@@ -4,16 +4,18 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using RauViet.classes;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Button;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
 
 namespace RauViet.ui
 {
-    public partial class Customers : Form
-    {        public Customers()
+    public partial class ExportCodes : Form
+    {        public ExportCodes()
         {
             InitializeComponent();
 
@@ -47,14 +49,13 @@ namespace RauViet.ui
             try
             {
                 // Chạy truy vấn trên thread riêng
-                DataTable dt = await SQLManager.Instance.getCustomersAsync();
+                DataTable dt = await SQLManager.Instance.getExportCodesAsync();
                 dataGV.DataSource = dt;
 
-                dataGV.Columns["CustomerID"].HeaderText = "Mã KH";
-                dataGV.Columns["FullName"].HeaderText = "Tên Khách Hàng";
-                dataGV.Columns["Email"].HeaderText = "Email";
-                dataGV.Columns["PhoneNumber"].HeaderText = "Số điện thoại";
-                dataGV.Columns["Address"].HeaderText = "Địa chỉ";
+                dataGV.Columns["ExportCode"].HeaderText = "Mã Xuất Cảng";
+                dataGV.Columns["ExportDate"].HeaderText = "Ngày Xuất Cảng";                
+                dataGV.Columns["Complete"].HeaderText = "Hoàn Thành";
+                dataGV.Columns["ModifiedAt"].HeaderText = "Ngày Thay đổi";
             }
             catch (Exception ex)
             {
@@ -78,12 +79,12 @@ namespace RauViet.ui
             }
         }
         
-        private int createID()
+        private int createNewID()
         {
             var existingIds = dataGV.Rows
             .Cast<DataGridViewRow>()
-            .Where(r => !r.IsNewRow && r.Cells["CustomerID"].Value != null)
-            .Select(r => Convert.ToInt32(r.Cells["CustomerID"].Value))
+            .Where(r => !r.IsNewRow && r.Cells["ExportCodeID"].Value != null)
+            .Select(r => Convert.ToInt32(r.Cells["ExportCodeID"].Value))
             .ToList();
 
             int newCustomerID = existingIds.Count > 0 ? existingIds.Max() + 1 : 1;
@@ -96,45 +97,56 @@ namespace RauViet.ui
             if (e.RowIndex < 0)
                 return;            
             var cells = dataGV.Rows[e.RowIndex].Cells;
-            string maKH = cells["CustomerID"].Value.ToString();
-            string fullName = cells["FullName"].Value.ToString();
-            string address = cells["Address"].Value.ToString();
-            string phone = cells["PhoneNumber"].Value.ToString();
-            string email = cells["Email"].Value.ToString();
+            int exportCodeID  = Convert.ToInt32(cells["ExportCodeID"].Value);
+            string exportCode = cells["ExportCode"].Value.ToString();
+            DateTime exportDate = Convert.ToDateTime(cells["ExportDate"].Value.ToString());
+            bool complete = Convert.ToBoolean(cells["Complete"].Value);
 
-            name_tb.Text = fullName;
-            address_tb.Text = address;
-            phone_tb.Text = phone;
-            email_tb.Text = email;
-            maKH_tb.Text = maKH;
+            exportCodeId_tb.Text = exportCodeID.ToString();
+            exportCode_tb.Text = exportCode;
+            exportdate_dtp.Value = exportDate;
+            complete_cb.Checked = complete;
+            complete_cb.AutoCheck = !complete;
+            if (complete)
+            {
+                complete_cb.ForeColor = Color.Red; // chỉ tác dụng khi Enabled = true trên nhiều hệ thống
+                complete_cb.BackColor = Color.Yellow; // background
+            }
+            else
+            {
+                complete_cb.ForeColor = Color.Black; // chỉ tác dụng khi Enabled = true trên nhiều hệ thống
+                complete_cb.BackColor = this.BackColor; // background
+            }
+
             delete_btn.Enabled = true;
+
         }
 
        
 
-        private async void updateData(int customerId, string fullName, string address, string phone, string email)
+        private async void updateExportCode(int exportCodeID, string exportCode, DateTime exportDate, bool complete)
         {
             foreach (DataGridViewRow row in dataGV.Rows)
             {
-                int maKH = Convert.ToInt32(row.Cells["CustomerID"].Value);
-                if (maKH.CompareTo(customerId) == 0)
+                int id = Convert.ToInt32(row.Cells["ExportCodeID"].Value);
+                if (id.CompareTo(exportCodeID) == 0)
                 {
                     DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", " Thay Đổi Thông Tin Khách Hàng", MessageBoxButtons.YesNo);
                     if (dialogResult == DialogResult.Yes)
                     {
                         try
                         {
-                            bool isScussess = await SQLManager.Instance.updateCustomerAsync(customerId, fullName, address, phone, email);
+                            bool isScussess = await SQLManager.Instance.updateExportCodeAsync(exportCodeID, exportCode, exportDate, complete);
 
                             if (isScussess == true)
                             {
                                 status_lb.Text = "Thành công.";
                                 status_lb.ForeColor = Color.Green;
 
-                                row.Cells["FullName"].Value = name_tb.Text;
-                                row.Cells["Address"].Value = address_tb.Text;
-                                row.Cells["PhoneNumber"].Value = phone_tb.Text;
-                                row.Cells["Email"].Value = email_tb.Text;
+                                row.Cells["ExportCode"].Value = exportCode;
+                                row.Cells["ExportDate"].Value = exportDate;
+                                row.Cells["ModifiedAt"].Value = DateTime.Now;
+                                row.Cells["Complete"].Value = complete;
                             }
                             else
                             {
@@ -148,16 +160,16 @@ namespace RauViet.ui
                             status_lb.ForeColor = Color.Red;
                         }
 
-                        
 
-                        
+
+
                     }
                     break;
                 }
             }
         }
 
-        private async void createNew(string fullName, string address, string phone, string email)
+        private async void createExportCode(string exportCode)
         {
             DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", " Tạo Mới Thông Tin Khách Hàng", MessageBoxButtons.YesNo);
 
@@ -165,20 +177,20 @@ namespace RauViet.ui
             {
                 try
                 {
-                    bool isScussess = await SQLManager.Instance.insertCustomerAsync(fullName, address, phone, email);
+                    bool isScussess = await SQLManager.Instance.insertExportCodeAsync(exportCode);
                     if (isScussess == true)
                     {
 
                         DataTable dataTable = (DataTable)dataGV.DataSource;
                         DataRow drToAdd = dataTable.NewRow();
 
-                        int newCustomerID = createID();
-                        drToAdd["CustomerID"] = newCustomerID;
-                        drToAdd["FullName"] = name_tb.Text;
-                        drToAdd["Address"] = address_tb.Text;
-                        drToAdd["PhoneNumber"] = phone_tb.Text;
-                        drToAdd["Email"] = email_tb.Text;
-                        maKH_tb.Text = newCustomerID.ToString();
+                        int newCustomerID = createNewID();
+                        drToAdd["ExportCodeID"] = newCustomerID;
+                        drToAdd["ExportCode"] = exportCode;
+                        drToAdd["ExportDate"] = DateTime.Now;
+                        drToAdd["ModifiedAt"] = DateTime.Now;
+                        drToAdd["Complete"] = false;
+                        exportCodeId_tb.Text = newCustomerID.ToString();
 
 
                         dataTable.Rows.Add(drToAdd);
@@ -198,32 +210,32 @@ namespace RauViet.ui
                     status_lb.Text = "Thất bại.";
                     status_lb.ForeColor = Color.Red;
                 }
-                
+
             }
         }
         private void saveBtn_Click(object sender, EventArgs e)
         {
-            if (maKH_tb.Text.Length != 0)
-                updateData(Convert.ToInt32(maKH_tb.Text), name_tb.Text, address_tb.Text, phone_tb.Text, email_tb.Text);
+            if (exportCodeId_tb.Text.Length != 0)
+                updateExportCode(Convert.ToInt32(exportCodeId_tb.Text), exportCode_tb.Text, exportdate_dtp.Value, complete_cb.Checked);
             else
-                createNew(name_tb.Text, address_tb.Text, phone_tb.Text, email_tb.Text);
+                createExportCode(exportCode_tb.Text);
 
         }
         private async void deleteBtn_Click(object sender, EventArgs e)
         {
-            string customerId = maKH_tb.Text;
+            string id = exportCodeId_tb.Text;
 
             foreach (DataGridViewRow row in dataGV.Rows)
             {
-                string maKH = row.Cells["CustomerID"].Value.ToString();
-                if (maKH.CompareTo(customerId) == 0)
+                string exportCodeID = row.Cells["ExportCodeID"].Value.ToString();
+                if (exportCodeID.CompareTo(id) == 0)
                 {
                     DialogResult dialogResult = MessageBox.Show("XÓA THÔNG TIN KHÁCH HÀNG ĐÓ NHA \n Chắc chắn chưa ?", " Xóa Thông Tin Khách Hàng", MessageBoxButtons.YesNo);
                     if (dialogResult == DialogResult.Yes)
                     {
                         try
                         {
-                            bool isScussess = await SQLManager.Instance.deleteCustomerAsync(Convert.ToInt32(customerId));
+                            bool isScussess = await SQLManager.Instance.deleteExportCodeAsync(Convert.ToInt32(exportCodeID));
 
                             if (isScussess == true)
                             {
@@ -260,14 +272,10 @@ namespace RauViet.ui
 
         private void newCustomerBtn_Click(object sender, EventArgs e)
         {
-            maKH_tb.Text = "";
-            name_tb.Text = "";
-            address_tb.Text = "";
-            phone_tb.Text = "";
-            email_tb.Text = "";
-            status_lb.Text = "";
-            delete_btn.Enabled = false;
-            return;            
+            exportCodeId_tb.Text = "";
+            exportCode_tb.Text = "";
+            exportdate_dtp.Value = DateTime.Now;
+            complete_cb.Checked = false;
         }
     }
 }

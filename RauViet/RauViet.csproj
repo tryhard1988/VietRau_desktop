@@ -101,7 +101,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="classes\printer\OrderListPrinter.cs" />
+    <Compile Include="classes\printer\OrderSummaryPrinter.cs" />
+    <Compile Include="classes\printer\PackingListPrinter.cs" />
     <Compile Include="classes\SQLManager.cs" />
+    <Compile Include="classes\Utils.cs" />
     <Compile Include="classes\WooCommerce.cs" />
     <Compile Include="excel_reader\excelReader.cs" />
     <Compile Include="Program.cs" />
@@ -116,6 +120,24 @@
     </Compile>
     <Compile Include="ui\QL_Kho.Designer.cs">
       <DependentUpon>QL_Kho.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ui\ql_kho_sub\OrderPackingList.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\ql_kho_sub\OrderPackingList.Designer.cs">
+      <DependentUpon>OrderPackingList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ui\ql_kho_sub\ExportCodes.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\ql_kho_sub\ExportCodes.Designer.cs">
+      <DependentUpon>ExportCodes.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ui\ql_kho_sub\OrdersList.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\ql_kho_sub\OrdersList.Designer.cs">
+      <DependentUpon>OrdersList.cs</DependentUpon>
     </Compile>
     <Compile Include="ui\ql_kho_sub\Customers.cs">
       <SubType>Form</SubType>
@@ -148,6 +170,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ui\QL_Kho.resx">
       <DependentUpon>QL_Kho.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\ql_kho_sub\OrderPackingList.resx">
+      <DependentUpon>OrderPackingList.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\ql_kho_sub\ExportCodes.resx">
+      <DependentUpon>ExportCodes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\ql_kho_sub\OrdersList.resx">
+      <DependentUpon>OrdersList.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ui\ql_kho_sub\Customers.resx">
       <DependentUpon>Customers.cs</DependentUpon>

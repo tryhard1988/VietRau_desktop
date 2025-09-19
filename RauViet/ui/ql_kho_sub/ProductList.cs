@@ -45,7 +45,19 @@ namespace RauViet.ui
 
             try
             {
-                DataTable sku_dt = await Task.Run(() => SQLManager.Instance.getProductSKU());
+                var skuTask = SQLManager.Instance.getProductSKUAsync();
+                var packingTask = SQLManager.Instance.getProductpackingAsync();
+
+                await Task.WhenAll(skuTask, packingTask);
+
+                DataTable sku_dt = skuTask.Result;
+                DataTable packing_dt = packingTask.Result;
+
+                foreach (DataColumn col in packing_dt.Columns)
+                    col.ReadOnly = false;
+
+
+
                 sku_cbb.DataSource = sku_dt;
                 sku_cbb.DisplayMember = "ProductNameVN";  // hiển thị tên
                 sku_cbb.ValueMember = "SKU";
@@ -53,7 +65,7 @@ namespace RauViet.ui
 
 
                 // Chạy truy vấn trên thread riêng
-                DataTable dt = await Task.Run(() => SQLManager.Instance.getProductpacking());
+               
 
 
                 // Tạo cột mới
@@ -62,9 +74,9 @@ namespace RauViet.ui
                 DataColumn colNameEN = new DataColumn("Name_EN", typeof(string));
 
                 // Thêm cột vào DataTable
-                dt.Columns.Add(PriceCNF);
-                dt.Columns.Add(colNameVN);
-                dt.Columns.Add(colNameEN);
+                packing_dt.Columns.Add(PriceCNF);
+                packing_dt.Columns.Add(colNameVN);
+                packing_dt.Columns.Add(colNameEN);
 
                 // Chuyển cột vào vị trí mong muốn
                 
@@ -72,7 +84,7 @@ namespace RauViet.ui
                 colNameEN.SetOrdinal(4); // chèn vào vị trí index 4
                // PriceCNF.SetOrdinal(5); // chèn vào vị trí index 3
                 // Gán giá trị cho từng dòng
-                foreach (DataRow dr in dt.Rows)
+                foreach (DataRow dr in packing_dt.Rows)
                 {
                     int sku = Convert.ToInt32(dr["SKU"]);
                     DataRow row = sku_dt.Select($"SKU = '{sku}'")[0];
@@ -82,12 +94,14 @@ namespace RauViet.ui
                     dr["PriceCNF"] = row["PriceCNF"].ToString();
                 }
 
-                dataGV.DataSource = dt;
+                dataGV.DataSource = packing_dt;
                 dataGV.Columns["ProductPackingID"].Visible = false;
                 dataGV.Columns["Amount"].Visible = false;
                 dataGV.Columns["Packing"].Visible = false;
                 dataGV.Columns["PriceCNF"].Visible = false;
                 dataGV.Columns["SKU"].Visible = false;
+
+                //  dataGV.Columns["SKU"].Visible = false;
 
                 dataGV.Columns["Name_VN"].HeaderText = "Tên Tiếng Việt";
                 dataGV.Columns["Name_EN"].HeaderText = "Tên Tiếng Anh";
@@ -106,7 +120,6 @@ namespace RauViet.ui
 
                 dataGV.Columns["PriceCNF"].AutoSizeMode = DataGridViewAutoSizeColumnMode.ColumnHeader;
                 dataGV.AutoResizeColumns();
-
 
                 updateDataTextBoxFlowSKU();
 
@@ -166,7 +179,7 @@ namespace RauViet.ui
         {
             foreach (DataGridViewRow row in dataGV.Rows)
             {
-                int productPackingID = int.Parse(row.Cells["ProductPackingID"].Value.ToString());
+                int productPackingID = Convert.ToInt32(row.Cells["ProductPackingID"].Value);
                 if (productPackingID.CompareTo(ID) == 0)
                 {
                     DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", " Thay Đổi Thông Tin Khách Hàng", MessageBoxButtons.YesNo);
@@ -174,7 +187,7 @@ namespace RauViet.ui
                     {
                         try
                         {      
-                            bool isScussess = await Task.Run(() => SQLManager.Instance.updateProductpacking(ID, SKU, BarCode, PLU, Amount, packing, barCodeEAN13, artNr, GGN));
+                            bool isScussess = await SQLManager.Instance.updateProductpackingAsync(ID, SKU, BarCode, PLU, Amount, packing, barCodeEAN13, artNr, GGN);
 
                             if (isScussess == true)
                             {
@@ -225,7 +238,7 @@ namespace RauViet.ui
             {
                 try
                 {
-                    bool isScussess = await Task.Run(() => SQLManager.Instance.insertProductpacking(SKU, BarCode, PLU, Amount, packing, barCodeEAN13, artNr, GGN));
+                    bool isScussess = await SQLManager.Instance.insertProductpackingAsync(SKU, BarCode, PLU, Amount, packing, barCodeEAN13, artNr, GGN);
                     if (isScussess == true)
                     {
                         DataRowView productSKUData = (DataRowView)sku_cbb.SelectedItem;
@@ -310,7 +323,7 @@ namespace RauViet.ui
                     {
                         try
                         {
-                            bool isScussess = await Task.Run(() => SQLManager.Instance.deleteProductpacking(id));
+                            bool isScussess = await SQLManager.Instance.deleteProductpackingAsync(Convert.ToInt32(id));
 
                             if (isScussess == true)
                             {
@@ -393,9 +406,7 @@ namespace RauViet.ui
                 }
 
                 if (dataGV.SelectedRows.Count > 0)
-                {
-                    var cells = dataGV.SelectedRows[0].Cells;                  
-
+                {     
                     foreach (var item in arr)
                     {
                         foreach (Control ctrl in packing_panel.Controls)

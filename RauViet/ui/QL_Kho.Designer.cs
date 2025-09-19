@@ -31,11 +31,11 @@
             this.khachhang_btn = new System.Windows.Forms.Button();
             this.products_SKU_btn = new System.Windows.Forms.Button();
             this.productpacking_btn = new System.Windows.Forms.Button();
-            this.button4 = new System.Windows.Forms.Button();
-            this.button5 = new System.Windows.Forms.Button();
-            this.button6 = new System.Windows.Forms.Button();
+            this.others_btn = new System.Windows.Forms.Button();
+            this.exportCode_btn = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
             this.content_panel = new System.Windows.Forms.Panel();
+            this.orderpackingList_btn = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -44,7 +44,7 @@
             this.khachhang_btn.Dock = System.Windows.Forms.DockStyle.Left;
             this.khachhang_btn.Location = new System.Drawing.Point(0, 0);
             this.khachhang_btn.Name = "khachhang_btn";
-            this.khachhang_btn.Size = new System.Drawing.Size(75, 62);
+            this.khachhang_btn.Size = new System.Drawing.Size(75, 56);
             this.khachhang_btn.TabIndex = 0;
             this.khachhang_btn.Text = "Khách Hàng";
             this.khachhang_btn.UseVisualStyleBackColor = true;
@@ -54,7 +54,7 @@
             this.products_SKU_btn.Dock = System.Windows.Forms.DockStyle.Left;
             this.products_SKU_btn.Location = new System.Drawing.Point(75, 0);
             this.products_SKU_btn.Name = "products_SKU_btn";
-            this.products_SKU_btn.Size = new System.Drawing.Size(75, 62);
+            this.products_SKU_btn.Size = new System.Drawing.Size(75, 56);
             this.products_SKU_btn.TabIndex = 1;
             this.products_SKU_btn.Text = "DS Sản Phẩm Theo SKU";
             this.products_SKU_btn.UseVisualStyleBackColor = true;
@@ -64,62 +64,62 @@
             this.productpacking_btn.Dock = System.Windows.Forms.DockStyle.Left;
             this.productpacking_btn.Location = new System.Drawing.Point(150, 0);
             this.productpacking_btn.Name = "productpacking_btn";
-            this.productpacking_btn.Size = new System.Drawing.Size(75, 62);
+            this.productpacking_btn.Size = new System.Drawing.Size(75, 56);
             this.productpacking_btn.TabIndex = 2;
             this.productpacking_btn.Text = "DS Sản Phẩn Theo Qui Cách";
             this.productpacking_btn.UseVisualStyleBackColor = true;
             // 
-            // button4
+            // others_btn
             // 
-            this.button4.Dock = System.Windows.Forms.DockStyle.Left;
-            this.button4.Location = new System.Drawing.Point(225, 0);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(75, 62);
-            this.button4.TabIndex = 3;
-            this.button4.Text = "button4";
-            this.button4.UseVisualStyleBackColor = true;
+            this.others_btn.Dock = System.Windows.Forms.DockStyle.Left;
+            this.others_btn.Location = new System.Drawing.Point(225, 0);
+            this.others_btn.Name = "others_btn";
+            this.others_btn.Size = new System.Drawing.Size(75, 56);
+            this.others_btn.TabIndex = 3;
+            this.others_btn.Text = "Đơn Hàng";
+            this.others_btn.UseVisualStyleBackColor = true;
             // 
-            // button5
+            // exportCode_btn
             // 
-            this.button5.Dock = System.Windows.Forms.DockStyle.Left;
-            this.button5.Location = new System.Drawing.Point(300, 0);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(75, 62);
-            this.button5.TabIndex = 4;
-            this.button5.Text = "button5";
-            this.button5.UseVisualStyleBackColor = true;
-            // 
-            // button6
-            // 
-            this.button6.Dock = System.Windows.Forms.DockStyle.Left;
-            this.button6.Location = new System.Drawing.Point(375, 0);
-            this.button6.Name = "button6";
-            this.button6.Size = new System.Drawing.Size(75, 62);
-            this.button6.TabIndex = 5;
-            this.button6.Text = "button6";
-            this.button6.UseVisualStyleBackColor = true;
+            this.exportCode_btn.Dock = System.Windows.Forms.DockStyle.Left;
+            this.exportCode_btn.Location = new System.Drawing.Point(300, 0);
+            this.exportCode_btn.Name = "exportCode_btn";
+            this.exportCode_btn.Size = new System.Drawing.Size(75, 56);
+            this.exportCode_btn.TabIndex = 4;
+            this.exportCode_btn.Text = "Mã Xuất Cảng";
+            this.exportCode_btn.UseVisualStyleBackColor = true;
             // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.button6);
-            this.panel1.Controls.Add(this.button5);
-            this.panel1.Controls.Add(this.button4);
+            this.panel1.Controls.Add(this.orderpackingList_btn);
+            this.panel1.Controls.Add(this.exportCode_btn);
+            this.panel1.Controls.Add(this.others_btn);
             this.panel1.Controls.Add(this.productpacking_btn);
             this.panel1.Controls.Add(this.products_SKU_btn);
             this.panel1.Controls.Add(this.khachhang_btn);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1046, 62);
+            this.panel1.Size = new System.Drawing.Size(1046, 56);
             this.panel1.TabIndex = 0;
             // 
             // content_panel
             // 
             this.content_panel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.content_panel.Location = new System.Drawing.Point(0, 62);
+            this.content_panel.Location = new System.Drawing.Point(0, 56);
             this.content_panel.Name = "content_panel";
-            this.content_panel.Size = new System.Drawing.Size(1046, 485);
+            this.content_panel.Size = new System.Drawing.Size(1046, 491);
             this.content_panel.TabIndex = 1;
+            // 
+            // orderpackingList_btn
+            // 
+            this.orderpackingList_btn.Dock = System.Windows.Forms.DockStyle.Left;
+            this.orderpackingList_btn.Location = new System.Drawing.Point(375, 0);
+            this.orderpackingList_btn.Name = "orderpackingList_btn";
+            this.orderpackingList_btn.Size = new System.Drawing.Size(75, 56);
+            this.orderpackingList_btn.TabIndex = 5;
+            this.orderpackingList_btn.Text = "Danh Sách Đóng Thùng";
+            this.orderpackingList_btn.UseVisualStyleBackColor = true;
             // 
             // QL_kho
             // 
@@ -139,10 +139,10 @@
         private System.Windows.Forms.Button khachhang_btn;
         private System.Windows.Forms.Button products_SKU_btn;
         private System.Windows.Forms.Button productpacking_btn;
-        private System.Windows.Forms.Button button4;
-        private System.Windows.Forms.Button button5;
-        private System.Windows.Forms.Button button6;
+        private System.Windows.Forms.Button others_btn;
+        private System.Windows.Forms.Button exportCode_btn;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Panel content_panel;
+        private System.Windows.Forms.Button orderpackingList_btn;
     }
 }

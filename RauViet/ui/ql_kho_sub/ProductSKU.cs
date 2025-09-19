@@ -48,7 +48,7 @@ namespace RauViet.ui
             try
             {
                 // Chạy truy vấn trên thread riêng
-                DataTable dt = await Task.Run(() => SQLManager.Instance.getProductSKU());
+                DataTable dt = await SQLManager.Instance.getProductSKUAsync();
                 dataGV.DataSource = dt;
 
                 dataGV.Columns["ProductNameVN"].HeaderText = "Tên Sản Phẩm (VN)";
@@ -122,11 +122,11 @@ namespace RauViet.ui
 
        
 
-        private async void updateProductSKU(string SKU, string productNameVN, string productNameEN, string packingType, string package, string packingList, string botanicalName, string priceCNF)
+        private async void updateProductSKU(int SKU, string productNameVN, string productNameEN, string packingType, string package, string packingList, string botanicalName, decimal priceCNF)
         {
             foreach (DataGridViewRow row in dataGV.Rows)
             {
-                string _SKU = row.Cells["SKU"].Value.ToString();
+                int _SKU =Convert.ToInt32(row.Cells["SKU"].Value);
                 if (_SKU.CompareTo(SKU) == 0)
                 {
                     DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", " Thay Đổi Thông Tin Khách Hàng", MessageBoxButtons.YesNo);
@@ -134,7 +134,7 @@ namespace RauViet.ui
                     {
                         try
                         {
-                            bool isScussess = await Task.Run(() => SQLManager.Instance.updateProductSKU(SKU, productNameVN, productNameEN, packingType, package, packingList, botanicalName, priceCNF));
+                            bool isScussess = await SQLManager.Instance.updateProductSKUAsync(SKU, productNameVN, productNameEN, packingType, package, packingList, botanicalName, priceCNF);
 
                             if (isScussess == true)
                             {
@@ -170,7 +170,7 @@ namespace RauViet.ui
             }
         }
 
-        private async void createNewProductSKU(string productNameVN, string productNameEN, string packingType, string package, string packingList, string botanicalName, string priceCNF)
+        private async void createNewProductSKU(string productNameVN, string productNameEN, string packingType, string package, string packingList, string botanicalName, decimal priceCNF)
         {
             DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", " Tạo Mới Thông Tin Khách Hàng", MessageBoxButtons.YesNo);
 
@@ -178,7 +178,7 @@ namespace RauViet.ui
             {
                 try
                 {
-                    bool isScussess = await Task.Run(() => SQLManager.Instance.insertProductSKU(productNameVN, productNameEN, packingType, package, packingList, botanicalName, priceCNF));
+                    bool isScussess = await SQLManager.Instance.insertProductSKUAsync(productNameVN, productNameEN, packingType, package, packingList, botanicalName, priceCNF);
                     if (isScussess == true)
                     {
 
@@ -227,9 +227,9 @@ namespace RauViet.ui
             }
 
             if (sku_tb.Text.Length != 0)
-                updateProductSKU(sku_tb.Text, product_VN_tb.Text, product_EN_tb.Text, packingType_tb.Text, package_tb.Text, packingType, botanicalName_tb.Text, priceCNF_tb.Text);
+                updateProductSKU(Convert.ToInt32(sku_tb.Text), product_VN_tb.Text, product_EN_tb.Text, packingType_tb.Text, package_tb.Text, packingType, botanicalName_tb.Text,Convert.ToDecimal(priceCNF_tb.Text));
             else
-                createNewProductSKU(product_VN_tb.Text, product_EN_tb.Text, packingType_tb.Text, package_tb.Text, packingType, botanicalName_tb.Text, priceCNF_tb.Text);
+                createNewProductSKU(product_VN_tb.Text, product_EN_tb.Text, packingType_tb.Text, package_tb.Text, packingType, botanicalName_tb.Text, Convert.ToDecimal(priceCNF_tb.Text));
 
         }
         private async void deleteBtn_Click(object sender, EventArgs e)
@@ -246,7 +246,7 @@ namespace RauViet.ui
                     {
                         try
                         {
-                            bool isScussess = await Task.Run(() => SQLManager.Instance.deleteProductSKU(SKU));
+                            bool isScussess = await SQLManager.Instance.deleteProductSKUAsync(Convert.ToInt32(SKU));
 
                             if (isScussess == true)
                             {
