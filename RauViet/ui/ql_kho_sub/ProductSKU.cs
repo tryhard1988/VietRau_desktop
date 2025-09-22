@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -32,8 +33,14 @@ namespace RauViet.ui
             newBtn.Click += newBtn_Click;
             luuBtn.Click += saveBtn_Click;
             delete_btn.Click += deleteBtn_Click;
-            dataGV.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGV_CellClick);
+            dataGV.SelectionChanged += this.dataGV_CellClick;
             this.dataGV.RowPrePaint += new System.Windows.Forms.DataGridViewRowPrePaintEventHandler(this.dataGV_RowPrePaint);
+            priceCNF_tb.KeyPress += Tb_KeyPress_OnlyNumber;
+            priority_tb.KeyPress += Tb_KeyPress_OnlyNumber;
+
+
+            sku_tb.Visible = false;
+            label1.Visible = false;
         }
 
         public async void ShowData()
@@ -49,12 +56,58 @@ namespace RauViet.ui
             {
                 // Chạy truy vấn trên thread riêng
                 DataTable dt = await SQLManager.Instance.getProductSKUAsync();
+                
+
+                int count = 0;
+                dt.Columns["SKU"].SetOrdinal(count++);
+                dt.Columns["ProductNameVN"].SetOrdinal(count++);
+                dt.Columns["ProductNameEN"].SetOrdinal(count++);
+                dt.Columns["PackingType"].SetOrdinal(count++);
+                dt.Columns["Package"].SetOrdinal(count++);
+                dt.Columns["PackingList"].SetOrdinal(count++);
+                dt.Columns["BotanicalName"].SetOrdinal(count++);
+                dt.Columns["PriceCNF"].SetOrdinal(count++);
+                dt.Columns["Priority"].SetOrdinal(count++);
+                dt.Columns["PlantingAreaCode"].SetOrdinal(count++);
                 dataGV.DataSource = dt;
+
 
                 dataGV.Columns["ProductNameVN"].HeaderText = "Tên Sản Phẩm (VN)";
                 dataGV.Columns["ProductNameEN"].HeaderText = "Tên Sản Phẩm (EN)";
                 dataGV.Columns["BotanicalName"].HeaderText = "Botanical Name";
-                dataGV.Columns["PriceCNF"].HeaderText = "Giá CNF (CHF/Kg)";
+                dataGV.Columns["PriceCNF"].HeaderText = "Giá CNF\n(CHF/Kg)";
+                dataGV.Columns["Priority"].HeaderText = "Ưu\nTiên";
+                dataGV.Columns["PackingList"].HeaderText = "Packing\nList";
+                dataGV.Columns["PackingType"].HeaderText = "Packing\nType";
+                dataGV.Columns["PlantingAreaCode"].HeaderText = "Mã\nVùng Trồng";
+
+                dataGV.Columns["ProductNameVN"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                dataGV.Columns["ProductNameEN"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                dataGV.Columns["BotanicalName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;   
+                dataGV.Columns["PackingList"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+                dataGV.Columns["PlantingAreaCode"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+
+                dataGV.Columns["PriceCNF"].Width = 60;
+                dataGV.Columns["Priority"].Width = 35;
+                dataGV.Columns["package"].Width = 60;
+                dataGV.Columns["PackingType"].Width = 60;
+                dataGV.Columns["SKU"].Width = 40;
+
+                dataGV.Columns["SKU"].Visible = false;
+
+                dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                dataGV.Columns["PriceCNF"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                dataGV.Columns["package"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                dataGV.Columns["PackingType"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                dataGV.Columns["Priority"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                dataGV.Columns["PackingList"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                dataGV.Columns["SKU"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                //dataGV.AutoResizeColumns();
+
+                
+
+                if (dataGV.SelectedRows.Count > 0)
+                    UpdateRightUI(0);
             }
             catch (Exception ex)
             {
@@ -91,23 +144,30 @@ namespace RauViet.ui
             return newSKU_ID;
         }
 
-        private void dataGV_CellClick(object sender, DataGridViewCellEventArgs e)
+        private void dataGV_CellClick(object sender, EventArgs e)
         {
-            if (e.RowIndex < 0)
+            int rowIndex = dataGV.CurrentRow.Index;
+            if (rowIndex < 0)
                 return;
 
-            
 
-            var cells = dataGV.Rows[e.RowIndex].Cells;
+            UpdateRightUI(rowIndex);
+        }
+
+        private void UpdateRightUI(int index)
+        {
+            var cells = dataGV.Rows[index].Cells;
 
             string SKU = cells["SKU"].Value.ToString();
             string productNameVN = cells["ProductNameVN"].Value.ToString();
-            string productNameEN = cells["ProductNameEN"].Value.ToString();            
+            string productNameEN = cells["ProductNameEN"].Value.ToString();
             string packingType = cells["PackingType"].Value.ToString();
             string package = cells["Package"].Value.ToString();
             string packingList = cells["PackingList"].Value.ToString();
             string botanicalName = cells["BotanicalName"].Value.ToString();
             string PriceCNF = cells["PriceCNF"].Value.ToString();
+            string priority = cells["Priority"].Value.ToString();
+            string plantingAreaCode = cells["PlantingAreaCode"].Value.ToString();
 
             sku_tb.Text = SKU;
             product_VN_tb.Text = productNameVN;
@@ -117,24 +177,30 @@ namespace RauViet.ui
             packing_tb.Text = packingList;
             botanicalName_tb.Text = botanicalName;
             priceCNF_tb.Text = PriceCNF;
+            priority_tb.Text = priority;
+            plantingareaCode_tb.Text = plantingAreaCode;
             delete_btn.Enabled = true;
+
+            info_gb.BackColor = Color.DarkGray;
+            status_lb.Text = "";
         }
+
 
        
 
-        private async void updateProductSKU(int SKU, string productNameVN, string productNameEN, string packingType, string package, string packingList, string botanicalName, decimal priceCNF)
+        private async void updateProductSKU(int SKU, string productNameVN, string productNameEN, string packingType, string package, string packingList, string botanicalName, decimal priceCNF, int priority, string plantingareaCode)
         {
             foreach (DataGridViewRow row in dataGV.Rows)
             {
                 int _SKU =Convert.ToInt32(row.Cells["SKU"].Value);
                 if (_SKU.CompareTo(SKU) == 0)
                 {
-                    DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", " Thay Đổi Thông Tin Khách Hàng", MessageBoxButtons.YesNo);
+                    DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                     if (dialogResult == DialogResult.Yes)
                     {
                         try
                         {
-                            bool isScussess = await SQLManager.Instance.updateProductSKUAsync(SKU, productNameVN, productNameEN, packingType, package, packingList, botanicalName, priceCNF);
+                            bool isScussess = await SQLManager.Instance.updateProductSKUAsync(SKU, productNameVN, productNameEN, packingType, package, packingList, botanicalName, priceCNF, priority, plantingareaCode);
 
                             if (isScussess == true)
                             {
@@ -148,6 +214,8 @@ namespace RauViet.ui
                                 row.Cells["PackingList"].Value = packingList;
                                 row.Cells["BotanicalName"].Value = botanicalName;
                                 row.Cells["PriceCNF"].Value = priceCNF;
+                                row.Cells["Priority"].Value = priority;
+                                row.Cells["PlantingAreaCode"].Value = plantingareaCode;
                             }
                             else
                             {
@@ -170,15 +238,15 @@ namespace RauViet.ui
             }
         }
 
-        private async void createNewProductSKU(string productNameVN, string productNameEN, string packingType, string package, string packingList, string botanicalName, decimal priceCNF)
+        private async void createNewProductSKU(string productNameVN, string productNameEN, string packingType, string package, string packingList, string botanicalName, decimal priceCNF, int priority, string plantingareaCode)
         {
-            DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", " Tạo Mới Thông Tin Khách Hàng", MessageBoxButtons.YesNo);
+            DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
             if (dialogResult == DialogResult.Yes)
             {
                 try
                 {
-                    bool isScussess = await SQLManager.Instance.insertProductSKUAsync(productNameVN, productNameEN, packingType, package, packingList, botanicalName, priceCNF);
+                    bool isScussess = await SQLManager.Instance.insertProductSKUAsync(productNameVN, productNameEN, packingType, package, packingList, botanicalName, priceCNF, priority, plantingareaCode);
                     if (isScussess == true)
                     {
 
@@ -194,6 +262,8 @@ namespace RauViet.ui
                         drToAdd["PackingList"] = packingList;
                         drToAdd["BotanicalName"] = botanicalName;
                         drToAdd["PriceCNF"] = priceCNF;
+                        drToAdd["Priority"] = priority;
+                        drToAdd["PlantingAreaCode"] = plantingareaCode;
                         sku_tb.Text = newCustomerID.ToString();
 
 
@@ -219,21 +289,42 @@ namespace RauViet.ui
         }
         private void saveBtn_Click(object sender, EventArgs e)
         {
-            String packingType = packing_tb.Text;
-            packingType = packingType.Replace(" ", "");
-            if (packingType.EndsWith("-"))
+            if(package_tb.Text.CompareTo("") == 0 ||
+                product_EN_tb.Text.CompareTo("") == 0 || product_VN_tb.Text.CompareTo("") == 0 || 
+                priceCNF_tb.Text.CompareTo("") == 0 || priority_tb.Text.CompareTo("") == 0)
             {
-                packingType = packingType.Substring(0, packingType.Length - 1);
+                MessageBox.Show(
+                                "Thiếu Dữ Liệu, Kiểm Tra Lại!",
+                                "Thông Báo",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Warning
+                            );
+                return;
             }
+                
+            String packingList = packing_tb.Text;
+            packingList = packingList.Replace(" ", "").ToLower();
+            if (packingList.EndsWith("-"))
+            {
+                packingList = packingList.Substring(0, packingList.Length - 1);
+            }
+            string productNameVN = product_VN_tb.Text;
+            string productNameEN = product_VN_tb.Text;
+            string packingType = packingType_tb.Text;
+            string plantingareaCode = plantingareaCode_tb.Text;
+            string package = package_tb.Text.Replace(" ", "").ToLower();
 
             if (sku_tb.Text.Length != 0)
-                updateProductSKU(Convert.ToInt32(sku_tb.Text), product_VN_tb.Text, product_EN_tb.Text, packingType_tb.Text, package_tb.Text, packingType, botanicalName_tb.Text,Convert.ToDecimal(priceCNF_tb.Text));
+                updateProductSKU(Convert.ToInt32(sku_tb.Text), productNameVN, productNameEN, packingType, package, packingList, botanicalName_tb.Text,Convert.ToDecimal(priceCNF_tb.Text),Convert.ToInt32(priority_tb.Text), plantingareaCode);
             else
-                createNewProductSKU(product_VN_tb.Text, product_EN_tb.Text, packingType_tb.Text, package_tb.Text, packingType, botanicalName_tb.Text, Convert.ToDecimal(priceCNF_tb.Text));
+                createNewProductSKU(productNameVN, productNameEN, packingType, package, packingList, botanicalName_tb.Text, Convert.ToDecimal(priceCNF_tb.Text), Convert.ToInt32(priority_tb.Text), plantingareaCode);
+            info_gb.BackColor = Color.Gray;
 
         }
         private async void deleteBtn_Click(object sender, EventArgs e)
         {
+            if (dataGV.SelectedRows.Count == 0) return;
+
             string SKU = sku_tb.Text;
 
             foreach (DataGridViewRow row in dataGV.Rows)
@@ -290,13 +381,27 @@ namespace RauViet.ui
             botanicalName_tb.Text = "";
             priceCNF_tb.Text = "";
             status_lb.Text = "";
+            plantingareaCode_tb.Text = "";
             delete_btn.Enabled = false;
+            info_gb.BackColor = Color.Green;
             return;            
         }
 
-        private void panel1_Paint(object sender, PaintEventArgs e)
+        private void Tb_KeyPress_OnlyNumber(object sender, KeyPressEventArgs e)
         {
+            TextBox tb = sender as TextBox;
 
+            // Chỉ cho nhập số, dấu chấm hoặc ký tự điều khiển
+            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) && e.KeyChar != '.')
+            {
+                e.Handled = true;
+            }
+
+            // Nếu đã có 1 dấu chấm, không cho nhập thêm
+            if (e.KeyChar == '.' && tb.Text.Contains("."))
+            {
+                e.Handled = true;
+            }
         }
     }
 }

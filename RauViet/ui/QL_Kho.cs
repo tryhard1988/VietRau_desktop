@@ -26,6 +26,45 @@ namespace RauViet.ui
             others_btn.Click += others_btn_Click;
             exportCode_btn.Click += exportCode_btn_Click;
             orderpackingList_btn.Click += orderpackingList_btn_Click;
+            orderTotal_btn.Click += orderTotal_btn_Click;
+            dkkd_btn.Click += dkkd_btn_Click;
+            phyto_btn.Click += phyto_btn_Click;
+        }
+
+        private void phyto_btn_Click(object sender, EventArgs e)
+        {
+            this.content_panel.Controls.Clear();
+
+            var form = new Phyto();
+            form.ShowData();
+
+            form.TopLevel = false;
+            form.Parent = this.content_panel;
+            form.Show();
+        }
+
+        private void dkkd_btn_Click(object sender, EventArgs e)
+        {
+            this.content_panel.Controls.Clear();
+
+            var form = new DangKyKiemDinh();
+            form.ShowData();
+
+            form.TopLevel = false;
+            form.Parent = this.content_panel;
+            form.Show();
+        }
+
+        private void orderTotal_btn_Click(object sender, EventArgs e)
+        {
+            this.content_panel.Controls.Clear();
+
+            var form = new OrdersTotal();
+            form.ShowData();
+
+            form.TopLevel = false;
+            form.Parent = this.content_panel;
+            form.Show();
         }
 
         private void orderpackingList_btn_Click(object sender, EventArgs e)

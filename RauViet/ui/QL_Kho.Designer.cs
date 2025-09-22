@@ -31,11 +31,14 @@
             this.khachhang_btn = new System.Windows.Forms.Button();
             this.products_SKU_btn = new System.Windows.Forms.Button();
             this.productpacking_btn = new System.Windows.Forms.Button();
-            this.others_btn = new System.Windows.Forms.Button();
             this.exportCode_btn = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.content_panel = new System.Windows.Forms.Panel();
+            this.orderTotal_btn = new System.Windows.Forms.Button();
             this.orderpackingList_btn = new System.Windows.Forms.Button();
+            this.others_btn = new System.Windows.Forms.Button();
+            this.content_panel = new System.Windows.Forms.Panel();
+            this.dkkd_btn = new System.Windows.Forms.Button();
+            this.phyto_btn = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -69,20 +72,10 @@
             this.productpacking_btn.Text = "DS Sản Phẩn Theo Qui Cách";
             this.productpacking_btn.UseVisualStyleBackColor = true;
             // 
-            // others_btn
-            // 
-            this.others_btn.Dock = System.Windows.Forms.DockStyle.Left;
-            this.others_btn.Location = new System.Drawing.Point(225, 0);
-            this.others_btn.Name = "others_btn";
-            this.others_btn.Size = new System.Drawing.Size(75, 56);
-            this.others_btn.TabIndex = 3;
-            this.others_btn.Text = "Đơn Hàng";
-            this.others_btn.UseVisualStyleBackColor = true;
-            // 
             // exportCode_btn
             // 
             this.exportCode_btn.Dock = System.Windows.Forms.DockStyle.Left;
-            this.exportCode_btn.Location = new System.Drawing.Point(300, 0);
+            this.exportCode_btn.Location = new System.Drawing.Point(225, 0);
             this.exportCode_btn.Name = "exportCode_btn";
             this.exportCode_btn.Size = new System.Drawing.Size(75, 56);
             this.exportCode_btn.TabIndex = 4;
@@ -91,9 +84,12 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.phyto_btn);
+            this.panel1.Controls.Add(this.dkkd_btn);
+            this.panel1.Controls.Add(this.orderTotal_btn);
             this.panel1.Controls.Add(this.orderpackingList_btn);
-            this.panel1.Controls.Add(this.exportCode_btn);
             this.panel1.Controls.Add(this.others_btn);
+            this.panel1.Controls.Add(this.exportCode_btn);
             this.panel1.Controls.Add(this.productpacking_btn);
             this.panel1.Controls.Add(this.products_SKU_btn);
             this.panel1.Controls.Add(this.khachhang_btn);
@@ -103,6 +99,36 @@
             this.panel1.Size = new System.Drawing.Size(1046, 56);
             this.panel1.TabIndex = 0;
             // 
+            // orderTotal_btn
+            // 
+            this.orderTotal_btn.Dock = System.Windows.Forms.DockStyle.Left;
+            this.orderTotal_btn.Location = new System.Drawing.Point(450, 0);
+            this.orderTotal_btn.Name = "orderTotal_btn";
+            this.orderTotal_btn.Size = new System.Drawing.Size(75, 56);
+            this.orderTotal_btn.TabIndex = 9;
+            this.orderTotal_btn.Text = "Tổng Đơn Hàng";
+            this.orderTotal_btn.UseVisualStyleBackColor = true;
+            // 
+            // orderpackingList_btn
+            // 
+            this.orderpackingList_btn.Dock = System.Windows.Forms.DockStyle.Left;
+            this.orderpackingList_btn.Location = new System.Drawing.Point(375, 0);
+            this.orderpackingList_btn.Name = "orderpackingList_btn";
+            this.orderpackingList_btn.Size = new System.Drawing.Size(75, 56);
+            this.orderpackingList_btn.TabIndex = 8;
+            this.orderpackingList_btn.Text = "Danh Sách Đóng Thùng";
+            this.orderpackingList_btn.UseVisualStyleBackColor = true;
+            // 
+            // others_btn
+            // 
+            this.others_btn.Dock = System.Windows.Forms.DockStyle.Left;
+            this.others_btn.Location = new System.Drawing.Point(300, 0);
+            this.others_btn.Name = "others_btn";
+            this.others_btn.Size = new System.Drawing.Size(75, 56);
+            this.others_btn.TabIndex = 7;
+            this.others_btn.Text = "Đơn Hàng";
+            this.others_btn.UseVisualStyleBackColor = true;
+            // 
             // content_panel
             // 
             this.content_panel.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -111,15 +137,25 @@
             this.content_panel.Size = new System.Drawing.Size(1046, 491);
             this.content_panel.TabIndex = 1;
             // 
-            // orderpackingList_btn
+            // dkkd_btn
             // 
-            this.orderpackingList_btn.Dock = System.Windows.Forms.DockStyle.Left;
-            this.orderpackingList_btn.Location = new System.Drawing.Point(375, 0);
-            this.orderpackingList_btn.Name = "orderpackingList_btn";
-            this.orderpackingList_btn.Size = new System.Drawing.Size(75, 56);
-            this.orderpackingList_btn.TabIndex = 5;
-            this.orderpackingList_btn.Text = "Danh Sách Đóng Thùng";
-            this.orderpackingList_btn.UseVisualStyleBackColor = true;
+            this.dkkd_btn.Dock = System.Windows.Forms.DockStyle.Left;
+            this.dkkd_btn.Location = new System.Drawing.Point(525, 0);
+            this.dkkd_btn.Name = "dkkd_btn";
+            this.dkkd_btn.Size = new System.Drawing.Size(75, 56);
+            this.dkkd_btn.TabIndex = 10;
+            this.dkkd_btn.Text = "Đăng Ký Kiểm Dịch";
+            this.dkkd_btn.UseVisualStyleBackColor = true;
+            // 
+            // phyto_btn
+            // 
+            this.phyto_btn.Dock = System.Windows.Forms.DockStyle.Left;
+            this.phyto_btn.Location = new System.Drawing.Point(600, 0);
+            this.phyto_btn.Name = "phyto_btn";
+            this.phyto_btn.Size = new System.Drawing.Size(75, 56);
+            this.phyto_btn.TabIndex = 11;
+            this.phyto_btn.Text = "PHYTO";
+            this.phyto_btn.UseVisualStyleBackColor = true;
             // 
             // QL_kho
             // 
@@ -139,10 +175,13 @@
         private System.Windows.Forms.Button khachhang_btn;
         private System.Windows.Forms.Button products_SKU_btn;
         private System.Windows.Forms.Button productpacking_btn;
-        private System.Windows.Forms.Button others_btn;
         private System.Windows.Forms.Button exportCode_btn;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Panel content_panel;
+        private System.Windows.Forms.Button orderTotal_btn;
         private System.Windows.Forms.Button orderpackingList_btn;
+        private System.Windows.Forms.Button others_btn;
+        private System.Windows.Forms.Button dkkd_btn;
+        private System.Windows.Forms.Button phyto_btn;
     }
 }

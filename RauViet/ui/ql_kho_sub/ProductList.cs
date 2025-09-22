@@ -33,9 +33,11 @@ namespace RauViet.ui
             newCustomerBtn.Click += newCustomerBtn_Click;
             LuuThayDoiBtn.Click += saveBtn_Click;
             delete_btn.Click += deleteBtn_Click;
-            dataGV.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGV_CellClick);
+            dataGV.SelectionChanged += this.dataGV_CellClick;
             this.dataGV.RowPrePaint += new System.Windows.Forms.DataGridViewRowPrePaintEventHandler(this.dataGV_RowPrePaint);
             priceCNF_tb.TextChanged += priceCNF_tb_TextChanged;
+
+            amount_tb.KeyPress += Tb_KeyPress_OnlyNumber;
 
         }
 
@@ -121,6 +123,8 @@ namespace RauViet.ui
                 dataGV.Columns["PriceCNF"].AutoSizeMode = DataGridViewAutoSizeColumnMode.ColumnHeader;
                 dataGV.AutoResizeColumns();
 
+                dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+
                 updateDataTextBoxFlowSKU();
 
             }
@@ -163,26 +167,21 @@ namespace RauViet.ui
             return newCustomerID;
         }
 
-        private void dataGV_CellClick(object sender, DataGridViewCellEventArgs e)
+        private void dataGV_CellClick(object sender, EventArgs e)
         {
-            if (e.RowIndex < 0)
-                return;
-
-            updateDataTextBoxFlowSKU();
-
-            
+            updateDataTextBoxFlowSKU();            
         }
 
        
 
-        private async void updateProductPacking(int ID, int SKU, string BarCode, string PLU, string Amount, string packing, string barCodeEAN13, string artNr, string GGN)
+        private async void updateProductPacking(int ID, int SKU, string BarCode, string PLU, int? Amount, string packing, string barCodeEAN13, string artNr, string GGN)
         {
             foreach (DataGridViewRow row in dataGV.Rows)
             {
                 int productPackingID = Convert.ToInt32(row.Cells["ProductPackingID"].Value);
                 if (productPackingID.CompareTo(ID) == 0)
                 {
-                    DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", " Thay Đổi Thông Tin Khách Hàng", MessageBoxButtons.YesNo);
+                    DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                     if (dialogResult == DialogResult.Yes)
                     {
                         try
@@ -200,14 +199,25 @@ namespace RauViet.ui
                                 row.Cells["SKU"].Value = SKU;
                                 row.Cells["BarCode"].Value = BarCode;
                                 row.Cells["PLU"].Value = PLU;
-                                row.Cells["Name_VN"].Value = productSKUData["ProductNameVN"] + " " + productSKUData["PackingType"] + " " + Amount + " " + packing; ;
-                                row.Cells["Name_EN"].Value = productSKUData["ProductNameEN"] + " " + productSKUData["PackingType"] + " " + Amount + " " + packing; ;
-                                row.Cells["Packing"].Value = packing;
+                                if (Amount != null)
+                                {
+                                    row.Cells["Name_VN"].Value = productSKUData["ProductNameVN"] + " " + productSKUData["PackingType"] + " " + Amount + " " + packing; 
+                                    row.Cells["Name_EN"].Value = productSKUData["ProductNameEN"] + " " + productSKUData["PackingType"] + " " + Amount + " " + packing; 
+                                }
+                                else
+                                {
+                                    row.Cells["Name_VN"].Value = productSKUData["ProductNameVN"];
+                                    row.Cells["Name_EN"].Value = productSKUData["ProductNameEN"];
+                                }
+                                    row.Cells["Packing"].Value = packing;
                                 row.Cells["PriceCNF"].Value = productSKUData["PriceCNF"];
                                 row.Cells["BarCodeEAN13"].Value = barCodeEAN13;
                                 row.Cells["ArtNr"].Value = artNr;
                                 row.Cells["GGN"].Value = GGN;
-                                row.Cells["Amount"].Value = Amount;
+                                if(Amount != null)
+                                    row.Cells["Amount"].Value = Amount;
+                                else
+                                    row.Cells["Amount"].Value = DBNull.Value;
                             }
                             else
                             {
@@ -230,9 +240,9 @@ namespace RauViet.ui
             }
         }
 
-        private async void createNewProducrpacking(int SKU, string BarCode, string PLU, string Amount, string packing, string barCodeEAN13, string artNr, string GGN)
+        private async void createNewProducrpacking(int SKU, string BarCode, string PLU, int? Amount, string packing, string barCodeEAN13, string artNr, string GGN)
         {
-            DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", " Tạo Mới Thông Tin Khách Hàng", MessageBoxButtons.YesNo);
+            DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
             if (dialogResult == DialogResult.Yes)
             {
@@ -251,14 +261,25 @@ namespace RauViet.ui
                         drToAdd["SKU"] = SKU;
                         drToAdd["BarCode"] = BarCode;
                         drToAdd["PLU"] = PLU;
-                        drToAdd["Name_VN"] = productSKUData["ProductNameVN"] + " " + productSKUData["PackingType"] + " " + Amount + " " + packing; ;
-                        drToAdd["Name_EN"] = productSKUData["ProductNameEN"] + " " + productSKUData["PackingType"] + " " + Amount + " " + packing; ;
+                        if (Amount != null)
+                        {
+                            drToAdd["Name_VN"] = productSKUData["ProductNameVN"] + " " + productSKUData["PackingType"] + " " + Amount + " " + packing;
+                            drToAdd["Name_EN"] = productSKUData["ProductNameEN"] + " " + productSKUData["PackingType"] + " " + Amount + " " + packing;
+                        }
+                        else
+                        {
+                            drToAdd["Name_VN"] = productSKUData["ProductNameVN"];
+                            drToAdd["Name_EN"] = productSKUData["ProductNameEN"];
+                        }
                         drToAdd["Packing"] = packing;
                         drToAdd["PriceCNF"] = productSKUData["PriceCNF"]; ;
                         drToAdd["BarCodeEAN13"] = barCodeEAN13;
                         drToAdd["ArtNr"] = artNr;
                         drToAdd["GGN"] = GGN;
-                        drToAdd["Amount"] = Amount;
+                        if (Amount != null)
+                            drToAdd["Amount"] = Amount;
+                        else
+                            drToAdd["Amount"] = DBNull.Value;
 
 
                         // SKU_tb.Text = newCustomerID.ToString();
@@ -292,6 +313,8 @@ namespace RauViet.ui
         }
         private void saveBtn_Click(object sender, EventArgs e)
         {
+            
+
             string packingStr = "";
 
             foreach (Control ctrl in packing_panel.Controls)
@@ -303,10 +326,25 @@ namespace RauViet.ui
                 }
             }
 
+            if (sku_cbb.Text.CompareTo("") == 0 || 
+                (packingStr.CompareTo("") != 0 && amount_tb.Text.CompareTo("") == 0) ||
+                (packing_panel.Controls.Count > 0 && packingStr.CompareTo("") == 0)) {
+                MessageBox.Show(
+                                "Thiếu Dữ Liệu, Kiểm Tra Lại!",
+                                "Thông Báo",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Warning
+                            );
+                return; 
+            }
+
+            int sku = Convert.ToInt32(sku_cbb.SelectedValue);
+            int? amount = string.IsNullOrWhiteSpace(amount_tb.Text)? (int?)null : int.Parse(amount_tb.Text);
+
             if (id_tb.Text.Length != 0)
-                updateProductPacking(int.Parse(id_tb.Text), Convert.ToInt32(sku_cbb.SelectedValue), barCode_tb.Text, PLU_tb.Text, amount_tb.Text, packingStr, barCodeEAN13_tb.Text, artNr_tb.Text, GGN_tb.Text);
+                updateProductPacking(int.Parse(id_tb.Text), sku, barCode_tb.Text, PLU_tb.Text, amount, packingStr, barCodeEAN13_tb.Text, artNr_tb.Text, GGN_tb.Text);
             else
-                createNewProducrpacking(Convert.ToInt32(sku_cbb.SelectedValue), barCode_tb.Text, PLU_tb.Text, amount_tb.Text, packingStr, barCodeEAN13_tb.Text, artNr_tb.Text, GGN_tb.Text);
+                createNewProducrpacking(sku, barCode_tb.Text, PLU_tb.Text, amount, packingStr, barCodeEAN13_tb.Text, artNr_tb.Text, GGN_tb.Text);
 
         }
         private async void deleteBtn_Click(object sender, EventArgs e)
@@ -376,6 +414,7 @@ namespace RauViet.ui
             delete_btn.Enabled = false;
             dataGV.ClearSelection();
 
+            info_gb.BackColor = Color.Green;
             sku_cbb_SelectedIndexChanged(sender, e);
             return;            
         }
@@ -391,37 +430,41 @@ namespace RauViet.ui
                 nameEN_tb.Text = productSKUData["ProductNameEN"].ToString();// + " " + amount + " " + packing;
                 priceCNF_tb.Text = productSKUData["PriceCNF"].ToString();
                 packing_panel.Controls.Clear();
-                string[] arr = productSKUData["PackingList"].ToString().Split('-');
-                int top = 00;
-
-                foreach (var item in arr)
+                if (productSKUData["PackingList"].ToString().CompareTo("") != 0)
                 {
-                    RadioButton rb = new RadioButton();
-                    rb.Text = item;
-                    rb.Name = item;
-                    rb.Location = new Point(top, 5);
-                    rb.AutoSize = true;
-                    packing_panel.Controls.Add(rb);
-                    top += 70;
-                }
+                    string[] arr = productSKUData["PackingList"].ToString().Split('-');
+                    int top = 00;
 
-                if (dataGV.SelectedRows.Count > 0)
-                {     
                     foreach (var item in arr)
                     {
-                        foreach (Control ctrl in packing_panel.Controls)
+                        RadioButton rb = new RadioButton();
+                        rb.Text = item;
+                        rb.Name = item;
+                        rb.Location = new Point(top, 5);
+                        rb.AutoSize = true;
+                        packing_panel.Controls.Add(rb);
+                        top += 70;
+                    }
+
+
+                    if (dataGV.SelectedRows.Count > 0)
+                    {
+                        foreach (var item in arr)
                         {
-                            if (ctrl is RadioButton rb)
+                            foreach (Control ctrl in packing_panel.Controls)
                             {
-                                var rb1 = (RadioButton)ctrl; //; ;.Checked = true;
-                                if (item.Equals(rb1.Name, StringComparison.OrdinalIgnoreCase))
+                                if (ctrl is RadioButton rb)
                                 {
-                                    rb.Checked = true;
-                                    break;
+                                    var rb1 = (RadioButton)ctrl; //; ;.Checked = true;
+                                    if (item.Equals(rb1.Name, StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        rb.Checked = true;
+                                        break;
+                                    }
                                 }
                             }
+
                         }
-                        
                     }
                 }
             }
@@ -463,26 +506,32 @@ namespace RauViet.ui
                 GGN_tb.Text = GGN;
 
                 packing_panel.Controls.Clear();
-                string[] arr = productSKUData["PackingList"].ToString().Split('-');
-                int top = 00;
 
-                foreach (var item in arr)
+                if (productSKUData["PackingList"].ToString().CompareTo("") != 0)
                 {
-                    RadioButton rb = new RadioButton();
-                    rb.Text = item;
-                    rb.Location = new Point(top, 5);
-                    rb.AutoSize = true;
-                    packing_panel.Controls.Add(rb);
+                    string[] arr = productSKUData["PackingList"].ToString().Split('-');
+                    int top = 00;
 
-                    if (item.Equals(cells["Packing"].Value.ToString(), StringComparison.OrdinalIgnoreCase))
+                    foreach (var item in arr)
                     {
-                        rb.Checked = true;
-                    }
+                        RadioButton rb = new RadioButton();
+                        rb.Text = item;
+                        rb.Location = new Point(top, 5);
+                        rb.AutoSize = true;
+                        packing_panel.Controls.Add(rb);
 
-                    top += 70;
+                        if (item.Equals(cells["Packing"].Value.ToString(), StringComparison.OrdinalIgnoreCase))
+                        {
+                            rb.Checked = true;
+                        }
+
+                        top += 70;
+                    }
                 }
 
+                info_gb.BackColor = Color.DarkGray;
                 delete_btn.Enabled = true;
+                status_lb.Text = "";
             }
         }
 
@@ -495,5 +544,21 @@ namespace RauViet.ui
             }
         }
 
+        private void Tb_KeyPress_OnlyNumber(object sender, KeyPressEventArgs e)
+        {
+            System.Windows.Forms.TextBox tb = sender as System.Windows.Forms.TextBox;
+
+            // Chỉ cho nhập số, dấu chấm hoặc ký tự điều khiển
+            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) && e.KeyChar != '.')
+            {
+                e.Handled = true;
+            }
+
+            // Nếu đã có 1 dấu chấm, không cho nhập thêm
+            if (e.KeyChar == '.' && tb.Text.Contains("."))
+            {
+                e.Handled = true;
+            }
+        }
     }
 }

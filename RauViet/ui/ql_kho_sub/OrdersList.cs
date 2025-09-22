@@ -38,11 +38,17 @@ namespace RauViet.ui
             delete_btn.Click += deleteBtn_Click;
             print_order_list_btn.Click += printOtherList_btn_Click;
             printPendingOrderSummary_btn.Click += printPendingOrderSummary_btn_Click;
-            dataGV.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGV_CellClick);
+            dataGV.SelectionChanged += this.dataGV_CellClick;
             this.dataGV.RowPrePaint += new System.Windows.Forms.DataGridViewRowPrePaintEventHandler(this.dataGV_RowPrePaint);
             PCSOther_tb.TextChanged += PCSOrder_tb_TextChanged;
             packing_ccb.SelectedIndexChanged += packing_ccb_SelectedIndexChanged;
             exportCode_search_cbb.SelectedIndexChanged += exportCode_search_cbb_SelectedIndexChanged;
+            PCSOther_tb.KeyPress += Tb_KeyPress_OnlyNumber;
+
+            orderId_tb.Visible = false;
+            label1.Visible = false;
+            priceCNF_tb.Visible = false;
+            label4.Visible = false;
         }
 
         public async void ShowData()
@@ -156,6 +162,7 @@ namespace RauViet.ui
                 dataGV.Columns["ExportCodeID"].Visible = false;
                 dataGV.Columns["NWReal"].Visible = false;
                 dataGV.Columns["PCSReal"].Visible = false;
+                dataGV.Columns["OrderPackingPriceCNF"].Visible = false;
 
                 dataGV.Columns["OrderId"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
                 dataGV.Columns["CustomerName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
@@ -163,15 +170,22 @@ namespace RauViet.ui
                 dataGV.Columns["PCSOther"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
                 dataGV.Columns["NWOther"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
 
+                dataGV.Columns["PCSOther"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                dataGV.Columns["NWOther"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                dataGV.Columns["Priority"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
+
+                dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
                 dataGV.AutoResizeColumns();
 
-                exportCode_search_cbb.DataSource = mExportCode_dt;
+
+                exportCode_search_cbb.DataSource = mExportCode_dt.Copy();
                 exportCode_search_cbb.DisplayMember = "ExportCode";  // hiển thị tên
                 exportCode_search_cbb.ValueMember = "ExportCodeID";
 
                 if (dataGV.SelectedRows.Count > 0)
                     updateRightUI(0);
+
             }
             catch (Exception ex)
             {
@@ -183,8 +197,6 @@ namespace RauViet.ui
                 loading_lb.Visible = false; // ẩn loading
                 loading_lb.Enabled = true; // enable lại button
             }
-
-            
         }
 
         private void exportCode_search_cbb_SelectedIndexChanged(object sender, EventArgs e)
@@ -260,11 +272,13 @@ namespace RauViet.ui
             return newCustomerID;
         }
 
-        private void dataGV_CellClick(object sender, DataGridViewCellEventArgs e)
+        private void dataGV_CellClick(object sender, EventArgs e)
         {
-            if (e.RowIndex < 0)
+            int rowIndex = dataGV.CurrentRow.Index;
+            if (rowIndex < 0)
                 return;
-            updateRightUI(e.RowIndex);
+
+            updateRightUI(rowIndex);
         }
 
         private void updateRightUI(int indexRowSelected)
@@ -297,6 +311,7 @@ namespace RauViet.ui
             netWeight_tb.Text = calNetWeight().ToString();
 
             delete_btn.Enabled = true;
+            info_gb.BackColor = Color.DarkGray;
         }
 
         private decimal calNetWeight() {
@@ -304,12 +319,25 @@ namespace RauViet.ui
                 return 0;
 
             
-            int PCSOther = Convert.ToInt32(PCSOther_tb.Text);
+            
+            
             DataRowView pakingData = (DataRowView)packing_ccb.SelectedItem;
-            string packing = pakingData["Packing"].ToString();
-            int amount = Convert.ToInt32(pakingData["Amount"]);
 
-            return Utils.calNetWeight(PCSOther, amount, packing);            
+            
+            int PCSOther = Convert.ToInt32(PCSOther_tb.Text);
+            string packing = pakingData["Packing"].ToString();
+            int? amount = pakingData["Amount"] == DBNull.Value
+                        ? (int?)null
+                        : Convert.ToInt32(pakingData["Amount"]);
+
+            if (amount == null)
+            {
+                return 0;
+            }
+            else
+            {
+                return Utils.calNetWeight(PCSOther, (int)amount, packing);
+            }
         }
        
 
@@ -320,7 +348,13 @@ namespace RauViet.ui
                 int id =Convert.ToInt32(row.Cells["OrderId"].Value);
                 if (id.CompareTo(orderId) == 0)
                 {
-                    DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", " Thay Đổi Thông Tin Khách Hàng", MessageBoxButtons.YesNo);
+                    DialogResult dialogResult = MessageBox.Show(
+                                            "Chắc chắn chưa?",
+                                            "Tạo Mới Thông Tin Khách Hàng",
+                                            MessageBoxButtons.YesNo,
+                                            MessageBoxIcon.Question // Icon dấu chấm hỏi
+                                        );
+
                     if (dialogResult == DialogResult.Yes)
                     {
                         try
@@ -368,7 +402,13 @@ namespace RauViet.ui
 
         private async void createOrder(int customerId, int exportCodeId, int packingId, int PCSOther, decimal NWOther, decimal priceCNF)
         {
-            DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", " Tạo Mới Thông Tin Khách Hàng", MessageBoxButtons.YesNo);
+            DialogResult dialogResult = MessageBox.Show(
+                                            "Chắc chắn chưa?",
+                                            "Tạo Mới Thông Tin Khách Hàng",
+                                            MessageBoxButtons.YesNo,
+                                            MessageBoxIcon.Question // Icon dấu chấm hỏi
+                                        );
+
 
             if (dialogResult == DialogResult.Yes)
             {
@@ -417,7 +457,21 @@ namespace RauViet.ui
         }
         private void saveBtn_Click(object sender, EventArgs e)
         {
-            
+            if (customer_ccb.SelectedValue == null
+                || packing_ccb.SelectedValue == null
+                || string.IsNullOrWhiteSpace(PCSOther_tb.Text)
+                || string.IsNullOrWhiteSpace(netWeight_tb.Text)
+                || string.IsNullOrWhiteSpace(priceCNF_tb.Text))
+            {
+                // Nếu bất kỳ giá trị nào rỗng, dừng
+                MessageBox.Show(
+                                "Thiếu Dữ Liệu, Kiểm Tra Lại!",
+                                "Thông Báo",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Warning
+                            );
+                return;
+            }
             int exportCodeId = Convert.ToInt32(exportCode_cbb.SelectedValue);
             int customerId = Convert.ToInt32(customer_ccb.SelectedValue);
             int packingId = Convert.ToInt32(packing_ccb.SelectedValue);
@@ -447,10 +501,12 @@ namespace RauViet.ui
                 if (id.CompareTo(orderId) == 0)
                 {
                     DialogResult dialogResult = MessageBox.Show(
-                        "XÓA THÔNG TIN KHÁCH HÀNG ĐÓ NHA \n Chắc chắn chưa ?",
-                        "Xóa Thông Tin Khách Hàng",
-                        MessageBoxButtons.YesNo
+                        "XÓA THÔNG ĐÓ NHA\nChắc chắn chưa?",
+                        "Thông Báo",
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Warning  // Thêm icon cảnh báo
                     );
+
 
                     if (dialogResult == DialogResult.Yes)
                     {
@@ -486,11 +542,21 @@ namespace RauViet.ui
             delete_btn.Enabled = false;
         }
 
+        private void Tb_KeyPress_OnlyNumber(object sender, KeyPressEventArgs e)
+        {
+            // Chỉ cho nhập số hoặc phím điều khiển (Backspace, Delete, Enter…)
+            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
+            {
+                e.Handled = true; // chặn ký tự không hợp lệ
+            }
+        }
+
         private void newCustomerBtn_Click(object sender, EventArgs e)
         {
             orderId_tb.Text = "";
             PCSOther_tb.Text = "";
             netWeight_tb.Text= "";
+            info_gb.BackColor = Color.Green;
 
             delete_btn.Enabled = false;
         }

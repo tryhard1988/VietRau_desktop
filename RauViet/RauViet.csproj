@@ -36,6 +36,21 @@
     <Reference Include="BouncyCastle.Cryptography, Version=2.0.0.0, Culture=neutral, PublicKeyToken=072edcf4a5328938, processorArchitecture=MSIL">
       <HintPath>..\packages\BouncyCastle.Cryptography.2.5.1\lib\net461\BouncyCastle.Cryptography.dll</HintPath>
     </Reference>
+    <Reference Include="ClosedXML, Version=0.105.0.0, Culture=neutral, PublicKeyToken=fd1eb21b62ae805b, processorArchitecture=MSIL">
+      <HintPath>..\packages\ClosedXML.0.105.0\lib\netstandard2.0\ClosedXML.dll</HintPath>
+    </Reference>
+    <Reference Include="ClosedXML.Parser, Version=1.0.0.0, Culture=neutral, PublicKeyToken=1d5f7376574c51ec, processorArchitecture=MSIL">
+      <HintPath>..\packages\ClosedXML.Parser.2.0.0\lib\netstandard2.0\ClosedXML.Parser.dll</HintPath>
+    </Reference>
+    <Reference Include="DocumentFormat.OpenXml, Version=3.1.1.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17, processorArchitecture=MSIL">
+      <HintPath>..\packages\DocumentFormat.OpenXml.3.1.1\lib\net46\DocumentFormat.OpenXml.dll</HintPath>
+    </Reference>
+    <Reference Include="DocumentFormat.OpenXml.Framework, Version=3.1.1.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17, processorArchitecture=MSIL">
+      <HintPath>..\packages\DocumentFormat.OpenXml.Framework.3.1.1\lib\net46\DocumentFormat.OpenXml.Framework.dll</HintPath>
+    </Reference>
+    <Reference Include="ExcelNumberFormat, Version=1.1.0.0, Culture=neutral, PublicKeyToken=23c6f5d73be07eca, processorArchitecture=MSIL">
+      <HintPath>..\packages\ExcelNumberFormat.1.1.0\lib\net20\ExcelNumberFormat.dll</HintPath>
+    </Reference>
     <Reference Include="Google.Protobuf, Version=3.30.0.0, Culture=neutral, PublicKeyToken=a7d26565bac4d604, processorArchitecture=MSIL">
       <HintPath>..\packages\Google.Protobuf.3.30.0\lib\net45\Google.Protobuf.dll</HintPath>
     </Reference>
@@ -51,11 +66,24 @@
     <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.5.0.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Bcl.HashCode, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.HashCode.1.1.1\lib\net461\Microsoft.Bcl.HashCode.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Office.Interop.Excel, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Office.Interop.Excel.15.0.4795.1001\lib\net20\Microsoft.Office.Interop.Excel.dll</HintPath>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
     <Reference Include="MySql.Data, Version=9.4.0.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <HintPath>..\packages\MySql.Data.9.4.0\lib\net462\MySql.Data.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="RBush, Version=4.0.0.0, Culture=neutral, PublicKeyToken=c77e27b81f4d0187, processorArchitecture=MSIL">
+      <HintPath>..\packages\RBush.Signed.4.0.0\lib\net47\RBush.dll</HintPath>
+    </Reference>
+    <Reference Include="SixLabors.Fonts, Version=1.0.0.0, Culture=neutral, PublicKeyToken=d998eea7b14cab13, processorArchitecture=MSIL">
+      <HintPath>..\packages\SixLabors.Fonts.1.0.0\lib\netstandard2.0\SixLabors.Fonts.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
@@ -96,6 +124,7 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
     <Reference Include="ZstdSharp, Version=0.8.5.0, Culture=neutral, PublicKeyToken=8d151af33a4ad5cf, processorArchitecture=MSIL">
       <HintPath>..\packages\ZstdSharp.Port.0.8.5\lib\net462\ZstdSharp.dll</HintPath>
     </Reference>
@@ -120,6 +149,24 @@
     </Compile>
     <Compile Include="ui\QL_Kho.Designer.cs">
       <DependentUpon>QL_Kho.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ui\ql_kho_sub\Phyto.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\ql_kho_sub\Phyto.Designer.cs">
+      <DependentUpon>Phyto.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ui\ql_kho_sub\DangKyKiemDinh.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\ql_kho_sub\DangKyKiemDinh.Designer.cs">
+      <DependentUpon>DangKyKiemDinh.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ui\ql_kho_sub\OrdersTotal.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\ql_kho_sub\OrdersTotal.Designer.cs">
+      <DependentUpon>OrdersTotal.cs</DependentUpon>
     </Compile>
     <Compile Include="ui\ql_kho_sub\OrderPackingList.cs">
       <SubType>Form</SubType>
@@ -171,6 +218,15 @@
     <EmbeddedResource Include="ui\QL_Kho.resx">
       <DependentUpon>QL_Kho.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="ui\ql_kho_sub\Phyto.resx">
+      <DependentUpon>Phyto.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\ql_kho_sub\DangKyKiemDinh.resx">
+      <DependentUpon>DangKyKiemDinh.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\ql_kho_sub\OrdersTotal.resx">
+      <DependentUpon>OrdersTotal.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ui\ql_kho_sub\OrderPackingList.resx">
       <DependentUpon>OrderPackingList.cs</DependentUpon>
     </EmbeddedResource>
@@ -211,6 +267,7 @@
   <ItemGroup>
     <Content Include="images\folder_icon.ico" />
     <Content Include="images\notes_icon.ico" />
+    <Content Include="Resources\Picture1.png" />
     <None Include="Resources\new.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
