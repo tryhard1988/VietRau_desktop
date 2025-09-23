@@ -10,16 +10,16 @@ public class OrderSummaryPrinter
     private int yPosition = 0;
     private bool firstPage = true;
     private DataTable data;
+    private string exportCode;
+    private DateTime exportDate;
 
-    public void Print(DataTable dataTable, string exportCode, DateTime exportDate)
+    // ------------------- Hàm Print Preview -------------------
+    public void PrintPreview(DataTable dataTable, string exportCode, DateTime exportDate)
     {
         if (dataTable == null || dataTable.Rows.Count == 0)
             return;
 
-        data = dataTable;
-        currentRowIndex = 0;
-        firstPage = true;
-        yPosition = 0;
+        SetupPrint(dataTable, exportCode, exportDate);
 
         PrintDocument printDoc = new PrintDocument();
         printDoc.PrintPage += PrintDoc_PrintPage;
@@ -33,6 +33,36 @@ public class OrderSummaryPrinter
         preview.ShowDialog();
     }
 
+    // ------------------- Hàm Print trực tiếp -------------------
+    public void PrintDirect(DataTable dataTable, string exportCode, DateTime exportDate)
+    {
+        if (dataTable == null || dataTable.Rows.Count == 0)
+            return;
+
+        DialogResult dialogResult = MessageBox.Show($"Chắc chắn Chưa?", "Xác nhận in ấn", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+        if (dialogResult == DialogResult.Yes)
+        {
+            SetupPrint(dataTable, exportCode, exportDate);
+
+            PrintDocument printDoc = new PrintDocument();
+            printDoc.PrintPage += PrintDoc_PrintPage;
+            printDoc.Print(); // in trực tiếp ra máy in mặc định
+        } 
+    }
+
+    // ------------------- Setup dữ liệu chung -------------------
+    private void SetupPrint(DataTable dataTable, string exportCode, DateTime exportDate)
+    {
+        this.data = dataTable;
+        this.exportCode = exportCode;
+        this.exportDate = exportDate;
+        currentRowIndex = 0;
+        firstPage = true;
+        yPosition = 0;
+    }
+
+    // ------------------- Hàm PrintPage -------------------
     private void PrintDoc_PrintPage(object sender, PrintPageEventArgs e)
     {
         int startX = 50;
@@ -55,7 +85,7 @@ public class OrderSummaryPrinter
         StringFormat sfDataLeft = new StringFormat() { Alignment = StringAlignment.Near, LineAlignment = StringAlignment.Center };
         StringFormat sfDataCenter = new StringFormat() { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center };
 
-        // Vẽ tiêu đề chỉ trên trang đầu
+        // Tiêu đề trang đầu
         if (firstPage)
         {
             string title = "TỔNG HỢP ĐƠN HÀNG THEO ĐÓNG GÓI";
@@ -64,10 +94,9 @@ public class OrderSummaryPrinter
             e.Graphics.DrawString(title, fontTitle, brush, titleX, y);
             y += (int)titleSize.Height + 10 + rowHeight;
 
-            e.Graphics.DrawString($"Mã đơn: {data.Rows[0]["ExportCode"]}", fontHeader, brush, startX, y);
+            e.Graphics.DrawString($"Mã đơn: {exportCode}", fontHeader, brush, startX, y);
             y += rowHeight;
 
-            DateTime exportDate = Convert.ToDateTime(data.Rows[0]["ExportDate"]);
             e.Graphics.DrawString($"Ngày Bay (ETD): {exportDate:dd/MM/yyyy}         -        Ngày Nhận Hàng (ETA): {exportDate.AddDays(1):dd/MM/yyyy}", fontContent, brush, startX, y);
             y += rowHeight - 5;
 

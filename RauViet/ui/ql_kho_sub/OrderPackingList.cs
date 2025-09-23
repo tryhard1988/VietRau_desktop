@@ -22,9 +22,13 @@ namespace RauViet.ui
 
             dataGV.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dataGV.MultiSelect = true;
+
+            carton_GV.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            carton_GV.MultiSelect = true;
             carton_GV.ColumnHeadersVisible = false;
             carton_GV.RowHeadersVisible = false;
             carton_GV.AllowUserToAddRows = false;
+            carton_GV.AllowUserToResizeRows = false;
 
             status_lb.Text = "";
             loading_lb.Text = "Đang tải dữ liệu, vui lòng chờ...";
@@ -34,6 +38,7 @@ namespace RauViet.ui
             fillter_btn.Click += fillter_btn_Click;
             LuuThayDoiBtn.Click += saveBtn_Click;
             print_btn.Click += print_btn_Click;
+            InPhieuGiaoHang_btn.Click += InPhieuGiaoHang_btn_Click;
             assignCartonNoBtn.Click += AssignCartonNoBtn_Click;
             autoEditCartonNo_btn.Click += autoEditCartonNo_btn_Click;
             assignPCSReal_btn.Click += AssignPCSRealBtn_Click;
@@ -41,6 +46,8 @@ namespace RauViet.ui
             assignCustomerCarton_btn.Click += assignCustomerCarton_btn_Click;
             dataGV.RowPrePaint += new System.Windows.Forms.DataGridViewRowPrePaintEventHandler(this.dataGV_RowPrePaint);
             dataGV.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.dataGV_EditingControlShowing);
+
+            carton_GV.SelectionChanged += carton_GV_SelectionChanged;
 
             dataGV.DataBindingComplete += dataGV_DataBindingComplete;
             dataGV.CellFormatting += dataGV_CellFormatting;
@@ -54,6 +61,63 @@ namespace RauViet.ui
             cartonNo_tb.KeyPress += Tb_KeyPress_OnlyNumber;
 
             exportCode_cbb.SelectedIndexChanged += exportCode_search_cbb_SelectedIndexChanged;
+        }
+
+        private void InPhieuGiaoHang_btn_Click(object sender, EventArgs e)
+        {
+            // Tạo DataTable kết quả
+            DataTable resultTable = new DataTable();
+            resultTable.Columns.Add("CartonSize", typeof(string));
+            resultTable.Columns.Add("Count", typeof(int));
+
+            // Group theo ProductPackingName
+            var groups = dataGV.Rows.Cast<DataGridViewRow>()
+                                    .Where(r =>
+                                        !r.IsNewRow &&
+                                        r.Cells["CartonSize"].Value != null &&
+                                        r.Cells["CartonSize"].Value.ToString().Trim() != "") // bỏ CartonSize rỗng
+                                    .GroupBy(r => r.Cells["CartonSize"].Value.ToString())
+                                    .Select(g => new { CartonSize = g.Key, Count = g.Count() });
+
+            foreach (var g in groups)
+            {
+                resultTable.Rows.Add(g.CartonSize, g.Count);
+                Console.WriteLine($"{g.CartonSize} ---- {g.Count}");
+            }
+
+            DataRowView exportCodeItem = (DataRowView)exportCode_cbb.SelectedItem;
+
+            string exportCode = exportCodeItem["ExportCode"].ToString();
+            DateTime exportDate = Convert.ToDateTime(exportCodeItem["ExportDate"]);
+
+            DeliveryPrinter deliveryPrinter = new DeliveryPrinter(resultTable, exportCode, exportDate);
+            deliveryPrinter.PrintDirect();
+        }
+
+        private void carton_GV_SelectionChanged(object sender, EventArgs e)
+        {
+            // Nếu không muốn reset liên tục thì clear selection trước
+            dataGV.ClearSelection();
+
+            // Lấy tất cả các ProductPackingName đang được chọn bên carton_GV
+            var selectedNames = new HashSet<string>();
+            foreach (DataGridViewRow row in carton_GV.SelectedRows)
+            {
+                if (row.Cells["CustomerCarton"].Value != null)
+                {
+                    selectedNames.Add(row.Cells["CustomerCarton"].Value.ToString());
+                }
+            }
+
+            // Duyệt dataGV, nếu ProductPackingName có trong list thì select
+            foreach (DataGridViewRow row in dataGV.Rows)
+            {
+                var name = row.Cells["CustomerCarton"].Value?.ToString();
+                if (name != null && selectedNames.Contains(name))
+                {
+                    row.Selected = true;
+                }
+            }
         }
 
         public async void ShowData()

@@ -39,6 +39,7 @@
             this.content_panel = new System.Windows.Forms.Panel();
             this.dkkd_btn = new System.Windows.Forms.Button();
             this.phyto_btn = new System.Windows.Forms.Button();
+            this.invoice_btn = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -84,6 +85,7 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.invoice_btn);
             this.panel1.Controls.Add(this.phyto_btn);
             this.panel1.Controls.Add(this.dkkd_btn);
             this.panel1.Controls.Add(this.orderTotal_btn);
@@ -157,6 +159,16 @@
             this.phyto_btn.Text = "PHYTO";
             this.phyto_btn.UseVisualStyleBackColor = true;
             // 
+            // invoice_btn
+            // 
+            this.invoice_btn.Dock = System.Windows.Forms.DockStyle.Left;
+            this.invoice_btn.Location = new System.Drawing.Point(675, 0);
+            this.invoice_btn.Name = "invoice_btn";
+            this.invoice_btn.Size = new System.Drawing.Size(75, 56);
+            this.invoice_btn.TabIndex = 12;
+            this.invoice_btn.Text = "INVOICE";
+            this.invoice_btn.UseVisualStyleBackColor = true;
+            // 
             // QL_kho
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -183,5 +195,6 @@
         private System.Windows.Forms.Button others_btn;
         private System.Windows.Forms.Button dkkd_btn;
         private System.Windows.Forms.Button phyto_btn;
+        private System.Windows.Forms.Button invoice_btn;
     }
 }

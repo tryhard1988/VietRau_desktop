@@ -45,6 +45,10 @@ namespace RauViet.ui
             this.label1 = new System.Windows.Forms.Label();
             this.dataGV = new System.Windows.Forms.DataGridView();
             this.autoCreateExportId_btn = new System.Windows.Forms.Button();
+            this.exRate_tb = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.shippingCost_tb = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.info_gb.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
@@ -68,6 +72,10 @@ namespace RauViet.ui
             // 
             // info_gb
             // 
+            this.info_gb.Controls.Add(this.shippingCost_tb);
+            this.info_gb.Controls.Add(this.label5);
+            this.info_gb.Controls.Add(this.exRate_tb);
+            this.info_gb.Controls.Add(this.label4);
             this.info_gb.Controls.Add(this.autoCreateExportId_btn);
             this.info_gb.Controls.Add(this.complete_cb);
             this.info_gb.Controls.Add(this.exportdate_dtp);
@@ -77,14 +85,14 @@ namespace RauViet.ui
             this.info_gb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.info_gb.Location = new System.Drawing.Point(32, 143);
             this.info_gb.Name = "info_gb";
-            this.info_gb.Size = new System.Drawing.Size(399, 174);
+            this.info_gb.Size = new System.Drawing.Size(399, 268);
             this.info_gb.TabIndex = 28;
             this.info_gb.TabStop = false;
             // 
             // complete_cb
             // 
             this.complete_cb.AutoSize = true;
-            this.complete_cb.Location = new System.Drawing.Point(25, 130);
+            this.complete_cb.Location = new System.Drawing.Point(25, 228);
             this.complete_cb.Name = "complete_cb";
             this.complete_cb.Size = new System.Drawing.Size(115, 20);
             this.complete_cb.TabIndex = 34;
@@ -94,7 +102,7 @@ namespace RauViet.ui
             // exportdate_dtp
             // 
             this.exportdate_dtp.Format = System.Windows.Forms.DateTimePickerFormat.Short;
-            this.exportdate_dtp.Location = new System.Drawing.Point(181, 81);
+            this.exportdate_dtp.Location = new System.Drawing.Point(181, 74);
             this.exportdate_dtp.Name = "exportdate_dtp";
             this.exportdate_dtp.Size = new System.Drawing.Size(142, 23);
             this.exportdate_dtp.TabIndex = 33;
@@ -109,26 +117,26 @@ namespace RauViet.ui
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(22, 84);
+            this.label3.Location = new System.Drawing.Point(25, 77);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(98, 16);
+            this.label3.Size = new System.Drawing.Size(103, 16);
             this.label3.TabIndex = 31;
-            this.label3.Text = "Ngày Xuất Cảng";
+            this.label3.Text = "Ngày Xuất Cảng:";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(22, 32);
+            this.label2.Location = new System.Drawing.Point(25, 32);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(87, 16);
+            this.label2.Size = new System.Drawing.Size(92, 16);
             this.label2.TabIndex = 30;
-            this.label2.Text = "Mã Xuất Cảng";
+            this.label2.Text = "Mã Xuất Cảng:";
             // 
             // delete_btn
             // 
             this.delete_btn.BackColor = System.Drawing.Color.Red;
             this.delete_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.delete_btn.Location = new System.Drawing.Point(293, 323);
+            this.delete_btn.Location = new System.Drawing.Point(293, 417);
             this.delete_btn.Name = "delete_btn";
             this.delete_btn.Size = new System.Drawing.Size(100, 39);
             this.delete_btn.TabIndex = 27;
@@ -160,7 +168,7 @@ namespace RauViet.ui
             // 
             this.newCustomerBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
             this.newCustomerBtn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.newCustomerBtn.Location = new System.Drawing.Point(185, 323);
+            this.newCustomerBtn.Location = new System.Drawing.Point(185, 417);
             this.newCustomerBtn.Name = "newCustomerBtn";
             this.newCustomerBtn.Size = new System.Drawing.Size(100, 39);
             this.newCustomerBtn.TabIndex = 25;
@@ -171,7 +179,7 @@ namespace RauViet.ui
             // 
             this.LuuThayDoiBtn.BackColor = System.Drawing.SystemColors.Highlight;
             this.LuuThayDoiBtn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LuuThayDoiBtn.Location = new System.Drawing.Point(77, 323);
+            this.LuuThayDoiBtn.Location = new System.Drawing.Point(77, 417);
             this.LuuThayDoiBtn.Name = "LuuThayDoiBtn";
             this.LuuThayDoiBtn.Size = new System.Drawing.Size(100, 39);
             this.LuuThayDoiBtn.TabIndex = 25;
@@ -218,6 +226,38 @@ namespace RauViet.ui
             this.autoCreateExportId_btn.Text = "Tự Tạo ID";
             this.autoCreateExportId_btn.UseVisualStyleBackColor = false;
             // 
+            // exRate_tb
+            // 
+            this.exRate_tb.Location = new System.Drawing.Point(181, 119);
+            this.exRate_tb.Name = "exRate_tb";
+            this.exRate_tb.Size = new System.Drawing.Size(89, 23);
+            this.exRate_tb.TabIndex = 36;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(25, 122);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(45, 16);
+            this.label4.TabIndex = 35;
+            this.label4.Text = "Tỉ Giá:";
+            // 
+            // shippingCost_tb
+            // 
+            this.shippingCost_tb.Location = new System.Drawing.Point(181, 164);
+            this.shippingCost_tb.Name = "shippingCost_tb";
+            this.shippingCost_tb.Size = new System.Drawing.Size(89, 23);
+            this.shippingCost_tb.TabIndex = 38;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(25, 167);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(63, 16);
+            this.label5.TabIndex = 37;
+            this.label5.Text = "Giá Cước:";
+            // 
             // ExportCodes
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -253,5 +293,9 @@ namespace RauViet.ui
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button autoCreateExportId_btn;
+        private System.Windows.Forms.TextBox shippingCost_tb;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.TextBox exRate_tb;
+        private System.Windows.Forms.Label label4;
     }
 }

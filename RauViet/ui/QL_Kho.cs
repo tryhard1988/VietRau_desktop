@@ -29,6 +29,19 @@ namespace RauViet.ui
             orderTotal_btn.Click += orderTotal_btn_Click;
             dkkd_btn.Click += dkkd_btn_Click;
             phyto_btn.Click += phyto_btn_Click;
+            invoice_btn.Click += invoice_btn_Click;
+        }
+
+        private void invoice_btn_Click(object sender, EventArgs e)
+        {
+            this.content_panel.Controls.Clear();
+
+            var form = new INVOICE();
+            form.ShowData();
+
+            form.TopLevel = false;
+            form.Parent = this.content_panel;
+            form.Show();
         }
 
         private void phyto_btn_Click(object sender, EventArgs e)

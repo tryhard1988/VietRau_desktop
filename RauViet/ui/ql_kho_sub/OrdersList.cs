@@ -573,11 +573,16 @@ namespace RauViet.ui
 
             PrintDataGridView(dataGV);
         }
-
+                
         private void PrintDataGridView(DataGridView dataGV)
         {
+            string staff = Utils.InputDialog("Nhập tên người phụ trách đóng gói:", "Nhập nhân viên", "");
+
+            if (string.IsNullOrWhiteSpace(staff))
+                return;
+
             OrderListPrinter printer = new OrderListPrinter();
-            printer.PrintProductPackingReport(dataGV, exportCode_search_cbb.Text, DateTime.Now, "NGuyen van a");
+            printer.PrintDirect(dataGV, exportCode_search_cbb.Text, DateTime.Now, staff);
         }
 
         private async void printPendingOrderSummary_btn_Click(object sender, EventArgs e)
@@ -590,7 +595,7 @@ namespace RauViet.ui
 
             OrderSummaryPrinter printer = new OrderSummaryPrinter();
 
-            printer.Print(pendingOrderSummary, exportCode, exportDate);
+            printer.PrintDirect(pendingOrderSummary, exportCode, exportDate);
         }
     }
 }

@@ -41,6 +41,10 @@ namespace RauViet.ui
             dataGV.SelectionChanged += this.dataGV_CellClick;
             this.dataGV.RowPrePaint += new System.Windows.Forms.DataGridViewRowPrePaintEventHandler(this.dataGV_RowPrePaint);
             complete_cb.CheckedChanged += completeCB_CheckedChanged;
+
+            exportCode_tb.KeyPress += Tb_KeyPress_OnlyNumber;
+            exRate_tb.KeyPress += Tb_KeyPress_OnlyNumber;
+            shippingCost_tb.KeyPress += Tb_KeyPress_OnlyNumber;
         }
 
         private void autoCreateExportId_btn_Click(object sender, EventArgs e)
@@ -60,6 +64,23 @@ namespace RauViet.ui
             }
 
             exportCode_tb.Text = (maxExportIndex + 1).ToString();
+        }
+
+        private void Tb_KeyPress_OnlyNumber(object sender, KeyPressEventArgs e)
+        {
+            System.Windows.Forms.TextBox tb = sender as System.Windows.Forms.TextBox;
+
+            // Chỉ cho nhập số, dấu chấm hoặc ký tự điều khiển
+            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) && e.KeyChar != '.')
+            {
+                e.Handled = true;
+            }
+
+            // Nếu đã có 1 dấu chấm, không cho nhập thêm
+            if (e.KeyChar == '.' && tb.Text.Contains("."))
+            {
+                e.Handled = true;
+            }
         }
 
         public async void ShowData()
@@ -149,11 +170,15 @@ namespace RauViet.ui
             var cells = dataGV.Rows[index].Cells;
             int exportCodeID = Convert.ToInt32(cells["ExportCodeID"].Value);
             int exportCodeIndex = Convert.ToInt32(cells["ExportCodeIndex"].Value);
+            decimal exRate = Convert.ToDecimal(cells["ExchangeRate"].Value);
+            decimal shippingCost = Convert.ToDecimal(cells["ShippingCost"].Value);
             DateTime exportDate = Convert.ToDateTime(cells["ExportDate"].Value.ToString());
             bool complete = Convert.ToBoolean(cells["Complete"].Value);
 
             exportCodeId_tb.Text = exportCodeID.ToString();
             exportCode_tb.Text = exportCodeIndex.ToString();
+            exRate_tb.Text = exRate.ToString();
+            shippingCost_tb.Text = shippingCost.ToString();
             exportdate_dtp.Value = exportDate;
             complete_cb.Checked = complete;
             complete_cb.AutoCheck = !complete;
@@ -178,7 +203,7 @@ namespace RauViet.ui
 
        
 
-        private async void updateExportCode(int exportCodeID, string exportCode, int exportCodeIndex, DateTime exportDate, bool complete)
+        private async void updateExportCode(int exportCodeID, string exportCode, int exportCodeIndex, DateTime exportDate, decimal exRate, decimal shippingCost, bool complete)
         {
             foreach (DataGridViewRow row in dataGV.Rows)
             {
@@ -190,7 +215,7 @@ namespace RauViet.ui
                     {
                         try
                         {
-                            bool isScussess = await SQLManager.Instance.updateExportCodeAsync(exportCodeID, exportCode, exportCodeIndex, exportDate, complete);
+                            bool isScussess = await SQLManager.Instance.updateExportCodeAsync(exportCodeID, exportCode, exportCodeIndex, exportDate, exRate, shippingCost, complete);
 
                             if (isScussess == true)
                             {
@@ -201,6 +226,8 @@ namespace RauViet.ui
                                 row.Cells["ExportDate"].Value = exportDate;
                                 row.Cells["ModifiedAt"].Value = DateTime.Now;
                                 row.Cells["Complete"].Value = complete;
+                                row.Cells["ExchangeRate"].Value = exRate;
+                                row.Cells["ShippingCost"].Value = shippingCost;
                             }
                             else
                             {
@@ -223,7 +250,7 @@ namespace RauViet.ui
             }
         }
 
-        private async void createExportCode(string exportCode, int exportCodeIndex, DateTime exportDate)
+        private async void createExportCode(string exportCode, int exportCodeIndex, DateTime exportDate, decimal exRate, decimal shippingCost)
         {
             DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", " Tạo Mới Thông Tin Khách Hàng", MessageBoxButtons.YesNo);
 
@@ -231,7 +258,7 @@ namespace RauViet.ui
             {
                 try
                 {
-                    bool isScussess = await SQLManager.Instance.insertExportCodeAsync(exportCode, exportCodeIndex, exportDate);
+                    bool isScussess = await SQLManager.Instance.insertExportCodeAsync(exportCode, exportCodeIndex, exportDate, exRate, shippingCost);
                     if (isScussess == true)
                     {
 
@@ -245,6 +272,8 @@ namespace RauViet.ui
                         drToAdd["ExportDate"] = exportDate;
                         drToAdd["ModifiedAt"] = DateTime.Now;
                         drToAdd["Complete"] = false;
+                        drToAdd["ExchangeRate"] = exRate;
+                        drToAdd["ShippingCost"] = shippingCost;
                         exportCodeId_tb.Text = newCustomerID.ToString();
 
 
@@ -286,10 +315,12 @@ namespace RauViet.ui
             DateTime exportDate = Convert.ToDateTime(exportdate_dtp.Value.ToString("dd/MM/yyyy"));
             int exportCodeIndex = Convert.ToInt32(exportCode_tb.Text);
             string exportCode = "MXC" + exportCodeIndex + "_"+ exportDate.Day + exportDate.Month + exportDate.Year;
+            decimal exRate = Convert.ToDecimal(exRate_tb.Text);
+            decimal shippingCost = Convert.ToDecimal(shippingCost_tb.Text);
             if (exportCodeId_tb.Text.Length != 0)
-                updateExportCode(Convert.ToInt32(exportCodeId_tb.Text), exportCode, exportCodeIndex, exportDate, complete_cb.Checked);
+                updateExportCode(Convert.ToInt32(exportCodeId_tb.Text), exportCode, exportCodeIndex, exportDate, exRate, shippingCost, complete_cb.Checked);
             else
-                createExportCode(exportCode, exportCodeIndex, exportDate);
+                createExportCode(exportCode, exportCodeIndex, exportDate, exRate, shippingCost);
 
         }
         private async void deleteBtn_Click(object sender, EventArgs e)
