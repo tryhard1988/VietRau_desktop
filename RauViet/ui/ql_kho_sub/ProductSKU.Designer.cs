@@ -60,6 +60,8 @@ namespace RauViet.ui
             this.dataGV = new System.Windows.Forms.DataGridView();
             this.plantingareaCode_tb = new System.Windows.Forms.TextBox();
             this.label13 = new System.Windows.Forms.Label();
+            this.lotCodeHeader_tb = new System.Windows.Forms.TextBox();
+            this.label14 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.info_gb.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
@@ -85,6 +87,8 @@ namespace RauViet.ui
             // 
             this.info_gb.BackColor = System.Drawing.SystemColors.ActiveBorder;
             this.info_gb.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.info_gb.Controls.Add(this.lotCodeHeader_tb);
+            this.info_gb.Controls.Add(this.label14);
             this.info_gb.Controls.Add(this.plantingareaCode_tb);
             this.info_gb.Controls.Add(this.label13);
             this.info_gb.Controls.Add(this.priority_tb);
@@ -107,16 +111,16 @@ namespace RauViet.ui
             this.info_gb.Controls.Add(this.label3);
             this.info_gb.Controls.Add(this.label2);
             this.info_gb.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.info_gb.Location = new System.Drawing.Point(46, 43);
+            this.info_gb.Location = new System.Drawing.Point(46, 61);
             this.info_gb.Name = "info_gb";
-            this.info_gb.Size = new System.Drawing.Size(430, 413);
+            this.info_gb.Size = new System.Drawing.Size(430, 468);
             this.info_gb.TabIndex = 29;
             this.info_gb.TabStop = false;
             // 
             // priority_tb
             // 
             this.priority_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.priority_tb.Location = new System.Drawing.Point(153, 371);
+            this.priority_tb.Location = new System.Drawing.Point(153, 414);
             this.priority_tb.Name = "priority_tb";
             this.priority_tb.Size = new System.Drawing.Size(99, 23);
             this.priority_tb.TabIndex = 55;
@@ -125,7 +129,7 @@ namespace RauViet.ui
             // 
             this.label12.AutoSize = true;
             this.label12.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label12.Location = new System.Drawing.Point(19, 374);
+            this.label12.Location = new System.Drawing.Point(19, 417);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(77, 16);
             this.label12.TabIndex = 54;
@@ -293,10 +297,10 @@ namespace RauViet.ui
             // status_lb
             // 
             this.status_lb.AutoSize = true;
-            this.status_lb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.status_lb.Location = new System.Drawing.Point(247, 24);
+            this.status_lb.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.status_lb.Location = new System.Drawing.Point(247, 19);
             this.status_lb.Name = "status_lb";
-            this.status_lb.Size = new System.Drawing.Size(41, 16);
+            this.status_lb.Size = new System.Drawing.Size(50, 19);
             this.status_lb.TabIndex = 28;
             this.status_lb.Text = "status";
             // 
@@ -305,7 +309,7 @@ namespace RauViet.ui
             this.delete_btn.BackColor = System.Drawing.Color.Red;
             this.delete_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.delete_btn.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.delete_btn.Location = new System.Drawing.Point(334, 462);
+            this.delete_btn.Location = new System.Drawing.Point(334, 535);
             this.delete_btn.Name = "delete_btn";
             this.delete_btn.Size = new System.Drawing.Size(107, 42);
             this.delete_btn.TabIndex = 27;
@@ -326,7 +330,7 @@ namespace RauViet.ui
             // 
             this.newBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
             this.newBtn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.newBtn.Location = new System.Drawing.Point(214, 462);
+            this.newBtn.Location = new System.Drawing.Point(214, 535);
             this.newBtn.Name = "newBtn";
             this.newBtn.Size = new System.Drawing.Size(107, 42);
             this.newBtn.TabIndex = 25;
@@ -337,7 +341,7 @@ namespace RauViet.ui
             // 
             this.luuBtn.BackColor = System.Drawing.SystemColors.HotTrack;
             this.luuBtn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.luuBtn.Location = new System.Drawing.Point(94, 462);
+            this.luuBtn.Location = new System.Drawing.Point(94, 535);
             this.luuBtn.Name = "luuBtn";
             this.luuBtn.Size = new System.Drawing.Size(107, 42);
             this.luuBtn.TabIndex = 25;
@@ -347,7 +351,7 @@ namespace RauViet.ui
             // sku_tb
             // 
             this.sku_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.sku_tb.Location = new System.Drawing.Point(116, 544);
+            this.sku_tb.Location = new System.Drawing.Point(68, 634);
             this.sku_tb.Name = "sku_tb";
             this.sku_tb.ReadOnly = true;
             this.sku_tb.Size = new System.Drawing.Size(38, 23);
@@ -358,7 +362,7 @@ namespace RauViet.ui
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(78, 544);
+            this.label1.Location = new System.Drawing.Point(30, 634);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(30, 16);
             this.label1.TabIndex = 35;
@@ -394,6 +398,24 @@ namespace RauViet.ui
             this.label13.Size = new System.Drawing.Size(100, 16);
             this.label13.TabIndex = 56;
             this.label13.Text = "Mã Vùng Trồng:";
+            // 
+            // lotCodeHeader_tb
+            // 
+            this.lotCodeHeader_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lotCodeHeader_tb.Location = new System.Drawing.Point(153, 371);
+            this.lotCodeHeader_tb.Name = "lotCodeHeader_tb";
+            this.lotCodeHeader_tb.Size = new System.Drawing.Size(98, 23);
+            this.lotCodeHeader_tb.TabIndex = 59;
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label14.Location = new System.Drawing.Point(19, 374);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(113, 16);
+            this.label14.TabIndex = 58;
+            this.label14.Text = "Mã Lot (3 số đầu):";
             // 
             // ProductSKU
             // 
@@ -445,5 +467,7 @@ namespace RauViet.ui
         private System.Windows.Forms.DataGridView dataGV;
         private System.Windows.Forms.TextBox plantingareaCode_tb;
         private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.TextBox lotCodeHeader_tb;
+        private System.Windows.Forms.Label label14;
     }
 }

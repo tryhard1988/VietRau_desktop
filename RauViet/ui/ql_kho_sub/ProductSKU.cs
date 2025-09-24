@@ -37,6 +37,7 @@ namespace RauViet.ui
             this.dataGV.RowPrePaint += new System.Windows.Forms.DataGridViewRowPrePaintEventHandler(this.dataGV_RowPrePaint);
             priceCNF_tb.KeyPress += Tb_KeyPress_OnlyNumber;
             priority_tb.KeyPress += Tb_KeyPress_OnlyNumber;
+            lotCodeHeader_tb.KeyPress += Tb_KeyPress_OnlyNumber;
 
 
             sku_tb.Visible = false;
@@ -67,8 +68,9 @@ namespace RauViet.ui
                 dt.Columns["PackingList"].SetOrdinal(count++);
                 dt.Columns["BotanicalName"].SetOrdinal(count++);
                 dt.Columns["PriceCNF"].SetOrdinal(count++);
-                dt.Columns["Priority"].SetOrdinal(count++);
                 dt.Columns["PlantingAreaCode"].SetOrdinal(count++);
+                dt.Columns["LOTCodeHeader"].SetOrdinal(count++);
+                dt.Columns["Priority"].SetOrdinal(count++);                
                 dataGV.DataSource = dt;
 
 
@@ -80,6 +82,7 @@ namespace RauViet.ui
                 dataGV.Columns["PackingList"].HeaderText = "Packing\nList";
                 dataGV.Columns["PackingType"].HeaderText = "Packing\nType";
                 dataGV.Columns["PlantingAreaCode"].HeaderText = "Mã\nVùng Trồng";
+                dataGV.Columns["LOTCodeHeader"].HeaderText = "Mã LOT\n3 số đầu";
 
                 dataGV.Columns["ProductNameVN"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 dataGV.Columns["ProductNameEN"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
@@ -146,6 +149,9 @@ namespace RauViet.ui
 
         private void dataGV_CellClick(object sender, EventArgs e)
         {
+            if (dataGV.CurrentRow == null) 
+                return;
+
             int rowIndex = dataGV.CurrentRow.Index;
             if (rowIndex < 0)
                 return;
@@ -168,6 +174,7 @@ namespace RauViet.ui
             string PriceCNF = cells["PriceCNF"].Value.ToString();
             string priority = cells["Priority"].Value.ToString();
             string plantingAreaCode = cells["PlantingAreaCode"].Value.ToString();
+            string lotCodeHeader = cells["LOTCodeHeader"].Value.ToString();
 
             sku_tb.Text = SKU;
             product_VN_tb.Text = productNameVN;
@@ -179,6 +186,7 @@ namespace RauViet.ui
             priceCNF_tb.Text = PriceCNF;
             priority_tb.Text = priority;
             plantingareaCode_tb.Text = plantingAreaCode;
+            lotCodeHeader_tb.Text = lotCodeHeader;
             delete_btn.Enabled = true;
 
             info_gb.BackColor = Color.DarkGray;
@@ -188,7 +196,8 @@ namespace RauViet.ui
 
        
 
-        private async void updateProductSKU(int SKU, string productNameVN, string productNameEN, string packingType, string package, string packingList, string botanicalName, decimal priceCNF, int priority, string plantingareaCode)
+        private async void updateProductSKU(int SKU, string productNameVN, string productNameEN, string packingType, string package, 
+            string packingList, string botanicalName, decimal priceCNF, int priority, string plantingareaCode, string LOTCodeHeader)
         {
             foreach (DataGridViewRow row in dataGV.Rows)
             {
@@ -200,7 +209,8 @@ namespace RauViet.ui
                     {
                         try
                         {
-                            bool isScussess = await SQLManager.Instance.updateProductSKUAsync(SKU, productNameVN, productNameEN, packingType, package, packingList, botanicalName, priceCNF, priority, plantingareaCode);
+                            bool isScussess = await SQLManager.Instance.updateProductSKUAsync(SKU, productNameVN, productNameEN, packingType, package, 
+                                packingList, botanicalName, priceCNF, priority, plantingareaCode, LOTCodeHeader);
 
                             if (isScussess == true)
                             {
@@ -216,6 +226,7 @@ namespace RauViet.ui
                                 row.Cells["PriceCNF"].Value = priceCNF;
                                 row.Cells["Priority"].Value = priority;
                                 row.Cells["PlantingAreaCode"].Value = plantingareaCode;
+                                row.Cells["LOTCodeHeader"].Value = LOTCodeHeader;
                             }
                             else
                             {
@@ -238,7 +249,8 @@ namespace RauViet.ui
             }
         }
 
-        private async void createNewProductSKU(string productNameVN, string productNameEN, string packingType, string package, string packingList, string botanicalName, decimal priceCNF, int priority, string plantingareaCode)
+        private async void createNewProductSKU(string productNameVN, string productNameEN, string packingType, string package, 
+            string packingList, string botanicalName, decimal priceCNF, int priority, string plantingareaCode, string LOTCodeHeader)
         {
             DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
@@ -246,7 +258,8 @@ namespace RauViet.ui
             {
                 try
                 {
-                    bool isScussess = await SQLManager.Instance.insertProductSKUAsync(productNameVN, productNameEN, packingType, package, packingList, botanicalName, priceCNF, priority, plantingareaCode);
+                    bool isScussess = await SQLManager.Instance.insertProductSKUAsync(productNameVN, productNameEN, packingType, package, 
+                        packingList, botanicalName, priceCNF, priority, plantingareaCode, LOTCodeHeader);
                     if (isScussess == true)
                     {
 
@@ -264,6 +277,7 @@ namespace RauViet.ui
                         drToAdd["PriceCNF"] = priceCNF;
                         drToAdd["Priority"] = priority;
                         drToAdd["PlantingAreaCode"] = plantingareaCode;
+                        drToAdd["LOTCodeHeader"] = LOTCodeHeader;
                         sku_tb.Text = newCustomerID.ToString();
 
 
@@ -312,12 +326,15 @@ namespace RauViet.ui
             string productNameEN = product_VN_tb.Text;
             string packingType = packingType_tb.Text;
             string plantingareaCode = plantingareaCode_tb.Text;
+            string lotCode = lotCodeHeader_tb.Text;
             string package = package_tb.Text.Replace(" ", "").ToLower();
 
             if (sku_tb.Text.Length != 0)
-                updateProductSKU(Convert.ToInt32(sku_tb.Text), productNameVN, productNameEN, packingType, package, packingList, botanicalName_tb.Text,Convert.ToDecimal(priceCNF_tb.Text),Convert.ToInt32(priority_tb.Text), plantingareaCode);
+                updateProductSKU(Convert.ToInt32(sku_tb.Text), productNameVN, productNameEN, packingType, package, 
+                    packingList, botanicalName_tb.Text,Convert.ToDecimal(priceCNF_tb.Text),Convert.ToInt32(priority_tb.Text), plantingareaCode, lotCode);
             else
-                createNewProductSKU(productNameVN, productNameEN, packingType, package, packingList, botanicalName_tb.Text, Convert.ToDecimal(priceCNF_tb.Text), Convert.ToInt32(priority_tb.Text), plantingareaCode);
+                createNewProductSKU(productNameVN, productNameEN, packingType, package, 
+                    packingList, botanicalName_tb.Text, Convert.ToDecimal(priceCNF_tb.Text), Convert.ToInt32(priority_tb.Text), plantingareaCode, lotCode);
             info_gb.BackColor = Color.Gray;
 
         }

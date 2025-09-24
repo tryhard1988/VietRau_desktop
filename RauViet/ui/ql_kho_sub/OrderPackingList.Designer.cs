@@ -95,7 +95,7 @@ namespace RauViet.ui
             this.groupBox1.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox1.Location = new System.Drawing.Point(16, 81);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(314, 328);
+            this.groupBox1.Size = new System.Drawing.Size(314, 266);
             this.groupBox1.TabIndex = 53;
             this.groupBox1.TabStop = false;
             // 
@@ -269,7 +269,7 @@ namespace RauViet.ui
             // 
             this.LuuThayDoiBtn.BackColor = System.Drawing.SystemColors.Highlight;
             this.LuuThayDoiBtn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LuuThayDoiBtn.Location = new System.Drawing.Point(16, 415);
+            this.LuuThayDoiBtn.Location = new System.Drawing.Point(13, 352);
             this.LuuThayDoiBtn.Name = "LuuThayDoiBtn";
             this.LuuThayDoiBtn.Size = new System.Drawing.Size(152, 59);
             this.LuuThayDoiBtn.TabIndex = 25;
@@ -307,7 +307,7 @@ namespace RauViet.ui
             // 
             this.InPhieuGiaoHang_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.InPhieuGiaoHang_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.InPhieuGiaoHang_btn.Location = new System.Drawing.Point(168, 416);
+            this.InPhieuGiaoHang_btn.Location = new System.Drawing.Point(165, 353);
             this.InPhieuGiaoHang_btn.Name = "InPhieuGiaoHang_btn";
             this.InPhieuGiaoHang_btn.Size = new System.Drawing.Size(162, 58);
             this.InPhieuGiaoHang_btn.TabIndex = 46;

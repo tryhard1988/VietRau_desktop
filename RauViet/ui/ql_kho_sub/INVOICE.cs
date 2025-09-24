@@ -13,7 +13,7 @@ namespace RauViet.ui
 {
     public partial class INVOICE : Form
     {
-        DataTable mExportCode_dt, mOrdersTotal_dt, mCustomerOrdersTotal_dt;
+        DataTable mExportCode_dt, mOrdersTotal_dt, mCustomerOrdersTotal_dt, mCartonOrdersTotal_dt;
         public INVOICE()
         {
             InitializeComponent();
@@ -50,115 +50,18 @@ namespace RauViet.ui
                 var ordersPackingTask = SQLManager.Instance.getOrdersINVOICEAsync();
                 var exportCodeTask = SQLManager.Instance.getExportCodes_Incomplete();
                 var customersOrdersTask = SQLManager.Instance.GetCustomersOrdersAsync();
+                var cartonOrdersTask = SQLManager.Instance.GetExportCartonCounts();
 
-                await Task.WhenAll(ordersPackingTask, exportCodeTask, customersOrdersTask);
+                await Task.WhenAll(ordersPackingTask, exportCodeTask, customersOrdersTask, cartonOrdersTask);
 
                 mExportCode_dt = exportCodeTask.Result;
                 mOrdersTotal_dt = ordersPackingTask.Result;
                 mCustomerOrdersTotal_dt = customersOrdersTask.Result;
+                mCartonOrdersTotal_dt= cartonOrdersTask.Result;
 
-                mOrdersTotal_dt.Columns.Add(new DataColumn("No", typeof(int)));
-                mOrdersTotal_dt.Columns.Add(new DataColumn("Quantity", typeof(decimal)));
-                mOrdersTotal_dt.Columns.Add(new DataColumn("AmountCHF", typeof(float)));
-
-                int count = 1;
-                foreach (DataRow dr in mOrdersTotal_dt.Rows)
-                {
-                    decimal NWReal = dr["NWReal"] == DBNull.Value ? 0 : Convert.ToDecimal(dr["NWReal"]);
-                    int PCS = dr["PCSReal"] == DBNull.Value ? 0 : Convert.ToInt32(dr["PCSReal"]);
-                    string Package = dr["Package"].ToString();
-                    decimal quantity = Utils.calQuanity(PCS, NWReal, Package);
-                    decimal price = dr["OrderPackingPriceCNF"] == DBNull.Value ? 0 : Convert.ToDecimal(dr["OrderPackingPriceCNF"]);
-
-                    dr["No"] = count++;
-                    dr["Quantity"] = quantity;
-                    dr["AmountCHF"] = quantity * price;
-                }
-
-
-                count = 0;
-                mOrdersTotal_dt.Columns["No"].SetOrdinal(count++);
-                mOrdersTotal_dt.Columns["PLU"].SetOrdinal(count++);
-                mOrdersTotal_dt.Columns["ProductNameEN"].SetOrdinal(count++);
-                mOrdersTotal_dt.Columns["ProductNameVN"].SetOrdinal(count++);
-                mOrdersTotal_dt.Columns["Package"].SetOrdinal(count++);
-                mOrdersTotal_dt.Columns["Quantity"].SetOrdinal(count++);
-                mOrdersTotal_dt.Columns["NWReal"].SetOrdinal(count++);
-                mOrdersTotal_dt.Columns["Packing"].SetOrdinal(count++);
-                mOrdersTotal_dt.Columns["PCSReal"].SetOrdinal(count++);
-                mOrdersTotal_dt.Columns["OrderPackingPriceCNF"].SetOrdinal(count++);
-                mOrdersTotal_dt.Columns["AmountCHF"].SetOrdinal(count++);
-                dataGV.DataSource = mOrdersTotal_dt;
-
-                dataGV.Columns["ExportCodeID"].Visible = false;
-
-                dataGV.Columns["No"].HeaderText = "No";
-                dataGV.Columns["ProductNameEN"].HeaderText = "English name";
-                dataGV.Columns["ProductNameVN"].HeaderText = "Vietnamese name";
-                dataGV.Columns["Package"].HeaderText = "Unit";
-                dataGV.Columns["NWReal"].HeaderText = "N.W(kg)";
-                dataGV.Columns["PCSReal"].HeaderText = "PCS";
-                dataGV.Columns["OrderPackingPriceCNF"].HeaderText = "Price (CHF)";
-                dataGV.Columns["AmountCHF"].HeaderText = "Amount (CHF)";
-
-
-                dataGV.Columns["Priority"].HeaderText = "Ưu\nTiên";
-
-                dataGV.Columns["Priority"].Width = 30;
-                dataGV.Columns["No"].Width = 30;
-                dataGV.Columns["PLU"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["ProductNameEN"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                dataGV.Columns["ProductNameVN"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                dataGV.Columns["Package"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["Quantity"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["NWReal"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["Packing"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["PCSReal"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["OrderPackingPriceCNF"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["AmountCHF"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-
-                dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-
-
-                mCustomerOrdersTotal_dt.Columns.Add(new DataColumn("No", typeof(int)));
-                mCustomerOrdersTotal_dt.Columns.Add(new DataColumn("AmountCHF", typeof(float)));
-
-
-                count = 0;
-                mCustomerOrdersTotal_dt.Columns["No"].SetOrdinal(count++);
-                mCustomerOrdersTotal_dt.Columns["FullName"].SetOrdinal(count++);
-                mCustomerOrdersTotal_dt.Columns["AmountCHF"].SetOrdinal(count++);
-                mCustomerOrdersTotal_dt.Columns["NWReal"].SetOrdinal(count++);
-                mCustomerOrdersTotal_dt.Columns["CNTS"].SetOrdinal(count++);
-
-                cusOrderGV.DataSource = mCustomerOrdersTotal_dt;
-                cusOrderGV.Columns["ExportCodeID"].Visible = false;
-                cusOrderGV.Columns["PCSReal"].Visible = false;
-                cusOrderGV.Columns["Package"].Visible = false;
-                cusOrderGV.Columns["OrderPackingPriceCNF"].Visible = false;
-                cusOrderGV.Columns["FullName"].HeaderText = "MARK";
-                cusOrderGV.Columns["NWReal"].HeaderText = "N.W";
-                cusOrderGV.Columns["AmountCHF"].HeaderText = "Amount CHF";
-                cusOrderGV.Columns["CNTS"].HeaderText = "CTNS";
-
-                cusOrderGV.Columns["No"].Width = 30;
-                cusOrderGV.Columns["FullName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                cusOrderGV.Columns["AmountCHF"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                cusOrderGV.Columns["NWReal"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                cusOrderGV.Columns["CNTS"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-
-                count = 1;
-                foreach (DataRow dr in mCustomerOrdersTotal_dt.Rows)
-                {
-                    decimal NWReal = dr["NWReal"] == DBNull.Value ? 0 : Convert.ToDecimal(dr["NWReal"]);
-                    int PCS = dr["PCSReal"] == DBNull.Value ? 0 : Convert.ToInt32(dr["PCSReal"]);
-                    string Package = dr["Package"].ToString();
-                    decimal quantity = Utils.calQuanity(PCS, NWReal, Package);
-                    decimal price = dr["OrderPackingPriceCNF"] == DBNull.Value ? 0 : Convert.ToDecimal(dr["OrderPackingPriceCNF"]);
-
-                    dr["No"] = count++;
-                    dr["AmountCHF"] = quantity * price;
-                }
+                showOrdersExport();
+                showCustomerOrderGV();
+                showCartonOrderGV();
 
                 exportCode_cbb.DataSource = mExportCode_dt;
                 exportCode_cbb.DisplayMember = "ExportCode";  // hiển thị tên
@@ -173,6 +76,157 @@ namespace RauViet.ui
             {
                 loading_lb.Visible = false; // ẩn loading
                 loading_lb.Enabled = true; // enable lại button
+            }
+        }
+
+        private void showOrdersExport()
+        {
+            mOrdersTotal_dt.Columns.Add(new DataColumn("No", typeof(int)));
+            mOrdersTotal_dt.Columns.Add(new DataColumn("Quantity", typeof(decimal)));
+            mOrdersTotal_dt.Columns.Add(new DataColumn("AmountCHF", typeof(float)));
+
+            int count = 1;
+            foreach (DataRow dr in mOrdersTotal_dt.Rows)
+            {
+                decimal NWReal = dr["NWReal"] == DBNull.Value ? 0 : Convert.ToDecimal(dr["NWReal"]);
+                int PCS = dr["PCSReal"] == DBNull.Value ? 0 : Convert.ToInt32(dr["PCSReal"]);
+                string Package = dr["Package"].ToString();
+                decimal quantity = Utils.calQuanity(PCS, NWReal, Package);
+                decimal price = dr["OrderPackingPriceCNF"] == DBNull.Value ? 0 : Convert.ToDecimal(dr["OrderPackingPriceCNF"]);
+
+                dr["No"] = count++;
+                dr["Quantity"] = quantity;
+                dr["AmountCHF"] = quantity * price;
+            }
+
+
+            count = 0;
+            mOrdersTotal_dt.Columns["No"].SetOrdinal(count++);
+            mOrdersTotal_dt.Columns["PLU"].SetOrdinal(count++);
+            mOrdersTotal_dt.Columns["ProductNameEN"].SetOrdinal(count++);
+            mOrdersTotal_dt.Columns["ProductNameVN"].SetOrdinal(count++);
+            mOrdersTotal_dt.Columns["Package"].SetOrdinal(count++);
+            mOrdersTotal_dt.Columns["Quantity"].SetOrdinal(count++);
+            mOrdersTotal_dt.Columns["NWReal"].SetOrdinal(count++);
+            mOrdersTotal_dt.Columns["Packing"].SetOrdinal(count++);
+            mOrdersTotal_dt.Columns["PCSReal"].SetOrdinal(count++);
+            mOrdersTotal_dt.Columns["OrderPackingPriceCNF"].SetOrdinal(count++);
+            mOrdersTotal_dt.Columns["AmountCHF"].SetOrdinal(count++);
+            dataGV.DataSource = mOrdersTotal_dt;
+
+            dataGV.Columns["ExportCodeID"].Visible = false;
+
+            dataGV.Columns["No"].HeaderText = "No";
+            dataGV.Columns["ProductNameEN"].HeaderText = "English name";
+            dataGV.Columns["ProductNameVN"].HeaderText = "Vietnamese name";
+            dataGV.Columns["Package"].HeaderText = "Unit";
+            dataGV.Columns["NWReal"].HeaderText = "N.W(kg)";
+            dataGV.Columns["PCSReal"].HeaderText = "PCS";
+            dataGV.Columns["OrderPackingPriceCNF"].HeaderText = "Price (CHF)";
+            dataGV.Columns["AmountCHF"].HeaderText = "Amount (CHF)";
+
+
+            dataGV.Columns["Priority"].HeaderText = "Ưu\nTiên";
+
+            dataGV.Columns["Priority"].Width = 30;
+            dataGV.Columns["No"].Width = 30;
+            dataGV.Columns["PLU"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            dataGV.Columns["ProductNameEN"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            dataGV.Columns["ProductNameVN"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            dataGV.Columns["Package"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            dataGV.Columns["Quantity"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            dataGV.Columns["NWReal"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            dataGV.Columns["Packing"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            dataGV.Columns["PCSReal"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            dataGV.Columns["OrderPackingPriceCNF"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            dataGV.Columns["AmountCHF"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+
+            dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+        }
+
+        private void showCustomerOrderGV()
+        {
+            mCustomerOrdersTotal_dt.Columns.Add(new DataColumn("No", typeof(int)));
+            mCustomerOrdersTotal_dt.Columns.Add(new DataColumn("AmountCHF", typeof(float)));
+
+
+            int count = 0;
+            mCustomerOrdersTotal_dt.Columns["No"].SetOrdinal(count++);
+            mCustomerOrdersTotal_dt.Columns["FullName"].SetOrdinal(count++);
+            mCustomerOrdersTotal_dt.Columns["AmountCHF"].SetOrdinal(count++);
+            mCustomerOrdersTotal_dt.Columns["NWReal"].SetOrdinal(count++);
+            mCustomerOrdersTotal_dt.Columns["CNTS"].SetOrdinal(count++);
+
+            cusOrderGV.DataSource = mCustomerOrdersTotal_dt;
+            cusOrderGV.Columns["ExportCodeID"].Visible = false;
+            cusOrderGV.Columns["PCSReal"].Visible = false;
+            cusOrderGV.Columns["Package"].Visible = false;
+            cusOrderGV.Columns["OrderPackingPriceCNF"].Visible = false;
+            cusOrderGV.Columns["FullName"].HeaderText = "MARK";
+            cusOrderGV.Columns["NWReal"].HeaderText = "N.W";
+            cusOrderGV.Columns["AmountCHF"].HeaderText = "Amount\nCHF";
+            cusOrderGV.Columns["CNTS"].HeaderText = "CTNS";
+
+            cusOrderGV.Columns["No"].Width = 30;
+            cusOrderGV.Columns["CNTS"].Width = 40;
+            cusOrderGV.Columns["NWReal"].Width = 40;
+            cusOrderGV.Columns["AmountCHF"].Width = 50;
+            cusOrderGV.Columns["FullName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+           // cusOrderGV.Columns["AmountCHF"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+          //  cusOrderGV.Columns["NWReal"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+          //  cusOrderGV.Columns["CNTS"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+
+            count = 1;
+            foreach (DataRow dr in mCustomerOrdersTotal_dt.Rows)
+            {
+                decimal NWReal = dr["NWReal"] == DBNull.Value ? 0 : Convert.ToDecimal(dr["NWReal"]);
+                int PCS = dr["PCSReal"] == DBNull.Value ? 0 : Convert.ToInt32(dr["PCSReal"]);
+                string Package = dr["Package"].ToString();
+                decimal quantity = Utils.calQuanity(PCS, NWReal, Package);
+                decimal price = dr["OrderPackingPriceCNF"] == DBNull.Value ? 0 : Convert.ToDecimal(dr["OrderPackingPriceCNF"]);
+
+                dr["No"] = count++;
+                dr["AmountCHF"] = quantity * price;
+            }
+        }
+
+        private void showCartonOrderGV()
+        {
+            mCartonOrdersTotal_dt.Columns.Add(new DataColumn("No", typeof(int)));
+            mCartonOrdersTotal_dt.Columns.Add(new DataColumn("Weight", typeof(decimal)));
+
+            int count = 0;
+            mCartonOrdersTotal_dt.Columns["No"].SetOrdinal(count++);
+            mCartonOrdersTotal_dt.Columns["CartonSize"].SetOrdinal(count++);
+            mCartonOrdersTotal_dt.Columns["CountCarton"].SetOrdinal(count++);
+
+            cartonSizeGV.DataSource = mCartonOrdersTotal_dt;
+            cartonSizeGV.Columns["ExportCodeID"].Visible = false;
+            cartonSizeGV.Columns["CartonSize"].HeaderText = "Carton Size";
+            cartonSizeGV.Columns["CountCarton"].HeaderText = "Quantity";
+
+            cartonSizeGV.Columns["No"].Width = 30;
+            cartonSizeGV.Columns["weight"].Width = 50;
+            cartonSizeGV.Columns["CountCarton"].Width = 50;
+            cartonSizeGV.Columns["CartonSize"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+         //   cartonSizeGV.Columns["CountCarton"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+
+            count = 1;
+            foreach (DataRow dr in mCartonOrdersTotal_dt.Rows)
+            {
+                dr["No"] = count++;
+                decimal countCarton = Convert.ToDecimal(dr["CountCarton"]);
+
+                string cartonSizeStr = dr["CartonSize"].ToString().Replace(" ", "");
+                if (cartonSizeStr.CompareTo("") != 0)
+                {
+                    string[] parts = cartonSizeStr.Split('x');
+                    decimal result = parts.Select(p => int.Parse(p)).Aggregate(1, (a, b) => a * b);
+                    result *= countCarton;
+                    result /= Convert.ToDecimal(6000);
+
+                    dr["Weight"] = result;
+                }
             }
         }
 
@@ -193,6 +247,10 @@ namespace RauViet.ui
                 DataView dvCus = new DataView(mCustomerOrdersTotal_dt);
                 dvCus.RowFilter = $"ExportCodeID = '{selectedExportCode}'";
                 cusOrderGV.DataSource = dvCus;
+
+                DataView dvCarton = new DataView(mCartonOrdersTotal_dt);
+                dvCarton.RowFilter = $"ExportCodeID = '{selectedExportCode}'";
+                cartonSizeGV.DataSource = dvCarton;
             }
             else
             {
@@ -222,6 +280,8 @@ namespace RauViet.ui
 
             string exportCode = ((DataRowView)exportCode_cbb.SelectedItem)["ExportCode"].ToString();
             DateTime exportDate = Convert.ToDateTime(((DataRowView)exportCode_cbb.SelectedItem)["ExportDate"]);
+            decimal exRate = Convert.ToDecimal(((DataRowView)exportCode_cbb.SelectedItem)["ExchangeRate"]);
+            decimal ShippingCost = Convert.ToDecimal(((DataRowView)exportCode_cbb.SelectedItem)["ShippingCost"]);
             try
             {
                 using (var wb = new XLWorkbook())
@@ -480,7 +540,18 @@ namespace RauViet.ui
                         rowIndex++;
                     }
 
+                    decimal totalCartonWeight = 0;
 
+                    foreach (DataGridViewRow row in cartonSizeGV.Rows)
+                    {
+                        if (row.IsNewRow) continue;
+
+                        var cellValue = row.Cells["Weight"].Value?.ToString() ?? "";
+                        if (decimal.TryParse(cellValue, out decimal num))
+                            totalCartonWeight += num;
+                    }
+
+                    decimal totalFreightCharge = totalCartonWeight * exRate * ShippingCost;
                     int totalRow = rowIndex;
                     int nwOtherColIndex = exportColumns.FindIndex(c => c.Name == "NWReal") + 1;
                     int nwAmountColIndex = exportColumns.FindIndex(c => c.Name == "AmountCHF") + 1;
@@ -513,7 +584,7 @@ namespace RauViet.ui
                     ws.Range(totalRow, 1, totalRow, 3).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
 
                     ws.Range(totalRow, 4, totalRow, exportColumns.Count).Merge();
-                    ws.Cell(totalRow, 4).Value = " chờ tính";
+                    ws.Cell(totalRow, 4).Value = Math.Round(totalAmount - totalFreightCharge, 2) + " CHF";
                     ws.Cell(totalRow, 4).Style.Font.Bold = true;
                     ws.Cell(totalRow, 4).Style.Font.FontSize = 10;
                     ws.Cell(totalRow, 4).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
@@ -528,7 +599,7 @@ namespace RauViet.ui
                     ws.Range(totalRow, 1, totalRow, 3).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
 
                     ws.Range(totalRow, 4, totalRow, exportColumns.Count).Merge();
-                    ws.Cell(totalRow, 4).Value = " chờ tính";
+                    ws.Cell(totalRow, 4).Value = Math.Round(totalFreightCharge, 2) + " CHF";
                     ws.Cell(totalRow, 4).Style.Font.Bold = true;
                     ws.Cell(totalRow, 4).Style.Font.FontSize = 10;
                     ws.Cell(totalRow, 4).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
@@ -543,7 +614,7 @@ namespace RauViet.ui
                     ws.Range(totalRow, 1, totalRow, 3).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
 
                     ws.Range(totalRow, 4, totalRow, exportColumns.Count).Merge();
-                    ws.Cell(totalRow, 4).Value = totalAmount + " CHF";
+                    ws.Cell(totalRow, 4).Value = Math.Round(totalAmount, 2) + " CHF";
                     ws.Cell(totalRow, 4).Style.Font.Bold = true;
                     ws.Cell(totalRow, 4).Style.Font.FontSize = 10;
                     ws.Cell(totalRow, 4).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
@@ -558,7 +629,7 @@ namespace RauViet.ui
                     ws.Range(totalRow, 1, totalRow, 3).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
 
                     ws.Range(totalRow, 4, totalRow, exportColumns.Count).Merge();
-                    ws.Cell(totalRow, 4).Value = totalNWReal + " kg";
+                    ws.Cell(totalRow, 4).Value = Math.Round(totalNWReal, 2) + " kg";
                     ws.Cell(totalRow, 4).Style.Font.Bold = true;
                     ws.Cell(totalRow, 4).Style.Font.FontSize = 10;
                     ws.Cell(totalRow, 4).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;

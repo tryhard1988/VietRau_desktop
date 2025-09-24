@@ -20,22 +20,50 @@ namespace RauViet.ui
 
             this.WindowState = FormWindowState.Maximized;
 
-            khachhang_btn.Click += khachhang_btn_Click;
-            products_SKU_btn.Click += Products_SKU_btn_Click;
-            productpacking_btn.Click += productPacking_btn_Click;
-            others_btn.Click += others_btn_Click;
-            exportCode_btn.Click += exportCode_btn_Click;
-            orderpackingList_btn.Click += orderpackingList_btn_Click;
-            orderTotal_btn.Click += orderTotal_btn_Click;
-            dkkd_btn.Click += dkkd_btn_Click;
-            phyto_btn.Click += phyto_btn_Click;
-            invoice_btn.Click += invoice_btn_Click;
+            KhachHang_menuItem.Click += khachhang_btn_Click;
+            productMain_menuitem.Click += Products_SKU_btn_Click;
+            productPacking_meniitem.Click += productPacking_btn_Click;
+            exportCode_menuItem.Click += exportCode_btn_Click;
+            order_menuitem.Click += others_btn_Click;
+            dsDongThung_menuitem.Click += orderpackingList_btn_Click;
+            do417_menuitem.Click += orderTotal_btn_Click;
+            lotCode_menuitem.Click += lotCode_btn_Click;
+            dkkd_menuitem.Click += dkkd_btn_Click;
+            phyto_menuitem.Click += phyto_btn_Click;
+            invoice_menuitem.Click += invoice_btn_Click;
+            packingTotal_menuitem.Click += packingTotal_btn_Click;
+
+            title_lb.Text = "";
+        }
+
+        private void packingTotal_btn_Click(object sender, EventArgs e)
+        {
+            this.content_panel.Controls.Clear();
+            title_lb.Text = "Packing Total";
+            var form = new DetailPackingTotal();
+            form.ShowData();
+
+            form.TopLevel = false;
+            form.Parent = this.content_panel;
+            form.Show();
+        }
+
+        private void lotCode_btn_Click(object sender, EventArgs e)
+        {
+            this.content_panel.Controls.Clear();
+            title_lb.Text = "Nhập Mã LOT";
+            var form = new LOTCode();
+            form.ShowData();
+
+            form.TopLevel = false;
+            form.Parent = this.content_panel;
+            form.Show();
         }
 
         private void invoice_btn_Click(object sender, EventArgs e)
         {
             this.content_panel.Controls.Clear();
-
+            title_lb.Text = "INVOICE";
             var form = new INVOICE();
             form.ShowData();
 
@@ -47,7 +75,7 @@ namespace RauViet.ui
         private void phyto_btn_Click(object sender, EventArgs e)
         {
             this.content_panel.Controls.Clear();
-
+            title_lb.Text = "PHYTO";
             var form = new Phyto();
             form.ShowData();
 
@@ -59,7 +87,7 @@ namespace RauViet.ui
         private void dkkd_btn_Click(object sender, EventArgs e)
         {
             this.content_panel.Controls.Clear();
-
+            title_lb.Text = "Đăng Ký Kiểm Định";
             var form = new DangKyKiemDinh();
             form.ShowData();
 
@@ -71,8 +99,8 @@ namespace RauViet.ui
         private void orderTotal_btn_Click(object sender, EventArgs e)
         {
             this.content_panel.Controls.Clear();
-
-            var form = new OrdersTotal();
+            title_lb.Text = "Dò 417";
+            var form = new Do417();
             form.ShowData();
 
             form.TopLevel = false;
@@ -83,7 +111,7 @@ namespace RauViet.ui
         private void orderpackingList_btn_Click(object sender, EventArgs e)
         {
             this.content_panel.Controls.Clear();
-
+            title_lb.Text = "Danh Sách Đóng Thùng";
             var form = new OrderPackingList();
             form.ShowData();
 
@@ -95,7 +123,7 @@ namespace RauViet.ui
         private void exportCode_btn_Click(object sender, EventArgs e)
         {
             this.content_panel.Controls.Clear();
-
+            title_lb.Text = "Danh Sách Mã Xuất Cảng";
             var productSKU = new ExportCodes();
             productSKU.ShowData();
 
@@ -107,7 +135,7 @@ namespace RauViet.ui
         private void Products_SKU_btn_Click(object sender, EventArgs e)
         {
             this.content_panel.Controls.Clear();
-
+            title_lb.Text = "Danh Sách Sản Phẩm Chính";
             var productSKU = new ProductSKU();
             productSKU.ShowData();
 
@@ -119,7 +147,7 @@ namespace RauViet.ui
         private void productPacking_btn_Click(object sender, EventArgs e)
         {
             this.content_panel.Controls.Clear();
-
+            title_lb.Text = "Danh Sách Sản Phẩm Quy Cách";
             var productList = new ProductList();
             productList.ShowData();
 
@@ -131,6 +159,7 @@ namespace RauViet.ui
         private void khachhang_btn_Click(object sender, EventArgs e)
         {
             this.content_panel.Controls.Clear();
+            title_lb.Text = "Danh Sách Khách Hàng";
 
             var customers = new Customers();
             customers.ShowData();
@@ -144,7 +173,7 @@ namespace RauViet.ui
         private void others_btn_Click(object sender, EventArgs e)
         {
             this.content_panel.Controls.Clear();
-
+            title_lb.Text = "Danh Sách Đơn Hàng";
             var others = new OrdersList();
             others.ShowData();
 
@@ -152,5 +181,6 @@ namespace RauViet.ui
             others.Parent = this.content_panel;
             others.Show();
         }
+
     }
 }

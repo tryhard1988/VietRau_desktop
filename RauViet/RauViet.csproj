@@ -151,11 +151,23 @@
     <Compile Include="ui\QL_Kho.Designer.cs">
       <DependentUpon>QL_Kho.cs</DependentUpon>
     </Compile>
+    <Compile Include="ui\ql_kho_sub\DetailPackingTotal.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\ql_kho_sub\DetailPackingTotal.Designer.cs">
+      <DependentUpon>DetailPackingTotal.cs</DependentUpon>
+    </Compile>
     <Compile Include="ui\ql_kho_sub\INVOICE.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="ui\ql_kho_sub\INVOICE.Designer.cs">
       <DependentUpon>INVOICE.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ui\ql_kho_sub\LOTCode.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\ql_kho_sub\LOTCode.Designer.cs">
+      <DependentUpon>LOTCode.cs</DependentUpon>
     </Compile>
     <Compile Include="ui\ql_kho_sub\Phyto.cs">
       <SubType>Form</SubType>
@@ -169,11 +181,11 @@
     <Compile Include="ui\ql_kho_sub\DangKyKiemDinh.Designer.cs">
       <DependentUpon>DangKyKiemDinh.cs</DependentUpon>
     </Compile>
-    <Compile Include="ui\ql_kho_sub\OrdersTotal.cs">
+    <Compile Include="ui\ql_kho_sub\Do417.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ui\ql_kho_sub\OrdersTotal.Designer.cs">
-      <DependentUpon>OrdersTotal.cs</DependentUpon>
+    <Compile Include="ui\ql_kho_sub\Do417.Designer.cs">
+      <DependentUpon>Do417.cs</DependentUpon>
     </Compile>
     <Compile Include="ui\ql_kho_sub\OrderPackingList.cs">
       <SubType>Form</SubType>
@@ -225,8 +237,14 @@
     <EmbeddedResource Include="ui\QL_Kho.resx">
       <DependentUpon>QL_Kho.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="ui\ql_kho_sub\DetailPackingTotal.resx">
+      <DependentUpon>DetailPackingTotal.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ui\ql_kho_sub\INVOICE.resx">
       <DependentUpon>INVOICE.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\ql_kho_sub\LOTCode.resx">
+      <DependentUpon>LOTCode.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ui\ql_kho_sub\Phyto.resx">
       <DependentUpon>Phyto.cs</DependentUpon>
@@ -234,8 +252,8 @@
     <EmbeddedResource Include="ui\ql_kho_sub\DangKyKiemDinh.resx">
       <DependentUpon>DangKyKiemDinh.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ui\ql_kho_sub\OrdersTotal.resx">
-      <DependentUpon>OrdersTotal.cs</DependentUpon>
+    <EmbeddedResource Include="ui\ql_kho_sub\Do417.resx">
+      <DependentUpon>Do417.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ui\ql_kho_sub\OrderPackingList.resx">
       <DependentUpon>OrderPackingList.cs</DependentUpon>

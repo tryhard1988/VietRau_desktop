@@ -65,6 +65,7 @@ namespace RauViet.ui
 
         private void InPhieuGiaoHang_btn_Click(object sender, EventArgs e)
         {
+            if (exportCode_cbb.SelectedItem == null) return;
             // Tạo DataTable kết quả
             DataTable resultTable = new DataTable();
             resultTable.Columns.Add("CartonSize", typeof(string));
@@ -82,7 +83,6 @@ namespace RauViet.ui
             foreach (var g in groups)
             {
                 resultTable.Rows.Add(g.CartonSize, g.Count);
-                Console.WriteLine($"{g.CartonSize} ---- {g.Count}");
             }
 
             DataRowView exportCodeItem = (DataRowView)exportCode_cbb.SelectedItem;
@@ -674,6 +674,8 @@ namespace RauViet.ui
                     }
                 }
             }
+
+            if (selectedCartons.Count <= 0) return;
 
             PackingListPrinter printer = new PackingListPrinter(dataGV, "Asiaway AG", "Schwamendingenstrasse 10, 8050 Zürich, Switzerland", selectedCartons);
 

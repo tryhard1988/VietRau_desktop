@@ -9,10 +9,10 @@ using RauViet.classes;
 
 namespace RauViet.ui
 {
-    public partial class OrdersTotal : Form
+    public partial class Do417 : Form
     {
         DataTable mExportCode_dt, mOrdersTotal_dt;
-        public OrdersTotal()
+        public Do417()
         {
             InitializeComponent();
 

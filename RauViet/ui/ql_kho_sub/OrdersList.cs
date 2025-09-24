@@ -151,8 +151,8 @@ namespace RauViet.ui
                 dataGV.Columns["ExportCode"].HeaderText = "mã Xuất Cảng";
                 dataGV.Columns["CustomerName"].HeaderText = "Tên Khách Hàng";
                 dataGV.Columns["ProductNameVN"].HeaderText = "Tên Sản Phẩm";
-                dataGV.Columns["PCSOther"].HeaderText = "PCS Other";
-                dataGV.Columns["NWOther"].HeaderText = "NW Other";
+                dataGV.Columns["PCSOther"].HeaderText = "PCS Order";
+                dataGV.Columns["NWOther"].HeaderText = "NW Order";
                 dataGV.Columns["PCSReal"].HeaderText = "PCS Real";
                 dataGV.Columns["NWReal"].HeaderText = "NW Real";
 
@@ -587,6 +587,8 @@ namespace RauViet.ui
 
         private async void printPendingOrderSummary_btn_Click(object sender, EventArgs e)
         {
+            if (exportCode_search_cbb.SelectedItem == null) return;
+
             DataRowView pakingData = (DataRowView)exportCode_search_cbb.SelectedItem;
             string exportCode = pakingData["ExportCode"].ToString();
             DateTime exportDate = Convert.ToDateTime(pakingData["ExportDate"]);

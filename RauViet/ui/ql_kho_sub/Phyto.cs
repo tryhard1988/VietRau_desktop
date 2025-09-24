@@ -154,6 +154,7 @@ namespace RauViet.ui
 
         private void ExportDataGridViewToExcel(DataGridView dgv)
         {
+            if (exportCode_cbb.SelectedItem == null) return;
             string exportCode = ((DataRowView)exportCode_cbb.SelectedItem)["ExportCode"].ToString();
             DateTime exportDate = Convert.ToDateTime(((DataRowView)exportCode_cbb.SelectedItem)["ExportDate"]);
             try
