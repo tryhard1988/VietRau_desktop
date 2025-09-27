@@ -145,6 +145,24 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="ui\importExcelToSQL\EditExcelFormProductPacking.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\importExcelToSQL\EditExcelFormProductPacking.Designer.cs">
+      <DependentUpon>EditExcelFormProductPacking.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ui\importExcelToSQL\EditExcelFormProductMain.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\importExcelToSQL\EditExcelFormProductMain.Designer.cs">
+      <DependentUpon>EditExcelFormProductMain.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ui\importExcelToSQL\EditExcelFormCustomer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\importExcelToSQL\EditExcelFormCustomer.Designer.cs">
+      <DependentUpon>EditExcelFormCustomer.cs</DependentUpon>
+    </Compile>
     <Compile Include="ui\QL_Kho.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -233,6 +251,15 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <SubType>Designer</SubType>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\importExcelToSQL\EditExcelFormProductPacking.resx">
+      <DependentUpon>EditExcelFormProductPacking.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\importExcelToSQL\EditExcelFormProductMain.resx">
+      <DependentUpon>EditExcelFormProductMain.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\importExcelToSQL\EditExcelFormCustomer.resx">
+      <DependentUpon>EditExcelFormCustomer.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ui\QL_Kho.resx">
       <DependentUpon>QL_Kho.cs</DependentUpon>

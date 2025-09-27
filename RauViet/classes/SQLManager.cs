@@ -11,7 +11,7 @@ namespace RauViet.classes
     {
         private static SQLManager ins = null;
         private static readonly object padlock = new object();
-        private readonly string conStr = "Data Source=localhost\\SQLEXPRESS;Initial Catalog=RauVietDB;Integrated Security=true;";
+        public readonly string conStr = "Data Source=localhost\\SQLEXPRESS;Initial Catalog=RauVietDB;Integrated Security=true;";
 
         private SQLManager() { }
 
@@ -122,7 +122,8 @@ namespace RauViet.classes
             return dt;
         }
 
-        public async Task<bool> updateProductSKUAsync(int SKU, string ProductNameVN, string ProductNameEN, string PackingType, string Package, string PackingList, string BotanicalName, decimal PriceCNF, int priority, string plantingareaCode)
+        public async Task<bool> updateProductSKUAsync(int SKU, string ProductNameVN, string ProductNameEN, string PackingType, string Package,
+            string PackingList, string BotanicalName, decimal PriceCNF, int priority, string plantingareaCode, string LOTCodeHeader)
         {
             string query = @"UPDATE ProductSKU SET 
                                 ProductNameVN=@ProductNameVN, 
@@ -133,6 +134,7 @@ namespace RauViet.classes
                                 BotanicalName=@BotanicalName, 
                                 PriceCNF=@PriceCNF,
                                 PlantingAreaCode=@PlantingAreaCode,
+                                LOTCodeHeader=@LOTCodeHeader,
                                 Priority=@Priority
                              WHERE SKU=@SKU";
             try
@@ -151,6 +153,7 @@ namespace RauViet.classes
                         cmd.Parameters.AddWithValue("@BotanicalName", BotanicalName);
                         cmd.Parameters.AddWithValue("@PriceCNF", PriceCNF);
                         cmd.Parameters.AddWithValue("@PlantingAreaCode", plantingareaCode);
+                        cmd.Parameters.AddWithValue("@LOTCodeHeader", LOTCodeHeader);
                         cmd.Parameters.AddWithValue("@Priority", priority);
                         await cmd.ExecuteNonQueryAsync();
                     }
@@ -160,10 +163,11 @@ namespace RauViet.classes
             catch { return false; }
         }
 
-        public async Task<bool> insertProductSKUAsync(string ProductNameVN, string ProductNameEN, string PackingType, string Package, string PackingList, string BotanicalName, decimal PriceCNF, int priority, string plantingareaCode)
+        public async Task<bool> insertProductSKUAsync(string ProductNameVN, string ProductNameEN, string PackingType, string Package, 
+            string PackingList, string BotanicalName, decimal PriceCNF, int priority, string plantingareaCode, string LOTCodeHeader)
         {
-            string query = @"INSERT INTO ProductSKU (ProductNameVN, ProductNameEN, PackingType, Package, PackingList, BotanicalName, PriceCNF, Priority, PlantingAreaCode)
-                             VALUES (@ProductNameVN, @ProductNameEN, @PackingType, @Package, @PackingList, @BotanicalName, @PriceCNF, @Priority, @PlantingAreaCode)";
+            string query = @"INSERT INTO ProductSKU (ProductNameVN, ProductNameEN, PackingType, Package, PackingList, BotanicalName, PriceCNF, Priority, PlantingAreaCode, LOTCodeHeader)
+                             VALUES (@ProductNameVN, @ProductNameEN, @PackingType, @Package, @PackingList, @BotanicalName, @PriceCNF, @Priority, @PlantingAreaCode, @LOTCodeHeader)";
             try
             {
                 using (SqlConnection con = new SqlConnection(conStr))
@@ -180,6 +184,7 @@ namespace RauViet.classes
                         cmd.Parameters.AddWithValue("@PriceCNF", PriceCNF);
                         cmd.Parameters.AddWithValue("@Priority", priority);
                         cmd.Parameters.AddWithValue("@PlantingAreaCode", plantingareaCode);
+                        cmd.Parameters.AddWithValue("@LOTCodeHeader", LOTCodeHeader);
                         await cmd.ExecuteNonQueryAsync();
                     }
                 }
@@ -341,7 +346,7 @@ namespace RauViet.classes
             using (SqlConnection con = new SqlConnection(conStr))
             {
                 await con.OpenAsync();
-                string query = "SELECT ExportCodeID, ExportCode, ExportDate FROM ExportCodes WHERE Complete = 0";
+                string query = "SELECT ExportCodeID, ExportCode, ExportDate, ExchangeRate, ShippingCost FROM ExportCodes WHERE Complete = 0 ORDER BY ExportDate DESC;";
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                 {
@@ -697,7 +702,7 @@ GROUP BY
     op.ProductPackingID,
     op.ExportCodeID,
     ot.NetWeightFinal,
-    ec.ExportCode   -- thêm ExportCode vào GROUP BY
+    ec.ExportCode
 ORDER BY 
     sku.Priority ASC,
     op.ExportCodeID,
@@ -870,7 +875,7 @@ ORDER BY
                                     ON pp.SKU = sku.SKU
                                 INNER JOIN ExportCodes ec
                                     ON o.ExportCodeID = ec.ExportCodeID
-                                WHERE ec.Complete = 0  -- chỉ lấy export chưa hoàn tất
+                                WHERE ec.Complete = 0  
                                 GROUP BY 
                                     pp.PLU,
                                     sku.ProductNameEN,
@@ -905,7 +910,7 @@ ORDER BY
                                     SUM(o.PCSReal) AS PCSReal,
                                     sku.Package,
                                     o.OrderPackingPriceCNF,
-                                    COUNT(*) AS CNTS  -- tổng số thùng của khách, không phân biệt loại
+                                    COUNT(*) AS CNTS
                                 FROM Orders o
                                 INNER JOIN Customers c
                                     ON o.CustomerID = c.CustomerID
@@ -915,7 +920,7 @@ ORDER BY
                                     ON pp.SKU = sku.SKU
                                 INNER JOIN ExportCodes ec
                                     ON o.ExportCodeID = ec.ExportCodeID
-                                WHERE ec.Complete = 0  -- chỉ lấy các export chưa hoàn tất
+                                WHERE ec.Complete = 0 
                                 GROUP BY
                                     o.ExportCodeID,
                                     c.FullName,
@@ -945,13 +950,126 @@ ORDER BY
                                 FROM Orders o
                                 INNER JOIN ExportCodes ec
                                     ON o.ExportCodeID = ec.ExportCodeID
-                                WHERE ec.Complete = 0  -- chỉ lấy các export chưa hoàn tất
+                                WHERE ec.Complete = 0
                                 GROUP BY
                                     o.ExportCodeID,
                                     o.CartonSize
                                 ORDER BY
                                     o.ExportCodeID,
                                     o.CartonSize;";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                {
+                    dt.Load(reader);
+                }
+            }
+            return dt;
+        }
+
+        public async Task<DataTable> GetLOTCodeByExportCode_inComplete()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(conStr))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT DISTINCT
+                                        p.SKU,
+                                        o.ExportCodeID,
+                                        e.ExportCode,
+                                        s.ProductNameVN,
+                                        s.LOTCodeHeader,
+                                        o.LOTCode,
+                                        o.LOTCodeComplete,
+                                        s.Priority 
+                                    FROM Orders o
+                                    INNER JOIN ProductPacking p ON o.ProductPackingID = p.ProductPackingID
+                                    INNER JOIN ProductSKU s ON p.SKU = s.SKU
+                                    INNER JOIN ExportCodes e ON o.ExportCodeID = e.ExportCodeID
+                                    WHERE e.Complete = 0;";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                {
+                    dt.Load(reader);
+                }
+            }
+            return dt;
+        }
+
+        public async Task<bool> UpsertOrdersLotCodesBySKUAsync(List<(int ExportCodeID, int SKU, string LOTCode, string LOTCodeComplete)> list)
+        {
+            try
+            {
+                using (SqlConnection con = new SqlConnection(conStr))
+                {
+                    await con.OpenAsync();
+
+                    foreach (var item in list)
+                    {
+                        string updateQuery = @"UPDATE o
+                        SET 
+                            o.LOTCode = @LOTCode,
+                            o.LOTCodeComplete = @LOTCodeComplete
+                        FROM Orders o
+                        INNER JOIN ProductPacking p ON o.ProductPackingID = p.ProductPackingID
+                        WHERE o.ExportCodeID = @ExportCodeID
+                          AND p.SKU = @SKU;";
+
+                        using (SqlCommand cmd = new SqlCommand(updateQuery, con))
+                        {
+                            cmd.Parameters.AddWithValue("@LOTCode", item.LOTCode ?? (object)DBNull.Value);
+                            cmd.Parameters.AddWithValue("@LOTCodeComplete", item.LOTCodeComplete ?? (object)DBNull.Value);
+                            cmd.Parameters.AddWithValue("@ExportCodeID", item.ExportCodeID);
+                            cmd.Parameters.AddWithValue("@SKU", item.SKU);
+
+                            await cmd.ExecuteNonQueryAsync();
+                        }
+                    }
+                }
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public async Task<DataTable> GetDetailPackingTotalByExportCode_incomplete()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(conStr))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT
+                                    o.ExportCodeID,
+                                    CONCAT(s.ProductNameVN, ' ', s.PackingType, ' ', p.Amount, ' ', p.packing) AS ProductNameVN,
+                                    CONCAT(s.ProductNameEN, ' ', s.PackingType, ' ', p.Amount, ' ', p.packing) AS ProductNameEN,
+                                    STRING_AGG(CAST(o.CartonNo AS NVARCHAR(20)), ', ') AS CartonNo,
+                                    MAX(o.LOTCodeComplete) AS LOTCodeComplete,
+                                    p.PLU,
+                                    s.Package,
+                                    SUM(o.NWReal) AS NWReal,
+                                    CONCAT(p.Amount, ' ', p.packing) AS packing,
+                                    SUM(o.PCSReal) AS PCSReal,
+                                    STRING_AGG(o.CustomerCarton, ', ') AS CustomerCarton,
+                                    s.Priority
+                                FROM Orders o
+                                INNER JOIN ProductPacking p ON o.ProductPackingID = p.ProductPackingID
+                                INNER JOIN ProductSKU s ON p.SKU = s.SKU
+                                INNER JOIN ExportCodes e ON o.ExportCodeID = e.ExportCodeID
+                                WHERE e.Complete = 0
+                                GROUP BY
+                                    o.ExportCodeID,
+                                    p.ProductPackingID,
+                                    s.ProductNameVN,
+                                    s.ProductNameEN,
+                                    s.PackingType,
+                                    p.Amount,
+                                    p.packing,
+                                    p.PLU,
+                                    s.Package,
+                                    s.Priority;";
 
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 using (SqlDataReader reader = await cmd.ExecuteReaderAsync())

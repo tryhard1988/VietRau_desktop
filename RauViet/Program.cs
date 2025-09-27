@@ -17,7 +17,7 @@ namespace RauViet
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new QL_kho());
+            Application.Run(new EditExcelFormProductPacking());
         }
     }
 }
