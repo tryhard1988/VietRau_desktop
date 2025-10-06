@@ -299,6 +299,7 @@ namespace RauViet.ui
             status_lb.Text = "";
             delete_btn.Enabled = false;
             info_gb.BackColor = Color.Green;
+            dataGV.ClearSelection();
             return;            
         }
     }

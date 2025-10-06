@@ -1,25 +1,31 @@
-﻿using System;
+﻿using RauViet.classes;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO.Packaging;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using RauViet.classes;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
 
 namespace RauViet.ui
 {
     public partial class ProductList : Form
-    {        public ProductList()
+    {
+        DataTable mSKU_dt;
+        private Timer debounceTimer = new Timer { Interval = 300 };
+        public ProductList()
         {
             InitializeComponent();
 
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Dock = DockStyle.Fill;
+
+            
 
             dataGV.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dataGV.MultiSelect = false;
@@ -28,16 +34,17 @@ namespace RauViet.ui
             loading_lb.Text = "Đang tải dữ liệu, vui lòng chờ...";
             loading_lb.Visible = false;
             delete_btn.Enabled = false;
-            sku_cbb.DropDownStyle = ComboBoxStyle.DropDownList;
 
-            newCustomerBtn.Click += newCustomerBtn_Click;
+            newCustomerBtn.Click += newBtn_Click;
             LuuThayDoiBtn.Click += saveBtn_Click;
             delete_btn.Click += deleteBtn_Click;
             dataGV.SelectionChanged += this.dataGV_CellClick;
-            this.dataGV.RowPrePaint += new System.Windows.Forms.DataGridViewRowPrePaintEventHandler(this.dataGV_RowPrePaint);
+        //    this.dataGV.RowPrePaint += new System.Windows.Forms.DataGridViewRowPrePaintEventHandler(this.dataGV_RowPrePaint);
             priceCNF_tb.TextChanged += priceCNF_tb_TextChanged;
-
+            search_tb.TextChanged += search_txt_TextChanged;
             amount_tb.KeyPress += Tb_KeyPress_OnlyNumber;
+
+            debounceTimer.Tick += DebounceTimer_Tick;
 
         }
 
@@ -52,56 +59,78 @@ namespace RauViet.ui
 
                 await Task.WhenAll(skuTask, packingTask);
 
-                DataTable sku_dt = skuTask.Result;
+                mSKU_dt = skuTask.Result;
                 DataTable packing_dt = packingTask.Result;
 
                 foreach (DataColumn col in packing_dt.Columns)
                     col.ReadOnly = false;
 
+                if (!packing_dt.Columns.Contains("ProductNameVN_NoSign"))
+                    packing_dt.Columns.Add("ProductNameVN_NoSign", typeof(string));
 
-
-                sku_cbb.DataSource = sku_dt;
+                sku_cbb.DataSource = mSKU_dt;
                 sku_cbb.DisplayMember = "ProductNameVN";  // hiển thị tên
                 sku_cbb.ValueMember = "SKU";
+                sku_cbb.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+                sku_cbb.AutoCompleteSource = AutoCompleteSource.ListItems;
                 sku_cbb.SelectedIndexChanged += sku_cbb_SelectedIndexChanged;
-
-
-                // Chạy truy vấn trên thread riêng
-               
-
-
-                // Tạo cột mới
-                DataColumn PriceCNF = new DataColumn("PriceCNF", typeof(string));
-                DataColumn colNameVN = new DataColumn("Name_VN", typeof(string));
-                DataColumn colNameEN = new DataColumn("Name_EN", typeof(string));
+                sku_cbb.TextUpdate += sku_cbb_TextUpdate;
 
                 // Thêm cột vào DataTable
-                packing_dt.Columns.Add(PriceCNF);
-                packing_dt.Columns.Add(colNameVN);
-                packing_dt.Columns.Add(colNameEN);
+                packing_dt.Columns.Add(new DataColumn("PriceCNF", typeof(string)));
+                packing_dt.Columns.Add(new DataColumn("Name_VN", typeof(string)));
+                packing_dt.Columns.Add(new DataColumn("Name_EN", typeof(string)));
+               // packing_dt.Columns.Add(new DataColumn("Package", typeof(string)));
 
                 // Chuyển cột vào vị trí mong muốn
-                
-                colNameVN.SetOrdinal(3); // chèn vào vị trí index 3
-                colNameEN.SetOrdinal(4); // chèn vào vị trí index 4
-               // PriceCNF.SetOrdinal(5); // chèn vào vị trí index 3
+
+                packing_dt.Columns["Name_VN"].SetOrdinal(3); 
+                packing_dt.Columns["Name_EN"].SetOrdinal(4);
+                packing_dt.Columns["Amount"].SetOrdinal(5);
+                // PriceCNF.SetOrdinal(5); // chèn vào vị trí index 3
                 // Gán giá trị cho từng dòng
                 foreach (DataRow dr in packing_dt.Rows)
                 {
                     int sku = Convert.ToInt32(dr["SKU"]);
-                    DataRow row = sku_dt.Select($"SKU = '{sku}'")[0];
+                    DataRow row = mSKU_dt.Select($"SKU = '{sku}'")[0];
 
-                    dr["Name_VN"] = row["ProductNameVN"].ToString() + " " + row["PackingType"].ToString() + " " + dr["Amount"] + " " + dr["Packing"].ToString();
-                    dr["Name_EN"] = row["ProductNameEN"].ToString() + " " + row["PackingType"].ToString() + " " + dr["Amount"] + " " + dr["Packing"].ToString();
+                    string package = row["Package"].ToString();
+                    string nameVN = row["ProductNameVN"].ToString();
+                    string nameEN = row["ProductNameEN"].ToString();
+                    string packingType = row["PackingType"].ToString();
+                    decimal amount = dr["Amount"] == DBNull.Value ? 0 : Convert.ToDecimal(dr["Amount"]);
+                    string packing = dr["Packing"].ToString();
+                    dr["Name_EN"] = nameEN;
+
+                    string resultAmount = amount.ToString("0.##");
+                    dr["Amount"] = resultAmount;
+
+                    if (package.CompareTo("kg") == 0 && packing.CompareTo("") != 0 && amount > 0)
+                    {
+                        
+                        dr["Name_VN"] = nameVN + " " + packingType + " " + resultAmount + " " + packing;
+                        dr["Name_EN"] = nameEN + " " + packingType + " " + resultAmount + " " + packing;
+                    }
+                    else
+                    {
+                        dr["Name_VN"] = nameVN;
+                        dr["Name_EN"] = nameEN;
+                    }
+
+                    dr["ProductNameVN_NoSign"] = Utils.RemoveVietnameseSigns(nameVN + " " + sku).ToLower();
+
+                    // dr["Package"] = package;
                     dr["PriceCNF"] = row["PriceCNF"].ToString();
                 }
 
                 dataGV.DataSource = packing_dt;
                 dataGV.Columns["ProductPackingID"].Visible = false;
-                dataGV.Columns["Amount"].Visible = false;
-                dataGV.Columns["Packing"].Visible = false;
+               // dataGV.Columns["Amount"].Visible = false;
+               // dataGV.Columns["Packing"].Visible = false;
                 dataGV.Columns["PriceCNF"].Visible = false;
-                dataGV.Columns["SKU"].Visible = false;
+                dataGV.Columns["SKU"].Visible = false; 
+                dataGV.Columns["ProductNameVN_NoSign"].Visible = false;
+
 
                 //  dataGV.Columns["SKU"].Visible = false;
 
@@ -118,15 +147,37 @@ namespace RauViet.ui
                 dataGV.Columns["BarCodeEAN13"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
                 dataGV.Columns["ArtNr"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
                 dataGV.Columns["GGN"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                //dataGV.Columns["Packing"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+                dataGV.Columns["Packing"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+                dataGV.Columns["Amount"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
 
                 dataGV.Columns["PriceCNF"].AutoSizeMode = DataGridViewAutoSizeColumnMode.ColumnHeader;
                 dataGV.AutoResizeColumns();
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
+                dataGV.Columns["Packing"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+
                 updateDataTextBoxFlowSKU();
 
+                Utils.SetTabStopRecursive(this, false);
+
+                int countTab = 0;
+                barCode_tb.TabIndex = countTab++; barCode_tb.TabStop = true;
+                PLU_tb.TabIndex = countTab++; PLU_tb.TabStop = true;
+                sku_cbb.TabIndex = countTab++; sku_cbb.TabStop = true;
+                packing_panel.TabIndex = countTab++; packing_panel.TabStop = true;
+                foreach (Control ctrl in packing_panel.Controls)
+                {
+                    if (ctrl is RadioButton rb && rb.Checked)
+                    {
+                        rb.TabIndex = countTab++; rb.TabStop = true;
+                    }
+                }
+                amount_tb.TabIndex = countTab++; amount_tb.TabStop = true;
+                barCodeEAN13_tb.TabIndex = countTab++; barCodeEAN13_tb.TabStop = true;
+                artNr_tb.TabIndex = countTab++; artNr_tb.TabStop = true;
+                GGN_tb.TabIndex = countTab++; GGN_tb.TabStop = true;
+                LuuThayDoiBtn.TabIndex = countTab++; LuuThayDoiBtn.TabStop = true;
             }
             catch (Exception ex)
             {
@@ -144,6 +195,44 @@ namespace RauViet.ui
             this.Dock = DockStyle.Fill;
 
             
+        }
+
+        
+        private void sku_cbb_TextUpdate(object sender, EventArgs e)
+        {
+            // Restart timer mỗi khi gõ
+            debounceTimer.Stop();
+            debounceTimer.Start();
+        }
+
+        private void DebounceTimer_Tick(object sender, EventArgs e)
+        {
+            debounceTimer.Stop();
+
+            string typed = sku_cbb.Text ?? "";
+            string plain = Utils.RemoveVietnameseSigns(typed).ToLower();
+
+            // Filter bằng LINQ
+            var filtered = mSKU_dt.AsEnumerable()
+                .Where(r => Utils.RemoveVietnameseSigns(r["ProductNameVN"].ToString().ToLower())
+                .Contains(plain));
+
+            DataTable temp;
+            if (filtered.Any())
+                temp = filtered.CopyToDataTable();
+            else
+                temp = mSKU_dt.Clone(); // nếu không có kết quả thì trả về table rỗng
+
+            // Gán lại DataSource
+            sku_cbb.DataSource = temp;
+            sku_cbb.DisplayMember = "ProductNameVN";
+            sku_cbb.ValueMember = "SKU";
+
+            // Giữ lại text người đang gõ
+            sku_cbb.DroppedDown = true;
+            sku_cbb.Text = typed;
+            sku_cbb.SelectionStart = typed.Length;
+            sku_cbb.SelectionLength = 0;
         }
 
         private void dataGV_RowPrePaint(object sender, DataGridViewRowPrePaintEventArgs e)
@@ -195,14 +284,20 @@ namespace RauViet.ui
 
                                 DataRowView productSKUData = (DataRowView)sku_cbb.SelectedItem;
 
+                                string package = productSKUData["Package"].ToString();
+                                decimal amount = Amount ?? 0;
+
+                                string resultAmount = amount.ToString("0.##");
+
+
 
                                 row.Cells["SKU"].Value = SKU;
                                 row.Cells["BarCode"].Value = BarCode;
                                 row.Cells["PLU"].Value = PLU;
-                                if (Amount != null)
+                                if (package.CompareTo("kg") == 0 && packing.CompareTo("") != 0 && amount > 0)
                                 {
-                                    row.Cells["Name_VN"].Value = productSKUData["ProductNameVN"] + " " + productSKUData["PackingType"] + " " + Amount + " " + packing; 
-                                    row.Cells["Name_EN"].Value = productSKUData["ProductNameEN"] + " " + productSKUData["PackingType"] + " " + Amount + " " + packing; 
+                                    row.Cells["Name_VN"].Value = productSKUData["ProductNameVN"] + " " + productSKUData["PackingType"] + " " + resultAmount + " " + packing; 
+                                    row.Cells["Name_EN"].Value = productSKUData["ProductNameEN"] + " " + productSKUData["PackingType"] + " " + resultAmount + " " + packing; 
                                 }
                                 else
                                 {
@@ -257,11 +352,15 @@ namespace RauViet.ui
 
                         int newID = createID();
 
+                        string package = productSKUData["Package"].ToString();
+                        decimal amount = Amount ?? 0;
+                        string resultAmount = amount.ToString("0.##");
+
                         drToAdd["ProductPackingID"] = newID;
                         drToAdd["SKU"] = SKU;
                         drToAdd["BarCode"] = BarCode;
                         drToAdd["PLU"] = PLU;
-                        if (Amount != null)
+                        if (package.CompareTo("kg") == 0 && packing.CompareTo("") != 0 && amount > 0)
                         {
                             drToAdd["Name_VN"] = productSKUData["ProductNameVN"] + " " + productSKUData["PackingType"] + " " + Amount + " " + packing;
                             drToAdd["Name_EN"] = productSKUData["ProductNameEN"] + " " + productSKUData["PackingType"] + " " + Amount + " " + packing;
@@ -296,6 +395,9 @@ namespace RauViet.ui
 
                         status_lb.Text = "Thành công";
                         status_lb.ForeColor = Color.Green;
+
+
+                        newBtn_Click(null, null);
                     }
                     else
                     {
@@ -313,8 +415,6 @@ namespace RauViet.ui
         }
         private void saveBtn_Click(object sender, EventArgs e)
         {
-            
-
             string packingStr = "";
 
             foreach (Control ctrl in packing_panel.Controls)
@@ -356,7 +456,8 @@ namespace RauViet.ui
                 string productPackingID = row.Cells["ProductPackingID"].Value.ToString();
                 if (productPackingID.CompareTo(id) == 0)
                 {
-                    DialogResult dialogResult = MessageBox.Show("XÓA THÔNG TIN KHÁCH HÀNG ĐÓ NHA \n Chắc chắn chưa ?", " Xóa Thông Tin Khách Hàng", MessageBoxButtons.YesNo);
+                    DialogResult dialogResult = MessageBox.Show("Xóa Nha, Chắc Chắn Chưa!", "Thông Báo", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
                     if (dialogResult == DialogResult.Yes)
                     {
                         try
@@ -390,19 +491,14 @@ namespace RauViet.ui
                 }
             }
 
-
-
-
-            delete_btn.Enabled = false;
         }
 
-        private void newCustomerBtn_Click(object sender, EventArgs e)
+        private void newBtn_Click(object sender, EventArgs e)
         {
             sku_cbb.SelectedIndex = -1;
             id_tb.Text = "";
             barCode_tb.Text = "";
             PLU_tb.Text = "";
-            botanicalName_tb.Text = "";
             nameVN_tb.Text = "";
             nameEN_tb.Text = "";
             status_lb.Text = "";
@@ -412,7 +508,8 @@ namespace RauViet.ui
             artNr_tb.Text = "";
             GGN_tb.Text = "";
             delete_btn.Enabled = false;
-            dataGV.ClearSelection();
+            barCode_tb.Focus();
+            
 
             info_gb.BackColor = Color.Green;
             sku_cbb_SelectedIndexChanged(sender, e);
@@ -425,7 +522,7 @@ namespace RauViet.ui
             {
                 DataRowView productSKUData = (DataRowView)sku_cbb.SelectedItem;
 
-                botanicalName_tb.Text = productSKUData["BotanicalName"].ToString();
+        //        botanicalName_tb.Text = productSKUData["BotanicalName"].ToString();
                 nameVN_tb.Text = productSKUData["ProductNameVN"].ToString();// + " " + amount + " " + packing;
                 nameEN_tb.Text = productSKUData["ProductNameEN"].ToString();// + " " + amount + " " + packing;
                 priceCNF_tb.Text = productSKUData["PriceCNF"].ToString();
@@ -444,8 +541,9 @@ namespace RauViet.ui
                         rb.AutoSize = true;
                         packing_panel.Controls.Add(rb);
                         top += 70;
+                        rb.Checked = true;
+                     //   rb.TabIndex = sku_cbb.TabIndex + 1;
                     }
-
 
                     if (dataGV.SelectedRows.Count > 0)
                     {
@@ -491,11 +589,12 @@ namespace RauViet.ui
 
                 sku_cbb.SelectedValue = SKU;
                 DataRowView productSKUData = (DataRowView)sku_cbb.SelectedItem;
+                if (productSKUData == null) return;
 
                 id_tb.Text = ID;
                 barCode_tb.Text = barcode;
                 PLU_tb.Text = PLU;
-                botanicalName_tb.Text = productSKUData["BotanicalName"].ToString();
+        //        botanicalName_tb.Text = productSKUData["BotanicalName"].ToString();
                 nameVN_tb.Text = productSKUData["ProductNameVN"].ToString();
                 nameEN_tb.Text = productSKUData["ProductNameEN"].ToString();
                 //    packing_tb.Text = packing;
@@ -559,6 +658,19 @@ namespace RauViet.ui
             {
                 e.Handled = true;
             }
+        }
+
+        private void search_txt_TextChanged(object sender, EventArgs e)
+        {
+            string keyword = Utils.RemoveVietnameseSigns(search_tb.Text.Trim().ToLower())
+                     .Replace("'", "''"); // tránh lỗi cú pháp '
+
+            DataTable dt = dataGV.DataSource as DataTable;
+            if (dt == null) return;
+
+            DataView dv = dt.DefaultView;
+            dv.RowFilter = $"[ProductNameVN_NoSign] LIKE '%{keyword}%'";
+
         }
     }
 }

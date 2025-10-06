@@ -130,6 +130,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="classes\CurrencyHelper.cs" />
+    <Compile Include="classes\ICanSave.cs" />
     <Compile Include="classes\printer\OrderListPrinter.cs" />
     <Compile Include="classes\printer\OrderSummaryPrinter.cs" />
     <Compile Include="classes\printer\DeliveryPrinter.cs" />
@@ -144,6 +146,12 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="ui\importExcelToSQL\EditExcelFormEmployee.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\importExcelToSQL\EditExcelFormEmployee.Designer.cs">
+      <DependentUpon>EditExcelFormEmployee.cs</DependentUpon>
     </Compile>
     <Compile Include="ui\importExcelToSQL\EditExcelFormProductPacking.cs">
       <SubType>Form</SubType>
@@ -163,82 +171,94 @@
     <Compile Include="ui\importExcelToSQL\EditExcelFormCustomer.Designer.cs">
       <DependentUpon>EditExcelFormCustomer.cs</DependentUpon>
     </Compile>
-    <Compile Include="ui\QL_Kho.cs">
+    <Compile Include="ui\Ordermanager.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ui\QL_Kho.Designer.cs">
-      <DependentUpon>QL_Kho.cs</DependentUpon>
+    <Compile Include="ui\Ordermanager.Designer.cs">
+      <DependentUpon>Ordermanager.cs</DependentUpon>
     </Compile>
-    <Compile Include="ui\ql_kho_sub\DetailPackingTotal.cs">
+    <Compile Include="ui\OrderManager_sub\CustomerDetailPackingTotal.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ui\ql_kho_sub\DetailPackingTotal.Designer.cs">
+    <Compile Include="ui\OrderManager_sub\CustomerDetailPackingTotal.Designer.cs">
+      <DependentUpon>CustomerDetailPackingTotal.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ui\PhanQuyen\User.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\PhanQuyen\User.Designer.cs">
+      <DependentUpon>User.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ui\OrderManager_sub\DetailPackingTotal.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\OrderManager_sub\DetailPackingTotal.Designer.cs">
       <DependentUpon>DetailPackingTotal.cs</DependentUpon>
     </Compile>
-    <Compile Include="ui\ql_kho_sub\INVOICE.cs">
+    <Compile Include="ui\OrderManager_sub\INVOICE.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ui\ql_kho_sub\INVOICE.Designer.cs">
+    <Compile Include="ui\OrderManager_sub\INVOICE.Designer.cs">
       <DependentUpon>INVOICE.cs</DependentUpon>
     </Compile>
-    <Compile Include="ui\ql_kho_sub\LOTCode.cs">
+    <Compile Include="ui\OrderManager_sub\LOTCode.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ui\ql_kho_sub\LOTCode.Designer.cs">
+    <Compile Include="ui\OrderManager_sub\LOTCode.Designer.cs">
       <DependentUpon>LOTCode.cs</DependentUpon>
     </Compile>
-    <Compile Include="ui\ql_kho_sub\Phyto.cs">
+    <Compile Include="ui\OrderManager_sub\Phyto.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ui\ql_kho_sub\Phyto.Designer.cs">
+    <Compile Include="ui\OrderManager_sub\Phyto.Designer.cs">
       <DependentUpon>Phyto.cs</DependentUpon>
     </Compile>
-    <Compile Include="ui\ql_kho_sub\DangKyKiemDinh.cs">
+    <Compile Include="ui\OrderManager_sub\DangKyKiemDinh.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ui\ql_kho_sub\DangKyKiemDinh.Designer.cs">
+    <Compile Include="ui\OrderManager_sub\DangKyKiemDinh.Designer.cs">
       <DependentUpon>DangKyKiemDinh.cs</DependentUpon>
     </Compile>
-    <Compile Include="ui\ql_kho_sub\Do417.cs">
+    <Compile Include="ui\OrderManager_sub\Do417.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ui\ql_kho_sub\Do417.Designer.cs">
+    <Compile Include="ui\OrderManager_sub\Do417.Designer.cs">
       <DependentUpon>Do417.cs</DependentUpon>
     </Compile>
-    <Compile Include="ui\ql_kho_sub\OrderPackingList.cs">
+    <Compile Include="ui\OrderManager_sub\OrderPackingList.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ui\ql_kho_sub\OrderPackingList.Designer.cs">
+    <Compile Include="ui\OrderManager_sub\OrderPackingList.Designer.cs">
       <DependentUpon>OrderPackingList.cs</DependentUpon>
     </Compile>
-    <Compile Include="ui\ql_kho_sub\ExportCodes.cs">
+    <Compile Include="ui\OrderManager_sub\ExportCodes.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ui\ql_kho_sub\ExportCodes.Designer.cs">
+    <Compile Include="ui\OrderManager_sub\ExportCodes.Designer.cs">
       <DependentUpon>ExportCodes.cs</DependentUpon>
     </Compile>
-    <Compile Include="ui\ql_kho_sub\OrdersList.cs">
+    <Compile Include="ui\OrderManager_sub\OrdersList.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ui\ql_kho_sub\OrdersList.Designer.cs">
+    <Compile Include="ui\OrderManager_sub\OrdersList.Designer.cs">
       <DependentUpon>OrdersList.cs</DependentUpon>
     </Compile>
-    <Compile Include="ui\ql_kho_sub\Customers.cs">
+    <Compile Include="ui\OrderManager_sub\Customers.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ui\ql_kho_sub\Customers.Designer.cs">
+    <Compile Include="ui\OrderManager_sub\Customers.Designer.cs">
       <DependentUpon>Customers.cs</DependentUpon>
     </Compile>
-    <Compile Include="ui\ql_kho_sub\ProductList.cs">
+    <Compile Include="ui\OrderManager_sub\ProductList.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ui\ql_kho_sub\ProductList.Designer.cs">
+    <Compile Include="ui\OrderManager_sub\ProductList.Designer.cs">
       <DependentUpon>ProductList.cs</DependentUpon>
     </Compile>
-    <Compile Include="ui\ql_kho_sub\ProductSKU.cs">
+    <Compile Include="ui\OrderManager_sub\ProductSKU.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ui\ql_kho_sub\ProductSKU.Designer.cs">
+    <Compile Include="ui\OrderManager_sub\ProductSKU.Designer.cs">
       <DependentUpon>ProductSKU.cs</DependentUpon>
     </Compile>
     <Compile Include="ui\WooCommerceUI.cs">
@@ -252,6 +272,9 @@
       <SubType>Designer</SubType>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Include="ui\importExcelToSQL\EditExcelFormEmployee.resx">
+      <DependentUpon>EditExcelFormEmployee.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ui\importExcelToSQL\EditExcelFormProductPacking.resx">
       <DependentUpon>EditExcelFormProductPacking.cs</DependentUpon>
     </EmbeddedResource>
@@ -261,43 +284,49 @@
     <EmbeddedResource Include="ui\importExcelToSQL\EditExcelFormCustomer.resx">
       <DependentUpon>EditExcelFormCustomer.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ui\QL_Kho.resx">
-      <DependentUpon>QL_Kho.cs</DependentUpon>
+    <EmbeddedResource Include="ui\Ordermanager.resx">
+      <DependentUpon>Ordermanager.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ui\ql_kho_sub\DetailPackingTotal.resx">
+    <EmbeddedResource Include="ui\OrderManager_sub\CustomerDetailPackingTotal.resx">
+      <DependentUpon>CustomerDetailPackingTotal.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\PhanQuyen\User.resx">
+      <DependentUpon>User.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\OrderManager_sub\DetailPackingTotal.resx">
       <DependentUpon>DetailPackingTotal.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ui\ql_kho_sub\INVOICE.resx">
+    <EmbeddedResource Include="ui\OrderManager_sub\INVOICE.resx">
       <DependentUpon>INVOICE.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ui\ql_kho_sub\LOTCode.resx">
+    <EmbeddedResource Include="ui\OrderManager_sub\LOTCode.resx">
       <DependentUpon>LOTCode.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ui\ql_kho_sub\Phyto.resx">
+    <EmbeddedResource Include="ui\OrderManager_sub\Phyto.resx">
       <DependentUpon>Phyto.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ui\ql_kho_sub\DangKyKiemDinh.resx">
+    <EmbeddedResource Include="ui\OrderManager_sub\DangKyKiemDinh.resx">
       <DependentUpon>DangKyKiemDinh.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ui\ql_kho_sub\Do417.resx">
+    <EmbeddedResource Include="ui\OrderManager_sub\Do417.resx">
       <DependentUpon>Do417.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ui\ql_kho_sub\OrderPackingList.resx">
+    <EmbeddedResource Include="ui\OrderManager_sub\OrderPackingList.resx">
       <DependentUpon>OrderPackingList.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ui\ql_kho_sub\ExportCodes.resx">
+    <EmbeddedResource Include="ui\OrderManager_sub\ExportCodes.resx">
       <DependentUpon>ExportCodes.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ui\ql_kho_sub\OrdersList.resx">
+    <EmbeddedResource Include="ui\OrderManager_sub\OrdersList.resx">
       <DependentUpon>OrdersList.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ui\ql_kho_sub\Customers.resx">
+    <EmbeddedResource Include="ui\OrderManager_sub\Customers.resx">
       <DependentUpon>Customers.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ui\ql_kho_sub\ProductList.resx">
+    <EmbeddedResource Include="ui\OrderManager_sub\ProductList.resx">
       <DependentUpon>ProductList.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ui\ql_kho_sub\ProductSKU.resx">
+    <EmbeddedResource Include="ui\OrderManager_sub\ProductSKU.resx">
       <DependentUpon>ProductSKU.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ui\WooCommerceUI.resx">

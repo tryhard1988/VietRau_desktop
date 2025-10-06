@@ -30,39 +30,45 @@ namespace RauViet.ui
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
+            this.preview_print_TD_btn = new System.Windows.Forms.Button();
+            this.prewiew_print_DSDH_btn = new System.Windows.Forms.Button();
+            this.info_gb = new System.Windows.Forms.GroupBox();
+            this.customer_ccb = new System.Windows.Forms.ComboBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.exportCode_cbb = new System.Windows.Forms.ComboBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.PCSOther_tb = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.packing_ccb = new System.Windows.Forms.ComboBox();
+            this.netWeight_tb = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.product_ccb = new System.Windows.Forms.ComboBox();
             this.printPendingOrderSummary_btn = new System.Windows.Forms.Button();
             this.print_order_list_btn = new System.Windows.Forms.Button();
             this.exportCode_search_cbb = new System.Windows.Forms.ComboBox();
-            this.exportCode_cbb = new System.Windows.Forms.ComboBox();
-            this.label8 = new System.Windows.Forms.Label();
-            this.packing_ccb = new System.Windows.Forms.ComboBox();
-            this.label7 = new System.Windows.Forms.Label();
-            this.product_ccb = new System.Windows.Forms.ComboBox();
-            this.customer_ccb = new System.Windows.Forms.ComboBox();
-            this.netWeight_tb = new System.Windows.Forms.TextBox();
-            this.label6 = new System.Windows.Forms.Label();
             this.delete_btn = new System.Windows.Forms.Button();
             this.loading_lb = new System.Windows.Forms.Label();
             this.status_lb = new System.Windows.Forms.Label();
             this.newCustomerBtn = new System.Windows.Forms.Button();
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
-            this.PCSOther_tb = new System.Windows.Forms.TextBox();
             this.priceCNF_tb = new System.Windows.Forms.TextBox();
             this.orderId_tb = new System.Windows.Forms.TextBox();
-            this.label5 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.dataGV = new System.Windows.Forms.DataGridView();
-            this.info_gb = new System.Windows.Forms.GroupBox();
+            this.exportExcel_TD_btn = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
             this.info_gb.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
             this.SuspendLayout();
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.exportExcel_TD_btn);
+            this.panel1.Controls.Add(this.preview_print_TD_btn);
+            this.panel1.Controls.Add(this.prewiew_print_DSDH_btn);
             this.panel1.Controls.Add(this.info_gb);
             this.panel1.Controls.Add(this.printPendingOrderSummary_btn);
             this.panel1.Controls.Add(this.print_order_list_btn);
@@ -77,41 +83,91 @@ namespace RauViet.ui
             this.panel1.Controls.Add(this.label4);
             this.panel1.Controls.Add(this.label1);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel1.Location = new System.Drawing.Point(862, 0);
+            this.panel1.Location = new System.Drawing.Point(816, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(402, 681);
+            this.panel1.Size = new System.Drawing.Size(448, 681);
             this.panel1.TabIndex = 9;
             // 
-            // printPendingOrderSummary_btn
+            // preview_print_TD_btn
             // 
-            this.printPendingOrderSummary_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
-            this.printPendingOrderSummary_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.printPendingOrderSummary_btn.Location = new System.Drawing.Point(236, 422);
-            this.printPendingOrderSummary_btn.Name = "printPendingOrderSummary_btn";
-            this.printPendingOrderSummary_btn.Size = new System.Drawing.Size(117, 64);
-            this.printPendingOrderSummary_btn.TabIndex = 39;
-            this.printPendingOrderSummary_btn.Text = "In Tổng Đơn";
-            this.printPendingOrderSummary_btn.UseVisualStyleBackColor = false;
+            this.preview_print_TD_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.preview_print_TD_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.preview_print_TD_btn.Location = new System.Drawing.Point(208, 475);
+            this.preview_print_TD_btn.Name = "preview_print_TD_btn";
+            this.preview_print_TD_btn.Size = new System.Drawing.Size(145, 47);
+            this.preview_print_TD_btn.TabIndex = 42;
+            this.preview_print_TD_btn.Text = "Xem Trước Bản In";
+            this.preview_print_TD_btn.UseVisualStyleBackColor = false;
             // 
-            // print_order_list_btn
+            // prewiew_print_DSDH_btn
             // 
-            this.print_order_list_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
-            this.print_order_list_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.print_order_list_btn.Location = new System.Drawing.Point(59, 422);
-            this.print_order_list_btn.Name = "print_order_list_btn";
-            this.print_order_list_btn.Size = new System.Drawing.Size(117, 64);
-            this.print_order_list_btn.TabIndex = 38;
-            this.print_order_list_btn.Text = "In Danh Sách Đơn hàng";
-            this.print_order_list_btn.UseVisualStyleBackColor = false;
+            this.prewiew_print_DSDH_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.prewiew_print_DSDH_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.prewiew_print_DSDH_btn.Location = new System.Drawing.Point(52, 475);
+            this.prewiew_print_DSDH_btn.Name = "prewiew_print_DSDH_btn";
+            this.prewiew_print_DSDH_btn.Size = new System.Drawing.Size(145, 47);
+            this.prewiew_print_DSDH_btn.TabIndex = 41;
+            this.prewiew_print_DSDH_btn.Text = "Xem Trước Bản In";
+            this.prewiew_print_DSDH_btn.UseVisualStyleBackColor = false;
             // 
-            // exportCode_search_cbb
+            // info_gb
             // 
-            this.exportCode_search_cbb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.exportCode_search_cbb.FormattingEnabled = true;
-            this.exportCode_search_cbb.Location = new System.Drawing.Point(0, 3);
-            this.exportCode_search_cbb.Name = "exportCode_search_cbb";
-            this.exportCode_search_cbb.Size = new System.Drawing.Size(153, 21);
-            this.exportCode_search_cbb.TabIndex = 37;
+            this.info_gb.Controls.Add(this.customer_ccb);
+            this.info_gb.Controls.Add(this.label2);
+            this.info_gb.Controls.Add(this.label3);
+            this.info_gb.Controls.Add(this.label5);
+            this.info_gb.Controls.Add(this.exportCode_cbb);
+            this.info_gb.Controls.Add(this.label8);
+            this.info_gb.Controls.Add(this.PCSOther_tb);
+            this.info_gb.Controls.Add(this.label6);
+            this.info_gb.Controls.Add(this.packing_ccb);
+            this.info_gb.Controls.Add(this.netWeight_tb);
+            this.info_gb.Controls.Add(this.label7);
+            this.info_gb.Controls.Add(this.product_ccb);
+            this.info_gb.Location = new System.Drawing.Point(17, 63);
+            this.info_gb.Name = "info_gb";
+            this.info_gb.Size = new System.Drawing.Size(419, 297);
+            this.info_gb.TabIndex = 40;
+            this.info_gb.TabStop = false;
+            // 
+            // customer_ccb
+            // 
+            this.customer_ccb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.customer_ccb.FormattingEnabled = true;
+            this.customer_ccb.Location = new System.Drawing.Point(112, 26);
+            this.customer_ccb.Name = "customer_ccb";
+            this.customer_ccb.Size = new System.Drawing.Size(203, 24);
+            this.customer_ccb.TabIndex = 0;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.Location = new System.Drawing.Point(7, 29);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(104, 16);
+            this.label2.TabIndex = 10;
+            this.label2.Text = "Tên Khách hàng:";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label3.Location = new System.Drawing.Point(7, 119);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(96, 16);
+            this.label3.TabIndex = 11;
+            this.label3.Text = "Tên Sản Phẩm:";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label5.Location = new System.Drawing.Point(7, 209);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(71, 16);
+            this.label5.TabIndex = 13;
+            this.label5.Text = "PCS Other:";
             // 
             // exportCode_cbb
             // 
@@ -133,6 +189,24 @@ namespace RauViet.ui
             this.label8.TabIndex = 34;
             this.label8.Text = "Mã Xuất Cảng:";
             // 
+            // PCSOther_tb
+            // 
+            this.PCSOther_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.PCSOther_tb.Location = new System.Drawing.Point(112, 210);
+            this.PCSOther_tb.Name = "PCSOther_tb";
+            this.PCSOther_tb.Size = new System.Drawing.Size(93, 23);
+            this.PCSOther_tb.TabIndex = 20;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label6.Location = new System.Drawing.Point(7, 254);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(103, 16);
+            this.label6.TabIndex = 28;
+            this.label6.Text = "Net Weight (Kg):";
+            // 
             // packing_ccb
             // 
             this.packing_ccb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -142,6 +216,14 @@ namespace RauViet.ui
             this.packing_ccb.Name = "packing_ccb";
             this.packing_ccb.Size = new System.Drawing.Size(93, 24);
             this.packing_ccb.TabIndex = 33;
+            // 
+            // netWeight_tb
+            // 
+            this.netWeight_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.netWeight_tb.Location = new System.Drawing.Point(112, 255);
+            this.netWeight_tb.Name = "netWeight_tb";
+            this.netWeight_tb.Size = new System.Drawing.Size(93, 23);
+            this.netWeight_tb.TabIndex = 29;
             // 
             // label7
             // 
@@ -155,42 +237,43 @@ namespace RauViet.ui
             // 
             // product_ccb
             // 
-            this.product_ccb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.product_ccb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.product_ccb.FormattingEnabled = true;
             this.product_ccb.Location = new System.Drawing.Point(112, 118);
             this.product_ccb.Name = "product_ccb";
-            this.product_ccb.Size = new System.Drawing.Size(203, 24);
+            this.product_ccb.Size = new System.Drawing.Size(301, 24);
             this.product_ccb.TabIndex = 31;
             // 
-            // customer_ccb
+            // printPendingOrderSummary_btn
             // 
-            this.customer_ccb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.customer_ccb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.customer_ccb.FormattingEnabled = true;
-            this.customer_ccb.Location = new System.Drawing.Point(112, 26);
-            this.customer_ccb.Name = "customer_ccb";
-            this.customer_ccb.Size = new System.Drawing.Size(203, 24);
-            this.customer_ccb.TabIndex = 30;
+            this.printPendingOrderSummary_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.printPendingOrderSummary_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.printPendingOrderSummary_btn.Location = new System.Drawing.Point(203, 422);
+            this.printPendingOrderSummary_btn.Name = "printPendingOrderSummary_btn";
+            this.printPendingOrderSummary_btn.Size = new System.Drawing.Size(150, 47);
+            this.printPendingOrderSummary_btn.TabIndex = 39;
+            this.printPendingOrderSummary_btn.Text = "In Tổng Đơn";
+            this.printPendingOrderSummary_btn.UseVisualStyleBackColor = false;
             // 
-            // netWeight_tb
+            // print_order_list_btn
             // 
-            this.netWeight_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.netWeight_tb.Location = new System.Drawing.Point(112, 255);
-            this.netWeight_tb.Name = "netWeight_tb";
-            this.netWeight_tb.ReadOnly = true;
-            this.netWeight_tb.Size = new System.Drawing.Size(93, 23);
-            this.netWeight_tb.TabIndex = 29;
+            this.print_order_list_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.print_order_list_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.print_order_list_btn.Location = new System.Drawing.Point(52, 422);
+            this.print_order_list_btn.Name = "print_order_list_btn";
+            this.print_order_list_btn.Size = new System.Drawing.Size(145, 47);
+            this.print_order_list_btn.TabIndex = 38;
+            this.print_order_list_btn.Text = "In DS Đơn hàng";
+            this.print_order_list_btn.UseVisualStyleBackColor = false;
             // 
-            // label6
+            // exportCode_search_cbb
             // 
-            this.label6.AutoSize = true;
-            this.label6.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label6.Location = new System.Drawing.Point(7, 254);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(103, 16);
-            this.label6.TabIndex = 28;
-            this.label6.Text = "Net Weight (Kg):";
+            this.exportCode_search_cbb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.exportCode_search_cbb.FormattingEnabled = true;
+            this.exportCode_search_cbb.Location = new System.Drawing.Point(0, 3);
+            this.exportCode_search_cbb.Name = "exportCode_search_cbb";
+            this.exportCode_search_cbb.Size = new System.Drawing.Size(153, 21);
+            this.exportCode_search_cbb.TabIndex = 37;
             // 
             // delete_btn
             // 
@@ -248,14 +331,6 @@ namespace RauViet.ui
             this.LuuThayDoiBtn.Text = "Lưu";
             this.LuuThayDoiBtn.UseVisualStyleBackColor = false;
             // 
-            // PCSOther_tb
-            // 
-            this.PCSOther_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.PCSOther_tb.Location = new System.Drawing.Point(112, 210);
-            this.PCSOther_tb.Name = "PCSOther_tb";
-            this.PCSOther_tb.Size = new System.Drawing.Size(93, 23);
-            this.PCSOther_tb.TabIndex = 20;
-            // 
             // priceCNF_tb
             // 
             this.priceCNF_tb.Location = new System.Drawing.Point(120, 620);
@@ -274,16 +349,6 @@ namespace RauViet.ui
             this.orderId_tb.TabIndex = 16;
             this.orderId_tb.Visible = false;
             // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(7, 209);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(71, 16);
-            this.label5.TabIndex = 13;
-            this.label5.Text = "PCS Other:";
-            // 
             // label4
             // 
             this.label4.AutoSize = true;
@@ -293,26 +358,6 @@ namespace RauViet.ui
             this.label4.TabIndex = 12;
             this.label4.Text = "Price CNF";
             this.label4.Visible = false;
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(7, 119);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(96, 16);
-            this.label3.TabIndex = 11;
-            this.label3.Text = "Tên Sản Phẩm:";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(7, 29);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(104, 16);
-            this.label2.TabIndex = 10;
-            this.label2.Text = "Tên Khách hàng:";
             // 
             // label1
             // 
@@ -333,28 +378,19 @@ namespace RauViet.ui
             this.dataGV.Location = new System.Drawing.Point(0, 0);
             this.dataGV.Name = "dataGV";
             this.dataGV.ReadOnly = true;
-            this.dataGV.Size = new System.Drawing.Size(862, 681);
+            this.dataGV.Size = new System.Drawing.Size(816, 681);
             this.dataGV.TabIndex = 11;
             // 
-            // info_gb
+            // exportExcel_TD_btn
             // 
-            this.info_gb.Controls.Add(this.customer_ccb);
-            this.info_gb.Controls.Add(this.label2);
-            this.info_gb.Controls.Add(this.label3);
-            this.info_gb.Controls.Add(this.label5);
-            this.info_gb.Controls.Add(this.exportCode_cbb);
-            this.info_gb.Controls.Add(this.label8);
-            this.info_gb.Controls.Add(this.PCSOther_tb);
-            this.info_gb.Controls.Add(this.label6);
-            this.info_gb.Controls.Add(this.packing_ccb);
-            this.info_gb.Controls.Add(this.netWeight_tb);
-            this.info_gb.Controls.Add(this.label7);
-            this.info_gb.Controls.Add(this.product_ccb);
-            this.info_gb.Location = new System.Drawing.Point(38, 63);
-            this.info_gb.Name = "info_gb";
-            this.info_gb.Size = new System.Drawing.Size(341, 297);
-            this.info_gb.TabIndex = 40;
-            this.info_gb.TabStop = false;
+            this.exportExcel_TD_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.exportExcel_TD_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.exportExcel_TD_btn.Location = new System.Drawing.Point(208, 528);
+            this.exportExcel_TD_btn.Name = "exportExcel_TD_btn";
+            this.exportExcel_TD_btn.Size = new System.Drawing.Size(145, 47);
+            this.exportExcel_TD_btn.TabIndex = 43;
+            this.exportExcel_TD_btn.Text = "Xuất Excel";
+            this.exportExcel_TD_btn.UseVisualStyleBackColor = false;
             // 
             // OrdersList
             // 
@@ -367,9 +403,9 @@ namespace RauViet.ui
             this.Text = "FormTableData";
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGV)).EndInit();
             this.info_gb.ResumeLayout(false);
             this.info_gb.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGV)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -402,5 +438,8 @@ namespace RauViet.ui
         private System.Windows.Forms.Button print_order_list_btn;
         private System.Windows.Forms.Button printPendingOrderSummary_btn;
         private System.Windows.Forms.GroupBox info_gb;
+        private System.Windows.Forms.Button prewiew_print_DSDH_btn;
+        private System.Windows.Forms.Button preview_print_TD_btn;
+        private System.Windows.Forms.Button exportExcel_TD_btn;
     }
 }

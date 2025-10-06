@@ -1,4 +1,7 @@
-﻿using System;
+﻿using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Wordprocessing;
+using RauViet.classes;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data;
@@ -6,10 +9,8 @@ using System.Data.OleDb;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using ClosedXML.Excel;
-using DocumentFormat.OpenXml.Wordprocessing;
-using RauViet.classes;
 
 namespace RauViet.ui
 {
@@ -21,16 +22,9 @@ namespace RauViet.ui
             this.WindowState = FormWindowState.Maximized;
             openFileExcel_mi.Click += openFileExcel_mi_Click;
             save_mi.Click += save_mi_Click;
-            importToSQL_productMain_mi.Click += importToSQL_mi_Click;
-            EditProductName_btn.Click += EditProductName_btn_Click;
             editpackage_btn.Click += editpackage_btn_Click;
-            checkSKU_btn.Click += checkSKU_btn_Click;
         }
 
-        private void importToSQL_mi_Click(object sender, EventArgs e)
-        {
-            ImportDataGridViewToSql(dataGV, SQLManager.Instance.conStr, "ProductSKU");
-        }
 
         private void importToSQL_ProductPacking_mi_Click(object sender, EventArgs e)
         {
@@ -196,7 +190,7 @@ namespace RauViet.ui
             }
 
             // Tạo 1 DataTable chỉ chứa schema và thêm 1 dòng đầu tiên
-           // DataTable oneRowTable = dt.Clone();
+          //  DataTable oneRowTable = dt.Clone();
           //  oneRowTable.ImportRow(dt.Rows[0]); // chỉ lấy dòng đầu tiên
 
             using (SqlConnection conn = new SqlConnection(connectionString))
@@ -207,11 +201,6 @@ namespace RauViet.ui
                 {
                     try
                     {
-                        // Bật IDENTITY_INSERT
-                        using (SqlCommand cmd = new SqlCommand($"SET IDENTITY_INSERT {tableName} ON", conn, tran))
-                        {
-                            cmd.ExecuteNonQuery();
-                        }
 
                         using (SqlBulkCopy bulkCopy = new SqlBulkCopy(conn, SqlBulkCopyOptions.KeepIdentity, tran))
                         {
@@ -226,11 +215,6 @@ namespace RauViet.ui
                             bulkCopy.WriteToServer(dt);
                         }
 
-                        // Tắt IDENTITY_INSERT
-                        using (SqlCommand cmd = new SqlCommand($"SET IDENTITY_INSERT {tableName} OFF", conn, tran))
-                        {
-                            cmd.ExecuteNonQuery();
-                        }
 
                         tran.Commit();
 
@@ -253,168 +237,6 @@ namespace RauViet.ui
                         );
                     }
                 }
-            }
-        }
-
-
-
-        private void DeleteSKUDuplicate_btn_Click(object sender, EventArgs e)
-        {
-            DataTable dt = (DataTable)dataGV.DataSource;
-            dt.DefaultView.Sort = "";
-            // ===== Hàm chuẩn hoá PackingList =====
-            string NormalizePacking(string input)
-            {
-                if (string.IsNullOrWhiteSpace(input)) return "";
-
-                string text = input.Trim().ToLower();
-
-                // Regex lấy đơn vị ở cuối
-                var match = System.Text.RegularExpressions.Regex.Match(text, @"(gr|g|kg|weight)$");
-
-                if (match.Success)
-                {
-                    string unit = match.Groups[1].Value;
-                    if (unit == "g") unit = "gr"; // đổi g -> gr
-                    return unit;
-                }
-
-                return "";
-            }
-
-            // ===== Bước 1: Gán SKU nếu trống =====
-            for (int i = dataGV.Rows.Count - 1; i >= 0; i--)
-            {
-                DataGridViewRow row = dataGV.Rows[i];
-                if (row.IsNewRow) continue;
-
-                string PLU = row.Cells["PLU"].Value?.ToString().Trim() ?? "";
-                string SKU = row.Cells["SKU"].Value?.ToString().Trim() ?? "";
-
-                if (string.IsNullOrEmpty(SKU))
-                {
-                    if (string.IsNullOrEmpty(PLU))
-                    {
-                        // SKU trống và PLU trống -> xóa luôn
-                        dataGV.Rows.RemoveAt(i);
-                        continue;
-                    }
-                    else
-                    {
-                        // SKU trống nhưng có PLU -> cấp SKU mới (max + 1)
-                        int maxSku = 0;
-                        foreach (DataGridViewRow r in dataGV.Rows)
-                        {
-                            if (r.IsNewRow) continue;
-                            string skuVal = r.Cells["SKU"].Value?.ToString().Trim();
-                            if (int.TryParse(skuVal, out int skuNum))
-                                if (skuNum > maxSku) maxSku = skuNum;
-                        }
-
-                        row.Cells["SKU"].Value = (maxSku + 1).ToString();
-                    }
-                }
-            }
-
-            // ===== Bước 2: Xử lý trùng SKU =====
-            Dictionary<string, DataGridViewRow> firstRowMap = new Dictionary<string, DataGridViewRow>();
-            Dictionary<string, HashSet<string>> packingMap = new Dictionary<string, HashSet<string>>();
-            HashSet<string> seen = new HashSet<string>();
-
-            for (int i = dataGV.Rows.Count - 1; i >= 0; i--)
-            {
-                DataGridViewRow row = dataGV.Rows[i];
-                if (row.IsNewRow) continue;
-
-                string sku = row.Cells["SKU"].Value?.ToString().Trim() ?? "";
-                if (string.IsNullOrEmpty(sku)) continue;
-
-                string currentPacking = NormalizePacking(row.Cells["PackingList"].Value?.ToString());
-
-                if (seen.Contains(sku))
-                {
-                    // SKU đã gặp -> merge PackingList
-                    DataGridViewRow keptRow = firstRowMap[sku];
-
-                    if (!string.IsNullOrEmpty(currentPacking))
-                    {
-                        if (!packingMap[sku].Contains(currentPacking))
-                        {
-                            packingMap[sku].Add(currentPacking);
-                            keptRow.Cells["PackingList"].Value = string.Join(", ", packingMap[sku]);
-                        }
-                    }
-
-                    // Xóa row hiện tại
-                    dataGV.Rows.RemoveAt(i);
-                }
-                else
-                {
-                    seen.Add(sku);
-                    firstRowMap[sku] = row;
-
-                    packingMap[sku] = new HashSet<string>();
-                    if (!string.IsNullOrEmpty(currentPacking))
-                    {
-                        packingMap[sku].Add(currentPacking);
-                        row.Cells["PackingList"].Value = currentPacking;
-                    }
-                    else
-                    {
-                        row.Cells["PackingList"].Value = "";
-                    }
-                }
-            }
-        }
-
-
-
-        private void checkSKU_btn_Click(object sender, EventArgs e)
-        {
-            DataTable dt = (DataTable)dataGV.DataSource;
-            dt.DefaultView.Sort = "";
-            HashSet<string> seen = new HashSet<string>();
-            List<string> duplicates = new List<string>();
-            List<string> invalids = new List<string>(); // chứa SKU không phải int
-
-            foreach (DataGridViewRow row in dataGV.Rows)
-            {
-                if (row.IsNewRow) continue;
-
-                string sku = row.Cells["SKU"].Value?.ToString().Trim() ?? "";
-                if (string.IsNullOrEmpty(sku)) continue;
-
-                // Check không phải số nguyên
-                if (!int.TryParse(sku, out _))
-                {
-                    if (!invalids.Contains(sku))
-                        invalids.Add(sku);
-                    continue; // bỏ qua, không check trùng nữa
-                }
-
-                // Check trùng
-                if (!seen.Add(sku))
-                {
-                    if (!duplicates.Contains(sku))
-                        duplicates.Add(sku);
-                }
-            }
-
-            // Kết quả
-            if (duplicates.Count > 0 || invalids.Count > 0)
-            {
-                string msg = "";
-                if (duplicates.Count > 0)
-                    msg += "Có SKU trùng nhau:\n" + string.Join(", ", duplicates) + "\n\n";
-                if (invalids.Count > 0)
-                    msg += "Có SKU không phải số nguyên:\n" + string.Join(", ", invalids);
-
-                MessageBox.Show(msg, "Check SKU", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
-            else
-            {
-                MessageBox.Show("Tất cả SKU hợp lệ, không trùng và đều là số nguyên.",
-                                "Check SKU", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
@@ -627,29 +449,18 @@ namespace RauViet.ui
 
         }
 
-        private void normalizeBotanicalName_btn_Click(object sender, EventArgs e)
-        {
-            DataTable dt = (DataTable)dataGV.DataSource;
-            dt.DefaultView.Sort = "";
-            foreach (DataGridViewRow row in dataGV.Rows)
-            {
-                if (row.IsNewRow) continue;
-
-                string nameEN = row.Cells["BotanicalName"].Value?.ToString().Trim() ?? "";
-
-                if (string.IsNullOrEmpty(nameEN) || nameEN.ToLower().Contains("unknow"))
-                {
-                    row.Cells["BotanicalName"].Value = "Unknow";
-                }
-            }
-        }
-
         private void DeleteSelectedRows_btn_Click(object sender, EventArgs e)
         {
-            if (dataGV.CurrentCell != null) // kiểm tra có cell nào đang được chọn không
+            if (dataGV.CurrentCell != null)
             {
-                int colIndex = dataGV.CurrentCell.ColumnIndex; // lấy index cột
-                dataGV.Columns.RemoveAt(colIndex); // xóa cột theo index
+                int colIndex = dataGV.CurrentCell.ColumnIndex;
+                string colName = dataGV.Columns[colIndex].Name;
+
+                DataTable dt = (DataTable)dataGV.DataSource;
+
+                // Xóa cột khỏi DataTable
+                if (dt.Columns.Contains(colName))
+                    dt.Columns.Remove(colName);
             }
         }
 
@@ -749,6 +560,9 @@ namespace RauViet.ui
 
         private void khongGia_khongPLU_btn_Click(object sender, EventArgs e)
         {
+            // Danh sách log các dòng bị xóa
+            List<string> logs = new List<string>();
+
             // Duyệt ngược để tránh lỗi khi xóa dòng
             for (int i = dataGV.Rows.Count - 1; i >= 0; i--)
             {
@@ -756,17 +570,33 @@ namespace RauViet.ui
                 if (row.IsNewRow) continue;
 
                 string plu = row.Cells["PLU"].Value?.ToString().Trim();
-                string price = row.Cells["PriceCNF"].Value?.ToString().Trim();
+                string priceStr = row.Cells["PriceCNF"].Value?.ToString().Trim();
                 string sku = row.Cells["SKU"].Value?.ToString().Trim();
+                string productName = row.Cells["ProductNameVN"].Value?.ToString().Trim();
 
                 bool removeRow = false;
 
                 // Nếu cả PLU và PriceCNF đều rỗng thì xóa
-                if (string.IsNullOrEmpty(plu) && string.IsNullOrEmpty(price))
+                if (string.IsNullOrEmpty(plu))
+                {
+                    if (string.IsNullOrEmpty(priceStr))
+                    {
+                        removeRow = true;
+                    }
+                    else if (decimal.TryParse(priceStr, out decimal priceValue))
+                    {
+                        if (priceValue <= 0)
+                        {
+                            removeRow = true;
+                        }
+                    }
+                }
+
+                // Nếu SKU không phải số nguyên thì xóa
+                if (string.IsNullOrEmpty(sku))
                 {
                     removeRow = true;
                 }
-
                 // Nếu SKU không phải số nguyên thì xóa
                 if (!string.IsNullOrEmpty(sku) && !int.TryParse(sku, out _))
                 {
@@ -775,16 +605,143 @@ namespace RauViet.ui
 
                 if (removeRow)
                 {
+                    logs.Add($"Xóa SKU: {sku}, PLU: {plu}, Product: {productName}, Price: {priceStr}");
                     dataGV.Rows.RemoveAt(i);
                 }
             }
+
+            // Hiển thị log
+            if (logs.Count > 0)
+            {
+                string message = string.Join(Environment.NewLine, logs);
+                MessageBox.Show(message, "Danh sách dòng bị xóa",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                MessageBox.Show("Không có dòng nào bị xóa.", "Kết quả",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
         }
 
+
+        private void ThemCotAmountVaboPhanSocuaPackingList_btn_Click(object sender, EventArgs e)
+    {
+        if (dataGV.DataSource == null)
+        {
+            MessageBox.Show("DataGridView chưa có DataSource!");
+            return;
+        }
+
+        DataTable dt = (DataTable)dataGV.DataSource;
+
+        // Thêm cột nếu chưa có
+        if (!dt.Columns.Contains("Amount"))
+            dt.Columns.Add("Amount", typeof(double));
+
+        if (!dt.Columns.Contains("packing"))
+            dt.Columns.Add("packing", typeof(string));
+
+        // Regex tách số và đơn vị
+        Regex regex = new Regex(@"(?<number>[\d\.]+)\s*(?<unit>\D*)");
+
+        foreach (DataRow dr in dt.Rows)
+        {
+            var packingListValue = dr["PackingList"]?.ToString();
+            if (string.IsNullOrWhiteSpace(packingListValue))
+            {
+                dr["Amount"] = 0;
+                dr["packing"] = "";
+                continue;
+            }
+
+            var match = regex.Match(packingListValue.Trim());
+            if (match.Success)
+            {
+                if (double.TryParse(match.Groups["number"].Value, out double amount))
+                {
+                    dr["Amount"] = amount;
+                }
+                else
+                {
+                    dr["Amount"] = 0;
+                }
+
+                dr["packing"] = match.Groups["unit"].Value.Trim();
+            }
+            else
+            {
+                dr["Amount"] = 0;
+                dr["packing"] = "";
+            }
+        }
+
+        MessageBox.Show("Đã tách Amount và Packing!");
+    }
+
+
+    private void checkSKU_btn_Click(object sender, EventArgs e)
+        {
+            HashSet<int> existingSKUs = new HashSet<int>();
+
+            using (SqlConnection conn = new SqlConnection(SQLManager.Instance.conStr))
+            {
+                conn.Open();
+                using (SqlCommand cmd = new SqlCommand("SELECT SKU FROM ProductSKU", conn))
+                {
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            existingSKUs.Add(reader.GetInt32(0)); // Lấy cột SKU
+                        }
+                    }
+                }
+            }
+
+            List<int> missingSKUs = new List<int>();
+
+            foreach (DataGridViewRow row in dataGV.Rows)
+            {
+                if (row.IsNewRow) continue; // bỏ qua dòng mới đang edit
+
+                if (int.TryParse(row.Cells["SKU"].Value?.ToString(), out int skuValue))
+                {
+                    if (!existingSKUs.Contains(skuValue))
+                    {
+                        missingSKUs.Add(skuValue);
+                    }
+                }
+            }
+
+            // Hiển thị kết quả
+            if (missingSKUs.Count > 0)
+            {
+                MessageBox.Show("Các SKU không có trong ProductSKU: " + string.Join(", ", missingSKUs));
+            }
+            else
+            {
+                MessageBox.Show("Tất cả SKU đều tồn tại trong ProductSKU.");
+            }
+        }
+
+        private void CountRowTotal_btn_Click(object sender, EventArgs e)
+        {
+            // Nếu DataGridView có AllowUserToAddRows = true thì hàng cuối là hàng trống → cần trừ đi 1
+            int rowCount = dataGV.AllowUserToAddRows
+                ? dataGV.Rows.Count - 1
+                : dataGV.Rows.Count;
+
+            MessageBox.Show("Tổng số dòng: " + rowCount.ToString());
+        }
 
         private void changeSKU_diff_kg_btn_Click(object sender, EventArgs e)
         {
             // Dictionary để đếm số lần gặp SKU
             Dictionary<string, int> skuCounter = new Dictionary<string, int>();
+
+            // Danh sách log các SKU bị đổi
+            List<string> logs = new List<string>();
 
             foreach (DataGridViewRow row in dataGV.Rows)
             {
@@ -792,6 +749,7 @@ namespace RauViet.ui
 
                 string sku = row.Cells["SKU"].Value?.ToString().Trim();
                 string package = row.Cells["Package"].Value?.ToString().Trim().ToLower();
+                string productName = row.Cells["ProductNameVN"].Value?.ToString().Trim(); // giả sử có cột ProductName
 
                 if (string.IsNullOrEmpty(sku)) continue;
 
@@ -806,17 +764,30 @@ namespace RauViet.ui
                     if (!string.Equals(package, "kg", StringComparison.OrdinalIgnoreCase))
                     {
                         skuCounter[sku]++; // tăng số đếm
-                        row.Cells["SKU"].Value = sku + skuCounter[sku];
+                        string newSku = sku + skuCounter[sku];
+
+                        // Ghi log trước khi đổi
+                        logs.Add($"SKU đổi: {sku} → {newSku} | Product: {productName}");
+
+                        // Đổi SKU trong DataGridView
+                        row.Cells["SKU"].Value = newSku;
                     }
                     // nếu Package = "kg" thì giữ nguyên
                 }
             }
 
-            MessageBox.Show("Đã chuẩn hóa SKU cho các dòng trùng lặp.", "Kết quả",
-                MessageBoxButtons.OK, MessageBoxIcon.Information);
+            // Hiển thị log nếu có thay đổi
+            if (logs.Count > 0)
+            {
+                string message = string.Join(Environment.NewLine, logs);
+                MessageBox.Show(message, "Danh sách SKU bị đổi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                MessageBox.Show("Không có SKU nào bị đổi.", "Kết quả",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
         }
-
-        
     }
 }
 

@@ -22,7 +22,7 @@ namespace RauViet.ui
             this.Dock = DockStyle.Fill;
 
             dataGV.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dataGV.MultiSelect = false;
+            dataGV.MultiSelect = true;
 
             status_lb.Text = "";
             loading_lb.Text = "Đang tải dữ liệu, vui lòng chờ...";
@@ -30,7 +30,7 @@ namespace RauViet.ui
 
 
             LuuThayDoiBtn.Click += saveBtn_Click;           
-            dataGV.RowPrePaint += new System.Windows.Forms.DataGridViewRowPrePaintEventHandler(this.dataGV_RowPrePaint);
+        //    dataGV.RowPrePaint += new System.Windows.Forms.DataGridViewRowPrePaintEventHandler(this.dataGV_RowPrePaint);
             //dataGV.CellEndEdit += dataGV_CellEndEdit;
 
             exportCode_cbb.SelectedIndexChanged += exportCode_search_cbb_SelectedIndexChanged;
@@ -97,6 +97,69 @@ namespace RauViet.ui
                 dr["No"] = count++;
                 dr["Quantity"] = quantity;
                 dr["AmountCHF"] = quantity * price;
+
+                dr.Table.Columns["Packing"].ReadOnly = false; // mở khóa tạm
+                dr.Table.Columns["PCSReal"].ReadOnly = false; // mở khóa tạm
+
+                var cellValue = dr["Packing"]?.ToString();
+
+                dr["PCSReal"] = Convert.ToInt32(PCS);
+
+                if (!string.IsNullOrWhiteSpace(cellValue))
+                {
+                    // Tách số và phần đơn vị
+                    string numberPart = "";
+                    string unitPart = "";
+                    
+                    int firstLetterIndex = -1;
+                    for (int i = 0; i < cellValue.Length; i++)
+                    {
+                        if (char.IsLetter(cellValue[i]))
+                        {
+                            firstLetterIndex = i;
+                            break;
+                        }
+                    }
+
+                    if (firstLetterIndex >= 0)
+                    {
+                        numberPart = cellValue.Substring(0, firstLetterIndex).Trim();
+                        unitPart = cellValue.Substring(firstLetterIndex).Trim();
+                    }
+                    else
+                    {
+                        numberPart = cellValue.Trim();
+                        unitPart = "";
+                    }
+
+                    // Chuyển số sang decimal
+                    if (decimal.TryParse(numberPart, out decimal value))
+                    {
+                        if (value == 0)
+                        {
+                            dr["Packing"] = unitPart.CompareTo("weight") == 0 ? "weight" : "";
+                        }
+                        else
+                        {
+                            // Loại bỏ .00 nếu là số nguyên
+                            string newNumber = value % 1 == 0 ? ((int)value).ToString() : value.ToString();
+
+                            dr["Packing"] = string.IsNullOrEmpty(unitPart) ? newNumber : $"{newNumber} {unitPart}";                    // gán giá trị mới
+                            // trả về trạng thái cũ
+
+                        }
+                    }
+                    else
+                    {
+                        dr["Packing"] = ""; // Nếu không parse được, để trống
+                    }
+                }
+                else
+                {
+                    dr["Packing"] = ""; // Nếu cell null hoặc rỗng
+                }
+                dr.Table.Columns["Packing"].ReadOnly = true;
+                dr.Table.Columns["PCSReal"].ReadOnly = true;
             }
 
 
@@ -147,7 +210,6 @@ namespace RauViet.ui
         private void showCustomerOrderGV()
         {
             mCustomerOrdersTotal_dt.Columns.Add(new DataColumn("No", typeof(int)));
-            mCustomerOrdersTotal_dt.Columns.Add(new DataColumn("AmountCHF", typeof(float)));
 
 
             int count = 0;
@@ -157,11 +219,17 @@ namespace RauViet.ui
             mCustomerOrdersTotal_dt.Columns["NWReal"].SetOrdinal(count++);
             mCustomerOrdersTotal_dt.Columns["CNTS"].SetOrdinal(count++);
 
+            count = 1;
+            foreach (DataRow dr in mCustomerOrdersTotal_dt.Rows)
+            {
+                dr["No"] = count++;
+            }
+
             cusOrderGV.DataSource = mCustomerOrdersTotal_dt;
             cusOrderGV.Columns["ExportCodeID"].Visible = false;
-            cusOrderGV.Columns["PCSReal"].Visible = false;
-            cusOrderGV.Columns["Package"].Visible = false;
-            cusOrderGV.Columns["OrderPackingPriceCNF"].Visible = false;
+           // cusOrderGV.Columns["PCSReal"].Visible = false;
+           // cusOrderGV.Columns["Package"].Visible = false;
+           // cusOrderGV.Columns["OrderPackingPriceCNF"].Visible = false;
             cusOrderGV.Columns["FullName"].HeaderText = "MARK";
             cusOrderGV.Columns["NWReal"].HeaderText = "N.W";
             cusOrderGV.Columns["AmountCHF"].HeaderText = "Amount\nCHF";
@@ -176,18 +244,7 @@ namespace RauViet.ui
           //  cusOrderGV.Columns["NWReal"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
           //  cusOrderGV.Columns["CNTS"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
 
-            count = 1;
-            foreach (DataRow dr in mCustomerOrdersTotal_dt.Rows)
-            {
-                decimal NWReal = dr["NWReal"] == DBNull.Value ? 0 : Convert.ToDecimal(dr["NWReal"]);
-                int PCS = dr["PCSReal"] == DBNull.Value ? 0 : Convert.ToInt32(dr["PCSReal"]);
-                string Package = dr["Package"].ToString();
-                decimal quantity = Utils.calQuanity(PCS, NWReal, Package);
-                decimal price = dr["OrderPackingPriceCNF"] == DBNull.Value ? 0 : Convert.ToDecimal(dr["OrderPackingPriceCNF"]);
-
-                dr["No"] = count++;
-                dr["AmountCHF"] = quantity * price;
-            }
+            
         }
 
         private void showCartonOrderGV()

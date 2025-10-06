@@ -31,14 +31,15 @@ namespace RauViet.ui
         {
             this.components = new System.ComponentModel.Container();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.InPhieuGiaoHang_btn = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.autoFillCartonSize_btn = new System.Windows.Forms.Button();
+            this.checkCarton_btn = new System.Windows.Forms.Button();
+            this.autoEditCartonNo_btn = new System.Windows.Forms.Button();
             this.assignCustomerCarton_btn = new System.Windows.Forms.Button();
             this.assignCartonSize_btn = new System.Windows.Forms.Button();
             this.cartonSize_tb = new System.Windows.Forms.TextBox();
             this.label8 = new System.Windows.Forms.Label();
-            this.assignPCSReal_btn = new System.Windows.Forms.Button();
-            this.PCSReal_tb = new System.Windows.Forms.TextBox();
-            this.label7 = new System.Windows.Forms.Label();
             this.assignCartonNoBtn = new System.Windows.Forms.Button();
             this.cartonNo_tb = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
@@ -49,12 +50,15 @@ namespace RauViet.ui
             this.panel4 = new System.Windows.Forms.Panel();
             this.print_btn = new System.Windows.Forms.Button();
             this.loading_lb = new System.Windows.Forms.Label();
+            this.assignPCSReal_btn = new System.Windows.Forms.Button();
+            this.PCSReal_tb = new System.Windows.Forms.TextBox();
             this.status_lb = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.autoEditCartonNo_btn = new System.Windows.Forms.Button();
             this.dataGV = new System.Windows.Forms.DataGridView();
-            this.InPhieuGiaoHang_btn = new System.Windows.Forms.Button();
+            this.previewPrint_PGH_btn = new System.Windows.Forms.Button();
+            this.previewPrint_PT_btn = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.panel3.SuspendLayout();
@@ -65,12 +69,16 @@ namespace RauViet.ui
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.previewPrint_PGH_btn);
             this.panel1.Controls.Add(this.InPhieuGiaoHang_btn);
             this.panel1.Controls.Add(this.groupBox1);
             this.panel1.Controls.Add(this.exportCode_cbb);
             this.panel1.Controls.Add(this.panel3);
             this.panel1.Controls.Add(this.loading_lb);
+            this.panel1.Controls.Add(this.assignPCSReal_btn);
+            this.panel1.Controls.Add(this.PCSReal_tb);
             this.panel1.Controls.Add(this.status_lb);
+            this.panel1.Controls.Add(this.label7);
             this.panel1.Controls.Add(this.LuuThayDoiBtn);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Right;
             this.panel1.Location = new System.Drawing.Point(851, 0);
@@ -78,40 +86,81 @@ namespace RauViet.ui
             this.panel1.Size = new System.Drawing.Size(495, 681);
             this.panel1.TabIndex = 9;
             // 
+            // InPhieuGiaoHang_btn
+            // 
+            this.InPhieuGiaoHang_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.InPhieuGiaoHang_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.InPhieuGiaoHang_btn.Location = new System.Drawing.Point(165, 399);
+            this.InPhieuGiaoHang_btn.Name = "InPhieuGiaoHang_btn";
+            this.InPhieuGiaoHang_btn.Size = new System.Drawing.Size(162, 45);
+            this.InPhieuGiaoHang_btn.TabIndex = 46;
+            this.InPhieuGiaoHang_btn.Text = "In Phiếu Giao Hàng";
+            this.InPhieuGiaoHang_btn.UseVisualStyleBackColor = false;
+            // 
             // groupBox1
             // 
             this.groupBox1.BackColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.groupBox1.Controls.Add(this.autoFillCartonSize_btn);
+            this.groupBox1.Controls.Add(this.checkCarton_btn);
             this.groupBox1.Controls.Add(this.autoEditCartonNo_btn);
             this.groupBox1.Controls.Add(this.assignCustomerCarton_btn);
             this.groupBox1.Controls.Add(this.assignCartonSize_btn);
             this.groupBox1.Controls.Add(this.cartonSize_tb);
             this.groupBox1.Controls.Add(this.label8);
-            this.groupBox1.Controls.Add(this.assignPCSReal_btn);
-            this.groupBox1.Controls.Add(this.PCSReal_tb);
-            this.groupBox1.Controls.Add(this.label7);
             this.groupBox1.Controls.Add(this.assignCartonNoBtn);
             this.groupBox1.Controls.Add(this.cartonNo_tb);
             this.groupBox1.Controls.Add(this.label6);
             this.groupBox1.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox1.Location = new System.Drawing.Point(16, 81);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(314, 266);
+            this.groupBox1.Size = new System.Drawing.Size(314, 302);
             this.groupBox1.TabIndex = 53;
             this.groupBox1.TabStop = false;
+            // 
+            // autoFillCartonSize_btn
+            // 
+            this.autoFillCartonSize_btn.BackColor = System.Drawing.Color.Lime;
+            this.autoFillCartonSize_btn.Location = new System.Drawing.Point(233, 121);
+            this.autoFillCartonSize_btn.Name = "autoFillCartonSize_btn";
+            this.autoFillCartonSize_btn.Size = new System.Drawing.Size(78, 34);
+            this.autoFillCartonSize_btn.TabIndex = 60;
+            this.autoFillCartonSize_btn.Text = "Auto Fill";
+            this.autoFillCartonSize_btn.UseVisualStyleBackColor = false;
+            // 
+            // checkCarton_btn
+            // 
+            this.checkCarton_btn.BackColor = System.Drawing.Color.Red;
+            this.checkCarton_btn.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.checkCarton_btn.Location = new System.Drawing.Point(116, 237);
+            this.checkCarton_btn.Name = "checkCarton_btn";
+            this.checkCarton_btn.Size = new System.Drawing.Size(174, 43);
+            this.checkCarton_btn.TabIndex = 59;
+            this.checkCarton_btn.Text = "Kiểm Tra Dữ Liệu";
+            this.checkCarton_btn.UseVisualStyleBackColor = false;
+            // 
+            // autoEditCartonNo_btn
+            // 
+            this.autoEditCartonNo_btn.BackColor = System.Drawing.Color.Lime;
+            this.autoEditCartonNo_btn.Location = new System.Drawing.Point(230, 64);
+            this.autoEditCartonNo_btn.Name = "autoEditCartonNo_btn";
+            this.autoEditCartonNo_btn.Size = new System.Drawing.Size(78, 34);
+            this.autoEditCartonNo_btn.TabIndex = 58;
+            this.autoEditCartonNo_btn.Text = "Auto Edit";
+            this.autoEditCartonNo_btn.UseVisualStyleBackColor = false;
             // 
             // assignCustomerCarton_btn
             // 
             this.assignCustomerCarton_btn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
-            this.assignCustomerCarton_btn.Location = new System.Drawing.Point(53, 216);
+            this.assignCustomerCarton_btn.Location = new System.Drawing.Point(19, 192);
             this.assignCustomerCarton_btn.Name = "assignCustomerCarton_btn";
-            this.assignCustomerCarton_btn.Size = new System.Drawing.Size(174, 31);
+            this.assignCustomerCarton_btn.Size = new System.Drawing.Size(174, 39);
             this.assignCustomerCarton_btn.TabIndex = 57;
             this.assignCustomerCarton_btn.Text = "Tự Động Tạo Mã Thùng";
             this.assignCustomerCarton_btn.UseVisualStyleBackColor = false;
             // 
             // assignCartonSize_btn
             // 
-            this.assignCartonSize_btn.Location = new System.Drawing.Point(163, 109);
+            this.assignCartonSize_btn.Location = new System.Drawing.Point(157, 121);
             this.assignCartonSize_btn.Name = "assignCartonSize_btn";
             this.assignCartonSize_btn.Size = new System.Drawing.Size(64, 30);
             this.assignCartonSize_btn.TabIndex = 56;
@@ -120,7 +169,7 @@ namespace RauViet.ui
             // 
             // cartonSize_tb
             // 
-            this.cartonSize_tb.Location = new System.Drawing.Point(53, 113);
+            this.cartonSize_tb.Location = new System.Drawing.Point(47, 125);
             this.cartonSize_tb.Name = "cartonSize_tb";
             this.cartonSize_tb.Size = new System.Drawing.Size(104, 23);
             this.cartonSize_tb.TabIndex = 55;
@@ -128,49 +177,24 @@ namespace RauViet.ui
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(27, 97);
+            this.label8.Location = new System.Drawing.Point(21, 109);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(73, 16);
             this.label8.TabIndex = 54;
             this.label8.Text = "Carton Size";
             // 
-            // assignPCSReal_btn
-            // 
-            this.assignPCSReal_btn.Location = new System.Drawing.Point(163, 166);
-            this.assignPCSReal_btn.Name = "assignPCSReal_btn";
-            this.assignPCSReal_btn.Size = new System.Drawing.Size(64, 30);
-            this.assignPCSReal_btn.TabIndex = 53;
-            this.assignPCSReal_btn.Text = "Assign";
-            this.assignPCSReal_btn.UseVisualStyleBackColor = true;
-            // 
-            // PCSReal_tb
-            // 
-            this.PCSReal_tb.Location = new System.Drawing.Point(53, 170);
-            this.PCSReal_tb.Name = "PCSReal_tb";
-            this.PCSReal_tb.Size = new System.Drawing.Size(104, 23);
-            this.PCSReal_tb.TabIndex = 52;
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(27, 154);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(87, 16);
-            this.label7.TabIndex = 51;
-            this.label7.Text = "PCS Thực Tế:";
-            // 
             // assignCartonNoBtn
             // 
-            this.assignCartonNoBtn.Location = new System.Drawing.Point(163, 49);
+            this.assignCartonNoBtn.Location = new System.Drawing.Point(157, 68);
             this.assignCartonNoBtn.Name = "assignCartonNoBtn";
-            this.assignCartonNoBtn.Size = new System.Drawing.Size(64, 30);
+            this.assignCartonNoBtn.Size = new System.Drawing.Size(64, 27);
             this.assignCartonNoBtn.TabIndex = 50;
             this.assignCartonNoBtn.Text = "Assign";
             this.assignCartonNoBtn.UseVisualStyleBackColor = true;
             // 
             // cartonNo_tb
             // 
-            this.cartonNo_tb.Location = new System.Drawing.Point(53, 53);
+            this.cartonNo_tb.Location = new System.Drawing.Point(47, 70);
             this.cartonNo_tb.Name = "cartonNo_tb";
             this.cartonNo_tb.Size = new System.Drawing.Size(104, 23);
             this.cartonNo_tb.TabIndex = 49;
@@ -178,7 +202,7 @@ namespace RauViet.ui
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(22, 37);
+            this.label6.Location = new System.Drawing.Point(16, 54);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(69, 16);
             this.label6.TabIndex = 48;
@@ -226,6 +250,7 @@ namespace RauViet.ui
             // 
             // panel4
             // 
+            this.panel4.Controls.Add(this.previewPrint_PT_btn);
             this.panel4.Controls.Add(this.print_btn);
             this.panel4.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panel4.Location = new System.Drawing.Point(0, 513);
@@ -239,7 +264,7 @@ namespace RauViet.ui
             this.print_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.print_btn.Location = new System.Drawing.Point(0, 3);
             this.print_btn.Name = "print_btn";
-            this.print_btn.Size = new System.Drawing.Size(162, 58);
+            this.print_btn.Size = new System.Drawing.Size(162, 45);
             this.print_btn.TabIndex = 45;
             this.print_btn.Text = "In Phiếu Thùng";
             this.print_btn.UseVisualStyleBackColor = false;
@@ -254,6 +279,24 @@ namespace RauViet.ui
             this.loading_lb.TabIndex = 10;
             this.loading_lb.Text = "loading_lb";
             // 
+            // assignPCSReal_btn
+            // 
+            this.assignPCSReal_btn.Location = new System.Drawing.Point(206, 598);
+            this.assignPCSReal_btn.Name = "assignPCSReal_btn";
+            this.assignPCSReal_btn.Size = new System.Drawing.Size(64, 30);
+            this.assignPCSReal_btn.TabIndex = 53;
+            this.assignPCSReal_btn.Text = "Assign";
+            this.assignPCSReal_btn.UseVisualStyleBackColor = true;
+            this.assignPCSReal_btn.Visible = false;
+            // 
+            // PCSReal_tb
+            // 
+            this.PCSReal_tb.Location = new System.Drawing.Point(96, 602);
+            this.PCSReal_tb.Name = "PCSReal_tb";
+            this.PCSReal_tb.Size = new System.Drawing.Size(104, 20);
+            this.PCSReal_tb.TabIndex = 52;
+            this.PCSReal_tb.Visible = false;
+            // 
             // status_lb
             // 
             this.status_lb.AutoSize = true;
@@ -265,13 +308,23 @@ namespace RauViet.ui
             this.status_lb.TabIndex = 26;
             this.status_lb.Text = "Email";
             // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(70, 586);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(75, 13);
+            this.label7.TabIndex = 51;
+            this.label7.Text = "PCS Thực Tế:";
+            this.label7.Visible = false;
+            // 
             // LuuThayDoiBtn
             // 
             this.LuuThayDoiBtn.BackColor = System.Drawing.SystemColors.Highlight;
             this.LuuThayDoiBtn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LuuThayDoiBtn.Location = new System.Drawing.Point(13, 352);
+            this.LuuThayDoiBtn.Location = new System.Drawing.Point(13, 398);
             this.LuuThayDoiBtn.Name = "LuuThayDoiBtn";
-            this.LuuThayDoiBtn.Size = new System.Drawing.Size(152, 59);
+            this.LuuThayDoiBtn.Size = new System.Drawing.Size(152, 97);
             this.LuuThayDoiBtn.TabIndex = 25;
             this.LuuThayDoiBtn.Text = "Lưu Thay Đổi";
             this.LuuThayDoiBtn.UseVisualStyleBackColor = false;
@@ -280,16 +333,6 @@ namespace RauViet.ui
             // 
             this.contextMenuStrip1.Name = "contextMenuStrip1";
             this.contextMenuStrip1.Size = new System.Drawing.Size(61, 4);
-            // 
-            // autoEditCartonNo_btn
-            // 
-            this.autoEditCartonNo_btn.BackColor = System.Drawing.Color.Lime;
-            this.autoEditCartonNo_btn.Location = new System.Drawing.Point(230, 49);
-            this.autoEditCartonNo_btn.Name = "autoEditCartonNo_btn";
-            this.autoEditCartonNo_btn.Size = new System.Drawing.Size(69, 30);
-            this.autoEditCartonNo_btn.TabIndex = 58;
-            this.autoEditCartonNo_btn.Text = "Auto Edit";
-            this.autoEditCartonNo_btn.UseVisualStyleBackColor = false;
             // 
             // dataGV
             // 
@@ -303,16 +346,27 @@ namespace RauViet.ui
             this.dataGV.Size = new System.Drawing.Size(851, 681);
             this.dataGV.TabIndex = 10;
             // 
-            // InPhieuGiaoHang_btn
+            // previewPrint_PGH_btn
             // 
-            this.InPhieuGiaoHang_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
-            this.InPhieuGiaoHang_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.InPhieuGiaoHang_btn.Location = new System.Drawing.Point(165, 353);
-            this.InPhieuGiaoHang_btn.Name = "InPhieuGiaoHang_btn";
-            this.InPhieuGiaoHang_btn.Size = new System.Drawing.Size(162, 58);
-            this.InPhieuGiaoHang_btn.TabIndex = 46;
-            this.InPhieuGiaoHang_btn.Text = "In Phiếu Giao Hàng";
-            this.InPhieuGiaoHang_btn.UseVisualStyleBackColor = false;
+            this.previewPrint_PGH_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.previewPrint_PGH_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.previewPrint_PGH_btn.Location = new System.Drawing.Point(165, 450);
+            this.previewPrint_PGH_btn.Name = "previewPrint_PGH_btn";
+            this.previewPrint_PGH_btn.Size = new System.Drawing.Size(162, 45);
+            this.previewPrint_PGH_btn.TabIndex = 54;
+            this.previewPrint_PGH_btn.Text = "Xem Trước Bảng In";
+            this.previewPrint_PGH_btn.UseVisualStyleBackColor = false;
+            // 
+            // previewPrint_PT_btn
+            // 
+            this.previewPrint_PT_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.previewPrint_PT_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.previewPrint_PT_btn.Location = new System.Drawing.Point(3, 53);
+            this.previewPrint_PT_btn.Name = "previewPrint_PT_btn";
+            this.previewPrint_PT_btn.Size = new System.Drawing.Size(162, 43);
+            this.previewPrint_PT_btn.TabIndex = 46;
+            this.previewPrint_PT_btn.Text = "Xem Trước Bản In";
+            this.previewPrint_PT_btn.UseVisualStyleBackColor = false;
             // 
             // OrderPackingList
             // 
@@ -361,5 +415,9 @@ namespace RauViet.ui
         private System.Windows.Forms.Button autoEditCartonNo_btn;
         private System.Windows.Forms.DataGridView dataGV;
         private System.Windows.Forms.Button InPhieuGiaoHang_btn;
+        private System.Windows.Forms.Button checkCarton_btn;
+        private System.Windows.Forms.Button autoFillCartonSize_btn;
+        private System.Windows.Forms.Button previewPrint_PGH_btn;
+        private System.Windows.Forms.Button previewPrint_PT_btn;
     }
 }

@@ -9,9 +9,10 @@ using RauViet.classes;
 
 namespace RauViet.ui
 {
-    public partial class LOTCode : Form
+    public partial class LOTCode : Form, ICanSave
     {
         DataTable mExportCode_dt, mLOTCode_dt;
+        private bool _dataChanged = false;
         public LOTCode()
         {
             InitializeComponent();
@@ -28,7 +29,7 @@ namespace RauViet.ui
 
 
             LuuThayDoiBtn.Click += saveBtn_Click;           
-            dataGV.RowPrePaint += new System.Windows.Forms.DataGridViewRowPrePaintEventHandler(this.dataGV_RowPrePaint);
+         //   dataGV.RowPrePaint += new System.Windows.Forms.DataGridViewRowPrePaintEventHandler(this.dataGV_RowPrePaint);
             dataGV.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.dataGV_EditingControlShowing);
             dataGV.CellFormatting += dataGV_CellFormatting;
             dataGV.CellValueChanged += dataGV_CellValueChanged;
@@ -92,6 +93,7 @@ namespace RauViet.ui
 
                 dataGV.Columns["ProductNameVN"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
+                _dataChanged = false;
 
                 exportCode_cbb.DataSource = mExportCode_dt;
                 exportCode_cbb.DisplayMember = "ExportCode";  // hiển thị tên
@@ -115,6 +117,7 @@ namespace RauViet.ui
             if (mLOTCode_dt == null || mExportCode_dt.Rows.Count == 0)
                 return;
 
+            SaveData();
             string selectedExportCode = ((DataRowView)exportCode_cbb.SelectedItem)["ExportCodeID"].ToString();
 
             if (!string.IsNullOrEmpty(selectedExportCode))
@@ -135,6 +138,7 @@ namespace RauViet.ui
 
         private void dataGV_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
+            _dataChanged = true;
             if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
             {
                 var columnName = dataGV.Columns[e.ColumnIndex].Name;
@@ -150,12 +154,11 @@ namespace RauViet.ui
         {
 
             string lotCodeHeader = row.Cells["LOTCodeHeader"].Value.ToString();
-            string LotCode = row.Cells["LotCode"].Value.ToString();
+            string LotCode = row.Cells["LotCode"].Value.ToString().Replace(" ","");
 
             string exportCode = exportCode_cbb.Text;
             string lastTwoChars = exportCode.Substring(exportCode.Length - 2);
-
-            row.Cells["LOTCodeComplete"].Value = lotCodeHeader + lastTwoChars + LotCode;
+            row.Cells["LOTCodeComplete"].Value = LotCode.CompareTo("") == 0 ? "" : lotCodeHeader + lastTwoChars + LotCode;            
         }
 
 
@@ -164,7 +167,17 @@ namespace RauViet.ui
         {
             if (dataGV.Columns[e.ColumnIndex].Name == "LOTCode")
             {
-                e.CellStyle.BackColor = Color.LightGray;
+                var row = dataGV.Rows[e.RowIndex];
+                var lotCodeHeaderValue = row.Cells["LOTCodeHeader"].Value?.ToString();
+                if (!string.IsNullOrEmpty(lotCodeHeaderValue))
+                {
+                    row.Cells["LOTCode"].ReadOnly = false;
+                    e.CellStyle.BackColor = Color.LightGray;
+                }
+                else
+                {
+                    row.Cells["LOTCode"].ReadOnly = true;
+                }
             }
         }
         private void dataGV_RowPrePaint(object sender, DataGridViewRowPrePaintEventArgs e)
@@ -227,8 +240,24 @@ namespace RauViet.ui
             }
         }
 
-        private async void saveBtn_Click(object sender, EventArgs e)
+        private void saveBtn_Click(object sender, EventArgs e)
         {
+            SaveData(false);
+        }
+
+        public async void SaveData(bool ask = true)
+        {
+            if (!_dataChanged && ask) return;
+
+            DialogResult dialogResult = MessageBox.Show(
+                                           "Chắc chắn chưa?",
+                                           "Thay đổi",
+                                           MessageBoxButtons.YesNo,
+                                           MessageBoxIcon.Question // Icon dấu chấm hỏi
+                                       );
+            if (dialogResult == DialogResult.No)
+                return;
+
             var list = new List<(int ExportCodeID, int SKU, string LOTCode, string LOTCodeComplete)>();
 
             foreach (DataGridViewRow row in dataGV.Rows)
@@ -243,18 +272,25 @@ namespace RauViet.ui
                 list.Add((exportCodeID, sku, lotCode, lotCodeComplete));
             }
 
-            // Gọi async
-            bool result = await SQLManager.Instance.UpsertOrdersLotCodesBySKUAsync(list);
-
-            if (result)
+            try
             {
-                MessageBox.Show("Cập nhật thành công!");
+                // Gọi async
+                bool result = await SQLManager.Instance.UpsertOrdersLotCodesBySKUAsync(list);
+
+                if (result)
+                {
+                    MessageBox.Show("Cập nhật thành công!");
+                    _dataChanged = false;
+                }
+                else
+                {
+                    MessageBox.Show("Cập nhật thất bại!");
+                }
             }
-            else
+            catch
             {
                 MessageBox.Show("Cập nhật thất bại!");
             }
         }
-
     }
 }

@@ -31,15 +31,16 @@ namespace RauViet.ui
         {
             this.panel1 = new System.Windows.Forms.Panel();
             this.info_gb = new System.Windows.Forms.GroupBox();
+            this.lotCodeHeader_tb = new System.Windows.Forms.TextBox();
+            this.label14 = new System.Windows.Forms.Label();
+            this.plantingareaCode_tb = new System.Windows.Forms.TextBox();
+            this.label13 = new System.Windows.Forms.Label();
             this.priority_tb = new System.Windows.Forms.TextBox();
             this.label12 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
-            this.label9 = new System.Windows.Forms.Label();
             this.packing_tb = new System.Windows.Forms.TextBox();
             this.label8 = new System.Windows.Forms.Label();
-            this.packingType_tb = new System.Windows.Forms.TextBox();
-            this.label7 = new System.Windows.Forms.Label();
             this.product_EN_tb = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.priceCNF_tb = new System.Windows.Forms.TextBox();
@@ -57,14 +58,19 @@ namespace RauViet.ui
             this.luuBtn = new System.Windows.Forms.Button();
             this.sku_tb = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
+            this.packingType_tb = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.panel2 = new System.Windows.Forms.Panel();
             this.dataGV = new System.Windows.Forms.DataGridView();
-            this.plantingareaCode_tb = new System.Windows.Forms.TextBox();
-            this.label13 = new System.Windows.Forms.Label();
-            this.lotCodeHeader_tb = new System.Windows.Forms.TextBox();
-            this.label14 = new System.Windows.Forms.Label();
+            this.panel3 = new System.Windows.Forms.Panel();
+            this.label15 = new System.Windows.Forms.Label();
+            this.search_tb = new System.Windows.Forms.TextBox();
             this.panel1.SuspendLayout();
             this.info_gb.SuspendLayout();
+            this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
+            this.panel3.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel1
@@ -77,6 +83,9 @@ namespace RauViet.ui
             this.panel1.Controls.Add(this.luuBtn);
             this.panel1.Controls.Add(this.sku_tb);
             this.panel1.Controls.Add(this.label1);
+            this.panel1.Controls.Add(this.label9);
+            this.panel1.Controls.Add(this.packingType_tb);
+            this.panel1.Controls.Add(this.label7);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Right;
             this.panel1.Location = new System.Drawing.Point(760, 0);
             this.panel1.Name = "panel1";
@@ -95,11 +104,8 @@ namespace RauViet.ui
             this.info_gb.Controls.Add(this.label12);
             this.info_gb.Controls.Add(this.label11);
             this.info_gb.Controls.Add(this.label10);
-            this.info_gb.Controls.Add(this.label9);
             this.info_gb.Controls.Add(this.packing_tb);
             this.info_gb.Controls.Add(this.label8);
-            this.info_gb.Controls.Add(this.packingType_tb);
-            this.info_gb.Controls.Add(this.label7);
             this.info_gb.Controls.Add(this.product_EN_tb);
             this.info_gb.Controls.Add(this.label6);
             this.info_gb.Controls.Add(this.priceCNF_tb);
@@ -111,16 +117,52 @@ namespace RauViet.ui
             this.info_gb.Controls.Add(this.label3);
             this.info_gb.Controls.Add(this.label2);
             this.info_gb.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.info_gb.Location = new System.Drawing.Point(46, 61);
+            this.info_gb.Location = new System.Drawing.Point(33, 113);
             this.info_gb.Name = "info_gb";
-            this.info_gb.Size = new System.Drawing.Size(430, 468);
+            this.info_gb.Size = new System.Drawing.Size(430, 407);
             this.info_gb.TabIndex = 29;
             this.info_gb.TabStop = false;
+            // 
+            // lotCodeHeader_tb
+            // 
+            this.lotCodeHeader_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lotCodeHeader_tb.Location = new System.Drawing.Point(153, 325);
+            this.lotCodeHeader_tb.Name = "lotCodeHeader_tb";
+            this.lotCodeHeader_tb.Size = new System.Drawing.Size(98, 23);
+            this.lotCodeHeader_tb.TabIndex = 59;
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label14.Location = new System.Drawing.Point(19, 328);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(113, 16);
+            this.label14.TabIndex = 58;
+            this.label14.Text = "Mã Lot (3 số đầu):";
+            // 
+            // plantingareaCode_tb
+            // 
+            this.plantingareaCode_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.plantingareaCode_tb.Location = new System.Drawing.Point(153, 282);
+            this.plantingareaCode_tb.Name = "plantingareaCode_tb";
+            this.plantingareaCode_tb.Size = new System.Drawing.Size(184, 23);
+            this.plantingareaCode_tb.TabIndex = 57;
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label13.Location = new System.Drawing.Point(19, 285);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(100, 16);
+            this.label13.TabIndex = 56;
+            this.label13.Text = "Mã Vùng Trồng:";
             // 
             // priority_tb
             // 
             this.priority_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.priority_tb.Location = new System.Drawing.Point(153, 414);
+            this.priority_tb.Location = new System.Drawing.Point(153, 368);
             this.priority_tb.Name = "priority_tb";
             this.priority_tb.Size = new System.Drawing.Size(99, 23);
             this.priority_tb.TabIndex = 55;
@@ -129,7 +171,7 @@ namespace RauViet.ui
             // 
             this.label12.AutoSize = true;
             this.label12.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label12.Location = new System.Drawing.Point(19, 417);
+            this.label12.Location = new System.Drawing.Point(19, 371);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(77, 16);
             this.label12.TabIndex = 54;
@@ -140,7 +182,7 @@ namespace RauViet.ui
             this.label11.AutoSize = true;
             this.label11.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label11.ForeColor = System.Drawing.SystemColors.ControlLight;
-            this.label11.Location = new System.Drawing.Point(302, 204);
+            this.label11.Location = new System.Drawing.Point(302, 158);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(119, 14);
             this.label11.TabIndex = 53;
@@ -151,27 +193,16 @@ namespace RauViet.ui
             this.label10.AutoSize = true;
             this.label10.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label10.ForeColor = System.Drawing.SystemColors.ControlLight;
-            this.label10.Location = new System.Drawing.Point(244, 162);
+            this.label10.Location = new System.Drawing.Point(244, 116);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(93, 14);
             this.label10.TabIndex = 52;
             this.label10.Text = "(vd: Kg, Lít,,...)";
             // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label9.ForeColor = System.Drawing.SystemColors.ControlLight;
-            this.label9.Location = new System.Drawing.Point(245, 118);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(101, 14);
-            this.label9.TabIndex = 51;
-            this.label9.Text = "(vd: Gói, Hộp,...)";
-            // 
             // packing_tb
             // 
             this.packing_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.packing_tb.Location = new System.Drawing.Point(153, 199);
+            this.packing_tb.Location = new System.Drawing.Point(153, 153);
             this.packing_tb.Name = "packing_tb";
             this.packing_tb.Size = new System.Drawing.Size(150, 23);
             this.packing_tb.TabIndex = 50;
@@ -180,29 +211,11 @@ namespace RauViet.ui
             // 
             this.label8.AutoSize = true;
             this.label8.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label8.Location = new System.Drawing.Point(19, 202);
+            this.label8.Location = new System.Drawing.Point(19, 156);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(105, 16);
             this.label8.TabIndex = 49;
             this.label8.Text = "Đợn Vị Chia Nhỏ:";
-            // 
-            // packingType_tb
-            // 
-            this.packingType_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.packingType_tb.Location = new System.Drawing.Point(153, 113);
-            this.packingType_tb.Name = "packingType_tb";
-            this.packingType_tb.Size = new System.Drawing.Size(89, 23);
-            this.packingType_tb.TabIndex = 48;
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label7.Location = new System.Drawing.Point(19, 116);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(91, 16);
-            this.label7.TabIndex = 47;
-            this.label7.Text = "Loại Đóng Gói:";
             // 
             // product_EN_tb
             // 
@@ -225,7 +238,7 @@ namespace RauViet.ui
             // priceCNF_tb
             // 
             this.priceCNF_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.priceCNF_tb.Location = new System.Drawing.Point(153, 285);
+            this.priceCNF_tb.Location = new System.Drawing.Point(153, 239);
             this.priceCNF_tb.Name = "priceCNF_tb";
             this.priceCNF_tb.Size = new System.Drawing.Size(99, 23);
             this.priceCNF_tb.TabIndex = 44;
@@ -233,7 +246,7 @@ namespace RauViet.ui
             // botanicalName_tb
             // 
             this.botanicalName_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.botanicalName_tb.Location = new System.Drawing.Point(153, 242);
+            this.botanicalName_tb.Location = new System.Drawing.Point(153, 196);
             this.botanicalName_tb.Name = "botanicalName_tb";
             this.botanicalName_tb.Size = new System.Drawing.Size(221, 23);
             this.botanicalName_tb.TabIndex = 43;
@@ -241,7 +254,7 @@ namespace RauViet.ui
             // package_tb
             // 
             this.package_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.package_tb.Location = new System.Drawing.Point(153, 156);
+            this.package_tb.Location = new System.Drawing.Point(153, 110);
             this.package_tb.Name = "package_tb";
             this.package_tb.Size = new System.Drawing.Size(89, 23);
             this.package_tb.TabIndex = 42;
@@ -258,7 +271,7 @@ namespace RauViet.ui
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(19, 288);
+            this.label5.Location = new System.Drawing.Point(19, 242);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(113, 16);
             this.label5.TabIndex = 39;
@@ -268,7 +281,7 @@ namespace RauViet.ui
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(19, 245);
+            this.label4.Location = new System.Drawing.Point(19, 199);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(90, 16);
             this.label4.TabIndex = 38;
@@ -278,11 +291,11 @@ namespace RauViet.ui
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(19, 159);
+            this.label3.Location = new System.Drawing.Point(19, 113);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(79, 16);
+            this.label3.Size = new System.Drawing.Size(86, 16);
             this.label3.TabIndex = 37;
-            this.label3.Text = "Đơn Vị Tính:";
+            this.label3.Text = "Đơn Vị Chính:";
             // 
             // label2
             // 
@@ -298,7 +311,7 @@ namespace RauViet.ui
             // 
             this.status_lb.AutoSize = true;
             this.status_lb.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.status_lb.Location = new System.Drawing.Point(247, 19);
+            this.status_lb.Location = new System.Drawing.Point(210, 91);
             this.status_lb.Name = "status_lb";
             this.status_lb.Size = new System.Drawing.Size(50, 19);
             this.status_lb.TabIndex = 28;
@@ -369,60 +382,96 @@ namespace RauViet.ui
             this.label1.Text = "SKU";
             this.label1.Visible = false;
             // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label9.ForeColor = System.Drawing.SystemColors.ControlLight;
+            this.label9.Location = new System.Drawing.Point(331, 638);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(101, 14);
+            this.label9.TabIndex = 51;
+            this.label9.Text = "(vd: Gói, Hộp,...)";
+            this.label9.Visible = false;
+            // 
+            // packingType_tb
+            // 
+            this.packingType_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.packingType_tb.Location = new System.Drawing.Point(239, 633);
+            this.packingType_tb.Name = "packingType_tb";
+            this.packingType_tb.Size = new System.Drawing.Size(89, 23);
+            this.packingType_tb.TabIndex = 48;
+            this.packingType_tb.Visible = false;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label7.Location = new System.Drawing.Point(105, 636);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(91, 16);
+            this.label7.TabIndex = 47;
+            this.label7.Text = "Loại Đóng Gói:";
+            this.label7.Visible = false;
+            // 
+            // panel2
+            // 
+            this.panel2.Controls.Add(this.dataGV);
+            this.panel2.Controls.Add(this.panel3);
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel2.Location = new System.Drawing.Point(0, 0);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(760, 681);
+            this.panel2.TabIndex = 11;
+            // 
             // dataGV
             // 
             this.dataGV.AllowUserToAddRows = false;
             this.dataGV.AllowUserToDeleteRows = false;
             this.dataGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGV.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dataGV.Location = new System.Drawing.Point(0, 0);
+            this.dataGV.Location = new System.Drawing.Point(0, 38);
             this.dataGV.Name = "dataGV";
             this.dataGV.ReadOnly = true;
-            this.dataGV.Size = new System.Drawing.Size(760, 681);
-            this.dataGV.TabIndex = 10;
+            this.dataGV.Size = new System.Drawing.Size(760, 643);
+            this.dataGV.TabIndex = 14;
             // 
-            // plantingareaCode_tb
+            // panel3
             // 
-            this.plantingareaCode_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.plantingareaCode_tb.Location = new System.Drawing.Point(153, 328);
-            this.plantingareaCode_tb.Name = "plantingareaCode_tb";
-            this.plantingareaCode_tb.Size = new System.Drawing.Size(184, 23);
-            this.plantingareaCode_tb.TabIndex = 57;
+            this.panel3.BackColor = System.Drawing.SystemColors.ActiveBorder;
+            this.panel3.Controls.Add(this.label15);
+            this.panel3.Controls.Add(this.search_tb);
+            this.panel3.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel3.Location = new System.Drawing.Point(0, 0);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(760, 38);
+            this.panel3.TabIndex = 13;
             // 
-            // label13
+            // label15
             // 
-            this.label13.AutoSize = true;
-            this.label13.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label13.Location = new System.Drawing.Point(19, 331);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(100, 16);
-            this.label13.TabIndex = 56;
-            this.label13.Text = "Mã Vùng Trồng:";
+            this.label15.AutoSize = true;
+            this.label15.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label15.Location = new System.Drawing.Point(430, 13);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(66, 16);
+            this.label15.TabIndex = 60;
+            this.label15.Text = "Tìm Kiếm:";
             // 
-            // lotCodeHeader_tb
+            // search_tb
             // 
-            this.lotCodeHeader_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lotCodeHeader_tb.Location = new System.Drawing.Point(153, 371);
-            this.lotCodeHeader_tb.Name = "lotCodeHeader_tb";
-            this.lotCodeHeader_tb.Size = new System.Drawing.Size(98, 23);
-            this.lotCodeHeader_tb.TabIndex = 59;
-            // 
-            // label14
-            // 
-            this.label14.AutoSize = true;
-            this.label14.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label14.Location = new System.Drawing.Point(19, 374);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(113, 16);
-            this.label14.TabIndex = 58;
-            this.label14.Text = "Mã Lot (3 số đầu):";
+            this.search_tb.BackColor = System.Drawing.SystemColors.InactiveBorder;
+            this.search_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.search_tb.Location = new System.Drawing.Point(502, 9);
+            this.search_tb.Name = "search_tb";
+            this.search_tb.Size = new System.Drawing.Size(252, 23);
+            this.search_tb.TabIndex = 12;
             // 
             // ProductSKU
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1264, 681);
-            this.Controls.Add(this.dataGV);
+            this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.Name = "ProductSKU";
             this.Text = "FormTableData";
@@ -430,7 +479,10 @@ namespace RauViet.ui
             this.panel1.PerformLayout();
             this.info_gb.ResumeLayout(false);
             this.info_gb.PerformLayout();
+            this.panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).EndInit();
+            this.panel3.ResumeLayout(false);
+            this.panel3.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -464,10 +516,14 @@ namespace RauViet.ui
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.TextBox priority_tb;
         private System.Windows.Forms.Label label12;
-        private System.Windows.Forms.DataGridView dataGV;
         private System.Windows.Forms.TextBox plantingareaCode_tb;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.TextBox lotCodeHeader_tb;
         private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.TextBox search_tb;
+        private System.Windows.Forms.DataGridView dataGV;
+        private System.Windows.Forms.Label label15;
     }
 }

@@ -169,7 +169,7 @@
             this.checkDuplicateProductNameEN_btn.Name = "checkDuplicateProductNameEN_btn";
             this.checkDuplicateProductNameEN_btn.Size = new System.Drawing.Size(273, 47);
             this.checkDuplicateProductNameEN_btn.TabIndex = 7;
-            this.checkDuplicateProductNameEN_btn.Text = "Kiểm Tra Produce EN có trùng tên không";
+            this.checkDuplicateProductNameEN_btn.Text = "đếm số dòng";
             this.checkDuplicateProductNameEN_btn.UseVisualStyleBackColor = true;
             this.checkDuplicateProductNameEN_btn.Click += new System.EventHandler(this.checkDuplicateProductNameEN_btn_Click);
             // 

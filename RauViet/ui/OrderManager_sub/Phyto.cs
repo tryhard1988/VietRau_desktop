@@ -24,7 +24,7 @@ namespace RauViet.ui
             this.Dock = DockStyle.Fill;
 
             dataGV.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dataGV.MultiSelect = false;
+            dataGV.MultiSelect = true;
 
             status_lb.Text = "";
             loading_lb.Text = "Đang tải dữ liệu, vui lòng chờ...";

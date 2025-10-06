@@ -12,6 +12,7 @@ public class PackingListPrinter
     private int _currentGroupIndex; // Nhóm hiện tại
     private int _currentRowIndex;   // Dòng hiện tại trong nhóm
     private int _yPosition;
+    private int sttCount;
     private bool _firstPage;
 
     private DataGridView _dataGridView;
@@ -91,6 +92,7 @@ public class PackingListPrinter
     {
         _currentGroupIndex = 0;
         _currentRowIndex = 0;
+        sttCount = 1;
         _yPosition = 50;
         _firstPage = true;
     }
@@ -237,7 +239,7 @@ public class PackingListPrinter
         y += lineHeight * 2;
 
         // ================= Table Data =================
-        int count = 1;
+        
         for (; _currentRowIndex < currentGroup.Count; _currentRowIndex++)
         {
             var row = currentGroup[_currentRowIndex];
@@ -247,8 +249,24 @@ public class PackingListPrinter
             string productVN = row.Cells["ProductPackingName"].Value?.ToString() ?? "";
             string unit = row.Cells["Package"].Value?.ToString() ?? "";
             string nw = row.Cells["NWReal"]?.Value?.ToString() ?? "";
-            string packingCalc = (row.Cells["Amount"].Value?.ToString() ?? "") + " " + (row.Cells["Packing"].Value?.ToString() ?? "");
+            decimal amount = row.Cells["Amount"].Value == null || row.Cells["Amount"].Value == DBNull.Value? 0 : Convert.ToDecimal(row.Cells["Amount"].Value);
+            string packing = row.Cells["Packing"].Value?.ToString() ?? "";
+            string packingCalc = "";
             string pcs = row.Cells["PCSReal"]?.Value?.ToString() ?? "";
+
+            string name = productEN.Length > productVN.Length ? productEN : productVN;
+            RectangleF rect = new RectangleF(x, y, colNameWidth, 9999);
+            SizeF textSize = e.Graphics.MeasureString(name, fontRegular, (int)colNameWidth, StringFormat.GenericDefault);
+            int dynamicHeight = Math.Max(lineHeight, (int)textSize.Height);
+
+            if (amount > 0 && packing.CompareTo("") != 0)
+            {
+                packingCalc = amount.ToString("0.##") + " " + packing;
+            }
+            else
+            {
+                packingCalc = packing.CompareTo("weight") == 0 ? packing : "";
+            }
 
             if (y + lineHeight > pageHeight)
             {
@@ -257,47 +275,48 @@ public class PackingListPrinter
                 return;
             }
 
-            g.DrawRectangle(Pens.Black, x, y, colNoWidth, lineHeight);
-            g.DrawString(count.ToString(), fontRegular, brush, new RectangleF(x, y, colNoWidth, lineHeight),
+            g.DrawRectangle(Pens.Black, x, y, colNoWidth, dynamicHeight);
+            g.DrawString(sttCount.ToString(), fontRegular, brush, new RectangleF(x, y, colNoWidth, dynamicHeight),
                 new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
             x += colNoWidth;
 
-            g.DrawRectangle(Pens.Black, x, y, colNameWidth / 2 - 50, lineHeight);
-            g.DrawString(productEN, fontRegular, brush, new RectangleF(x, y, colNameWidth / 2 - 50, lineHeight),
-                new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
+            g.DrawRectangle(Pens.Black, x, y, colNameWidth / 2 - 50, dynamicHeight);
+            g.DrawString(productEN, fontRegular, brush, new RectangleF(x + 5, y, colNameWidth / 2 - 50, dynamicHeight),
+                new StringFormat { Alignment = StringAlignment.Near, LineAlignment = StringAlignment.Center });
             x += colNameWidth / 2 - 50;
 
-            g.DrawRectangle(Pens.Black, x, y, colNameWidth / 2 + 50, lineHeight);
-            g.DrawString(productVN, fontRegular, brush, new RectangleF(x, y, colNameWidth / 2 + 50, lineHeight),
-                new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
+            g.DrawRectangle(Pens.Black, x, y, colNameWidth / 2 + 50, dynamicHeight);
+            g.DrawString(productVN, fontRegular, brush, new RectangleF(x + 5, y, colNameWidth / 2 + 50, dynamicHeight),
+                new StringFormat { Alignment = StringAlignment.Near, LineAlignment = StringAlignment.Center });
             x += colNameWidth / 2 + 50;
 
-            g.DrawRectangle(Pens.Black, x, y, colQuantityWidth / 2, lineHeight);
-            g.DrawString(unit, fontRegular, brush, new RectangleF(x, y, colQuantityWidth / 2, lineHeight),
+            g.DrawRectangle(Pens.Black, x, y, colQuantityWidth / 2, dynamicHeight);
+            g.DrawString(unit, fontRegular, brush, new RectangleF(x, y, colQuantityWidth / 2, dynamicHeight),
                 new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
             x += colQuantityWidth / 2;
 
-            g.DrawRectangle(Pens.Black, x, y, colQuantityWidth / 2, lineHeight);
-            g.DrawString(nw, fontRegular, brush, new RectangleF(x, y, colQuantityWidth / 2, lineHeight),
+            g.DrawRectangle(Pens.Black, x, y, colQuantityWidth / 2, dynamicHeight);
+            g.DrawString(nw, fontRegular, brush, new RectangleF(x, y, colQuantityWidth / 2, dynamicHeight),
                 new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
             x += colQuantityWidth / 2;
 
-            g.DrawRectangle(Pens.Black, x, y, colPackingWidth, lineHeight);
-            g.DrawString(packingCalc, fontRegular, brush, new RectangleF(x, y, colPackingWidth, lineHeight),
+            g.DrawRectangle(Pens.Black, x, y, colPackingWidth, dynamicHeight);
+            g.DrawString(packingCalc, fontRegular, brush, new RectangleF(x, y, colPackingWidth, dynamicHeight),
                 new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
             x += colPackingWidth;
 
-            g.DrawRectangle(Pens.Black, x, y, colPCSWidth, lineHeight);
-            g.DrawString(pcs, fontRegular, brush, new RectangleF(x, y, colPCSWidth, lineHeight),
+            g.DrawRectangle(Pens.Black, x, y, colPCSWidth, dynamicHeight);
+            g.DrawString(pcs, fontRegular, brush, new RectangleF(x, y, colPCSWidth, dynamicHeight),
                 new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
 
-            y += lineHeight;
-            count++;
+            y += dynamicHeight;
+            sttCount++;
         }
 
         // Xong 1 group
         _currentGroupIndex++;
         _currentRowIndex = 0;
+        sttCount = 1;
         _yPosition = 50;
         _firstPage = true;
 

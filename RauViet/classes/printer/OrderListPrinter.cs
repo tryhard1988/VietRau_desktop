@@ -1,12 +1,15 @@
-﻿using System;
+﻿using RauViet.classes;
+using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Printing;
 using System.Linq;
 using System.Windows.Forms;
-using System.Collections.Generic;
 
 public class OrderListPrinter
 {
+    int stt = 1;
+    string currentProduct = null;
     private int yPosition = 0;
     private bool firstPage = true;
     private int currentRowIndex = 0; // chỉ số dòng hiện tại
@@ -61,6 +64,8 @@ public class OrderListPrinter
         currentRowIndex = 0;
         firstPage = true;
         yPosition = 0;
+        stt = 1;
+        currentProduct = null;
     }
 
     // ------------------- Vẽ trang -------------------
@@ -106,10 +111,7 @@ public class OrderListPrinter
 
         // Vẽ header bảng
         DrawTableHeader(g, left, ref y, rowHeight, pageWidth, fontHeader);
-
-        string currentProduct = null;
-        int stt = 1;
-
+              
         // --- DỮ LIỆU ---
         for (; currentRowIndex < printRows.Count; currentRowIndex++)
         {
@@ -164,17 +166,24 @@ public class OrderListPrinter
 
             if (y + rowHeight > pageHeight)
             {
+                currentRowIndex++;
                 yPosition = e.MarginBounds.Top;
                 firstPage = false;
-                e.HasMorePages = true;
-                return;
+                if (currentRowIndex < printRows.Count)
+                {
+                    e.HasMorePages = true;
+                    return;
+                }
+                else
+                    break;
+                
+
             }
         }
 
         e.HasMorePages = false;
         yPosition = 0;
         firstPage = true;
-        currentRowIndex = 0;
     }
 
     // ------------------- Vẽ header bảng -------------------

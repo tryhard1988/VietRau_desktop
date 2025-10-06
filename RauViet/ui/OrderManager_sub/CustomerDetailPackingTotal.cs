@@ -1,20 +1,22 @@
-﻿using System;
+﻿using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Bibliography;
+using RauViet.classes;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using RauViet.classes;
-using ClosedXML.Excel;
 
 namespace RauViet.ui
 {
-    public partial class DetailPackingTotal : Form
+    public partial class CustomerDetailPackingTotal : Form
     {
         DataTable mExportCode_dt, mOrdersTotal_dt;
-        public DetailPackingTotal()
+        public CustomerDetailPackingTotal()
         {
             InitializeComponent();
 
@@ -22,7 +24,7 @@ namespace RauViet.ui
             this.Dock = DockStyle.Fill;
 
             dataGV.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dataGV.MultiSelect = false;
+            dataGV.MultiSelect = true;
             
 
             status_lb.Text = "";
@@ -31,7 +33,7 @@ namespace RauViet.ui
 
 
             LuuThayDoiBtn.Click += saveBtn_Click;           
-            dataGV.RowPrePaint += new System.Windows.Forms.DataGridViewRowPrePaintEventHandler(this.dataGV_RowPrePaint);
+        //    dataGV.RowPrePaint += new System.Windows.Forms.DataGridViewRowPrePaintEventHandler(this.dataGV_RowPrePaint);
             //dataGV.CellEndEdit += dataGV_CellEndEdit;
 
             exportCode_cbb.SelectedIndexChanged += exportCode_search_cbb_SelectedIndexChanged;
@@ -48,7 +50,7 @@ namespace RauViet.ui
 
             try
             {
-                var ordersPackingTask = SQLManager.Instance.GetDetailPackingTotalByExportCode_incomplete();
+                var ordersPackingTask = SQLManager.Instance.GetCustomerDetailPacking_incomplete();
                 var exportCodeTask = SQLManager.Instance.getExportCodes_Incomplete();
 
                 await Task.WhenAll(ordersPackingTask, exportCodeTask);
@@ -57,56 +59,77 @@ namespace RauViet.ui
                 mOrdersTotal_dt = ordersPackingTask.Result;
 
                 mOrdersTotal_dt.Columns.Add(new DataColumn("No", typeof(string)));
-
+                mOrdersTotal_dt.Columns.Add(new DataColumn("AmountPacking", typeof(string)));
+                mOrdersTotal_dt.Columns["PCSReal"].ReadOnly = false;
                 int count = 1;
                 foreach (DataRow dr in mOrdersTotal_dt.Rows)
                 {
                     dr["No"] = count++;
 
+                    decimal amount = dr["Amount"] != DBNull.Value? Convert.ToDecimal(dr["Amount"]): 0;
+                    string package = dr["Package"].ToString();
+                    string packing = dr["packing"].ToString();
+                    string productNameVN = dr["ProductNameVN"].ToString();
+                    string productNameEN = dr["ProductNameEN"].ToString();
+
+                    if (package.CompareTo("kg") == 0 && packing.CompareTo("") != 0 && amount > 0)
+                    {
+                        string amountStr = amount.ToString("0.##");
+                        dr["ProductNameVN"] = $"{productNameVN} {amountStr} {packing}";
+                        dr["ProductNameEN"] = $"{productNameEN} {amountStr} {packing}";
+                    }
+
+                    if (package.CompareTo("weight") == 0)
+                    {
+                        dr["AmountPacking"] = packing;
+                        dr["PCSReal"] = Convert.ToInt32(0);
+
+                    }
+                    else if(packing.CompareTo("") != 0 && amount > 0)
+                    {
+                        string amountStr = amount.ToString("0.##");
+                        dr["AmountPacking"] = $"{amountStr} {packing}";
+                    }
                 }
 
                 count = 0;
                 mOrdersTotal_dt.Columns["No"].SetOrdinal(count++);
+                mOrdersTotal_dt.Columns["FullName"].SetOrdinal(count++);
                 mOrdersTotal_dt.Columns["CartonNo"].SetOrdinal(count++);
                 mOrdersTotal_dt.Columns["ProductNameEN"].SetOrdinal(count++);
                 mOrdersTotal_dt.Columns["ProductNameVN"].SetOrdinal(count++);
-                mOrdersTotal_dt.Columns["LOTCodeComplete"].SetOrdinal(count++);
                 mOrdersTotal_dt.Columns["PLU"].SetOrdinal(count++);
                 mOrdersTotal_dt.Columns["Package"].SetOrdinal(count++);
                 mOrdersTotal_dt.Columns["NWReal"].SetOrdinal(count++);
-                mOrdersTotal_dt.Columns["packing"].SetOrdinal(count++);
+                mOrdersTotal_dt.Columns["AmountPacking"].SetOrdinal(count++);
                 mOrdersTotal_dt.Columns["PCSReal"].SetOrdinal(count++);
                 mOrdersTotal_dt.Columns["CustomerCarton"].SetOrdinal(count++);
                 dataGV.DataSource = mOrdersTotal_dt;
 
                 dataGV.Columns["ExportCodeID"].Visible = false;
+                dataGV.Columns["Amount"].Visible = false;
+                dataGV.Columns["packing"].Visible = false;
 
                 dataGV.Columns["CartonNo"].HeaderText = "Carton No";
                 dataGV.Columns["ProductNameEN"].HeaderText = "English name";
                 dataGV.Columns["ProductNameVN"].HeaderText = "Vietnamese name";
-                dataGV.Columns["LOTCodeComplete"].HeaderText = "LOT";
                 dataGV.Columns["Package"].HeaderText = "Unit";
                 dataGV.Columns["NWReal"].HeaderText = "N.W";
                 dataGV.Columns["PCSReal"].HeaderText = "PCS";
-                dataGV.Columns["packing"].HeaderText = "Packing";
-                dataGV.Columns["CustomerCarton"].HeaderText = "Mask No";
+                dataGV.Columns["AmountPacking"].HeaderText = "Packing";
+                dataGV.Columns["CustomerCarton"].HeaderText = "Note";
 
-                dataGV.Columns["Priority"].HeaderText = "Ưu\nTiên";
 
-                dataGV.Columns["Priority"].Width = 30;
                 dataGV.Columns["No"].Width = 30;
-                dataGV.Columns["CustomerCarton"].Width = 200;
-                dataGV.Columns["CartonNo"].Width = 120;
                 dataGV.Columns["ProductNameEN"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 dataGV.Columns["ProductNameVN"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                dataGV.Columns["LOTCodeComplete"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+                dataGV.Columns["CustomerCarton"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+                dataGV.Columns["CartonNo"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
                 dataGV.Columns["PLU"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
                 dataGV.Columns["Package"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
                 dataGV.Columns["NWReal"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["packing"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+                dataGV.Columns["AmountPacking"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
                 dataGV.Columns["PCSReal"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-
-                dataGV.Columns["Priority"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
@@ -163,34 +186,108 @@ namespace RauViet.ui
         
         private async void saveBtn_Click(object sender, EventArgs e)
         {
-            ExportDataGridViewToExcel(dataGV);
+            ExportGroupedByCustomer(dataGV);
         }
 
-
-
-        private void ExportDataGridViewToExcel(DataGridView dgv)
+        private void ExportGroupedByCustomer(DataGridView dgv)
         {
             if (exportCode_cbb.SelectedItem == null) return;
+
             string exportCode = ((DataRowView)exportCode_cbb.SelectedItem)["ExportCode"].ToString();
+            string exportCodeIndex = ((DataRowView)exportCode_cbb.SelectedItem)["ExportCodeIndex"].ToString();
             DateTime exportDate = Convert.ToDateTime(((DataRowView)exportCode_cbb.SelectedItem)["ExportDate"]);
+            string folderPath = "";
+            using (FolderBrowserDialog fbd = new FolderBrowserDialog())
+            {
+                fbd.Description = "Chọn thư mục để lưu tất cả file Excel";
+                if (fbd.ShowDialog() == DialogResult.OK)
+                {
+                    folderPath = fbd.SelectedPath;
+                }
+                else
+                {
+                    return; // Người dùng bấm Cancel
+                }
+            }
+
+            // Lấy danh sách FullName duy nhất
+            var fullNames = dgv.Rows.Cast<DataGridViewRow>()
+                             .Where(r => !r.IsNewRow && r.Cells["FullName"].Value != null)
+                             .Select(r => r.Cells["FullName"].Value.ToString())
+                             .Distinct()
+                             .ToList();
+
+            foreach (var fullName in fullNames)
+            {
+                // Lọc dữ liệu theo FullName
+                var dt = new DataTable();
+                foreach (DataGridViewColumn col in dgv.Columns)
+                {
+                    dt.Columns.Add(col.Name, col.ValueType ?? typeof(string));
+                }
+
+                foreach (DataGridViewRow row in dgv.Rows)
+                {
+                    if (row.IsNewRow) continue;
+                    if (row.Cells["FullName"].Value?.ToString() == fullName)
+                    {
+                        var newRow = dt.NewRow();
+                        foreach (DataGridViewColumn col in dgv.Columns)
+                        {
+                            newRow[col.Name] = row.Cells[col.Index].Value ?? DBNull.Value;
+                        }
+                        dt.Rows.Add(newRow);
+                    }
+                }
+
+                // Đặt tên file: packingTotal_{exportCode}_{customerName}.xlsx
+                string safeCustomerName = string.Join("_", fullName.Split(Path.GetInvalidFileNameChars()));
+                string filePath = Path.Combine(folderPath, $"PL-{safeCustomerName}-ETD {exportDate.Day}.{exportDate.Month} {exportCodeIndex}.xlsx");
+
+
+                // Xuất ra file excel cho khách hàng này
+                ExportDataTableToExcel(dt, fullName, exportCode, filePath);
+            }
+
+            MessageBox.Show("Xuất xong tất cả khách hàng!");
+        }
+
+        private void ExportDataTableToExcel(DataTable dt, string customerName, string exportCode, string filePath)
+        {
             try
             {
+
+                DateTime exportDate = Convert.ToDateTime(((DataRowView)exportCode_cbb.SelectedItem)["ExportDate"]);
+
                 using (var wb = new XLWorkbook())
                 {
-                    var ws = wb.Worksheets.Add("Data");
+                    var ws = wb.Worksheets.Add(customerName);
+
                     ws.Style.Font.FontName = "Arial";
                     ws.Style.Font.FontSize = 9;
                     ws.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
                     // Danh sách cột muốn xuất theo Name
-                    string[] columnsToExport = new string[] { "No", "CartonNo", "ProductNameEN", "ProductNameVN", "LOTCodeComplete", "PLU", "Package", "NWReal", "packing", "PCSReal", "CustomerCarton" };
-
+                    string[] columnsToExport = new string[] { "No", "CartonNo", "ProductNameEN", "ProductNameVN", "PLU", "Package", "NWReal", "AmountPacking", "PCSReal", "CustomerCarton" };
+                    var labels = new Dictionary<string, string>
+                    {
+                        { "No", "No" },
+                        { "CartonNo", "Carton No" },
+                        { "ProductNameEN", "English name" },
+                        { "ProductNameVN", "Vietnamese name" },
+                        { "PLU", "PLU" },
+                        { "Package", "Unit" },
+                        { "NWReal", "N.W" },
+                        { "AmountPacking", "Packing" },
+                        { "PCSReal", "PCS" },
+                        { "CustomerCarton", "Note" }
+                    };
                     // Lọc cột hiển thị và có trong danh sách
-                    var exportColumns = dgv.Columns.Cast<DataGridViewColumn>()
-                                            .Where(c => c.Visible && columnsToExport.Contains(c.Name))
-                                            .OrderBy(c => Array.IndexOf(columnsToExport, c.Name))
-                                            .ToList();
+                    var exportColumns = dt.Columns.Cast<DataColumn>()
+                        .Where(c => columnsToExport.Contains(c.ColumnName))
+                        .OrderBy(c => Array.IndexOf(columnsToExport, c.ColumnName))
+                        .ToList();
 
-                    
+
 
                     // Hàng 1: Tên công ty
                     ws.Range(1, 1, 1, exportColumns.Count).Merge();
@@ -235,7 +332,7 @@ namespace RauViet.ui
 
                     // Hàng 5: Invoice No
                     ws.Range(5, 5, 5, exportColumns.Count).Merge();
-                    ws.Cell(5, 5).Value = "Packing List No:     " + exportDate.Day+ exportDate.Month+ exportDate.Year + "SQ";
+                    ws.Cell(5, 5).Value = "Packing List No:     " + exportDate.Day + exportDate.Month + exportDate.Year + "SQ";
                     ws.Cell(5, 5).Style.Font.FontSize = 10;
                     ws.Cell(5, 5).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
                     ws.Range(5, 5, 5, exportColumns.Count).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
@@ -246,7 +343,7 @@ namespace RauViet.ui
                     ws.Cell(6, 5).Style.Font.Bold = true;
                     ws.Cell(6, 5).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
                     ws.Range(6, 5, 6, 6).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
-                    
+
                     ws.Range(6, 5, 6, 6).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
 
                     ws.Range(6, 7, 6, exportColumns.Count).Merge();
@@ -265,8 +362,8 @@ namespace RauViet.ui
                     ws.Range(7, 1, 9, 4).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
 
                     ws.Range(7, 5, 7, exportColumns.Count).Merge();
-                    ws.Cell(7, 5).Value = "TOTAL";
-                    ws.Cell(7, 5).Style.Font.FontSize = 10;
+                    ws.Cell(7, 5).Value = customerName;
+                    ws.Cell(7, 5).Style.Font.FontSize = 11;
                     ws.Cell(7, 5).Style.Font.Bold = true;
                     ws.Cell(7, 5).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
                     ws.Range(7, 5, 7, exportColumns.Count).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
@@ -311,12 +408,12 @@ namespace RauViet.ui
                     int colIndex = 1;
                     foreach (var col in exportColumns)
                     {
-                        if (col.Name == "ProductNameEN" || col.Name == "ProductNameVN" || col.Name == "LOTCodeComplete" || col.Name == "PLU")
+                        if (col.ColumnName == "ProductNameEN" || col.ColumnName == "ProductNameVN" || col.ColumnName == "PLU")
                         {
                             // Gộp 3 cột con cho "Name of Goods" ở hàng 5
-                            if (colIndex == exportColumns.FindIndex(c => c.Name == "ProductNameEN") + 1)
+                            if (colIndex == exportColumns.FindIndex(c => c.ColumnName == "ProductNameEN") + 1)
                             {
-                                var range = ws.Range(headerStartRow, colIndex, headerStartRow, colIndex + 4);
+                                var range = ws.Range(headerStartRow, colIndex, headerStartRow, colIndex + 2);
                                 range.Merge();
                                 ws.Cell(headerStartRow, colIndex).Value = "Name of Goods";
                                 ws.Cell(headerStartRow, colIndex).Style.Font.Bold = true;
@@ -326,17 +423,17 @@ namespace RauViet.ui
 
                             // Header con ở hàng 6
                             var cell = ws.Cell(headerStartRow + 1, colIndex);
-                            cell.Value = col.HeaderText;
+                            cell.Value = labels[col.ColumnName];
                             cell.Style.Font.Bold = true;
                             cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
                             cell.Style.Border.OutsideBorder = XLBorderStyleValues.Thin; // Đóng khung
 
                             colIndex++;
                         }
-                        else if (col.Name == "Package" || col.Name == "NWReal")
+                        else if (col.ColumnName == "Package" || col.ColumnName == "NWReal")
                         {
                             // Gộp 2 cột con cho "Unit Price" ở hàng 5
-                            if (colIndex == exportColumns.FindIndex(c => c.Name == "Package") + 1)
+                            if (colIndex == exportColumns.FindIndex(c => c.ColumnName == "Package") + 1)
                             {
                                 var range = ws.Range(headerStartRow, colIndex, headerStartRow, colIndex + 1);
                                 range.Merge();
@@ -348,7 +445,7 @@ namespace RauViet.ui
 
                             // Header con ở hàng 6
                             var cell = ws.Cell(headerStartRow + 1, colIndex);
-                            cell.Value = col.HeaderText;
+                            cell.Value = labels[col.ColumnName];
                             cell.Style.Font.Bold = true;
                             cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
                             cell.Style.Border.OutsideBorder = XLBorderStyleValues.Thin; // Đóng khung
@@ -360,7 +457,7 @@ namespace RauViet.ui
                             // Các cột khác gộp 2 hàng (5 và 6)
                             var range = ws.Range(headerStartRow, colIndex, headerStartRow + 1, colIndex);
                             range.Merge();
-                            ws.Cell(headerStartRow, colIndex).Value = col.HeaderText;
+                            ws.Cell(headerStartRow, colIndex).Value = labels[col.ColumnName];
                             ws.Cell(headerStartRow, colIndex).Style.Font.Bold = true;
                             ws.Cell(headerStartRow, colIndex).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
                             range.Style.Border.OutsideBorder = XLBorderStyleValues.Thin; // Đóng khung
@@ -369,38 +466,39 @@ namespace RauViet.ui
                         }
                     }
 
+                    int excelColIndex = 1;
                     foreach (var col in exportColumns)
                     {
-                        var column = ws.Column(col.Index + 1);
+                        var column = ws.Column(excelColIndex);
                         column.Width = 20; // đặt chiều rộng cố định (quan trọng để wrap text có tác dụng)
                         column.Style.Alignment.WrapText = true;
+                        excelColIndex++;
                     }
 
-                   
+
 
                     // ===== Data bắt đầu từ hàng 7 =====
                     decimal totalNWOther = 0; // Biến lưu tổng
                     int totalCarton = 0;
                     ws.Column(11).Width = 30;
-                    ws.Column(2).Width = 15;
+                    ws.Column(2).Width = 10;
+                    ws.Column(10).Width = 20;
 
+                    excelColIndex = 1;
                     int rowIndex = headerStartRow + 2;
-                    foreach (DataGridViewRow row in dgv.Rows)
+                    foreach (DataRow row in dt.Rows)
                     {
-                        if (row.IsNewRow) continue;
-
                         colIndex = 1;
                         foreach (var col in exportColumns)
                         {
                             var cell = ws.Cell(rowIndex, colIndex);
-                            var cellValue = row.Cells[col.Index].Value?.ToString() ?? "";
+                            var cellValue = row[col.ColumnName]?.ToString() ?? "";
                             cell.Value = cellValue;
-
                             // Bật wrap text
                             cell.Style.Alignment.WrapText = true;
 
                             // Căn phải các cột số
-                            if (col.ValueType == typeof(int) || col.ValueType == typeof(decimal))
+                            if (col.DataType == typeof(int) || col.DataType == typeof(decimal))
                                 cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
                             else
                                 cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
@@ -409,23 +507,27 @@ namespace RauViet.ui
                             cell.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
 
                             // Tính tổng cột NWOther
-                            if (col.Name == "NWReal")
+                            if (col.ColumnName == "NWReal")
                             {
                                 if (decimal.TryParse(cellValue, out decimal num))
                                     totalNWOther += num;
                             }
-                            else if (col.Name == "PCSReal" || col.Name == "Package" || col.Name == "No" || col.Name == "NWReal")
+                            else if (col.ColumnName == "PCSReal" || col.ColumnName == "Package" || col.ColumnName == "No" || col.ColumnName == "NWReal")
                             {
                                 cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
                             }
-                            else if (col.Name == "CustomerCarton" || col.Name == "CartonNo")
+                            else if (col.ColumnName == "CustomerCarton" || col.ColumnName == "CartonNo")
                             {
                                 cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                                double columnWidth = col.Width;
-                                int estimatedLines = (int)((cellValue.Length * ws.Style.Font.FontSize / columnWidth) + 2);
-                                ws.Row(rowIndex).Height = estimatedLines * ws.Style.Font.FontSize * 1.2; // lineHeight ~ font size * 1.2
+                                double columnWidth = ws.Column(colIndex).Width;
+                                double avgCharWidth = 0.5;
+                                double estimatedLines = Math.Ceiling((cellValue.Length * avgCharWidth) / columnWidth);
+                               
+                                estimatedLines += 1;
+                                
+                                ws.Row(rowIndex).Height = estimatedLines * (ws.Style.Font.FontSize) * 1.3; // lineHeight ~ font size * 1.2
 
-                                if(col.Name == "CustomerCarton" && cellValue.CompareTo("") != 0)
+                                if (col.ColumnName == "CustomerCarton" && cellValue.CompareTo("") != 0)
                                 {
                                     int count = cellValue.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Length;
                                     totalCarton += count;
@@ -435,15 +537,16 @@ namespace RauViet.ui
                         }
 
                         // Tự động điều chỉnh chiều cao hàng
-                       // ws.Row(rowIndex).Height = 0;
-                       // ws.Row(rowIndex).AdjustToContents();
+                        // ws.Row(rowIndex).Height = 0;
+                        // ws.Row(rowIndex).AdjustToContents();
 
                         rowIndex++;
+                       
                     }
 
                     ws.Columns().AdjustToContents();
                     ws.Column(1).Width = 3;
-                    ws.Column(2).Width = 15;
+                    ws.Column(2).Width = 10;
                     ws.Column(3).Width += 3;
                     ws.Column(4).Width += 3;
                     ws.Column(5).Width += 3;
@@ -451,7 +554,7 @@ namespace RauViet.ui
                     ws.Column(7).Width = 7;
                     ws.Column(8).Width = 10;
                     ws.Column(9).Width = 7;
-                    ws.Column(10).Width = 7;
+                    ws.Column(10).Width = 20;
                     ws.Column(11).Width = 30;
 
                     ws.Row(1).Height += 5;
@@ -471,7 +574,7 @@ namespace RauViet.ui
                     ws.Cell(totalRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
                     ws.Range(totalRow, 1, totalRow, 3).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
 
-                    ws.Range(totalRow +1, 1, totalRow + 1, 3).Merge();
+                    ws.Range(totalRow + 1, 1, totalRow + 1, 3).Merge();
                     ws.Cell(totalRow + 1, 1).Value = "Total Carton:";
                     ws.Cell(totalRow + 1, 1).Style.Font.Bold = true;
                     ws.Cell(totalRow + 1, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
@@ -489,17 +592,8 @@ namespace RauViet.ui
                     ws.Cell(totalRow + 1, 4).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
                     ws.Range(totalRow + 1, 4, totalRow + 1, exportColumns.Count).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
 
-                    // ===== Save file =====
-                    using (SaveFileDialog sfd = new SaveFileDialog())
-                    {
-                        sfd.Filter = "Excel Workbook|*.xlsx";
-                        sfd.FileName = "packingToal_" + exportCode + "_" + exportDate.Day + exportDate.Month + exportDate.Year + ".xlsx";
-                        if (sfd.ShowDialog() == DialogResult.OK)
-                        {
-                            wb.SaveAs(sfd.FileName);
-                            MessageBox.Show("thành công\n" + sfd.FileName);
-                        }
-                    }
+
+                    wb.SaveAs(filePath);
                 }
             }
             catch (Exception ex)
@@ -507,8 +601,6 @@ namespace RauViet.ui
                 MessageBox.Show("Lỗi khi xuất Excel: " + ex.Message);
             }
         }
-
-
 
     }
 }

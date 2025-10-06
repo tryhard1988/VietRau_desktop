@@ -1,9 +1,10 @@
-﻿using System;
+﻿using RauViet.ui;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.IO.Packaging;
 using System.Threading.Tasks;
-using RauViet.ui;
 
 namespace RauViet.classes
 {
@@ -112,7 +113,8 @@ namespace RauViet.classes
             using (SqlConnection con = new SqlConnection(conStr))
             {
                 await con.OpenAsync();
-                string query = "SELECT * FROM ProductSKU";
+                string query = @"SELECT * FROM ProductSKU ORDER BY ProductNameVN ASC";
+
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                 {
@@ -346,7 +348,23 @@ namespace RauViet.classes
             using (SqlConnection con = new SqlConnection(conStr))
             {
                 await con.OpenAsync();
-                string query = "SELECT ExportCodeID, ExportCode, ExportDate, ExchangeRate, ShippingCost FROM ExportCodes WHERE Complete = 0 ORDER BY ExportDate DESC;";
+                string query = @"SELECT 
+                                    ec.ExportCodeID,
+                                    ec.ExportCode,
+                                    ec.ExportDate,
+                                    ec.ExchangeRate,
+                                    ec.ShippingCost,
+                                    ec.ExportCodeIndex,
+                                    ei.FullName AS InputByName,
+                                    ep.FullName AS PackingByName
+                                FROM 
+                                    ExportCodes ec
+                                LEFT JOIN Employee ei ON ec.InputBy = ei.EmployeeID
+                                LEFT JOIN Employee ep ON ec.PackingBy = ep.EmployeeID
+                                WHERE 
+                                    ec.Complete = 0
+                                ORDER BY 
+                                    ec.ExportDate DESC;";
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                 {
@@ -356,9 +374,19 @@ namespace RauViet.classes
             return dt;
         }
 
-        public async Task<bool> updateExportCodeAsync(int exportCodeID, string exportCode, int exportCodeIndex, DateTime exportDate, decimal exRate, decimal shippingCost, bool complete)
+        public async Task<bool> updateExportCodeAsync(int exportCodeID, string exportCode, int exportCodeIndex, DateTime exportDate, decimal? exRate, decimal? shippingCost, int inputBy, int packingBy, bool complete)
         {
-            string query = "UPDATE ExportCodes SET ExportCode=@ExportCode, ExportCodeIndex=@ExportCodeIndex, ExportDate=@ExportDate, ExchangeRate=@ExchangeRate, ShippingCost=@ShippingCost, ModifiedAt=@ModifiedAt, Complete=@Complete WHERE ExportCodeID=@ExportCodeID";
+            string query = @"UPDATE ExportCodes SET 
+                                ExportCode=@ExportCode, 
+                                ExportCodeIndex=@ExportCodeIndex, 
+                                ExportDate=@ExportDate, 
+                                ExchangeRate=@ExchangeRate, 
+                                ShippingCost=@ShippingCost, 
+                                ModifiedAt=@ModifiedAt, 
+                                InputBy=@InputBy, 
+                                PackingBy=@PackingBy, 
+                                Complete=@Complete 
+                            WHERE ExportCodeID=@ExportCodeID";
             try
             {
                 using (SqlConnection con = new SqlConnection(conStr))
@@ -372,8 +400,11 @@ namespace RauViet.classes
                         cmd.Parameters.AddWithValue("@ExportDate", exportDate);
                         cmd.Parameters.AddWithValue("@ModifiedAt", DateTime.Now);
                         cmd.Parameters.AddWithValue("@Complete", complete);
-                        cmd.Parameters.AddWithValue("@ExchangeRate", exRate);
-                        cmd.Parameters.AddWithValue("@ShippingCost", shippingCost);
+                        cmd.Parameters.AddWithValue("@InputBy", inputBy);
+                        cmd.Parameters.AddWithValue("@PackingBy", packingBy);
+                        cmd.Parameters.AddWithValue("@ExchangeRate", exRate.HasValue ? (object)exRate.Value : DBNull.Value);
+                        cmd.Parameters.AddWithValue("@ShippingCost", shippingCost.HasValue ? (object)shippingCost.Value : DBNull.Value);
+
                         await cmd.ExecuteNonQueryAsync();
                     }
                 }
@@ -382,9 +413,9 @@ namespace RauViet.classes
             catch { return false; }
         }
 
-        public async Task<bool> insertExportCodeAsync(string exportCode, int exportCodeIndex, DateTime exportDate, decimal exRate, decimal shippingCost)
+        public async Task<bool> insertExportCodeAsync(string exportCode, int exportCodeIndex, DateTime exportDate, decimal? exRate, decimal? shippingCost, int inputBy, int packingBy)
         {
-            string query = "INSERT INTO ExportCodes (ExportCode, ExportCodeIndex, ExportDate, ExchangeRate, ShippingCost) VALUES (@ExportCode, @ExportCodeIndex, @ExportDate, @ExchangeRate, @ShippingCost)";
+            string query = "INSERT INTO ExportCodes (ExportCode, ExportCodeIndex, ExportDate, ExchangeRate, ShippingCost, InputBy, PackingBy) VALUES (@ExportCode, @ExportCodeIndex, @ExportDate, @ExchangeRate, @ShippingCost, @InputBy, @PackingBy)";
             try
             {
                 using (SqlConnection con = new SqlConnection(conStr))
@@ -395,8 +426,11 @@ namespace RauViet.classes
                         cmd.Parameters.AddWithValue("@ExportCode", exportCode);
                         cmd.Parameters.AddWithValue("@ExportCodeIndex", exportCodeIndex);
                         cmd.Parameters.AddWithValue("@ExportDate", exportDate);
-                        cmd.Parameters.AddWithValue("@ExchangeRate", exRate);
-                        cmd.Parameters.AddWithValue("@ShippingCost", shippingCost);
+                        cmd.Parameters.AddWithValue("@InputBy", inputBy);
+                        cmd.Parameters.AddWithValue("@PackingBy", packingBy);
+                        cmd.Parameters.AddWithValue("@ExchangeRate", exRate.HasValue ? (object)exRate.Value : DBNull.Value);
+                        cmd.Parameters.AddWithValue("@ShippingCost", shippingCost.HasValue ? (object)shippingCost.Value : DBNull.Value);
+
                         await cmd.ExecuteNonQueryAsync();
                     }
                 }
@@ -405,24 +439,53 @@ namespace RauViet.classes
             catch { return false; }
         }
 
-        public async Task<bool> deleteExportCodeAsync(int exportCodeID)
+        public async Task<bool> DeleteExportCodeWithOrdersAsync(int exportCodeID)
         {
-            string query = "DELETE FROM ExportCodes WHERE ExportCodeID=@ExportCodeID";
+            string deleteOrdersTotalQuery = "DELETE FROM OrdersTotal WHERE ExportCodeID = @ExportCodeID";
+            string deleteOrdersQuery = "DELETE FROM Orders WHERE ExportCodeID = @ExportCodeID";
+            string deleteExportCodeQuery = "DELETE FROM ExportCodes WHERE ExportCodeID = @ExportCodeID";
+
             try
             {
                 using (SqlConnection con = new SqlConnection(conStr))
                 {
                     await con.OpenAsync();
-                    using (SqlCommand cmd = new SqlCommand(query, con))
+
+                    using (SqlTransaction tran = con.BeginTransaction())
                     {
-                        cmd.Parameters.AddWithValue("@ExportCodeID", exportCodeID);
-                        await cmd.ExecuteNonQueryAsync();
+                        // Xóa OrdersTotal
+                        using (SqlCommand cmd = new SqlCommand(deleteOrdersTotalQuery, con, tran))
+                        {
+                            cmd.Parameters.AddWithValue("@ExportCodeID", exportCodeID);
+                            await cmd.ExecuteNonQueryAsync();
+                        }
+
+                        // Xóa Orders
+                        using (SqlCommand cmd = new SqlCommand(deleteOrdersQuery, con, tran))
+                        {
+                            cmd.Parameters.AddWithValue("@ExportCodeID", exportCodeID);
+                            await cmd.ExecuteNonQueryAsync();
+                        }
+
+                        // Xóa ExportCode
+                        using (SqlCommand cmd = new SqlCommand(deleteExportCodeQuery, con, tran))
+                        {
+                            cmd.Parameters.AddWithValue("@ExportCodeID", exportCodeID);
+                            await cmd.ExecuteNonQueryAsync();
+                        }
+
+                        tran.Commit();
                     }
                 }
+
                 return true;
             }
-            catch { return false; }
+            catch
+            {
+                return false;
+            }
         }
+
         //==================================================Others================================
 
         public async Task<DataTable> getOrdersAsync()
@@ -438,8 +501,6 @@ namespace RauViet.classes
     p.ProductPackingID,
     o.PCSOther,
     o.NWOther,
-    o.PCSReal,
-    o.NWReal,
     o.OrderPackingPriceCNF,
     s.Priority
 
@@ -518,7 +579,7 @@ ORDER BY o.ExportCodeID;";
 
         public async Task<bool> deleteOrderAsync(int id)
         {
-            string query = "DELETE FROM Customers Orders OrderId=@OrderId";
+            string query = "DELETE FROM Orders WHERE OrderId=@OrderId";
             try
             {
                 using (SqlConnection con = new SqlConnection(conStr))
@@ -543,34 +604,45 @@ ORDER BY o.ExportCodeID;";
             {
                 await con.OpenAsync();
 
-                string query = @"
-            SELECT 
-                e.ExportCode,
-                e.ExportDate,
-                CONCAT(sku.ProductNameVN, ' ', sku.PackingType, ' ', pp.Amount, ' ', pp.packing) AS ProductPackingName,
-                SUM(o.PCSOther) AS TotalPCSOther,
-                SUM(o.NWOther) AS TotalNWOther,
-                sku.Priority
-            FROM Orders o
-            INNER JOIN ExportCodes e
-                ON o.ExportCodeID = e.ExportCodeID
-            INNER JOIN ProductPacking pp
-                ON o.ProductPackingID = pp.ProductPackingID
-            INNER JOIN ProductSKU sku
-                ON pp.SKU = sku.SKU
-            WHERE e.Complete = 0 AND e.ExportCodeID = @exportCodeID
-            GROUP BY 
-                pp.ProductPackingID,
-                sku.ProductNameVN,
-                sku.PackingType,
-                pp.Amount,
-                pp.packing,
-                e.ExportCode,
-                e.ExportDate,
-                sku.Priority
-            ORDER BY 
-                e.ExportCode,
-                sku.Priority;
+                string query = @"SELECT 
+                                    e.ExportCode,
+                                    e.ExportDate,
+                                    CASE 
+                                        WHEN sku.Package = 'kg' AND pp.Amount > 0 AND ISNULL(pp.packing,'') <> ''
+                                        THEN CONCAT(sku.ProductNameVN, ' ', sku.PackingType, ' ', 
+                                                    CASE 
+                                                        WHEN pp.Amount = FLOOR(pp.Amount) THEN CAST(FLOOR(pp.Amount) AS VARCHAR(20))
+                                                        ELSE CAST(pp.Amount AS VARCHAR(20))
+                                                    END
+                                                    , ' ', pp.packing)
+                                        ELSE sku.ProductNameVN
+                                    END AS ProductPackingName,
+                                    SUM(o.PCSOther) AS TotalPCSOther,
+                                    SUM(o.NWOther) AS TotalNWOther,
+                                    sku.Priority
+                                FROM Orders o
+                                INNER JOIN ExportCodes e
+                                    ON o.ExportCodeID = e.ExportCodeID
+                                INNER JOIN ProductPacking pp
+                                    ON o.ProductPackingID = pp.ProductPackingID
+                                INNER JOIN ProductSKU sku
+                                    ON pp.SKU = sku.SKU
+                                WHERE e.Complete = 0 AND e.ExportCodeID = @exportCodeID
+                                GROUP BY 
+                                    pp.ProductPackingID,
+                                    sku.ProductNameVN,
+                                    sku.PackingType,
+                                    pp.Amount,
+                                    pp.packing,
+                                    sku.Package,
+                                    e.ExportCode,
+                                    e.ExportDate,
+                                    sku.Priority
+                                ORDER BY 
+                                    sku.Priority,
+                                    sku.ProductNameVN;
+                                    
+
         ";
 
                 using (SqlCommand cmd = new SqlCommand(query, con))
@@ -595,13 +667,9 @@ ORDER BY o.ExportCodeID;";
                 await con.OpenAsync();
                 string query = @"
             SELECT                 
-                c.FullName AS CustomerName,    
-                CONCAT(
-                    s.ProductNameVN, ' ',
-                    CAST(s.PackingType AS NVARCHAR(50)), ' ',
-                    CAST(p.Amount AS NVARCHAR(50)), ' ',
-                    CAST(p.packing AS NVARCHAR(50))
-                ) AS ProductPackingName,  
+                c.FullName AS CustomerName,   
+                s.ProductNameVN AS ProductPackingName,
+                s.PackingType,  
                 o.CustomerCarton,
                 o.CartonNo,
                 o.CartonSize,
@@ -675,38 +743,44 @@ ORDER BY o.ExportCodeID;";
             {
                 await con.OpenAsync();
                 string query = @"SELECT 
-    sku.ProductNameVN + ' ' + CAST(pp.Amount AS NVARCHAR(10)) + ' ' + pp.packing AS ProductNameVN,
-          
-    SUM(op.NWOther) AS TotalNWOther,
-    SUM(op.NWReal) AS TotalNWReal,
-    ot.NetWeightFinal,
-    sku.Priority,
-    op.ProductPackingID,  
-    op.ExportCodeID
-FROM Orders op
-LEFT JOIN OrdersTotal ot 
-    ON op.ProductPackingID = ot.ProductPackingID 
-    AND op.ExportCodeID = ot.ExportCodeID
-INNER JOIN ProductPacking pp 
-    ON op.ProductPackingID = pp.ProductPackingID
-INNER JOIN ProductSKU sku
-    ON pp.SKU = sku.SKU
-INNER JOIN ExportCodes ec
-    ON op.ExportCodeID = ec.ExportCodeID
-WHERE ec.Complete = 0
-GROUP BY 
-    sku.ProductNameVN,
-    pp.Amount,
-    pp.packing,
-    sku.Priority,
-    op.ProductPackingID,
-    op.ExportCodeID,
-    ot.NetWeightFinal,
-    ec.ExportCode
-ORDER BY 
-    sku.Priority ASC,
-    op.ExportCodeID,
-    op.ProductPackingID;";
+                                    sku.SKU,
+                                    sku.ProductNameVN,
+                                    pp.Amount,
+                                    pp.packing,
+                                    sku.Package,
+                                    SUM(op.NWOther) AS TotalNWOther,
+                                    SUM(op.NWReal) AS TotalNWReal,
+                                    MAX(ot.NetWeightFinal) AS NetWeightFinal,
+                                    sku.Priority,
+                                    op.ProductPackingID,  
+                                    op.ExportCodeID,
+                                    ec.ExportCode
+                                FROM Orders op
+                                LEFT JOIN OrdersTotal ot 
+                                    ON op.ProductPackingID = ot.ProductPackingID 
+                                    AND op.ExportCodeID = ot.ExportCodeID
+                                INNER JOIN ProductPacking pp 
+                                    ON op.ProductPackingID = pp.ProductPackingID
+                                INNER JOIN ProductSKU sku
+                                    ON pp.SKU = sku.SKU
+                                INNER JOIN ExportCodes ec
+                                    ON op.ExportCodeID = ec.ExportCodeID
+                                WHERE ec.Complete = 0
+                                GROUP BY 
+                                    sku.SKU,
+                                    sku.ProductNameVN,
+                                    pp.Amount,
+                                    pp.packing,
+                                    sku.Package,
+                                    sku.Priority,
+                                    op.ProductPackingID,
+                                    op.ExportCodeID,
+                                    ec.ExportCode
+                                ORDER BY 
+                                    sku.Priority ASC,
+                                    op.ExportCodeID,
+                                    op.ProductPackingID;
+";
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                 {
@@ -714,6 +788,25 @@ ORDER BY
                 }
             }
             return dt;
+        }
+
+        public async Task<bool> deleteOrderTotalAsync(int exportCodeID)
+        {
+            string query = "DELETE FROM OrdersTotal WHERE ExportCodeID =@ExportCodeID ";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(conStr))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@ExportCodeID", exportCodeID);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+                return true;
+            }
+            catch { return false; }
         }
 
         public async Task<bool> UpsertOrdersTotalListAsync(List<(int ExportCodeID, int ProductPackingID, decimal? NetWeightFinal)> list)
@@ -793,7 +886,7 @@ ORDER BY
                                     p.BotanicalName,
                                     p.Priority,
                                     p.PlantingAreaCode,
-                                    SUM(o.NWOther) * 1.1 AS NWOther
+                                    FORMAT(SUM(o.NWOther) * 1.1, 'N2') AS NWOther
                                 FROM Orders o
                                 INNER JOIN ProductPacking pp ON o.ProductPackingID = pp.ProductPackingID
                                 INNER JOIN ProductSKU p ON pp.SKU = p.SKU
@@ -859,8 +952,16 @@ ORDER BY
                 await con.OpenAsync();
                 string query = @"SELECT
                                     pp.PLU,
-                                    sku.ProductNameEN,
-                                    sku.ProductNameVN + ' ' + CAST(pp.Amount AS NVARCHAR(10)) + ' ' + pp.packing AS ProductNameVN,
+                                    CASE 
+                                        WHEN sku.Package = 'kg' AND pp.Amount > 0 AND ISNULL(pp.packing, '') <> '' 
+                                        THEN CONCAT(sku.ProductNameEN, ' ', FORMAT(pp.Amount, '0.##'), ' ', pp.packing)
+                                        ELSE sku.ProductNameEN
+                                    END AS ProductNameEN,
+                                    CASE 
+                                        WHEN sku.Package = 'kg' AND pp.Amount > 0 AND ISNULL(pp.packing, '') <> '' 
+                                        THEN CONCAT(sku.ProductNameVN, ' ', FORMAT(pp.Amount, '0.##'), ' ', pp.packing)
+                                        ELSE sku.ProductNameVN
+                                    END AS ProductNameVN,
                                     sku.Package,
                                     CAST(pp.Amount AS NVARCHAR(10)) + ' ' + pp.packing AS Packing,
                                     SUM(o.NWReal) AS NWReal,
@@ -904,29 +1005,32 @@ ORDER BY
             {
                 await con.OpenAsync();
                 string query = @"SELECT
-                                    o.ExportCodeID,
-                                    c.FullName,
-                                    SUM(o.NWReal) AS NWReal,
-                                    SUM(o.PCSReal) AS PCSReal,
-                                    sku.Package,
-                                    o.OrderPackingPriceCNF,
-                                    COUNT(*) AS CNTS
-                                FROM Orders o
-                                INNER JOIN Customers c
-                                    ON o.CustomerID = c.CustomerID
-                                INNER JOIN ProductPacking pp
-                                    ON o.ProductPackingID = pp.ProductPackingID
-                                INNER JOIN ProductSKU sku
-                                    ON pp.SKU = sku.SKU
-                                INNER JOIN ExportCodes ec
-                                    ON o.ExportCodeID = ec.ExportCodeID
-                                WHERE ec.Complete = 0 
-                                GROUP BY
-                                    o.ExportCodeID,
-                                    c.FullName,
-                                    sku.Package,
-                                    o.OrderPackingPriceCNF
-                                ORDER BY o.ExportCodeID, c.FullName;";
+                                        o.ExportCodeID,
+                                        c.FullName,
+                                        SUM(o.NWReal) AS NWReal,
+                                        SUM(
+                                            CASE 
+                                                WHEN sku.Package IN ('kg', 'weight') 
+                                                    THEN o.OrderPackingPriceCNF * o.NWReal
+                                                ELSE o.OrderPackingPriceCNF * o.PCSReal
+                                            END
+                                        ) AS AmountCHF,
+                                        COUNT(*) AS CNTS
+                                    FROM Orders o
+                                    INNER JOIN Customers c
+                                        ON o.CustomerID = c.CustomerID
+                                    INNER JOIN ProductPacking pp
+                                        ON o.ProductPackingID = pp.ProductPackingID
+                                    INNER JOIN ProductSKU sku
+                                        ON pp.SKU = sku.SKU
+                                    INNER JOIN ExportCodes ec
+                                        ON o.ExportCodeID = ec.ExportCodeID
+                                    WHERE ec.Complete = 0 
+                                    GROUP BY
+                                        o.ExportCodeID,
+                                        c.FullName
+                                    ORDER BY 
+                                        o.ExportCodeID, c.FullName;";
 
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
@@ -1043,9 +1147,17 @@ ORDER BY
                 await con.OpenAsync();
                 string query = @"SELECT
                                     o.ExportCodeID,
-                                    CONCAT(s.ProductNameVN, ' ', s.PackingType, ' ', p.Amount, ' ', p.packing) AS ProductNameVN,
-                                    CONCAT(s.ProductNameEN, ' ', s.PackingType, ' ', p.Amount, ' ', p.packing) AS ProductNameEN,
-                                    STRING_AGG(CAST(o.CartonNo AS NVARCHAR(20)), ', ') AS CartonNo,
+                                    CASE 
+                                        WHEN s.Package = 'kg' AND p.Amount > 0 AND ISNULL(p.packing, '') <> '' 
+                                        THEN CONCAT(s.ProductNameVN, ' ', s.PackingType, ' ', FORMAT(p.Amount, '0.##'), ' ', p.packing)
+                                        ELSE s.ProductNameVN
+                                    END AS ProductNameVN,
+                                    CASE 
+                                        WHEN s.Package = 'kg' AND p.Amount > 0 AND ISNULL(p.packing, '') <> '' 
+                                        THEN CONCAT(s.ProductNameEN, ' ', s.PackingType, ' ', FORMAT(p.Amount, '0.##'), ' ', p.packing)
+                                        ELSE s.ProductNameEN
+                                    END AS ProductNameEN,
+                                    STRING_AGG(CAST(o.CartonNo AS NVARCHAR(50)), ', ') AS CartonNo,
                                     MAX(o.LOTCodeComplete) AS LOTCodeComplete,
                                     p.PLU,
                                     s.Package,
@@ -1069,7 +1181,127 @@ ORDER BY
                                     p.packing,
                                     p.PLU,
                                     s.Package,
-                                    s.Priority;";
+                                    s.Priority;
+";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                {
+                    dt.Load(reader);
+                }
+            }
+            return dt;
+        }
+
+        public async Task<DataTable> GetCustomerDetailPacking_incomplete()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(conStr))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT
+                                        c.FullName,
+                                        sku.ProductNameVN,
+                                        sku.ProductNameEN,
+                                        sku.Package,
+                                        pp.PLU,
+                                        o.ExportCodeID,
+                                        pp.Amount,
+                                        pp.packing,
+                                        SUM(o.NWReal) AS NWReal,
+                                        SUM(o.PCSReal) AS PCSReal,
+                                        STRING_AGG(o.CustomerCarton, ', ') AS CustomerCarton,
+                                        STRING_AGG(CAST(o.CartonNo AS NVARCHAR(50)), ', ') AS CartonNo
+                                    FROM Orders o
+                                    INNER JOIN Customers c 
+                                        ON o.CustomerID = c.CustomerID
+                                    INNER JOIN ProductPacking pp
+                                        ON o.ProductPackingID = pp.ProductPackingID
+                                    INNER JOIN ProductSKU sku
+                                        ON pp.SKU = sku.SKU
+                                    INNER JOIN ExportCodes ec
+                                        ON o.ExportCodeID = ec.ExportCodeID
+                                    WHERE ec.Complete = 0
+                                    GROUP BY 
+                                        c.FullName,
+                                        sku.ProductNameVN,
+                                        sku.ProductNameEN,
+                                        sku.Package,
+                                        pp.PLU,
+                                        o.ExportCodeID,
+                                        pp.Amount,
+                                        pp.packing
+                                    ORDER BY c.FullName;";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                {
+                    dt.Load(reader);
+                }
+            }
+            return dt;
+        }
+
+
+        public async Task<bool> updateNewPriceInOrderListWithExportCode(int exportCodeID)
+        {
+            string query = @"UPDATE o
+                            SET o.OrderPackingPriceCNF = ps.PriceCNF
+                            FROM Orders o
+                            INNER JOIN ProductPacking pp ON o.ProductPackingID = pp.ProductPackingID
+                            INNER JOIN ProductSKU ps ON pp.SKU = ps.SKU
+                            INNER JOIN ExportCodes ec ON o.ExportCodeID = ec.ExportCodeID
+                            WHERE ec.Complete = 0
+                                AND o.ExportCodeID = @ExportCodeID;";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(conStr))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@ExportCodeID", exportCodeID);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+                return true;
+            }
+            catch { return false; }
+        }
+
+        public async Task<DataTable> GetActiveEmployeesIn_DongGoi()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(conStr))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT EmployeeID, FullName FROM Employee WHERE DepartmentID = 29 AND IsActive = 1;";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                {
+                    dt.Load(reader);
+                }
+            }
+            return dt;
+        }
+
+        public async Task<DataTable> GetUserData()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(conStr))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT 
+                                    u.UserID,
+                                    u.Username,
+                                    u.PasswordHash,
+                                    e.EmployeeID,
+                                    e.EmployeeCode,
+                                    e.FullName,
+                                    u.IsActive
+                                FROM Users u
+                                LEFT JOIN Employee e ON u.EmployeeID = e.EmployeeID;";
 
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 using (SqlDataReader reader = await cmd.ExecuteReaderAsync())

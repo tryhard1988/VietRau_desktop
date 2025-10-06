@@ -70,9 +70,10 @@ public class OrderSummaryPrinter
         int rowHeight = 30;
 
         int colWidth_STT = 50;
-        int colWidth_Product = 450;
+        int colWidth_Product = 230;
         int colWidth_pcs = 60;
         int colWidth_nw = 170;
+        int colWidth_gc = 220;
 
         int y = startY;
 
@@ -120,8 +121,12 @@ public class OrderSummaryPrinter
 
         e.Graphics.DrawRectangle(Pens.Black, x, y, colWidth_nw, rowHeight);
         e.Graphics.DrawString("Khối Lượng(Kg)", fontHeader, brush, new RectangleF(x, y, colWidth_nw, rowHeight), sfHeader);
-        y += rowHeight;
+        x += colWidth_nw;
 
+        e.Graphics.DrawRectangle(Pens.Black, x, y, colWidth_gc, rowHeight);
+        e.Graphics.DrawString("Ghi chú", fontHeader, brush, new RectangleF(x, y, colWidth_gc, rowHeight), sfHeader);
+        y += rowHeight;
+        
         // ------------------ Dữ liệu ------------------
         int totalPCS = 0;
         decimal totalNetWeight = 0;
@@ -132,36 +137,45 @@ public class OrderSummaryPrinter
 
             x = startX;
 
-            // STT
-            e.Graphics.DrawRectangle(Pens.Black, x, y, colWidth_STT, rowHeight);
-            e.Graphics.DrawString((currentRowIndex + 1).ToString(), fontContent, brush, new RectangleF(x, y, colWidth_STT, rowHeight), sfHeader);
-            x += colWidth_STT;
+            
 
             // ProductPackingName
             string name = row["ProductPackingName"]?.ToString() ?? "";
-            e.Graphics.DrawRectangle(Pens.Black, x, y, colWidth_Product, rowHeight);
-            e.Graphics.DrawString(name, fontContent, brush, new RectangleF(x, y, colWidth_Product, rowHeight), sfDataLeft);
+            RectangleF rect = new RectangleF(x, y, colWidth_Product, 9999);
+            SizeF textSize = e.Graphics.MeasureString(name,fontContent,(int)colWidth_Product, StringFormat.GenericDefault);
+            int dynamicHeight = Math.Max(rowHeight, (int)textSize.Height);
+
+            // STT
+            e.Graphics.DrawRectangle(Pens.Black, x, y, colWidth_STT, dynamicHeight);
+            e.Graphics.DrawString((currentRowIndex + 1).ToString(), fontContent, brush, new RectangleF(x, y, colWidth_STT, rowHeight), sfHeader);
+            x += colWidth_STT;
+
+            e.Graphics.DrawRectangle(Pens.Black, x, y, colWidth_Product, dynamicHeight);
+            e.Graphics.DrawString(name, fontContent, brush, new RectangleF(x, y, colWidth_Product, dynamicHeight), sfDataLeft);
             x += colWidth_Product;
 
             // TotalPCSOther
             int pcs = Convert.ToInt32(row["TotalPCSOther"] ?? 0);
-            e.Graphics.DrawRectangle(Pens.Black, x, y, colWidth_pcs, rowHeight);
+            e.Graphics.DrawRectangle(Pens.Black, x, y, colWidth_pcs, dynamicHeight);
             e.Graphics.DrawString(pcs.ToString(), fontContent, brush, new RectangleF(x, y, colWidth_pcs, rowHeight), sfDataCenter);
             totalPCS += pcs;
             x += colWidth_pcs;
 
             // TotalNetWeight
             decimal net = Convert.ToDecimal(row["TotalNWOther"] ?? 0);
-            e.Graphics.DrawRectangle(Pens.Black, x, y, colWidth_nw, rowHeight);
+            e.Graphics.DrawRectangle(Pens.Black, x, y, colWidth_nw, dynamicHeight);
             e.Graphics.DrawString(net.ToString("N2"), fontContent, brush, new RectangleF(x, y, colWidth_nw, rowHeight), sfDataCenter);
             totalNetWeight += net;
             x += colWidth_nw;
 
-            y += rowHeight;
+            e.Graphics.DrawRectangle(Pens.Black, x, y, colWidth_gc, dynamicHeight);
+
+            y += dynamicHeight;
 
             // Kiểm tra phân trang
             if (y + rowHeight > e.MarginBounds.Bottom)
             {
+                currentRowIndex++;
                 yPosition = e.MarginBounds.Top;
                 firstPage = false;
                 e.HasMorePages = true;

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO.Packaging;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -22,6 +23,20 @@ namespace RauViet.ui
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Dock = DockStyle.Fill;
 
+            Utils.SetTabStopRecursive(this, false);
+            int countTab = 0;
+            product_VN_tb.TabIndex = countTab++; product_VN_tb.TabStop = true;
+            product_EN_tb.TabIndex = countTab++; product_EN_tb.TabStop = true;
+            package_tb.TabIndex = countTab++; package_tb.TabStop = true;
+            packing_tb.TabIndex = countTab++; packing_tb.TabStop = true;
+            botanicalName_tb.TabIndex = countTab++; botanicalName_tb.TabStop = true;
+            priceCNF_tb.TabIndex = countTab++; priceCNF_tb.TabStop = true;
+            plantingareaCode_tb.TabIndex = countTab++; plantingareaCode_tb.TabStop = true;
+            lotCodeHeader_tb.TabIndex = countTab++; lotCodeHeader_tb.TabStop = true;
+            priority_tb.TabIndex = countTab++; priority_tb.TabStop = true;
+            luuBtn.TabIndex = countTab++; luuBtn.TabStop = true;
+
+
             dataGV.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dataGV.MultiSelect = false;
 
@@ -34,10 +49,11 @@ namespace RauViet.ui
             luuBtn.Click += saveBtn_Click;
             delete_btn.Click += deleteBtn_Click;
             dataGV.SelectionChanged += this.dataGV_CellClick;
-            this.dataGV.RowPrePaint += new System.Windows.Forms.DataGridViewRowPrePaintEventHandler(this.dataGV_RowPrePaint);
+    //        this.dataGV.RowPrePaint += new System.Windows.Forms.DataGridViewRowPrePaintEventHandler(this.dataGV_RowPrePaint);
             priceCNF_tb.KeyPress += Tb_KeyPress_OnlyNumber;
             priority_tb.KeyPress += Tb_KeyPress_OnlyNumber;
             lotCodeHeader_tb.KeyPress += Tb_KeyPress_OnlyNumber;
+            search_tb.TextChanged += search_txt_TextChanged;
 
 
             sku_tb.Visible = false;
@@ -46,8 +62,6 @@ namespace RauViet.ui
 
         public async void ShowData()
         {
-            
-
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Dock = DockStyle.Fill;
 
@@ -57,7 +71,16 @@ namespace RauViet.ui
             {
                 // Chạy truy vấn trên thread riêng
                 DataTable dt = await SQLManager.Instance.getProductSKUAsync();
-                
+
+                if (!dt.Columns.Contains("ProductNameVN_NoSign"))
+                    dt.Columns.Add("ProductNameVN_NoSign", typeof(string));
+
+                foreach (DataRow row in dt.Rows)
+                {
+                    string name = row["ProductNameVN"]?.ToString() ?? "";
+                    int SKU = Convert.ToInt32(row["SKU"]);
+                    row["ProductNameVN_NoSign"] = Utils.RemoveVietnameseSigns(name + " " + SKU).ToLower();
+                }
 
                 int count = 0;
                 dt.Columns["SKU"].SetOrdinal(count++);
@@ -86,17 +109,20 @@ namespace RauViet.ui
 
                 dataGV.Columns["ProductNameVN"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 dataGV.Columns["ProductNameEN"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                dataGV.Columns["BotanicalName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;   
-                dataGV.Columns["PackingList"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["PlantingAreaCode"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
 
+                dataGV.Columns["BotanicalName"].Width = 100;
+                dataGV.Columns["PlantingAreaCode"].Width = 50;
+                dataGV.Columns["LOTCodeHeader"].Width = 50;
                 dataGV.Columns["PriceCNF"].Width = 60;
                 dataGV.Columns["Priority"].Width = 35;
                 dataGV.Columns["package"].Width = 60;
                 dataGV.Columns["PackingType"].Width = 60;
-                dataGV.Columns["SKU"].Width = 40;
+                dataGV.Columns["PackingList"].Width = 60;
+                dataGV.Columns["SKU"].Width = 60;
 
-                dataGV.Columns["SKU"].Visible = false;
+                dataGV.Columns["ProductNameVN_NoSign"].Visible = false;
+                dataGV.Columns["PackingType"].Visible = false;
+                // dataGV.Columns["SKU"].Visible = false;
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 dataGV.Columns["PriceCNF"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
@@ -286,6 +312,8 @@ namespace RauViet.ui
 
                         status_lb.Text = "Thành công";
                         status_lb.ForeColor = Color.Green;
+
+                        newBtn_Click(null, null);
                     }
                     else
                     {
@@ -323,7 +351,7 @@ namespace RauViet.ui
                 packingList = packingList.Substring(0, packingList.Length - 1);
             }
             string productNameVN = product_VN_tb.Text;
-            string productNameEN = product_VN_tb.Text;
+            string productNameEN = product_EN_tb.Text;
             string packingType = packingType_tb.Text;
             string plantingareaCode = plantingareaCode_tb.Text;
             string lotCode = lotCodeHeader_tb.Text;
@@ -394,13 +422,17 @@ namespace RauViet.ui
             sku_tb.Text = "";
             product_VN_tb.Text = "";
             product_EN_tb.Text = "";
-            package_tb.Text = "";
+            package_tb.Text = "kg";
+            packing_tb.Text = "kg-gr";
             botanicalName_tb.Text = "";
             priceCNF_tb.Text = "";
             status_lb.Text = "";
             plantingareaCode_tb.Text = "";
+            lotCodeHeader_tb.Text = createSKUID().ToString();
+
             delete_btn.Enabled = false;
             info_gb.BackColor = Color.Green;
+            product_VN_tb.Focus();
             return;            
         }
 
@@ -419,6 +451,19 @@ namespace RauViet.ui
             {
                 e.Handled = true;
             }
+        }
+
+        private void search_txt_TextChanged(object sender, EventArgs e)
+        {
+            string keyword = Utils.RemoveVietnameseSigns(search_tb.Text.Trim().ToLower())
+                     .Replace("'", "''"); // tránh lỗi cú pháp '
+
+            DataTable dt = dataGV.DataSource as DataTable;
+            if (dt == null) return;
+
+            DataView dv = dt.DefaultView;
+            dv.RowFilter = $"[ProductNameVN_NoSign] LIKE '%{keyword}%'";
+
         }
     }
 }

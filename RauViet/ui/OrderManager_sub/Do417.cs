@@ -1,17 +1,20 @@
-﻿using System;
+﻿using DocumentFormat.OpenXml.Bibliography;
+using DocumentFormat.OpenXml.Office2010.Excel;
+using RauViet.classes;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using RauViet.classes;
 
 namespace RauViet.ui
 {
-    public partial class Do417 : Form
+    public partial class Do417 : Form, ICanSave
     {
         DataTable mExportCode_dt, mOrdersTotal_dt;
+        private bool _dataChanged = false;
         public Do417()
         {
             InitializeComponent();
@@ -26,9 +29,9 @@ namespace RauViet.ui
             loading_lb.Text = "Đang tải dữ liệu, vui lòng chờ...";
             loading_lb.Visible = false;
 
-
+            Reset_btn.Click += resetBtn_Click;
             LuuThayDoiBtn.Click += saveBtn_Click;           
-            dataGV.RowPrePaint += new System.Windows.Forms.DataGridViewRowPrePaintEventHandler(this.dataGV_RowPrePaint);
+         //   dataGV.RowPrePaint += new System.Windows.Forms.DataGridViewRowPrePaintEventHandler(this.dataGV_RowPrePaint);
             dataGV.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.dataGV_EditingControlShowing);
             dataGV.CellFormatting += dataGV_CellFormatting;
             dataGV.CellValueChanged += dataGV_CellValueChanged;
@@ -37,8 +40,6 @@ namespace RauViet.ui
 
             exportCode_cbb.SelectedIndexChanged += exportCode_search_cbb_SelectedIndexChanged;
         }
-
-        
 
         public async void ShowData()
         {
@@ -64,14 +65,44 @@ namespace RauViet.ui
                 mOrdersTotal_dt.Columns.Add(new DataColumn("NWDifference", typeof(decimal)));
 
                 int count = 1;
+                mOrdersTotal_dt.Columns["NetWeightFinal"].ReadOnly = false;
                 foreach (DataRow dr in mOrdersTotal_dt.Rows)
                 {
+                    int SKU = Convert.ToInt32(dr["SKU"]);
+                    string productName = dr["ProductNameVN"].ToString();
+                    string packing = dr["packing"].ToString();
+                    string package = dr["Package"].ToString();
+
+                    decimal amount = dr["Amount"] == DBNull.Value ? 0 : Convert.ToDecimal(dr["Amount"]);
+
+                    if (package.CompareTo("kg") == 0 && packing.CompareTo("") != 0 && amount > 0)
+                    {
+                        string amountStr = amount.ToString("0.##");
+                        dr["ProductNameVN"] = $"{productName} {amountStr} {packing}";
+                    }
+                    else
+                    {
+                        dr["ProductNameVN"] = $"{productName}";
+                    }
+
                     decimal nwReal, nwFinal,nwOrder;
 
                     // thử ép kiểu, nếu không thành công thì bỏ qua
                     bool isNWRealValid = decimal.TryParse(dr["TotalNWReal"]?.ToString(), out nwReal);
                     bool isNWFinalValid = decimal.TryParse(dr["NetWeightFinal"]?.ToString(), out nwFinal);
                     bool isNWOrderValid = decimal.TryParse(dr["TotalNWOther"]?.ToString(), out nwOrder);
+
+                    if (!isNWFinalValid && isNWRealValid)
+                    {
+                        if ((package.CompareTo("kg") == 0 || package.CompareTo("weight") == 0) &&
+                            SKU < 1000)
+                        {
+                            dr["NetWeightFinal"] = nwReal;
+                            nwFinal = nwReal;
+                            isNWFinalValid = isNWRealValid;
+                        }
+                        
+                    }
 
                     if (isNWRealValid && isNWFinalValid) dr["NWDifference"] = nwReal - nwFinal;
                     else dr["NWDifference"] = DBNull.Value;
@@ -94,6 +125,9 @@ namespace RauViet.ui
 
                 dataGV.Columns["ProductPackingID"].Visible = false;
                 dataGV.Columns["ExportCodeID"].Visible = false;
+                dataGV.Columns["Package"].Visible = false;
+                dataGV.Columns["Amount"].Visible = false;
+                dataGV.Columns["packing"].Visible = false;
 
                 dataGV.ReadOnly = false;
                 dataGV.Columns["NetWeightFinal"].ReadOnly = false;
@@ -130,15 +164,18 @@ namespace RauViet.ui
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
+                _dataChanged = false;
+
                 exportCode_cbb.DataSource = mExportCode_dt;
                 exportCode_cbb.DisplayMember = "ExportCode";  // hiển thị tên
                 exportCode_cbb.ValueMember = "ExportCodeID";
+
                 
             }
             catch (Exception ex)
             {
                 status_lb.Text = "Thất bại.";
-                status_lb.ForeColor = Color.Red;
+                status_lb.ForeColor = System.Drawing.Color.Red;
             }
             finally
             {
@@ -153,6 +190,8 @@ namespace RauViet.ui
                 return;
 
             string selectedExportCode = ((DataRowView)exportCode_cbb.SelectedItem)["ExportCodeID"].ToString();
+
+            SaveData();
 
             if (!string.IsNullOrEmpty(selectedExportCode))
             {
@@ -172,6 +211,7 @@ namespace RauViet.ui
 
         private void dataGV_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
+            _dataChanged = true;
             if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
             {
                 var columnName = dataGV.Columns[e.ColumnIndex].Name;
@@ -210,14 +250,14 @@ namespace RauViet.ui
         {
             if (dataGV.Columns[e.ColumnIndex].Name == "NetWeightFinal")
             {
-                e.CellStyle.BackColor = Color.LightGray;
+                e.CellStyle.BackColor = System.Drawing.Color.LightGray;
             }
         }
         private void dataGV_RowPrePaint(object sender, DataGridViewRowPrePaintEventArgs e)
         {
             if (e.RowIndex % 2 == 0)
             {
-                dataGV.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.Beige;
+                dataGV.Rows[e.RowIndex].DefaultCellStyle.BackColor = System.Drawing.Color.Beige;
             }
         }        
 
@@ -273,8 +313,57 @@ namespace RauViet.ui
             }
         }
 
-        private async void saveBtn_Click(object sender, EventArgs e)
+        private async void resetBtn_Click(object sender, EventArgs e)
         {
+            DialogResult dialogResult = MessageBox.Show("Xóa Nha, Chắc Chắn Chưa!", "Thông Báo", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (dialogResult == DialogResult.Yes)
+            {
+                try
+                {
+                    bool isScussess = await SQLManager.Instance.deleteOrderTotalAsync(Convert.ToInt32(exportCode_cbb.SelectedValue));
+
+                    if (isScussess == true)
+                    {
+                        status_lb.Text = "Thành công.";
+                        status_lb.ForeColor = System.Drawing.Color.Green;
+
+                        ShowData();
+
+                    }
+                    else
+                    {
+                        status_lb.Text = "Thất bại.";
+                        status_lb.ForeColor = System.Drawing.Color.Red;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    status_lb.Text = "Thất bại.";
+                    status_lb.ForeColor = System.Drawing.Color.Red;
+                }
+
+
+
+
+            }
+        }
+        private void saveBtn_Click(object sender, EventArgs e)
+        {
+            SaveData(false);
+        }
+
+        public async void SaveData(bool ask = true)
+        {
+            if (!_dataChanged && ask) return;
+            DialogResult dialogResult = MessageBox.Show(
+                                            "Chắc chắn chưa?",
+                                            "Thay đổi",
+                                            MessageBoxButtons.YesNo,
+                                            MessageBoxIcon.Question // Icon dấu chấm hỏi
+                                        );
+            if (dialogResult == DialogResult.No)
+                return;
             // Giả sử datagridview là dgvOrdersTotal
             var list = new List<(int ExportCodeID, int ProductPackingID, decimal? NetWeightFinal)>();
 
@@ -305,18 +394,31 @@ namespace RauViet.ui
                 }
             }
 
-            // Gọi hàm upsert
-            bool result = await SQLManager.Instance.UpsertOrdersTotalListAsync(list);
-
-            if (result)
+            try
             {
-                MessageBox.Show("Cập nhật thành công!");
+                // Gọi hàm upsert
+                bool result = await SQLManager.Instance.UpsertOrdersTotalListAsync(list);
+
+                if (result)
+                {
+                    _dataChanged = false;
+                    MessageBox.Show("Cập nhật thành công!");
+                   // status_lb.Text = "Thành công.";
+                    //status_lb.ForeColor = System.Drawing.Color.Green;
+                }
+                else
+                {
+                    MessageBox.Show("Cập nhật thất bại!");
+                    //status_lb.Text = "Thất bại.";
+                    //status_lb.ForeColor = System.Drawing.Color.Red;
+                }
             }
-            else
+            catch
             {
                 MessageBox.Show("Cập nhật thất bại!");
+                //status_lb.Text = "Thất bại.";
+                //status_lb.ForeColor = System.Drawing.Color.Red;
             }
         }
-
     }
 }

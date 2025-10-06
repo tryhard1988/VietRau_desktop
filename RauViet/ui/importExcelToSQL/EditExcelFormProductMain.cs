@@ -341,7 +341,7 @@ namespace RauViet.ui
                         if (!packingMap[sku].Contains(currentPacking))
                         {
                             packingMap[sku].Add(currentPacking);
-                            keptRow.Cells["PackingList"].Value = string.Join(", ", packingMap[sku]);
+                            keptRow.Cells["PackingList"].Value = string.Join("-", packingMap[sku]);
                         }
                     }
 
@@ -579,34 +579,12 @@ namespace RauViet.ui
 
         private void checkDuplicateProductNameEN_btn_Click(object sender, EventArgs e)
         {
-            HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            List<string> duplicates = new List<string>();
+            // Nếu DataGridView có AllowUserToAddRows = true thì hàng cuối là hàng trống → cần trừ đi 1
+            int rowCount = dataGV.AllowUserToAddRows
+                ? dataGV.Rows.Count - 1
+                : dataGV.Rows.Count;
 
-            foreach (DataGridViewRow row in dataGV.Rows)
-            {
-                if (row.IsNewRow) continue;
-
-                string nameEN = row.Cells["ProductNameEN"].Value?.ToString().Trim() ?? "";
-                if (string.IsNullOrEmpty(nameEN)) continue;
-
-                if (!seen.Add(nameEN))
-                {
-                    // Đã gặp rồi => trùng
-                    if (!duplicates.Contains(nameEN, StringComparer.OrdinalIgnoreCase))
-                        duplicates.Add(nameEN);
-                }
-            }
-
-            if (duplicates.Count > 0)
-            {
-                string msg = "Các ProductNameEN bị trùng:\n" + string.Join(", ", duplicates);
-                MessageBox.Show(msg, "Check ProductNameEN", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
-            else
-            {
-                MessageBox.Show("Không có ProductNameEN trùng.", "Check ProductNameEN",
-                                MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
+            MessageBox.Show("Tổng số dòng: " + rowCount.ToString());
         }
 
         private void normalizeProductNameEN_btn_Click(object sender, EventArgs e)
@@ -749,6 +727,9 @@ namespace RauViet.ui
 
         private void khongGia_khongPLU_btn_Click(object sender, EventArgs e)
         {
+            // Danh sách log các dòng bị xóa
+            List<string> logs = new List<string>();
+
             // Duyệt ngược để tránh lỗi khi xóa dòng
             for (int i = dataGV.Rows.Count - 1; i >= 0; i--)
             {
@@ -756,15 +737,26 @@ namespace RauViet.ui
                 if (row.IsNewRow) continue;
 
                 string plu = row.Cells["PLU"].Value?.ToString().Trim();
-                string price = row.Cells["PriceCNF"].Value?.ToString().Trim();
+                string priceStr = row.Cells["PriceCNF"].Value?.ToString().Trim();
                 string sku = row.Cells["SKU"].Value?.ToString().Trim();
+                string productName = row.Cells["ProductNameVN"].Value?.ToString().Trim();
 
                 bool removeRow = false;
 
                 // Nếu cả PLU và PriceCNF đều rỗng thì xóa
-                if (string.IsNullOrEmpty(plu) && string.IsNullOrEmpty(price))
+                if (string.IsNullOrEmpty(plu))
                 {
-                    removeRow = true;
+                    if(string.IsNullOrEmpty(priceStr))
+                    {
+                        removeRow = true;
+                    }
+                    else if (decimal.TryParse(priceStr, out decimal priceValue))
+                    {
+                        if (priceValue <= 0)
+                        {
+                            removeRow = true;
+                        }
+                    }
                 }
 
                 // Nếu SKU không phải số nguyên thì xóa
@@ -775,10 +767,26 @@ namespace RauViet.ui
 
                 if (removeRow)
                 {
+                    logs.Add($"Xóa SKU: {sku}, PLU: {plu}, Product: {productName}, Price: {priceStr}");
                     dataGV.Rows.RemoveAt(i);
                 }
             }
+
+            // Hiển thị log
+            if (logs.Count > 0)
+            {
+                string message = string.Join(Environment.NewLine, logs);
+                MessageBox.Show(message, "Danh sách dòng bị xóa",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                MessageBox.Show("Không có dòng nào bị xóa.", "Kết quả",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
         }
+
+
 
 
         private void changeSKU_diff_kg_btn_Click(object sender, EventArgs e)
@@ -786,12 +794,16 @@ namespace RauViet.ui
             // Dictionary để đếm số lần gặp SKU
             Dictionary<string, int> skuCounter = new Dictionary<string, int>();
 
+            // Danh sách log các SKU bị đổi
+            List<string> logs = new List<string>();
+
             foreach (DataGridViewRow row in dataGV.Rows)
             {
                 if (row.IsNewRow) continue;
 
                 string sku = row.Cells["SKU"].Value?.ToString().Trim();
                 string package = row.Cells["Package"].Value?.ToString().Trim().ToLower();
+                string productName = row.Cells["ProductNameVN"].Value?.ToString().Trim(); // giả sử có cột ProductName
 
                 if (string.IsNullOrEmpty(sku)) continue;
 
@@ -806,17 +818,33 @@ namespace RauViet.ui
                     if (!string.Equals(package, "kg", StringComparison.OrdinalIgnoreCase))
                     {
                         skuCounter[sku]++; // tăng số đếm
-                        row.Cells["SKU"].Value = sku + skuCounter[sku];
+                        string newSku = sku + skuCounter[sku];
+
+                        // Ghi log trước khi đổi
+                        logs.Add($"SKU đổi: {sku} → {newSku} | Product: {productName}");
+
+                        // Đổi SKU trong DataGridView
+                        row.Cells["SKU"].Value = newSku;
                     }
                     // nếu Package = "kg" thì giữ nguyên
                 }
             }
 
-            MessageBox.Show("Đã chuẩn hóa SKU cho các dòng trùng lặp.", "Kết quả",
-                MessageBoxButtons.OK, MessageBoxIcon.Information);
+            // Hiển thị log nếu có thay đổi
+            if (logs.Count > 0)
+            {
+                string message = string.Join(Environment.NewLine, logs);
+                MessageBox.Show(message, "Danh sách SKU bị đổi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                MessageBox.Show("Không có SKU nào bị đổi.", "Kết quả",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
         }
 
-        
+
+
     }
 }
 

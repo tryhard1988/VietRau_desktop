@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
+            this.title_lb = new System.Windows.Forms.Label();
             this.LOT_menuitem = new System.Windows.Forms.MenuStrip();
             this.KhachHang_menuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.danhSáchSảnPhẩmToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -39,14 +40,14 @@
             this.order_menuitem = new System.Windows.Forms.ToolStripMenuItem();
             this.dsDongThung_menuitem = new System.Windows.Forms.ToolStripMenuItem();
             this.do417_menuitem = new System.Windows.Forms.ToolStripMenuItem();
+            this.lotCode_menuitem = new System.Windows.Forms.ToolStripMenuItem();
             this.xuấtExcelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dkkd_menuitem = new System.Windows.Forms.ToolStripMenuItem();
-            this.content_panel = new System.Windows.Forms.Panel();
             this.phyto_menuitem = new System.Windows.Forms.ToolStripMenuItem();
             this.invoice_menuitem = new System.Windows.Forms.ToolStripMenuItem();
             this.packingTotal_menuitem = new System.Windows.Forms.ToolStripMenuItem();
-            this.lotCode_menuitem = new System.Windows.Forms.ToolStripMenuItem();
-            this.title_lb = new System.Windows.Forms.Label();
+            this.customerDetailPacking_mi = new System.Windows.Forms.ToolStripMenuItem();
+            this.content_panel = new System.Windows.Forms.Panel();
             this.panel1.SuspendLayout();
             this.LOT_menuitem.SuspendLayout();
             this.SuspendLayout();
@@ -60,6 +61,18 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(1388, 56);
             this.panel1.TabIndex = 0;
+            // 
+            // title_lb
+            // 
+            this.title_lb.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.title_lb.AutoSize = true;
+            this.title_lb.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.title_lb.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
+            this.title_lb.Location = new System.Drawing.Point(595, 30);
+            this.title_lb.Name = "title_lb";
+            this.title_lb.Size = new System.Drawing.Size(68, 23);
+            this.title_lb.TabIndex = 19;
+            this.title_lb.Text = "label1";
             // 
             // LOT_menuitem
             // 
@@ -124,7 +137,7 @@
             // 
             this.order_menuitem.Name = "order_menuitem";
             this.order_menuitem.Size = new System.Drawing.Size(180, 22);
-            this.order_menuitem.Text = "Tạo Đơn hàng";
+            this.order_menuitem.Text = "Đơn hàng";
             // 
             // dsDongThung_menuitem
             // 
@@ -138,13 +151,20 @@
             this.do417_menuitem.Size = new System.Drawing.Size(180, 22);
             this.do417_menuitem.Text = "Dò 417";
             // 
+            // lotCode_menuitem
+            // 
+            this.lotCode_menuitem.Name = "lotCode_menuitem";
+            this.lotCode_menuitem.Size = new System.Drawing.Size(180, 22);
+            this.lotCode_menuitem.Text = "Nhập Mã LOT";
+            // 
             // xuấtExcelToolStripMenuItem
             // 
             this.xuấtExcelToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.dkkd_menuitem,
             this.phyto_menuitem,
             this.invoice_menuitem,
-            this.packingTotal_menuitem});
+            this.packingTotal_menuitem,
+            this.customerDetailPacking_mi});
             this.xuấtExcelToolStripMenuItem.Name = "xuấtExcelToolStripMenuItem";
             this.xuấtExcelToolStripMenuItem.Size = new System.Drawing.Size(79, 21);
             this.xuấtExcelToolStripMenuItem.Text = "Xuất Excel";
@@ -152,8 +172,32 @@
             // dkkd_menuitem
             // 
             this.dkkd_menuitem.Name = "dkkd_menuitem";
-            this.dkkd_menuitem.Size = new System.Drawing.Size(186, 22);
+            this.dkkd_menuitem.Size = new System.Drawing.Size(217, 22);
             this.dkkd_menuitem.Text = "Đăng Ký Kiểm Dịch";
+            // 
+            // phyto_menuitem
+            // 
+            this.phyto_menuitem.Name = "phyto_menuitem";
+            this.phyto_menuitem.Size = new System.Drawing.Size(217, 22);
+            this.phyto_menuitem.Text = "PHYTO";
+            // 
+            // invoice_menuitem
+            // 
+            this.invoice_menuitem.Name = "invoice_menuitem";
+            this.invoice_menuitem.Size = new System.Drawing.Size(217, 22);
+            this.invoice_menuitem.Text = "INVOICE";
+            // 
+            // packingTotal_menuitem
+            // 
+            this.packingTotal_menuitem.Name = "packingTotal_menuitem";
+            this.packingTotal_menuitem.Size = new System.Drawing.Size(217, 22);
+            this.packingTotal_menuitem.Text = "Packing Total";
+            // 
+            // customerDetailPacking_mi
+            // 
+            this.customerDetailPacking_mi.Name = "customerDetailPacking_mi";
+            this.customerDetailPacking_mi.Size = new System.Drawing.Size(217, 22);
+            this.customerDetailPacking_mi.Text = "Customer Detail Packing";
             // 
             // content_panel
             // 
@@ -162,42 +206,6 @@
             this.content_panel.Name = "content_panel";
             this.content_panel.Size = new System.Drawing.Size(1388, 491);
             this.content_panel.TabIndex = 1;
-            // 
-            // phyto_menuitem
-            // 
-            this.phyto_menuitem.Name = "phyto_menuitem";
-            this.phyto_menuitem.Size = new System.Drawing.Size(186, 22);
-            this.phyto_menuitem.Text = "PHYTO";
-            // 
-            // invoice_menuitem
-            // 
-            this.invoice_menuitem.Name = "invoice_menuitem";
-            this.invoice_menuitem.Size = new System.Drawing.Size(186, 22);
-            this.invoice_menuitem.Text = "INVOICE";
-            // 
-            // packingTotal_menuitem
-            // 
-            this.packingTotal_menuitem.Name = "packingTotal_menuitem";
-            this.packingTotal_menuitem.Size = new System.Drawing.Size(186, 22);
-            this.packingTotal_menuitem.Text = "Packing Total";
-            // 
-            // lotCode_menuitem
-            // 
-            this.lotCode_menuitem.Name = "lotCode_menuitem";
-            this.lotCode_menuitem.Size = new System.Drawing.Size(180, 22);
-            this.lotCode_menuitem.Text = "Nhập Mã LOT";
-            // 
-            // title_lb
-            // 
-            this.title_lb.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.title_lb.AutoSize = true;
-            this.title_lb.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.title_lb.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
-            this.title_lb.Location = new System.Drawing.Point(595, 30);
-            this.title_lb.Name = "title_lb";
-            this.title_lb.Size = new System.Drawing.Size(68, 23);
-            this.title_lb.TabIndex = 19;
-            this.title_lb.Text = "label1";
             // 
             // QL_kho
             // 
@@ -237,5 +245,6 @@
         private System.Windows.Forms.ToolStripMenuItem packingTotal_menuitem;
         private System.Windows.Forms.ToolStripMenuItem lotCode_menuitem;
         private System.Windows.Forms.Label title_lb;
+        private System.Windows.Forms.ToolStripMenuItem customerDetailPacking_mi;
     }
 }

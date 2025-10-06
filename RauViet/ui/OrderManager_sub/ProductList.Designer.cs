@@ -30,22 +30,6 @@ namespace RauViet.ui
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
-            this.id_tb = new System.Windows.Forms.TextBox();
-            this.label11 = new System.Windows.Forms.Label();
-            this.status_lb = new System.Windows.Forms.Label();
-            this.priceCNF_tb = new System.Windows.Forms.TextBox();
-            this.label8 = new System.Windows.Forms.Label();
-            this.delete_btn = new System.Windows.Forms.Button();
-            this.loading_lb = new System.Windows.Forms.Label();
-            this.newCustomerBtn = new System.Windows.Forms.Button();
-            this.LuuThayDoiBtn = new System.Windows.Forms.Button();
-            this.nameEN_tb = new System.Windows.Forms.TextBox();
-            this.nameVN_tb = new System.Windows.Forms.TextBox();
-            this.botanicalName_tb = new System.Windows.Forms.TextBox();
-            this.label5 = new System.Windows.Forms.Label();
-            this.label12 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.dataGV = new System.Windows.Forms.DataGridView();
             this.info_gb = new System.Windows.Forms.GroupBox();
             this.sku_cbb = new System.Windows.Forms.ComboBox();
             this.packing_panel = new System.Windows.Forms.Panel();
@@ -63,9 +47,27 @@ namespace RauViet.ui
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
+            this.id_tb = new System.Windows.Forms.TextBox();
+            this.label11 = new System.Windows.Forms.Label();
+            this.status_lb = new System.Windows.Forms.Label();
+            this.priceCNF_tb = new System.Windows.Forms.TextBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.delete_btn = new System.Windows.Forms.Button();
+            this.loading_lb = new System.Windows.Forms.Label();
+            this.newCustomerBtn = new System.Windows.Forms.Button();
+            this.LuuThayDoiBtn = new System.Windows.Forms.Button();
+            this.nameEN_tb = new System.Windows.Forms.TextBox();
+            this.nameVN_tb = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label15 = new System.Windows.Forms.Label();
+            this.search_tb = new System.Windows.Forms.TextBox();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.dataGV = new System.Windows.Forms.DataGridView();
             this.panel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
             this.info_gb.SuspendLayout();
+            this.panel2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
             this.SuspendLayout();
             // 
             // panel1
@@ -82,175 +84,13 @@ namespace RauViet.ui
             this.panel1.Controls.Add(this.LuuThayDoiBtn);
             this.panel1.Controls.Add(this.nameEN_tb);
             this.panel1.Controls.Add(this.nameVN_tb);
-            this.panel1.Controls.Add(this.botanicalName_tb);
             this.panel1.Controls.Add(this.label5);
-            this.panel1.Controls.Add(this.label12);
             this.panel1.Controls.Add(this.label4);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Right;
             this.panel1.Location = new System.Drawing.Point(861, 0);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(403, 681);
             this.panel1.TabIndex = 0;
-            // 
-            // id_tb
-            // 
-            this.id_tb.Location = new System.Drawing.Point(40, 621);
-            this.id_tb.Name = "id_tb";
-            this.id_tb.ReadOnly = true;
-            this.id_tb.Size = new System.Drawing.Size(31, 20);
-            this.id_tb.TabIndex = 42;
-            this.id_tb.Visible = false;
-            // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(24, 621);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(18, 13);
-            this.label11.TabIndex = 41;
-            this.label11.Text = "ID";
-            this.label11.Visible = false;
-            // 
-            // status_lb
-            // 
-            this.status_lb.AutoSize = true;
-            this.status_lb.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.status_lb.Location = new System.Drawing.Point(166, 76);
-            this.status_lb.Name = "status_lb";
-            this.status_lb.Size = new System.Drawing.Size(59, 23);
-            this.status_lb.TabIndex = 40;
-            this.status_lb.Text = "status";
-            // 
-            // priceCNF_tb
-            // 
-            this.priceCNF_tb.Location = new System.Drawing.Point(201, 625);
-            this.priceCNF_tb.Name = "priceCNF_tb";
-            this.priceCNF_tb.ReadOnly = true;
-            this.priceCNF_tb.Size = new System.Drawing.Size(24, 20);
-            this.priceCNF_tb.TabIndex = 35;
-            this.priceCNF_tb.Visible = false;
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(130, 628);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(95, 13);
-            this.label8.TabIndex = 30;
-            this.label8.Text = "Giá CNF (CHF/Kg)";
-            this.label8.Visible = false;
-            // 
-            // delete_btn
-            // 
-            this.delete_btn.BackColor = System.Drawing.Color.Red;
-            this.delete_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.delete_btn.Location = new System.Drawing.Point(253, 447);
-            this.delete_btn.Name = "delete_btn";
-            this.delete_btn.Size = new System.Drawing.Size(92, 54);
-            this.delete_btn.TabIndex = 27;
-            this.delete_btn.Text = "Xóa";
-            this.delete_btn.UseVisualStyleBackColor = false;
-            // 
-            // loading_lb
-            // 
-            this.loading_lb.AutoSize = true;
-            this.loading_lb.Dock = System.Windows.Forms.DockStyle.Top;
-            this.loading_lb.Location = new System.Drawing.Point(0, 0);
-            this.loading_lb.Name = "loading_lb";
-            this.loading_lb.Size = new System.Drawing.Size(55, 13);
-            this.loading_lb.TabIndex = 10;
-            this.loading_lb.Text = "loading_lb";
-            // 
-            // newCustomerBtn
-            // 
-            this.newCustomerBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
-            this.newCustomerBtn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.newCustomerBtn.Location = new System.Drawing.Point(155, 447);
-            this.newCustomerBtn.Name = "newCustomerBtn";
-            this.newCustomerBtn.Size = new System.Drawing.Size(92, 54);
-            this.newCustomerBtn.TabIndex = 25;
-            this.newCustomerBtn.Text = "Tạo mới";
-            this.newCustomerBtn.UseVisualStyleBackColor = false;
-            // 
-            // LuuThayDoiBtn
-            // 
-            this.LuuThayDoiBtn.BackColor = System.Drawing.SystemColors.Highlight;
-            this.LuuThayDoiBtn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LuuThayDoiBtn.Location = new System.Drawing.Point(57, 447);
-            this.LuuThayDoiBtn.Name = "LuuThayDoiBtn";
-            this.LuuThayDoiBtn.Size = new System.Drawing.Size(92, 54);
-            this.LuuThayDoiBtn.TabIndex = 25;
-            this.LuuThayDoiBtn.Text = "Lưu";
-            this.LuuThayDoiBtn.UseVisualStyleBackColor = false;
-            // 
-            // nameEN_tb
-            // 
-            this.nameEN_tb.Location = new System.Drawing.Point(85, 595);
-            this.nameEN_tb.Name = "nameEN_tb";
-            this.nameEN_tb.ReadOnly = true;
-            this.nameEN_tb.Size = new System.Drawing.Size(50, 20);
-            this.nameEN_tb.TabIndex = 20;
-            this.nameEN_tb.Visible = false;
-            // 
-            // nameVN_tb
-            // 
-            this.nameVN_tb.Location = new System.Drawing.Point(267, 599);
-            this.nameVN_tb.Name = "nameVN_tb";
-            this.nameVN_tb.ReadOnly = true;
-            this.nameVN_tb.Size = new System.Drawing.Size(50, 20);
-            this.nameVN_tb.TabIndex = 19;
-            this.nameVN_tb.Visible = false;
-            // 
-            // botanicalName_tb
-            // 
-            this.botanicalName_tb.Location = new System.Drawing.Point(322, 632);
-            this.botanicalName_tb.Name = "botanicalName_tb";
-            this.botanicalName_tb.ReadOnly = true;
-            this.botanicalName_tb.Size = new System.Drawing.Size(27, 20);
-            this.botanicalName_tb.TabIndex = 18;
-            this.botanicalName_tb.Visible = false;
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(23, 598);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(73, 13);
-            this.label5.TabIndex = 13;
-            this.label5.Text = "Tên tiếng anh";
-            this.label5.Visible = false;
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(247, 632);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(82, 13);
-            this.label12.TabIndex = 11;
-            this.label12.Text = "Botanical Name";
-            this.label12.Visible = false;
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(202, 602);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(72, 13);
-            this.label4.TabIndex = 12;
-            this.label4.Text = "Tên tiếng việt";
-            this.label4.Visible = false;
-            // 
-            // dataGV
-            // 
-            this.dataGV.AllowUserToAddRows = false;
-            this.dataGV.AllowUserToDeleteRows = false;
-            this.dataGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGV.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dataGV.Location = new System.Drawing.Point(0, 0);
-            this.dataGV.Name = "dataGV";
-            this.dataGV.ReadOnly = true;
-            this.dataGV.Size = new System.Drawing.Size(861, 681);
-            this.dataGV.TabIndex = 2;
             // 
             // info_gb
             // 
@@ -406,20 +246,194 @@ namespace RauViet.ui
             this.label1.TabIndex = 47;
             this.label1.Text = "Sản Phẩm:";
             // 
+            // id_tb
+            // 
+            this.id_tb.Location = new System.Drawing.Point(40, 621);
+            this.id_tb.Name = "id_tb";
+            this.id_tb.ReadOnly = true;
+            this.id_tb.Size = new System.Drawing.Size(31, 20);
+            this.id_tb.TabIndex = 42;
+            this.id_tb.Visible = false;
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(24, 621);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(18, 13);
+            this.label11.TabIndex = 41;
+            this.label11.Text = "ID";
+            this.label11.Visible = false;
+            // 
+            // status_lb
+            // 
+            this.status_lb.AutoSize = true;
+            this.status_lb.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.status_lb.Location = new System.Drawing.Point(166, 76);
+            this.status_lb.Name = "status_lb";
+            this.status_lb.Size = new System.Drawing.Size(59, 23);
+            this.status_lb.TabIndex = 40;
+            this.status_lb.Text = "status";
+            // 
+            // priceCNF_tb
+            // 
+            this.priceCNF_tb.Location = new System.Drawing.Point(201, 625);
+            this.priceCNF_tb.Name = "priceCNF_tb";
+            this.priceCNF_tb.ReadOnly = true;
+            this.priceCNF_tb.Size = new System.Drawing.Size(24, 20);
+            this.priceCNF_tb.TabIndex = 35;
+            this.priceCNF_tb.Visible = false;
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(130, 628);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(95, 13);
+            this.label8.TabIndex = 30;
+            this.label8.Text = "Giá CNF (CHF/Kg)";
+            this.label8.Visible = false;
+            // 
+            // delete_btn
+            // 
+            this.delete_btn.BackColor = System.Drawing.Color.Red;
+            this.delete_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.delete_btn.Location = new System.Drawing.Point(253, 447);
+            this.delete_btn.Name = "delete_btn";
+            this.delete_btn.Size = new System.Drawing.Size(92, 54);
+            this.delete_btn.TabIndex = 27;
+            this.delete_btn.Text = "Xóa";
+            this.delete_btn.UseVisualStyleBackColor = false;
+            // 
+            // loading_lb
+            // 
+            this.loading_lb.AutoSize = true;
+            this.loading_lb.Dock = System.Windows.Forms.DockStyle.Top;
+            this.loading_lb.Location = new System.Drawing.Point(0, 0);
+            this.loading_lb.Name = "loading_lb";
+            this.loading_lb.Size = new System.Drawing.Size(55, 13);
+            this.loading_lb.TabIndex = 10;
+            this.loading_lb.Text = "loading_lb";
+            // 
+            // newCustomerBtn
+            // 
+            this.newCustomerBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
+            this.newCustomerBtn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.newCustomerBtn.Location = new System.Drawing.Point(155, 447);
+            this.newCustomerBtn.Name = "newCustomerBtn";
+            this.newCustomerBtn.Size = new System.Drawing.Size(92, 54);
+            this.newCustomerBtn.TabIndex = 25;
+            this.newCustomerBtn.Text = "Tạo mới";
+            this.newCustomerBtn.UseVisualStyleBackColor = false;
+            // 
+            // LuuThayDoiBtn
+            // 
+            this.LuuThayDoiBtn.BackColor = System.Drawing.SystemColors.Highlight;
+            this.LuuThayDoiBtn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.LuuThayDoiBtn.Location = new System.Drawing.Point(57, 447);
+            this.LuuThayDoiBtn.Name = "LuuThayDoiBtn";
+            this.LuuThayDoiBtn.Size = new System.Drawing.Size(92, 54);
+            this.LuuThayDoiBtn.TabIndex = 25;
+            this.LuuThayDoiBtn.Text = "Lưu";
+            this.LuuThayDoiBtn.UseVisualStyleBackColor = false;
+            // 
+            // nameEN_tb
+            // 
+            this.nameEN_tb.Location = new System.Drawing.Point(85, 595);
+            this.nameEN_tb.Name = "nameEN_tb";
+            this.nameEN_tb.ReadOnly = true;
+            this.nameEN_tb.Size = new System.Drawing.Size(50, 20);
+            this.nameEN_tb.TabIndex = 20;
+            this.nameEN_tb.Visible = false;
+            // 
+            // nameVN_tb
+            // 
+            this.nameVN_tb.Location = new System.Drawing.Point(267, 599);
+            this.nameVN_tb.Name = "nameVN_tb";
+            this.nameVN_tb.ReadOnly = true;
+            this.nameVN_tb.Size = new System.Drawing.Size(50, 20);
+            this.nameVN_tb.TabIndex = 19;
+            this.nameVN_tb.Visible = false;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(23, 598);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(73, 13);
+            this.label5.TabIndex = 13;
+            this.label5.Text = "Tên tiếng anh";
+            this.label5.Visible = false;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(202, 602);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(72, 13);
+            this.label4.TabIndex = 12;
+            this.label4.Text = "Tên tiếng việt";
+            this.label4.Visible = false;
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label15.Location = new System.Drawing.Point(531, 13);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(66, 16);
+            this.label15.TabIndex = 62;
+            this.label15.Text = "Tìm Kiếm:";
+            // 
+            // search_tb
+            // 
+            this.search_tb.BackColor = System.Drawing.SystemColors.InactiveBorder;
+            this.search_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.search_tb.Location = new System.Drawing.Point(603, 9);
+            this.search_tb.Name = "search_tb";
+            this.search_tb.Size = new System.Drawing.Size(252, 23);
+            this.search_tb.TabIndex = 61;
+            // 
+            // panel2
+            // 
+            this.panel2.BackColor = System.Drawing.SystemColors.ActiveBorder;
+            this.panel2.Controls.Add(this.search_tb);
+            this.panel2.Controls.Add(this.label15);
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel2.Location = new System.Drawing.Point(0, 0);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(861, 42);
+            this.panel2.TabIndex = 63;
+            // 
+            // dataGV
+            // 
+            this.dataGV.AllowUserToAddRows = false;
+            this.dataGV.AllowUserToDeleteRows = false;
+            this.dataGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGV.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dataGV.Location = new System.Drawing.Point(0, 42);
+            this.dataGV.Name = "dataGV";
+            this.dataGV.ReadOnly = true;
+            this.dataGV.Size = new System.Drawing.Size(861, 639);
+            this.dataGV.TabIndex = 64;
+            // 
             // ProductList
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1264, 681);
             this.Controls.Add(this.dataGV);
+            this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.Name = "ProductList";
             this.Text = "FormTableData";
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGV)).EndInit();
             this.info_gb.ResumeLayout(false);
             this.info_gb.PerformLayout();
+            this.panel2.ResumeLayout(false);
+            this.panel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGV)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -434,14 +448,11 @@ namespace RauViet.ui
         private System.Windows.Forms.Button newCustomerBtn;
         private System.Windows.Forms.Label loading_lb;
         private System.Windows.Forms.Button delete_btn;
-        private System.Windows.Forms.DataGridView dataGV;
         private System.Windows.Forms.TextBox priceCNF_tb;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label status_lb;
         private System.Windows.Forms.TextBox id_tb;
         private System.Windows.Forms.Label label11;
-        private System.Windows.Forms.TextBox botanicalName_tb;
-        private System.Windows.Forms.Label label12;
         private System.Windows.Forms.GroupBox info_gb;
         private System.Windows.Forms.ComboBox sku_cbb;
         private System.Windows.Forms.Panel packing_panel;
@@ -459,5 +470,9 @@ namespace RauViet.ui
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.TextBox search_tb;
+        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.DataGridView dataGV;
     }
 }
