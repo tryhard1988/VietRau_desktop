@@ -37,20 +37,20 @@ namespace RauViet.ui
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.panel2 = new System.Windows.Forms.Panel();
-            this.dataGV = new System.Windows.Forms.DataGridView();
-            this.panel3 = new System.Windows.Forms.Panel();
-            this.label1 = new System.Windows.Forms.Label();
             this.panel4 = new System.Windows.Forms.Panel();
-            this.label2 = new System.Windows.Forms.Label();
-            this.cusOrderGV = new System.Windows.Forms.DataGridView();
             this.cartonSizeGV = new System.Windows.Forms.DataGridView();
+            this.label2 = new System.Windows.Forms.Label();
+            this.panel3 = new System.Windows.Forms.Panel();
+            this.cusOrderGV = new System.Windows.Forms.DataGridView();
+            this.label1 = new System.Windows.Forms.Label();
+            this.dataGV = new System.Windows.Forms.DataGridView();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
-            this.panel3.SuspendLayout();
             this.panel4.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.cusOrderGV)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.cartonSizeGV)).BeginInit();
+            this.panel3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.cusOrderGV)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
             this.SuspendLayout();
             // 
             // panel1
@@ -120,40 +120,6 @@ namespace RauViet.ui
             this.panel2.Size = new System.Drawing.Size(297, 681);
             this.panel2.TabIndex = 14;
             // 
-            // dataGV
-            // 
-            this.dataGV.AllowUserToAddRows = false;
-            this.dataGV.AllowUserToDeleteRows = false;
-            this.dataGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGV.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dataGV.Location = new System.Drawing.Point(0, 0);
-            this.dataGV.Name = "dataGV";
-            this.dataGV.ReadOnly = true;
-            this.dataGV.Size = new System.Drawing.Size(787, 681);
-            this.dataGV.TabIndex = 15;
-            // 
-            // panel3
-            // 
-            this.panel3.Controls.Add(this.cusOrderGV);
-            this.panel3.Controls.Add(this.label1);
-            this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel3.Location = new System.Drawing.Point(0, 0);
-            this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(297, 681);
-            this.panel3.TabIndex = 14;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.label1.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.label1.Location = new System.Drawing.Point(0, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(255, 16);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "THỐNG KÊ SỐ THÙNG THEO KHÁCH HÀNG";
-            // 
             // panel4
             // 
             this.panel4.Controls.Add(this.cartonSizeGV);
@@ -163,6 +129,18 @@ namespace RauViet.ui
             this.panel4.Name = "panel4";
             this.panel4.Size = new System.Drawing.Size(297, 353);
             this.panel4.TabIndex = 15;
+            // 
+            // cartonSizeGV
+            // 
+            this.cartonSizeGV.AllowUserToAddRows = false;
+            this.cartonSizeGV.AllowUserToDeleteRows = false;
+            this.cartonSizeGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.cartonSizeGV.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.cartonSizeGV.Location = new System.Drawing.Point(0, 16);
+            this.cartonSizeGV.Name = "cartonSizeGV";
+            this.cartonSizeGV.ReadOnly = true;
+            this.cartonSizeGV.Size = new System.Drawing.Size(297, 337);
+            this.cartonSizeGV.TabIndex = 14;
             // 
             // label2
             // 
@@ -176,6 +154,16 @@ namespace RauViet.ui
             this.label2.TabIndex = 1;
             this.label2.Text = "THỐNG KÊ SỐ THÙNG THEO SIZE ";
             // 
+            // panel3
+            // 
+            this.panel3.Controls.Add(this.cusOrderGV);
+            this.panel3.Controls.Add(this.label1);
+            this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel3.Location = new System.Drawing.Point(0, 0);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(297, 681);
+            this.panel3.TabIndex = 14;
+            // 
             // cusOrderGV
             // 
             this.cusOrderGV.AllowUserToAddRows = false;
@@ -188,17 +176,29 @@ namespace RauViet.ui
             this.cusOrderGV.Size = new System.Drawing.Size(297, 665);
             this.cusOrderGV.TabIndex = 12;
             // 
-            // cartonSizeGV
+            // label1
             // 
-            this.cartonSizeGV.AllowUserToAddRows = false;
-            this.cartonSizeGV.AllowUserToDeleteRows = false;
-            this.cartonSizeGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.cartonSizeGV.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.cartonSizeGV.Location = new System.Drawing.Point(0, 16);
-            this.cartonSizeGV.Name = "cartonSizeGV";
-            this.cartonSizeGV.ReadOnly = true;
-            this.cartonSizeGV.Size = new System.Drawing.Size(297, 337);
-            this.cartonSizeGV.TabIndex = 14;
+            this.label1.AutoSize = true;
+            this.label1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.label1.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.label1.Location = new System.Drawing.Point(0, 0);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(255, 16);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "THỐNG KÊ SỐ THÙNG THEO KHÁCH HÀNG";
+            // 
+            // dataGV
+            // 
+            this.dataGV.AllowUserToAddRows = false;
+            this.dataGV.AllowUserToDeleteRows = false;
+            this.dataGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGV.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dataGV.Location = new System.Drawing.Point(0, 0);
+            this.dataGV.Name = "dataGV";
+            this.dataGV.ReadOnly = true;
+            this.dataGV.Size = new System.Drawing.Size(787, 681);
+            this.dataGV.TabIndex = 15;
             // 
             // INVOICE
             // 
@@ -213,13 +213,13 @@ namespace RauViet.ui
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dataGV)).EndInit();
-            this.panel3.ResumeLayout(false);
-            this.panel3.PerformLayout();
             this.panel4.ResumeLayout(false);
             this.panel4.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.cusOrderGV)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.cartonSizeGV)).EndInit();
+            this.panel3.ResumeLayout(false);
+            this.panel3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.cusOrderGV)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGV)).EndInit();
             this.ResumeLayout(false);
 
         }

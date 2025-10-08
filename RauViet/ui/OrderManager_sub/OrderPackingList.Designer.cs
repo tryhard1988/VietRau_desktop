@@ -31,6 +31,7 @@ namespace RauViet.ui
         {
             this.components = new System.ComponentModel.Container();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.previewPrint_PGH_btn = new System.Windows.Forms.Button();
             this.InPhieuGiaoHang_btn = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.autoFillCartonSize_btn = new System.Windows.Forms.Button();
@@ -48,6 +49,7 @@ namespace RauViet.ui
             this.carton_GV = new System.Windows.Forms.DataGridView();
             this.fillter_btn = new System.Windows.Forms.Button();
             this.panel4 = new System.Windows.Forms.Panel();
+            this.previewPrint_PT_btn = new System.Windows.Forms.Button();
             this.print_btn = new System.Windows.Forms.Button();
             this.loading_lb = new System.Windows.Forms.Label();
             this.assignPCSReal_btn = new System.Windows.Forms.Button();
@@ -57,8 +59,6 @@ namespace RauViet.ui
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.dataGV = new System.Windows.Forms.DataGridView();
-            this.previewPrint_PGH_btn = new System.Windows.Forms.Button();
-            this.previewPrint_PT_btn = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.panel3.SuspendLayout();
@@ -85,6 +85,17 @@ namespace RauViet.ui
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(495, 681);
             this.panel1.TabIndex = 9;
+            // 
+            // previewPrint_PGH_btn
+            // 
+            this.previewPrint_PGH_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.previewPrint_PGH_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.previewPrint_PGH_btn.Location = new System.Drawing.Point(165, 450);
+            this.previewPrint_PGH_btn.Name = "previewPrint_PGH_btn";
+            this.previewPrint_PGH_btn.Size = new System.Drawing.Size(162, 45);
+            this.previewPrint_PGH_btn.TabIndex = 54;
+            this.previewPrint_PGH_btn.Text = "Xem Trước Bảng In";
+            this.previewPrint_PGH_btn.UseVisualStyleBackColor = false;
             // 
             // InPhieuGiaoHang_btn
             // 
@@ -258,6 +269,17 @@ namespace RauViet.ui
             this.panel4.Size = new System.Drawing.Size(162, 155);
             this.panel4.TabIndex = 51;
             // 
+            // previewPrint_PT_btn
+            // 
+            this.previewPrint_PT_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.previewPrint_PT_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.previewPrint_PT_btn.Location = new System.Drawing.Point(3, 53);
+            this.previewPrint_PT_btn.Name = "previewPrint_PT_btn";
+            this.previewPrint_PT_btn.Size = new System.Drawing.Size(162, 43);
+            this.previewPrint_PT_btn.TabIndex = 46;
+            this.previewPrint_PT_btn.Text = "Xem Trước Bản In";
+            this.previewPrint_PT_btn.UseVisualStyleBackColor = false;
+            // 
             // print_btn
             // 
             this.print_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
@@ -345,28 +367,6 @@ namespace RauViet.ui
             this.dataGV.ReadOnly = true;
             this.dataGV.Size = new System.Drawing.Size(851, 681);
             this.dataGV.TabIndex = 10;
-            // 
-            // previewPrint_PGH_btn
-            // 
-            this.previewPrint_PGH_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
-            this.previewPrint_PGH_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.previewPrint_PGH_btn.Location = new System.Drawing.Point(165, 450);
-            this.previewPrint_PGH_btn.Name = "previewPrint_PGH_btn";
-            this.previewPrint_PGH_btn.Size = new System.Drawing.Size(162, 45);
-            this.previewPrint_PGH_btn.TabIndex = 54;
-            this.previewPrint_PGH_btn.Text = "Xem Trước Bảng In";
-            this.previewPrint_PGH_btn.UseVisualStyleBackColor = false;
-            // 
-            // previewPrint_PT_btn
-            // 
-            this.previewPrint_PT_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
-            this.previewPrint_PT_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.previewPrint_PT_btn.Location = new System.Drawing.Point(3, 53);
-            this.previewPrint_PT_btn.Name = "previewPrint_PT_btn";
-            this.previewPrint_PT_btn.Size = new System.Drawing.Size(162, 43);
-            this.previewPrint_PT_btn.TabIndex = 46;
-            this.previewPrint_PT_btn.Text = "Xem Trước Bản In";
-            this.previewPrint_PT_btn.UseVisualStyleBackColor = false;
             // 
             // OrderPackingList
             // 

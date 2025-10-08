@@ -243,19 +243,6 @@ namespace RauViet.ui
             }
         }
         
-        private int createID()
-        {
-            var existingIds = dataGV.Rows
-            .Cast<DataGridViewRow>()
-            .Where(r => !r.IsNewRow && r.Cells["ProductPackingID"].Value != null)
-            .Select(r => Convert.ToInt32(r.Cells["ProductPackingID"].Value))
-            .ToList();
-
-            int newCustomerID = existingIds.Count > 0 ? existingIds.Max() + 1 : 1;
-
-            return newCustomerID;
-        }
-
         private void dataGV_CellClick(object sender, EventArgs e)
         {
             updateDataTextBoxFlowSKU();            
@@ -343,20 +330,18 @@ namespace RauViet.ui
             {
                 try
                 {
-                    bool isScussess = await SQLManager.Instance.insertProductpackingAsync(SKU, BarCode, PLU, Amount, packing, barCodeEAN13, artNr, GGN);
-                    if (isScussess == true)
+                    int newId = await SQLManager.Instance.insertProductpackingAsync(SKU, BarCode, PLU, Amount, packing, barCodeEAN13, artNr, GGN);
+                    if (newId > 0)
                     {
                         DataRowView productSKUData = (DataRowView)sku_cbb.SelectedItem;
                         DataTable dataTable = (DataTable)dataGV.DataSource;
                         DataRow drToAdd = dataTable.NewRow();
 
-                        int newID = createID();
-
                         string package = productSKUData["Package"].ToString();
                         decimal amount = Amount ?? 0;
                         string resultAmount = amount.ToString("0.##");
 
-                        drToAdd["ProductPackingID"] = newID;
+                        drToAdd["ProductPackingID"] = newId;
                         drToAdd["SKU"] = SKU;
                         drToAdd["BarCode"] = BarCode;
                         drToAdd["PLU"] = PLU;
@@ -383,7 +368,7 @@ namespace RauViet.ui
 
                         // SKU_tb.Text = newCustomerID.ToString();
 
-                        id_tb.Text = newID.ToString();
+                        id_tb.Text = newId.ToString();
                         dataTable.Rows.Add(drToAdd);
                         dataTable.AcceptChanges();
 

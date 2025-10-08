@@ -1,10 +1,14 @@
-﻿using RauViet.ui;
+﻿using DocumentFormat.OpenXml.Drawing.Charts;
+using DocumentFormat.OpenXml.Spreadsheet;
+using RauViet.ui;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO.Packaging;
 using System.Threading.Tasks;
+using System.Windows.Forms;
+using DataTable = System.Data.DataTable;
 
 namespace RauViet.classes
 {
@@ -27,6 +31,27 @@ namespace RauViet.classes
                     return ins;
                 }
             }
+        }
+
+        public async Task<string> GetPasswordHashFromDatabase(string username)
+        {
+            string hash = "";
+
+            using (SqlConnection con = new SqlConnection(conStr))
+            {
+                await con.OpenAsync();
+                using (var cmd = new SqlCommand("SELECT PasswordHash FROM Users WHERE Username = @Username AND IsActive = 1", con))
+                {
+                    cmd.Parameters.AddWithValue("@Username", username);
+                    var result = await cmd.ExecuteScalarAsync();
+
+                    if (result != DBNull.Value && result != null)
+                        hash = result.ToString();
+                }
+            }
+            
+
+            return hash;
         }
 
         //==============================Customers==============================
@@ -67,9 +92,12 @@ namespace RauViet.classes
             catch { return false; }
         }
 
-        public async Task<bool> insertCustomerAsync(string name, string code)
+        public async Task<int> insertCustomerAsync(string name, string code)
         {
-            string query = "INSERT INTO Customers (FullName, CustomerCode) VALUES (@FullName, @CustomerCode)";
+            int newId = -1;
+            string query = @"INSERT INTO Customers (FullName, CustomerCode) 
+                             OUTPUT INSERTED.CustomerID
+                            VALUES (@FullName, @CustomerCode)";
             try
             {
                 using (SqlConnection con = new SqlConnection(conStr))
@@ -79,12 +107,14 @@ namespace RauViet.classes
                     {
                         cmd.Parameters.AddWithValue("@FullName", name);
                         cmd.Parameters.AddWithValue("@CustomerCode", code);
-                        await cmd.ExecuteNonQueryAsync();
+                        object result = await cmd.ExecuteScalarAsync();
+                        if (result != null)
+                            newId = Convert.ToInt32(result);
                     }
                 }
-                return true;
+                return newId;
             }
-            catch { return false; }
+            catch { return -1; }
         }
 
         public async Task<bool> deleteCustomerAsync(int customerID)
@@ -165,11 +195,14 @@ namespace RauViet.classes
             catch { return false; }
         }
 
-        public async Task<bool> insertProductSKUAsync(string ProductNameVN, string ProductNameEN, string PackingType, string Package, 
+        public async Task<int> insertProductSKUAsync(string ProductNameVN, string ProductNameEN, string PackingType, string Package, 
             string PackingList, string BotanicalName, decimal PriceCNF, int priority, string plantingareaCode, string LOTCodeHeader)
         {
+            int newId = -1;
+
             string query = @"INSERT INTO ProductSKU (ProductNameVN, ProductNameEN, PackingType, Package, PackingList, BotanicalName, PriceCNF, Priority, PlantingAreaCode, LOTCodeHeader)
-                             VALUES (@ProductNameVN, @ProductNameEN, @PackingType, @Package, @PackingList, @BotanicalName, @PriceCNF, @Priority, @PlantingAreaCode, @LOTCodeHeader)";
+                            OUTPUT INSERTED.SKU                             
+                            VALUES (@ProductNameVN, @ProductNameEN, @PackingType, @Package, @PackingList, @BotanicalName, @PriceCNF, @Priority, @PlantingAreaCode, @LOTCodeHeader)";
             try
             {
                 using (SqlConnection con = new SqlConnection(conStr))
@@ -187,12 +220,14 @@ namespace RauViet.classes
                         cmd.Parameters.AddWithValue("@Priority", priority);
                         cmd.Parameters.AddWithValue("@PlantingAreaCode", plantingareaCode);
                         cmd.Parameters.AddWithValue("@LOTCodeHeader", LOTCodeHeader);
-                        await cmd.ExecuteNonQueryAsync();
+                        object result = await cmd.ExecuteScalarAsync();
+                        if (result != null)
+                            newId = Convert.ToInt32(result);
                     }
                 }
-                return true;
+                return newId;
             }
-            catch { return false; }
+            catch { return -1; }
         }
 
         public async Task<bool> deleteProductSKUAsync(int SKU)
@@ -279,9 +314,11 @@ namespace RauViet.classes
             catch { return false; }
         }
 
-        public async Task<bool> insertProductpackingAsync(int SKU, string BarCode, string PLU, int? Amount, string packing, string barCodeEAN13, string artNr, string GGN)
+        public async Task<int> insertProductpackingAsync(int SKU, string BarCode, string PLU, int? Amount, string packing, string barCodeEAN13, string artNr, string GGN)
         {
+            int newId = -1;
             string query = @"INSERT INTO ProductPacking (SKU, BarCode, PLU, Amount, packing, BarCodeEAN13, ArtNr, GGN)
+                            OUTPUT INSERTED.ProductPackingID
                              VALUES (@SKU, @BarCode, @PLU, @Amount, @packing, @BarCodeEAN13, @ArtNr, @GGN)";
             try
             {
@@ -298,12 +335,14 @@ namespace RauViet.classes
                         cmd.Parameters.AddWithValue("@BarCodeEAN13", barCodeEAN13);
                         cmd.Parameters.AddWithValue("@ArtNr", artNr);
                         cmd.Parameters.AddWithValue("@GGN", GGN);
-                        await cmd.ExecuteNonQueryAsync();
+                        object result = await cmd.ExecuteScalarAsync();
+                        if (result != null)
+                            newId = Convert.ToInt32(result);
                     }
                 }
-                return true;
+                return newId;
             }
-            catch { return false; }
+            catch { return -1; }
         }
 
         public async Task<bool> deleteProductpackingAsync(int productPackingID)
@@ -413,9 +452,12 @@ namespace RauViet.classes
             catch { return false; }
         }
 
-        public async Task<bool> insertExportCodeAsync(string exportCode, int exportCodeIndex, DateTime exportDate, decimal? exRate, decimal? shippingCost, int inputBy, int packingBy)
+        public async Task<int> insertExportCodeAsync(string exportCode, int exportCodeIndex, DateTime exportDate, decimal? exRate, decimal? shippingCost, int inputBy, int packingBy)
         {
-            string query = "INSERT INTO ExportCodes (ExportCode, ExportCodeIndex, ExportDate, ExchangeRate, ShippingCost, InputBy, PackingBy) VALUES (@ExportCode, @ExportCodeIndex, @ExportDate, @ExchangeRate, @ShippingCost, @InputBy, @PackingBy)";
+            int newId = -1;
+            string query = @"INSERT INTO ExportCodes (ExportCode, ExportCodeIndex, ExportDate, ExchangeRate, ShippingCost, InputBy, PackingBy) 
+                                OUTPUT INSERTED.ExportCodeID
+                                VALUES (@ExportCode, @ExportCodeIndex, @ExportDate, @ExchangeRate, @ShippingCost, @InputBy, @PackingBy)";
             try
             {
                 using (SqlConnection con = new SqlConnection(conStr))
@@ -431,12 +473,14 @@ namespace RauViet.classes
                         cmd.Parameters.AddWithValue("@ExchangeRate", exRate.HasValue ? (object)exRate.Value : DBNull.Value);
                         cmd.Parameters.AddWithValue("@ShippingCost", shippingCost.HasValue ? (object)shippingCost.Value : DBNull.Value);
 
-                        await cmd.ExecuteNonQueryAsync();
+                        object result = await cmd.ExecuteScalarAsync();
+                        if (result != null)
+                            newId = Convert.ToInt32(result);
                     }
                 }
-                return true;
+                return newId;
             }
-            catch { return false; }
+            catch { return -1; }
         }
 
         public async Task<bool> DeleteExportCodeWithOrdersAsync(int exportCodeID)
@@ -552,9 +596,11 @@ ORDER BY o.ExportCodeID;";
             catch { return false; }
         }
 
-        public async Task<bool> insertOrderAsync(int customerId, int exportCodeId, int packingId, int PCSOther, decimal NWOther, decimal priceCNF)
+        public async Task<int> insertOrderAsync(int customerId, int exportCodeId, int packingId, int PCSOther, decimal NWOther, decimal priceCNF)
         {
+            int newId = -1;
             string query = @"INSERT INTO Orders (CustomerID, ExportCodeID, ProductPackingID, OrderPackingPriceCNF, PCSOther, NWOther)
+                            OUTPUT INSERTED.OrderId
                              VALUES (@CustomerID, @ExportCodeID, @ProductPackingID, @OrderPackingPriceCNF, @PCSOther, @NWOther)";
             try
             {
@@ -569,12 +615,14 @@ ORDER BY o.ExportCodeID;";
                         cmd.Parameters.AddWithValue("@OrderPackingPriceCNF", priceCNF);
                         cmd.Parameters.AddWithValue("@PCSOther", PCSOther);
                         cmd.Parameters.AddWithValue("@NWOther", NWOther);
-                        await cmd.ExecuteNonQueryAsync();
+                        object result = await cmd.ExecuteScalarAsync();
+                        if (result != null)
+                            newId = Convert.ToInt32(result);
                     }
                 }
-                return true;
+                return newId;
             }
-            catch { return false; }
+            catch { return -1; }
         }
 
         public async Task<bool> deleteOrderAsync(int id)
@@ -1041,7 +1089,7 @@ ORDER BY o.ExportCodeID;";
             return dt;
         }
 
-        public async Task<DataTable> GetExportCartonCounts()
+        public async Task<DataTable> GetExportCartonCountsAsync()
         {
             DataTable dt = new DataTable();
             using (SqlConnection con = new SqlConnection(conStr))
@@ -1071,7 +1119,7 @@ ORDER BY o.ExportCodeID;";
             return dt;
         }
 
-        public async Task<DataTable> GetLOTCodeByExportCode_inComplete()
+        public async Task<DataTable> GetLOTCodeByExportCode_inCompleteAsync()
         {
             DataTable dt = new DataTable();
             using (SqlConnection con = new SqlConnection(conStr))
@@ -1139,7 +1187,7 @@ ORDER BY o.ExportCodeID;";
             }
         }
 
-        public async Task<DataTable> GetDetailPackingTotalByExportCode_incomplete()
+        public async Task<DataTable> GetDetailPackingTotalByExportCode_incompleteAsync()
         {
             DataTable dt = new DataTable();
             using (SqlConnection con = new SqlConnection(conStr))
@@ -1193,7 +1241,7 @@ ORDER BY o.ExportCodeID;";
             return dt;
         }
 
-        public async Task<DataTable> GetCustomerDetailPacking_incomplete()
+        public async Task<DataTable> GetCustomerDetailPacking_incompleteAsync()
         {
             DataTable dt = new DataTable();
             using (SqlConnection con = new SqlConnection(conStr))
@@ -1243,7 +1291,7 @@ ORDER BY o.ExportCodeID;";
         }
 
 
-        public async Task<bool> updateNewPriceInOrderListWithExportCode(int exportCodeID)
+        public async Task<bool> updateNewPriceInOrderListWithExportCodeAsync(int exportCodeID)
         {
             string query = @"UPDATE o
                             SET o.OrderPackingPriceCNF = ps.PriceCNF
@@ -1269,7 +1317,7 @@ ORDER BY o.ExportCodeID;";
             catch { return false; }
         }
 
-        public async Task<DataTable> GetActiveEmployeesIn_DongGoi()
+        public async Task<DataTable> GetActiveEmployeesIn_DongGoiAsync()
         {
             DataTable dt = new DataTable();
             using (SqlConnection con = new SqlConnection(conStr))
@@ -1286,22 +1334,13 @@ ORDER BY o.ExportCodeID;";
             return dt;
         }
 
-        public async Task<DataTable> GetUserData()
+        public async Task<DataTable> GetActiveEmployees_For_CreateUserAsync()
         {
             DataTable dt = new DataTable();
             using (SqlConnection con = new SqlConnection(conStr))
             {
                 await con.OpenAsync();
-                string query = @"SELECT 
-                                    u.UserID,
-                                    u.Username,
-                                    u.PasswordHash,
-                                    e.EmployeeID,
-                                    e.EmployeeCode,
-                                    e.FullName,
-                                    u.IsActive
-                                FROM Users u
-                                LEFT JOIN Employee e ON u.EmployeeID = e.EmployeeID;";
+                string query = @"SELECT EmployeeID, FullName, EmployeeCode FROM Employee WHERE canCreateUserName = 1 AND IsActive = 1;";
 
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
@@ -1311,5 +1350,652 @@ ORDER BY o.ExportCodeID;";
             }
             return dt;
         }
+
+        public async Task<DataTable> GetRolesAsync()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(conStr))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT RoleID, RoleName FROM Roles;";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                {
+                    dt.Load(reader);
+                }
+            }
+            return dt;
+        }
+
+        public async Task<DataTable> GetEmployeesAsync()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(conStr))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT * FROM Employee";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                {
+                    dt.Load(reader);
+                }
+            }
+            return dt;
+        }
+
+        public async Task<bool> updateEmployeesAsync(int employeeId, string maNV, string tenNV, DateTime birthDate, DateTime hireDate,
+                                    bool isMale, string homeTown, string address, string citizenID, DateTime? issueDate, string issuePlace, int department,
+                                    int position, int contractType, bool isActive, bool canCreateUserName)
+        {
+            string query = @"UPDATE Employee SET 
+                                EmployeeCode=@EmployeeCode, 
+                                FullName=@FullName,
+                                BirthDate=@BirthDate, 
+                                HireDate=@HireDate,
+                                Gender=@Gender, 
+                                Hometown=@Hometown,
+                                Address=@Address, 
+                                CitizenID=@CitizenID,
+                                IssueDate=@IssueDate, 
+                                IssuePlace=@IssuePlace,
+                                PositionID=@PositionID, 
+                                DepartmentID=@DepartmentID,
+                                ContractTypeID=@ContractTypeID, 
+                                IsActive=@IsActive,
+                                canCreateUserName=@canCreateUserName
+                            WHERE EmployeeID=@EmployeeID";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(conStr))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@EmployeeID", employeeId);
+                        cmd.Parameters.AddWithValue("@EmployeeCode", maNV);
+                        cmd.Parameters.AddWithValue("@FullName", tenNV);
+                        cmd.Parameters.AddWithValue("@BirthDate", birthDate);
+                        cmd.Parameters.AddWithValue("@HireDate", hireDate);
+                        cmd.Parameters.AddWithValue("@Gender", isMale);
+                        cmd.Parameters.AddWithValue("@Hometown", homeTown);
+                        cmd.Parameters.AddWithValue("@Address", address);
+                        cmd.Parameters.AddWithValue("@CitizenID", citizenID);
+                        cmd.Parameters.AddWithValue("@IssueDate", (object)(issueDate ?? (object)DBNull.Value));
+                        cmd.Parameters.AddWithValue("@IssuePlace", issuePlace);
+                        cmd.Parameters.AddWithValue("@PositionID", position);
+                        cmd.Parameters.AddWithValue("@DepartmentID", department);
+                        cmd.Parameters.AddWithValue("@ContractTypeID", contractType);
+                        cmd.Parameters.AddWithValue("@IsActive", isActive);
+                        cmd.Parameters.AddWithValue("@canCreateUserName", canCreateUserName);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+                return true;
+            }
+            catch { return false; }
+        }
+
+        public async Task<bool> deleteEmployeeAsync(int employeeID)
+        {
+            string query = "DELETE FROM Employee WHERE EmployeeID=@EmployeeID";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(conStr))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@EmployeeID", employeeID);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+                return true;
+            }
+            catch { return false; }
+        }
+
+
+        public async Task<int> insertEmployeeAsync(string maNV_temp, string tenNV, DateTime birthDate, DateTime hireDate, bool isMale, string homeTown,
+                                                    string address, string citizenID, DateTime? issueDate, string issuePlace, int department, 
+                                                    int position, int contractType, bool isActive, bool canCreateUserName)
+        {
+            int newId = -1;
+
+            string insertQuery = @"
+        INSERT INTO Employee (
+            EmployeeCode, FullName, BirthDate, HireDate, Gender, Hometown, Address,
+            CitizenID, IssueDate, IssuePlace,
+            PositionID, DepartmentID, ContractTypeID, IsActive, canCreateUserName
+        )
+        OUTPUT INSERTED.EmployeeID
+        VALUES (
+            @EmployeeCode, @FullName, @BirthDate, @HireDate, @Gender, @Hometown, @Address,
+            @CitizenID, @IssueDate, @IssuePlace,
+            @PositionID, @DepartmentID, @ContractTypeID, @IsActive, @canCreateUserName
+        )";
+
+            try
+            {
+                using (SqlConnection con = new SqlConnection(conStr))
+                {
+                    await con.OpenAsync();
+
+                    // 2️⃣ Insert và lấy ID mới
+                    using (SqlCommand cmd = new SqlCommand(insertQuery, con))
+                    {
+                        cmd.Parameters.AddWithValue("@EmployeeCode", maNV_temp);
+                        cmd.Parameters.AddWithValue("@FullName", tenNV);
+                        cmd.Parameters.AddWithValue("@BirthDate", birthDate);
+                        cmd.Parameters.AddWithValue("@HireDate", hireDate);
+                        cmd.Parameters.AddWithValue("@Gender", isMale);
+                        cmd.Parameters.AddWithValue("@Hometown", homeTown);
+                        cmd.Parameters.AddWithValue("@Address", address);
+                        cmd.Parameters.AddWithValue("@CitizenID", citizenID);
+                        cmd.Parameters.AddWithValue("@IssueDate", (object)issueDate ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@IssuePlace", issuePlace);
+                        cmd.Parameters.AddWithValue("@PositionID", position);
+                        cmd.Parameters.AddWithValue("@DepartmentID", department);
+                        cmd.Parameters.AddWithValue("@ContractTypeID", contractType);
+                        cmd.Parameters.AddWithValue("@IsActive", isActive);
+                        cmd.Parameters.AddWithValue("@canCreateUserName", canCreateUserName);
+
+                        object result = await cmd.ExecuteScalarAsync();
+                        if (result != null)
+                            newId = Convert.ToInt32(result);
+                    }
+
+                    // 3️⃣ Cập nhật lại EmployeeCode thật
+                    if (newId > 0)
+                    {
+                        string employeeCode = $"VR{newId:D4}";
+
+                        using (SqlCommand updateCmd = new SqlCommand("UPDATE Employee SET EmployeeCode = @EmployeeCode WHERE EmployeeID = @ID", con))
+                        {
+                            updateCmd.Parameters.AddWithValue("@EmployeeCode", employeeCode);
+                            updateCmd.Parameters.AddWithValue("@ID", newId);
+                            await updateCmd.ExecuteNonQueryAsync();
+                        }
+                    }
+                }
+
+                return newId;
+            }
+            catch
+            {
+                return -1;
+            }
+        }
+
+        public async Task<DataTable> GetActiveDepartmentAsync()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(conStr))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT * FROM Department WHERE IsActive = 1";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                {
+                    dt.Load(reader);
+                }
+            }
+            return dt;
+        }
+
+        public async Task<DataTable> GetActivePositionAsync()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(conStr))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT * FROM Position WHERE IsActive = 1";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                {
+                    dt.Load(reader);
+                }
+            }
+            return dt;
+        }
+
+        public async Task<DataTable> GetContractTypeAsync()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(conStr))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT * FROM ContractType";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                {
+                    dt.Load(reader);
+                }
+            }
+            return dt;
+        }
+
+        public async Task<DataTable> GetUserDataAsync()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(conStr))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT 
+                                    u.UserID,
+                                    u.Username,
+                                    u.PasswordHash,
+                                    u.EmployeeID,
+                                    u.IsActive,
+                                    STRING_AGG(r.RoleID, ',') AS RoleIDs
+                                FROM Users u
+                                LEFT JOIN UserRoles ur ON u.UserID = ur.UserID
+                                LEFT JOIN Roles r ON ur.RoleID = r.RoleID
+                                GROUP BY 
+                                    u.UserID, u.Username, u.PasswordHash, u.EmployeeID, 
+                                    u.IsActive
+                                ORDER BY u.UserID;";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                {
+                    dt.Load(reader);
+                }
+            }
+            return dt;
+        }
+
+        public async Task<bool> updateUserAsync(int userID, string userName, string password, int employeeID, Boolean isActive, List<int> roleIDs)
+        {
+            string query = @"UPDATE Users SET 
+                                Username=@Username, PasswordHash=@PasswordHash, EmployeeID=@EmployeeID, IsActive=@IsActive 
+                            WHERE UserID=@UserID";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(conStr))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@UserID", userID);
+                        cmd.Parameters.AddWithValue("@Username", userName);
+                        cmd.Parameters.AddWithValue("@PasswordHash", password);
+                        cmd.Parameters.AddWithValue("@EmployeeID", employeeID);
+                        cmd.Parameters.AddWithValue("@IsActive", isActive);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+
+                    string roleIDsString = string.Join(",", roleIDs);
+                    using (SqlCommand cmdRole = new SqlCommand("sp_UpdateUserRoles", con))
+                    {
+                        cmdRole.CommandType = CommandType.StoredProcedure;
+                        cmdRole.Parameters.AddWithValue("@UserID", userID);
+                        cmdRole.Parameters.AddWithValue("@RoleIDs", roleIDsString);
+                        await cmdRole.ExecuteNonQueryAsync();
+                    }
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Lỗi updateUserAsync: " + ex.Message);
+                return false;
+            }
+        }
+
+        public async Task<bool> updateUser_notPasswordAsync(int userID, string userName, int employeeID, Boolean isActive, List<int> roleIDs)
+        {
+            string query = @"UPDATE Users SET 
+                                Username=@Username, EmployeeID=@EmployeeID, IsActive=@IsActive 
+                            WHERE UserID=@UserID";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(conStr))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@UserID", userID);
+                        cmd.Parameters.AddWithValue("@Username", userName);
+                        cmd.Parameters.AddWithValue("@EmployeeID", employeeID);
+                        cmd.Parameters.AddWithValue("@IsActive", isActive);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+
+                    string roleIDsString = string.Join(",", roleIDs);
+                    using (SqlCommand cmdRole = new SqlCommand("sp_UpdateUserRoles", con))
+                    {
+                        cmdRole.CommandType = CommandType.StoredProcedure;
+                        cmdRole.Parameters.AddWithValue("@UserID", userID);
+                        cmdRole.Parameters.AddWithValue("@RoleIDs", roleIDsString);
+                        await cmdRole.ExecuteNonQueryAsync();
+                    }
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Lỗi updateUserAsync: " + ex.Message);
+                return false;
+            }
+        }
+
+        public async Task<int> insertUserDataAsync(string userName, string password, int employeeID, Boolean isActive, List<int> roleIDs)
+        {
+            int newId = -1;
+            string query = @"INSERT INTO Users (Username, PasswordHash, EmployeeID, IsActive) 
+                             OUTPUT INSERTED.UserID
+                            VALUES (@Username, @PasswordHash, @EmployeeID, @IsActive)";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(conStr))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@Username", userName);
+                        cmd.Parameters.AddWithValue("@PasswordHash", password);
+                        cmd.Parameters.AddWithValue("@EmployeeID", employeeID);
+                        cmd.Parameters.AddWithValue("@IsActive", isActive);
+                        object result = await cmd.ExecuteScalarAsync();
+                        if (result != null)
+                        {
+                            newId = Convert.ToInt32(result);
+
+                            string roleIDsString = string.Join(",", roleIDs);
+                            using (SqlCommand cmdRole = new SqlCommand("sp_UpdateUserRoles", con))
+                            {
+                                cmdRole.CommandType = CommandType.StoredProcedure;
+                                cmdRole.Parameters.AddWithValue("@UserID", newId);
+                                cmdRole.Parameters.AddWithValue("@RoleIDs", roleIDsString);
+                                await cmdRole.ExecuteNonQueryAsync();
+                            }
+                        }
+                    }
+                }
+                return newId;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Lỗi updateUserAsync: " + ex.Message);
+                return -1;
+            }
+        }
+
+        public async Task<bool> deleteUserAsync(int userID)
+        {
+            string query = "DELETE FROM Users WHERE UserID=@UserID";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(conStr))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@UserID", userID);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+                return true;
+            }
+            catch { return false; }
+        }
+
+        public async Task<DataTable> GetDepartmentAsybc()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(conStr))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT * FROM Department";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                {
+                    dt.Load(reader);
+                }
+            }
+            return dt;
+        }
+
+        public async Task<bool> updateDepartmentAsync(int departmentID, string departmentName, string description, bool isActive)
+        {
+            string query = @"UPDATE Department SET DepartmentName=@DepartmentName, Description=@Description, IsActive=@IsActive 
+                            WHERE DepartmentID=@DepartmentID";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(conStr))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@DepartmentID", departmentID);
+                        cmd.Parameters.AddWithValue("@DepartmentName", departmentName);
+                        cmd.Parameters.AddWithValue("@Description", description);
+                        cmd.Parameters.AddWithValue("@IsActive", isActive);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+                return true;
+            }
+            catch { return false; }
+        }
+
+        public async Task<int> insertDepartmentAsync(string departmentName, string description, bool isActive)
+        {
+            int newId = -1;
+
+            string query = @"INSERT INTO Department (DepartmentName, Description, IsActive) 
+                                OUTPUT INSERTED.DepartmentID
+                                VALUES (@DepartmentName, @Description, @IsActive)";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(conStr))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@DepartmentName", departmentName);
+                        cmd.Parameters.AddWithValue("@Description", description);
+                        cmd.Parameters.AddWithValue("@IsActive", isActive);
+                        object result = await cmd.ExecuteScalarAsync();
+                        if (result != null)
+                            newId = Convert.ToInt32(result);
+                    }
+                }
+                return newId;
+            }
+            catch { return -1;}
+        }
+
+        public async Task<bool> deleteDepartmentAsync(int ID)
+        {
+            string query = "DELETE FROM Department WHERE DepartmentID=@DepartmentID";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(conStr))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@DepartmentID", ID);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+                return true;
+            }
+            catch { return false; }
+        }
+
+        public async Task<DataTable> GetPositionAsync()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(conStr))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT * FROM Position";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                {
+                    dt.Load(reader);
+                }
+            }
+            return dt;
+        }
+
+        public async Task<bool> updatePositionAsync(int PositionID, string PositionName, string description, bool isActive)
+        {
+            string query = @"UPDATE Position SET PositionName=@PositionName, Description=@Description, IsActive=@IsActive 
+                            WHERE PositionID=@PositionID";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(conStr))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@PositionID", PositionID);
+                        cmd.Parameters.AddWithValue("@PositionName", PositionName);
+                        cmd.Parameters.AddWithValue("@Description", description);
+                        cmd.Parameters.AddWithValue("@IsActive", isActive);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+                return true;
+            }
+            catch { return false; }
+        }
+
+        public async Task<int> insertPositionAsync(string PositionName, string description, bool isActive)
+        {
+            int newId = -1;
+
+            string query = @"INSERT INTO Position (PositionName, Description, IsActive) 
+                                OUTPUT INSERTED.PositionID
+                                VALUES (@PositionName, @Description, @IsActive)";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(conStr))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@PositionName", PositionName);
+                        cmd.Parameters.AddWithValue("@Description", description);
+                        cmd.Parameters.AddWithValue("@IsActive", isActive);
+                        object result = await cmd.ExecuteScalarAsync();
+                        if (result != null)
+                            newId = Convert.ToInt32(result);
+                    }
+                }
+                return newId;
+            }
+            catch { return -1; }
+        }
+
+        public async Task<bool> deletePositionAsync(int ID)
+        {
+            string query = "DELETE FROM Position WHERE PositionID=@PositionID";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(conStr))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@PositionID", ID);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+                return true;
+            }
+            catch { return false; }
+        }
+
+        public async Task<DataRow> GetInfoUserAsync(string userName)
+        {
+            DataTable dt = new DataTable();
+
+            using (SqlConnection con = new SqlConnection(conStr))
+            {
+                await con.OpenAsync();
+
+                string query = @"SELECT 
+                                    e.EmployeeID,
+                                    e.EmployeeCode,
+                                    e.FullName,
+                                    STRING_AGG(r.RoleCode, ',') AS RoleCodes
+                                FROM Users u
+                                INNER JOIN Employee e ON u.EmployeeID = e.EmployeeID
+                                LEFT JOIN UserRoles ur ON u.UserID = ur.UserID
+                                LEFT JOIN Roles r ON ur.RoleID = r.RoleID
+                                WHERE u.Username = @Username
+                                    AND u.IsActive = 1
+                                    AND e.IsActive = 1
+                                GROUP BY e.EmployeeID, e.EmployeeCode, e.FullName;
+";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    cmd.Parameters.AddWithValue("@Username", userName);
+
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+
+            // Trả về dòng đầu tiên nếu có
+            return dt.Rows.Count > 0 ? dt.Rows[0] : null;
+        }
+
+        public async Task<bool> ChangePasswordAsync(string username, string oldPassword, string newPassword)
+        {
+            try
+            {
+                string oldHash = await GetPasswordHashFromDatabase(username);
+                if (string.IsNullOrEmpty(oldHash))
+                    return false;
+
+                if (!Utils.VerifyPassword(oldPassword, oldHash))
+                    return false;
+
+                string newHash = Utils.HashPassword(newPassword);
+
+                using (SqlConnection con = new SqlConnection(conStr))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand("sp_ChangeUserPassword", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@Username", username);
+                        cmd.Parameters.AddWithValue("@NewPassword", newHash);
+
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+
+                return true; // thành công
+            }
+            catch (SqlException ex)
+            {
+                // Lỗi từ SQL Server (ví dụ: SP không tồn tại, constraint, timeout...)
+                MessageBox.Show("Lỗi SQL: " + ex.Message, "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+            catch (Exception ex)
+            {
+                // Lỗi khác (mất kết nối, null reference, ...)
+                MessageBox.Show("Đã xảy ra lỗi: " + ex.Message, "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+        }
+
     }
 }

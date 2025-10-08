@@ -52,7 +52,7 @@ namespace RauViet.ui
 
             try
             {
-                var LOTCodeTask = SQLManager.Instance.GetLOTCodeByExportCode_inComplete();
+                var LOTCodeTask = SQLManager.Instance.GetLOTCodeByExportCode_inCompleteAsync();
                 var exportCodeTask = SQLManager.Instance.getExportCodes_Incomplete();
 
                 await Task.WhenAll(LOTCodeTask, exportCodeTask);

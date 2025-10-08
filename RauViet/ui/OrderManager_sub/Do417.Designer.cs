@@ -31,13 +31,13 @@ namespace RauViet.ui
         {
             this.components = new System.ComponentModel.Container();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.Reset_btn = new System.Windows.Forms.Button();
             this.exportCode_cbb = new System.Windows.Forms.ComboBox();
             this.loading_lb = new System.Windows.Forms.Label();
             this.status_lb = new System.Windows.Forms.Label();
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.dataGV = new System.Windows.Forms.DataGridView();
-            this.Reset_btn = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
             this.SuspendLayout();
@@ -54,6 +54,17 @@ namespace RauViet.ui
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(427, 681);
             this.panel1.TabIndex = 9;
+            // 
+            // Reset_btn
+            // 
+            this.Reset_btn.BackColor = System.Drawing.Color.Gray;
+            this.Reset_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Reset_btn.Location = new System.Drawing.Point(227, 280);
+            this.Reset_btn.Name = "Reset_btn";
+            this.Reset_btn.Size = new System.Drawing.Size(162, 52);
+            this.Reset_btn.TabIndex = 53;
+            this.Reset_btn.Text = "Khởi Tạo Lại";
+            this.Reset_btn.UseVisualStyleBackColor = false;
             // 
             // exportCode_cbb
             // 
@@ -111,17 +122,6 @@ namespace RauViet.ui
             this.dataGV.ReadOnly = true;
             this.dataGV.Size = new System.Drawing.Size(837, 681);
             this.dataGV.TabIndex = 10;
-            // 
-            // Reset_btn
-            // 
-            this.Reset_btn.BackColor = System.Drawing.Color.Gray;
-            this.Reset_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Reset_btn.Location = new System.Drawing.Point(227, 280);
-            this.Reset_btn.Name = "Reset_btn";
-            this.Reset_btn.Size = new System.Drawing.Size(162, 52);
-            this.Reset_btn.TabIndex = 53;
-            this.Reset_btn.Text = "Khởi Tạo Lại";
-            this.Reset_btn.UseVisualStyleBackColor = false;
             // 
             // Do417
             // 

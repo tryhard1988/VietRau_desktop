@@ -136,6 +136,7 @@
     <Compile Include="classes\printer\OrderSummaryPrinter.cs" />
     <Compile Include="classes\printer\DeliveryPrinter.cs" />
     <Compile Include="classes\printer\PackingListPrinter.cs" />
+    <Compile Include="classes\UserManager.cs" />
     <Compile Include="classes\SQLManager.cs" />
     <Compile Include="classes\Utils.cs" />
     <Compile Include="classes\WooCommerce.cs" />
@@ -171,17 +172,41 @@
     <Compile Include="ui\importExcelToSQL\EditExcelFormCustomer.Designer.cs">
       <DependentUpon>EditExcelFormCustomer.cs</DependentUpon>
     </Compile>
-    <Compile Include="ui\Ordermanager.cs">
+    <Compile Include="ui\FormManager.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ui\Ordermanager.Designer.cs">
-      <DependentUpon>Ordermanager.cs</DependentUpon>
+    <Compile Include="ui\FormManager.Designer.cs">
+      <DependentUpon>FormManager.cs</DependentUpon>
     </Compile>
     <Compile Include="ui\OrderManager_sub\CustomerDetailPackingTotal.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="ui\OrderManager_sub\CustomerDetailPackingTotal.Designer.cs">
       <DependentUpon>CustomerDetailPackingTotal.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ui\PhanQuyen\Employee.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\PhanQuyen\Employee.Designer.cs">
+      <DependentUpon>Employee.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ui\PhanQuyen\LoginForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\PhanQuyen\LoginForm.Designer.cs">
+      <DependentUpon>LoginForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ui\PhanQuyen\Position.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\PhanQuyen\Position.Designer.cs">
+      <DependentUpon>Position.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ui\PhanQuyen\Department.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\PhanQuyen\Department.Designer.cs">
+      <DependentUpon>Department.cs</DependentUpon>
     </Compile>
     <Compile Include="ui\PhanQuyen\User.cs">
       <SubType>Form</SubType>
@@ -284,11 +309,23 @@
     <EmbeddedResource Include="ui\importExcelToSQL\EditExcelFormCustomer.resx">
       <DependentUpon>EditExcelFormCustomer.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ui\Ordermanager.resx">
-      <DependentUpon>Ordermanager.cs</DependentUpon>
+    <EmbeddedResource Include="ui\FormManager.resx">
+      <DependentUpon>FormManager.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ui\OrderManager_sub\CustomerDetailPackingTotal.resx">
       <DependentUpon>CustomerDetailPackingTotal.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\PhanQuyen\Employee.resx">
+      <DependentUpon>Employee.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\PhanQuyen\LoginForm.resx">
+      <DependentUpon>LoginForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\PhanQuyen\Position.resx">
+      <DependentUpon>Position.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\PhanQuyen\Department.resx">
+      <DependentUpon>Department.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ui\PhanQuyen\User.resx">
       <DependentUpon>User.cs</DependentUpon>
@@ -351,6 +388,7 @@
   <ItemGroup>
     <Content Include="images\folder_icon.ico" />
     <Content Include="images\notes_icon.ico" />
+    <Content Include="Resources\logo_vr.png" />
     <Content Include="Resources\Picture1.png" />
     <None Include="Resources\new.png" />
   </ItemGroup>

@@ -77,7 +77,6 @@ CREATE TABLE ContractType (
     Description NVARCHAR(255) NULL                  -- Mô tả thêm (nếu cần)
 );
 
-select * from Position
 CREATE TABLE Position (
     PositionID INT IDENTITY(1,1) PRIMARY KEY,    -- Mã chức vụ tự tăng
     PositionName NVARCHAR(100) NOT NULL UNIQUE,  -- Tên chức vụ (VD: Giám đốc, Nhân viên)
@@ -86,7 +85,6 @@ CREATE TABLE Position (
     CreatedAt DATETIME DEFAULT GETDATE()         -- Ngày tạo
 );
 
-select * from Department
 CREATE TABLE Department (
     DepartmentID INT IDENTITY(1,1) PRIMARY KEY,   -- Mã phòng ban tự tăng
     DepartmentName NVARCHAR(100) NOT NULL UNIQUE, -- Tên phòng ban (VD: Hành chính, Kỹ thuật...)
@@ -94,7 +92,7 @@ CREATE TABLE Department (
     IsActive BIT DEFAULT 1,                       -- Trạng thái hoạt động (1 = còn, 0 = ngưng)
     CreatedAt DATETIME DEFAULT GETDATE()          -- Ngày tạo bản ghi
 );
-
+select * from Employee
 CREATE TABLE Employee (
     EmployeeID INT IDENTITY(1,1) PRIMARY KEY,               -- Mã nhân viên tự tăng
     EmployeeCode NVARCHAR(20) NOT NULL UNIQUE,              -- Mã nhân viên (VD: NV001)
@@ -106,6 +104,7 @@ CREATE TABLE Employee (
     -- 🏠 Thông tin cá nhân
     Hometown NVARCHAR(150) NULL,                            -- Quê quán
     Address NVARCHAR(200) NULL,                             -- Địa chỉ hiện tại
+   
     CitizenID NVARCHAR(20) NULL,                            -- Số CCCD/CMND
     IssueDate DATE NULL,                                    -- Ngày cấp CCCD
     IssuePlace NVARCHAR(100) NULL,                          -- Nơi cấp CCCD
@@ -117,6 +116,7 @@ CREATE TABLE Employee (
 
     -- ⚙️ Trạng thái
     IsActive BIT DEFAULT 1,                                 -- Đang làm việc (1 = còn làm, 0 = nghỉ)
+    canCreateUserName BIT NOT NULL DEFAULT 0,
     CreatedAt DATETIME DEFAULT GETDATE(),                   -- Ngày tạo bản ghi
 
     -- 🔗 Khóa ngoại
@@ -129,3 +129,96 @@ CREATE TABLE Employee (
     CONSTRAINT FK_Employee_ContractType FOREIGN KEY (ContractTypeID)
         REFERENCES ContractType(ContractTypeID)
 );
+
+CREATE TABLE Users (
+    UserID INT IDENTITY(1,1) PRIMARY KEY,
+    Username NVARCHAR(50) NOT NULL UNIQUE,    -- Tên đăng nhập
+    PasswordHash NVARCHAR(255) NOT NULL,      -- Mật khẩu đã mã hóa (hash)
+    EmployeeID INT NULL,                      -- Nếu có liên kết đến nhân viên (FK)
+    IsActive BIT NOT NULL DEFAULT 1,          -- 1 = hoạt động, 0 = khóa
+    CreatedAt DATETIME DEFAULT GETDATE(),
+
+    CONSTRAINT FK_Users_Employee FOREIGN KEY (EmployeeID)
+        REFERENCES Employee(EmployeeID)
+);
+
+select * from Roles
+CREATE TABLE Roles (
+    RoleID INT IDENTITY(1,1) PRIMARY KEY,
+    RoleCode NVARCHAR(255) NOT NULL UNIQUE,-- Ví dụ: Admin, Manager, Staff
+    RoleName NVARCHAR(50) NOT NULL     
+);
+
+UPDATE Roles
+SET RoleCode = N'nldh'
+WHERE RoleID = 5;
+
+INSERT INTO Roles (RoleCode, RoleName)
+VALUES
+    (N'xegkh',       N'Xuất Excel Gửi Khách Hàng');
+
+CREATE TABLE UserRoles (
+    UserID INT NOT NULL,
+    RoleID INT NOT NULL,
+    PRIMARY KEY (UserID, RoleID),
+
+    CONSTRAINT FK_UserRoles_User FOREIGN KEY (UserID)
+        REFERENCES Users(UserID)
+        ON DELETE CASCADE,
+
+    CONSTRAINT FK_UserRoles_Role FOREIGN KEY (RoleID)
+        REFERENCES Roles(RoleID)
+        ON DELETE CASCADE
+);
+
+CREATE PROCEDURE sp_UpdateUserRoles
+    @UserID INT,
+    @RoleIDs NVARCHAR(MAX)  -- Chuỗi "1,3,5"
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- Xóa các role không còn được chọn
+    DELETE FROM UserRoles
+    WHERE UserID = @UserID
+      AND RoleID NOT IN (
+          SELECT CAST(value AS INT)
+          FROM STRING_SPLIT(@RoleIDs, ',')
+      );
+
+    -- Thêm role mới chưa có
+    INSERT INTO UserRoles (UserID, RoleID)
+    SELECT @UserID, CAST(value AS INT)
+    FROM STRING_SPLIT(@RoleIDs, ',')
+    WHERE CAST(value AS INT) NOT IN (
+        SELECT RoleID FROM UserRoles WHERE UserID = @UserID
+    );
+END
+
+CREATE PROCEDURE sp_ChangeUserPassword
+    @Username NVARCHAR(50),
+    @NewPassword NVARCHAR(255)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @CurrentHash NVARCHAR(255);
+
+    -- Lấy hash hiện tại trong DB
+    SELECT @CurrentHash = PasswordHash 
+    FROM Users 
+    WHERE Username = @Username AND IsActive = 1;
+
+    IF @CurrentHash IS NULL
+    BEGIN
+        RAISERROR('Người dùng không tồn tại hoặc bị khóa.', 16, 1);
+        RETURN;
+    END;
+
+    -- Cập nhật mật khẩu mới (đã hash sẵn ở C#)
+    UPDATE Users
+    SET PasswordHash = @NewPassword
+    WHERE Username = @Username;
+
+    SELECT 'Đổi mật khẩu thành công!' AS Message;
+END;

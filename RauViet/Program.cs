@@ -1,4 +1,5 @@
 ﻿using RauViet.ui;
+using RauViet.ui.PhanQuyen;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +18,8 @@ namespace RauViet
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new EditExcelFormProductPacking());
+            //Application.Run(new QL_kho());
+            Application.Run(new LoginForm());
         }
     }
 }

@@ -96,8 +96,6 @@ namespace RauViet.ui
                 mProductPacking_dt = packingTask.Result;
                 mExportCode_dt = exportCodeTask.Result;
 
-
-
                 mProductPacking_dt.Columns.Add(new DataColumn("PackingName", typeof(string)));
                 mProductPacking_dt.Columns.Add(new DataColumn("ProductName", typeof(string)));
 
@@ -357,18 +355,6 @@ namespace RauViet.ui
             }
         }
         
-        private int createID()
-        {
-            var existingIds = dataGV.Rows
-            .Cast<DataGridViewRow>()
-            .Where(r => !r.IsNewRow && r.Cells["OrderId"].Value != null)
-            .Select(r => Convert.ToInt32(r.Cells["OrderId"].Value))
-            .ToList();
-
-            int newID = existingIds.Count > 0 ? existingIds.Max() + 1 : 1;
-
-            return newID;
-        }
 
         private void dataGV_CellClick(object sender, EventArgs e)
         {
@@ -520,13 +506,12 @@ namespace RauViet.ui
             {
                 try
                 {
-                    bool isScussess = await SQLManager.Instance.insertOrderAsync(customerId, exportCodeId, packingId, PCSOther, NWOther, priceCNF);
-                    if (isScussess == true)
+                    int newId = await SQLManager.Instance.insertOrderAsync(customerId, exportCodeId, packingId, PCSOther, NWOther, priceCNF);
+                    if (newId > 0)
                     {
                         DataRow drToAdd = mOrders_dt.NewRow();
 
-                        int newID = createID();
-                        drToAdd["OrderId"] = newID;
+                        drToAdd["OrderId"] = newId;
                         drToAdd["CustomerID"] = customerId;
                         drToAdd["ExportCodeID"] = exportCodeId;
                         drToAdd["ProductPackingID"] = packingId;

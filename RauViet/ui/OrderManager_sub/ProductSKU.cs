@@ -160,19 +160,6 @@ namespace RauViet.ui
             }
         }
         
-        private int createSKUID()
-        {
-            var existingIds = dataGV.Rows
-            .Cast<DataGridViewRow>()
-            .Where(r => !r.IsNewRow && r.Cells["SKU"].Value != null)
-            .Select(r => Convert.ToInt32(r.Cells["SKU"].Value))
-            .ToList();
-
-            int newSKU_ID = existingIds.Count > 0 ? existingIds.Max() + 1 : 1;
-
-            return newSKU_ID;
-        }
-
         private void dataGV_CellClick(object sender, EventArgs e)
         {
             if (dataGV.CurrentRow == null) 
@@ -284,16 +271,15 @@ namespace RauViet.ui
             {
                 try
                 {
-                    bool isScussess = await SQLManager.Instance.insertProductSKUAsync(productNameVN, productNameEN, packingType, package, 
+                    int newId = await SQLManager.Instance.insertProductSKUAsync(productNameVN, productNameEN, packingType, package, 
                         packingList, botanicalName, priceCNF, priority, plantingareaCode, LOTCodeHeader);
-                    if (isScussess == true)
+                    if (newId > 0)
                     {
 
                         DataTable dataTable = (DataTable)dataGV.DataSource;
                         DataRow drToAdd = dataTable.NewRow();
 
-                        int newCustomerID = createSKUID();
-                        drToAdd["SKU"] = newCustomerID;
+                        drToAdd["SKU"] = newId;
                         drToAdd["ProductNameVN"] = productNameVN;
                         drToAdd["ProductNameEN"] = productNameEN;
                         drToAdd["PackingType"] = packingType;
@@ -304,7 +290,7 @@ namespace RauViet.ui
                         drToAdd["Priority"] = priority;
                         drToAdd["PlantingAreaCode"] = plantingareaCode;
                         drToAdd["LOTCodeHeader"] = LOTCodeHeader;
-                        sku_tb.Text = newCustomerID.ToString();
+                        sku_tb.Text = newId.ToString();
 
 
                         dataTable.Rows.Add(drToAdd);
@@ -428,7 +414,7 @@ namespace RauViet.ui
             priceCNF_tb.Text = "";
             status_lb.Text = "";
             plantingareaCode_tb.Text = "";
-            lotCodeHeader_tb.Text = createSKUID().ToString();
+            lotCodeHeader_tb.Text = "";
 
             delete_btn.Enabled = false;
             info_gb.BackColor = Color.Green;

@@ -36,6 +36,8 @@ namespace RauViet.ui
             loading_lb.Visible = false;
             delete_btn.Enabled = false;
 
+            complete_cb.Visible = UserManager.Instance.hasRole_HoanThanhDonHang();
+
             autoCreateExportId_btn.Enabled = false;
 
             updatePrice_btn.Click += updatePrice_btn_click;
@@ -65,7 +67,7 @@ namespace RauViet.ui
                     try
                     {
                         int exportCodeID = Convert.ToInt32(dataGV.CurrentRow.Cells["ExportCodeID"].Value);
-                        bool isScussess = await SQLManager.Instance.updateNewPriceInOrderListWithExportCode(exportCodeID);
+                        bool isScussess = await SQLManager.Instance.updateNewPriceInOrderListWithExportCodeAsync(exportCodeID);
                         if(isScussess == true)
                         {
                             MessageBox.Show("Thành Công", " Thay Đổi Giá", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -136,7 +138,7 @@ namespace RauViet.ui
             {
                 // Chạy truy vấn trên thread riêng
                 var exportCodeTask = SQLManager.Instance.getExportCodesAsync();
-                var employeesInDongGoiTask = SQLManager.Instance.GetActiveEmployeesIn_DongGoi();
+                var employeesInDongGoiTask = SQLManager.Instance.GetActiveEmployeesIn_DongGoiAsync();
 
                 await Task.WhenAll(exportCodeTask, employeesInDongGoiTask);
 
@@ -225,19 +227,6 @@ namespace RauViet.ui
             }
         }
         
-        private int createNewID()
-        {
-            var existingIds = dataGV.Rows
-            .Cast<DataGridViewRow>()
-            .Where(r => !r.IsNewRow && r.Cells["ExportCodeID"].Value != null)
-            .Select(r => Convert.ToInt32(r.Cells["ExportCodeID"].Value))
-            .ToList();
-
-            int newCustomerID = existingIds.Count > 0 ? existingIds.Max() + 1 : 1;
-
-            return newCustomerID;
-        }
-
         private void dataGV_CellClick(object sender, EventArgs e)
         {
             if (dataGV.CurrentRow == null) return;
@@ -277,10 +266,18 @@ namespace RauViet.ui
             updatePrice_btn.Enabled = !complete;
             LuuThayDoiBtn.Enabled = !complete;
             newCustomerBtn.Enabled = !complete;
+            exRate_btn.Enabled = !complete;
             exRate_tb.Enabled = !complete;
             shippingCost_tb.Enabled = !complete;
-            delete_btn.Enabled = true;// !complete;
-            complete_cb.Visible = true;
+            inputBy_cbb.Enabled = !complete;
+            packingBy_cbb.Enabled = !complete;
+            delete_btn.Enabled = !complete; 
+            
+            if(UserManager.Instance.hasRole_HoanThanhDonHang())
+                complete_cb.Visible = true;
+            else
+                complete_cb.Visible = false;
+
             autoCreateExportId_btn.Enabled = false;
 
             if (complete)
@@ -363,8 +360,8 @@ namespace RauViet.ui
             {
                 try
                 {
-                    bool isScussess = await SQLManager.Instance.insertExportCodeAsync(exportCode, exportCodeIndex, exportDate, exRate, shippingCost, inputBy, packingBy);
-                    if (isScussess == true)
+                    int newId = await SQLManager.Instance.insertExportCodeAsync(exportCode, exportCodeIndex, exportDate, exRate, shippingCost, inputBy, packingBy);
+                    if (newId > 0)
                     {
                         DataRow[] inputByRow = _employeesInDongGoi_dt.Select($"EmployeeID = {inputBy}");
                         DataRow[] packingByRow = _employeesInDongGoi_dt.Select($"EmployeeID = {packingBy}");
@@ -372,8 +369,7 @@ namespace RauViet.ui
                         System.Data.DataTable dataTable = (System.Data.DataTable)dataGV.DataSource;
                         DataRow drToAdd = dataTable.NewRow();
 
-                        int newExportCodeID = createNewID();
-                        drToAdd["ExportCodeID"] = newExportCodeID;
+                        drToAdd["ExportCodeID"] = newId;
                         drToAdd["ExportCode"] = exportCode;
                         drToAdd["ExportCodeIndex"] = exportCodeIndex;
                         drToAdd["ExportDate"] = exportDate;
@@ -387,7 +383,7 @@ namespace RauViet.ui
                         drToAdd["PackingByName"] = packingByRow[0]["FullName"].ToString();
 
 
-                        exportCodeId_tb.Text = newExportCodeID.ToString();
+                        exportCodeId_tb.Text = newId.ToString();
 
 
                         dataTable.Rows.Add(drToAdd);
@@ -412,7 +408,7 @@ namespace RauViet.ui
         }
         private void saveBtn_Click(object sender, EventArgs e)
         {
-            if(exportCode_tb.Text.CompareTo("") == 0)
+            if(exportCode_tb.Text.CompareTo("") == 0 || inputBy_cbb.SelectedValue == null || packingBy_cbb.SelectedValue == null)
             {
                 MessageBox.Show(
                                 "Dữ Liệu Không hợp Lệ, Kiểm Tra Lại!",

@@ -50,7 +50,7 @@ namespace RauViet.ui
 
             try
             {
-                var ordersPackingTask = SQLManager.Instance.GetCustomerDetailPacking_incomplete();
+                var ordersPackingTask = SQLManager.Instance.GetCustomerDetailPacking_incompleteAsync();
                 var exportCodeTask = SQLManager.Instance.getExportCodes_Incomplete();
 
                 await Task.WhenAll(ordersPackingTask, exportCodeTask);

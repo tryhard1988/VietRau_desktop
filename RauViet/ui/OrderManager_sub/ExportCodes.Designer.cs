@@ -32,6 +32,8 @@ namespace RauViet.ui
             this.panel1 = new System.Windows.Forms.Panel();
             this.updatePrice_btn = new System.Windows.Forms.Button();
             this.info_gb = new System.Windows.Forms.GroupBox();
+            this.packingBy_cbb = new System.Windows.Forms.ComboBox();
+            this.inputBy_cbb = new System.Windows.Forms.ComboBox();
             this.label7 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.exRate_btn = new System.Windows.Forms.Button();
@@ -53,8 +55,6 @@ namespace RauViet.ui
             this.exportCodeId_tb = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.dataGV = new System.Windows.Forms.DataGridView();
-            this.inputBy_cbb = new System.Windows.Forms.ComboBox();
-            this.packingBy_cbb = new System.Windows.Forms.ComboBox();
             this.panel1.SuspendLayout();
             this.info_gb.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
@@ -111,6 +111,24 @@ namespace RauViet.ui
             this.info_gb.Size = new System.Drawing.Size(399, 298);
             this.info_gb.TabIndex = 28;
             this.info_gb.TabStop = false;
+            // 
+            // packingBy_cbb
+            // 
+            this.packingBy_cbb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.packingBy_cbb.FormattingEnabled = true;
+            this.packingBy_cbb.Location = new System.Drawing.Point(178, 215);
+            this.packingBy_cbb.Name = "packingBy_cbb";
+            this.packingBy_cbb.Size = new System.Drawing.Size(212, 24);
+            this.packingBy_cbb.TabIndex = 45;
+            // 
+            // inputBy_cbb
+            // 
+            this.inputBy_cbb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.inputBy_cbb.FormattingEnabled = true;
+            this.inputBy_cbb.Location = new System.Drawing.Point(178, 177);
+            this.inputBy_cbb.Name = "inputBy_cbb";
+            this.inputBy_cbb.Size = new System.Drawing.Size(212, 24);
+            this.inputBy_cbb.TabIndex = 44;
             // 
             // label7
             // 
@@ -311,24 +329,6 @@ namespace RauViet.ui
             this.dataGV.ReadOnly = true;
             this.dataGV.Size = new System.Drawing.Size(833, 681);
             this.dataGV.TabIndex = 10;
-            // 
-            // inputBy_cbb
-            // 
-            this.inputBy_cbb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.inputBy_cbb.FormattingEnabled = true;
-            this.inputBy_cbb.Location = new System.Drawing.Point(178, 177);
-            this.inputBy_cbb.Name = "inputBy_cbb";
-            this.inputBy_cbb.Size = new System.Drawing.Size(212, 24);
-            this.inputBy_cbb.TabIndex = 44;
-            // 
-            // packingBy_cbb
-            // 
-            this.packingBy_cbb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.packingBy_cbb.FormattingEnabled = true;
-            this.packingBy_cbb.Location = new System.Drawing.Point(178, 215);
-            this.packingBy_cbb.Name = "packingBy_cbb";
-            this.packingBy_cbb.Size = new System.Drawing.Size(212, 24);
-            this.packingBy_cbb.TabIndex = 45;
             // 
             // ExportCodes
             // 
