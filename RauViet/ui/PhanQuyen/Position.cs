@@ -51,15 +51,23 @@ namespace RauViet.ui
                 await Task.WhenAll(postionTask);
                 DataTable postion_dt = postionTask.Result;
 
+                int count = 0;
+                postion_dt.Columns["PositionCode"].SetOrdinal(count++);
+                postion_dt.Columns["PositionName"].SetOrdinal(count++);
+                postion_dt.Columns["Description"].SetOrdinal(count++);
+                postion_dt.Columns["IsActive"].SetOrdinal(count++);
+
                 dataGV.DataSource = postion_dt;
 
                 dataGV.Columns["PositionName"].HeaderText = "Tên Vị Trí";
                 dataGV.Columns["Description"].HeaderText = "Diễn Giải";
                 dataGV.Columns["IsActive"].HeaderText = "Còn Hoạt Động";
+                dataGV.Columns["PositionCode"].HeaderText = "Mã Chức Vụ";
 
+                dataGV.Columns["PositionID"].Visible = false;
                 dataGV.Columns.Remove("CreatedAt");
 
-                dataGV.Columns["PositionID"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+                dataGV.Columns["PositionCode"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
                 dataGV.Columns["PositionName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
                 dataGV.Columns["Description"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
                 dataGV.Columns["IsActive"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
@@ -100,6 +108,7 @@ namespace RauViet.ui
       
         private void dataGV_CellClick(object sender, EventArgs e)
         {
+            if (dataGV.CurrentRow == null) return;
             int rowIndex = dataGV.CurrentRow.Index;
             if (rowIndex < 0)
                 return;
@@ -114,11 +123,13 @@ namespace RauViet.ui
             int positionID = Convert.ToInt32(cells["PositionID"].Value);
             string positionName = cells["PositionName"].Value.ToString();
             string description = cells["Description"].Value.ToString();
+            string positionCode = cells["PositionCode"].Value.ToString();
             Boolean isActive = Convert.ToBoolean(cells["IsActive"].Value);
 
             positionID_tb.Text = positionID.ToString();
             description_tb.Text = description;
             positionName_tb.Text = positionName;
+            positionCode_tb.Text = positionCode;    
             isActive_cb.Checked = isActive;
 
             delete_btn.Enabled = true;
@@ -127,7 +138,7 @@ namespace RauViet.ui
             status_lb.Text = "";
         }
 
-        private async void updateData(int positionId, string positionName, string description, bool isActive)
+        private async void updateData(int positionId, string positionCode, string positionName, string description, bool isActive)
         {
             foreach (DataGridViewRow row in dataGV.Rows)
             {
@@ -139,7 +150,7 @@ namespace RauViet.ui
                     {
                         try
                         {
-                            bool isScussess = await SQLManager.Instance.updatePositionAsync(positionId, positionName, description, isActive);
+                            bool isScussess = await SQLManager.Instance.updatePositionAsync(positionId, positionCode, positionName, description, isActive);
 
                             if (isScussess == true)
                             {
@@ -148,6 +159,7 @@ namespace RauViet.ui
 
                                 row.Cells["PositionName"].Value = positionName;
                                 row.Cells["Description"].Value = description;
+                                row.Cells["PositionCode"].Value = positionCode;
                                 row.Cells["IsActive"].Value = isActive;
                             }
                             else
@@ -171,7 +183,7 @@ namespace RauViet.ui
             }
         }
 
-        private async void createNew(string positionName, string description, bool isActive)
+        private async void createNew(string positionCode, string positionName, string description, bool isActive)
         {
             DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
@@ -179,7 +191,7 @@ namespace RauViet.ui
             {
                 try
                 {
-                    int newId = await SQLManager.Instance.insertPositionAsync(positionName, description, isActive);
+                    int newId = await SQLManager.Instance.insertPositionAsync(positionCode, positionName, description, isActive);
                     if (newId > 0)
                     {
 
@@ -188,6 +200,7 @@ namespace RauViet.ui
 
                         drToAdd["PositionID"] = newId;
                         drToAdd["PositionName"] = positionName;
+                        drToAdd["PositionCode"] = positionCode;
                         drToAdd["Description"] = description;
                         drToAdd["IsActive"] = isActive;
 
@@ -233,14 +246,16 @@ namespace RauViet.ui
                 return;
             }
 
+            string positionCode = positionCode_tb.Text.Replace(" ", "").ToLower();
             string positionName = positionName_tb.Text;
             string description = description_tb.Text;
+
             Boolean isActive = isActive_cb.Checked;
 
             if (positionID_tb.Text.Length != 0)
-                updateData(Convert.ToInt32(positionID_tb.Text), positionName, description, isActive);
+                updateData(Convert.ToInt32(positionID_tb.Text), positionCode, positionName, description, isActive);
             else
-                createNew(positionName, description, isActive);
+                createNew(positionCode, positionName, description, isActive);
 
         }
         private async void deleteBtn_Click(object sender, EventArgs e)

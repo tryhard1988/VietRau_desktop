@@ -31,7 +31,6 @@ namespace RauViet.ui
         {
             this.panel1 = new System.Windows.Forms.Panel();
             this.info_gb = new System.Windows.Forms.GroupBox();
-            this.canCreateUserName_cb = new System.Windows.Forms.CheckBox();
             this.label13 = new System.Windows.Forms.Label();
             this.issuePlace_tb = new System.Windows.Forms.TextBox();
             this.issueDate_dtp = new System.Windows.Forms.DateTimePicker();
@@ -66,6 +65,7 @@ namespace RauViet.ui
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
             this.employeeID_tb = new System.Windows.Forms.TextBox();
             this.dataGV = new System.Windows.Forms.DataGridView();
+            this.canCreateUserName_cb = new System.Windows.Forms.CheckBox();
             this.panel1.SuspendLayout();
             this.info_gb.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
@@ -121,16 +121,6 @@ namespace RauViet.ui
             this.info_gb.Size = new System.Drawing.Size(422, 473);
             this.info_gb.TabIndex = 28;
             this.info_gb.TabStop = false;
-            // 
-            // canCreateUserName_cb
-            // 
-            this.canCreateUserName_cb.AutoSize = true;
-            this.canCreateUserName_cb.Location = new System.Drawing.Point(164, 438);
-            this.canCreateUserName_cb.Name = "canCreateUserName_cb";
-            this.canCreateUserName_cb.Size = new System.Drawing.Size(92, 17);
-            this.canCreateUserName_cb.TabIndex = 43;
-            this.canCreateUserName_cb.Text = "Có UserName";
-            this.canCreateUserName_cb.UseVisualStyleBackColor = true;
             // 
             // label13
             // 
@@ -452,6 +442,16 @@ namespace RauViet.ui
             this.dataGV.ReadOnly = true;
             this.dataGV.Size = new System.Drawing.Size(811, 724);
             this.dataGV.TabIndex = 10;
+            // 
+            // canCreateUserName_cb
+            // 
+            this.canCreateUserName_cb.AutoSize = true;
+            this.canCreateUserName_cb.Location = new System.Drawing.Point(164, 438);
+            this.canCreateUserName_cb.Name = "canCreateUserName_cb";
+            this.canCreateUserName_cb.Size = new System.Drawing.Size(92, 17);
+            this.canCreateUserName_cb.TabIndex = 43;
+            this.canCreateUserName_cb.Text = "Có UserName";
+            this.canCreateUserName_cb.UseVisualStyleBackColor = true;
             // 
             // Employee
             // 

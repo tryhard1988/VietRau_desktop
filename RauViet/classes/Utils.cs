@@ -1,4 +1,5 @@
-﻿using DocumentFormat.OpenXml.Wordprocessing;
+﻿using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Wordprocessing;
 using System;
 using System.Data;
 using System.Security.Cryptography;
@@ -162,5 +163,45 @@ public static class Utils
         inputForm.CancelButton = cancelButton;
 
         return inputForm.ShowDialog() == DialogResult.OK ? textBox.Text : null;
+    }
+
+    public static DataTable LoadExcel_NoHeader(string filePath)
+    {
+        DataTable dt = new DataTable();
+        try
+        {
+            using (var workbook = new XLWorkbook(filePath))
+            {
+                var ws = workbook.Worksheet(1); // Sheet đầu tiên
+                var range = ws.RangeUsed();     // Lấy vùng có dữ liệu
+                if (range == null) return dt;   // Trả về DataTable rỗng nếu sheet trống
+
+                int rowCount = range.RowCount();
+                int colCount = range.ColumnCount();
+
+                // Tạo cột tự động: Column1, Column2, ...
+                for (int c = 1; c <= colCount; c++)
+                    dt.Columns.Add($"Column{c}");
+
+                // Đọc dữ liệu
+                for (int r = 1; r <= rowCount; r++)
+                {
+                    DataRow row = dt.NewRow();
+                    for (int c = 1; c <= colCount; c++)
+                    {
+                        row[c - 1] = ws.Cell(r, c).GetValue<string>();
+                    }
+                    dt.Rows.Add(row);
+                }
+            }
+
+            
+        }
+        catch
+        {
+
+        }
+
+        return dt;
     }
 }

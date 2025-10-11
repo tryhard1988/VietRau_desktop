@@ -1,7 +1,7 @@
 ﻿
 namespace RauViet.ui
 {
-    partial class Position
+    partial class Department
     {
         /// <summary>
         /// Required designer variable.
@@ -32,7 +32,7 @@ namespace RauViet.ui
             this.panel1 = new System.Windows.Forms.Panel();
             this.info_gb = new System.Windows.Forms.GroupBox();
             this.isActive_cb = new System.Windows.Forms.CheckBox();
-            this.positionName_tb = new System.Windows.Forms.TextBox();
+            this.departmentName_tb = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.description_tb = new System.Windows.Forms.TextBox();
@@ -41,10 +41,8 @@ namespace RauViet.ui
             this.status_lb = new System.Windows.Forms.Label();
             this.newCustomerBtn = new System.Windows.Forms.Button();
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
-            this.positionID_tb = new System.Windows.Forms.TextBox();
+            this.departmentID_tb = new System.Windows.Forms.TextBox();
             this.dataGV = new System.Windows.Forms.DataGridView();
-            this.positionCode_tb = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.info_gb.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
@@ -58,7 +56,7 @@ namespace RauViet.ui
             this.panel1.Controls.Add(this.status_lb);
             this.panel1.Controls.Add(this.newCustomerBtn);
             this.panel1.Controls.Add(this.LuuThayDoiBtn);
-            this.panel1.Controls.Add(this.positionID_tb);
+            this.panel1.Controls.Add(this.departmentID_tb);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(718, 0);
             this.panel1.Name = "panel1";
@@ -67,52 +65,50 @@ namespace RauViet.ui
             // 
             // info_gb
             // 
-            this.info_gb.Controls.Add(this.positionCode_tb);
-            this.info_gb.Controls.Add(this.label1);
             this.info_gb.Controls.Add(this.isActive_cb);
-            this.info_gb.Controls.Add(this.positionName_tb);
+            this.info_gb.Controls.Add(this.departmentName_tb);
             this.info_gb.Controls.Add(this.label2);
             this.info_gb.Controls.Add(this.label3);
             this.info_gb.Controls.Add(this.description_tb);
             this.info_gb.Location = new System.Drawing.Point(61, 177);
             this.info_gb.Name = "info_gb";
-            this.info_gb.Size = new System.Drawing.Size(422, 232);
+            this.info_gb.Size = new System.Drawing.Size(422, 186);
             this.info_gb.TabIndex = 28;
             this.info_gb.TabStop = false;
             // 
             // isActive_cb
             // 
             this.isActive_cb.AutoSize = true;
-            this.isActive_cb.Location = new System.Drawing.Point(154, 177);
+            this.isActive_cb.Location = new System.Drawing.Point(135, 142);
             this.isActive_cb.Name = "isActive_cb";
             this.isActive_cb.Size = new System.Drawing.Size(107, 17);
             this.isActive_cb.TabIndex = 21;
             this.isActive_cb.Text = "Đang Hoạt Động";
             this.isActive_cb.UseVisualStyleBackColor = true;
             // 
-            // positionName_tb
+            // departmentName_tb
             // 
-            this.positionName_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.positionName_tb.Location = new System.Drawing.Point(104, 80);
-            this.positionName_tb.Name = "positionName_tb";
-            this.positionName_tb.Size = new System.Drawing.Size(250, 23);
-            this.positionName_tb.TabIndex = 17;
+            this.departmentName_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.departmentName_tb.Location = new System.Drawing.Point(135, 35);
+            this.departmentName_tb.Name = "departmentName_tb";
+            this.departmentName_tb.Size = new System.Drawing.Size(250, 23);
+            this.departmentName_tb.TabIndex = 17;
             // 
             // label2
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(14, 83);
+            this.label2.Location = new System.Drawing.Point(14, 38);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(86, 16);
+            this.label2.Size = new System.Drawing.Size(98, 16);
             this.label2.TabIndex = 10;
-            this.label2.Text = "Tên Chức Vụ:";
+            this.label2.Text = "Tên Phòng Ban:";
             // 
             // label3
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(14, 131);
+            this.label3.Location = new System.Drawing.Point(14, 86);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(62, 16);
             this.label3.TabIndex = 11;
@@ -121,16 +117,16 @@ namespace RauViet.ui
             // description_tb
             // 
             this.description_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.description_tb.Location = new System.Drawing.Point(104, 128);
+            this.description_tb.Location = new System.Drawing.Point(135, 83);
             this.description_tb.Name = "description_tb";
-            this.description_tb.Size = new System.Drawing.Size(293, 23);
+            this.description_tb.Size = new System.Drawing.Size(250, 23);
             this.description_tb.TabIndex = 18;
             // 
             // delete_btn
             // 
             this.delete_btn.BackColor = System.Drawing.Color.Red;
             this.delete_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.delete_btn.Location = new System.Drawing.Point(345, 415);
+            this.delete_btn.Location = new System.Drawing.Point(343, 391);
             this.delete_btn.Name = "delete_btn";
             this.delete_btn.Size = new System.Drawing.Size(113, 47);
             this.delete_btn.TabIndex = 27;
@@ -152,7 +148,7 @@ namespace RauViet.ui
             this.status_lb.AutoSize = true;
             this.status_lb.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.status_lb.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.status_lb.Location = new System.Drawing.Point(247, 151);
+            this.status_lb.Location = new System.Drawing.Point(247, 103);
             this.status_lb.Name = "status_lb";
             this.status_lb.Size = new System.Drawing.Size(55, 23);
             this.status_lb.TabIndex = 26;
@@ -162,7 +158,7 @@ namespace RauViet.ui
             // 
             this.newCustomerBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
             this.newCustomerBtn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.newCustomerBtn.Location = new System.Drawing.Point(219, 415);
+            this.newCustomerBtn.Location = new System.Drawing.Point(217, 391);
             this.newCustomerBtn.Name = "newCustomerBtn";
             this.newCustomerBtn.Size = new System.Drawing.Size(113, 47);
             this.newCustomerBtn.TabIndex = 25;
@@ -173,21 +169,21 @@ namespace RauViet.ui
             // 
             this.LuuThayDoiBtn.BackColor = System.Drawing.SystemColors.Highlight;
             this.LuuThayDoiBtn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LuuThayDoiBtn.Location = new System.Drawing.Point(93, 415);
+            this.LuuThayDoiBtn.Location = new System.Drawing.Point(91, 391);
             this.LuuThayDoiBtn.Name = "LuuThayDoiBtn";
             this.LuuThayDoiBtn.Size = new System.Drawing.Size(113, 47);
             this.LuuThayDoiBtn.TabIndex = 25;
             this.LuuThayDoiBtn.Text = "Lưu";
             this.LuuThayDoiBtn.UseVisualStyleBackColor = false;
             // 
-            // positionID_tb
+            // departmentID_tb
             // 
-            this.positionID_tb.Location = new System.Drawing.Point(144, 616);
-            this.positionID_tb.Name = "positionID_tb";
-            this.positionID_tb.ReadOnly = true;
-            this.positionID_tb.Size = new System.Drawing.Size(32, 20);
-            this.positionID_tb.TabIndex = 16;
-            this.positionID_tb.Visible = false;
+            this.departmentID_tb.Location = new System.Drawing.Point(144, 616);
+            this.departmentID_tb.Name = "departmentID_tb";
+            this.departmentID_tb.ReadOnly = true;
+            this.departmentID_tb.Size = new System.Drawing.Size(32, 20);
+            this.departmentID_tb.TabIndex = 16;
+            this.departmentID_tb.Visible = false;
             // 
             // dataGV
             // 
@@ -201,32 +197,14 @@ namespace RauViet.ui
             this.dataGV.Size = new System.Drawing.Size(718, 681);
             this.dataGV.TabIndex = 1;
             // 
-            // positionCode_tb
-            // 
-            this.positionCode_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.positionCode_tb.Location = new System.Drawing.Point(104, 40);
-            this.positionCode_tb.Name = "positionCode_tb";
-            this.positionCode_tb.Size = new System.Drawing.Size(250, 23);
-            this.positionCode_tb.TabIndex = 23;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(14, 43);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(81, 16);
-            this.label1.TabIndex = 22;
-            this.label1.Text = "Mã Chức Vụ:";
-            // 
-            // Position
+            // Department
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1264, 681);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.dataGV);
-            this.Name = "Position";
+            this.Name = "Department";
             this.Text = "FormTableData";
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
@@ -240,7 +218,7 @@ namespace RauViet.ui
         #endregion
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.TextBox description_tb;
-        private System.Windows.Forms.TextBox positionName_tb;
+        private System.Windows.Forms.TextBox departmentName_tb;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button LuuThayDoiBtn;
@@ -251,8 +229,6 @@ namespace RauViet.ui
         private System.Windows.Forms.Button delete_btn;
         private System.Windows.Forms.GroupBox info_gb;
         private System.Windows.Forms.CheckBox isActive_cb;
-        private System.Windows.Forms.TextBox positionID_tb;
-        private System.Windows.Forms.TextBox positionCode_tb;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TextBox departmentID_tb;
     }
 }

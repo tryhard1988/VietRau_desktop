@@ -37,17 +37,17 @@
             this.changePass_btn = new System.Windows.Forms.Button();
             this.login_panel = new System.Windows.Forms.Panel();
             this.changePass_panel = new System.Windows.Forms.Panel();
-            this.back_btn = new System.Windows.Forms.Button();
-            this.change_comfirm_tb = new System.Windows.Forms.TextBox();
-            this.label6 = new System.Windows.Forms.Label();
-            this.change_new_pass_tb = new System.Windows.Forms.TextBox();
-            this.label5 = new System.Windows.Forms.Label();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.updatePass_btn = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
             this.change_pass_tb = new System.Windows.Forms.TextBox();
             this.change_user_tb = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
+            this.change_new_pass_tb = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.change_comfirm_tb = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.back_btn = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.login_panel.SuspendLayout();
             this.changePass_panel.SuspendLayout();
@@ -157,55 +157,6 @@
             this.changePass_panel.Size = new System.Drawing.Size(286, 311);
             this.changePass_panel.TabIndex = 8;
             // 
-            // back_btn
-            // 
-            this.back_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
-            this.back_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.back_btn.Location = new System.Drawing.Point(150, 237);
-            this.back_btn.Name = "back_btn";
-            this.back_btn.Size = new System.Drawing.Size(135, 50);
-            this.back_btn.TabIndex = 7;
-            this.back_btn.Text = "Quay Lại";
-            this.back_btn.UseVisualStyleBackColor = false;
-            // 
-            // change_comfirm_tb
-            // 
-            this.change_comfirm_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.change_comfirm_tb.Location = new System.Drawing.Point(122, 191);
-            this.change_comfirm_tb.Name = "change_comfirm_tb";
-            this.change_comfirm_tb.PasswordChar = '*';
-            this.change_comfirm_tb.Size = new System.Drawing.Size(162, 23);
-            this.change_comfirm_tb.TabIndex = 9;
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label6.Location = new System.Drawing.Point(6, 194);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(94, 16);
-            this.label6.TabIndex = 8;
-            this.label6.Text = "Xác Nhận Lại:";
-            // 
-            // change_new_pass_tb
-            // 
-            this.change_new_pass_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.change_new_pass_tb.Location = new System.Drawing.Point(123, 154);
-            this.change_new_pass_tb.Name = "change_new_pass_tb";
-            this.change_new_pass_tb.PasswordChar = '*';
-            this.change_new_pass_tb.Size = new System.Drawing.Size(162, 23);
-            this.change_new_pass_tb.TabIndex = 7;
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(7, 157);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(99, 16);
-            this.label5.TabIndex = 6;
-            this.label5.Text = "Mật Khẩu Mới:";
-            // 
             // pictureBox2
             // 
             this.pictureBox2.ErrorImage = null;
@@ -265,6 +216,55 @@
             this.label4.Size = new System.Drawing.Size(73, 16);
             this.label4.TabIndex = 3;
             this.label4.Text = "Mật Khẩu:";
+            // 
+            // change_new_pass_tb
+            // 
+            this.change_new_pass_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.change_new_pass_tb.Location = new System.Drawing.Point(123, 154);
+            this.change_new_pass_tb.Name = "change_new_pass_tb";
+            this.change_new_pass_tb.PasswordChar = '*';
+            this.change_new_pass_tb.Size = new System.Drawing.Size(162, 23);
+            this.change_new_pass_tb.TabIndex = 7;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label5.Location = new System.Drawing.Point(7, 157);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(99, 16);
+            this.label5.TabIndex = 6;
+            this.label5.Text = "Mật Khẩu Mới:";
+            // 
+            // change_comfirm_tb
+            // 
+            this.change_comfirm_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.change_comfirm_tb.Location = new System.Drawing.Point(122, 191);
+            this.change_comfirm_tb.Name = "change_comfirm_tb";
+            this.change_comfirm_tb.PasswordChar = '*';
+            this.change_comfirm_tb.Size = new System.Drawing.Size(162, 23);
+            this.change_comfirm_tb.TabIndex = 9;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label6.Location = new System.Drawing.Point(6, 194);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(94, 16);
+            this.label6.TabIndex = 8;
+            this.label6.Text = "Xác Nhận Lại:";
+            // 
+            // back_btn
+            // 
+            this.back_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.back_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.back_btn.Location = new System.Drawing.Point(150, 237);
+            this.back_btn.Name = "back_btn";
+            this.back_btn.Size = new System.Drawing.Size(135, 50);
+            this.back_btn.TabIndex = 7;
+            this.back_btn.Text = "Quay Lại";
+            this.back_btn.UseVisualStyleBackColor = false;
             // 
             // LoginForm
             // 

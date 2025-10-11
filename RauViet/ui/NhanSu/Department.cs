@@ -101,7 +101,6 @@ namespace RauViet.ui
         
         private void dataGV_CellClick(object sender, EventArgs e)
         {
-            if (dataGV.CurrentRow == null) return;
             int rowIndex = dataGV.CurrentRow.Index;
             if (rowIndex < 0)
                 return;

@@ -184,6 +184,24 @@
     <Compile Include="ui\OrderManager_sub\CustomerDetailPackingTotal.Designer.cs">
       <DependentUpon>CustomerDetailPackingTotal.cs</DependentUpon>
     </Compile>
+    <Compile Include="ui\PhanQuyen\AnnualLeaveBalance.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\PhanQuyen\AnnualLeaveBalance.Designer.cs">
+      <DependentUpon>AnnualLeaveBalance.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ui\PhanQuyen\LeaveAttendance.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\PhanQuyen\LeaveAttendance.Designer.cs">
+      <DependentUpon>LeaveAttendance.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ui\PhanQuyen\OvertimeAttendace.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\PhanQuyen\OvertimeAttendace.Designer.cs">
+      <DependentUpon>OvertimeAttendace.cs</DependentUpon>
+    </Compile>
     <Compile Include="ui\PhanQuyen\Employee.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -195,6 +213,24 @@
     </Compile>
     <Compile Include="ui\PhanQuyen\LoginForm.Designer.cs">
       <DependentUpon>LoginForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ui\PhanQuyen\Attendance.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\PhanQuyen\Attendance.Designer.cs">
+      <DependentUpon>Attendance.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ui\PhanQuyen\Holidays.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\PhanQuyen\Holidays.Designer.cs">
+      <DependentUpon>Holidays.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ui\PhanQuyen\OvertimeType.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\PhanQuyen\OvertimeType.Designer.cs">
+      <DependentUpon>OvertimeType.cs</DependentUpon>
     </Compile>
     <Compile Include="ui\PhanQuyen\Position.cs">
       <SubType>Form</SubType>
@@ -315,11 +351,29 @@
     <EmbeddedResource Include="ui\OrderManager_sub\CustomerDetailPackingTotal.resx">
       <DependentUpon>CustomerDetailPackingTotal.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="ui\PhanQuyen\AnnualLeaveBalance.resx">
+      <DependentUpon>AnnualLeaveBalance.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\PhanQuyen\LeaveAttendance.resx">
+      <DependentUpon>LeaveAttendance.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\PhanQuyen\OvertimeAttendace.resx">
+      <DependentUpon>OvertimeAttendace.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ui\PhanQuyen\Employee.resx">
       <DependentUpon>Employee.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ui\PhanQuyen\LoginForm.resx">
       <DependentUpon>LoginForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\PhanQuyen\Attendance.resx">
+      <DependentUpon>Attendance.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\PhanQuyen\Holidays.resx">
+      <DependentUpon>Holidays.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\PhanQuyen\OvertimeType.resx">
+      <DependentUpon>OvertimeType.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ui\PhanQuyen\Position.resx">
       <DependentUpon>Position.cs</DependentUpon>

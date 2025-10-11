@@ -1,4 +1,5 @@
-﻿using DocumentFormat.OpenXml.Drawing.Charts;
+﻿using DocumentFormat.OpenXml.Bibliography;
+using DocumentFormat.OpenXml.Drawing.Charts;
 using DocumentFormat.OpenXml.Spreadsheet;
 using RauViet.ui;
 using System;
@@ -8,6 +9,7 @@ using System.Data.SqlClient;
 using System.IO.Packaging;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 using DataTable = System.Data.DataTable;
 
 namespace RauViet.classes
@@ -1848,9 +1850,9 @@ ORDER BY o.ExportCodeID;";
             return dt;
         }
 
-        public async Task<bool> updatePositionAsync(int PositionID, string PositionName, string description, bool isActive)
+        public async Task<bool> updatePositionAsync(int PositionID, string positionCode, string PositionName, string description, bool isActive)
         {
-            string query = @"UPDATE Position SET PositionName=@PositionName, Description=@Description, IsActive=@IsActive 
+            string query = @"UPDATE Position SET PositionCode=@PositionCode, PositionName=@PositionName, Description=@Description, IsActive=@IsActive 
                             WHERE PositionID=@PositionID";
             try
             {
@@ -1860,6 +1862,7 @@ ORDER BY o.ExportCodeID;";
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
                         cmd.Parameters.AddWithValue("@PositionID", PositionID);
+                        cmd.Parameters.AddWithValue("@PositionCode", positionCode);
                         cmd.Parameters.AddWithValue("@PositionName", PositionName);
                         cmd.Parameters.AddWithValue("@Description", description);
                         cmd.Parameters.AddWithValue("@IsActive", isActive);
@@ -1871,13 +1874,13 @@ ORDER BY o.ExportCodeID;";
             catch { return false; }
         }
 
-        public async Task<int> insertPositionAsync(string PositionName, string description, bool isActive)
+        public async Task<int> insertPositionAsync(string positionCode, string PositionName, string description, bool isActive)
         {
             int newId = -1;
 
-            string query = @"INSERT INTO Position (PositionName, Description, IsActive) 
+            string query = @"INSERT INTO Position (PositionCode, PositionName, Description, IsActive) 
                                 OUTPUT INSERTED.PositionID
-                                VALUES (@PositionName, @Description, @IsActive)";
+                                VALUES (@PositionCode, @PositionName, @Description, @IsActive)";
             try
             {
                 using (SqlConnection con = new SqlConnection(conStr))
@@ -1885,6 +1888,7 @@ ORDER BY o.ExportCodeID;";
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
+                        cmd.Parameters.AddWithValue("@PositionCode", positionCode);
                         cmd.Parameters.AddWithValue("@PositionName", PositionName);
                         cmd.Parameters.AddWithValue("@Description", description);
                         cmd.Parameters.AddWithValue("@IsActive", isActive);
@@ -1997,5 +2001,695 @@ ORDER BY o.ExportCodeID;";
             }
         }
 
+        public async Task<DataTable> GetEmployeeShiftAsync()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(conStr))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT 
+                                        e.EmployeeID,
+                                        e.EmployeeCode,
+                                        e.FullName,
+                                        STRING_AGG(CAST(s.ShiftID AS NVARCHAR(10)), ',') AS ShiftIDs
+                                    FROM Employee e
+                                    LEFT JOIN EmployeeShift es 
+                                        ON e.EmployeeID = es.EmployeeID
+                                    LEFT JOIN Shift s 
+                                        ON es.ShiftID = s.ShiftID
+                                    WHERE e.IsActive = 1
+                                    GROUP BY e.EmployeeID, e.EmployeeCode, e.FullName;";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                {
+                    dt.Load(reader);
+                }
+            }
+            return dt;
+        }
+
+        public async Task<DataTable> GetShiftAsync()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(conStr))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT ShiftID, ShiftCode, ShiftName FROM Shift";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                {
+                    dt.Load(reader);
+                }
+            }
+            return dt;
+        }
+
+        public async Task<bool> UpsertAttendanceBatchAsync(List<(string EmployeeCode, DateTime WorkDate, double WorkingHours, string Note, string AttendanceLog)> attendanceData)
+        {
+            try
+            {
+                DataTable dt = new DataTable();
+                dt.Columns.Add("EmployeeCode", typeof(string));
+                dt.Columns.Add("WorkDate", typeof(DateTime));
+                dt.Columns.Add("WorkingHours", typeof(double));
+                dt.Columns.Add("Note", typeof(string));
+                dt.Columns.Add("AttendanceLog", typeof(string));
+
+                foreach (var item in attendanceData)
+                {
+                    dt.Rows.Add(item.EmployeeCode, item.WorkDate.Date, item.WorkingHours, item.Note, item.AttendanceLog);
+                }
+
+                using (SqlConnection conn = new SqlConnection(conStr))
+                {
+                    await conn.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand("dbo.UpsertAttendanceBatch", conn))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        var param = cmd.Parameters.AddWithValue("@AttendanceList", dt);
+                        param.SqlDbType = SqlDbType.Structured;
+                        param.TypeName = "dbo.AttendanceTableType";
+
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Lỗi khi cập nhật batch chấm công: " + ex.Message);
+                return false;
+            }
+        }
+
+        public async Task<DataTable> GetEmployeesForEttendamceAsync()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(conStr))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT 
+                                    e.EmployeeCode,
+                                    e.FullName,
+                                    p.PositionCode,
+                                    p.PositionName,
+                                    ct.ContractTypeCode,
+                                    ct.ContractTypeName
+                                FROM Employee e
+                                LEFT JOIN Position p 
+                                    ON e.PositionID = p.PositionID
+                                LEFT JOIN ContractType ct 
+                                    ON e.ContractTypeID = ct.ContractTypeID
+                                WHERE e.IsActive = 1;";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                {
+                    dt.Load(reader);
+                }
+            }
+            return dt;
+        }
+
+        public async Task<DataTable> GetEmployeesForEttendamceAsync(string contractTypeCode)
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(conStr))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT 
+                                    e.EmployeeCode,
+                                    e.FullName,
+                                    p.PositionCode,
+                                    p.PositionName,
+                                    ct.ContractTypeCode,
+                                    ct.ContractTypeName
+                                FROM Employee e
+                                LEFT JOIN Position p 
+                                    ON e.PositionID = p.PositionID
+                                LEFT JOIN ContractType ct 
+                                    ON e.ContractTypeID = ct.ContractTypeID
+                                WHERE e.IsActive = 1 AND ct.ContractTypeCode = @ContractTypeCode;";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    cmd.Parameters.AddWithValue("@ContractTypeCode", contractTypeCode);
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
+        }
+
+        public async Task<DataTable> GetAttendamceAsync(int month, int year)
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(conStr))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT EmployeeCode, WorkDate, WorkingHours, Note, AttendanceLog
+                                FROM Attendance
+                                WHERE MONTH(WorkDate) = @Month
+                                  AND YEAR(WorkDate) = @Year
+                                ORDER BY EmployeeCode, WorkDate;";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    cmd.Parameters.AddWithValue("@Month", month);
+                    cmd.Parameters.AddWithValue("@Year", year);
+
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
+        }
+
+        public async Task<DataTable> GetHolidayAsync()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(conStr))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT * FROM Holiday";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                {
+                    dt.Load(reader);
+                }
+            }
+            return dt;
+        }
+
+        public async Task<DataTable> GetHolidayAsync(int month, int year)
+        {
+            DataTable dt = new DataTable();
+
+            using (SqlConnection con = new SqlConnection(conStr))
+            {
+                await con.OpenAsync();
+
+                string query = @"SELECT *
+                                FROM Holiday
+                                WHERE MONTH(HolidayDate) = @Month AND YEAR(HolidayDate) = @Year";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    cmd.Parameters.AddWithValue("@Month", month);
+                    cmd.Parameters.AddWithValue("@Year", year);
+
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+
+            return dt;
+        }
+
+
+        public async Task<bool> insertHolidayAsync(DateTime holidayDate, string holidayName)
+        {
+            string query = @"INSERT INTO Holiday (HolidayDate, HolidayName) 
+                     VALUES (@HolidayDate, @HolidayName)";
+
+            try
+            {
+                using (SqlConnection con = new SqlConnection(conStr))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@HolidayDate", holidayDate.Date);
+                        cmd.Parameters.AddWithValue("@HolidayName", holidayName);
+
+                        int rows = await cmd.ExecuteNonQueryAsync(); // <-- đúng ở đây
+                        return rows > 0;
+                    }
+                }
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> deleteHolidayAsync(DateTime Holidate)
+        {
+            string query = "DELETE FROM Holiday WHERE HolidayDate=@HolidayDate";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(conStr))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@HolidayDate", Holidate.Date);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+                return true;
+            }
+            catch { return false; }
+        }
+
+        public async Task<DataTable> GetOvertimeTypeAsync()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(conStr))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT * FROM OvertimeType";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                {
+                    dt.Load(reader);
+                }
+            }
+            return dt;
+        }
+
+        public async Task<DataTable> GetOvertimeTypeAsync(bool isActive)
+        {
+            DataTable dt = new DataTable();
+
+            using (SqlConnection con = new SqlConnection(conStr))
+            {
+                await con.OpenAsync();
+
+                string query = @"SELECT *
+                                FROM OvertimeType
+                                WHERE IsActive = @IsActive";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    cmd.Parameters.AddWithValue("@IsActive", isActive);
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+
+            return dt;
+        }
+
+        public async Task<bool> updateOvertimeTypeAsync(int overtimeTypeID, string overtimeName, double salaryFactor, bool isActive)
+        {
+            string query = @"UPDATE OvertimeType SET 
+                                OvertimeName=@OvertimeName, 
+                                SalaryFactor=@SalaryFactor, 
+                                IsActive=@IsActive 
+                            WHERE OvertimeTypeID=@OvertimeTypeID";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(conStr))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@OvertimeTypeID", overtimeTypeID);
+                        cmd.Parameters.AddWithValue("@OvertimeName", overtimeName);
+                        cmd.Parameters.AddWithValue("@SalaryFactor", salaryFactor);
+                        cmd.Parameters.AddWithValue("@IsActive", isActive);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+                return true;
+            }
+            catch { return false; }
+        }
+
+        public async Task<int> insertOvertimeTypeAsync(string overtimeName, double salaryFactor, bool isActive)
+        {
+            int newId = -1;
+
+            string query = @"INSERT INTO OvertimeType (OvertimeName, SalaryFactor, IsActive) 
+                                OUTPUT INSERTED.OvertimeTypeID
+                                VALUES (@OvertimeName, @SalaryFactor, @IsActive)";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(conStr))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@OvertimeName", overtimeName);
+                        cmd.Parameters.AddWithValue("@SalaryFactor", salaryFactor);
+                        cmd.Parameters.AddWithValue("@IsActive", isActive);
+                        object result = await cmd.ExecuteScalarAsync();
+                        if (result != null)
+                            newId = Convert.ToInt32(result);
+                    }
+                }
+                return newId;
+            }
+            catch { return -1; }
+        }
+
+        public async Task<DataTable> GetOvertimeAttendamceAsync(int month, int year)
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(conStr))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT OvertimeAttendanceID, EmployeeCode, WorkDate, StartTime, EndTime, OvertimeTypeID, Note, UpdatedHistory
+                                FROM OvertimeAttendance
+                                WHERE MONTH(WorkDate) = @Month
+                                  AND YEAR(WorkDate) = @Year
+                                ORDER BY EmployeeCode, WorkDate;";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    cmd.Parameters.AddWithValue("@Month", month);
+                    cmd.Parameters.AddWithValue("@Year", year);
+
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
+        }
+
+        public async Task<bool> updateOvertimeAttendanceAsync(int overtimeAttendanceID, string employeeCode, DateTime workDate,
+                                        TimeSpan startTime, TimeSpan endTime, int overtimeTypeID, string note, string updatedHistory)
+        {
+            string query = @"UPDATE OvertimeAttendance SET 
+                                EmployeeCode=@EmployeeCode, 
+                                WorkDate=@WorkDate,
+                                StartTime=@StartTime, 
+                                EndTime=@EndTime,
+                                OvertimeTypeID=@OvertimeTypeID, 
+                                Note=@Note,
+                                UpdatedHistory=@UpdatedHistory                                
+                            WHERE OvertimeAttendanceID=@OvertimeAttendanceID";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(conStr))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@OvertimeAttendanceID", overtimeAttendanceID);
+                        cmd.Parameters.AddWithValue("@EmployeeCode", employeeCode);
+                        cmd.Parameters.AddWithValue("@WorkDate", workDate.Date);
+                        cmd.Parameters.AddWithValue("@StartTime", startTime);
+                        cmd.Parameters.AddWithValue("@EndTime", endTime);
+                        cmd.Parameters.AddWithValue("@OvertimeTypeID", overtimeTypeID);
+                        cmd.Parameters.AddWithValue("@Note", note);
+                        cmd.Parameters.AddWithValue("@UpdatedHistory", updatedHistory);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+                return true;
+            }
+            catch { return false; }
+        }
+
+        public async Task<int> insertOvertimeAttendanceAsync(string employeeCode, DateTime workDate, TimeSpan startTime, TimeSpan endTime, 
+                                                                int overtimeTypeID, string note, string updatedHistory)
+        {
+            int newId = -1;
+
+            string insertQuery = @" INSERT INTO OvertimeAttendance (
+                                        EmployeeCode, WorkDate, StartTime, EndTime, OvertimeTypeID, Note, UpdatedHistory
+                                    )
+                                    OUTPUT INSERTED.OvertimeAttendanceID
+                                    VALUES (
+                                        @EmployeeCode, @WorkDate, @StartTime, @EndTime, @OvertimeTypeID, @Note, @UpdatedHistory
+                                    )";
+
+            try
+            {
+                using (SqlConnection con = new SqlConnection(conStr))
+                {
+                    await con.OpenAsync();
+
+                    // 2️⃣ Insert và lấy ID mới
+                    using (SqlCommand cmd = new SqlCommand(insertQuery, con))
+                    {
+                        cmd.Parameters.AddWithValue("@EmployeeCode", employeeCode);
+                        cmd.Parameters.AddWithValue("@WorkDate", workDate.Date);
+                        cmd.Parameters.Add("@StartTime", SqlDbType.Time).Value = startTime;
+                        cmd.Parameters.Add("@EndTime", SqlDbType.Time).Value = endTime;
+                        cmd.Parameters.AddWithValue("@OvertimeTypeID", overtimeTypeID);
+                        cmd.Parameters.AddWithValue("@Note", note);
+                        cmd.Parameters.AddWithValue("@UpdatedHistory", updatedHistory);
+
+                        object result = await cmd.ExecuteScalarAsync();
+                        if (result != null)
+                            newId = Convert.ToInt32(result);
+                    }
+                }
+
+                return newId;
+            }
+            catch
+            {
+                return -1;
+            }
+        }
+
+        public async Task<DataTable> GetAnnualLeaveBalanceAsync(int year)
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(conStr))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT 
+                                    E.EmployeeID, 
+                                    E.EmployeeCode,
+                                    E.FullName,
+                                    P.PositionName,                 
+                                    ISNULL(ALB.Year, @Year) AS [Year],
+                                    ISNULL(ALB.Month, '') AS [Month],
+                                    ISNULL(LV.LeaveCount, 0) AS LeaveCount
+                                FROM Employee AS E
+                                LEFT JOIN Position AS P 
+                                    ON E.PositionID = P.PositionID
+                                LEFT JOIN ContractType AS CT
+                                    ON E.ContractTypeID = CT.ContractTypeID
+                                LEFT JOIN AnnualLeaveBalance AS ALB 
+                                    ON E.EmployeeCode = ALB.EmployeeCode
+                                    AND ALB.Year = @Year
+                                LEFT JOIN (
+                                    SELECT 
+                                        EmployeeCode,
+                                        COUNT(DateOff) AS LeaveCount
+                                    FROM LeaveAttendance
+                                    WHERE YEAR(DateOff) = @Year
+                                    GROUP BY EmployeeCode
+                                ) AS LV 
+                                    ON E.EmployeeCode = LV.EmployeeCode
+                                WHERE 
+                                    E.IsActive = 1
+                                    AND CT.ContractTypeCode = 'c_thuc'
+                                ORDER BY 
+                                    E.EmployeeCode;";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    cmd.Parameters.AddWithValue("@Year", year);
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
+        }
+
+        public async Task<bool> UpsertAnnualLeaveBalanceBatchAsync(List<(string EmployeeCode, int Year, string Month)> albData)
+        {
+            try
+            {
+                DataTable dt = new DataTable();
+                dt.Columns.Add("EmployeeCode", typeof(string));
+                dt.Columns.Add("Year", typeof(int));
+                dt.Columns.Add("Month", typeof(string));
+
+                foreach (var item in albData)
+                {
+                    dt.Rows.Add(item.EmployeeCode, item.Year, item.Month);
+                }
+
+                using (SqlConnection conn = new SqlConnection(conStr))
+                {
+                    await conn.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand("Upsert_AnnualLeaveBalance_Batch", conn))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        var param = cmd.Parameters.AddWithValue("@AnnualLeaveList", dt);
+                        param.SqlDbType = SqlDbType.Structured;
+                        param.TypeName = "AnnualLeaveBalanceType";
+
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Lỗi khi cập nhật: " + ex.Message);
+                return false;
+            }
+        }
+
+        public async Task AutoUpsertAnnualLeaveMonthListAsync()
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(conStr))
+                {
+                    await conn.OpenAsync();
+
+                    using (SqlCommand cmd = new SqlCommand("UpdateAnnualLeaveMonthList", conn))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+
+                Console.WriteLine("[AutoUpsertAnnualLeaveMonthList] ✅ Cập nhật thành công");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[AutoUpsertAnnualLeaveMonthList] ❌ Lỗi: {ex.Message}");
+            }
+        }
+
+        public async Task<DataTable> GetLeaveAttendanceAsync(int month, int year)
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(conStr))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT *
+                                FROM LeaveAttendance
+                                WHERE MONTH(DateOff) = @Month
+                                  AND YEAR(DateOff) = @Year
+                                ORDER BY EmployeeCode, DateOff;";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    cmd.Parameters.AddWithValue("@Month", month);
+                    cmd.Parameters.AddWithValue("@Year", year);
+
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
+        }
+
+        public async Task<DataTable> GetLeaveTypeAsync()
+        {
+            DataTable dt = new DataTable();
+
+            using (SqlConnection con = new SqlConnection(conStr))
+            {
+                await con.OpenAsync();
+
+                string query = @"SELECT *
+                                FROM LeaveType";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+
+            return dt;
+        }
+
+        public async Task<int> insertLeaveAttendanceAsync(string employeeCode, string leaveTypeCode, DateTime dateOff, string Note, string UpdatedHistory)
+        {
+            int newId = -1;
+
+            string insertQuery = @" INSERT INTO LeaveAttendance  (
+                                EmployeeCode, LeaveTypeCode, DateOff, Note, UpdatedHistory
+                            )
+                            OUTPUT INSERTED.LeaveID
+                            VALUES (
+                                @EmployeeCode, @LeaveTypeCode, @DateOff, @Note, @UpdatedHistory
+                            )";
+
+
+            try
+            {
+                using (SqlConnection con = new SqlConnection(conStr))
+                {
+                    await con.OpenAsync();
+
+                    // 2️⃣ Insert và lấy ID mới
+                    using (SqlCommand cmd = new SqlCommand(insertQuery, con))
+                    {
+                        cmd.Parameters.AddWithValue("@EmployeeCode", employeeCode);
+                        cmd.Parameters.AddWithValue("@LeaveTypeCode", leaveTypeCode);
+                        cmd.Parameters.AddWithValue("@DateOff", dateOff.Date);
+                        cmd.Parameters.AddWithValue("@Note", Note);
+                        cmd.Parameters.AddWithValue("@UpdatedHistory", UpdatedHistory);
+
+                        object result = await cmd.ExecuteScalarAsync();
+                        if (result != null)
+                            newId = Convert.ToInt32(result);
+                    }
+                }
+
+                return newId;
+            }
+            catch
+            {
+                return -1;
+            }
+        }
+
+        public async Task<bool> updateLeaveAttendanceAsync(int leaveID, string employeeCode, string leaveTypeCode, DateTime dateOff, string Note, string UpdatedHistory)
+        {
+            string query = @"UPDATE LeaveAttendance SET 
+                                EmployeeCode=@EmployeeCode, 
+                                LeaveTypeCode=@LeaveTypeCode,
+                                DateOff=@DateOff, 
+                                Note=@Note,
+                                UpdatedHistory=@UpdatedHistory                                
+                            WHERE LeaveID=@LeaveID";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(conStr))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@LeaveID", leaveID);
+                        cmd.Parameters.AddWithValue("@EmployeeCode", employeeCode);
+                        cmd.Parameters.AddWithValue("@LeaveTypeCode", leaveTypeCode);
+                        cmd.Parameters.AddWithValue("@DateOff", dateOff.Date);
+                        cmd.Parameters.AddWithValue("@Note", Note);
+                        cmd.Parameters.AddWithValue("@UpdatedHistory", UpdatedHistory);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+                return true;
+            }
+            catch { return false; }
+        }
     }
 }

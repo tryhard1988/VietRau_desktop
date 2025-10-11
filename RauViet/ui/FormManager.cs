@@ -19,6 +19,9 @@ namespace RauViet.ui
         {
             InitializeComponent();
 
+            Task.Run(() =>SQLManager.Instance.AutoUpsertAnnualLeaveMonthListAsync());
+
+
             this.WindowState = FormWindowState.Maximized;
             this.Text = "Quản Lý Việt Rau - NV: " + UserManager.Instance.fullName + " [" + UserManager.Instance.employeeCode + "]";
 
@@ -83,7 +86,18 @@ namespace RauViet.ui
             else
                 xuatExcelGuiKH_Group_mi.Visible = false;
 
-
+            if (UserManager.Instance.hasRole_ChamCong())
+            {
+                attendanceHC_mi.Click += attendanceHC_mi_Click;
+                holiday_mi.Click += Holiday_mi_Click;
+                overtimeType_mi.Click += OvertimeType_mi_Click;
+                overtimeAttendace_mi.Click += OvertimeAttendace_mi_Click;
+                annualLeaveBalance_mi.Click += AnnualLeaveBalance_mi_Click;
+                leaveAttendance_mi.Click += LeaveAttendance_mi_Click;
+            }
+            else
+                chamcong_pmi.Visible = false;
+            
             title_lb.Text = "";
         }
 
@@ -112,7 +126,34 @@ namespace RauViet.ui
             form.Show();
         }
 
+        private void LeaveAttendance_mi_Click(object sender, EventArgs e)
+        {
+            SwitchChildForm<LeaveAttendance>("Bảng Đơn Nghỉ Phép");
+        }
 
+        private void AnnualLeaveBalance_mi_Click(object sender, EventArgs e)
+        {
+            SwitchChildForm<AnnualLeaveBalance>("Bảng Tồn Phép Nghỉ");
+        }
+
+        private void OvertimeAttendace_mi_Click(object sender, EventArgs e)
+        {
+            SwitchChildForm<OvertimeAttendace>("Bảng Chấm Công Tăng Ca");
+        }
+        private void OvertimeType_mi_Click(object sender, EventArgs e)
+        {
+            SwitchChildForm<OvertimeType>("Bảng Loại Tăng Ca");
+        }
+
+        private void Holiday_mi_Click(object sender, EventArgs e)
+        {
+            SwitchChildForm<Holidays>("Lập Ngày Nghỉ Lễ");
+        }
+
+        private void attendanceHC_mi_Click(object sender, EventArgs e)
+        {
+            SwitchChildForm<Attendance>("Nhóm Ca Làm Của Nhân Viên");
+        }
         private void customerDetailPacking_mi_Click(object sender, EventArgs e)
         {
             SwitchChildForm<CustomerDetailPackingTotal>("Customer Detail Packing");

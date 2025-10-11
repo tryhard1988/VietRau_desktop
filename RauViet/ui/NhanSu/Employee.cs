@@ -64,7 +64,6 @@ namespace RauViet.ui
                 issueDate_dtp.Format = DateTimePickerFormat.Custom;
                 issueDate_dtp.CustomFormat = "dd/MM/yyyy";
 
-                
                 department_cbb.DataSource = mDepartment_dt;
                 department_cbb.DisplayMember = "DepartmentName";
                 department_cbb.ValueMember = "DepartmentID";
@@ -91,24 +90,14 @@ namespace RauViet.ui
                     int contractTypeID = Convert.ToInt32(dr["ContractTypeID"]);
                     Boolean gender = Convert.ToBoolean(dr["Gender"]);
 
-                    string positionName = "";
-                    string departmentName = "";
-                    DataRow[] postionRows = mPosition_dt.Select($"PositionID = {positionID}");
-                    if (postionRows.Length > 0)
-                        positionName = postionRows[0]["PositionName"].ToString();
 
-                    DataRow[] departmentRows = mDepartment_dt.Select($"departmentID = {departmentID}");
-                    if (departmentRows.Length > 0)
-                        departmentName = departmentRows[0]["DepartmentName"].ToString();
-
+                    string positionName = mPosition_dt.Select($"PositionID = {positionID}")[0]["PositionName"].ToString();
+                    string departmentName = mDepartment_dt.Select($"DepartmentID = {departmentID}")[0]["DepartmentName"].ToString();
                     string contractTypeName = mContractType_dt.Select($"ContractTypeID = {contractTypeID}")[0]["ContractTypeName"].ToString();
 
                     dr["Age"] = age;
                     dr["GenderName"] = gender == true? "Nam" : "Nữ";
-                    
-                    if(!string.IsNullOrEmpty(positionName))
-                        dr["Position"] = positionName;
-                    
+                    dr["Position"] = positionName;
                     dr["Department"] = departmentName;
                     dr["ContractType"] = contractTypeName;
                 }
@@ -166,6 +155,18 @@ namespace RauViet.ui
                 dataGV.Columns["IsActive"].Width = 50;
                 dataGV.Columns["Age"].Width = 40;
 
+                //dataGV.Columns["EmployeeCode"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+                //dataGV.Columns["FullName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+                //dataGV.Columns["BirthDate"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+                //dataGV.Columns["HireDate"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+                //dataGV.Columns["GenderName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+                //dataGV.Columns["Position"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+                //dataGV.Columns["Department"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+                //dataGV.Columns["ContractType"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+                //dataGV.Columns["IsActive"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+                //dataGV.Columns["Age"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+
+                // dataGV.Columns["UserID"].Visible = false;
 
                 if (dataGV.Rows.Count > 0)
                 {
@@ -431,8 +432,7 @@ namespace RauViet.ui
             bool isActive = isActive_cb.Checked;
             bool canCreateUserName = canCreateUserName_cb.Checked;
 
-            if ((maNV.CompareTo("") == 0 && employeeID_tb.Text.CompareTo("") != 0) || tenNV.CompareTo("") == 0 || DateTime.Now.Year - birthDate.Year < 18 ||
-                department_cbb.SelectedItem == null || position_cbb.SelectedItem == null)
+            if ((maNV.CompareTo("") == 0 && employeeID_tb.Text.CompareTo("") != 0) || tenNV.CompareTo("") == 0 || DateTime.Now.Year - birthDate.Year < 18)
             {
                 MessageBox.Show("Sai Dữ Liệu, Kiểm Tra Lại!", "Thông Báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;

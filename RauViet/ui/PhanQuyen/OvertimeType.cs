@@ -1,4 +1,7 @@
-﻿using System;
+﻿using DocumentFormat.OpenXml.VariantTypes;
+using DocumentFormat.OpenXml.Wordprocessing;
+using RauViet.classes;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -7,14 +10,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using RauViet.classes;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
+using Color = System.Drawing.Color;
 
 namespace RauViet.ui
 {
-    public partial class Department : Form
+    public partial class OvertimeType : Form
     { 
-        public Department()
+        public OvertimeType()
         {
             InitializeComponent();
 
@@ -46,23 +49,26 @@ namespace RauViet.ui
             try
             {
                 // Chạy truy vấn trên thread riêng
-                var departmentTask = SQLManager.Instance.GetDepartmentAsybc();
+                var postionTask = SQLManager.Instance.GetOvertimeTypeAsync();
 
-                await Task.WhenAll(departmentTask);
-                DataTable department_dt = departmentTask.Result;
+                await Task.WhenAll(postionTask);
+                DataTable postion_dt = postionTask.Result;
 
-                department_dt.Columns.Remove("CreatedAt");
+                int count = 0;
+                postion_dt.Columns["OvertimeName"].SetOrdinal(count++);
+                postion_dt.Columns["SalaryFactor"].SetOrdinal(count++);
+                postion_dt.Columns["IsActive"].SetOrdinal(count++);
 
-                dataGV.DataSource = department_dt;
+                dataGV.DataSource = postion_dt;
 
-                dataGV.Columns["DepartmentID"].HeaderText = "Mã Phòng Ban";
-                dataGV.Columns["DepartmentName"].HeaderText = "Tên Phòng Ban";
-                dataGV.Columns["Description"].HeaderText = "Diễn Giải";
+                dataGV.Columns["OvertimeName"].HeaderText = "Tên Loại Tăng Ca";
+                dataGV.Columns["SalaryFactor"].HeaderText = "Hệ Số Nhân";
                 dataGV.Columns["IsActive"].HeaderText = "Còn Hoạt Động";
 
-                dataGV.Columns["DepartmentID"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["DepartmentName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["Description"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+                dataGV.Columns["OvertimeTypeID"].Visible = false;
+
+                dataGV.Columns["OvertimeName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+                dataGV.Columns["SalaryFactor"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
                 dataGV.Columns["IsActive"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
 
                // dataGV.Columns["UserID"].Visible = false;
@@ -71,7 +77,6 @@ namespace RauViet.ui
                 {
                     dataGV.ClearSelection();
                     dataGV.Rows[0].Selected = true;
-                    dataGV.CurrentCell = dataGV.Rows[0].Cells[0];
                     UpdateRightUI(0);
                 }
 
@@ -98,7 +103,7 @@ namespace RauViet.ui
                 dataGV.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.Beige;
             }
         }
-        
+      
         private void dataGV_CellClick(object sender, EventArgs e)
         {
             if (dataGV.CurrentRow == null) return;
@@ -113,42 +118,43 @@ namespace RauViet.ui
         private void UpdateRightUI(int index)
         {
             var cells = dataGV.Rows[index].Cells;
-            int departmentID = Convert.ToInt32(cells["DepartmentID"].Value);
-            string departmentName = cells["DepartmentName"].Value.ToString();
-            string description = cells["Description"].Value.ToString();
+            int positionID = Convert.ToInt32(cells["OvertimeTypeID"].Value);
+            string positionName = cells["OvertimeName"].Value.ToString();
+            double salaryFactor = Convert.ToDouble(cells["SalaryFactor"].Value);
             Boolean isActive = Convert.ToBoolean(cells["IsActive"].Value);
 
-            departmentID_tb.Text = departmentID.ToString();
-            description_tb.Text = description;
-            departmentName_tb.Text = departmentName;
+            overtimeTypeID_tb.Text = positionID.ToString();
+            overtimeName_tb.Text = positionName;
+            salaryFactor_tb.Text = salaryFactor.ToString(); 
             isActive_cb.Checked = isActive;
+
             delete_btn.Enabled = true;
 
             info_gb.BackColor = Color.DarkGray;
             status_lb.Text = "";
         }
 
-        private async void updateData(int departmentID, string departmentName, string description, Boolean isActive)
+        private async void updateData(int overtimeTypeID, string overtimeName, double salaryFactor, bool isActive)
         {
             foreach (DataGridViewRow row in dataGV.Rows)
             {
-                int id = Convert.ToInt32(row.Cells["DepartmentID"].Value);
-                if (id.CompareTo(departmentID) == 0)
+                int id = Convert.ToInt32(row.Cells["OvertimeTypeID"].Value);
+                if (id.CompareTo(overtimeTypeID) == 0)
                 {
                     DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                     if (dialogResult == DialogResult.Yes)
                     {
                         try
                         {
-                            bool isScussess = await SQLManager.Instance.updateDepartmentAsync(departmentID, departmentName, description, isActive);
+                            bool isScussess = await SQLManager.Instance.updateOvertimeTypeAsync(overtimeTypeID, overtimeName, salaryFactor, isActive);
 
                             if (isScussess == true)
                             {
                                 status_lb.Text = "Thành công.";
                                 status_lb.ForeColor = Color.Green;
 
-                                row.Cells["DepartmentName"].Value = departmentName;
-                                row.Cells["Description"].Value = description;
+                                row.Cells["OvertimeName"].Value = overtimeName;
+                                row.Cells["SalaryFactor"].Value = salaryFactor;
                                 row.Cells["IsActive"].Value = isActive;
                             }
                             else
@@ -161,14 +167,18 @@ namespace RauViet.ui
                         {
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;
-                        }  
+                        }
+
+                        
+
+                        
                     }
                     break;
                 }
             }
         }
 
-        private async void createNew(string departmentName, string description, bool isActive)
+        private async void createNew(string overtimeName, double salaryFactor, bool isActive)
         {
             DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
@@ -176,18 +186,19 @@ namespace RauViet.ui
             {
                 try
                 {
-                    int deparmetnID = await SQLManager.Instance.insertDepartmentAsync(departmentName, description, isActive);
-                    if (deparmetnID > 0)
+                    int newId = await SQLManager.Instance.insertOvertimeTypeAsync(overtimeName, salaryFactor, isActive);
+                    if (newId > 0)
                     {
+
                         DataTable dataTable = (DataTable)dataGV.DataSource;
                         DataRow drToAdd = dataTable.NewRow();
 
-                        drToAdd["DepartmentID"] = deparmetnID;
-                        drToAdd["DepartmentName"] = departmentName;
-                        drToAdd["Description"] = description;
+                        drToAdd["OvertimeTypeID"] = newId;
+                        drToAdd["OvertimeName"] = overtimeName;
+                        drToAdd["SalaryFactor"] = salaryFactor;
                         drToAdd["IsActive"] = isActive;
 
-                        departmentID_tb.Text = deparmetnID.ToString();
+                        overtimeTypeID_tb.Text = newId.ToString();
 
 
                         dataTable.Rows.Add(drToAdd);
@@ -218,7 +229,7 @@ namespace RauViet.ui
         }
         private void saveBtn_Click(object sender, EventArgs e)
         {
-            if (departmentName_tb.Text.CompareTo("") == 0)
+            if (salaryFactor_tb.Text.CompareTo("") == 0)
             {
                 MessageBox.Show(
                                 "Thiếu Dữ Liệu, Kiểm Tra Lại!",
@@ -229,33 +240,33 @@ namespace RauViet.ui
                 return;
             }
 
-            string departmentName = departmentName_tb.Text;
-            string description = description_tb.Text;
+            string overtimeName = overtimeName_tb.Text;
+            double salaryFactor = Convert.ToDouble(salaryFactor_tb.Text);
             Boolean isActive = isActive_cb.Checked;
 
-            if (departmentID_tb.Text.Length != 0)
-                updateData(Convert.ToInt32(departmentID_tb.Text), departmentName, description, isActive);
+            if (overtimeTypeID_tb.Text.Length != 0)
+                updateData(Convert.ToInt32(overtimeTypeID_tb.Text), overtimeName, salaryFactor, isActive);
             else
-                createNew(departmentName, description, isActive);
+                createNew(overtimeName, salaryFactor, isActive);
 
         }
         private async void deleteBtn_Click(object sender, EventArgs e)
         {
             if (dataGV.SelectedRows.Count == 0) return;
 
-            string departmentID = departmentID_tb.Text;
+            string id = overtimeTypeID_tb.Text;
 
             foreach (DataGridViewRow row in dataGV.Rows)
             {
-                string id = row.Cells["DepartmentID"].Value.ToString();
-                if (id.CompareTo(departmentID) == 0)
+                string positionID = row.Cells["PositionID"].Value.ToString();
+                if (positionID.CompareTo(id) == 0)
                 {
-                    DialogResult dialogResult = MessageBox.Show("XÓA \n Chắc chắn chưa ?", " Xóa Thông Tin", MessageBoxButtons.YesNo);
+                    DialogResult dialogResult = MessageBox.Show("XÓA ĐÓ NHA \n Chắc chắn chưa ?", " Xóa Thông Tin", MessageBoxButtons.YesNo);
                     if (dialogResult == DialogResult.Yes)
                     {
                         try
                         {
-                            bool isScussess = await SQLManager.Instance.deleteDepartmentAsync(Convert.ToInt32(id));
+                            bool isScussess = await SQLManager.Instance.deletePositionAsync(Convert.ToInt32(positionID));
 
                             if (isScussess == true)
                             {
@@ -288,9 +299,9 @@ namespace RauViet.ui
 
         private void newCustomerBtn_Click(object sender, EventArgs e)
         {
-            departmentID_tb.Text = "";
-            departmentName_tb.Text = "";
-            description_tb.Text = "";
+            overtimeTypeID_tb.Text = "";
+            overtimeName_tb.Text = "";
+            salaryFactor_tb.Text = "";
             isActive_cb.Checked = true;
 
             status_lb.Text = "";
