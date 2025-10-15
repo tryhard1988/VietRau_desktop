@@ -33,8 +33,16 @@ namespace RauViet.ui
             if (UserManager.Instance.hasRole_NhanSu())
             {
                 employee_mi.Click += employee_mi_Click;
+                employeeBH_mi.Click += EmployeeBH_mi_Click;
+                employeeBank_mi.Click += EmployeeBank_mi_Click;
+                employeeWork_mi.Click += EmployeeWork_mi_Click;
                 department_mi.Click += department_mi_Click;
                 position_mi.Click += position_mi_Click;
+                overtimeType_mi.Click += OvertimeType_mi_Click;
+                holiday_mi.Click += Holiday_mi_Click;
+                allowanceType_mi.Click += AllowanceType_mi_Click;
+                salaryGrade_mi.Click += SalaryGrade_mi_Click;
+                employeeSalaryInfo_mi.Click += EmployeeSalaryInfo_mi_Click;
             }
             else
             {
@@ -89,11 +97,17 @@ namespace RauViet.ui
             if (UserManager.Instance.hasRole_ChamCong())
             {
                 attendanceHC_mi.Click += attendanceHC_mi_Click;
-                holiday_mi.Click += Holiday_mi_Click;
-                overtimeType_mi.Click += OvertimeType_mi_Click;
                 overtimeAttendace_mi.Click += OvertimeAttendace_mi_Click;
                 annualLeaveBalance_mi.Click += AnnualLeaveBalance_mi_Click;
-                leaveAttendance_mi.Click += LeaveAttendance_mi_Click;
+                leaveAttendance_mi.Click += LeaveAttendance_mi_Click;                
+                departmentAllowance_mi.Click += DepartmentAllowance_mi_Click;
+                positionAllowance_mi.Click += PositionAllowance_mi_Click;
+                employeeAllowance_mi.Click += EmployeeAllowance_mi_Click;
+                monthlyAllowance_mi.Click += MonthlyAllowance_mi_Click;
+                deduction_VEG_mi.Click += deduction_VEG_mi_Click;
+                deduction_OTH_mi.Click += Deduction_OTH_mi_Click;
+                deduction_CEP_mi.Click += Deduction_CEP_mi_Click;
+                deduction_ADV_mi.Click += Deduction_ADV_mi_Click;
             }
             else
                 chamcong_pmi.Visible = false;
@@ -126,6 +140,76 @@ namespace RauViet.ui
             form.Show();
         }
 
+        private void Deduction_ADV_mi_Click(object sender, EventArgs e)
+        {
+            SwitchChildForm<EmployeeDeduction_ADV>("Ứng Lương Cho Nhân Viên");
+        }
+
+        private void Deduction_CEP_mi_Click(object sender, EventArgs e)
+        {
+           SwitchChildForm<EmployeeDeduction_CEP>("Thu Hộ CEP");
+        }
+
+        private void Deduction_OTH_mi_Click(object sender, EventArgs e)
+        {
+            SwitchChildForm<EmployeeDeduction_OTH>("Các Khoản Trừ Khác Của Nhân Viên");
+        }
+
+        private void deduction_VEG_mi_Click(object sender, EventArgs e)
+        {
+            SwitchChildForm<EmployeeDeduction_VEG>("Tiền Rau Của Nhân Viên");
+        }
+
+        private void EmployeeWork_mi_Click(object sender, EventArgs e)
+        {
+            SwitchChildForm<Employee_POS_DEP_CON>("Thông Tin Công Việc Nhân Viên");
+        }
+
+        private void EmployeeBank_mi_Click(object sender, EventArgs e)
+        {
+            SwitchChildForm<EmployeeNganHang>("Thông Tin Tài Khoản Ngân Hàng Của Nhân Viên");
+        }
+
+        private void EmployeeBH_mi_Click(object sender, EventArgs e)
+        {
+            SwitchChildForm<EmployeeBaoHiem>("Thông Tin Bảo Hiểm");
+        }
+
+        private void EmployeeSalaryInfo_mi_Click(object sender, EventArgs e)
+        {
+            SwitchChildForm<EmployeeSalaryInfo>("Chi Tiết Thay Đổi Lương");
+        }
+
+        private void SalaryGrade_mi_Click(object sender, EventArgs e)
+        {
+            SwitchChildForm<SalaryGrade>("Bảng Bậc Lương");
+        }
+
+        private void MonthlyAllowance_mi_Click(object sender, EventArgs e)
+        {
+            SwitchChildForm<MonthlyAllowance>("Phụ Cấp Phát Sinh Trong Tháng");
+        }
+
+        private void EmployeeAllowance_mi_Click(object sender, EventArgs e)
+        {
+            SwitchChildForm<EmployeeAllowance>("Phụ Cấp Theo Từng Nhân Viên");
+        }
+
+        private void PositionAllowance_mi_Click(object sender, EventArgs e)
+        {
+            SwitchChildForm<PositionAllowance>("Phụ Cấp Theo Chức Vụ");
+        }
+
+        private void DepartmentAllowance_mi_Click(object sender, EventArgs e)
+        {
+            SwitchChildForm<DepartmentAllowance>("Phụ Cấp Theo Phòng Ban");
+        }
+
+        private void AllowanceType_mi_Click(object sender, EventArgs e)
+        {
+            SwitchChildForm<AllowanceType>("Loại Phụ Cấp");
+        }
+
         private void LeaveAttendance_mi_Click(object sender, EventArgs e)
         {
             SwitchChildForm<LeaveAttendance>("Bảng Đơn Nghỉ Phép");
@@ -152,7 +236,7 @@ namespace RauViet.ui
 
         private void attendanceHC_mi_Click(object sender, EventArgs e)
         {
-            SwitchChildForm<Attendance>("Nhóm Ca Làm Của Nhân Viên");
+            SwitchChildForm<Attendance>("Chấm CôngHành Chính");
         }
         private void customerDetailPacking_mi_Click(object sender, EventArgs e)
         {

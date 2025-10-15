@@ -57,6 +57,7 @@ namespace RauViet.ui
 
             loadAttandance_btn.Click += LoadLeaveAttendance_btn_Click;
             newBtn.Click += NewBtn_Click;
+            delete_btn.Click += Delete_btn_Click;
         }
 
         public async void ShowData()
@@ -93,14 +94,12 @@ namespace RauViet.ui
                                         ContractTypeCode: r.Field<string>("ContractTypeCode")
                                     )
                                 );
-
-
-                mEmployee_dt.Columns.Add(new DataColumn("TotalWorkingHour", typeof(double)));
+            //    mEmployee_dt.Columns.Add(new DataColumn("TotalWorkingHour", typeof(double)));
 
                 dataGV.DataSource = mEmployee_dt;
                 dataGV.Columns["EmployeeCode"].HeaderText = "Mã Nhân Viên";
                 dataGV.Columns["FullName"].HeaderText = "Tên Nhân Viên";
-                dataGV.Columns["TotalWorkingHour"].HeaderText = "Tổng G.Làm";
+             //   dataGV.Columns["TotalWorkingHour"].HeaderText = "Tổng G.Làm";
                 dataGV.Columns["ContractTypeName"].HeaderText = "Loại H.Đồng";
                 dataGV.Columns["PositionName"].HeaderText = "Chức Vụ";
 
@@ -109,7 +108,7 @@ namespace RauViet.ui
 
                 dataGV.Columns["EmployeeCode"].Width = 50;
                 dataGV.Columns["FullName"].Width = 160;
-                dataGV.Columns["TotalWorkingHour"].Width = 50;
+             // dataGV.Columns["TotalWorkingHour"].Width = 50;
                 dataGV.Columns["ContractTypeName"].Width = 70;
                 dataGV.Columns["PositionName"].Width = 70;
 
@@ -141,24 +140,45 @@ namespace RauViet.ui
         {
             attendanceGV.SelectionChanged -= this.attendanceGV_CellClick;
 
+            
+            mLeaveAttendance_dt.Columns.Add(new DataColumn("LeaveTypeName", typeof(string)));
+            mLeaveAttendance_dt.Columns.Add(new DataColumn("DayOfWeek", typeof(string)));
+
+            string[] vietDays = { "CN", "T.2", "T.3", "T.4", "T.5", "T.6", "T.7" };
+            foreach (DataRow row in mLeaveAttendance_dt.Rows)
+            {
+                string leaveTypeCode = Convert.ToString(row["LeaveTypeCode"]);
+                DataRow[] foundRows = mLeaveType.Select($"LeaveTypeCode = '{leaveTypeCode}'");
+                if (foundRows.Length > 0)
+                {
+                    DateTime dayOff = Convert.ToDateTime(row["DateOff"]);
+                    row["LeaveTypeName"] = foundRows[0]["LeaveTypeName"].ToString();
+                    row["DayOfWeek"] = vietDays[(int)dayOff.DayOfWeek];
+                }
+            }
+
             int count = 0;
-            mLeaveAttendance_dt.Columns["LeaveTypeCode"].SetOrdinal(count++);
-            mLeaveAttendance_dt.Columns["DateOff"].SetOrdinal(count++);            
+            mLeaveAttendance_dt.Columns["DayOfWeek"].SetOrdinal(count++);
+            mLeaveAttendance_dt.Columns["DateOff"].SetOrdinal(count++);
+            mLeaveAttendance_dt.Columns["LeaveTypeName"].SetOrdinal(count++);
             mLeaveAttendance_dt.Columns["Note"].SetOrdinal(count++);
 
             attendanceGV.DataSource = mLeaveAttendance_dt;
             attendanceGV.Columns["LeaveID"].Visible = false;
+            attendanceGV.Columns["LeaveTypeCode"].Visible = false;
             attendanceGV.Columns["EmployeeCode"].Visible = false;
             attendanceGV.Columns["UpdatedHistory"].Visible = false;
 
             attendanceGV.Columns["DateOff"].DefaultCellStyle.Format = "dd/MM/yyyy";
 
-            attendanceGV.Columns["LeaveTypeCode"].HeaderText = "Ngày Làm";
+            attendanceGV.Columns["DayOfWeek"].HeaderText = "Thứ";
+            attendanceGV.Columns["LeaveTypeName"].HeaderText = "Loại Nghỉ Phép";
             attendanceGV.Columns["DateOff"].HeaderText = "Ngày Nghỉ";
             attendanceGV.Columns["Note"].HeaderText = "Ghi Chú";
 
-            attendanceGV.Columns["LeaveTypeCode"].Width = 40;
-            attendanceGV.Columns["DateOff"].Width = 70;
+            attendanceGV.Columns["DayOfWeek"].Width = 40;
+            attendanceGV.Columns["LeaveTypeName"].Width = 150;
+            attendanceGV.Columns["DateOff"].Width = 100;
             attendanceGV.Columns["Note"].Width = 250;
 
             attendanceGV.Columns["UpdatedHistory"].DefaultCellStyle.WrapMode = DataGridViewTriState.True;
@@ -263,6 +283,12 @@ namespace RauViet.ui
                                 row.Cells["Note"].Value = Note;
                                 row.Cells["UpdatedHistory"].Value = UpdatedHistory;
 
+                                DataRow[] foundRows = mLeaveType.Select($"LeaveTypeCode = '{leaveTypeCode}'");
+                                if (foundRows.Length > 0)
+                                {
+                                    row.Cells["LeaveTypeName"].Value = foundRows[0]["LeaveTypeName"].ToString();
+                                }
+
                                 //DataRow[] rows = mOvertimeType.Select($"OvertimeTypeID = {overtimeTypeID}");
                                 //if (rows.Length > 0)
                                 //    row.Cells["OvertimeName"].Value = rows[0]["OvertimeName"].ToString();
@@ -270,8 +296,8 @@ namespace RauViet.ui
                                 //TimeSpan duration = endTime - startTime;
                                 //row.Cells["WorkingHours"].Value = Math.Round(duration.TotalHours, 1);
 
-                                //string[] vietDays = { "CN", "T.2", "T.3", "T.4", "T.5", "T.6", "T.7" };
-                                //row.Cells["DayOfWeek"].Value = vietDays[(int)workDate.DayOfWeek];
+                                string[] vietDays = { "CN", "T.2", "T.3", "T.4", "T.5", "T.6", "T.7" };
+                                row.Cells["DayOfWeek"].Value = vietDays[(int)dateOff.DayOfWeek];
 
                             }
                             else
@@ -317,6 +343,12 @@ namespace RauViet.ui
                         drToAdd["Note"] = Note;
                         drToAdd["UpdatedHistory"] = UpdatedHistory;
 
+                        DataRow[] foundRows = mLeaveType.Select($"LeaveTypeCode = '{leaveTypeCode}'");
+                        if (foundRows.Length > 0)
+                        {
+                            drToAdd["LeaveTypeName"] = foundRows[0]["LeaveTypeName"].ToString();
+                        }
+
                         //DataRow[] rows = mOvertimeType.Select($"OvertimeTypeID = {overtimeTypeID}");
                         //if (rows.Length > 0)
                         //    drToAdd["OvertimeName"] = rows[0]["OvertimeName"].ToString();
@@ -324,8 +356,8 @@ namespace RauViet.ui
                         //TimeSpan duration = endTime - startTime;
                         //drToAdd["WorkingHours"] = Math.Round(duration.TotalHours, 1);
 
-                        //string[] vietDays = { "CN", "T.2", "T.3", "T.4", "T.5", "T.6", "T.7" };
-                        //drToAdd["DayOfWeek"] = vietDays[(int)workDate.DayOfWeek];
+                        string[] vietDays = { "CN", "T.2", "T.3", "T.4", "T.5", "T.6", "T.7" };
+                        drToAdd["DayOfWeek"] = vietDays[(int)dateOff.DayOfWeek];
 
                         mLeaveAttendance_dt.Rows.Add(drToAdd);
                         mLeaveAttendance_dt.AcceptChanges();
@@ -389,6 +421,53 @@ namespace RauViet.ui
             leaveID_tb.Text = "";
             note_tb.Text = "";
             info_gb.BackColor = Color.Green;
+        }
+
+        private async void Delete_btn_Click(object sender, EventArgs e)
+        {
+            if (attendanceGV.SelectedRows.Count == 0 || string.IsNullOrEmpty(leaveID_tb.Text)) return;
+
+            int id = Convert.ToInt32(leaveID_tb.Text);
+
+            foreach (DataGridViewRow row in attendanceGV.Rows)
+            {
+                int leaveID = Convert.ToInt32(row.Cells["LeaveID"].Value);
+                if (leaveID.CompareTo(id) == 0)
+                {
+                    DialogResult dialogResult = MessageBox.Show("XÓA ĐÓ NHA \n Chắc chắn chưa ?", " Xóa Thông Tin", MessageBoxButtons.YesNo);
+                    if (dialogResult == DialogResult.Yes)
+                    {
+                        try
+                        {
+                            bool isScussess = await SQLManager.Instance.deleteLeaveAttendanceAsync(leaveID);
+
+                            if (isScussess == true)
+                            {
+                                status_lb.Text = "Thành công.";
+                                status_lb.ForeColor = Color.Green;
+
+                                int delRowInd = row.Index;
+                                attendanceGV.Rows.Remove(row);
+                            }
+                            else
+                            {
+                                status_lb.Text = "Thất bại.";
+                                status_lb.ForeColor = Color.Red;
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            status_lb.Text = "Thất bại.";
+                            status_lb.ForeColor = Color.Red;
+                        }
+
+
+
+
+                    }
+                    break;
+                }
+            }
         }
     }
 }

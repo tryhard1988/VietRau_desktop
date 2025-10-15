@@ -79,7 +79,6 @@ CREATE TABLE ContractType (
     Description NVARCHAR(255) NULL                  -- Mô tả thêm (nếu cần)
 );
 
-
 CREATE TABLE Position (
     PositionID INT IDENTITY(1,1) PRIMARY KEY,    -- Mã chức vụ tự tăng
     PositionCode NVARCHAR(30) NOT NULL UNIQUE,
@@ -104,6 +103,17 @@ CREATE TABLE Employee (
     BirthDate DATE NULL,                                    -- Ngày sinh
     HireDate DATE NULL,                                     -- Ngày vào làm
     Gender BIT NULL,                                        -- 1 = Nam, 0 = Nữ
+    ProbationSalaryPercent  DECIMAL(5,2) NOT NULL DEFAULT 0.85,
+    PhoneNumber NVARCHAR(20) NULL,     -- Số điện thoại liên hệ
+    NoteResign NVARCHAR(255) NULL,     -- Ghi chú ra/vào công ty
+
+    BankName NVARCHAR(100) NULL,
+    BankBranch NVARCHAR(100) NULL,         -- Chi nhánh
+    BankAccountNumber NVARCHAR(50) NULL,   -- Số tài khoản
+    BankAccountHolder NVARCHAR(100) NULL,  -- Chủ tài khoản
+
+    SocialInsuranceNumber NVARCHAR(50) NULL,  -- Số sổ bảo hiểm xã hội
+    HealthInsuranceNumber NVARCHAR(50) NULL,  -- Số thẻ bảo hiểm y tế
 
     -- 🏠 Thông tin cá nhân
     Hometown NVARCHAR(150) NULL,                            -- Quê quán
@@ -117,7 +127,7 @@ CREATE TABLE Employee (
     PositionID INT NULL,                                    -- Chức vụ (FK)
     DepartmentID INT NULL,                                  -- Phòng ban (FK)
     ContractTypeID INT NULL,                                -- Loại hợp đồng (FK)
-
+    SalaryGradeID INT NULL
     -- ⚙️ Trạng thái
     IsActive BIT DEFAULT 1,                                 -- Đang làm việc (1 = còn làm, 0 = nghỉ)
     canCreateUserName BIT NOT NULL DEFAULT 0,
@@ -132,6 +142,9 @@ CREATE TABLE Employee (
 
     CONSTRAINT FK_Employee_ContractType FOREIGN KEY (ContractTypeID)
         REFERENCES ContractType(ContractTypeID)
+
+    CONSTRAINT FK_Employee_SalaryGrade FOREIGN KEY (SalaryGradeID) 
+        REFERENCES SalaryGrade(SalaryGradeID);
 );
 
 CREATE TABLE Users (
@@ -166,7 +179,6 @@ CREATE TABLE UserRoles (
         ON DELETE CASCADE
 );
 
-select * from Attendance
 CREATE TABLE Attendance (
     AttendanceID INT IDENTITY(1,1) PRIMARY KEY,
     EmployeeCode NVARCHAR(20) NOT NULL,      -- Mã nhân viên thay cho EmployeeID
@@ -182,13 +194,11 @@ CREATE TABLE Attendance (
     CONSTRAINT UQ_Attendance UNIQUE (EmployeeCode, WorkDate)
 );
 
-select * from Holiday
 CREATE TABLE Holiday (
     HolidayDate DATE PRIMARY KEY,
     HolidayName NVARCHAR(100)
 );
 
-Drop table OvertimeType
 CREATE TABLE OvertimeType (
     OvertimeTypeID INT IDENTITY(1,1) PRIMARY KEY,      -- Khóa chính tự tăng
     OvertimeName NVARCHAR(100) NOT NULL,              -- Tên loại tăng ca
@@ -196,7 +206,6 @@ CREATE TABLE OvertimeType (
     IsActive BIT DEFAULT 1                             -- Có áp dụng hay không
 );
 
-Drop table OvertimeAttendance
 CREATE TABLE OvertimeAttendance (
     OvertimeAttendanceID INT IDENTITY(1,1) PRIMARY KEY,  -- Khóa chính tự tăng
     EmployeeCode NVARCHAR(20) NOT NULL,                     -- Mã nhân viên thay cho EmployeeID
@@ -215,15 +224,6 @@ CREATE TABLE OvertimeAttendance (
         REFERENCES OvertimeType(OvertimeTypeID)
 );
 
-drop table LeaveType
-CREATE TABLE LeaveType (
-    LeaveTypeID INT IDENTITY(1,1) PRIMARY KEY,        -- Khóa chính tự tăng
-    LeaveTypeCode NVARCHAR(20) NOT NULL UNIQUE,       -- Mã loại phép (AL, SL, UL,...)
-    LeaveTypeName NVARCHAR(100) NOT NULL,             -- Tên loại phép (Nghỉ phép năm, Nghỉ bệnh,...)
-    IsPaid BIT DEFAULT 1                             -- Có hưởng lương không (1: có, 0: không)
-);
-
-select * from AnnualLeaveBalance
 CREATE TABLE AnnualLeaveBalance (
     BalanceID INT IDENTITY(1,1) PRIMARY KEY,
     EmployeeCode NVARCHAR(20) NOT NULL,    
@@ -236,7 +236,14 @@ CREATE TABLE AnnualLeaveBalance (
          CONSTRAINT UQ_AnnualLeaveBalance_Employee_Year UNIQUE (EmployeeCode, Year)
 );
 
-drop table LeaveAttendance
+CREATE TABLE LeaveType (
+    LeaveTypeID INT IDENTITY(1,1) PRIMARY KEY,        -- Khóa chính tự tăng
+    LeaveTypeCode NVARCHAR(20) NOT NULL UNIQUE,       -- Mã loại phép (AL, SL, UL,...)
+    LeaveTypeName NVARCHAR(100) NOT NULL,             -- Tên loại phép (Nghỉ phép năm, Nghỉ bệnh,...)
+    IsPaid BIT DEFAULT 1,                             -- Có hưởng lương không (1: có, 0: không)
+    IsDeductAnnualLeave BIT NOT NULL DEFAULT 0
+);
+
 CREATE TABLE LeaveAttendance (
     LeaveID INT IDENTITY(1,1) PRIMARY KEY,       -- Khóa chính tự tăng
     EmployeeCode NVARCHAR(20) NOT NULL,          -- Mã nhân viên
@@ -254,6 +261,132 @@ CREATE TABLE LeaveAttendance (
     CONSTRAINT UQ_LeaveAttendance_Employee_Date UNIQUE (EmployeeCode, DateOff)
 );
 
+select * from ApplyScope
+CREATE TABLE ApplyScope (
+    ApplyScopeID INT IDENTITY(1,1) PRIMARY KEY,   -- Khóa chính tự tăng
+    ScopeCode NVARCHAR(20) NOT NULL UNIQUE,       -- Mã nhóm áp dụng (VD: EMP, DEP, POS, ALL)
+    ScopeName NVARCHAR(100) NOT NULL,             -- Tên hiển thị (VD: Nhân viên, Phòng ban, Chức vụ, Toàn công ty)
+);
+
+CREATE TABLE AllowanceType (
+    AllowanceTypeID INT IDENTITY(1,1) PRIMARY KEY,   -- Khóa chính tự tăng
+    AllowanceName NVARCHAR(100) NOT NULL UNIQUE,     -- Tên phụ cấp (VD: Phụ cấp ăn trưa)
+    IsInsuranceIncluded BIT DEFAULT 0,               -- Có tính đóng BHXH/BHYT/BHTN không
+    ApplyScopeID INT NOT NULL,                       -- Nhóm áp dụng (FK -> ApplyScope)
+    IsActive BIT DEFAULT 1,                          -- Còn áp dụng hay không
+
+    CONSTRAINT FK_AllowanceType_ApplyScope FOREIGN KEY (ApplyScopeID)
+        REFERENCES ApplyScope(ApplyScopeID)
+);
+
+CREATE TABLE DepartmentAllowance (
+    DepartmentAllowanceID INT IDENTITY(1,1) PRIMARY KEY,
+    DepartmentID INT NOT NULL,
+    AllowanceTypeID INT NOT NULL,
+    Amount DECIMAL(18,2) NOT NULL DEFAULT 0,
+    Note NVARCHAR(255) NULL,
+
+    CONSTRAINT UQ_DepartmentAllowance UNIQUE (DepartmentID, AllowanceTypeID),
+    CONSTRAINT FK_DepartmentAllowance_Department FOREIGN KEY (DepartmentID)
+        REFERENCES Department(DepartmentID),
+    CONSTRAINT FK_DepartmentAllowance_AllowanceType FOREIGN KEY (AllowanceTypeID)
+        REFERENCES AllowanceType(AllowanceTypeID)
+);
+
+CREATE TABLE PositionAllowance (
+    PositionAllowanceID INT IDENTITY(1,1) PRIMARY KEY,
+    PositionID INT NOT NULL,
+    AllowanceTypeID INT NOT NULL,
+    Amount DECIMAL(18,2) NOT NULL DEFAULT 0,
+    Note NVARCHAR(255) NULL,
+
+    CONSTRAINT UQ_PositionAllowance UNIQUE (PositionID, AllowanceTypeID),
+    CONSTRAINT FK_PositionAllowance_Position FOREIGN KEY (PositionID)
+        REFERENCES Position(PositionID),
+    CONSTRAINT FK_PositionAllowance_AllowanceType FOREIGN KEY (AllowanceTypeID)
+        REFERENCES AllowanceType(AllowanceTypeID)
+);
+
+CREATE TABLE EmployeeAllowance (
+    EmployeeAllowanceID INT IDENTITY(1,1) PRIMARY KEY,
+    EmployeeCode NVARCHAR(20) NOT NULL,
+    AllowanceTypeID INT NOT NULL,
+    Amount DECIMAL(18,2) NOT NULL DEFAULT 0,
+    Note NVARCHAR(255) NULL,
+
+    CONSTRAINT UQ_EmployeeAllowance UNIQUE (EmployeeCode, AllowanceTypeID),
+    CONSTRAINT FK_EmployeeAllowance_Employee FOREIGN KEY (EmployeeCode)
+        REFERENCES Employee(EmployeeCode),
+    CONSTRAINT FK_EmployeeAllowance_AllowanceType FOREIGN KEY (AllowanceTypeID)
+        REFERENCES AllowanceType(AllowanceTypeID)
+);
 
 
+CREATE TABLE MonthlyAllowance (
+    MonthlyAllowanceID INT IDENTITY(1,1) PRIMARY KEY,
+    EmployeeCode NVARCHAR(20) NOT NULL,
+    AllowanceTypeID INT NOT NULL,
+    Month INT NOT NULL,               -- Tháng phát sinh
+    Year INT NOT NULL,                -- Năm phát sinh
+    Amount DECIMAL(18,2) NOT NULL DEFAULT 0,
+    Note NVARCHAR(255) NULL,
 
+    CONSTRAINT FK_MonthlyAllowance_Employee FOREIGN KEY (EmployeeCode)
+        REFERENCES Employee(EmployeeCode),
+    CONSTRAINT FK_MonthlyAllowance_AllowanceType FOREIGN KEY (AllowanceTypeID)
+        REFERENCES AllowanceType(AllowanceTypeID),
+
+    CONSTRAINT UQ_MonthlyAllowance UNIQUE (EmployeeCode, AllowanceTypeID, Month, Year)
+);
+
+CREATE TABLE SalaryGrade (
+    SalaryGradeID INT IDENTITY(1,1) PRIMARY KEY,      -- Khóa chính tự tăng
+    GradeName NVARCHAR(100) NOT NULL,                 -- Tên bậc lương (ví dụ: Bậc 1, Bậc 2,...)
+    Salary INT NOT NULL,                    -- Mức lương tối thiểu của bậc    
+    Note NVARCHAR(255) NULL,                          -- Ghi chú
+    IsActive BIT NOT NULL DEFAULT 1,                  -- Còn hiệu lực hay không
+);
+
+CREATE TABLE EmployeeSalaryInfo (
+    SalaryInfoID INT IDENTITY(1,1) PRIMARY KEY,
+    EmployeeCode NVARCHAR(20) NOT NULL,
+    Month INT NOT NULL,
+    Year INT NOT NULL,
+    BaseSalary INT NOT NULL,    
+    InsuranceBaseSalary INT NOT NULL DEFAULT 0,
+    Note NVARCHAR(255) NULL,
+    CreatedAt DATETIME DEFAULT GETDATE()
+);
+Drop table DeductionType
+CREATE TABLE DeductionType (
+    DeductionTypeID INT IDENTITY(1,1) PRIMARY KEY,     -- Khóa chính
+    DeductionTypeCode NVARCHAR(20) NOT NULL UNIQUE,    -- Mã khoản trừ (VD: ADV, VEG, CEP)
+    DeductionTypeName NVARCHAR(100) NOT NULL,          -- Tên khoản trừ (VD: Ứng lương, Tiền rau)
+    IsActive BIT DEFAULT 1                             -- Còn sử dụng
+);
+
+select * from DeductionType
+INSERT INTO DeductionType (DeductionTypeCode, DeductionTypeName, IsActive)
+VALUES
+    (N'ADV', N'Ứng lương', 1),
+    (N'VEG', N'Tiền rau', 1),
+    (N'CEP', N'Thu hộ CEP', 1),
+    (N'OTH', N'Trừ khác', 1);
+
+select * From EmployeeDeduction
+CREATE TABLE EmployeeDeduction (
+    EmployeeDeductionID INT IDENTITY(1,1) PRIMARY KEY,
+    EmployeeCode NVARCHAR(20) NOT NULL,
+    DeductionTypeCode NVARCHAR(20) NOT NULL,
+    DeductionMonth INT NOT NULL,
+    DeductionYear INT NOT NULL,
+    DeductionDate DATE NOT NULL,
+    Amount INT NOT NULL DEFAULT 0,
+    Note NVARCHAR(255) NULL,
+    UpdateHistory NVARCHAR(255) NULL,
+
+    CONSTRAINT FK_EmployeeDeduction_Employee FOREIGN KEY (EmployeeCode)
+        REFERENCES Employee(EmployeeCode),
+    CONSTRAINT FK_EmployeeDeduction_DeductionTypeCode FOREIGN KEY (DeductionTypeCode)
+        REFERENCES DeductionType(DeductionTypeCode)
+);

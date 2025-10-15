@@ -48,6 +48,9 @@ namespace RauViet.ui
             loading_lb.Text = "Đang tải dữ liệu, vui lòng chờ...";
             loading_lb.Visible = false;
 
+            workDate_dtp.Format = DateTimePickerFormat.Custom;
+            workDate_dtp.CustomFormat = "dd/MM/yyyy";
+
             startTime_dtp.Format = DateTimePickerFormat.Custom;
             startTime_dtp.CustomFormat = "HH:mm";
             startTime_dtp.ShowUpDown = true;
@@ -443,6 +446,16 @@ namespace RauViet.ui
 
             string employeeCode = dataGV.CurrentRow.Cells["EmployeeCode"].Value?.ToString();
             DateTime workDate = workDate_dtp.Value;
+
+            int year = Convert.ToInt32(year_tb.Text);
+            int month = Convert.ToInt32(month_cbb.SelectedItem);
+
+            if (workDate.Year != year || month != workDate.Month)
+            {
+                MessageBox.Show("Tháng hoặc Năm có vẫn đề", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
             TimeSpan startTime = new TimeSpan(startTime_dtp.Value.Hour, startTime_dtp.Value.Minute, 0);
             TimeSpan endTime = new TimeSpan(endTime_dtp.Value.Hour, endTime_dtp.Value.Minute, 0);
             int overtimeAttendanceID = Convert.ToInt32(overtimeType_cbb.SelectedValue);
@@ -467,7 +480,7 @@ namespace RauViet.ui
         {
             overtimeAttendaceID_tb.Text = "";
             note_tb.Text = "";
-            workDate_dtp.Value = DateTime.Now.Date;
+           // workDate_dtp.Value = DateTime.Now.Date;
             info_gb.BackColor = Color.Green;
         }
     }

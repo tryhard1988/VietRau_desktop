@@ -51,6 +51,7 @@ namespace RauViet.ui
             this.status_lb = new System.Windows.Forms.Label();
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
             this.attendanceGV = new System.Windows.Forms.DataGridView();
+            this.delete_btn = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
             this.panel1.SuspendLayout();
             this.info_gb.SuspendLayout();
@@ -72,6 +73,7 @@ namespace RauViet.ui
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.delete_btn);
             this.panel1.Controls.Add(this.updatedHistory_tb);
             this.panel1.Controls.Add(this.leaveID_tb);
             this.panel1.Controls.Add(this.newBtn);
@@ -106,9 +108,9 @@ namespace RauViet.ui
             // 
             this.newBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
             this.newBtn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.newBtn.Location = new System.Drawing.Point(167, 499);
+            this.newBtn.Location = new System.Drawing.Point(123, 490);
             this.newBtn.Name = "newBtn";
-            this.newBtn.Size = new System.Drawing.Size(113, 47);
+            this.newBtn.Size = new System.Drawing.Size(96, 47);
             this.newBtn.TabIndex = 30;
             this.newBtn.Text = "Tạo mới";
             this.newBtn.UseVisualStyleBackColor = false;
@@ -268,9 +270,9 @@ namespace RauViet.ui
             // 
             this.LuuThayDoiBtn.BackColor = System.Drawing.SystemColors.Highlight;
             this.LuuThayDoiBtn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LuuThayDoiBtn.Location = new System.Drawing.Point(40, 499);
+            this.LuuThayDoiBtn.Location = new System.Drawing.Point(13, 490);
             this.LuuThayDoiBtn.Name = "LuuThayDoiBtn";
-            this.LuuThayDoiBtn.Size = new System.Drawing.Size(110, 47);
+            this.LuuThayDoiBtn.Size = new System.Drawing.Size(96, 47);
             this.LuuThayDoiBtn.TabIndex = 25;
             this.LuuThayDoiBtn.Text = "Lưu";
             this.LuuThayDoiBtn.UseVisualStyleBackColor = false;
@@ -286,6 +288,17 @@ namespace RauViet.ui
             this.attendanceGV.ReadOnly = true;
             this.attendanceGV.Size = new System.Drawing.Size(563, 681);
             this.attendanceGV.TabIndex = 12;
+            // 
+            // delete_btn
+            // 
+            this.delete_btn.BackColor = System.Drawing.Color.Red;
+            this.delete_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.delete_btn.Location = new System.Drawing.Point(233, 490);
+            this.delete_btn.Name = "delete_btn";
+            this.delete_btn.Size = new System.Drawing.Size(96, 47);
+            this.delete_btn.TabIndex = 33;
+            this.delete_btn.Text = "Xóa";
+            this.delete_btn.UseVisualStyleBackColor = false;
             // 
             // LeaveAttendance
             // 
@@ -332,5 +345,6 @@ namespace RauViet.ui
         private System.Windows.Forms.Button newBtn;
         private System.Windows.Forms.TextBox leaveID_tb;
         private System.Windows.Forms.TextBox updatedHistory_tb;
+        private System.Windows.Forms.Button delete_btn;
     }
 }

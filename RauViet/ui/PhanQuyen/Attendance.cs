@@ -158,9 +158,12 @@ namespace RauViet.ui
 
             int count = 0;
             mAttendamce_dt.Columns["DayOfWeek"].SetOrdinal(count++);
-            mAttendamce_dt.Columns["WorkDate"].SetOrdinal(count++);            
+            mAttendamce_dt.Columns["WorkDate"].SetOrdinal(count++);
             mAttendamce_dt.Columns["WorkingHours"].SetOrdinal(count++);
-            mAttendamce_dt.Columns["Note"].SetOrdinal(count++);
+            mAttendamce_dt.Columns["AttendanceLog"].SetOrdinal(count++);
+            mAttendamce_dt.Columns["LeaveTypeName"].SetOrdinal(count++);
+            mAttendamce_dt.Columns["OvertimeName"].SetOrdinal(count++);
+            mAttendamce_dt.Columns["Note"].SetOrdinal(count);
 
             attendanceGV.DataSource = mAttendamce_dt;
             attendanceGV.Columns["EmployeeCode"].Visible = false;
@@ -171,15 +174,20 @@ namespace RauViet.ui
             attendanceGV.Columns["WorkingHours"].HeaderText = "Số G.Làm";
             attendanceGV.Columns["DayOfWeek"].HeaderText = "Thứ";
             attendanceGV.Columns["AttendanceLog"].HeaderText = "Ra/Vào Cổng";
+            attendanceGV.Columns["LeaveTypeName"].HeaderText = "Nghỉ(Nếu Có)";
+            attendanceGV.Columns["OvertimeName"].HeaderText = "Tăng Ca";
             attendanceGV.Columns["Note"].HeaderText = "Ghi Chú";
 
             attendanceGV.Columns["DayOfWeek"].Width = 40;
             attendanceGV.Columns["WorkDate"].Width = 70;
+            attendanceGV.Columns["LeaveTypeName"].Width = 70;
+            attendanceGV.Columns["OvertimeName"].Width = 120;
             attendanceGV.Columns["WorkingHours"].Width = 50;
             attendanceGV.Columns["AttendanceLog"].Width = 250;
             attendanceGV.Columns["Note"].Width = 150;
 
             attendanceGV.Columns["AttendanceLog"].DefaultCellStyle.WrapMode = DataGridViewTriState.True;
+            attendanceGV.Columns["OvertimeName"].DefaultCellStyle.WrapMode = DataGridViewTriState.True;
             attendanceGV.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
             attendanceGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
@@ -192,7 +200,8 @@ namespace RauViet.ui
 
             cal_WorkingHour_WorkingDay();
 
-            if (dataGV.CurrentRow != null) {
+            if (dataGV.CurrentRow != null)
+            {
                 int selectedIndex = dataGV.CurrentRow?.Index ?? -1;
                 UpdateRightUI(selectedIndex);
             }

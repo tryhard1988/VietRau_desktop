@@ -69,7 +69,7 @@ namespace RauViet.classes
         }
 
         public bool hasRole_User(){return hasRole("ql_user");}
-        public bool hasRole_NhanSu(){ return hasRole("qlns");}
+        public bool hasRole_NhanSu(){ return true; hasRole("qlns");}
         public bool hasRole_KhachHang() { return hasRole("qlkh"); }
         public bool hasRole_SanPham() { return hasRole("qlsp"); }
         public bool hasRole_HoanThanhDonHang() { return hasRole("htdh"); }

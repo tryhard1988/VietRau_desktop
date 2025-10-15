@@ -14,7 +14,7 @@ namespace RauViet.ui
 {    
     public partial class Employee : Form
     {
-        private DataTable mDepartment_dt, mPosition_dt, mContractType_dt;
+        private DataTable mEmployees_dt;
         public Employee()
         {
             InitializeComponent();
@@ -34,6 +34,7 @@ namespace RauViet.ui
             LuuThayDoiBtn.Click += saveBtn_Click;
             delete_btn.Click += deleteBtn_Click;
             dataGV.SelectionChanged += this.dataGV_CellClick;
+            probationSalaryPercent_tb.KeyPress += Tb_KeyPress_OnlyNumber;
         }
 
         public async void ShowData()
@@ -50,12 +51,10 @@ namespace RauViet.ui
                 var departmentTask = SQLManager.Instance.GetActiveDepartmentAsync();
                 var positionTask = SQLManager.Instance.GetActivePositionAsync();
                 var contractTypeTask = SQLManager.Instance.GetContractTypeAsync();
+                var salaryGradeTask = SQLManager.Instance.GetActiveSalaryGradeAsync();
 
-                await Task.WhenAll(employeesTask, departmentTask, positionTask, contractTypeTask);
-                DataTable employees_dt = employeesTask.Result;
-                mDepartment_dt = departmentTask.Result;
-                mPosition_dt = positionTask.Result;
-                mContractType_dt = contractTypeTask.Result;
+                await Task.WhenAll(employeesTask, departmentTask, positionTask, contractTypeTask, salaryGradeTask);
+                mEmployees_dt = employeesTask.Result;              
 
                 birthdate_dtp.Format = DateTimePickerFormat.Custom;
                 birthdate_dtp.CustomFormat = "dd/MM/yyyy";
@@ -64,107 +63,62 @@ namespace RauViet.ui
                 issueDate_dtp.Format = DateTimePickerFormat.Custom;
                 issueDate_dtp.CustomFormat = "dd/MM/yyyy";
 
-                
-                department_cbb.DataSource = mDepartment_dt;
-                department_cbb.DisplayMember = "DepartmentName";
-                department_cbb.ValueMember = "DepartmentID";
+                mEmployees_dt.Columns.Add(new DataColumn("GenderName", typeof(string)));
 
-                position_cbb.DataSource = mPosition_dt;
-                position_cbb.DisplayMember = "PositionName";
-                position_cbb.ValueMember = "PositionID";
-
-                contractType_cbb.DataSource = mContractType_dt;
-                contractType_cbb.DisplayMember = "ContractTypeName";
-                contractType_cbb.ValueMember = "ContractTypeID";
-
-                employees_dt.Columns.Add(new DataColumn("GenderName", typeof(string)));
-                employees_dt.Columns.Add(new DataColumn("Age", typeof(int)));
-                employees_dt.Columns.Add(new DataColumn("Position", typeof(string)));
-                employees_dt.Columns.Add(new DataColumn("Department", typeof(string)));
-                employees_dt.Columns.Add(new DataColumn("ContractType", typeof(string)));
-
-                foreach (DataRow dr in employees_dt.Rows)
+                foreach (DataRow dr in mEmployees_dt.Rows)
                 {
                     int age = DateTime.Now.Year - Convert.ToDateTime(dr["BirthDate"]).Year;
-                    int positionID = Convert.ToInt32(dr["PositionID"]);
-                    int departmentID = Convert.ToInt32(dr["DepartmentID"]);
-                    int contractTypeID = Convert.ToInt32(dr["ContractTypeID"]);
                     Boolean gender = Convert.ToBoolean(dr["Gender"]);
-
-                    string positionName = "";
-                    string departmentName = "";
-                    DataRow[] postionRows = mPosition_dt.Select($"PositionID = {positionID}");
-                    if (postionRows.Length > 0)
-                        positionName = postionRows[0]["PositionName"].ToString();
-
-                    DataRow[] departmentRows = mDepartment_dt.Select($"departmentID = {departmentID}");
-                    if (departmentRows.Length > 0)
-                        departmentName = departmentRows[0]["DepartmentName"].ToString();
-
-                    string contractTypeName = mContractType_dt.Select($"ContractTypeID = {contractTypeID}")[0]["ContractTypeName"].ToString();
-
-                    dr["Age"] = age;
-                    dr["GenderName"] = gender == true? "Nam" : "Nữ";
-                    
-                    if(!string.IsNullOrEmpty(positionName))
-                        dr["Position"] = positionName;
-                    
-                    dr["Department"] = departmentName;
-                    dr["ContractType"] = contractTypeName;
+                    dr["GenderName"] = (gender == true? "Nam" : "Nữ  ") + " - " + age;
                 }
 
                 int count = 0;
-                employees_dt.Columns["EmployeeCode"].SetOrdinal(count++);
-                employees_dt.Columns["FullName"].SetOrdinal(count++);
-                employees_dt.Columns["GenderName"].SetOrdinal(count++);
-                employees_dt.Columns["BirthDate"].SetOrdinal(count++);
-                employees_dt.Columns["Age"].SetOrdinal(count++);
-                employees_dt.Columns["HireDate"].SetOrdinal(count++);
-                employees_dt.Columns["Department"].SetOrdinal(count++);
-                employees_dt.Columns["Position"].SetOrdinal(count++);
-                employees_dt.Columns["ContractType"].SetOrdinal(count++);
-                employees_dt.Columns["IsActive"].SetOrdinal(count++);
-                                
-                dataGV.DataSource = employees_dt;
+                mEmployees_dt.Columns["EmployeeCode"].SetOrdinal(count++);
+                mEmployees_dt.Columns["FullName"].SetOrdinal(count++);
+                mEmployees_dt.Columns["GenderName"].SetOrdinal(count++);
+                mEmployees_dt.Columns["BirthDate"].SetOrdinal(count++);
+                mEmployees_dt.Columns["HireDate"].SetOrdinal(count++);                
+                mEmployees_dt.Columns["IsActive"].SetOrdinal(count++);
+                mEmployees_dt.Columns["ProbationSalaryPercent"].SetOrdinal(count++);
+                mEmployees_dt.Columns["CitizenID"].SetOrdinal(count++);
+                mEmployees_dt.Columns["Address"].SetOrdinal(count++);
+                mEmployees_dt.Columns["PhoneNumber"].SetOrdinal(count++);
+                mEmployees_dt.Columns["NoteResign"].SetOrdinal(count++);
+
+                dataGV.DataSource = mEmployees_dt;
 
                 dataGV.Columns["EmployeeCode"].HeaderText = "Mã NV";
                 dataGV.Columns["FullName"].HeaderText = "Họ Và Tên";
                 dataGV.Columns["BirthDate"].HeaderText = "Ngày Sinh";
                 dataGV.Columns["HireDate"].HeaderText = "Ngày Vào Làm";
                 dataGV.Columns["GenderName"].HeaderText = "G.Tính";
-                dataGV.Columns["Position"].HeaderText = "Chức Vụ";
-                dataGV.Columns["Department"].HeaderText = "Phòng Ban";
-                dataGV.Columns["ContractType"].HeaderText = "Loại Hợp Đồng";
                 dataGV.Columns["IsActive"].HeaderText = "Đang Làm";
-                dataGV.Columns["Age"].HeaderText = "Tuổi";
+                dataGV.Columns["ProbationSalaryPercent"].HeaderText = "%Lương Thử Việc";
+                dataGV.Columns["CitizenID"].HeaderText = "CCCD/CMND";
+                dataGV.Columns["PhoneNumber"].HeaderText = "Số Điện Thoại";
+                dataGV.Columns["NoteResign"].HeaderText = "Ra/Vào Công Ty";
 
                 dataGV.Columns["BirthDate"].DefaultCellStyle.Format = "dd/MM/yyyy";
                 dataGV.Columns["HireDate"].DefaultCellStyle.Format = "dd/MM/yyyy";
                 dataGV.Columns["IssueDate"].DefaultCellStyle.Format = "dd/MM/yyyy";
 
                 dataGV.Columns["Gender"].Visible = false;
-                dataGV.Columns["EmployeeID"].Visible = false;
-                dataGV.Columns["PositionID"].Visible = false;
-                dataGV.Columns["DepartmentID"].Visible = false;
-                dataGV.Columns["ContractTypeID"].Visible = false;
+                dataGV.Columns["EmployeeID"].Visible = false;                
                 dataGV.Columns["canCreateUserName"].Visible = false;
                 dataGV.Columns["Address"].Visible = false;
                 dataGV.Columns["Hometown"].Visible = false;
-                dataGV.Columns["CitizenID"].Visible = false;
+             //   dataGV.Columns["CitizenID"].Visible = false;
                 dataGV.Columns["IssueDate"].Visible = false;
                 dataGV.Columns["IssuePlace"].Visible = false;
-                dataGV.Columns["CreatedAt"].Visible = false;
 
                 dataGV.Columns["EmployeeCode"].Width = 50;
                 dataGV.Columns["FullName"].Width = 160;
                 dataGV.Columns["BirthDate"].Width = 70;
                 dataGV.Columns["HireDate"].Width = 70;
-                dataGV.Columns["GenderName"].Width = 50;
-                dataGV.Columns["Position"].Width = 100;
-                dataGV.Columns["Department"].Width = 120;
-                dataGV.Columns["ContractType"].Width = 90;
+                dataGV.Columns["GenderName"].Width = 70;
                 dataGV.Columns["IsActive"].Width = 50;
-                dataGV.Columns["Age"].Width = 40;
+                dataGV.Columns["CitizenID"].Width = 90;
+                dataGV.Columns["NoteResign"].Width = 90;
 
 
                 if (dataGV.Rows.Count > 0)
@@ -190,7 +144,23 @@ namespace RauViet.ui
 
             
         }
-        
+
+        private void Tb_KeyPress_OnlyNumber(object sender, KeyPressEventArgs e)
+        {
+            TextBox tb = sender as TextBox;
+
+            // Chỉ cho nhập số, phím điều khiển hoặc dấu chấm
+            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) && e.KeyChar != '.')
+            {
+                e.Handled = true; // chặn ký tự không hợp lệ
+            }
+
+            // Không cho nhập nhiều dấu chấm
+            if (e.KeyChar == '.' && tb.Text.Contains("."))
+            {
+                e.Handled = true;
+            }
+        }
         private int createID()
         {
             var existingIds = dataGV.Rows
@@ -219,9 +189,6 @@ namespace RauViet.ui
         {
             var cells = dataGV.Rows[index].Cells;
             int employeeID = Convert.ToInt32(cells["EmployeeID"].Value);
-            int positionID = Convert.ToInt32(cells["PositionID"].Value);
-            int departmentID = Convert.ToInt32(cells["DepartmentID"].Value);
-            int contractTypeID = Convert.ToInt32(cells["ContractTypeID"].Value);
             string employeeCode = cells["EmployeeCode"].Value.ToString();
             string fullName = cells["FullName"].Value.ToString();
             DateTime birthDate = Convert.ToDateTime(cells["BirthDate"].Value);
@@ -230,6 +197,9 @@ namespace RauViet.ui
             string hometown = cells["Hometown"].Value.ToString();
             string address = cells["Address"].Value.ToString();
             string citizenID = cells["CitizenID"].Value.ToString();
+            string phone = cells["PhoneNumber"].Value.ToString();
+            string noteResign = cells["NoteResign"].Value.ToString();
+            decimal? probationSalaryPercent = Utils.GetDecimalValue(cells["ProbationSalaryPercent"]);
 
             DateTime? issueDate = DateTime.TryParse(cells["IssueDate"].Value?.ToString(), out DateTime tmp) ? tmp : (DateTime?)null;
 
@@ -249,9 +219,9 @@ namespace RauViet.ui
             citizenId_tb.Text = citizenID;
             issueDate_dtp.Value = issueDate ?? DateTime.Now;
             issuePlace_tb.Text = issuePlace;
-            position_cbb.SelectedValue = positionID;
-            department_cbb.SelectedValue = departmentID;
-            contractType_cbb.SelectedValue = contractTypeID;
+            phone_tb.Text = phone;
+            noteResign_tb.Text = noteResign;
+            probationSalaryPercent_tb.Text = (probationSalaryPercent != null ? probationSalaryPercent : 0).ToString();
             isActive_cb.Checked = isActive;
             canCreateUserName_cb.Checked = canCreateUserName;
             nvCode_tb.Enabled = true;
@@ -262,21 +232,29 @@ namespace RauViet.ui
         }
         
         private async void updateData(int employeeId, string maNV, string tenNV, DateTime birthDate, DateTime hireDate,
-                                    bool isMale, string homeTown, string address, string citizenID, DateTime? issueDate, string issuePlace, int department, 
-                                    int position, int contractType, bool isActive, bool canCreateUserName)
+                                    bool isMale, string homeTown, string address, string citizenID, DateTime? issueDate, string issuePlace,
+                                    bool isActive, bool canCreateUserName, decimal probationSalaryPercent, string phone, string noteResign)
         {
             foreach (DataGridViewRow row in dataGV.Rows)
             {
                 int id = Convert.ToInt32(row.Cells["EmployeeID"].Value);
                 if (id.CompareTo(employeeId) == 0)
                 {
+                    bool isActiveCurrent = Convert.ToBoolean(row.Cells["IsActive"].Value);
+                    string noteResignUpdate = noteResign;
+                    if (isActiveCurrent != isActive)
+                    {
+                        noteResignUpdate += DateTime.Now.ToString("MM/yyyy");
+                        noteResignUpdate += isActive == true ? "(Vào); " : "(Ra);";
+                    }
                     DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                     if (dialogResult == DialogResult.Yes)
                     {
                         try
                         {
                             bool isScussess = await SQLManager.Instance.updateEmployeesAsync(employeeId, maNV, tenNV, birthDate, hireDate,
-                                    isMale, homeTown, address, citizenID, issueDate, issuePlace, department, position, contractType, isActive, canCreateUserName);
+                                    isMale, homeTown, address, citizenID, issueDate, issuePlace, isActive, canCreateUserName, 
+                                    probationSalaryPercent, phone, noteResignUpdate);
 
                             if (isScussess == true)
                             {
@@ -293,23 +271,14 @@ namespace RauViet.ui
                                 row.Cells["CitizenID"].Value = citizenID;
                                 row.Cells["IssueDate"].Value = issueDate;
                                 row.Cells["IssuePlace"].Value = issuePlace;
-                                row.Cells["PositionID"].Value = position;
-                                row.Cells["DepartmentID"].Value = department;
-                                row.Cells["ContractTypeID"].Value = contractType;
                                 row.Cells["IsActive"].Value = isActive;
+                                row.Cells["PhoneNumber"].Value = phone;
+                                row.Cells["NoteResign"].Value = noteResignUpdate;
                                 row.Cells["canCreateUserName"].Value = canCreateUserName;
-
+                                row.Cells["ProbationSalaryPercent"].Value = probationSalaryPercent;
                                 int age = DateTime.Now.Year - birthDate.Year;
 
-                                string positionName = mPosition_dt.Select($"PositionID = {position}")[0]["PositionName"].ToString();
-                                string departmentName = mDepartment_dt.Select($"DepartmentID = {department}")[0]["DepartmentName"].ToString();
-                                string contractTypeName = mContractType_dt.Select($"ContractTypeID = {contractType}")[0]["ContractTypeName"].ToString();
-
-                                row.Cells["Age"].Value = age;
-                                row.Cells["GenderName"].Value = isMale == true ? "Nam" : "Nữ";
-                                row.Cells["Position"].Value = positionName;
-                                row.Cells["Department"].Value = departmentName;
-                                row.Cells["ContractType"].Value = contractTypeName;
+                                row.Cells["GenderName"].Value = (isMale == true ? "Nam" : "Nữ  ") + " - " + age;
 
 
                             }
@@ -335,8 +304,8 @@ namespace RauViet.ui
         }
 
         private async void createNew(string tenNV, DateTime birthDate, DateTime hireDate, bool isMale, string homeTown, 
-                                    string address, string citizenID, DateTime? issueDate, string issuePlace, int department,
-                                    int position, int contractType, bool isActive, bool canCreateUserName)
+                                    string address, string citizenID, DateTime? issueDate, string issuePlace, bool isActive,
+                                    bool canCreateUserName, decimal probationSalaryPercent, string phone, string noteResign)
         {
             DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
@@ -346,7 +315,7 @@ namespace RauViet.ui
                 {
                     string nvCode_temp = "VR" + createID().ToString("D4");
                     int newEmployee = await SQLManager.Instance.insertEmployeeAsync(nvCode_temp,tenNV, birthDate, hireDate,isMale, homeTown, address, 
-                        citizenID, issueDate, issuePlace, department, position, contractType, isActive, canCreateUserName);
+                        citizenID, issueDate, issuePlace, isActive, canCreateUserName, probationSalaryPercent, phone, noteResign);
                     if (newEmployee > 0)
                     {
                         DataTable dataTable = (DataTable)dataGV.DataSource;
@@ -365,24 +334,15 @@ namespace RauViet.ui
                         drToAdd["CitizenID"] = citizenID;
                         drToAdd["IssueDate"] = issueDate;
                         drToAdd["IssuePlace"] = issuePlace;
-                        drToAdd["PositionID"] = position;
-                        drToAdd["DepartmentID"] = department;
-                        drToAdd["ContractTypeID"] = contractType;
                         drToAdd["IsActive"] = isActive;
+                        drToAdd["PhoneNumber"] = phone;
+                        drToAdd["NoteResign"] = noteResign;
                         drToAdd["canCreateUserName"] = canCreateUserName;
+                        drToAdd["ProbationSalaryPercent"] = probationSalaryPercent;
 
                         int age = DateTime.Now.Year - birthDate.Year;
 
-                        string positionName = mPosition_dt.Select($"PositionID = {position}")[0]["PositionName"].ToString();
-                        string departmentName = mDepartment_dt.Select($"DepartmentID = {department}")[0]["DepartmentName"].ToString();
-                        string contractTypeName = mContractType_dt.Select($"ContractTypeID = {contractType}")[0]["ContractTypeName"].ToString();
-
-                        drToAdd["Age"] = age;
-                        drToAdd["GenderName"] = isMale == true ? "Nam" : "Nữ";
-                        drToAdd["Position"] = positionName;
-                        drToAdd["Department"] = departmentName;
-                        drToAdd["ContractType"] = contractTypeName;
-
+                        drToAdd["GenderName"] = (isMale == true ? "Nam" : "Nữ  ") + " - " + age;
 
                         dataTable.Rows.Add(drToAdd);
                         dataTable.AcceptChanges();
@@ -415,26 +375,39 @@ namespace RauViet.ui
 
         private void saveBtn_Click(object sender, EventArgs e)
         {
-            string maNV = nvCode_tb.Text;
-            string tenNV = tenNV_tb.Text;
             DateTime birthDate = birthdate_dtp.Value;
             DateTime hireDate = hireDate_dtp.Value;
+
+            if ((string.IsNullOrEmpty(nvCode_tb.Text) && !string.IsNullOrEmpty(employeeID_tb.Text)) || 
+                tenNV_tb.Text.CompareTo("") == 0 || string.IsNullOrEmpty(probationSalaryPercent_tb.Text))
+            {
+                MessageBox.Show("Sai Dữ Liệu, Kiểm Tra Lại!", "Thông Báo", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            if (DateTime.Now.Year - birthDate.Year < 18)
+            {
+                MessageBox.Show("Nhân Viên Chưa Đủ 18t, Kiểm Tra Lại!", "Thông Báo", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            string maNV = nvCode_tb.Text;
+            string tenNV = tenNV_tb.Text;            
             bool isMale = gender_cb.Checked;
             string homeTown = hometown_tb.Text;
             string address = address_tb.Text;
             string citizenID = citizenId_tb.Text;
+            string phone = phone_tb.Text;
+            string noteResign = noteResign_tb.Text;
             DateTime? issueDate = issueDate_dtp.Value;
             string issuePlace = issuePlace_tb.Text;
-            int department = Convert.ToInt32(department_cbb.SelectedValue);
-            int position = Convert.ToInt32(position_cbb.SelectedValue);
-            int contractType = Convert.ToInt32(contractType_cbb.SelectedValue);
+            decimal probationSalaryPercent = Convert.ToDecimal(probationSalaryPercent_tb.Text);
             bool isActive = isActive_cb.Checked;
             bool canCreateUserName = canCreateUserName_cb.Checked;
 
-            if ((maNV.CompareTo("") == 0 && employeeID_tb.Text.CompareTo("") != 0) || tenNV.CompareTo("") == 0 || DateTime.Now.Year - birthDate.Year < 18 ||
-                department_cbb.SelectedItem == null || position_cbb.SelectedItem == null)
+            if(IsCitizenIDDuplicate(citizenID, maNV) == true)
             {
-                MessageBox.Show("Sai Dữ Liệu, Kiểm Tra Lại!", "Thông Báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Số CCCD/CMND Bị Trùng, Kiểm Tra Lại!", "Thông Báo", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
@@ -447,10 +420,10 @@ namespace RauViet.ui
 
             if (employeeID_tb.Text.Length != 0)
                 updateData(Convert.ToInt32(employeeID_tb.Text), maNV, tenNV, birthDate, hireDate,isMale, homeTown, 
-                    address, citizenID, issueDate, issuePlace, department,position, contractType, isActive, canCreateUserName);
+                    address, citizenID, issueDate, issuePlace, isActive, canCreateUserName, probationSalaryPercent, phone, noteResign);
             else
                 createNew(tenNV, birthDate, hireDate,isMale, homeTown, 
-                    address, citizenID, issueDate, issuePlace, department,position, contractType, isActive, canCreateUserName);
+                    address, citizenID, issueDate, issuePlace, isActive, canCreateUserName, probationSalaryPercent, phone, noteResign);
 
         }
         private async void deleteBtn_Click(object sender, EventArgs e)
@@ -508,7 +481,6 @@ namespace RauViet.ui
             tenNV_tb.Text = "";
             hireDate_dtp.Value = DateTime.Now;
             citizenId_tb.Text = "";
-            contractType_cbb.SelectedValue = 2;
             isActive_cb.Checked = true;
             canCreateUserName_cb.Checked = false;
 
@@ -518,5 +490,24 @@ namespace RauViet.ui
          //   dataGV.ClearSelection();
             return;            
         }
+
+        private bool IsCitizenIDDuplicate(string newCitizenID, string currentEmployeeCode = null)
+        {
+            if (string.IsNullOrWhiteSpace(newCitizenID))
+                return false; // Cho phép trống
+
+            var duplicates = mEmployees_dt.AsEnumerable()
+                .Where(row => row.Field<string>("CitizenID") == newCitizenID);
+
+            // Nếu đang cập nhật thì bỏ qua chính nhân viên hiện tại
+            if (!string.IsNullOrEmpty(currentEmployeeCode))
+            {
+                duplicates = duplicates.Where(row =>
+                    row.Field<string>("EmployeeCode") != currentEmployeeCode);
+            }
+
+            return duplicates.Any();
+        }
+
     }
 }

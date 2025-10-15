@@ -2,6 +2,7 @@
 using DocumentFormat.OpenXml.Wordprocessing;
 using System;
 using System.Data;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Windows.Forms;
@@ -203,5 +204,83 @@ public static class Utils
         }
 
         return dt;
+    }
+
+    public static int? GetIntValue(DataGridViewCell cell)
+    {
+        if (cell == null || cell.Value == null || cell.Value == DBNull.Value)
+            return null;
+
+        try
+        {
+            // Nếu đã là int thì ép kiểu trực tiếp
+            if (cell.Value is int valueInt)
+                return valueInt;
+
+            // Nếu là kiểu khác (string, long, decimal, v.v.)
+            string strValue = cell.Value.ToString().Trim();
+            if (string.IsNullOrWhiteSpace(strValue))
+                return null;
+
+            return Convert.ToInt32(strValue);
+        }
+        catch
+        {
+            return null; // hoặc throw nếu bạn muốn bắt lỗi ở ngoài
+        }
+    }
+
+    public static decimal? GetDecimalValue(DataGridViewCell cell)
+    {
+        if (cell == null || cell.Value == null || cell.Value == DBNull.Value)
+            return null;
+
+        try
+        {
+            // Nếu đã là decimal thì ép kiểu trực tiếp
+            if (cell.Value is decimal decVal)
+                return decVal;
+
+            // Nếu là kiểu int, double, float, v.v.
+            if (decimal.TryParse(cell.Value.ToString().Trim(), out decimal result))
+                return result;
+
+            return null;
+        }
+        catch
+        {
+            return null; // hoặc throw nếu muốn xử lý bên ngoài
+        }
+    }
+
+    public static int? GetIntValue(object value)
+    {
+        if (value == null || value == DBNull.Value)
+            return null;
+
+        return int.TryParse(value.ToString(), out int result)
+            ? (int?)result  // ép sang int? để tương thích với null
+            : null;
+    }
+
+
+    public static void SafeSelectValue(ComboBox combo, object value)
+    {
+        if (value == null)
+        {
+            combo.SelectedIndex = -1;
+            return;
+        }
+
+        // Ép về kiểu int nếu cần
+        int intValue = Convert.ToInt32(value);
+
+        // Kiểm tra danh sách có chứa không
+        if (combo.DataSource is DataTable dt && dt.AsEnumerable().Any(r => r.Field<int>(combo.ValueMember) == intValue))
+            combo.SelectedValue = intValue;
+        else
+        {
+            combo.SelectedIndex = -1; // Không chọn gì nếu không tồn tại
+        }
     }
 }
