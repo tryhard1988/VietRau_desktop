@@ -131,6 +131,7 @@ CREATE TABLE Employee (
     -- ⚙️ Trạng thái
     IsActive BIT DEFAULT 1,                                 -- Đang làm việc (1 = còn làm, 0 = nghỉ)
     canCreateUserName BIT NOT NULL DEFAULT 0,
+    IsInsuranceRefund BIT NOT NULL DEFAULT 0,
     CreatedAt DATETIME DEFAULT GETDATE(),                   -- Ngày tạo bản ghi
 
     -- 🔗 Khóa ngoại
@@ -235,7 +236,7 @@ CREATE TABLE AnnualLeaveBalance (
 
          CONSTRAINT UQ_AnnualLeaveBalance_Employee_Year UNIQUE (EmployeeCode, Year)
 );
-
+select * from LeaveType
 CREATE TABLE LeaveType (
     LeaveTypeID INT IDENTITY(1,1) PRIMARY KEY,        -- Khóa chính tự tăng
     LeaveTypeCode NVARCHAR(20) NOT NULL UNIQUE,       -- Mã loại phép (AL, SL, UL,...)
@@ -251,6 +252,7 @@ CREATE TABLE LeaveAttendance (
     DateOff DATE NOT NULL,                       -- Ngày nghỉ
     Note NVARCHAR(255) NULL,                     -- Ghi chú
     UpdatedHistory NVARCHAR(MAX) NULL,           -- Lịch sử cập nhật
+    LeaveHours DECIMAL(5,2) NOT NULL DEFAULT 8,
 
     CONSTRAINT FK_LeaveAttendance_Employee FOREIGN KEY (EmployeeCode)
         REFERENCES Employee(EmployeeCode),
@@ -261,15 +263,16 @@ CREATE TABLE LeaveAttendance (
     CONSTRAINT UQ_LeaveAttendance_Employee_Date UNIQUE (EmployeeCode, DateOff)
 );
 
-select * from ApplyScope
 CREATE TABLE ApplyScope (
     ApplyScopeID INT IDENTITY(1,1) PRIMARY KEY,   -- Khóa chính tự tăng
     ScopeCode NVARCHAR(20) NOT NULL UNIQUE,       -- Mã nhóm áp dụng (VD: EMP, DEP, POS, ALL)
     ScopeName NVARCHAR(100) NOT NULL,             -- Tên hiển thị (VD: Nhân viên, Phòng ban, Chức vụ, Toàn công ty)
 );
 
+select * from AllowanceType
 CREATE TABLE AllowanceType (
     AllowanceTypeID INT IDENTITY(1,1) PRIMARY KEY,   -- Khóa chính tự tăng
+    AllowanceCode NVARCHAR(20) NOT NULL UNIQUE,
     AllowanceName NVARCHAR(100) NOT NULL UNIQUE,     -- Tên phụ cấp (VD: Phụ cấp ăn trưa)
     IsInsuranceIncluded BIT DEFAULT 0,               -- Có tính đóng BHXH/BHYT/BHTN không
     ApplyScopeID INT NOT NULL,                       -- Nhóm áp dụng (FK -> ApplyScope)
@@ -357,7 +360,8 @@ CREATE TABLE EmployeeSalaryInfo (
     Note NVARCHAR(255) NULL,
     CreatedAt DATETIME DEFAULT GETDATE()
 );
-Drop table DeductionType
+
+select * from DeductionType 
 CREATE TABLE DeductionType (
     DeductionTypeID INT IDENTITY(1,1) PRIMARY KEY,     -- Khóa chính
     DeductionTypeCode NVARCHAR(20) NOT NULL UNIQUE,    -- Mã khoản trừ (VD: ADV, VEG, CEP)
@@ -365,15 +369,6 @@ CREATE TABLE DeductionType (
     IsActive BIT DEFAULT 1                             -- Còn sử dụng
 );
 
-select * from DeductionType
-INSERT INTO DeductionType (DeductionTypeCode, DeductionTypeName, IsActive)
-VALUES
-    (N'ADV', N'Ứng lương', 1),
-    (N'VEG', N'Tiền rau', 1),
-    (N'CEP', N'Thu hộ CEP', 1),
-    (N'OTH', N'Trừ khác', 1);
-
-select * From EmployeeDeduction
 CREATE TABLE EmployeeDeduction (
     EmployeeDeductionID INT IDENTITY(1,1) PRIMARY KEY,
     EmployeeCode NVARCHAR(20) NOT NULL,
@@ -389,4 +384,53 @@ CREATE TABLE EmployeeDeduction (
         REFERENCES Employee(EmployeeCode),
     CONSTRAINT FK_EmployeeDeduction_DeductionTypeCode FOREIGN KEY (DeductionTypeCode)
         REFERENCES DeductionType(DeductionTypeCode)
+);
+
+select * from EmployeeAllowanceHistory
+drop table EmployeeAllowanceHistory
+CREATE TABLE EmployeeAllowanceHistory (
+    ID INT IDENTITY(1,1) PRIMARY KEY,
+    ScopeCode NVARCHAR(20) NOT NULL,
+    AllowanceTypeID INT NOT NULL,
+    EmployeeCode NVARCHAR(20) NOT NULL,
+    AllowanceName NVARCHAR(100) NULL,
+    IsInsuranceIncluded BIT DEFAULT 0,
+    Amount INT NOT NULL DEFAULT 0,
+    Month INT NOT NULL,
+    Year INT NOT NULL
+);
+
+UPDATE SalaryLock
+SET IsLocked = 0
+WHERE ID = 4;
+
+select * from SalaryLock
+CREATE TABLE SalaryLock (
+    ID INT IDENTITY(1,1) PRIMARY KEY,
+    Month INT NOT NULL,
+    Year INT NOT NULL,
+    IsLocked BIT NOT NULL DEFAULT 0,
+    CONSTRAINT UQ_SalaryLock UNIQUE (Month, Year) 
+);
+
+select * from EmployeeSalaryHistory
+Drop TABLE EmployeeSalaryHistory
+CREATE TABLE EmployeeSalaryHistory (
+    SalaryInfoID INT IDENTITY(1,1) PRIMARY KEY,
+    EmployeeCode NVARCHAR(20) NOT NULL,
+    ContractTypeName NVARCHAR(100) NOT NULL,
+    Month INT NOT NULL,
+    Year INT NOT NULL,
+    BaseSalary DECIMAL(18,2) NOT NULL,              
+    NetSalary DECIMAL(18,2) NOT NULL,               -- Lương thực lãnh (đã bao gồm tất cả)
+    NetInsuranceSalary DECIMAL(18,2) NOT NULL,      -- Lương tính đóng bảo hiểm
+    InsuranceAllowance DECIMAL(18,2) DEFAULT 0,     -- Phụ cấp đóng bảo hiểm
+    NonInsuranceAllowance DECIMAL(18,2) DEFAULT 0,  -- Phụ cấp không đóng bảo hiểm
+    OvertimeSalary DECIMAL(18,2) DEFAULT 0,         -- Tiền lương tăng ca
+    LeaveSalary DECIMAL(18,2) DEFAULT 0,            -- Tiền lương ngày nghỉ
+    DeductionAmount DECIMAL(18,2) DEFAULT 0,        -- Các khoản trừ
+    
+    CreatedAt DATETIME DEFAULT GETDATE(),
+
+    CONSTRAINT UQ_EmployeeSalaryInfo_Employee_Month_Year UNIQUE (EmployeeCode, Month, Year)
 );

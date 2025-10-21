@@ -125,6 +125,7 @@ namespace RauViet.ui
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 employeeDeductionGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+
             }
             catch (Exception ex)
             {
@@ -318,9 +319,9 @@ namespace RauViet.ui
             }
         }
 
-        private void saveBtn_Click(object sender, EventArgs e)
+        private async void saveBtn_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(amount_tb.Text) == null || dataGV.CurrentRow == null || string.IsNullOrEmpty(amount_tb.Text) == null)
+            if (string.IsNullOrEmpty(amount_tb.Text) || dataGV.CurrentRow == null)
             {
                 MessageBox.Show("Sai Dữ Liệu, Kiểm Tra Lại!", "Thông Báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -334,6 +335,13 @@ namespace RauViet.ui
             int amount = Convert.ToInt32(amount_tb.Text);
             string note = note_tb.Text;
             string updateHistory = updateHistory_tb.Text + DateTime.Now.ToString("MM/yyyy") + ":" + UserManager.Instance.employeeCode + ";";
+
+            bool isLock = await SQLStore.Instance.IsSalaryLockAsync(month, year);
+            if (isLock)
+            {
+                MessageBox.Show("Tháng " + month + "/" + year + " đã bị khóa.", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
 
             if (IsDuplicateDeductionMonth(employeeDeductionGV, employeeCode, month, year, employeeDeductionID_tb.Text.Length != 0 ? false : true))
             {

@@ -42,6 +42,7 @@ namespace RauViet.ui
             this.status_lb = new System.Windows.Forms.Label();
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
             this.attendanceGV = new System.Windows.Forms.DataGridView();
+            this.calWorkHour_btn = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
             this.panel1.SuspendLayout();
             this.info_gb.SuspendLayout();
@@ -86,6 +87,7 @@ namespace RauViet.ui
             // 
             // info_gb
             // 
+            this.info_gb.Controls.Add(this.calWorkHour_btn);
             this.info_gb.Controls.Add(this.loadAttandance_btn);
             this.info_gb.Controls.Add(this.label1);
             this.info_gb.Controls.Add(this.month_cbb);
@@ -189,6 +191,17 @@ namespace RauViet.ui
             this.attendanceGV.Size = new System.Drawing.Size(552, 681);
             this.attendanceGV.TabIndex = 12;
             // 
+            // calWorkHour_btn
+            // 
+            this.calWorkHour_btn.BackColor = System.Drawing.SystemColors.Highlight;
+            this.calWorkHour_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.calWorkHour_btn.Location = new System.Drawing.Point(17, 125);
+            this.calWorkHour_btn.Name = "calWorkHour_btn";
+            this.calWorkHour_btn.Size = new System.Drawing.Size(177, 47);
+            this.calWorkHour_btn.TabIndex = 30;
+            this.calWorkHour_btn.Text = "Tính Lại Số Giờ làm";
+            this.calWorkHour_btn.UseVisualStyleBackColor = false;
+            // 
             // Attendance
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -223,5 +236,6 @@ namespace RauViet.ui
         private System.Windows.Forms.Button loadAttandance_btn;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.DataGridView attendanceGV;
+        private System.Windows.Forms.Button calWorkHour_btn;
     }
 }

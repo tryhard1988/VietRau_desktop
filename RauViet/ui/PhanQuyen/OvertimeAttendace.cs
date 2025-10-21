@@ -134,6 +134,10 @@ namespace RauViet.ui
                 Attendamce();
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+
+                bool isLock = await SQLStore.Instance.IsSalaryLockAsync(month, year);
+                LuuThayDoiBtn.Visible = !isLock;
+                newBtn.Visible = !isLock;
             }
             catch (Exception ex)
             {
@@ -249,6 +253,10 @@ namespace RauViet.ui
 
             mOvertimeAttendamce_dt = overtimeAttendamceTask.Result;
             Attendamce();
+
+            bool isLock = await SQLStore.Instance.IsSalaryLockAsync(month, year);
+            LuuThayDoiBtn.Visible = !isLock;
+            newBtn.Visible = !isLock;
         }
 
         private void dataGV_CellClick(object sender, EventArgs e)

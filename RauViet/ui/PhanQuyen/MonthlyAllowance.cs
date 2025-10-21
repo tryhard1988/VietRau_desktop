@@ -323,9 +323,9 @@ namespace RauViet.ui
             }
         }
 
-        private void saveBtn_Click(object sender, EventArgs e)
+        private async void saveBtn_Click(object sender, EventArgs e)
         {
-            if (allowanceType_cbb.SelectedValue == null || string.IsNullOrEmpty(amount_tb.Text) == null || 
+            if (allowanceType_cbb.SelectedValue == null || string.IsNullOrEmpty(amount_tb.Text) || 
                 dataGV.CurrentRow == null || month_cbb.SelectedItem == null || string.IsNullOrEmpty(year_tb.Text))
             {
                 MessageBox.Show("Sai Dữ Liệu, Kiểm Tra Lại!", "Thông Báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -338,6 +338,13 @@ namespace RauViet.ui
             int year = Convert.ToInt32(year_tb.Text);
             int allowanceTypeID = Convert.ToInt32(allowanceType_cbb.SelectedValue);
             string note= note_tb.Text;
+
+            bool isLock = await SQLStore.Instance.IsSalaryLockAsync(month, year);
+            if (isLock)
+            {
+                MessageBox.Show("Tháng " + month + "/" + year + " đã bị khóa.", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
 
             if (monthlyAllowanceID_tb.Text.Length != 0)
                 updateData(Convert.ToInt32(monthlyAllowanceID_tb.Text), employeeCode, month, year, amount, allowanceTypeID, note);

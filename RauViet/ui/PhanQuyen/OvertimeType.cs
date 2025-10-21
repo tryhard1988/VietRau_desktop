@@ -16,7 +16,8 @@ using Color = System.Drawing.Color;
 namespace RauViet.ui
 {
     public partial class OvertimeType : Form
-    { 
+    {
+        DataTable mOvertimeType_dt;
         public OvertimeType()
         {
             InitializeComponent();
@@ -49,17 +50,17 @@ namespace RauViet.ui
             try
             {
                 // Chạy truy vấn trên thread riêng
-                var postionTask = SQLManager.Instance.GetOvertimeTypeAsync();
+                var overtimeTypeTask = SQLStore.Instance.GetOvertimeTypeAsync();
 
-                await Task.WhenAll(postionTask);
-                DataTable postion_dt = postionTask.Result;
+                await Task.WhenAll(overtimeTypeTask);
+                mOvertimeType_dt = overtimeTypeTask.Result;
 
                 int count = 0;
-                postion_dt.Columns["OvertimeName"].SetOrdinal(count++);
-                postion_dt.Columns["SalaryFactor"].SetOrdinal(count++);
-                postion_dt.Columns["IsActive"].SetOrdinal(count++);
+                mOvertimeType_dt.Columns["OvertimeName"].SetOrdinal(count++);
+                mOvertimeType_dt.Columns["SalaryFactor"].SetOrdinal(count++);
+                mOvertimeType_dt.Columns["IsActive"].SetOrdinal(count++);
 
-                dataGV.DataSource = postion_dt;
+                dataGV.DataSource = mOvertimeType_dt;
 
                 dataGV.Columns["OvertimeName"].HeaderText = "Tên Loại Tăng Ca";
                 dataGV.Columns["SalaryFactor"].HeaderText = "Hệ Số Nhân";
@@ -156,6 +157,8 @@ namespace RauViet.ui
                                 row.Cells["OvertimeName"].Value = overtimeName;
                                 row.Cells["SalaryFactor"].Value = salaryFactor;
                                 row.Cells["IsActive"].Value = isActive;
+
+                                SQLStore.Instance.restOvertimeTypeAsync();
                             }
                             else
                             {
@@ -167,11 +170,7 @@ namespace RauViet.ui
                         {
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;
-                        }
-
-                        
-
-                        
+                        }                        
                     }
                     break;
                 }
@@ -212,6 +211,7 @@ namespace RauViet.ui
 
                         status_lb.Text = "Thành công";
                         status_lb.ForeColor = Color.Green;
+                        SQLStore.Instance.restOvertimeTypeAsync();
                     }
                     else
                     {
@@ -258,15 +258,15 @@ namespace RauViet.ui
 
             foreach (DataGridViewRow row in dataGV.Rows)
             {
-                string positionID = row.Cells["PositionID"].Value.ToString();
-                if (positionID.CompareTo(id) == 0)
+                string overtimeTypeID = row.Cells["OvertimeTypeID"].Value.ToString();
+                if (overtimeTypeID.CompareTo(id) == 0)
                 {
                     DialogResult dialogResult = MessageBox.Show("XÓA ĐÓ NHA \n Chắc chắn chưa ?", " Xóa Thông Tin", MessageBoxButtons.YesNo);
                     if (dialogResult == DialogResult.Yes)
                     {
                         try
                         {
-                            bool isScussess = await SQLManager.Instance.deletePositionAsync(Convert.ToInt32(positionID));
+                            bool isScussess = await SQLManager.Instance.deleteOvertimeTypeAsync(Convert.ToInt32(overtimeTypeID));
 
                             if (isScussess == true)
                             {

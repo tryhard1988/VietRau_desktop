@@ -296,7 +296,7 @@ namespace RauViet.ui
 
         private void saveBtn_Click(object sender, EventArgs e)
         {
-            if (allowanceType_cbb.SelectedValue == null || string.IsNullOrEmpty(amount_tb.Text) == null || dataGV.CurrentRow == null)
+            if (allowanceType_cbb.SelectedValue == null || string.IsNullOrEmpty(amount_tb.Text) || dataGV.CurrentRow == null)
             {
                 MessageBox.Show("Sai Dữ Liệu, Kiểm Tra Lại!", "Thông Báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;

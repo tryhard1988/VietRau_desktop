@@ -1,6 +1,7 @@
 ﻿using DocumentFormat.OpenXml.Bibliography;
 using DocumentFormat.OpenXml.Drawing.Charts;
 using DocumentFormat.OpenXml.Spreadsheet;
+using DocumentFormat.OpenXml.Vml.Office;
 using RauViet.ui;
 using System;
 using System.Collections.Generic;
@@ -541,22 +542,22 @@ namespace RauViet.classes
             {
                 await con.OpenAsync();
                 string query = @"SELECT 
-    o.OrderId,
-    o.ExportCodeID,
-    c.CustomerID,    
-    p.ProductPackingID,
-    o.PCSOther,
-    o.NWOther,
-    o.OrderPackingPriceCNF,
-    s.Priority
+                                        o.OrderId,
+                                        o.ExportCodeID,
+                                        c.CustomerID,    
+                                        p.ProductPackingID,
+                                        o.PCSOther,
+                                        o.NWOther,
+                                        o.OrderPackingPriceCNF,
+                                        s.Priority
 
-FROM Orders o
-INNER JOIN Customers c ON o.CustomerID = c.CustomerID
-INNER JOIN ProductPacking p ON o.ProductPackingID = p.ProductPackingID
-INNER JOIN ProductSKU s ON p.SKU = s.SKU
-INNER JOIN ExportCodes ec ON o.ExportCodeID = ec.ExportCodeID
-WHERE ec.Complete = 0
-ORDER BY o.ExportCodeID;";
+                                    FROM Orders o
+                                    INNER JOIN Customers c ON o.CustomerID = c.CustomerID
+                                    INNER JOIN ProductPacking p ON o.ProductPackingID = p.ProductPackingID
+                                    INNER JOIN ProductSKU s ON p.SKU = s.SKU
+                                    INNER JOIN ExportCodes ec ON o.ExportCodeID = ec.ExportCodeID
+                                    WHERE ec.Complete = 0
+                                    ORDER BY o.ExportCodeID;";
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                 {
@@ -1377,7 +1378,7 @@ ORDER BY o.ExportCodeID;";
             {
                 await con.OpenAsync();
                 string query = @"SELECT EmployeeID, EmployeeCode, FullName, BirthDate, HireDate, Gender, ProbationSalaryPercent, Hometown, 
-                                    Address, CitizenID, IssueDate, IssuePlace, IsActive, canCreateUserName, PhoneNumber, NoteResign
+                                    Address, CitizenID, IssueDate, IssuePlace, IsActive, canCreateUserName, PhoneNumber, NoteResign, IsInsuranceRefund
                                 FROM Employee";
 
                 using (SqlCommand cmd = new SqlCommand(query, con))
@@ -1391,7 +1392,7 @@ ORDER BY o.ExportCodeID;";
 
         public async Task<bool> updateEmployeesAsync(int employeeId, string maNV, string tenNV, DateTime birthDate, DateTime hireDate,
                                     bool isMale, string homeTown, string address, string citizenID, DateTime? issueDate, string issuePlace, 
-                                    bool isActive, bool canCreateUserName, decimal probationSalaryPercent, string phone, string noteResign)
+                                    bool isActive, bool canCreateUserName, decimal probationSalaryPercent, string phone, string noteResign, bool isInsuranceRefund)
         {
             string query = @"UPDATE Employee SET 
                                 EmployeeCode=@EmployeeCode, 
@@ -1408,6 +1409,7 @@ ORDER BY o.ExportCodeID;";
                                 canCreateUserName=@canCreateUserName,
                                 ProbationSalaryPercent=@ProbationSalaryPercent,
                                 PhoneNumber=@PhoneNumber,
+                                IsInsuranceRefund=@IsInsuranceRefund,
                                 NoteResign=@NoteResign
                             WHERE EmployeeID=@EmployeeID";
             try
@@ -1433,6 +1435,7 @@ ORDER BY o.ExportCodeID;";
                         cmd.Parameters.AddWithValue("@ProbationSalaryPercent", probationSalaryPercent);
                         cmd.Parameters.AddWithValue("@PhoneNumber", phone);
                         cmd.Parameters.AddWithValue("@NoteResign", noteResign);
+                        cmd.Parameters.AddWithValue("@IsInsuranceRefund", isInsuranceRefund);
                         await cmd.ExecuteNonQueryAsync();
                     }
                 }
@@ -1462,20 +1465,20 @@ ORDER BY o.ExportCodeID;";
 
 
         public async Task<int> insertEmployeeAsync(string maNV_temp, string tenNV, DateTime birthDate, DateTime hireDate, bool isMale, string homeTown,
-                                                    string address, string citizenID, DateTime? issueDate, string issuePlace,
-                                                    bool isActive, bool canCreateUserName, decimal probationSalaryPercent, string phone, string noteResign)
+                                                    string address, string citizenID, DateTime? issueDate, string issuePlace, bool isActive, bool canCreateUserName, 
+                                                    decimal probationSalaryPercent, string phone, string noteResign, bool isInsuranceRefund)
         {
             int newId = -1;
 
             string insertQuery = @"
         INSERT INTO Employee (
             EmployeeCode, FullName, BirthDate, HireDate, Gender, Hometown, Address, CitizenID, IssueDate, IssuePlace, IsActive, 
-            canCreateUserName, ProbationSalaryPercent, PhoneNumber, NoteResign
+            canCreateUserName, ProbationSalaryPercent, PhoneNumber, NoteResign, IsInsuranceRefund
         )
         OUTPUT INSERTED.EmployeeID
         VALUES (
             @EmployeeCode, @FullName, @BirthDate, @HireDate, @Gender, @Hometown, @Address, @CitizenID, @IssueDate, @IssuePlace, @IsActive, 
-            @canCreateUserName, @ProbationSalaryPercent, @PhoneNumber, @NoteResign
+            @canCreateUserName, @ProbationSalaryPercent, @PhoneNumber, @NoteResign, @IsInsuranceRefund
         )";
 
             try
@@ -1502,6 +1505,7 @@ ORDER BY o.ExportCodeID;";
                         cmd.Parameters.AddWithValue("@ProbationSalaryPercent", probationSalaryPercent);
                         cmd.Parameters.AddWithValue("@PhoneNumber", phone);
                         cmd.Parameters.AddWithValue("@NoteResign", noteResign);
+                        cmd.Parameters.AddWithValue("@IsInsuranceRefund", isInsuranceRefund);
                         object result = await cmd.ExecuteScalarAsync();
                         if (result != null)
                             newId = Convert.ToInt32(result);
@@ -1589,6 +1593,54 @@ ORDER BY o.ExportCodeID;";
             }
             return dt;
         }
+
+        public async Task<DataTable> GetActiveEmployee_DeductionATT_Async(int month, int year)
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(conStr))
+            {
+                await con.OpenAsync();
+
+                using (SqlCommand cmd = new SqlCommand("sp_GetEmployeeAllowance_ChuyenCan", con))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add("@Month", SqlDbType.Int).Value = month;
+                    cmd.Parameters.Add("@Year", SqlDbType.Int).Value = year;
+
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
+        }
+
+        public async Task<DataTable> GetEmployeeLeave_PT_KP_Async(int month, int year)
+        {
+            DataTable dt = new DataTable();
+
+            using (SqlConnection con = new SqlConnection(conStr))
+            {
+                await con.OpenAsync();
+
+                using (SqlCommand cmd = new SqlCommand("sp_GetEmployeeLeave_PT_KP", con))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.Add("@Month", SqlDbType.Int).Value = month;
+                    cmd.Parameters.Add("@Year", SqlDbType.Int).Value = year;
+
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+
+            return dt;
+        }
+
 
         public async Task<DataTable> GetContractTypeAsync()
         {
@@ -2129,82 +2181,17 @@ ORDER BY o.ExportCodeID;";
             return dt;
         }
 
-        public async Task<DataTable> GetEmployeesForEttendamceAsync(string contractTypeCode)
+        public async Task<DataTable> GetEmployeesForAttendanceAsync(int year)
         {
             DataTable dt = new DataTable();
+
             using (SqlConnection con = new SqlConnection(conStr))
             {
                 await con.OpenAsync();
-                string query = @"SELECT 
-                                    e.EmployeeCode,
-                                    e.FullName,
-                                    p.PositionCode,
-                                    p.PositionName,
-                                    ct.ContractTypeCode,
-                                    ct.ContractTypeName
-                                FROM Employee e
-                                LEFT JOIN Position p 
-                                    ON e.PositionID = p.PositionID
-                                LEFT JOIN ContractType ct 
-                                    ON e.ContractTypeID = ct.ContractTypeID
-                                WHERE e.IsActive = 1 AND ct.ContractTypeCode = @ContractTypeCode;";
 
-                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlCommand cmd = new SqlCommand("sp_GetRemainingLeave", con))
                 {
-                    cmd.Parameters.AddWithValue("@ContractTypeCode", contractTypeCode);
-                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
-                    {
-                        dt.Load(reader);
-                    }
-                }
-            }
-            return dt;
-        }
-
-        public async Task<DataTable> GetAttendamceAsync(int month, int year)
-        {
-            DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(conStr))
-            {
-                await con.OpenAsync();
-                string query = @"SELECT 
-                                    a.EmployeeCode,
-                                    a.WorkDate,
-                                    a.WorkingHours,
-                                    a.Note,
-                                    a.AttendanceLog,
-                                    lt.LeaveTypeName, 
-                                    STRING_AGG(ot.OvertimeName, CHAR(13) + CHAR(10)) AS OvertimeName
-                                FROM Attendance a
-                                -- Join nghỉ phép
-                                LEFT JOIN LeaveAttendance la 
-                                    ON a.EmployeeCode = la.EmployeeCode 
-                                   AND a.WorkDate = la.DateOff
-                                LEFT JOIN LeaveType lt 
-                                    ON la.LeaveTypeCode = lt.LeaveTypeCode
-                                -- Join tăng ca
-                                LEFT JOIN OvertimeAttendance oa
-                                    ON a.EmployeeCode = oa.EmployeeCode
-                                   AND a.WorkDate = oa.WorkDate
-                                LEFT JOIN OvertimeType ot
-                                    ON oa.OvertimeTypeID = ot.OvertimeTypeID
-                                WHERE MONTH(a.WorkDate) = @Month
-                                  AND YEAR(a.WorkDate) = @Year
-                                GROUP BY 
-                                    a.EmployeeCode, 
-                                    a.WorkDate, 
-                                    a.WorkingHours, 
-                                    a.Note, 
-                                    a.AttendanceLog, 
-                                    lt.LeaveTypeName
-                                ORDER BY 
-                                    a.EmployeeCode, 
-                                    a.WorkDate;
-";
-
-                using (SqlCommand cmd = new SqlCommand(query, con))
-                {
-                    cmd.Parameters.AddWithValue("@Month", month);
+                    cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.AddWithValue("@Year", year);
 
                     using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
@@ -2213,6 +2200,41 @@ ORDER BY o.ExportCodeID;";
                     }
                 }
             }
+
+            return dt;
+        }
+
+        public async Task<DataTable> GetAttendamceAsync(int month, int year)
+        {
+            var dt = new DataTable();
+
+            try
+            {
+                using (var con = new SqlConnection(conStr))
+                {
+                    await con.OpenAsync();
+
+                    using (var cmd = new SqlCommand("sp_GetAttendanceSummary", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        // Thêm tham số
+                        cmd.Parameters.Add("@Month", SqlDbType.Int).Value = month;
+                        cmd.Parameters.Add("@Year", SqlDbType.Int).Value = year;
+
+                        // Đọc dữ liệu
+                        using (var reader = await cmd.ExecuteReaderAsync())
+                        {
+                            dt.Load(reader);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Lỗi khi lấy dữ liệu chấm công: " + ex.Message, ex);
+            }
+
             return dt;
         }
 
@@ -2263,8 +2285,7 @@ ORDER BY o.ExportCodeID;";
 
         public async Task<bool> insertHolidayAsync(DateTime holidayDate, string holidayName)
         {
-            string query = @"INSERT INTO Holiday (HolidayDate, HolidayName) 
-                     VALUES (@HolidayDate, @HolidayName)";
+            string query = "sp_InsertHolidayAndAttendance";
 
             try
             {
@@ -2273,11 +2294,19 @@ ORDER BY o.ExportCodeID;";
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
+                        cmd.CommandType = CommandType.StoredProcedure;
                         cmd.Parameters.AddWithValue("@HolidayDate", holidayDate.Date);
                         cmd.Parameters.AddWithValue("@HolidayName", holidayName);
 
-                        int rows = await cmd.ExecuteNonQueryAsync(); // <-- đúng ở đây
-                        return rows > 0;
+                        // Dùng ReturnValue để nhận giá trị trả về
+                        SqlParameter returnParam = new SqlParameter("@ReturnVal", SqlDbType.Int);
+                        returnParam.Direction = ParameterDirection.ReturnValue;
+                        cmd.Parameters.Add(returnParam);
+
+                        await cmd.ExecuteNonQueryAsync();
+
+                        int result = (int)returnParam.Value;
+                        return result == 1;
                     }
                 }
             }
@@ -2287,23 +2316,37 @@ ORDER BY o.ExportCodeID;";
             }
         }
 
-        public async Task<bool> deleteHolidayAsync(DateTime Holidate)
+
+
+        public async Task<bool> DeleteHolidayAsync(DateTime holidayDate)
         {
-            string query = "DELETE FROM Holiday WHERE HolidayDate=@HolidayDate";
             try
             {
                 using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlCommand cmd = new SqlCommand("sp_DeleteHolidayAndAttendance", con))
                 {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@HolidayDate", holidayDate.Date);
+
                     await con.OpenAsync();
-                    using (SqlCommand cmd = new SqlCommand(query, con))
-                    {
-                        cmd.Parameters.AddWithValue("@HolidayDate", Holidate.Date);
-                        await cmd.ExecuteNonQueryAsync();
-                    }
+                    int rows = await cmd.ExecuteNonQueryAsync();
+
+                    // Vì SP có COMMIT TRANSACTION nên nếu không lỗi => xem như thành công
+                    return true;
                 }
-                return true;
             }
-            catch { return false; }
+            catch (SqlException ex)
+            {
+                Console.WriteLine($"SQL Error: {ex.Message}");
+                MessageBox.Show($"SQL Error: {ex.Message}", "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"General Error: {ex.Message}");
+                MessageBox.Show($"General Error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
         }
 
         public async Task<DataTable> GetOvertimeTypeAsync()
@@ -2399,6 +2442,81 @@ ORDER BY o.ExportCodeID;";
                 return newId;
             }
             catch { return -1; }
+        }
+
+        public async Task<bool> deleteOvertimeTypeAsync(int ID)
+        {
+            string query = "DELETE FROM OvertimeType WHERE OvertimeTypeID=@OvertimeTypeID";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(conStr))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@OvertimeTypeID", ID);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+                return true;
+            }
+            catch { return false; }
+        }
+
+        public async Task<DataTable> GetOvertimeAttendamceForSalaryAsync(int month, int year)
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(conStr))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT 
+                                    oa.OvertimeTypeID,
+                                    oa.EmployeeCode, oa.WorkDate,
+                                    ot.OvertimeName, ot.SalaryFactor,
+                                    CAST(DATEDIFF(MINUTE, oa.StartTime, oa.EndTime) / 60.0 AS DECIMAL(10,2)) AS HourWork                                    
+                                FROM OvertimeAttendance oa
+                                JOIN OvertimeType ot ON oa.OvertimeTypeID = ot.OvertimeTypeID
+                                WHERE MONTH(oa.WorkDate) = @Month
+                                  AND YEAR(oa.WorkDate) = @Year
+                                ORDER BY oa.EmployeeCode, oa.WorkDate;";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    cmd.Parameters.AddWithValue("@Month", month);
+                    cmd.Parameters.AddWithValue("@Year", year);
+
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
+        }
+
+        public async Task<DataTable> GetAttendamceForSalaryAsync(int month, int year)
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(conStr))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT EmployeeCode, WorkDate, WorkingHours
+                                FROM Attendance
+                                WHERE MONTH(WorkDate) = @Month AND YEAR(WorkDate) = @Year
+                                ORDER BY EmployeeCode, WorkDate;";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    cmd.Parameters.AddWithValue("@Month", month);
+                    cmd.Parameters.AddWithValue("@Year", year);
+
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
         }
 
         public async Task<DataTable> GetOvertimeAttendamceAsync(int month, int year)
@@ -2505,55 +2623,29 @@ ORDER BY o.ExportCodeID;";
                 return -1;
             }
         }
-
         public async Task<DataTable> GetAnnualLeaveBalanceAsync(int year)
         {
             DataTable dt = new DataTable();
+
             using (SqlConnection con = new SqlConnection(conStr))
             {
                 await con.OpenAsync();
-                string query = @"SELECT 
-                                    E.EmployeeID, 
-                                    E.EmployeeCode,
-                                    E.FullName,
-                                    P.PositionName,                 
-                                    ISNULL(ALB.Year, @Year) AS [Year],
-                                    ISNULL(ALB.Month, '') AS [Month],
-                                    ISNULL(LV.LeaveCount, 0) AS LeaveCount
-                                FROM Employee AS E
-                                LEFT JOIN Position AS P 
-                                    ON E.PositionID = P.PositionID
-                                LEFT JOIN ContractType AS CT
-                                    ON E.ContractTypeID = CT.ContractTypeID
-                                LEFT JOIN AnnualLeaveBalance AS ALB 
-                                    ON E.EmployeeCode = ALB.EmployeeCode
-                                    AND ALB.Year = @Year
-                                LEFT JOIN (
-                                    SELECT 
-                                        EmployeeCode,
-                                        COUNT(DateOff) AS LeaveCount
-                                    FROM LeaveAttendance
-                                    WHERE YEAR(DateOff) = @Year
-                                    GROUP BY EmployeeCode
-                                ) AS LV 
-                                    ON E.EmployeeCode = LV.EmployeeCode
-                                WHERE 
-                                    E.IsActive = 1
-                                    AND CT.ContractTypeCode = 'c_thuc'
-                                ORDER BY 
-                                    E.EmployeeCode;";
 
-                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlCommand cmd = new SqlCommand("sp_GetAnnualLeaveReport", con))
                 {
+                    cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.AddWithValue("@Year", year);
+
                     using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                     {
                         dt.Load(reader);
                     }
                 }
             }
+
             return dt;
         }
+
 
         public async Task<bool> UpsertAnnualLeaveBalanceBatchAsync(List<(string EmployeeCode, int Year, string Month)> albData)
         {
@@ -2615,7 +2707,7 @@ ORDER BY o.ExportCodeID;";
             }
         }
 
-        public async Task<DataTable> GetLeaveAttendanceAsync(int month, int year)
+        public async Task<DataTable> GetLeaveAttendanceAsync_Withour_NghiLe(int year)
         {
             DataTable dt = new DataTable();
             using (SqlConnection con = new SqlConnection(conStr))
@@ -2623,13 +2715,12 @@ ORDER BY o.ExportCodeID;";
                 await con.OpenAsync();
                 string query = @"SELECT *
                                 FROM LeaveAttendance
-                                WHERE MONTH(DateOff) = @Month
-                                  AND YEAR(DateOff) = @Year
+                                WHERE YEAR(DateOff) = @Year
+                                  AND LeaveTypeCode != 'NL_1'
                                 ORDER BY EmployeeCode, DateOff;";
 
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 {
-                    cmd.Parameters.AddWithValue("@Month", month);
                     cmd.Parameters.AddWithValue("@Year", year);
 
                     using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
@@ -2641,7 +2732,53 @@ ORDER BY o.ExportCodeID;";
             return dt;
         }
 
-        public async Task<DataTable> GetLeaveTypeAsync()
+        public async Task<DataTable> GetLeaveAttendanceAsync_IsPaid(int month, int year)
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(conStr))
+            {
+                await con.OpenAsync();
+
+                using (SqlCommand cmd = new SqlCommand("sp_GetPaidLeaveByMonth", con))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.AddWithValue("@Year", year);
+                    cmd.Parameters.AddWithValue("@Month", month);
+
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
+        }
+
+        public async Task<DataTable> GetEmployeeDeductions(int month, int year)
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(conStr))
+            {
+                await con.OpenAsync();
+
+                using (SqlCommand cmd = new SqlCommand("sp_GetEmployeeDeductions", con))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.AddWithValue("@Year", year);
+                    cmd.Parameters.AddWithValue("@Month", month);
+
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
+        }
+
+        public async Task<DataTable> GetLeaveType_Without_NL1_Async()
         {
             DataTable dt = new DataTable();
 
@@ -2649,8 +2786,7 @@ ORDER BY o.ExportCodeID;";
             {
                 await con.OpenAsync();
 
-                string query = @"SELECT *
-                                FROM LeaveType";
+                string query = @"SELECT * FROM LeaveType WHERE LeaveTypeCode != 'NL_1' ";
 
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 {
@@ -2664,16 +2800,38 @@ ORDER BY o.ExportCodeID;";
             return dt;
         }
 
-        public async Task<int> insertLeaveAttendanceAsync(string employeeCode, string leaveTypeCode, DateTime dateOff, string Note, string UpdatedHistory)
+        public async Task<DataTable> GetLeaveType_HavePaid_Async()
+        {
+            DataTable dt = new DataTable();
+
+            using (SqlConnection con = new SqlConnection(conStr))
+            {
+                await con.OpenAsync();
+
+                string query = @"SELECT LeaveTypeCode, LeaveTypeName FROM LeaveType WHERE IsPaid = 1 ";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+
+            return dt;
+        }
+
+        public async Task<int> insertLeaveAttendanceAsync(string employeeCode, string leaveTypeCode, DateTime dateOff, string Note, string UpdatedHistory, decimal hourLeave)
         {
             int newId = -1;
 
             string insertQuery = @" INSERT INTO LeaveAttendance  (
-                                EmployeeCode, LeaveTypeCode, DateOff, Note, UpdatedHistory
+                                EmployeeCode, LeaveTypeCode, DateOff, Note, UpdatedHistory, LeaveHours
                             )
                             OUTPUT INSERTED.LeaveID
                             VALUES (
-                                @EmployeeCode, @LeaveTypeCode, @DateOff, @Note, @UpdatedHistory
+                                @EmployeeCode, @LeaveTypeCode, @DateOff, @Note, @UpdatedHistory, @LeaveHours
                             )";
 
 
@@ -2691,6 +2849,7 @@ ORDER BY o.ExportCodeID;";
                         cmd.Parameters.AddWithValue("@DateOff", dateOff.Date);
                         cmd.Parameters.AddWithValue("@Note", Note);
                         cmd.Parameters.AddWithValue("@UpdatedHistory", UpdatedHistory);
+                        cmd.Parameters.AddWithValue("@LeaveHours", hourLeave);
 
                         object result = await cmd.ExecuteScalarAsync();
                         if (result != null)
@@ -2706,13 +2865,14 @@ ORDER BY o.ExportCodeID;";
             }
         }
 
-        public async Task<bool> updateLeaveAttendanceAsync(int leaveID, string employeeCode, string leaveTypeCode, DateTime dateOff, string Note, string UpdatedHistory)
+        public async Task<bool> updateLeaveAttendanceAsync(int leaveID, string employeeCode, string leaveTypeCode, DateTime dateOff, string Note, string UpdatedHistory, decimal hourLeave)
         {
             string query = @"UPDATE LeaveAttendance SET 
                                 EmployeeCode=@EmployeeCode, 
                                 LeaveTypeCode=@LeaveTypeCode,
                                 DateOff=@DateOff, 
                                 Note=@Note,
+                                LeaveHours=@LeaveHours,
                                 UpdatedHistory=@UpdatedHistory                                
                             WHERE LeaveID=@LeaveID";
             try
@@ -2727,6 +2887,7 @@ ORDER BY o.ExportCodeID;";
                         cmd.Parameters.AddWithValue("@LeaveTypeCode", leaveTypeCode);
                         cmd.Parameters.AddWithValue("@DateOff", dateOff.Date);
                         cmd.Parameters.AddWithValue("@Note", Note);
+                        cmd.Parameters.AddWithValue("@LeaveHours", hourLeave);
                         cmd.Parameters.AddWithValue("@UpdatedHistory", UpdatedHistory);
                         await cmd.ExecuteNonQueryAsync();
                     }
@@ -2801,16 +2962,16 @@ ORDER BY o.ExportCodeID;";
         }
 
 
-        public async Task<int> insertAllowanceTypeAsync(string allowanceName, int applyScopeID, bool isActive, bool isInsuranceIncluded)
+        public async Task<int> insertAllowanceTypeAsync(string allowanceName, string allowanceCode, int applyScopeID, bool isActive, bool isInsuranceIncluded)
         {
             int newId = -1;
 
             string insertQuery = @" INSERT INTO AllowanceType (
-                                        AllowanceName, ApplyScopeID, IsActive, IsInsuranceIncluded
+                                        AllowanceName, AllowanceCode, ApplyScopeID, IsActive, IsInsuranceIncluded
                                     )
                                     OUTPUT INSERTED.AllowanceTypeID
                                     VALUES (
-                                        @AllowanceName, @ApplyScopeID, @IsActive, @IsInsuranceIncluded
+                                        @AllowanceName, @AllowanceCode, @ApplyScopeID, @IsActive, @IsInsuranceIncluded
                                     )";
 
             try
@@ -2823,6 +2984,7 @@ ORDER BY o.ExportCodeID;";
                     using (SqlCommand cmd = new SqlCommand(insertQuery, con))
                     {
                         cmd.Parameters.AddWithValue("@AllowanceName", allowanceName);
+                        cmd.Parameters.AddWithValue("@AllowanceCode", allowanceCode);
                         cmd.Parameters.AddWithValue("@ApplyScopeID", applyScopeID);
                         cmd.Parameters.AddWithValue("@IsActive", isActive);
                         cmd.Parameters.AddWithValue("@IsInsuranceIncluded", isInsuranceIncluded);
@@ -2841,10 +3003,11 @@ ORDER BY o.ExportCodeID;";
             }
         }
 
-        public async Task<bool> updateAllowanceTypeAsync(int allowanceTypeID, string allowanceName, int applyScopeID, bool isActive, bool isInsuranceIncluded)
+        public async Task<bool> updateAllowanceTypeAsync(int allowanceTypeID, string allowanceName, string allowanceCode, int applyScopeID, bool isActive, bool isInsuranceIncluded)
         {
             string query = @"UPDATE AllowanceType SET 
                                 AllowanceName=@AllowanceName, 
+                                AllowanceCode=@AllowanceCode, 
                                 IsInsuranceIncluded=@IsInsuranceIncluded,
                                 ApplyScopeID=@ApplyScopeID, 
                                 IsActive=@IsActive
@@ -2858,9 +3021,29 @@ ORDER BY o.ExportCodeID;";
                     {
                         cmd.Parameters.AddWithValue("@AllowanceTypeID", allowanceTypeID);
                         cmd.Parameters.AddWithValue("@AllowanceName", allowanceName);
+                        cmd.Parameters.AddWithValue("@AllowanceCode", allowanceCode);
                         cmd.Parameters.AddWithValue("@ApplyScopeID", applyScopeID);
                         cmd.Parameters.AddWithValue("@IsInsuranceIncluded", isInsuranceIncluded);
                         cmd.Parameters.AddWithValue("@IsActive", isActive);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+                return true;
+            }
+            catch { return false; }
+        }
+
+        public async Task<bool> deleteAllowanceTypeAsync(int allowanceTypeID)
+        {
+            string query = "DELETE FROM AllowanceType WHERE AllowanceTypeID=@AllowanceTypeID";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(conStr))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@AllowanceTypeID", allowanceTypeID);
                         await cmd.ExecuteNonQueryAsync();
                     }
                 }
@@ -3738,6 +3921,42 @@ ORDER BY o.ExportCodeID;";
             return newId;
         }
 
+        public async Task<bool> UpsertEmployeeDeductionAsync(string EmployeeCode, string DeductionTypeCode, DateTime DeductionDate, int amount, string note, string updateHistory)
+        {
+            try
+            {
+                using (SqlConnection con = new SqlConnection(conStr))
+                {
+                    await con.OpenAsync();
+
+                    using (SqlCommand cmd = new SqlCommand("sp_UpsertEmployeeDeduction", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        cmd.Parameters.AddWithValue("@EmployeeCode", EmployeeCode);
+                        cmd.Parameters.AddWithValue("@DeductionTypeCode", DeductionTypeCode);
+                        cmd.Parameters.AddWithValue("@DeductionMonth", DeductionDate.Month);
+                        cmd.Parameters.AddWithValue("@DeductionYear", DeductionDate.Year);
+                        cmd.Parameters.AddWithValue("@DeductionDate", DeductionDate.Date);
+                        cmd.Parameters.AddWithValue("@Amount", amount);
+                        cmd.Parameters.AddWithValue("@Note", note ?? (object)DBNull.Value);
+                        cmd.Parameters.AddWithValue("@UpdateHistory", updateHistory ?? (object)DBNull.Value);
+
+                        // ExecuteScalarAsync chỉ để trigger SP, không cần lấy giá trị
+                        await cmd.ExecuteScalarAsync();
+                    }
+                }
+
+                return true; // Thành công
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[UpsertEmployeeDeductionAsync] Error: {ex.Message}");
+                return false; // Lỗi
+            }
+        }
+
+
         public async Task<bool> deleteEmployeeDeductionAsync(int EmployeeDeductionID)
         {
             string query = "DELETE FROM EmployeeDeduction WHERE EmployeeDeductionID=@EmployeeDeductionID";
@@ -3755,6 +3974,195 @@ ORDER BY o.ExportCodeID;";
                 return true;
             }
             catch { return false; }
+        }
+
+        public async Task<DataTable> GetEmployeeAllowanceAsync(int month, int year)
+        {
+            DataTable dt = new DataTable();
+
+            using (SqlConnection con = new SqlConnection(conStr))
+            {
+                await con.OpenAsync();
+
+                bool isLock = await SQLStore.Instance.IsSalaryLockAsync(month, year);
+                string spStr = isLock ? "sp_GetEmployeeAllowanceHistory_ByMonth" : "sp_GetEmployeeAllowance";
+                using (SqlCommand cmd = new SqlCommand(spStr, con))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@Month", month);
+                    cmd.Parameters.AddWithValue("@Year", year);
+
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+
+            return dt;
+        }
+
+        public async Task<DataTable> GetEmployeeSalarySummaryAsync(int month, int year)
+        {
+            DataTable dt = new DataTable();
+
+            using (SqlConnection con = new SqlConnection(conStr))
+            {
+                await con.OpenAsync();
+
+                using (SqlCommand cmd = new SqlCommand("sp_GetEmployeeSalarySummary", con))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure; // Quan trọng
+
+                    cmd.Parameters.AddWithValue("@Month", month);
+                    cmd.Parameters.AddWithValue("@Year", year);
+
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+
+            return dt;
+        }
+
+        public async Task<bool> UpsertSaveEmployeeAllowanceHistoryBatchAsync(List<(string EmployeeCode, string scopeCode, int allowanceTypeID, string AllowanceName, bool IsInsuranceIncluded, int Amount, int Month, int Year)> data)
+        {
+            try
+            {
+                DataTable dt = new DataTable();
+                dt.Columns.Add("ScopeCode", typeof(string));
+                dt.Columns.Add("AllowanceTypeID", typeof(int));
+                dt.Columns.Add("EmployeeCode", typeof(string));                
+                dt.Columns.Add("AllowanceName", typeof(string));
+                dt.Columns.Add("IsInsuranceIncluded", typeof(bool));
+                dt.Columns.Add("Amount", typeof(int));
+                dt.Columns.Add("Month", typeof(int));
+                dt.Columns.Add("Year", typeof(int));
+
+                foreach (var item in data)
+                {
+                    dt.Rows.Add(item.scopeCode, item.allowanceTypeID, item.EmployeeCode, item.AllowanceName, item.IsInsuranceIncluded, item.Amount, item.Month, item.Year);
+                }
+
+                using (SqlConnection conn = new SqlConnection(conStr))
+                {
+                    await conn.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand("sp_SaveEmployeeAllowanceHistory_Batch", conn))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        var param = cmd.Parameters.AddWithValue("@AllowanceData", dt);
+                        param.SqlDbType = SqlDbType.Structured;
+                        param.TypeName = "EmployeeAllowanceHistoryTableType";
+
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Lỗi khi cập nhật: " + ex.Message);
+                return false;
+            }
+        }
+
+        public async Task<DataTable> GetSalaryLockAsync()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(conStr))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT * FROM SalaryLock";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
+        }
+
+        public async Task<bool> UpsertLockSalaryAsync(int Month, int Year, bool IsLocked)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(conStr))
+                {
+                    await conn.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand("sp_SetSalaryLock", conn))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@Month", Month);
+                        cmd.Parameters.AddWithValue("@Year", Year);
+                        cmd.Parameters.AddWithValue("@IsLocked", IsLocked);
+
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Lỗi khi cập nhật: " + ex.Message);
+                return false;
+            }
+        }
+
+        
+        public async Task<bool> UpsertEmployeeSalaryHistoryAsync(List<(string EmployeeCode, string ContractTypeName, int Month, int Year, decimal BaseSalary, decimal NetSalary, decimal NetInsuranceSalary,
+            decimal InsuranceAllowance, decimal NonInsuranceAllowance, decimal OvertimeSalary, decimal LeaveSalary, decimal DeductionAmount)> data)
+        {
+            try
+            {
+                DataTable dt = new DataTable();
+                dt.Columns.Add("EmployeeCode", typeof(string));
+                dt.Columns.Add("ContractTypeName", typeof(string));
+                dt.Columns.Add("Month", typeof(int));
+                dt.Columns.Add("Year", typeof(int));
+                dt.Columns.Add("BaseSalary", typeof(decimal));
+                dt.Columns.Add("NetSalary", typeof(decimal));
+                dt.Columns.Add("NetInsuranceSalary", typeof(decimal));
+                dt.Columns.Add("InsuranceAllowance", typeof(decimal));
+                dt.Columns.Add("NonInsuranceAllowance", typeof(decimal));
+                dt.Columns.Add("OvertimeSalary", typeof(decimal));
+                dt.Columns.Add("LeaveSalary", typeof(decimal));
+                dt.Columns.Add("DeductionAmount", typeof(decimal));
+
+
+                foreach (var item in data)
+                {
+                    dt.Rows.Add(item.EmployeeCode, item.ContractTypeName, item.Month, item.Year, item.BaseSalary, item.NetSalary, item.NetInsuranceSalary, item.InsuranceAllowance,
+                         item.NonInsuranceAllowance, item.OvertimeSalary, item.LeaveSalary, item.DeductionAmount);
+                }
+
+                using (SqlConnection conn = new SqlConnection(conStr))
+                {
+                    await conn.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand("sp_UpsertEmployeeSalaryHistory_Batch", conn))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        var param = cmd.Parameters.AddWithValue("@SalaryData", dt);
+                        param.SqlDbType = SqlDbType.Structured;
+                        param.TypeName = "EmployeeSalaryHistoryTableType";
+
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Lỗi khi cập nhật: " + ex.Message);
+                return false;
+            }
         }
     }
 }

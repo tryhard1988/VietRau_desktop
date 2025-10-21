@@ -33,6 +33,10 @@ namespace RauViet.ui
             this.delete_btn = new System.Windows.Forms.Button();
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
             this.info_gb = new System.Windows.Forms.GroupBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.noteResign_tb = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.phone_tb = new System.Windows.Forms.TextBox();
             this.label15 = new System.Windows.Forms.Label();
             this.probationSalaryPercent_tb = new System.Windows.Forms.TextBox();
             this.canCreateUserName_cb = new System.Windows.Forms.CheckBox();
@@ -62,10 +66,7 @@ namespace RauViet.ui
             this.status_lb = new System.Windows.Forms.Label();
             this.employeeID_tb = new System.Windows.Forms.TextBox();
             this.dataGV = new System.Windows.Forms.DataGridView();
-            this.label1 = new System.Windows.Forms.Label();
-            this.phone_tb = new System.Windows.Forms.TextBox();
-            this.label4 = new System.Windows.Forms.Label();
-            this.noteResign_tb = new System.Windows.Forms.TextBox();
+            this.isInsuranceRefund_CB = new System.Windows.Forms.CheckBox();
             this.panel1.SuspendLayout();
             this.info_gb.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
@@ -110,6 +111,7 @@ namespace RauViet.ui
             // 
             // info_gb
             // 
+            this.info_gb.Controls.Add(this.isInsuranceRefund_CB);
             this.info_gb.Controls.Add(this.label4);
             this.info_gb.Controls.Add(this.noteResign_tb);
             this.info_gb.Controls.Add(this.label1);
@@ -144,6 +146,45 @@ namespace RauViet.ui
             this.info_gb.TabIndex = 28;
             this.info_gb.TabStop = false;
             // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label4.Location = new System.Drawing.Point(18, 409);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(104, 16);
+            this.label4.TabIndex = 50;
+            this.label4.Text = "Ra Vào Công Ty:";
+            // 
+            // noteResign_tb
+            // 
+            this.noteResign_tb.Enabled = false;
+            this.noteResign_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.noteResign_tb.Location = new System.Drawing.Point(128, 396);
+            this.noteResign_tb.Multiline = true;
+            this.noteResign_tb.Name = "noteResign_tb";
+            this.noteResign_tb.ReadOnly = true;
+            this.noteResign_tb.Size = new System.Drawing.Size(278, 48);
+            this.noteResign_tb.TabIndex = 51;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Location = new System.Drawing.Point(32, 338);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(93, 16);
+            this.label1.TabIndex = 48;
+            this.label1.Text = "Số Điện Thoại:";
+            // 
+            // phone_tb
+            // 
+            this.phone_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.phone_tb.Location = new System.Drawing.Point(128, 335);
+            this.phone_tb.Name = "phone_tb";
+            this.phone_tb.Size = new System.Drawing.Size(122, 23);
+            this.phone_tb.TabIndex = 49;
+            // 
             // label15
             // 
             this.label15.AutoSize = true;
@@ -167,9 +208,9 @@ namespace RauViet.ui
             this.canCreateUserName_cb.AutoSize = true;
             this.canCreateUserName_cb.Location = new System.Drawing.Point(171, 457);
             this.canCreateUserName_cb.Name = "canCreateUserName_cb";
-            this.canCreateUserName_cb.Size = new System.Drawing.Size(92, 17);
+            this.canCreateUserName_cb.Size = new System.Drawing.Size(79, 17);
             this.canCreateUserName_cb.TabIndex = 43;
-            this.canCreateUserName_cb.Text = "Có UserName";
+            this.canCreateUserName_cb.Text = "Cấp Quyền";
             this.canCreateUserName_cb.UseVisualStyleBackColor = true;
             // 
             // label13
@@ -414,44 +455,15 @@ namespace RauViet.ui
             this.dataGV.Size = new System.Drawing.Size(811, 724);
             this.dataGV.TabIndex = 10;
             // 
-            // label1
+            // isInsuranceRefund_CB
             // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(32, 338);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(93, 16);
-            this.label1.TabIndex = 48;
-            this.label1.Text = "Số Điện Thoại:";
-            // 
-            // phone_tb
-            // 
-            this.phone_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.phone_tb.Location = new System.Drawing.Point(128, 335);
-            this.phone_tb.Name = "phone_tb";
-            this.phone_tb.Size = new System.Drawing.Size(122, 23);
-            this.phone_tb.TabIndex = 49;
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(18, 409);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(104, 16);
-            this.label4.TabIndex = 50;
-            this.label4.Text = "Ra Vào Công Ty:";
-            // 
-            // noteResign_tb
-            // 
-            this.noteResign_tb.Enabled = false;
-            this.noteResign_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.noteResign_tb.Location = new System.Drawing.Point(128, 396);
-            this.noteResign_tb.Multiline = true;
-            this.noteResign_tb.Name = "noteResign_tb";
-            this.noteResign_tb.ReadOnly = true;
-            this.noteResign_tb.Size = new System.Drawing.Size(278, 48);
-            this.noteResign_tb.TabIndex = 51;
+            this.isInsuranceRefund_CB.AutoSize = true;
+            this.isInsuranceRefund_CB.Location = new System.Drawing.Point(293, 457);
+            this.isInsuranceRefund_CB.Name = "isInsuranceRefund_CB";
+            this.isInsuranceRefund_CB.Size = new System.Drawing.Size(101, 17);
+            this.isInsuranceRefund_CB.TabIndex = 52;
+            this.isInsuranceRefund_CB.Text = "Hoàn Bảo Hiểm";
+            this.isInsuranceRefund_CB.UseVisualStyleBackColor = true;
             // 
             // Employee
             // 
@@ -509,5 +521,6 @@ namespace RauViet.ui
         private System.Windows.Forms.TextBox phone_tb;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox noteResign_tb;
+        private System.Windows.Forms.CheckBox isInsuranceRefund_CB;
     }
 }

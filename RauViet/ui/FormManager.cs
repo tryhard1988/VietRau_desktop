@@ -20,6 +20,7 @@ namespace RauViet.ui
             InitializeComponent();
 
             Task.Run(() =>SQLManager.Instance.AutoUpsertAnnualLeaveMonthListAsync());
+            Task.Run(() => SQLStore.Instance.preload());
 
 
             this.WindowState = FormWindowState.Maximized;
@@ -108,12 +109,18 @@ namespace RauViet.ui
                 deduction_OTH_mi.Click += Deduction_OTH_mi_Click;
                 deduction_CEP_mi.Click += Deduction_CEP_mi_Click;
                 deduction_ADV_mi.Click += Deduction_ADV_mi_Click;
+                deduction_ATT_mi.Click += Deduction_ATT_mi_Click;
+                salaryCaculator_mi.Click += SalaryCaculator_mi_Click;
             }
             else
                 chamcong_pmi.Visible = false;
-            
+
+            reportSalary_Month_mi.Click += ReportSalary_Month_mi_Click;
+
+
             title_lb.Text = "";
         }
+
 
         private void SwitchChildForm<T>(string title) where T : Form, new()
         {
@@ -138,6 +145,21 @@ namespace RauViet.ui
             showDataMethod?.Invoke(form, null);
 
             form.Show();
+        }
+
+        private void ReportSalary_Month_mi_Click(object sender, EventArgs e)
+        {
+            SwitchChildForm<ReportSalary_Month>("Tổng Hợp Chi Lương Qua Theo Tháng");
+        }
+
+        private void SalaryCaculator_mi_Click(object sender, EventArgs e)
+        {
+            SwitchChildForm<SalaryCaculator>("Bảng Tính Lương Nhân Viên");
+        }
+
+        private void Deduction_ATT_mi_Click(object sender, EventArgs e)
+        {
+            SwitchChildForm<EmployeeDeduction_ATT>("Trừ Chuyên Cần");
         }
 
         private void Deduction_ADV_mi_Click(object sender, EventArgs e)

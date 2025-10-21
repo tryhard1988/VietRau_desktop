@@ -128,6 +128,11 @@ namespace RauViet.ui
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 employeeDeductionGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+
+                bool isLock = await SQLStore.Instance.IsSalaryLockAsync(month, year);
+                LuuThayDoiBtn.Visible = !isLock;
+                newCustomerBtn.Visible = !isLock;
+                delete_btn.Visible = !isLock;
             }
             catch (Exception ex)
             {
@@ -158,6 +163,11 @@ namespace RauViet.ui
                 int selectedIndex = dataGV.CurrentRow?.Index ?? -1;
                 UpdateEmployeeDeductionUI(selectedIndex);
             }
+
+            bool isLock = await SQLStore.Instance.IsSalaryLockAsync(month, year);
+            LuuThayDoiBtn.Visible = !isLock;
+            newCustomerBtn.Visible = !isLock;
+            delete_btn.Visible = !isLock;
         }
 
         private void Tb_KeyPress_OnlyNumber(object sender, KeyPressEventArgs e)
@@ -323,7 +333,7 @@ namespace RauViet.ui
 
         private void saveBtn_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(amount_tb.Text) == null || dataGV.CurrentRow == null || string.IsNullOrEmpty(amount_tb.Text) == null)
+            if (string.IsNullOrEmpty(amount_tb.Text) || dataGV.CurrentRow == null)
             {
                 MessageBox.Show("Sai Dữ Liệu, Kiểm Tra Lại!", "Thông Báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;

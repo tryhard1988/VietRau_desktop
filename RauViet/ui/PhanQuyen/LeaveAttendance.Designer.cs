@@ -31,10 +31,13 @@ namespace RauViet.ui
         {
             this.dataGV = new System.Windows.Forms.DataGridView();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.delete_btn = new System.Windows.Forms.Button();
             this.updatedHistory_tb = new System.Windows.Forms.TextBox();
             this.leaveID_tb = new System.Windows.Forms.TextBox();
             this.newBtn = new System.Windows.Forms.Button();
             this.info_gb = new System.Windows.Forms.GroupBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.hourLeave_tb = new System.Windows.Forms.TextBox();
             this.label8 = new System.Windows.Forms.Label();
             this.dateOff_dtp = new System.Windows.Forms.DateTimePicker();
             this.leaveType_cbb = new System.Windows.Forms.ComboBox();
@@ -43,15 +46,12 @@ namespace RauViet.ui
             this.note_tb = new System.Windows.Forms.TextBox();
             this.load_gb = new System.Windows.Forms.GroupBox();
             this.loadAttandance_btn = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
-            this.month_cbb = new System.Windows.Forms.ComboBox();
             this.year_tb = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.loading_lb = new System.Windows.Forms.Label();
             this.status_lb = new System.Windows.Forms.Label();
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
             this.attendanceGV = new System.Windows.Forms.DataGridView();
-            this.delete_btn = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
             this.panel1.SuspendLayout();
             this.info_gb.SuspendLayout();
@@ -88,6 +88,17 @@ namespace RauViet.ui
             this.panel1.Size = new System.Drawing.Size(343, 681);
             this.panel1.TabIndex = 11;
             // 
+            // delete_btn
+            // 
+            this.delete_btn.BackColor = System.Drawing.Color.Red;
+            this.delete_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.delete_btn.Location = new System.Drawing.Point(233, 490);
+            this.delete_btn.Name = "delete_btn";
+            this.delete_btn.Size = new System.Drawing.Size(96, 47);
+            this.delete_btn.TabIndex = 33;
+            this.delete_btn.Text = "Xóa";
+            this.delete_btn.UseVisualStyleBackColor = false;
+            // 
             // updatedHistory_tb
             // 
             this.updatedHistory_tb.Location = new System.Drawing.Point(195, 230);
@@ -95,6 +106,7 @@ namespace RauViet.ui
             this.updatedHistory_tb.ReadOnly = true;
             this.updatedHistory_tb.Size = new System.Drawing.Size(55, 20);
             this.updatedHistory_tb.TabIndex = 32;
+            this.updatedHistory_tb.Visible = false;
             // 
             // leaveID_tb
             // 
@@ -103,6 +115,7 @@ namespace RauViet.ui
             this.leaveID_tb.ReadOnly = true;
             this.leaveID_tb.Size = new System.Drawing.Size(55, 20);
             this.leaveID_tb.TabIndex = 31;
+            this.leaveID_tb.Visible = false;
             // 
             // newBtn
             // 
@@ -117,6 +130,8 @@ namespace RauViet.ui
             // 
             // info_gb
             // 
+            this.info_gb.Controls.Add(this.label1);
+            this.info_gb.Controls.Add(this.hourLeave_tb);
             this.info_gb.Controls.Add(this.label8);
             this.info_gb.Controls.Add(this.dateOff_dtp);
             this.info_gb.Controls.Add(this.leaveType_cbb);
@@ -129,11 +144,29 @@ namespace RauViet.ui
             this.info_gb.TabIndex = 29;
             this.info_gb.TabStop = false;
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Location = new System.Drawing.Point(31, 110);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(78, 16);
+            this.label1.TabIndex = 32;
+            this.label1.Text = "Số Giờ Nghỉ:";
+            // 
+            // hourLeave_tb
+            // 
+            this.hourLeave_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.hourLeave_tb.Location = new System.Drawing.Point(117, 107);
+            this.hourLeave_tb.Name = "hourLeave_tb";
+            this.hourLeave_tb.Size = new System.Drawing.Size(66, 23);
+            this.hourLeave_tb.TabIndex = 33;
+            // 
             // label8
             // 
             this.label8.AutoSize = true;
             this.label8.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label8.Location = new System.Drawing.Point(38, 82);
+            this.label8.Location = new System.Drawing.Point(38, 81);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(69, 16);
             this.label8.TabIndex = 31;
@@ -169,7 +202,7 @@ namespace RauViet.ui
             // 
             this.label15.AutoSize = true;
             this.label15.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label15.Location = new System.Drawing.Point(51, 154);
+            this.label15.Location = new System.Drawing.Point(51, 160);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(56, 16);
             this.label15.TabIndex = 11;
@@ -178,7 +211,7 @@ namespace RauViet.ui
             // note_tb
             // 
             this.note_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.note_tb.Location = new System.Drawing.Point(115, 136);
+            this.note_tb.Location = new System.Drawing.Point(115, 142);
             this.note_tb.Multiline = true;
             this.note_tb.Name = "note_tb";
             this.note_tb.Size = new System.Drawing.Size(195, 67);
@@ -187,8 +220,6 @@ namespace RauViet.ui
             // load_gb
             // 
             this.load_gb.Controls.Add(this.loadAttandance_btn);
-            this.load_gb.Controls.Add(this.label1);
-            this.load_gb.Controls.Add(this.month_cbb);
             this.load_gb.Controls.Add(this.year_tb);
             this.load_gb.Controls.Add(this.label2);
             this.load_gb.Location = new System.Drawing.Point(53, 64);
@@ -208,29 +239,10 @@ namespace RauViet.ui
             this.loadAttandance_btn.Text = "Load";
             this.loadAttandance_btn.UseVisualStyleBackColor = false;
             // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(111, 35);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(12, 16);
-            this.label1.TabIndex = 22;
-            this.label1.Text = "/";
-            // 
-            // month_cbb
-            // 
-            this.month_cbb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.month_cbb.FormattingEnabled = true;
-            this.month_cbb.Location = new System.Drawing.Point(69, 32);
-            this.month_cbb.Name = "month_cbb";
-            this.month_cbb.Size = new System.Drawing.Size(39, 21);
-            this.month_cbb.TabIndex = 21;
-            // 
             // year_tb
             // 
             this.year_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.year_tb.Location = new System.Drawing.Point(129, 32);
+            this.year_tb.Location = new System.Drawing.Point(65, 32);
             this.year_tb.Name = "year_tb";
             this.year_tb.Size = new System.Drawing.Size(48, 23);
             this.year_tb.TabIndex = 20;
@@ -289,17 +301,6 @@ namespace RauViet.ui
             this.attendanceGV.Size = new System.Drawing.Size(563, 681);
             this.attendanceGV.TabIndex = 12;
             // 
-            // delete_btn
-            // 
-            this.delete_btn.BackColor = System.Drawing.Color.Red;
-            this.delete_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.delete_btn.Location = new System.Drawing.Point(233, 490);
-            this.delete_btn.Name = "delete_btn";
-            this.delete_btn.Size = new System.Drawing.Size(96, 47);
-            this.delete_btn.TabIndex = 33;
-            this.delete_btn.Text = "Xóa";
-            this.delete_btn.UseVisualStyleBackColor = false;
-            // 
             // LeaveAttendance
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -331,9 +332,7 @@ namespace RauViet.ui
         private System.Windows.Forms.Label loading_lb;
         private System.Windows.Forms.Label status_lb;
         private System.Windows.Forms.Button LuuThayDoiBtn;
-        private System.Windows.Forms.ComboBox month_cbb;
         private System.Windows.Forms.Button loadAttandance_btn;
-        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.DataGridView attendanceGV;
         private System.Windows.Forms.GroupBox info_gb;
         private System.Windows.Forms.Label label8;
@@ -346,5 +345,7 @@ namespace RauViet.ui
         private System.Windows.Forms.TextBox leaveID_tb;
         private System.Windows.Forms.TextBox updatedHistory_tb;
         private System.Windows.Forms.Button delete_btn;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TextBox hourLeave_tb;
     }
 }

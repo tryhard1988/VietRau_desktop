@@ -31,6 +31,8 @@ namespace RauViet.ui
         {
             this.panel1 = new System.Windows.Forms.Panel();
             this.info_gb = new System.Windows.Forms.GroupBox();
+            this.capphep_btn = new System.Windows.Forms.Button();
+            this.label1 = new System.Windows.Forms.Label();
             this.load_btn = new System.Windows.Forms.Button();
             this.month_cbb = new System.Windows.Forms.ComboBox();
             this.year_tb = new System.Windows.Forms.TextBox();
@@ -38,8 +40,6 @@ namespace RauViet.ui
             this.loading_lb = new System.Windows.Forms.Label();
             this.status_lb = new System.Windows.Forms.Label();
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
-            this.capphep_btn = new System.Windows.Forms.Button();
             this.dataGV = new System.Windows.Forms.DataGridView();
             this.panel1.SuspendLayout();
             this.info_gb.SuspendLayout();
@@ -71,6 +71,27 @@ namespace RauViet.ui
             this.info_gb.Size = new System.Drawing.Size(241, 184);
             this.info_gb.TabIndex = 28;
             this.info_gb.TabStop = false;
+            // 
+            // capphep_btn
+            // 
+            this.capphep_btn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
+            this.capphep_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.capphep_btn.Location = new System.Drawing.Point(20, 59);
+            this.capphep_btn.Name = "capphep_btn";
+            this.capphep_btn.Size = new System.Drawing.Size(114, 46);
+            this.capphep_btn.TabIndex = 32;
+            this.capphep_btn.Text = "Cấp Phép";
+            this.capphep_btn.UseVisualStyleBackColor = false;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Location = new System.Drawing.Point(125, 19);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(17, 23);
+            this.label1.TabIndex = 31;
+            this.label1.Text = "/";
             // 
             // load_btn
             // 
@@ -141,27 +162,6 @@ namespace RauViet.ui
             this.LuuThayDoiBtn.TabIndex = 25;
             this.LuuThayDoiBtn.Text = "Lưu";
             this.LuuThayDoiBtn.UseVisualStyleBackColor = false;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(125, 19);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(17, 23);
-            this.label1.TabIndex = 31;
-            this.label1.Text = "/";
-            // 
-            // capphep_btn
-            // 
-            this.capphep_btn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
-            this.capphep_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.capphep_btn.Location = new System.Drawing.Point(20, 59);
-            this.capphep_btn.Name = "capphep_btn";
-            this.capphep_btn.Size = new System.Drawing.Size(114, 46);
-            this.capphep_btn.TabIndex = 32;
-            this.capphep_btn.Text = "Cấp Phép";
-            this.capphep_btn.UseVisualStyleBackColor = false;
             // 
             // dataGV
             // 

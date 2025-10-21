@@ -49,6 +49,7 @@
             this.allowanceType_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.salaryGrade_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.chamcong_pmi = new System.Windows.Forms.ToolStripMenuItem();
+            this.salaryCaculator_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.attendanceHC_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.overtimeAttendace_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.leaveAttendance_mi = new System.Windows.Forms.ToolStripMenuItem();
@@ -58,6 +59,12 @@
             this.positionAllowance_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.departmentAllowance_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.monthlyAllowance_mi = new System.Windows.Forms.ToolStripMenuItem();
+            this.employeeDeduction_mi = new System.Windows.Forms.ToolStripMenuItem();
+            this.deduction_VEG_mi = new System.Windows.Forms.ToolStripMenuItem();
+            this.deduction_ADV_mi = new System.Windows.Forms.ToolStripMenuItem();
+            this.deduction_ATT_mi = new System.Windows.Forms.ToolStripMenuItem();
+            this.deduction_CEP_mi = new System.Windows.Forms.ToolStripMenuItem();
+            this.deduction_OTH_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.KhachHang_menuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.sanpham_group_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.productMain_menuitem = new System.Windows.Forms.ToolStripMenuItem();
@@ -74,12 +81,9 @@
             this.invoice_menuitem = new System.Windows.Forms.ToolStripMenuItem();
             this.packingTotal_menuitem = new System.Windows.Forms.ToolStripMenuItem();
             this.customerDetailPacking_mi = new System.Windows.Forms.ToolStripMenuItem();
+            this.thôngKêToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.reportSalary_Month_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.content_panel = new System.Windows.Forms.Panel();
-            this.employeeDeduction_mi = new System.Windows.Forms.ToolStripMenuItem();
-            this.deduction_VEG_mi = new System.Windows.Forms.ToolStripMenuItem();
-            this.deduction_ADV_mi = new System.Windows.Forms.ToolStripMenuItem();
-            this.deduction_OTH_mi = new System.Windows.Forms.ToolStripMenuItem();
-            this.deduction_CEP_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1.SuspendLayout();
             this.LOT_menuitem.SuspendLayout();
             this.SuspendLayout();
@@ -129,7 +133,8 @@
             this.KhachHang_menuItem,
             this.sanpham_group_mi,
             this.donhang_group_mi,
-            this.xuatExcelGuiKH_Group_mi});
+            this.xuatExcelGuiKH_Group_mi,
+            this.thôngKêToolStripMenuItem});
             this.LOT_menuitem.Location = new System.Drawing.Point(0, 0);
             this.LOT_menuitem.Name = "LOT_menuitem";
             this.LOT_menuitem.Size = new System.Drawing.Size(1388, 25);
@@ -247,6 +252,7 @@
             // chamcong_pmi
             // 
             this.chamcong_pmi.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.salaryCaculator_mi,
             this.attendanceHC_mi,
             this.overtimeAttendace_mi,
             this.leaveAttendance_mi,
@@ -256,6 +262,12 @@
             this.chamcong_pmi.Name = "chamcong_pmi";
             this.chamcong_pmi.Size = new System.Drawing.Size(88, 21);
             this.chamcong_pmi.Text = "Chấm Công";
+            // 
+            // salaryCaculator_mi
+            // 
+            this.salaryCaculator_mi.Name = "salaryCaculator_mi";
+            this.salaryCaculator_mi.Size = new System.Drawing.Size(218, 22);
+            this.salaryCaculator_mi.Text = "Bảng Lương Nhân Viên";
             // 
             // attendanceHC_mi
             // 
@@ -315,6 +327,48 @@
             this.monthlyAllowance_mi.Name = "monthlyAllowance_mi";
             this.monthlyAllowance_mi.Size = new System.Drawing.Size(229, 22);
             this.monthlyAllowance_mi.Text = "P.C Phát Sinh Trong Tháng";
+            // 
+            // employeeDeduction_mi
+            // 
+            this.employeeDeduction_mi.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.deduction_VEG_mi,
+            this.deduction_ADV_mi,
+            this.deduction_ATT_mi,
+            this.deduction_CEP_mi,
+            this.deduction_OTH_mi});
+            this.employeeDeduction_mi.Name = "employeeDeduction_mi";
+            this.employeeDeduction_mi.Size = new System.Drawing.Size(218, 22);
+            this.employeeDeduction_mi.Text = "Các Khoản Trừ Của NV";
+            // 
+            // deduction_VEG_mi
+            // 
+            this.deduction_VEG_mi.Name = "deduction_VEG_mi";
+            this.deduction_VEG_mi.Size = new System.Drawing.Size(167, 22);
+            this.deduction_VEG_mi.Text = "Tiền Rau";
+            // 
+            // deduction_ADV_mi
+            // 
+            this.deduction_ADV_mi.Name = "deduction_ADV_mi";
+            this.deduction_ADV_mi.Size = new System.Drawing.Size(167, 22);
+            this.deduction_ADV_mi.Text = "Ứng Lương";
+            // 
+            // deduction_ATT_mi
+            // 
+            this.deduction_ATT_mi.Name = "deduction_ATT_mi";
+            this.deduction_ATT_mi.Size = new System.Drawing.Size(167, 22);
+            this.deduction_ATT_mi.Text = "Trừ Chuyên Cần";
+            // 
+            // deduction_CEP_mi
+            // 
+            this.deduction_CEP_mi.Name = "deduction_CEP_mi";
+            this.deduction_CEP_mi.Size = new System.Drawing.Size(167, 22);
+            this.deduction_CEP_mi.Text = "Thu Hộ CEP";
+            // 
+            // deduction_OTH_mi
+            // 
+            this.deduction_OTH_mi.Name = "deduction_OTH_mi";
+            this.deduction_OTH_mi.Size = new System.Drawing.Size(167, 22);
+            this.deduction_OTH_mi.Text = "Trừ Khác";
             // 
             // KhachHang_menuItem
             // 
@@ -427,6 +481,20 @@
             this.customerDetailPacking_mi.Size = new System.Drawing.Size(217, 22);
             this.customerDetailPacking_mi.Text = "Customer Detail Packing";
             // 
+            // thôngKêToolStripMenuItem
+            // 
+            this.thôngKêToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.reportSalary_Month_mi});
+            this.thôngKêToolStripMenuItem.Name = "thôngKêToolStripMenuItem";
+            this.thôngKêToolStripMenuItem.Size = new System.Drawing.Size(76, 21);
+            this.thôngKêToolStripMenuItem.Text = "Thống Kê";
+            // 
+            // reportSalary_Month_mi
+            // 
+            this.reportSalary_Month_mi.Name = "reportSalary_Month_mi";
+            this.reportSalary_Month_mi.Size = new System.Drawing.Size(200, 22);
+            this.reportSalary_Month_mi.Text = "Chi Lương Các Tháng";
+            // 
             // content_panel
             // 
             this.content_panel.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -434,41 +502,6 @@
             this.content_panel.Name = "content_panel";
             this.content_panel.Size = new System.Drawing.Size(1388, 491);
             this.content_panel.TabIndex = 1;
-            // 
-            // employeeDeduction_mi
-            // 
-            this.employeeDeduction_mi.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.deduction_VEG_mi,
-            this.deduction_ADV_mi,
-            this.deduction_OTH_mi,
-            this.deduction_CEP_mi});
-            this.employeeDeduction_mi.Name = "employeeDeduction_mi";
-            this.employeeDeduction_mi.Size = new System.Drawing.Size(218, 22);
-            this.employeeDeduction_mi.Text = "Các Khoản Trừ Của NV";
-            // 
-            // deduction_VEG_mi
-            // 
-            this.deduction_VEG_mi.Name = "deduction_VEG_mi";
-            this.deduction_VEG_mi.Size = new System.Drawing.Size(180, 22);
-            this.deduction_VEG_mi.Text = "Tiền Rau";
-            // 
-            // deduction_ADV_mi
-            // 
-            this.deduction_ADV_mi.Name = "deduction_ADV_mi";
-            this.deduction_ADV_mi.Size = new System.Drawing.Size(180, 22);
-            this.deduction_ADV_mi.Text = "Ứng Lương";
-            // 
-            // deduction_OTH_mi
-            // 
-            this.deduction_OTH_mi.Name = "deduction_OTH_mi";
-            this.deduction_OTH_mi.Size = new System.Drawing.Size(180, 22);
-            this.deduction_OTH_mi.Text = "Trừ Khác";
-            // 
-            // deduction_CEP_mi
-            // 
-            this.deduction_CEP_mi.Name = "deduction_CEP_mi";
-            this.deduction_CEP_mi.Size = new System.Drawing.Size(180, 22);
-            this.deduction_CEP_mi.Text = "Thu Hộ CEP";
             // 
             // FormManager
             // 
@@ -541,5 +574,9 @@
         private System.Windows.Forms.ToolStripMenuItem deduction_ADV_mi;
         private System.Windows.Forms.ToolStripMenuItem deduction_OTH_mi;
         private System.Windows.Forms.ToolStripMenuItem deduction_CEP_mi;
+        private System.Windows.Forms.ToolStripMenuItem salaryCaculator_mi;
+        private System.Windows.Forms.ToolStripMenuItem deduction_ATT_mi;
+        private System.Windows.Forms.ToolStripMenuItem thôngKêToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem reportSalary_Month_mi;
     }
 }

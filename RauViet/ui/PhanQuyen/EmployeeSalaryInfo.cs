@@ -1,4 +1,5 @@
-﻿using DocumentFormat.OpenXml.VariantTypes;
+﻿using DocumentFormat.OpenXml.Bibliography;
+using DocumentFormat.OpenXml.VariantTypes;
 using DocumentFormat.OpenXml.Wordprocessing;
 using RauViet.classes;
 using System;
@@ -257,7 +258,7 @@ namespace RauViet.ui
 
         private void saveBtn_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(baseSalary_tb.Text) == null || 
+            if (string.IsNullOrEmpty(baseSalary_tb.Text) || 
                 dataGV.CurrentRow == null || month_cbb.SelectedItem == null || string.IsNullOrEmpty(year_tb.Text))
             {
                 MessageBox.Show("Sai Dữ Liệu, Kiểm Tra Lại!", "Thông Báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -281,10 +282,19 @@ namespace RauViet.ui
             var currentRow = salaryInfoGV.CurrentRow;
             if (currentRow.Cells["SalaryInfoID"].Value == null) return;
 
+            int  month = Convert.ToInt32(month_cbb.SelectedItem);
+            int year = Convert.ToInt32(year_tb.Text);
+            bool isLock = await SQLStore.Instance.IsSalaryLockAsync(month, year);
+            if (isLock)
+            {
+                MessageBox.Show("Tháng " + month + "/" + year + " đã bị khóa.", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
             int salaryInfoID = Convert.ToInt32(currentRow.Cells["SalaryInfoID"].Value);
 
             DialogResult dialogResult = MessageBox.Show(
-                "XÓA THÔNG TIN \nChắc chắn chưa?",
+                "Chắc chắn chưa?",
                 "Xóa Thông Tin",
                 MessageBoxButtons.YesNo,
                 MessageBoxIcon.Warning

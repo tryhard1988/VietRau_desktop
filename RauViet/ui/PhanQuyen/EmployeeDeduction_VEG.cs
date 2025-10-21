@@ -323,7 +323,8 @@ namespace RauViet.ui
 
         private void saveBtn_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(amount_tb.Text) == null || dataGV.CurrentRow == null || string.IsNullOrEmpty(amount_tb.Text) == null)
+            int amount;
+            if (!int.TryParse(amount_tb.Text, out amount) || dataGV.CurrentRow == null)
             {
                 MessageBox.Show("Sai Dữ Liệu, Kiểm Tra Lại!", "Thông Báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -341,7 +342,6 @@ namespace RauViet.ui
             }
 
             string employeeCode = Convert.ToString(dataGV.CurrentRow.Cells["EmployeeCode"].Value);
-            int amount = Convert.ToInt32(amount_tb.Text);
             string note = note_tb.Text;
             string updateHistory = updateHistory_tb.Text + DateTime.Now.ToString("MM/yyyy") + ":" + UserManager.Instance.employeeCode + ";";
 

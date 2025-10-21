@@ -62,11 +62,11 @@ namespace RauViet.ui
 
             year_tb.KeyPress += Tb_KeyPress_OnlyNumber;
 
-            excelAttendance_btn.Click += ExcelAttendance_btn_Click;
+            excelAttendance_btn.Click += ExcelAttendance_btn_Click;                       
 
             loadAttandance_btn.Click += LoadAttandance_btn_Click;
+            calWorkHour_btn.Click += CalWorkHour_btn_Click;
         }
-
 
         public async void ShowData()
         {
@@ -130,8 +130,45 @@ namespace RauViet.ui
                 }
 
                 Attendamce();
+                attendanceGV.DataSource = mAttendamce_dt;
+                attendanceGV.Columns["EmployeeCode"].Visible = false;
+                attendanceGV.Columns["LeaveHours"].Visible = false;
+                attendanceGV.Columns["WorkDate"].DefaultCellStyle.Format = "dd/MM/yyyy";
+                attendanceGV.Columns["WorkingHours"].DefaultCellStyle.Format = "0.##";
+
+                attendanceGV.Columns["WorkDate"].HeaderText = "Ngày Làm";
+                attendanceGV.Columns["WorkingHours"].HeaderText = "Số G.Làm";
+                attendanceGV.Columns["DayOfWeek"].HeaderText = "Thứ";
+                attendanceGV.Columns["AttendanceLog"].HeaderText = "Ra/Vào Cổng";
+                attendanceGV.Columns["LeaveTypeName"].HeaderText = "Nghỉ(Nếu Có)";
+                attendanceGV.Columns["OvertimeName"].HeaderText = "Tăng Ca";
+                attendanceGV.Columns["Note"].HeaderText = "Ghi Chú";
+
+                attendanceGV.Columns["DayOfWeek"].Width = 40;
+                attendanceGV.Columns["WorkDate"].Width = 70;
+                attendanceGV.Columns["LeaveTypeName"].Width = 100;
+                attendanceGV.Columns["OvertimeName"].Width = 120;
+                attendanceGV.Columns["WorkingHours"].Width = 50;
+                attendanceGV.Columns["AttendanceLog"].Width = 250;
+                attendanceGV.Columns["Note"].Width = 150;
+
+                attendanceGV.Columns["AttendanceLog"].DefaultCellStyle.WrapMode = DataGridViewTriState.True;
+                attendanceGV.Columns["OvertimeName"].DefaultCellStyle.WrapMode = DataGridViewTriState.True;
+                attendanceGV.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
+                attendanceGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+
+                attendanceGV.ReadOnly = false;
+                attendanceGV.Columns["WorkingHours"].ReadOnly = false;
+                attendanceGV.Columns["Note"].ReadOnly = false;
+                attendanceGV.Columns["DayOfWeek"].ReadOnly = true;
+                attendanceGV.Columns["WorkDate"].ReadOnly = true;
+                attendanceGV.Columns["AttendanceLog"].ReadOnly = true;
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+
+                bool isLock = await SQLStore.Instance.IsSalaryLockAsync(month, year);
+                LuuThayDoiBtn.Visible = !isLock;
+                calWorkHour_btn.Visible = !isLock;
             }
             catch (Exception ex)
             {
@@ -165,45 +202,23 @@ namespace RauViet.ui
             mAttendamce_dt.Columns["OvertimeName"].SetOrdinal(count++);
             mAttendamce_dt.Columns["Note"].SetOrdinal(count);
 
-            attendanceGV.DataSource = mAttendamce_dt;
-            attendanceGV.Columns["EmployeeCode"].Visible = false;
-            attendanceGV.Columns["WorkDate"].DefaultCellStyle.Format = "dd/MM/yyyy";
-            attendanceGV.Columns["WorkingHours"].DefaultCellStyle.Format = "0.##";
+            
 
-            attendanceGV.Columns["WorkDate"].HeaderText = "Ngày Làm";
-            attendanceGV.Columns["WorkingHours"].HeaderText = "Số G.Làm";
-            attendanceGV.Columns["DayOfWeek"].HeaderText = "Thứ";
-            attendanceGV.Columns["AttendanceLog"].HeaderText = "Ra/Vào Cổng";
-            attendanceGV.Columns["LeaveTypeName"].HeaderText = "Nghỉ(Nếu Có)";
-            attendanceGV.Columns["OvertimeName"].HeaderText = "Tăng Ca";
-            attendanceGV.Columns["Note"].HeaderText = "Ghi Chú";
-
-            attendanceGV.Columns["DayOfWeek"].Width = 40;
-            attendanceGV.Columns["WorkDate"].Width = 70;
-            attendanceGV.Columns["LeaveTypeName"].Width = 70;
-            attendanceGV.Columns["OvertimeName"].Width = 120;
-            attendanceGV.Columns["WorkingHours"].Width = 50;
-            attendanceGV.Columns["AttendanceLog"].Width = 250;
-            attendanceGV.Columns["Note"].Width = 150;
-
-            attendanceGV.Columns["AttendanceLog"].DefaultCellStyle.WrapMode = DataGridViewTriState.True;
-            attendanceGV.Columns["OvertimeName"].DefaultCellStyle.WrapMode = DataGridViewTriState.True;
-            attendanceGV.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
-            attendanceGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-
-            attendanceGV.ReadOnly = false;
-            attendanceGV.Columns["WorkingHours"].ReadOnly = false;
-            attendanceGV.Columns["Note"].ReadOnly = false;
-            attendanceGV.Columns["DayOfWeek"].ReadOnly = true;
-            attendanceGV.Columns["WorkDate"].ReadOnly = true;
-            attendanceGV.Columns["AttendanceLog"].ReadOnly = true;
-
-            cal_WorkingHour_WorkingDay();
+            cal_WorkingHour_WorkingDay();            
 
             if (dataGV.CurrentRow != null)
             {
                 int selectedIndex = dataGV.CurrentRow?.Index ?? -1;
                 UpdateRightUI(selectedIndex);
+            }
+        }
+
+        private void CalWorkHour_btn_Click(object sender, EventArgs e)
+        {
+            foreach (DataRow dr in mAttendamce_dt.Rows)
+            {
+                if (double.TryParse(dr["LeaveHours"]?.ToString(), out double leaveHour))
+                    dr["WorkingHours"] = Math.Max(0, 8 - leaveHour);
             }
         }
 
@@ -362,6 +377,12 @@ namespace RauViet.ui
                     }
                     else
                     {
+                        bool isLock = await SQLStore.Instance.IsSalaryLockAsync(month, year);
+                        if (isLock)
+                        {
+                            MessageBox.Show($"File Excel Là Dữ Liệu Của Tháng {month}/{year} \n Nhưng Tháng Này Đã Bị Khóa Rồi ?", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }
                         //tạo dữ liệu cho nhân viên thời vụ
                         var thoiVuList = employeeDict
                                             .Where(kv => kv.Value.ContractTypeCode.Equals("thoi_vu", StringComparison.OrdinalIgnoreCase))
@@ -432,6 +453,10 @@ namespace RauViet.ui
             mAttendamce_dt = attendamceTask.Result;
             mHoliday_dt = holidayTask.Result;
             Attendamce();
+
+            bool isLock = await SQLStore.Instance.IsSalaryLockAsync(month, year);
+            LuuThayDoiBtn.Visible = !isLock;
+            calWorkHour_btn.Visible = !isLock;
         }
 
         private void dataGV_CellClick(object sender, EventArgs e)
@@ -468,6 +493,8 @@ namespace RauViet.ui
                 }
                 else
                 {
+                    dr["TotalWorkingHour"] = 0;
+                    dr["TotalWorkingDay"] = 0;
                 }
             }
         } 

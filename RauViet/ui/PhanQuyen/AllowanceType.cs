@@ -136,11 +136,13 @@ namespace RauViet.ui
             int allowanceTypeID = Convert.ToInt32(cells["AllowanceTypeID"].Value);
             int applyScopeID = Convert.ToInt32(cells["ApplyScopeID"].Value);
             string allowanceName = cells["AllowanceName"].Value.ToString();
+            string allowanceCode = cells["AllowanceCode"].Value.ToString();
             Boolean isActive = Convert.ToBoolean(cells["IsActive"].Value);
             Boolean isInsuranceIncluded = Convert.ToBoolean(cells["IsInsuranceIncluded"].Value);
 
             this.allowanceTypeID_tb.Text = allowanceTypeID.ToString();
             allowanceName_tb.Text = allowanceName;
+            allowanceCode_tb.Text = allowanceCode;
             isInsuranceIncluded_cb.Checked = isInsuranceIncluded;
             this.isActive_cb.Checked = isActive;
             ScopeName_cbb.SelectedValue = applyScopeID;
@@ -150,7 +152,7 @@ namespace RauViet.ui
             status_lb.Text = "";
         }
         
-        private async void updateData(int allowanceTypeID, string allowanceName, int applyScopeID, bool isActive,bool isInsuranceIncluded)
+        private async void updateData(int allowanceTypeID, string allowanceName, string allowanceCode, int applyScopeID, bool isActive,bool isInsuranceIncluded)
         {
             foreach (DataGridViewRow row in dataGV.Rows)
             {
@@ -162,7 +164,7 @@ namespace RauViet.ui
                     {
                         try
                         {
-                            bool isScussess = await SQLManager.Instance.updateAllowanceTypeAsync(allowanceTypeID, allowanceName, applyScopeID, isActive, isInsuranceIncluded);
+                            bool isScussess = await SQLManager.Instance.updateAllowanceTypeAsync(allowanceTypeID, allowanceName, allowanceCode, applyScopeID, isActive, isInsuranceIncluded);
 
                             if (isScussess == true)
                             {
@@ -170,6 +172,7 @@ namespace RauViet.ui
                                 status_lb.ForeColor = Color.Green;
 
                                 row.Cells["AllowanceName"].Value = allowanceName;
+                                row.Cells["AllowanceCode"].Value = allowanceCode;
                                 row.Cells["IsInsuranceIncluded"].Value = isInsuranceIncluded;
                                 row.Cells["ApplyScopeID"].Value = applyScopeID;
                                 row.Cells["IsActive"].Value = isActive;
@@ -196,7 +199,7 @@ namespace RauViet.ui
             }
         }
 
-        private async void createNew(string allowanceName, int applyScopeID, bool isActive, bool isInsuranceIncluded)
+        private async void createNew(string allowanceName, string allowanceCode, int applyScopeID, bool isActive, bool isInsuranceIncluded)
         {
             DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
@@ -204,7 +207,7 @@ namespace RauViet.ui
             {
                 try
                 {
-                    int allowanceTypeID = await SQLManager.Instance.insertAllowanceTypeAsync(allowanceName, applyScopeID, isActive, isInsuranceIncluded);
+                    int allowanceTypeID = await SQLManager.Instance.insertAllowanceTypeAsync(allowanceName, allowanceCode, applyScopeID, isActive, isInsuranceIncluded);
                     if (allowanceTypeID > 0)
                     {
                         DataTable dataTable = (DataTable)dataGV.DataSource;
@@ -214,6 +217,7 @@ namespace RauViet.ui
                         allowanceTypeID_tb.Text = allowanceTypeID.ToString();
                         drToAdd["AllowanceTypeID"] = allowanceTypeID;
                         drToAdd["AllowanceName"] = allowanceName;
+                        drToAdd["AllowanceCode"] = allowanceCode;
                         drToAdd["IsInsuranceIncluded"] = isInsuranceIncluded;
                         drToAdd["ApplyScopeID"] = applyScopeID;
                         drToAdd["IsActive"] = isActive;
@@ -254,6 +258,7 @@ namespace RauViet.ui
                 return;
 
             string allowanceName = allowanceName_tb.Text;
+            string allowanceCode = allowanceCode_tb.Text;
             int applyScopeID = Convert.ToInt32(ScopeName_cbb.SelectedValue);
             bool isInsuranceIncluded = isInsuranceIncluded_cb.Checked;
             bool isActive = this.isActive_cb.Checked;
@@ -266,28 +271,28 @@ namespace RauViet.ui
 
 
             if (allowanceTypeID_tb.Text.Length != 0)
-                updateData(Convert.ToInt32(allowanceTypeID_tb.Text), allowanceName, applyScopeID, isActive, isInsuranceIncluded);
+                updateData(Convert.ToInt32(allowanceTypeID_tb.Text), allowanceName, allowanceCode, applyScopeID, isActive, isInsuranceIncluded);
             else
-                createNew(allowanceName, applyScopeID, isActive, isInsuranceIncluded);
+                createNew(allowanceName, allowanceCode, applyScopeID, isActive, isInsuranceIncluded);
 
         }
         private async void deleteBtn_Click(object sender, EventArgs e)
         {
             if (dataGV.SelectedRows.Count == 0) return;
 
-            string employeeID = allowanceTypeID_tb.Text;
+            string allowanceTypeID = allowanceTypeID_tb.Text;
 
             foreach (DataGridViewRow row in dataGV.Rows)
             {
-                string id = row.Cells["EmployeeID"].Value.ToString();
-                if (id.CompareTo(employeeID) == 0)
+                string id = row.Cells["AllowanceTypeID"].Value.ToString();
+                if (id.CompareTo(allowanceTypeID) == 0)
                 {
-                    DialogResult dialogResult = MessageBox.Show("XÓA THÔNG TIN \n Chắc chắn chưa ?", " Xóa Thông Tin", MessageBoxButtons.YesNo);
+                    DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", " Xóa Thông Tin", MessageBoxButtons.YesNo);
                     if (dialogResult == DialogResult.Yes)
                     {
                         try
                         {
-                            bool isScussess = await SQLManager.Instance.deleteEmployeeAsync(Convert.ToInt32(employeeID));
+                            bool isScussess = await SQLManager.Instance.deleteAllowanceTypeAsync(Convert.ToInt32(allowanceTypeID));
 
                             if (isScussess == true)
                             {

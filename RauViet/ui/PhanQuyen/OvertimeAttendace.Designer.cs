@@ -97,6 +97,7 @@ namespace RauViet.ui
             this.updatedHistory_tb.ReadOnly = true;
             this.updatedHistory_tb.Size = new System.Drawing.Size(55, 20);
             this.updatedHistory_tb.TabIndex = 32;
+            this.updatedHistory_tb.Visible = false;
             // 
             // overtimeAttendaceID_tb
             // 
@@ -105,6 +106,7 @@ namespace RauViet.ui
             this.overtimeAttendaceID_tb.ReadOnly = true;
             this.overtimeAttendaceID_tb.Size = new System.Drawing.Size(55, 20);
             this.overtimeAttendaceID_tb.TabIndex = 31;
+            this.overtimeAttendaceID_tb.Visible = false;
             // 
             // newBtn
             // 

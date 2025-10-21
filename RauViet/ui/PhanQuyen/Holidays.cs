@@ -171,7 +171,7 @@ namespace RauViet.ui
                     {
                         try
                         {
-                            bool isScussess = await SQLManager.Instance.deleteHolidayAsync(date);
+                            bool isScussess = await SQLManager.Instance.DeleteHolidayAsync(date);
 
                             if (isScussess == true)
                             {
