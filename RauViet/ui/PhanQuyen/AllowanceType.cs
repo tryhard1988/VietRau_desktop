@@ -49,8 +49,8 @@ namespace RauViet.ui
             try
             {
                 // Chạy truy vấn trên thread riêng
-                var allowanceTypeTask = SQLManager.Instance.GetAllowanceTypeAsync();
-                var applyScopeAsync = SQLManager.Instance.GetApplyScopeAsync();
+                var allowanceTypeTask = SQLStore.Instance.GetAllowanceTypeAsync();
+                var applyScopeAsync = SQLStore.Instance.GetApplyScopeAsync();
 
                 await Task.WhenAll(allowanceTypeTask, applyScopeAsync);
                 DataTable allowanceType_dt = allowanceTypeTask.Result;
@@ -60,17 +60,7 @@ namespace RauViet.ui
                 ScopeName_cbb.DisplayMember = "ScopeName";
                 ScopeName_cbb.ValueMember = "ApplyScopeID";
 
-                allowanceType_dt.Columns.Add(new DataColumn("ScopeName", typeof(string)));
-
-                foreach (DataRow dr in allowanceType_dt.Rows)
-                {
-                    int applyScopeID = Convert.ToInt32(dr["ApplyScopeID"]);
-
-                    string departmentName = "";
-                    DataRow[] applyScopeRows = mApplyScope_dt.Select($"ApplyScopeID = {applyScopeID}");
-                    if (applyScopeRows.Length > 0)
-                        dr["ScopeName"] = applyScopeRows[0]["ScopeName"].ToString();
-                }
+                
 
                 int count = 0;
                 allowanceType_dt.Columns["AllowanceName"].SetOrdinal(count++);
@@ -165,7 +155,6 @@ namespace RauViet.ui
                         try
                         {
                             bool isScussess = await SQLManager.Instance.updateAllowanceTypeAsync(allowanceTypeID, allowanceName, allowanceCode, applyScopeID, isActive, isInsuranceIncluded);
-
                             if (isScussess == true)
                             {
                                 status_lb.Text = "Thành công.";

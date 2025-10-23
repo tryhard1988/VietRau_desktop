@@ -53,7 +53,8 @@ namespace RauViet.ui
             year_tb.KeyPress += Tb_KeyPress_OnlyNumber;
             baseSalary_tb.KeyPress += Tb_KeyPress_OnlyNumber;
             insuranceBaseSalary_tb.KeyPress += Tb_KeyPress_OnlyNumber;
-        }
+            month_cbb.SelectedIndexChanged += Month_cbb_SelectedIndexChanged;
+        }        
 
         public async void ShowData()
         {
@@ -64,18 +65,13 @@ namespace RauViet.ui
 
             try
             {
-                var employeeTask = SQLManager.Instance.GetActiveEmployeeAsync();
-                var employeeSalaryInfoAsync = SQLManager.Instance.GetEmployeeSalaryInfoAsybc();
+                string[] keepColumns = { "EmployeeCode", "FullName", "PositionName", "ContractTypeName", };
+                var employeesTask = SQLStore.Instance.GetEmployeesAsync(keepColumns);
+                var employeeSalaryInfoAsync = SQLStore.Instance.GetEmployeeSalaryInfoAsync();
 
-                await Task.WhenAll(employeeTask, employeeSalaryInfoAsync);
-                DataTable employee_dt = employeeTask.Result;
+                await Task.WhenAll(employeesTask, employeeSalaryInfoAsync);
+                DataTable employee_dt = employeesTask.Result;
                 mEmployeeSalaryInfo_dt = employeeSalaryInfoAsync.Result;
-
-                mEmployeeSalaryInfo_dt.Columns.Add(new DataColumn("Date", typeof(string)));
-                foreach (DataRow dr in mEmployeeSalaryInfo_dt.Rows)
-                {
-                    dr["Date"] = dr["Month"] + "/" + dr["Year"];
-                }
 
                 foreach (DataRow dr in employee_dt.Rows)
                 {
@@ -101,7 +97,7 @@ namespace RauViet.ui
                 mEmployeeSalaryInfo_dt.Columns["Note"].SetOrdinal(count++);
                 mEmployeeSalaryInfo_dt.Columns["CreatedAt"].SetOrdinal(count++);
 
-                salaryInfoGV.Columns["Date"].HeaderText = "Tháng P.C";
+                salaryInfoGV.Columns["Date"].HeaderText = "Tháng/Năm";
                 salaryInfoGV.Columns["BaseSalary"].HeaderText = "Lương CB";
                 salaryInfoGV.Columns["Note"].HeaderText = "Ghi Chú";
                 salaryInfoGV.Columns["CreatedAt"].HeaderText = "Ngày Tạo";
@@ -256,7 +252,7 @@ namespace RauViet.ui
             }
         }
 
-        private void saveBtn_Click(object sender, EventArgs e)
+        private async void saveBtn_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(baseSalary_tb.Text) || 
                 dataGV.CurrentRow == null || month_cbb.SelectedItem == null || string.IsNullOrEmpty(year_tb.Text))
@@ -268,11 +264,41 @@ namespace RauViet.ui
             string employeeCode = Convert.ToString(dataGV.CurrentRow.Cells["EmployeeCode"].Value);
             int baseSalary = Convert.ToInt32(baseSalary_tb.Text);
             int insuranceBaseSalary = Convert.ToInt32(insuranceBaseSalary_tb.Text);
-            int month = Convert.ToInt32(month_cbb.SelectedItem);
-            int year = Convert.ToInt32(year_tb.Text);
+            int newMonth = Convert.ToInt32(month_cbb.SelectedItem);
+            int newYear = Convert.ToInt32(year_tb.Text);
             string note= note_tb.Text;
-            
-            createNew(employeeCode, month, year, baseSalary, insuranceBaseSalary, note);
+
+            int maxYear = 0, maxMonth = 0;
+            foreach (DataGridViewRow row in salaryInfoGV.Rows)
+            {
+                if (row.IsNewRow) continue; // bỏ dòng trống
+                int year1 = Convert.ToInt32(row.Cells["Year"].Value);
+                int month1 = Convert.ToInt32(row.Cells["Month"].Value);
+
+                if (year1 > maxYear || (year1 == maxYear && month1 > maxMonth))
+                {
+                    maxYear = year1;
+                    maxMonth = month1;
+                }
+            }
+
+            // So sánh
+            bool isValid = (newYear > maxYear) || (newYear == maxYear && newMonth > maxMonth);
+
+            if (!isValid)
+            {
+                MessageBox.Show($"Dữ liệu mới ({newMonth}/{newYear}) phải lớn hơn dữ liệu hiện có ({maxMonth}/{maxYear}).");
+                return;
+            }
+
+            bool isLock = await SQLStore.Instance.IsSalaryLockAsync(newMonth, newYear);
+            if (isLock)
+            {
+                MessageBox.Show("Tháng " + newMonth + "/" + newYear + " đã bị khóa.", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            createNew(employeeCode, newMonth, newYear, baseSalary, insuranceBaseSalary, note);
 
         }
         private async void deleteBtn_Click(object sender, EventArgs e)
@@ -324,6 +350,42 @@ namespace RauViet.ui
                 status_lb.Text = "Lỗi khi xóa: " + ex.Message;
                 status_lb.ForeColor = Color.Red;
             }
+        }
+
+        private async void Month_cbb_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            int newMonth = Convert.ToInt32(month_cbb.SelectedItem);
+            int newYear = Convert.ToInt32(year_tb.Text);
+            bool isLock = await SQLStore.Instance.IsSalaryLockAsync(newMonth, newYear);
+
+            if (!isLock)
+            {
+                delete_btn.Visible = !isLock;
+
+                int maxYear = 0, maxMonth = 0;
+                foreach (DataGridViewRow row in salaryInfoGV.Rows)
+                {
+                    if (row.IsNewRow) continue; // bỏ dòng trống
+                    int year1 = Convert.ToInt32(row.Cells["Year"].Value);
+                    int month1 = Convert.ToInt32(row.Cells["Month"].Value);
+
+                    if (year1 > maxYear || (year1 == maxYear && month1 > maxMonth))
+                    {
+                        maxYear = year1;
+                        maxMonth = month1;
+                    }
+                }
+
+                isLock = !((newYear > maxYear) || (newYear == maxYear && newMonth > maxMonth));
+                LuuThayDoiBtn.Visible = !isLock;
+            }
+            else
+            {
+                LuuThayDoiBtn.Visible = !isLock;
+                delete_btn.Visible = !isLock;
+            }
+
+                
         }
     }
 }

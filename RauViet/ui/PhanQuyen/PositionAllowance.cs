@@ -55,7 +55,7 @@ namespace RauViet.ui
             try
             {
                 // Chạy truy vấn trên thread riêng
-                var postionTask = SQLManager.Instance.GetActivePositionAsync();
+                var postionTask = SQLStore.Instance.GetActivePositionAsync();
                 var positionAllowanceAsync = SQLManager.Instance.GetPositionAllowanceAsybc();
                 var allowanceTypeAsync = SQLManager.Instance.GetAllowanceTypeAsync("POS");
 

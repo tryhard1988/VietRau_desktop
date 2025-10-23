@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Data.OleDb;
 using System.Drawing;
+using System.IO.Packaging;
 using System.Linq;
 using System.Reflection.Emit;
 using System.Text;
@@ -52,7 +53,9 @@ namespace RauViet.ui
             delete_btn.Click += Delete_btn_Click;
             hourLeave_tb.KeyPress += Tb_KeyPress_OnlyNumber;
             year_tb.KeyPress += Tb_KeyPress_OnlyNumber;
+            dateOff_dtp.ValueChanged += DateOff_dtp_ValueChanged;
         }
+
 
         public async void ShowData()
         {
@@ -65,13 +68,18 @@ namespace RauViet.ui
             try
             {
                 int year = Convert.ToInt32(year_tb.Text);
+                List<string> leavecodeParam =new List<string>();
+                leavecodeParam.Add("NL_1");
                 // Chạy truy vấn trên thread riêng
-                var employeeTask = SQLManager.Instance.GetEmployeesForAttendanceAsync(year);
-                var leaveAttendanceTask = SQLManager.Instance.GetLeaveAttendanceAsync_Withour_NghiLe(year);
-                var leaveTypeTask = SQLManager.Instance.GetLeaveType_Without_NL1_Async();
+                string[] keepColumns = { "EmployeeCode", "FullName", "PositionName", "ContractTypeName", };
+                var employeesTask = SQLStore.Instance.GetEmployeesAsync(keepColumns);
+                var leaveTypeTask = SQLStore.Instance.GetLeaveTypeWithoutAsync(leavecodeParam);
+                var employeeRemainingLeaveTask = SQLStore.Instance.GetAnnualLeaveBalanceAsync(year);
+                var leaveAttendanceTask = SQLStore.Instance.GetLeaveAttendancesAsyn(year);
+                
 
-                await Task.WhenAll(employeeTask, leaveAttendanceTask, leaveTypeTask);
-                mEmployee_dt = employeeTask.Result;
+                await Task.WhenAll(employeeRemainingLeaveTask, leaveAttendanceTask, leaveTypeTask, employeesTask);
+                mEmployee_dt = employeeRemainingLeaveTask.Result;
                 mLeaveAttendance_dt = leaveAttendanceTask.Result;
                 mLeaveType = leaveTypeTask.Result;
 
@@ -79,16 +87,26 @@ namespace RauViet.ui
                 leaveType_cbb.DisplayMember = "LeaveTypeName";
                 leaveType_cbb.ValueMember = "LeaveTypeCode";
 
+                int count = 0;
+                mEmployee_dt.Columns["EmployeeCode"].SetOrdinal(count++);
+                mEmployee_dt.Columns["FullName"].SetOrdinal(count++);
+                mEmployee_dt.Columns["PositionName"].SetOrdinal(count++);
+                mEmployee_dt.Columns["RemainingLeave"].SetOrdinal(count++);
+
                 dataGV.DataSource = mEmployee_dt;
                 dataGV.Columns["EmployeeCode"].HeaderText = "Mã Nhân Viên";
                 dataGV.Columns["FullName"].HeaderText = "Tên Nhân Viên";
-                dataGV.Columns["ContractTypeName"].HeaderText = "Loại H.Đồng";
+              //  dataGV.Columns["ContractTypeName"].HeaderText = "Loại H.Đồng";
                 dataGV.Columns["PositionName"].HeaderText = "Chức Vụ";
                 dataGV.Columns["RemainingLeave"].HeaderText = "Phép Năm Còn";
 
+                dataGV.Columns["Month"].Visible = false;
+                dataGV.Columns["Year"].Visible = false;
+                dataGV.Columns["LeaveCount"].Visible = false;
+
                 dataGV.Columns["EmployeeCode"].Width = 50;
                 dataGV.Columns["FullName"].Width = 160;
-                dataGV.Columns["ContractTypeName"].Width = 70;
+              //  dataGV.Columns["ContractTypeName"].Width = 70;
                 dataGV.Columns["PositionName"].Width = 70;
 
                 dataGV.Width = 500;
@@ -118,23 +136,6 @@ namespace RauViet.ui
         private void loadLeaveAttendance()
         {
             attendanceGV.SelectionChanged -= this.attendanceGV_CellClick;
-
-            
-            mLeaveAttendance_dt.Columns.Add(new DataColumn("LeaveTypeName", typeof(string)));
-            mLeaveAttendance_dt.Columns.Add(new DataColumn("DayOfWeek", typeof(string)));
-
-            string[] vietDays = { "CN", "T.2", "T.3", "T.4", "T.5", "T.6", "T.7" };
-            foreach (DataRow row in mLeaveAttendance_dt.Rows)
-            {
-                string leaveTypeCode = Convert.ToString(row["LeaveTypeCode"]);
-                DataRow[] foundRows = mLeaveType.Select($"LeaveTypeCode = '{leaveTypeCode}'");
-                if (foundRows.Length > 0)
-                {
-                    DateTime dayOff = Convert.ToDateTime(row["DateOff"]);
-                    row["LeaveTypeName"] = foundRows[0]["LeaveTypeName"].ToString();
-                    row["DayOfWeek"] = vietDays[(int)dayOff.DayOfWeek];
-                }
-            }
 
             int count = 0;
             mLeaveAttendance_dt.Columns["DayOfWeek"].SetOrdinal(count++);
@@ -177,7 +178,7 @@ namespace RauViet.ui
         {
             int year = Convert.ToInt32(year_tb.Text);
 
-            var leaveAttendanceTask = SQLManager.Instance.GetLeaveAttendanceAsync_Withour_NghiLe(year);
+            var leaveAttendanceTask = SQLStore.Instance.GetLeaveAttendancesAsyn(year);
 
             await Task.WhenAll(leaveAttendanceTask);
 
@@ -251,7 +252,7 @@ namespace RauViet.ui
             string employeeCode = cells["EmployeeCode"].Value.ToString();
 
             DataView dv = new DataView(mLeaveAttendance_dt);
-            dv.RowFilter = $"EmployeeCode = '{employeeCode}'";
+            dv.RowFilter = $"EmployeeCode = '{employeeCode}' AND LeaveTypeCode <> 'NL_1'";
 
             attendanceGV.DataSource = dv;
         }
@@ -352,6 +353,19 @@ namespace RauViet.ui
                         int rowIndex = attendanceGV.Rows.Count - 1;
                         attendanceGV.Rows[rowIndex].Selected = true;
 
+                        if (SQLStore.Instance.IsDeductAnnualLeave(leaveTypeCode))
+                        {
+                            DataRow[] rows = mEmployee_dt.Select($"EmployeeCode = '{employeeCode}'");
+                            DataRow row = mEmployee_dt.Select($"EmployeeCode = '{employeeCode}'").FirstOrDefault();
+                            if (row != null)
+                            {
+                                int leaveCount = row.Field<int?>("LeaveCount") ?? 0;
+                                int remaining = row.Field<int?>("RemainingLeave") ?? 0;
+
+                                row["LeaveCount"] = leaveCount + 1;
+                                row["RemainingLeave"] = remaining - 1;
+                            }
+                        }
 
                         status_lb.Text = "Thành công";
                         status_lb.ForeColor = Color.Green;
@@ -428,6 +442,14 @@ namespace RauViet.ui
                 int leaveID = Convert.ToInt32(row.Cells["LeaveID"].Value);
                 if (leaveID.CompareTo(id) == 0)
                 {
+                    DateTime dateOff = Convert.ToDateTime(row.Cells["DateOff"].Value);
+                    bool isLock = await SQLStore.Instance.IsSalaryLockAsync(dateOff.Month, dateOff.Year);
+                    if (isLock)
+                    {
+                        MessageBox.Show("Tháng " + dateOff.Month + "/" + dateOff.Year + " đã bị khóa.", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
                     DialogResult dialogResult = MessageBox.Show("XÓA ĐÓ NHA \n Chắc chắn chưa ?", " Xóa Thông Tin", MessageBoxButtons.YesNo);
                     if (dialogResult == DialogResult.Yes)
                     {
@@ -437,10 +459,22 @@ namespace RauViet.ui
 
                             if (isScussess == true)
                             {
+                                if (SQLStore.Instance.IsDeductAnnualLeave(row.Cells["LeaveTypeCode"].Value.ToString()))
+                                {
+                                    string employeeCode = dataGV.CurrentRow.Cells["EmployeeCode"].Value?.ToString();
+                                    DataRow row1 = mEmployee_dt.Select($"EmployeeCode = '{employeeCode}'").FirstOrDefault();
+                                    if (row1 != null)
+                                    {
+                                        int leaveCount = row1.Field<int?>("LeaveCount") ?? 0;
+                                        int remaining = row1.Field<int?>("RemainingLeave") ?? 0;
+
+                                        row1["LeaveCount"] = leaveCount - 1;
+                                        row1["RemainingLeave"] = remaining + 1;
+                                    }
+                                }
+
                                 status_lb.Text = "Thành công.";
                                 status_lb.ForeColor = Color.Green;
-
-                                int delRowInd = row.Index;
                                 attendanceGV.Rows.Remove(row);
                             }
                             else
@@ -462,6 +496,14 @@ namespace RauViet.ui
                     break;
                 }
             }
+        }
+        private async void DateOff_dtp_ValueChanged(object sender, EventArgs e)
+        {
+            DateTime dayyOff = Convert.ToDateTime(dateOff_dtp.Value);
+            bool isLock = await SQLStore.Instance.IsSalaryLockAsync(dayyOff.Month, dayyOff.Year);
+            LuuThayDoiBtn.Visible = !isLock;
+            newBtn.Visible = !isLock;
+            delete_btn.Visible = !isLock;
         }
     }
 }

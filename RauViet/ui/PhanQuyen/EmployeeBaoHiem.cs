@@ -41,11 +41,11 @@ namespace RauViet.ui
 
             try
             {
-                // Chạy truy vấn trên thread riêng
-                var employeeTask = SQLManager.Instance.GetEmployeeBHAsybc();
+                string[] keepColumns = { "EmployeeCode", "FullName", "SocialInsuranceNumber", "HealthInsuranceNumber" };
+                var employeesTask = SQLStore.Instance.GetEmployeesAsync(keepColumns);
 
-                await Task.WhenAll(employeeTask);
-                DataTable employee_dt = employeeTask.Result;
+                await Task.WhenAll(employeesTask);
+                DataTable employee_dt = employeesTask.Result;
 
                 dataGV.DataSource = employee_dt;
 
@@ -129,6 +129,13 @@ namespace RauViet.ui
 
                                 row.Cells["SocialInsuranceNumber"].Value = bhxh;
                                 row.Cells["HealthInsuranceNumber"].Value = bhyt;
+
+                                var parameters = new Dictionary<string, object>
+                                {
+                                    ["SocialInsuranceNumber"] = bhxh,
+                                    ["HealthInsuranceNumber"] = bhyt
+                                };
+                                SQLStore.Instance.updateEmploy(EmployeeCode, parameters);
                             }
                             else
                             {

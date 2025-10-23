@@ -33,6 +33,7 @@ namespace RauViet.ui
             this.panel1 = new System.Windows.Forms.Panel();
             this.excelAttendance_btn = new System.Windows.Forms.Button();
             this.info_gb = new System.Windows.Forms.GroupBox();
+            this.calWorkHour_btn = new System.Windows.Forms.Button();
             this.loadAttandance_btn = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.month_cbb = new System.Windows.Forms.ComboBox();
@@ -42,7 +43,6 @@ namespace RauViet.ui
             this.status_lb = new System.Windows.Forms.Label();
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
             this.attendanceGV = new System.Windows.Forms.DataGridView();
-            this.calWorkHour_btn = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
             this.panel1.SuspendLayout();
             this.info_gb.SuspendLayout();
@@ -66,7 +66,6 @@ namespace RauViet.ui
             this.panel1.Controls.Add(this.excelAttendance_btn);
             this.panel1.Controls.Add(this.info_gb);
             this.panel1.Controls.Add(this.loading_lb);
-            this.panel1.Controls.Add(this.status_lb);
             this.panel1.Controls.Add(this.LuuThayDoiBtn);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Right;
             this.panel1.Location = new System.Drawing.Point(955, 0);
@@ -78,7 +77,7 @@ namespace RauViet.ui
             // 
             this.excelAttendance_btn.BackColor = System.Drawing.SystemColors.Highlight;
             this.excelAttendance_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.excelAttendance_btn.Location = new System.Drawing.Point(128, 388);
+            this.excelAttendance_btn.Location = new System.Drawing.Point(120, 23);
             this.excelAttendance_btn.Name = "excelAttendance_btn";
             this.excelAttendance_btn.Size = new System.Drawing.Size(177, 47);
             this.excelAttendance_btn.TabIndex = 29;
@@ -90,6 +89,7 @@ namespace RauViet.ui
             this.info_gb.Controls.Add(this.calWorkHour_btn);
             this.info_gb.Controls.Add(this.loadAttandance_btn);
             this.info_gb.Controls.Add(this.label1);
+            this.info_gb.Controls.Add(this.status_lb);
             this.info_gb.Controls.Add(this.month_cbb);
             this.info_gb.Controls.Add(this.year_tb);
             this.info_gb.Controls.Add(this.label2);
@@ -98,6 +98,17 @@ namespace RauViet.ui
             this.info_gb.Size = new System.Drawing.Size(241, 184);
             this.info_gb.TabIndex = 28;
             this.info_gb.TabStop = false;
+            // 
+            // calWorkHour_btn
+            // 
+            this.calWorkHour_btn.BackColor = System.Drawing.SystemColors.Highlight;
+            this.calWorkHour_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.calWorkHour_btn.Location = new System.Drawing.Point(17, 125);
+            this.calWorkHour_btn.Name = "calWorkHour_btn";
+            this.calWorkHour_btn.Size = new System.Drawing.Size(177, 47);
+            this.calWorkHour_btn.TabIndex = 30;
+            this.calWorkHour_btn.Text = "Tính Lại Số Giờ làm";
+            this.calWorkHour_btn.UseVisualStyleBackColor = false;
             // 
             // loadAttandance_btn
             // 
@@ -162,7 +173,7 @@ namespace RauViet.ui
             this.status_lb.AutoSize = true;
             this.status_lb.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.status_lb.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.status_lb.Location = new System.Drawing.Point(116, 121);
+            this.status_lb.Location = new System.Drawing.Point(93, 6);
             this.status_lb.Name = "status_lb";
             this.status_lb.Size = new System.Drawing.Size(55, 23);
             this.status_lb.TabIndex = 26;
@@ -170,11 +181,11 @@ namespace RauViet.ui
             // 
             // LuuThayDoiBtn
             // 
-            this.LuuThayDoiBtn.BackColor = System.Drawing.SystemColors.Highlight;
+            this.LuuThayDoiBtn.BackColor = System.Drawing.Color.Red;
             this.LuuThayDoiBtn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LuuThayDoiBtn.Location = new System.Drawing.Point(12, 388);
+            this.LuuThayDoiBtn.Location = new System.Drawing.Point(74, 372);
             this.LuuThayDoiBtn.Name = "LuuThayDoiBtn";
-            this.LuuThayDoiBtn.Size = new System.Drawing.Size(110, 47);
+            this.LuuThayDoiBtn.Size = new System.Drawing.Size(138, 47);
             this.LuuThayDoiBtn.TabIndex = 25;
             this.LuuThayDoiBtn.Text = "Lưu";
             this.LuuThayDoiBtn.UseVisualStyleBackColor = false;
@@ -190,17 +201,6 @@ namespace RauViet.ui
             this.attendanceGV.ReadOnly = true;
             this.attendanceGV.Size = new System.Drawing.Size(552, 681);
             this.attendanceGV.TabIndex = 12;
-            // 
-            // calWorkHour_btn
-            // 
-            this.calWorkHour_btn.BackColor = System.Drawing.SystemColors.Highlight;
-            this.calWorkHour_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.calWorkHour_btn.Location = new System.Drawing.Point(17, 125);
-            this.calWorkHour_btn.Name = "calWorkHour_btn";
-            this.calWorkHour_btn.Size = new System.Drawing.Size(177, 47);
-            this.calWorkHour_btn.TabIndex = 30;
-            this.calWorkHour_btn.Text = "Tính Lại Số Giờ làm";
-            this.calWorkHour_btn.UseVisualStyleBackColor = false;
             // 
             // Attendance
             // 

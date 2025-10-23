@@ -416,75 +416,45 @@ GO
 drop PROCEDURE sp_GetEmployeeSalarySummary
 CREATE PROCEDURE sp_GetEmployeeSalarySummary
     @Month INT,
-    @Year INT
+    @Year INTsp_GetEmployeeDeductions
 AS
 BEGIN
     SET NOCOUNT ON;
 
     SELECT 
         e.EmployeeCode,
-        e.FullName,
-        e.HireDate,
-        e.IsInsuranceRefund,
-        ct.ContractTypeName,
 
-        -- 💰 Lương cơ bản
+        -- 💰 Lương cơ bản (thử việc tính theo %)
         CASE 
             WHEN ct.ContractTypeCode = 't_viec' THEN ISNULL(sal.BaseSalary, 0) * e.ProbationSalaryPercent
             ELSE ISNULL(sal.BaseSalary, 0)
         END AS BaseSalary,
 
-        -- 💵 Lương đóng BH
+        -- 💵 Lương đóng BH (chỉ áp dụng cho chính thức)
         CASE 
             WHEN ct.ContractTypeCode = 'c_thuc' THEN ISNULL(sal.InsuranceBaseSalary, 0)
             ELSE 0
-        END AS InsuranceBaseSalary,
-
-        -- 🌴 Số ngày phép còn lại
-        ISNULL(
-            (LEN(alb.Month) - LEN(REPLACE(alb.Month, ',', '')) + 1),
-            0
-        )
-        - ISNULL(lv.UsedLeave, 0) AS RemainingLeave
+        END AS InsuranceBaseSalary
 
     FROM Employee e
     LEFT JOIN ContractType ct 
         ON e.ContractTypeID = ct.ContractTypeID
 
-    -- 🔹 Lấy lương cơ bản và lương BH mới nhất trước tháng/năm hiện tại
     OUTER APPLY (
         SELECT TOP 1 
             esi.BaseSalary, 
             esi.InsuranceBaseSalary
         FROM EmployeeSalaryInfo esi
         WHERE esi.EmployeeCode = e.EmployeeCode
-            AND (esi.Year < @Year OR (esi.Year = @Year AND esi.Month <= @Month))
+          AND (esi.Year < @Year OR (esi.Year = @Year AND esi.Month <= @Month))
         ORDER BY esi.Year DESC, esi.Month DESC
     ) sal
-
-    -- 🔹 Bảng phép năm
-    LEFT JOIN AnnualLeaveBalance alb 
-        ON e.EmployeeCode = alb.EmployeeCode 
-        AND alb.Year = @Year
-
-    -- 🔹 Bảng phép đã nghỉ
-    LEFT JOIN (
-        SELECT 
-            EmployeeCode,
-            COUNT(*) AS UsedLeave
-        FROM LeaveAttendance la
-        INNER JOIN LeaveType lt
-            ON la.LeaveTypeCode = lt.LeaveTypeCode
-        WHERE lt.IsDeductAnnualLeave = 1
-          AND YEAR(DateOff) = @Year
-        GROUP BY EmployeeCode
-    ) lv 
-        ON e.EmployeeCode = lv.EmployeeCode
 
     WHERE e.IsActive = 1
     ORDER BY e.EmployeeCode;
 END;
 GO
+
 
 
 
@@ -576,11 +546,7 @@ BEGIN
     SET NOCOUNT ON;
 
     SELECT 
-        E.EmployeeID, 
-        E.EmployeeCode,
-        E.FullName,
-        P.PositionName,                 
-        ISNULL(ALB.Year, @Year) AS [Year],
+        E.EmployeeCode,                 
         ISNULL(ALB.Month, '') AS [Month],
         ISNULL(LV.LeaveCount, 0) AS LeaveCount
     FROM Employee AS E
@@ -620,10 +586,6 @@ BEGIN
 
     SELECT 
         e.EmployeeCode,
-        e.FullName,
-        p.PositionName,
-        ct.ContractTypeName,
-
         -- 🔹 Phép còn lại = Tổng số phép có - Số phép đã nghỉ
         ISNULL(
             (LEN(alb.Month) - LEN(REPLACE(alb.Month, ',', '')) + 1),
@@ -689,24 +651,25 @@ GO
 
 Drop PROCEDURE sp_GetEmployeeDeductions
 CREATE PROCEDURE sp_GetEmployeeDeductions
-    @Month INT,
     @Year INT
 AS
 BEGIN
     SET NOCOUNT ON;
 
     SELECT 
+        ed.EmployeeDeductionID,
         ed.EmployeeCode,
         ed.DeductionTypeCode,
         ed.DeductionDate,
+        ed.Note,
+        ed.updateHistory,
         dt.DeductionTypeName,
         ed.Amount
         
     FROM EmployeeDeduction ed
     INNER JOIN DeductionType dt
         ON ed.DeductionTypeCode = dt.DeductionTypeCode
-    WHERE ed.DeductionMonth = @Month
-      AND ed.DeductionYear = @Year
+    WHERE ed.DeductionYear = @Year
       AND dt.IsActive = 1
     ORDER BY ed.EmployeeCode, ed.DeductionDate;
 END;

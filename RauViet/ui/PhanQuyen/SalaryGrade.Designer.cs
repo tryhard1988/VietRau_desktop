@@ -55,7 +55,6 @@ namespace RauViet.ui
             this.panel1.Controls.Add(this.info_gb);
             this.panel1.Controls.Add(this.delete_btn);
             this.panel1.Controls.Add(this.loading_lb);
-            this.panel1.Controls.Add(this.status_lb);
             this.panel1.Controls.Add(this.newCustomerBtn);
             this.panel1.Controls.Add(this.LuuThayDoiBtn);
             this.panel1.Controls.Add(this.salaryGradeID_tb);
@@ -70,6 +69,7 @@ namespace RauViet.ui
             this.info_gb.Controls.Add(this.salaryName_tb);
             this.info_gb.Controls.Add(this.label1);
             this.info_gb.Controls.Add(this.isActive_cb);
+            this.info_gb.Controls.Add(this.status_lb);
             this.info_gb.Controls.Add(this.salary_tb);
             this.info_gb.Controls.Add(this.label2);
             this.info_gb.Controls.Add(this.label3);
@@ -149,7 +149,7 @@ namespace RauViet.ui
             // 
             this.delete_btn.BackColor = System.Drawing.Color.Red;
             this.delete_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.delete_btn.Location = new System.Drawing.Point(345, 415);
+            this.delete_btn.Location = new System.Drawing.Point(299, 415);
             this.delete_btn.Name = "delete_btn";
             this.delete_btn.Size = new System.Drawing.Size(113, 47);
             this.delete_btn.TabIndex = 27;
@@ -171,7 +171,7 @@ namespace RauViet.ui
             this.status_lb.AutoSize = true;
             this.status_lb.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.status_lb.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.status_lb.Location = new System.Drawing.Point(247, 151);
+            this.status_lb.Location = new System.Drawing.Point(172, 14);
             this.status_lb.Name = "status_lb";
             this.status_lb.Size = new System.Drawing.Size(55, 23);
             this.status_lb.TabIndex = 26;
@@ -181,9 +181,9 @@ namespace RauViet.ui
             // 
             this.newCustomerBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
             this.newCustomerBtn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.newCustomerBtn.Location = new System.Drawing.Point(219, 415);
+            this.newCustomerBtn.Location = new System.Drawing.Point(395, 150);
             this.newCustomerBtn.Name = "newCustomerBtn";
-            this.newCustomerBtn.Size = new System.Drawing.Size(113, 47);
+            this.newCustomerBtn.Size = new System.Drawing.Size(88, 33);
             this.newCustomerBtn.TabIndex = 25;
             this.newCustomerBtn.Text = "Tạo mới";
             this.newCustomerBtn.UseVisualStyleBackColor = false;
@@ -192,7 +192,7 @@ namespace RauViet.ui
             // 
             this.LuuThayDoiBtn.BackColor = System.Drawing.SystemColors.Highlight;
             this.LuuThayDoiBtn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LuuThayDoiBtn.Location = new System.Drawing.Point(93, 415);
+            this.LuuThayDoiBtn.Location = new System.Drawing.Point(144, 415);
             this.LuuThayDoiBtn.Name = "LuuThayDoiBtn";
             this.LuuThayDoiBtn.Size = new System.Drawing.Size(113, 47);
             this.LuuThayDoiBtn.TabIndex = 25;

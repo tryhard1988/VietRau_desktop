@@ -13,7 +13,8 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
 namespace RauViet.ui
 {
     public partial class Department : Form
-    { 
+    {
+        DataTable mDepartment_dt;
         public Department()
         {
             InitializeComponent();
@@ -46,14 +47,15 @@ namespace RauViet.ui
             try
             {
                 // Chạy truy vấn trên thread riêng
-                var departmentTask = SQLManager.Instance.GetDepartmentAsybc();
+                var departmentTask = SQLStore.Instance.GetDepartmentAsync();
 
                 await Task.WhenAll(departmentTask);
-                DataTable department_dt = departmentTask.Result;
+                mDepartment_dt = departmentTask.Result;
 
-                department_dt.Columns.Remove("CreatedAt");
+                if (mDepartment_dt.Columns.Contains("CreatedAt"))
+                    mDepartment_dt.Columns.Remove("CreatedAt");
 
-                dataGV.DataSource = department_dt;
+                dataGV.DataSource = mDepartment_dt;
 
                 dataGV.Columns["DepartmentID"].HeaderText = "Mã Phòng Ban";
                 dataGV.Columns["DepartmentName"].HeaderText = "Tên Phòng Ban";
@@ -197,7 +199,6 @@ namespace RauViet.ui
                         int rowIndex = dataGV.Rows.Count - 1;
                         dataGV.Rows[rowIndex].Selected = true;
                         UpdateRightUI(dataGV.Rows.Count - 1);
-                        
 
                         status_lb.Text = "Thành công";
                         status_lb.ForeColor = Color.Green;

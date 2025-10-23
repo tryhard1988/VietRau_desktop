@@ -43,11 +43,12 @@ namespace RauViet.ui
             try
             {
                 // Chạy truy vấn trên thread riêng
-                var employeesTask = SQLManager.Instance.GetEmployeeWorkAsyc();
-                var departmentTask = SQLManager.Instance.GetActiveDepartmentAsync();
-                var positionTask = SQLManager.Instance.GetActivePositionAsync();
-                var contractTypeTask = SQLManager.Instance.GetContractTypeAsync();
-                var salaryGradeTask = SQLManager.Instance.GetActiveSalaryGradeAsync();
+                string[] keepColumns = { "EmployeeCode", "FullName", "HireDate", "PositionID", "DepartmentID", "ContractTypeID", "SalaryGradeID", "PositionName", "DepartmentName", "ContractTypeName", "GradeName" };
+                var employeesTask = SQLStore.Instance.GetEmployeesAsync(keepColumns);
+                var departmentTask = SQLStore.Instance.GetActiveDepartmentAsync();
+                var positionTask = SQLStore.Instance.GetActivePositionAsync();
+                var contractTypeTask = SQLStore.Instance.GetContractTypeAsync();
+                var salaryGradeTask = SQLStore.Instance.GetActiveSalaryGradeAsync();
 
                 await Task.WhenAll(employeesTask, departmentTask, positionTask, contractTypeTask, salaryGradeTask);
                 mEmployees_dt = employeesTask.Result;
@@ -71,63 +72,15 @@ namespace RauViet.ui
 
                 salaryGrade_ccb.DataSource = mSalaryGrade_dt;
                 salaryGrade_ccb.DisplayMember = "GradeName";
-                salaryGrade_ccb.ValueMember = "SalaryGradeID";
-
-                mEmployees_dt.Columns.Add(new DataColumn("Position", typeof(string)));
-                mEmployees_dt.Columns.Add(new DataColumn("Department", typeof(string)));
-                mEmployees_dt.Columns.Add(new DataColumn("ContractType", typeof(string)));
-                mEmployees_dt.Columns.Add(new DataColumn("GradeName", typeof(string)));
-
-                foreach (DataRow dr in mEmployees_dt.Rows)
-                {
-                    int? positionID = Utils.GetIntValue(dr["PositionID"]);
-                    int? departmentID = Utils.GetIntValue(dr["DepartmentID"]);
-                    int? salaryGradeID = Utils.GetIntValue(dr["SalaryGradeID"]);
-                    int? contractTypeID = Utils.GetIntValue(dr["ContractTypeID"]);
-
-                    string positionName = "";
-                    string departmentName = "";
-                    string gradeName = "";
-                    string contractTypeName = "";
-                    if (positionID != null)
-                    {
-                        DataRow[] postionRows = mPosition_dt.Select($"PositionID = {positionID}");
-                        if (postionRows.Length > 0)
-                            positionName = postionRows[0]["PositionName"].ToString();
-                    }
-
-                    if (departmentID != null)
-                    {
-                        DataRow[] departmentRows = mDepartment_dt.Select($"departmentID = {departmentID}");
-                        if (departmentRows.Length > 0)
-                            departmentName = departmentRows[0]["DepartmentName"].ToString();
-                    }
-                    if (salaryGradeID != null)
-                    {
-                        DataRow[] salaryGradeRows = mSalaryGrade_dt.Select($"SalaryGradeID = {salaryGradeID}");
-                        if (salaryGradeRows.Length > 0)
-                            gradeName = salaryGradeRows[0]["GradeName"].ToString();
-                    }
-
-                    if (contractTypeID != null)
-                    {
-                        DataRow[] contractTypeRows = mContractType_dt.Select($"ContractTypeID = {contractTypeID}");
-                        if (contractTypeRows.Length > 0)
-                            contractTypeName = contractTypeRows[0]["ContractTypeName"].ToString();
-                    }                    
-                    dr["Position"] = positionName;
-                    dr["Department"] = departmentName;
-                    dr["ContractType"] = contractTypeName;
-                    dr["GradeName"] = gradeName;
-                }
+                salaryGrade_ccb.ValueMember = "SalaryGradeID";                              
 
                 int count = 0;
                 mEmployees_dt.Columns["EmployeeCode"].SetOrdinal(count++);
                 mEmployees_dt.Columns["FullName"].SetOrdinal(count++);                
                 mEmployees_dt.Columns["HireDate"].SetOrdinal(count++);
-                mEmployees_dt.Columns["Department"].SetOrdinal(count++);
-                mEmployees_dt.Columns["Position"].SetOrdinal(count++);
-                mEmployees_dt.Columns["ContractType"].SetOrdinal(count++);                
+                mEmployees_dt.Columns["DepartmentName"].SetOrdinal(count++);
+                mEmployees_dt.Columns["PositionName"].SetOrdinal(count++);
+                mEmployees_dt.Columns["ContractTypeName"].SetOrdinal(count++);                
                 mEmployees_dt.Columns["GradeName"].SetOrdinal(count++);
                 
 
@@ -136,9 +89,9 @@ namespace RauViet.ui
                 dataGV.Columns["EmployeeCode"].HeaderText = "Mã NV";
                 dataGV.Columns["FullName"].HeaderText = "Họ Và Tên";
                 dataGV.Columns["HireDate"].HeaderText = "Ngày Vào Làm";
-                dataGV.Columns["Position"].HeaderText = "Chức Vụ";
-                dataGV.Columns["Department"].HeaderText = "Phòng Ban";
-                dataGV.Columns["ContractType"].HeaderText = "Loại Hợp Đồng";
+                dataGV.Columns["PositionName"].HeaderText = "Chức Vụ";
+                dataGV.Columns["DepartmentName"].HeaderText = "Phòng Ban";
+                dataGV.Columns["ContractTypeName"].HeaderText = "Loại Hợp Đồng";
                 dataGV.Columns["GradeName"].HeaderText = "Bậc Lương";
 
                 dataGV.Columns["SalaryGradeID"].Visible = false;
@@ -149,9 +102,9 @@ namespace RauViet.ui
                 dataGV.Columns["EmployeeCode"].Width = 50;
                 dataGV.Columns["FullName"].Width = 160;
                 dataGV.Columns["HireDate"].Width = 70;
-                dataGV.Columns["Position"].Width = 100;
-                dataGV.Columns["Department"].Width = 120;
-                dataGV.Columns["ContractType"].Width = 90;
+                dataGV.Columns["PositionName"].Width = 100;
+                dataGV.Columns["DepartmentName"].Width = 120;
+                dataGV.Columns["ContractTypeName"].Width = 90;
                 dataGV.Columns["GradeName"].Width = 90;
 
 
@@ -240,11 +193,30 @@ namespace RauViet.ui
                                 string departmentName = mDepartment_dt.Select($"DepartmentID = {department}")[0]["DepartmentName"].ToString();
                                 string contractTypeName = mContractType_dt.Select($"ContractTypeID = {contractType}")[0]["ContractTypeName"].ToString();
                                 string gradeName = mSalaryGrade_dt.Select($"SalaryGradeID = {salaryGrade}")[0]["GradeName"].ToString();
+                                string positionCode = mPosition_dt.Select($"PositionID = {position}")[0]["PositionCode"].ToString();
+                                string contractTypeCode = mContractType_dt.Select($"ContractTypeID = {contractType}")[0]["ContractTypeCode"].ToString();
 
-                                row.Cells["Position"].Value = positionName;
-                                row.Cells["Department"].Value = departmentName;
-                                row.Cells["ContractType"].Value = contractTypeName;
+                                row.Cells["PositionName"].Value = positionName;
+                                row.Cells["DepartmentName"].Value = departmentName;
+                                row.Cells["ContractTypeName"].Value = contractTypeName;
                                 row.Cells["GradeName"].Value = gradeName;
+
+                                var parameters = new Dictionary<string, object>
+                                {
+                                    ["PositionID"] = position,
+                                    ["DepartmentID"] = department,
+                                    ["ContractTypeID"] = contractType,
+                                    ["SalaryGradeID"] = salaryGrade,
+
+                                    ["PositionName"] = positionName,
+                                    ["DepartmentName"] = departmentName,
+                                    ["ContractTypeName"] = contractTypeName,
+                                    ["GradeName"] = gradeName,
+
+                                    ["PositionCode"] = positionCode,
+                                    ["ContractTypeCode"] = contractTypeCode
+                                };
+                                SQLStore.Instance.updateEmploy(maNV, parameters);
 
 
                             }

@@ -1,4 +1,5 @@
-﻿using DocumentFormat.OpenXml.VariantTypes;
+﻿using DocumentFormat.OpenXml.Bibliography;
+using DocumentFormat.OpenXml.VariantTypes;
 using DocumentFormat.OpenXml.Wordprocessing;
 using RauViet.classes;
 using System;
@@ -52,6 +53,8 @@ namespace RauViet.ui
             allowanceGV.SelectionChanged += this.allowanceGV_CellClick;
             year_tb.KeyPress += Tb_KeyPress_OnlyNumber;
             amount_tb.KeyPress += Tb_KeyPress_OnlyNumber;
+
+            month_cbb.SelectedIndexChanged += Month_cbb_SelectedIndexChanged;
         }
 
         public async void ShowData()
@@ -63,12 +66,13 @@ namespace RauViet.ui
 
             try
             {
-                var employeeTask = SQLManager.Instance.GetActiveEmployeeAsync();
+                string[] keepColumns = { "EmployeeCode", "FullName", "PositionName", "ContractTypeName", };
+                var employeesTask = SQLStore.Instance.GetEmployeesAsync(keepColumns);
                 var monthlyAllowanceAsync = SQLManager.Instance.GetMonthlyAllowanceAsybc();
                 var allowanceTypeAsync = SQLManager.Instance.GetAllowanceTypeAsync("ONCE");
 
-                await Task.WhenAll(employeeTask, monthlyAllowanceAsync, allowanceTypeAsync);
-                DataTable employee_dt = employeeTask.Result;
+                await Task.WhenAll(employeesTask, monthlyAllowanceAsync, allowanceTypeAsync);
+                DataTable employee_dt = employeesTask.Result;
                 mMonthlyAllowance_dt = monthlyAllowanceAsync.Result;
                 mAllowanceType_dt = allowanceTypeAsync.Result;
 
@@ -409,6 +413,16 @@ namespace RauViet.ui
             info_gb.BackColor = Color.Green;
          //   dataGV.ClearSelection();
             return;            
+        }
+
+        private async void Month_cbb_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            int month = Convert.ToInt32(month_cbb.SelectedItem);
+            int year = Convert.ToInt32(year_tb.Text);
+            bool isLock = await SQLStore.Instance.IsSalaryLockAsync(month, year);
+            LuuThayDoiBtn.Visible = !isLock;
+            newCustomerBtn.Visible = !isLock;
+            delete_btn.Visible = !isLock;
         }
     }
 }

@@ -1377,9 +1377,7 @@ namespace RauViet.classes
             using (SqlConnection con = new SqlConnection(conStr))
             {
                 await con.OpenAsync();
-                string query = @"SELECT EmployeeID, EmployeeCode, FullName, BirthDate, HireDate, Gender, ProbationSalaryPercent, Hometown, 
-                                    Address, CitizenID, IssueDate, IssuePlace, IsActive, canCreateUserName, PhoneNumber, NoteResign, IsInsuranceRefund
-                                FROM Employee";
+                string query = @"SELECT * FROM Employee";
 
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
@@ -1531,67 +1529,6 @@ namespace RauViet.classes
             {
                 return -1;
             }
-        }
-
-        public async Task<DataTable> GetActiveDepartmentAsync()
-        {
-            DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(conStr))
-            {
-                await con.OpenAsync();
-                string query = @"SELECT * FROM Department WHERE IsActive = 1";
-
-                using (SqlCommand cmd = new SqlCommand(query, con))
-                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
-                {
-                    dt.Load(reader);
-                }
-            }
-            return dt;
-        }
-
-        public async Task<DataTable> GetActivePositionAsync()
-        {
-            DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(conStr))
-            {
-                await con.OpenAsync();
-                string query = @"SELECT * FROM Position WHERE IsActive = 1";
-
-                using (SqlCommand cmd = new SqlCommand(query, con))
-                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
-                {
-                    dt.Load(reader);
-                }
-            }
-            return dt;
-        }
-
-        public async Task<DataTable> GetActiveEmployeeAsync()
-        {
-            DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(conStr))
-            {
-                await con.OpenAsync();
-                string query = @"SELECT 
-                                    e.EmployeeCode,
-                                    e.FullName,
-                                    p.PositionName,
-                                    ct.ContractTypeName
-                                FROM Employee e
-                                LEFT JOIN Position p 
-                                    ON e.PositionID = p.PositionID
-                                LEFT JOIN ContractType ct 
-                                    ON e.ContractTypeID = ct.ContractTypeID
-                                WHERE e.IsActive = 1;";
-
-                using (SqlCommand cmd = new SqlCommand(query, con))
-                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
-                {
-                    dt.Load(reader);
-                }
-            }
-            return dt;
         }
 
         public async Task<DataTable> GetActiveEmployee_DeductionATT_Async(int month, int year)
@@ -2152,36 +2089,7 @@ namespace RauViet.classes
             }
         }
 
-        public async Task<DataTable> GetEmployeesForEttendamceAsync()
-        {
-            DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(conStr))
-            {
-                await con.OpenAsync();
-                string query = @"SELECT 
-                                    e.EmployeeCode,
-                                    e.FullName,
-                                    p.PositionCode,
-                                    p.PositionName,
-                                    ct.ContractTypeCode,
-                                    ct.ContractTypeName
-                                FROM Employee e
-                                LEFT JOIN Position p 
-                                    ON e.PositionID = p.PositionID
-                                LEFT JOIN ContractType ct 
-                                    ON e.ContractTypeID = ct.ContractTypeID
-                                WHERE e.IsActive = 1;";
-
-                using (SqlCommand cmd = new SqlCommand(query, con))
-                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
-                {
-                    dt.Load(reader);
-                }
-            }
-            return dt;
-        }
-
-        public async Task<DataTable> GetEmployeesForAttendanceAsync(int year)
+        public async Task<DataTable> GetGetRemainingLeaveAsync(int year)
         {
             DataTable dt = new DataTable();
 
@@ -2366,31 +2274,6 @@ namespace RauViet.classes
             return dt;
         }
 
-        public async Task<DataTable> GetOvertimeTypeAsync(bool isActive)
-        {
-            DataTable dt = new DataTable();
-
-            using (SqlConnection con = new SqlConnection(conStr))
-            {
-                await con.OpenAsync();
-
-                string query = @"SELECT *
-                                FROM OvertimeType
-                                WHERE IsActive = @IsActive";
-
-                using (SqlCommand cmd = new SqlCommand(query, con))
-                {
-                    cmd.Parameters.AddWithValue("@IsActive", isActive);
-                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
-                    {
-                        dt.Load(reader);
-                    }
-                }
-            }
-
-            return dt;
-        }
-
         public async Task<bool> updateOvertimeTypeAsync(int overtimeTypeID, string overtimeName, double salaryFactor, bool isActive)
         {
             string query = @"UPDATE OvertimeType SET 
@@ -2525,7 +2408,8 @@ namespace RauViet.classes
             using (SqlConnection con = new SqlConnection(conStr))
             {
                 await con.OpenAsync();
-                string query = @"SELECT OvertimeAttendanceID, EmployeeCode, WorkDate, StartTime, EndTime, OvertimeTypeID, Note, UpdatedHistory
+                string query = @"SELECT OvertimeAttendanceID, EmployeeCode, WorkDate, StartTime, EndTime, OvertimeTypeID, Note, UpdatedHistory,
+                                CAST(DATEDIFF(MINUTE, StartTime, EndTime) / 60.0 AS DECIMAL(10,2)) AS HourWork  
                                 FROM OvertimeAttendance
                                 WHERE MONTH(WorkDate) = @Month
                                   AND YEAR(WorkDate) = @Year
@@ -2707,6 +2591,27 @@ namespace RauViet.classes
             }
         }
 
+        public async Task<DataTable> GetLeaveAttendanceAsync(int year)
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(conStr))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT * FROM LeaveAttendance WHERE YEAR(DateOff) = @Year ORDER BY EmployeeCode, DateOff;";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    cmd.Parameters.AddWithValue("@Year", year);
+
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
+        }
+
         public async Task<DataTable> GetLeaveAttendanceAsync_Withour_NghiLe(int year)
         {
             DataTable dt = new DataTable();
@@ -2755,7 +2660,7 @@ namespace RauViet.classes
             return dt;
         }
 
-        public async Task<DataTable> GetEmployeeDeductions(int month, int year)
+        public async Task<DataTable> GetEmployeeDeductions(int year)
         {
             DataTable dt = new DataTable();
             using (SqlConnection con = new SqlConnection(conStr))
@@ -2767,7 +2672,6 @@ namespace RauViet.classes
                     cmd.CommandType = CommandType.StoredProcedure;
 
                     cmd.Parameters.AddWithValue("@Year", year);
-                    cmd.Parameters.AddWithValue("@Month", month);
 
                     using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                     {
@@ -2778,7 +2682,7 @@ namespace RauViet.classes
             return dt;
         }
 
-        public async Task<DataTable> GetLeaveType_Without_NL1_Async()
+        public async Task<DataTable> GetLeaveTypeAsync()
         {
             DataTable dt = new DataTable();
 
@@ -2786,29 +2690,7 @@ namespace RauViet.classes
             {
                 await con.OpenAsync();
 
-                string query = @"SELECT * FROM LeaveType WHERE LeaveTypeCode != 'NL_1' ";
-
-                using (SqlCommand cmd = new SqlCommand(query, con))
-                {
-                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
-                    {
-                        dt.Load(reader);
-                    }
-                }
-            }
-
-            return dt;
-        }
-
-        public async Task<DataTable> GetLeaveType_HavePaid_Async()
-        {
-            DataTable dt = new DataTable();
-
-            using (SqlConnection con = new SqlConnection(conStr))
-            {
-                await con.OpenAsync();
-
-                string query = @"SELECT LeaveTypeCode, LeaveTypeName FROM LeaveType WHERE IsPaid = 1 ";
+                string query = @"SELECT * FROM LeaveType ";
 
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 {
@@ -3487,23 +3369,6 @@ namespace RauViet.classes
             return dt;
         }
 
-        public async Task<DataTable> GetActiveSalaryGradeAsync()
-        {
-            DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(conStr))
-            {
-                await con.OpenAsync();
-                string query = @"SELECT * FROM SalaryGrade WHERE IsActive = 1";
-
-                using (SqlCommand cmd = new SqlCommand(query, con))
-                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
-                {
-                    dt.Load(reader);
-                }
-            }
-            return dt;
-        }
-
         public async Task<bool> updateSalaryGradeAsync(int salaryGradeID, string gradeName, int salary, string note, bool isActive)
         {
             string query = @"UPDATE SalaryGrade SET 
@@ -3653,23 +3518,6 @@ namespace RauViet.classes
             catch { return false; }
         }
 
-        public async Task<DataTable> GetEmployeeBHAsybc()
-        {
-            DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(conStr))
-            {
-                await con.OpenAsync();
-                string query = @"SELECT EmployeeCode, FullName, SocialInsuranceNumber, HealthInsuranceNumber FROM Employee WHERE IsActive = 1";
-
-                using (SqlCommand cmd = new SqlCommand(query, con))
-                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
-                {
-                    dt.Load(reader);
-                }
-            }
-            return dt;
-        }
-
         public async Task<bool> updateEmployeeBHAsync(string EmployeeCode, string SocialInsuranceNumber, string HealthInsuranceNumber)
         {
             string query = @"UPDATE Employee SET 
@@ -3691,23 +3539,6 @@ namespace RauViet.classes
                 return true;
             }
             catch { return false; }
-        }
-
-        public async Task<DataTable> GetEmployeeBankAsybc()
-        {
-            DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(conStr))
-            {
-                await con.OpenAsync();
-                string query = @"SELECT EmployeeCode, FullName, BankName, BankAccountHolder, BankAccountNumber, BankBranch FROM Employee WHERE IsActive = 1";
-
-                using (SqlCommand cmd = new SqlCommand(query, con))
-                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
-                {
-                    dt.Load(reader);
-                }
-            }
-            return dt;
         }
 
         public async Task<bool> updateEmployeeBankAsync(string EmployeeCode, string BankName, string BankBranch, string BankAccountNumber, string BankAccountHolder)
@@ -3733,23 +3564,6 @@ namespace RauViet.classes
                 return true;
             }
             catch { return false; }
-        }
-
-        public async Task<DataTable> GetEmployeeWorkAsyc()
-        {
-            DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(conStr))
-            {
-                await con.OpenAsync();
-                string query = @"SELECT EmployeeCode, FullName, HireDate, PositionID, DepartmentID, ContractTypeID, SalaryGradeID FROM Employee WHERE IsActive = 1";
-
-                using (SqlCommand cmd = new SqlCommand(query, con))
-                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
-                {
-                    dt.Load(reader);
-                }
-            }
-            return dt;
         }
 
         public async Task<bool> updateEmployeeWorkAsync(string EmployeeCode, int PositionID, int DepartmentID, int ContractTypeID, int SalaryGradeID)
@@ -3989,31 +3803,6 @@ namespace RauViet.classes
                 using (SqlCommand cmd = new SqlCommand(spStr, con))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@Month", month);
-                    cmd.Parameters.AddWithValue("@Year", year);
-
-                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
-                    {
-                        dt.Load(reader);
-                    }
-                }
-            }
-
-            return dt;
-        }
-
-        public async Task<DataTable> GetEmployeeSalarySummaryAsync(int month, int year)
-        {
-            DataTable dt = new DataTable();
-
-            using (SqlConnection con = new SqlConnection(conStr))
-            {
-                await con.OpenAsync();
-
-                using (SqlCommand cmd = new SqlCommand("sp_GetEmployeeSalarySummary", con))
-                {
-                    cmd.CommandType = CommandType.StoredProcedure; // Quan trọng
-
                     cmd.Parameters.AddWithValue("@Month", month);
                     cmd.Parameters.AddWithValue("@Year", year);
 

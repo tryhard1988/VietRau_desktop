@@ -54,7 +54,7 @@ namespace RauViet.ui
             try
             {
                 // Chạy truy vấn trên thread riêng
-                var departmentTask = SQLManager.Instance.GetActiveDepartmentAsync();
+                var departmentTask = SQLStore.Instance.GetActiveDepartmentAsync();
                 var departmentAllowanceAsync = SQLManager.Instance.GetDepartmentAllowanceAsybc();
                 var allowanceTypeAsync = SQLManager.Instance.GetAllowanceTypeAsync("DEP");
 

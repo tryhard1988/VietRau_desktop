@@ -45,7 +45,7 @@ namespace RauViet.ui
             try
             {
                 // Chạy truy vấn trên thread riêng
-                var salaryGradeTask = SQLManager.Instance.GetSalaryGradeAsync();
+                var salaryGradeTask = SQLStore.Instance.GetSalaryGradeAsync();
                 await Task.WhenAll(salaryGradeTask);
                 DataTable salaryGrade_dt = salaryGradeTask.Result;
 

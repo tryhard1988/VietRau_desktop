@@ -19,6 +19,7 @@ namespace RauViet.ui
     {
         private DataTable mEmployeeDeduction_dt, mDeductionType_dt;
         private const string DeductionTypeCode = "ADV";
+        private string mDeductionName = "";
         public EmployeeDeduction_ADV()
         {
             InitializeComponent();
@@ -72,12 +73,14 @@ namespace RauViet.ui
             {
                 int month = Convert.ToInt32(month_cbb.SelectedItem);
                 int year = Convert.ToInt32(year_tb.Text);
-                var employeeTask = SQLManager.Instance.GetActiveEmployeeAsync();
-                var employeeDeductionAsync = SQLManager.Instance.GetEmployeeDeductionAsync(month, year, DeductionTypeCode);
-
-                await Task.WhenAll(employeeTask, employeeDeductionAsync);
-                DataTable employee_dt = employeeTask.Result;
+                string[] keepColumns = { "EmployeeCode", "FullName", "PositionName", "ContractTypeName", };
+                var employeesTask = SQLStore.Instance.GetEmployeesAsync(keepColumns);
+                var employeeDeductionAsync = SQLStore.Instance.GetDeductionAsync(month, year, DeductionTypeCode);
+                var deductionNameAsync = SQLStore.Instance.GetDeductionNameAsync(DeductionTypeCode);
+                await Task.WhenAll(employeesTask, employeeDeductionAsync, deductionNameAsync);
+                DataTable employee_dt = employeesTask.Result;
                 mEmployeeDeduction_dt = employeeDeductionAsync.Result;
+                mDeductionName = deductionNameAsync.Result;
 
                 foreach (DataRow dr in employee_dt.Rows)
                 {
@@ -92,6 +95,8 @@ namespace RauViet.ui
 
                 employeeDeductionGV.Columns["EmployeeDeductionID"].Visible = false;
                 employeeDeductionGV.Columns["EmployeeCode"].Visible = false;
+                employeeDeductionGV.Columns["DeductionTypeCode"].Visible = false;
+                employeeDeductionGV.Columns["DeductionTypeName"].Visible = false;
 
                 int count = 0;
                 mEmployeeDeduction_dt.Columns["DeductionDate"].SetOrdinal(count++);
@@ -271,6 +276,13 @@ namespace RauViet.ui
                                 row.Cells["Amount"].Value = amount;
                                 row.Cells["Note"].Value = note;
                                 row.Cells["UpdateHistory"].Value = updateHistory;
+
+                                DataRowView drv = row.DataBoundItem as DataRowView;
+                                if (drv != null)
+                                {
+                                    DataRow dr = drv.Row;
+                                    SQLStore.Instance.addOrUpdateDeduction(deductionDate.Year, dr);
+                                }
                             }
                             else
                             {
@@ -304,6 +316,8 @@ namespace RauViet.ui
 
                         drToAdd["EmployeeDeductionID"] = employeeDeductionID;
                         drToAdd["EmployeeCode"] = employeeCode;
+                        drToAdd["DeductionTypeCode"] = DeductionTypeCode;
+                        drToAdd["DeductionTypeName"] = mDeductionName;
                         drToAdd["DeductionDate"] = deductionDate.Date;
                         drToAdd["Amount"] = amount;
                         drToAdd["Note"] = note;
@@ -315,6 +329,7 @@ namespace RauViet.ui
                         status_lb.Text = "Thành công";
                         status_lb.ForeColor = Color.Green;
 
+                        SQLStore.Instance.addOrUpdateDeduction(deductionDate.Year, drToAdd);
                         newCustomerBtn_Click(null, null);
                     }
                     else
@@ -332,7 +347,7 @@ namespace RauViet.ui
             }
         }
 
-        private void saveBtn_Click(object sender, EventArgs e)
+        private async void saveBtn_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(amount_tb.Text) || dataGV.CurrentRow == null)
             {
@@ -340,7 +355,6 @@ namespace RauViet.ui
                 return;
             }
 
-            
             DateTime deductionDate = deductionDate_dtp.Value;
             int year = Convert.ToInt32(year_tb.Text);
             int month = Convert.ToInt32(month_cbb.SelectedItem);
@@ -348,6 +362,13 @@ namespace RauViet.ui
             if (deductionDate.Year != year || month != deductionDate.Month)
             {
                 MessageBox.Show("Tháng hoặc Năm có vẫn đề", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            bool isLock = await SQLStore.Instance.IsSalaryLockAsync(month, year);
+            if (isLock)
+            {
+                MessageBox.Show("Tháng " + month + "/" + year + " đã bị khóa.", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
@@ -373,6 +394,14 @@ namespace RauViet.ui
                 string id = row.Cells["EmployeeDeductionID"].Value.ToString();
                 if (id.CompareTo(employeeDeductionID) == 0)
                 {
+                    DateTime deductionDate = Convert.ToDateTime(row.Cells["DeductionDate"].Value);
+                    bool isLock = await SQLStore.Instance.IsSalaryLockAsync(deductionDate.Month, deductionDate.Year);
+                    if (isLock)
+                    {
+                        MessageBox.Show("Tháng " + deductionDate.Month + "/" + deductionDate.Year + " đã bị khóa.", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
                     DialogResult dialogResult = MessageBox.Show("XÓA THÔNG TIN \n Chắc chắn chưa ?", " Xóa Thông Tin", MessageBoxButtons.YesNo);
                     if (dialogResult == DialogResult.Yes)
                     {

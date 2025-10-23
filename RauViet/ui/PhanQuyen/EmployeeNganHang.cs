@@ -1,4 +1,6 @@
-﻿using System;
+﻿using DocumentFormat.OpenXml.Bibliography;
+using RauViet.classes;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -7,7 +9,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using RauViet.classes;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
 
 namespace RauViet.ui
@@ -41,11 +42,11 @@ namespace RauViet.ui
 
             try
             {
-                // Chạy truy vấn trên thread riêng
-                var employeeTask = SQLManager.Instance.GetEmployeeBankAsybc();
+                string[] keepColumns = { "EmployeeCode", "FullName", "BankName", "BankAccountHolder", "BankAccountNumber", "BankBranch" };
+                var employeesTask = SQLStore.Instance.GetEmployeesAsync(keepColumns);
 
-                await Task.WhenAll(employeeTask);
-                DataTable employee_dt = employeeTask.Result;
+                await Task.WhenAll(employeesTask);
+                DataTable employee_dt = employeesTask.Result;
 
                 dataGV.DataSource = employee_dt;
 
@@ -139,6 +140,15 @@ namespace RauViet.ui
                                 row.Cells["BankBranch"].Value = bankBranch;
                                 row.Cells["BankAccountNumber"].Value = bankAccountNumber;
                                 row.Cells["BankAccountHolder"].Value = bankAccountHolder;
+
+                                var parameters = new Dictionary<string, object>
+                                {
+                                    ["BankName"] = bankName,
+                                    ["BankBranch"] = bankBranch,
+                                    ["BankAccountNumber"] = bankAccountNumber,
+                                    ["BankAccountHolder"] = bankAccountHolder
+                                };
+                                SQLStore.Instance.updateEmploy(employeeCode, parameters);
                             }
                             else
                             {

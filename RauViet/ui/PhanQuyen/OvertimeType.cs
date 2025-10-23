@@ -157,8 +157,6 @@ namespace RauViet.ui
                                 row.Cells["OvertimeName"].Value = overtimeName;
                                 row.Cells["SalaryFactor"].Value = salaryFactor;
                                 row.Cells["IsActive"].Value = isActive;
-
-                                SQLStore.Instance.restOvertimeTypeAsync();
                             }
                             else
                             {
@@ -211,7 +209,6 @@ namespace RauViet.ui
 
                         status_lb.Text = "Thành công";
                         status_lb.ForeColor = Color.Green;
-                        SQLStore.Instance.restOvertimeTypeAsync();
                     }
                     else
                     {

@@ -1,13 +1,16 @@
-﻿using DocumentFormat.OpenXml.VariantTypes;
+﻿using DocumentFormat.OpenXml.Spreadsheet;
+using DocumentFormat.OpenXml.VariantTypes;
 using DocumentFormat.OpenXml.Vml;
 using DocumentFormat.OpenXml.Wordprocessing;
 using RauViet.classes;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -84,18 +87,27 @@ namespace RauViet.ui
             {
                 int month = Convert.ToInt32(month_cbb.SelectedItem);
                 int year = Convert.ToInt32(year_tb.Text);
-                var employeeTask = SQLManager.Instance.GetEmployeeSalarySummaryAsync(month, year);
-                var employeeAllowanceAsync = SQLManager.Instance.GetEmployeeAllowanceAsync(month, year);
-                var overtimeAttendamceAsync = SQLManager.Instance.GetOvertimeAttendamceForSalaryAsync(month, year);
-                var leaveAttendanceAsync = SQLManager.Instance.GetLeaveAttendanceAsync_IsPaid(month, year);
-                var deductionAsync = SQLManager.Instance.GetEmployeeDeductions(month, year);
-                var overtimeTypeAsync = SQLStore.Instance.GetOvertimeTypeAsync();
-                var leaveTypeAsync = SQLStore.Instance.GetLeaveType_HavePaidAsync();
-                var deductionTypeAsync = SQLStore.Instance.GetDeductionTypeAsync();
-                var attendamceTask = SQLManager.Instance.GetAttendamceForSalaryAsync(month, year);
 
-                await Task.WhenAll(employeeTask, employeeAllowanceAsync, overtimeAttendamceAsync, leaveAttendanceAsync,
-                    deductionAsync, overtimeTypeAsync, leaveTypeAsync, deductionTypeAsync, attendamceTask);
+                string[] keepColumns = { "EmployeeCode", "FullName", "HireDate", "IsInsuranceRefund", "ContractTypeName" };
+                string[] keepColumnsInfo = { "BaseSalary", "InsuranceBaseSalary" };
+                string[] keepColumnsLeave = { "EmployeeCode", "LeaveTypeCode", "DateOff", "LeaveTypeName", "LeaveHours" };
+                string[] keepColumnsAttendamce = { "EmployeeCode", "WorkDate", "WorkingHours"};
+                var employeInfoTask = SQLStore.Instance.GetEmployeesAsync(keepColumns);
+                var annualLeaveBalanceTask = SQLStore.Instance.GetAnnualLeaveBalanceAsync(year);
+                var overtimeTypeAsync = SQLStore.Instance.GetOvertimeTypeAsync();
+                var leaveTypeAsync = SQLStore.Instance.GetLeaveTypeWithPaidAsync(true);
+                var deductionTypeAsync = SQLStore.Instance.GetDeductionTypeAsync();
+                var deductionAsync = SQLStore.Instance.GetDeductionAsync(month, year);
+                var overtimeAttendamceAsync = SQLStore.Instance.GetOvertimeAttendamceAsync(month, year);                
+                var employeeTask = SQLStore.Instance.GetEmployeeSalaryInfoAsync(keepColumnsInfo, month, year);
+                var leaveAttendanceAsync = SQLStore.Instance.GetLeaveAttendancesAsyn(keepColumnsLeave, month, year, true);
+                var attendamceTask = SQLStore.Instance.GetAttendamceAsync(keepColumnsAttendamce, month, year);
+
+                var employeeAllowanceAsync = SQLManager.Instance.GetEmployeeAllowanceAsync(month, year);    
+                
+
+                await Task.WhenAll(employeInfoTask, employeeTask, employeeAllowanceAsync, overtimeAttendamceAsync, leaveAttendanceAsync,
+                    deductionAsync, overtimeTypeAsync, leaveTypeAsync, deductionTypeAsync, attendamceTask, annualLeaveBalanceTask);
 
                 mCurentMonth = month;
                 mCurentYear = year;
@@ -109,36 +121,15 @@ namespace RauViet.ui
                 mLeaveType_dt = leaveTypeAsync.Result;
                 mDeductionType = deductionTypeAsync.Result;
                 mAttendamce_dt = attendamceTask.Result;
-                // ====== 1️⃣ Tính phụ cấp có/không bảo hiểm ======
-                var insuranceResult = from row in mAllowance_dt.AsEnumerable()
-                                      where row.Field<string>("ScopeCode") != "ONCE"
-                                      group row by row.Field<string>("EmployeeCode") into g
-                                      select new
-                                      {
-                                          EmployeeCode = g.Key,
-                                          TotalIncludedInsurance = g
-                                              .Where(r => Convert.ToBoolean(r["IsInsuranceIncluded"]))
-                                              .Sum(r => r["Amount"] == DBNull.Value ? 0 : Convert.ToInt32(r["Amount"])),
-                                          TotalExcludedInsurance = g
-                                              .Where(r => !Convert.ToBoolean(r["IsInsuranceIncluded"]))
-                                              .Sum(r => r["Amount"] == DBNull.Value ? 0 : Convert.ToInt32(r["Amount"]))
-                                      };
+                
+                
 
-                var attendamceResult = from row in mAttendamce_dt.AsEnumerable()
-                                      group row by row.Field<string>("EmployeeCode") into g
-                                      select new
-                                      {
-                                          EmployeeCode = g.Key,
-                                          TotalHourWork = g
-                                              .Sum(r => r["WorkingHours"] == DBNull.Value ? 0 : Convert.ToInt32(r["WorkingHours"])),
-                                      };
-
-                // ====== 2️⃣ Thêm cột cần tính ======
-                void AddColumnIfNotExists(DataTable dt, string name, Type type)
-                {
-                    if (!dt.Columns.Contains(name))
-                        dt.Columns.Add(new DataColumn(name, type));
-                }
+                AddColumnIfNotExists(mEmployee_dt, "EmployeeCode", typeof(string));
+                AddColumnIfNotExists(mEmployee_dt, "FullName", typeof(string));
+                AddColumnIfNotExists(mEmployee_dt, "HireDate", typeof(DateTime));
+                AddColumnIfNotExists(mEmployee_dt, "IsInsuranceRefund", typeof(bool));
+                AddColumnIfNotExists(mEmployee_dt, "ContractTypeName", typeof(string));
+                AddColumnIfNotExists(mEmployee_dt, "RemainingLeave", typeof(int));
 
                 AddColumnIfNotExists(mEmployee_dt, "TotalIncludedInsurance", typeof(int));
                 AddColumnIfNotExists(mEmployee_dt, "TotalExcludedInsurance", typeof(int));
@@ -149,326 +140,17 @@ namespace RauViet.ui
                 AddColumnIfNotExists(mEmployee_dt, "TotalSalaryHourWork", typeof(decimal));
                 AddColumnIfNotExists(mEmployee_dt, "InsuranceRefund", typeof(decimal));
                 AddColumnIfNotExists(mEmployee_dt, "NetSalary", typeof(decimal));
+                AddColumnIfNotExists(mAttendamce_dt, "DayOfWeek", typeof(string));
 
-                foreach (DataRow adr in mAllowance_dt.Rows)
-                {
-                    string scopeCode = adr["ScopeCode"].ToString();
-                    if(scopeCode.CompareTo("ONCE") == 0)
-                        AddColumnIfNotExists(mEmployee_dt, "Allowance" + adr["AllowanceTypeID"].ToString(), typeof(decimal));
-                }
+                var t1 = AddDynamicColumnsAsync();
+                var t2 = Task.Run(() => CalculateAllSalaries(employeInfoTask.Result, annualLeaveBalanceTask.Result));
+                await Task.WhenAll(t1, t2);
 
-                foreach (DataRow otdr in mOvertimeType_dt.Rows)
-                {
-                    AddColumnIfNotExists(mEmployee_dt, "OvertimeType" + otdr["OvertimeTypeID"].ToString(), typeof(decimal));
-                    AddColumnIfNotExists(mEmployee_dt, "c_OvertimeType" + otdr["OvertimeTypeID"].ToString(), typeof(decimal));
-                }
-
-                foreach (DataRow otdr in mLeaveType_dt.Rows)
-                {
-                    AddColumnIfNotExists(mEmployee_dt, "LeaveType" + otdr["LeaveTypeCode"].ToString(), typeof(decimal));
-                    AddColumnIfNotExists(mEmployee_dt, "c_LeaveType" + otdr["LeaveTypeCode"].ToString(), typeof(decimal));
-                }
-
-                foreach (DataRow dtdr in mDeductionType.Rows)
-                {
-                    AddColumnIfNotExists(mEmployee_dt, "DeductionType" + dtdr["DeductionTypeCode"].ToString(), typeof(decimal));
-                }
-
-                mAttendamce_dt.Columns.Add("DayOfWeek", typeof(string));
-
-                foreach (DataRow row in mAttendamce_dt.Rows)
-                {
-                    DateTime dt = Convert.ToDateTime(row["WorkDate"]);
-                    string[] vietDays = { "CN", "T.2", "T.3", "T.4", "T.5", "T.6", "T.7" };
-                    row["DayOfWeek"] = vietDays[(int)dt.DayOfWeek];
-                }
-
-                int countAttendamce = 0;
-                mAttendamce_dt.Columns["DayOfWeek"].SetOrdinal(countAttendamce++);
-                mAttendamce_dt.Columns["WorkDate"].SetOrdinal(countAttendamce++);
-                mAttendamce_dt.Columns["WorkingHours"].SetOrdinal(countAttendamce++);
-
-                // ====== 3️⃣ Tính toán cho từng nhân viên ======
-                foreach (DataRow dr in mEmployee_dt.Rows)
-                {
-                    string employeeCode = Convert.ToString(dr["EmployeeCode"]);
-                    bool isInsuranceRefund = Convert.ToBoolean(dr["IsInsuranceRefund"]);
-
-                    int insuranceBaseSalary = dr["InsuranceBaseSalary"] == DBNull.Value ? 0 : Convert.ToInt32(dr["InsuranceBaseSalary"]);
-                    int baseSalary = dr["BaseSalary"] == DBNull.Value ? 0 : Convert.ToInt32(dr["BaseSalary"]);
-
-                    var match = insuranceResult.FirstOrDefault(r => r.EmployeeCode == employeeCode);                    
-                    int totalIncludedInsurance = match?.TotalIncludedInsurance ?? 0;
-                    int totalExcludedInsurance = match?.TotalExcludedInsurance ?? 0;
-                    // Tính tiền BHXH nhân viên phải nộp (10.5%)
-                    int employeeInsurancePaid = Convert.ToInt32((totalIncludedInsurance + insuranceBaseSalary) * 0.105m);
-
-                    // Tính lương ngày và giờ
-                    double daySalary = ((baseSalary - employeeInsurancePaid) + totalIncludedInsurance + totalExcludedInsurance) / 26.0;
-                    decimal hourSalary = Math.Round((decimal)(daySalary / 8.0), 1);
-
-                    dr["TotalIncludedInsurance"] = totalIncludedInsurance;
-                    dr["TotalExcludedInsurance"] = totalExcludedInsurance;
-                    dr["TotalInsuranceSalary"] = totalIncludedInsurance + insuranceBaseSalary;
-                    dr["EmployeeInsurancePaid"] = employeeInsurancePaid;
-                    dr["HourSalary"] = hourSalary;
-                    dr["InsuranceRefund"] = isInsuranceRefund ? employeeInsurancePaid : 0;
-
-                }
-
-                // ====== 4️⃣ Tính tiền tăng ca ======
-                AddColumnIfNotExists(mOvertimeAttendance_dt, "OvertimeAttendanceSalary", typeof(decimal));
-
-                foreach (DataRow dr in mOvertimeAttendance_dt.Rows)
-                {
-                    string employeeCode = Convert.ToString(dr["EmployeeCode"]);
-                    decimal salaryFactor = dr["SalaryFactor"] == DBNull.Value ? 1 : Convert.ToDecimal(dr["SalaryFactor"]);
-                    decimal hourWork = dr["HourWork"] == DBNull.Value ? 0 : Convert.ToDecimal(dr["HourWork"]);
-
-                    var employeeRow = mEmployee_dt.AsEnumerable()
-                        .FirstOrDefault(r => r.Field<string>("EmployeeCode") == employeeCode);
-
-                    decimal hourSalary = employeeRow?.Field<decimal>("HourSalary") ?? 0;
-
-                    dr["OvertimeAttendanceSalary"] = Math.Round(hourSalary * hourWork * salaryFactor, 1);
-                }
-
-                // ====== 5️⃣ Tổng tiền tăng ca theo nhân viên ======
-                foreach (DataRow dr in mEmployee_dt.Rows)
-                {
-                    string employeeCode = Convert.ToString(dr["EmployeeCode"]);
-                    decimal hourSalary = Convert.ToDecimal(dr["HourSalary"]);
-
-                    //luong
-                    decimal totalIncludedInsurance = Convert.ToDecimal(dr["TotalIncludedInsurance"]);
-                    decimal totalExcludedInsurance = Convert.ToDecimal(dr["TotalExcludedInsurance"]);
-                    decimal totalSalaryHourWork = 0;;
-                    decimal insuranceRefund = Convert.ToDecimal(dr["InsuranceRefund"]);
-                    decimal overtimeMoney = 0;
-                    decimal leaveMoney = 0;
-                    decimal allowanceONCE = 0;
-
-                    //các khoảng trừ
-                    decimal deductionMoney = 0;
-                    decimal employeeInsurancePaid = Convert.ToDecimal(dr["EmployeeInsurancePaid"]);
-
-                    var hwMatch = attendamceResult.FirstOrDefault(r => r.EmployeeCode == employeeCode);
-                    int totalHourWork = hwMatch?.TotalHourWork ?? 0;
-                    totalSalaryHourWork = totalHourWork * hourSalary;
-
-                    dr["TotalHourWork"] = totalHourWork;
-                    dr["TotalSalaryHourWork"] = totalSalaryHourWork;
-
-                    DataTable empAllowance = mAllowance_dt.Clone();
-                    foreach (DataRow adr in mAllowance_dt.Select($"EmployeeCode = '{employeeCode}'"))
-                        empAllowance.ImportRow(adr);
-
-                    foreach (DataRow adr in empAllowance.Rows)
-                    {
-                        string scopeCode = adr["ScopeCode"].ToString();
-                        
-                        if (scopeCode.CompareTo("ONCE") == 0)
-                        {
-                            int allowanceTypeID = Convert.ToInt32(adr["AllowanceTypeID"]);
-                            decimal amount = Convert.ToDecimal(adr["Amount"]);
-                            dr["Allowance" + adr["AllowanceTypeID"].ToString()] = amount;
-                            allowanceONCE += amount;
-                        }
-                    }
-
-                    foreach (DataRow otdr in mOvertimeType_dt.Rows)
-                    {
-                        int overtimeTypeID = Convert.ToInt32(otdr["OvertimeTypeID"]);
-                        var filteredRows = mOvertimeAttendance_dt.AsEnumerable().Where(r => r.Field<string>("EmployeeCode") == employeeCode && r.Field<int>("OvertimeTypeID") == overtimeTypeID);
-
-                        decimal total = filteredRows.Any()? filteredRows.Sum(r => r.Field<decimal>("OvertimeAttendanceSalary")): 0m;
-                        decimal totalhour = filteredRows.Any() ? filteredRows.Sum(r => r.Field<decimal>("HourWork")) : 0m;
-
-                        dr["c_OvertimeType" + overtimeTypeID.ToString()] = totalhour;
-                        dr["OvertimeType" + overtimeTypeID.ToString()] = total;
-                        overtimeMoney += total;
-                    }
-
-                    foreach (DataRow ltdr in mLeaveType_dt.Rows)
-                    {
-                        string leaveTypeCode = Convert.ToString(ltdr["LeaveTypeCode"]);
-                        var count = mLeaveAttendance_dt.AsEnumerable().Count(r => r.Field<string>("EmployeeCode") == employeeCode && r.Field<string>("LeaveTypeCode") == leaveTypeCode);
-
-                        decimal temp = count * 8 * hourSalary;
-                        dr["LeaveType" + leaveTypeCode] = temp;
-                        dr["c_LeaveType" + leaveTypeCode] = count * 8;
-                        leaveMoney += temp;
-                    }
-
-                    foreach (DataRow ltdr in mDeductionType.Rows)
-                    {
-                        string deductionTypeCode = Convert.ToString(ltdr["DeductionTypeCode"]);
-                        var total = mDeduction_dt.AsEnumerable().Where(r => r.Field<string>("EmployeeCode") == employeeCode && r.Field<string>("DeductionTypeCode") == deductionTypeCode).Sum(r => r.Field<int>("Amount"));
-
-                        dr["DeductionType" + deductionTypeCode] = total;
-                        deductionMoney += total;
-                    }
+                _ = Task.Run(() => SetupAllGrids());
+                _ = Task.Run(() => SetupDataGridViewHeaders());
 
 
-
-                    decimal netSalary = totalSalaryHourWork + insuranceRefund + overtimeMoney + leaveMoney + allowanceONCE;
-                    netSalary -= (deductionMoney);
-                    dr["NetSalary"] = netSalary;
-
-                }
-
-                int countE = 0;
-                mEmployee_dt.Columns["EmployeeCode"].SetOrdinal(countE++);
-                mEmployee_dt.Columns["FullName"].SetOrdinal(countE++);
-                mEmployee_dt.Columns["ContractTypeName"].SetOrdinal(countE++);
-                mEmployee_dt.Columns["NetSalary"].SetOrdinal(countE++);
-                mEmployee_dt.Columns["BaseSalary"].SetOrdinal(countE++);
-                mEmployee_dt.Columns["TotalSalaryHourWork"].SetOrdinal(countE++);
-                mEmployee_dt.Columns["TotalHourWork"].SetOrdinal(countE++);
-                mEmployee_dt.Columns["HourSalary"].SetOrdinal(countE++);
-                mEmployee_dt.Columns["InsuranceBaseSalary"].SetOrdinal(countE++);
-                mEmployee_dt.Columns["TotalInsuranceSalary"].SetOrdinal(countE++);
-                mEmployee_dt.Columns["EmployeeInsurancePaid"].SetOrdinal(countE++);
-                mEmployee_dt.Columns["InsuranceRefund"].SetOrdinal(countE++);
-
-                overtimeAttendanceGV.DataSource = mOvertimeAttendance_dt;
-                allowanceGV.DataSource = mAllowance_dt;
-                leaveGV.DataSource = mLeaveAttendance_dt;
-                deductionGV.DataSource = mDeduction_dt;
-                attendamceGV.DataSource = mAttendamce_dt;
-                dataGV.DataSource = mEmployee_dt;
                 
-
-                attendamceGV.Columns["EmployeeCode"].Visible = false;
-                allowanceGV.Columns["EmployeeCode"].Visible = false;
-                allowanceGV.Columns["AllowanceTypeID"].Visible = false;
-                allowanceGV.Columns["ScopeCode"].Visible = false;
-                overtimeAttendanceGV.Columns["EmployeeCode"].Visible = false;
-                overtimeAttendanceGV.Columns["SalaryFactor"].Visible = false;
-                overtimeAttendanceGV.Columns["OvertimeTypeID"].Visible = false;
-                leaveGV.Columns["EmployeeCode"].Visible = false;
-                leaveGV.Columns["LeaveTypeCode"].Visible = false;
-                deductionGV.Columns["EmployeeCode"].Visible = false;
-                deductionGV.Columns["DeductionTypeCode"].Visible = false;
-                dataGV.Columns["IsInsuranceRefund"].Visible = false;
-                dataGV.Columns["HireDate"].Visible = false;
-                dataGV.Columns["RemainingLeave"].Visible = false;
-
-                allowanceGV.Columns["AllowanceName"].HeaderText = "Phụ Cấp";
-                allowanceGV.Columns["Amount"].HeaderText = "Số Tiền";
-                allowanceGV.Columns["IsInsuranceIncluded"].HeaderText = "BHXH";
-                allowanceGV.Columns["AllowanceName"].Width = 120;
-                allowanceGV.Columns["Amount"].Width = 70;
-                allowanceGV.Columns["IsInsuranceIncluded"].Width = 40;
-
-                deductionGV.Columns["DeductionDate"].HeaderText = "Ngày Trừ";
-                deductionGV.Columns["DeductionTypeName"].HeaderText = "Loại Tiền";
-                deductionGV.Columns["Amount"].HeaderText = "Số Tiền";
-                deductionGV.Columns["DeductionDate"].Width = 70;
-                deductionGV.Columns["DeductionTypeName"].Width = 80;
-                deductionGV.Columns["Amount"].Width = 60;
-
-                attendamceGV.Columns["DayOfWeek"].HeaderText = "Thứ";
-                attendamceGV.Columns["WorkDate"].HeaderText = "Ngày Làm";
-                attendamceGV.Columns["WorkingHours"].HeaderText = "S.Giờ";
-                attendamceGV.Columns["DayOfWeek"].Width = 40;
-                attendamceGV.Columns["WorkDate"].Width = 80;
-                attendamceGV.Columns["WorkingHours"].Width = 50;
-
-                overtimeAttendanceGV.Columns["WorkDate"].HeaderText = "Ngày T.Ca";
-                overtimeAttendanceGV.Columns["OvertimeName"].HeaderText = "Loại T.Ca";
-                overtimeAttendanceGV.Columns["HourWork"].HeaderText = "S.Giờ";
-                overtimeAttendanceGV.Columns["OvertimeAttendanceSalary"].HeaderText = "T.Công";
-                overtimeAttendanceGV.Columns["WorkDate"].Width = 70;
-                overtimeAttendanceGV.Columns["OvertimeName"].Width = 80;
-                overtimeAttendanceGV.Columns["HourWork"].Width = 40;
-                overtimeAttendanceGV.Columns["OvertimeAttendanceSalary"].Width = 60;
-
-                leaveGV.Columns["LeaveTypeName"].HeaderText = "Loại Ngày Nghỉ";
-                leaveGV.Columns["DateOff"].HeaderText = "Ngày Nghỉ";
-                leaveGV.Columns["DateOff"].Width = 80;
-                leaveGV.Columns["LeaveTypeName"].Width = 150;
-
-                dataGV.Columns["EmployeeCode"].HeaderText = "Mã NV";
-                dataGV.Columns["FullName"].HeaderText = "Tên Nhân Viên";
-                dataGV.Columns["ContractTypeName"].HeaderText = "Hợp Đồng";
-                dataGV.Columns["NetSalary"].HeaderText = "Thực Lãnh";
-                dataGV.Columns["BaseSalary"].HeaderText = "Lương CB";
-                dataGV.Columns["InsuranceBaseSalary"].HeaderText = "Lương C.S Đóng BHXH";
-                dataGV.Columns["TotalInsuranceSalary"].HeaderText = "Lương Tính Đóng BHXH";
-                dataGV.Columns["TotalSalaryHourWork"].HeaderText = "T.Lương Theo Giờ";
-                dataGV.Columns["TotalHourWork"].HeaderText = "Giờ Công Làm";
-                dataGV.Columns["HourSalary"].HeaderText = "Tiền 1 Giờ Làm";
-                dataGV.Columns["EmployeeInsurancePaid"].HeaderText = "Tiền NV Nộp BHXH";
-                dataGV.Columns["InsuranceRefund"].HeaderText = "Hoàn Trả BHXH";
-
-                dataGV.Columns["TotalIncludedInsurance"].HeaderText = "PC Đóng BHXH";
-                dataGV.Columns["TotalExcludedInsurance"].HeaderText = "PC K.Đóng BHXH";
-
-                dataGV.Columns["EmployeeCode"].Frozen = true;
-                dataGV.Columns["FullName"].Frozen = true;
-                dataGV.Columns["NetSalary"].Frozen = true;
-
-                dataGV.Columns["EmployeeCode"].Width = 50;
-                dataGV.Columns["FullName"].Width = 120;
-                dataGV.Columns["NetSalary"].Width = 70;
-                dataGV.Columns["BaseSalary"].Width = 70;                
-                dataGV.Columns["TotalSalaryHourWork"].Width = 70;
-                dataGV.Columns["TotalHourWork"].Width = 50;
-                dataGV.Columns["HourSalary"].Width = 50;
-                dataGV.Columns["InsuranceBaseSalary"].Width = 70;
-                dataGV.Columns["TotalInsuranceSalary"].Width = 70;
-                dataGV.Columns["EmployeeInsurancePaid"].Width = 50;
-                dataGV.Columns["InsuranceRefund"].Width = 50;
-                dataGV.Columns["TotalIncludedInsurance"].Width = 50;
-                dataGV.Columns["TotalExcludedInsurance"].Width = 50;
-
-                dataGV.Columns["NetSalary"].HeaderCell.Style.BackColor = Color.BurlyWood;
-                
-                dataGV.Columns["InsuranceBaseSalary"].HeaderCell.Style.BackColor = Color.Coral;
-                dataGV.Columns["TotalInsuranceSalary"].HeaderCell.Style.BackColor = Color.Coral;
-                dataGV.Columns["EmployeeInsurancePaid"].HeaderCell.Style.BackColor = Color.Coral;
-                dataGV.Columns["InsuranceRefund"].HeaderCell.Style.BackColor = Color.Coral;
-                dataGV.Columns["TotalIncludedInsurance"].HeaderCell.Style.BackColor = Color.Coral;
-                dataGV.Columns["TotalExcludedInsurance"].HeaderCell.Style.BackColor = Color.Coral;
-
-                foreach (DataRow adr in mAllowance_dt.Rows)
-                {
-                    string scopeCode = adr["ScopeCode"].ToString();
-                    if (scopeCode.CompareTo("ONCE") == 0)
-                    {
-                        string AllowanceCol = "Allowance" + adr["AllowanceTypeID"].ToString();
-                        dataGV.Columns[AllowanceCol].HeaderText = adr["AllowanceName"].ToString();
-                        dataGV.Columns[AllowanceCol].Width = 50;
-                        dataGV.Columns[AllowanceCol].HeaderCell.Style.BackColor = Color.Coral;
-                    }
-                }
-
-                foreach (DataRow otdr in mOvertimeType_dt.Rows)
-                {
-                    string overtimeTypeCol = "OvertimeType" + otdr["OvertimeTypeID"].ToString();
-                    dataGV.Columns["c_" + overtimeTypeCol].Visible = false;
-                    dataGV.Columns[overtimeTypeCol].HeaderText = otdr["OvertimeName"].ToString();
-                    dataGV.Columns[overtimeTypeCol].Width = 50;
-                    dataGV.Columns[overtimeTypeCol].HeaderCell.Style.BackColor = Color.Yellow;
-                }
-
-                foreach (DataRow otdr in mLeaveType_dt.Rows)
-                {
-                    string leaveTypeCol = "LeaveType" + otdr["LeaveTypeCode"].ToString();
-                    dataGV.Columns["c_" + leaveTypeCol].Visible = false;
-                    dataGV.Columns[leaveTypeCol].HeaderText = otdr["LeaveTypeName"].ToString();
-                    dataGV.Columns[leaveTypeCol].Width = 50;
-                    dataGV.Columns[leaveTypeCol].HeaderCell.Style.BackColor = Color.Aqua;
-                }
-
-                foreach (DataRow ltdr in mDeductionType.Rows)
-                {
-                    string deductionTypeCol = "DeductionType" + ltdr["DeductionTypeCode"].ToString();
-                    dataGV.Columns[deductionTypeCol].HeaderText = ltdr["DeductionTypeName"].ToString();
-                    dataGV.Columns[deductionTypeCol].Width = 50;
-                    dataGV.Columns[deductionTypeCol].HeaderCell.Style.BackColor = Color.Gray;
-                }
 
 
                 if (dataGV.Rows.Count > 0)
@@ -493,6 +175,683 @@ namespace RauViet.ui
             }
 
             
+        }
+
+        public void CalculateAllSalaries(DataTable employeInfo, DataTable annualLeaveBalance)
+        {
+            var insuranceResult = from row in mAllowance_dt.AsEnumerable()
+                                  where row.Field<string>("ScopeCode") != "ONCE"
+                                  group row by row.Field<string>("EmployeeCode") into g
+                                  select new
+                                  {
+                                      EmployeeCode = g.Key,
+                                      TotalIncludedInsurance = g
+                                          .Where(r => Convert.ToBoolean(r["IsInsuranceIncluded"]))
+                                          .Sum(r => r["Amount"] == DBNull.Value ? 0 : Convert.ToInt32(r["Amount"])),
+                                      TotalExcludedInsurance = g
+                                          .Where(r => !Convert.ToBoolean(r["IsInsuranceIncluded"]))
+                                          .Sum(r => r["Amount"] == DBNull.Value ? 0 : Convert.ToInt32(r["Amount"]))
+                                  };
+
+            var attendamceResult = from row in mAttendamce_dt.AsEnumerable()
+                                   group row by row.Field<string>("EmployeeCode") into g
+                                   select new
+                                   {
+                                       EmployeeCode = g.Key,
+                                       TotalHourWork = g
+                                           .Sum(r => r["WorkingHours"] == DBNull.Value ? 0 : Convert.ToInt32(r["WorkingHours"])),
+                                   };
+
+            var employeeLookup = employeInfo.AsEnumerable().ToDictionary(r => r.Field<string>("EmployeeCode"));
+            var annualLeaveBalanceLookup = annualLeaveBalance.AsEnumerable().ToDictionary(r => r.Field<string>("EmployeeCode"));
+            Task.Run(() =>
+            {
+                foreach (DataRow dr in mEmployee_dt.Rows)
+                {
+                    string employeeCode = Convert.ToString(dr["EmployeeCode"]);
+
+                    if (employeeLookup.TryGetValue(employeeCode, out DataRow matchRow))
+                    {
+                        dr["ContractTypeName"] = Convert.ToString(matchRow["ContractTypeName"]);
+                        dr["IsInsuranceRefund"] = Convert.ToBoolean(matchRow["IsInsuranceRefund"]);
+                        dr["HireDate"] = Convert.ToDateTime(matchRow["HireDate"]);
+                        dr["FullName"] = matchRow["FullName"]?.ToString();
+                    }
+
+                }
+            });
+
+            // Copy dữ liệu đầu vào (thread-safe)
+            var rows = mEmployee_dt.AsEnumerable().ToList();
+
+            // Mảng kết quả tạm
+            var resultList = new ConcurrentBag<(string EmployeeCode, decimal HourSalary, int EmployeeInsurancePaid, int TotalIncludedInsurance, int TotalExcludedInsurance, int TotalInsuranceSalary, int InsuranceRefund)>();
+
+            Parallel.ForEach(rows, dr =>
+            {
+                string employeeCode = Convert.ToString(dr["EmployeeCode"]);
+
+                if (!employeeLookup.TryGetValue(employeeCode, out DataRow matchRow))
+                    return;
+
+                bool isInsuranceRefund = Convert.ToBoolean(matchRow["IsInsuranceRefund"]);
+                int insuranceBaseSalary = dr["InsuranceBaseSalary"] == DBNull.Value ? 0 : Convert.ToInt32(dr["InsuranceBaseSalary"]);
+                int baseSalary = dr["BaseSalary"] == DBNull.Value ? 0 : Convert.ToInt32(dr["BaseSalary"]);
+
+                var match = insuranceResult.FirstOrDefault(r => r.EmployeeCode == employeeCode);
+                int totalIncludedInsurance = match?.TotalIncludedInsurance ?? 0;
+                int totalExcludedInsurance = match?.TotalExcludedInsurance ?? 0;
+                int employeeInsurancePaid = Convert.ToInt32((totalIncludedInsurance + insuranceBaseSalary) * 0.105m);
+
+                double daySalary = ((baseSalary - employeeInsurancePaid) + totalIncludedInsurance + totalExcludedInsurance) / 26.0;
+                decimal hourSalary = Math.Round((decimal)(daySalary / 8.0), 1);
+
+                resultList.Add((
+                    employeeCode,
+                    hourSalary,
+                    employeeInsurancePaid,
+                    totalIncludedInsurance,
+                    totalExcludedInsurance,
+                    totalIncludedInsurance + insuranceBaseSalary,
+                    isInsuranceRefund ? employeeInsurancePaid : 0
+                ));
+            });
+
+            // Sau khi tính xong, cập nhật lại DataTable trên UI/main thread
+            
+            foreach (var r in resultList)
+            {
+                var dr = mEmployee_dt.AsEnumerable()
+                    .FirstOrDefault(x => x.Field<string>("EmployeeCode") == r.EmployeeCode);
+                if (dr == null) continue;
+
+                dr["TotalIncludedInsurance"] = r.TotalIncludedInsurance;
+                dr["TotalExcludedInsurance"] = r.TotalExcludedInsurance;
+                dr["TotalInsuranceSalary"] = r.TotalInsuranceSalary;
+                dr["EmployeeInsurancePaid"] = r.EmployeeInsurancePaid;
+                dr["HourSalary"] = r.HourSalary;
+                dr["InsuranceRefund"] = r.InsuranceRefund;
+            }
+
+            // ====== 4️⃣ Tính tiền tăng ca ======
+            AddColumnIfNotExists(mOvertimeAttendance_dt, "OvertimeAttendanceSalary", typeof(decimal));
+
+            foreach (DataRow dr in mOvertimeAttendance_dt.Rows)
+            {
+                string employeeCode = Convert.ToString(dr["EmployeeCode"]);
+                decimal salaryFactor = dr["SalaryFactor"] == DBNull.Value ? 1 : Convert.ToDecimal(dr["SalaryFactor"]);
+                decimal hourWork = dr["HourWork"] == DBNull.Value ? 0 : Convert.ToDecimal(dr["HourWork"]);
+
+                var employeeRow = mEmployee_dt.AsEnumerable()
+                    .FirstOrDefault(r => r.Field<string>("EmployeeCode") == employeeCode);
+
+                decimal hourSalary = employeeRow?.Field<decimal>("HourSalary") ?? 0;
+
+                dr["OvertimeAttendanceSalary"] = Math.Round(hourSalary * hourWork * salaryFactor, 1);
+            }
+
+            // ====== 5️⃣ Tổng tiền tăng ca theo nhân viên ======
+            foreach (DataRow dr in mEmployee_dt.Rows)
+            {
+                string employeeCode = Convert.ToString(dr["EmployeeCode"]);
+                decimal hourSalary = Convert.ToDecimal(dr["HourSalary"]);
+
+                //luong
+                decimal totalIncludedInsurance = Convert.ToDecimal(dr["TotalIncludedInsurance"]);
+                decimal totalExcludedInsurance = Convert.ToDecimal(dr["TotalExcludedInsurance"]);
+                decimal totalSalaryHourWork = 0; ;
+                decimal insuranceRefund = Convert.ToDecimal(dr["InsuranceRefund"]);
+                decimal overtimeMoney = 0;
+                decimal leaveMoney = 0;
+                decimal allowanceONCE = 0;
+
+                //các khoảng trừ
+                decimal deductionMoney = 0;
+                decimal employeeInsurancePaid = Convert.ToDecimal(dr["EmployeeInsurancePaid"]);
+
+                var hwMatch = attendamceResult.FirstOrDefault(r => r.EmployeeCode == employeeCode);
+                int totalHourWork = hwMatch?.TotalHourWork ?? 0;
+                totalSalaryHourWork = totalHourWork * hourSalary;
+
+                dr["TotalHourWork"] = totalHourWork;
+                dr["TotalSalaryHourWork"] = totalSalaryHourWork;
+
+                DataTable empAllowance = mAllowance_dt.Clone();
+                foreach (DataRow adr in mAllowance_dt.Select($"EmployeeCode = '{employeeCode}'"))
+                    empAllowance.ImportRow(adr);
+
+                foreach (DataRow adr in empAllowance.Rows)
+                {
+                    string scopeCode = adr["ScopeCode"].ToString();
+
+                    if (scopeCode.CompareTo("ONCE") == 0)
+                    {
+                        int allowanceTypeID = Convert.ToInt32(adr["AllowanceTypeID"]);
+                        decimal amount = Convert.ToDecimal(adr["Amount"]);
+                        dr["Allowance" + adr["AllowanceTypeID"].ToString()] = amount;
+                        allowanceONCE += amount;
+                    }
+                }
+
+                foreach (DataRow otdr in mOvertimeType_dt.Rows)
+                {
+                    int overtimeTypeID = Convert.ToInt32(otdr["OvertimeTypeID"]);
+                    var filteredRows = mOvertimeAttendance_dt.AsEnumerable().Where(r => r.Field<string>("EmployeeCode") == employeeCode && r.Field<int>("OvertimeTypeID") == overtimeTypeID);
+
+                    decimal total = filteredRows.Any() ? filteredRows.Sum(r => r.Field<decimal>("OvertimeAttendanceSalary")) : 0m;
+                    decimal totalhour = filteredRows.Any() ? filteredRows.Sum(r => r.Field<decimal>("HourWork")) : 0m;
+
+                    dr["c_OvertimeType" + overtimeTypeID.ToString()] = totalhour;
+                    dr["OvertimeType" + overtimeTypeID.ToString()] = total;
+                    overtimeMoney += total;
+                }
+
+                foreach (DataRow ltdr in mLeaveType_dt.Rows)
+                {
+                    string leaveTypeCode = Convert.ToString(ltdr["LeaveTypeCode"]);
+                    var sumLeaveHours = mLeaveAttendance_dt.AsEnumerable().Where(r => r.Field<string>("EmployeeCode") == employeeCode &&
+                                                                                        r.Field<string>("LeaveTypeCode") == leaveTypeCode)
+                                                                            .Sum(r => r.Field<decimal>("LeaveHours"));
+                    decimal temp = sumLeaveHours * hourSalary;
+                    dr["LeaveType" + leaveTypeCode] = temp;
+                    dr["c_LeaveType" + leaveTypeCode] = sumLeaveHours;
+                    leaveMoney += temp;
+                }
+
+                foreach (DataRow ltdr in mDeductionType.Rows)
+                {
+                    string deductionTypeCode = Convert.ToString(ltdr["DeductionTypeCode"]);
+                    var total = mDeduction_dt.AsEnumerable().Where(r => r.Field<string>("EmployeeCode") == employeeCode && r.Field<string>("DeductionTypeCode") == deductionTypeCode).Sum(r => r.Field<int>("Amount"));
+
+                    dr["DeductionType" + deductionTypeCode] = total;
+                    deductionMoney += total;
+                }
+
+
+
+                decimal netSalary = totalSalaryHourWork + insuranceRefund + overtimeMoney + leaveMoney + allowanceONCE;
+                netSalary -= (deductionMoney);
+                dr["NetSalary"] = netSalary;
+
+            }
+        }
+
+        public async Task SetupAllGrids()
+        {
+            // 🔹 Task 1️⃣: Sắp xếp cột Employee
+            var t1 = Task.Run(() =>
+            {
+                int countE = 0;
+                mEmployee_dt.Columns["EmployeeCode"].SetOrdinal(countE++);
+                mEmployee_dt.Columns["FullName"].SetOrdinal(countE++);
+                mEmployee_dt.Columns["ContractTypeName"].SetOrdinal(countE++);
+                mEmployee_dt.Columns["NetSalary"].SetOrdinal(countE++);
+                mEmployee_dt.Columns["BaseSalary"].SetOrdinal(countE++);
+                mEmployee_dt.Columns["TotalSalaryHourWork"].SetOrdinal(countE++);
+                mEmployee_dt.Columns["TotalHourWork"].SetOrdinal(countE++);
+                mEmployee_dt.Columns["HourSalary"].SetOrdinal(countE++);
+                mEmployee_dt.Columns["InsuranceBaseSalary"].SetOrdinal(countE++);
+                mEmployee_dt.Columns["TotalInsuranceSalary"].SetOrdinal(countE++);
+                mEmployee_dt.Columns["EmployeeInsurancePaid"].SetOrdinal(countE++);
+                mEmployee_dt.Columns["InsuranceRefund"].SetOrdinal(countE++);
+            });
+
+            // 🔹 Task 2️⃣: Sắp xếp cột Leave
+            var t2 = Task.Run(() =>
+            {
+                int countL = 0;
+                mLeaveAttendance_dt.Columns["DateOff"].SetOrdinal(countL++);
+                mLeaveAttendance_dt.Columns["LeaveTypeName"].SetOrdinal(countL++);
+                mLeaveAttendance_dt.Columns["LeaveHours"].SetOrdinal(countL++);
+            });
+
+            var t3 = Task.Run(() =>
+            {
+                int countAttendamce = 0;
+                mAttendamce_dt.Columns["DayOfWeek"].SetOrdinal(countAttendamce++);
+                mAttendamce_dt.Columns["WorkDate"].SetOrdinal(countAttendamce++);
+                mAttendamce_dt.Columns["WorkingHours"].SetOrdinal(countAttendamce++);
+            });
+
+
+            
+            // 🔹 Chờ 2 task nền xong
+            await Task.WhenAll(t1, t2, t3);
+
+            // 🔹 Gán DataSource (phải trên UI thread)
+            this.Invoke(new Action(() =>
+            {
+                overtimeAttendanceGV.DataSource = mOvertimeAttendance_dt;
+                allowanceGV.DataSource = mAllowance_dt;
+                leaveGV.DataSource = mLeaveAttendance_dt;
+                deductionGV.DataSource = mDeduction_dt;
+                attendamceGV.DataSource = mAttendamce_dt;
+                dataGV.DataSource = mEmployee_dt;
+            }));
+
+            // 🔹 Các task còn lại (ẩn cột, header, màu, width) có thể chạy song song
+            var tHideCols = Task.Run(() => this.Invoke(new Action(() => HideUnnecessaryColumns())));
+            var tHeaders = Task.Run(() => this.Invoke(new Action(() => SetupGridThemesAsync())));
+
+            await Task.WhenAll(tHideCols, tHeaders);
+        }
+
+        // 🧩 Gọn hơn bằng cách tách nhỏ thành 2 hàm con
+        private void HideUnnecessaryColumns()
+        {
+            string[] hideAllowCols = { "EmployeeCode", "AllowanceTypeID", "ScopeCode" };
+            foreach (string col in hideAllowCols)
+                if (allowanceGV.Columns.Contains(col))
+                    allowanceGV.Columns[col].Visible = false;
+
+            string[] hideOverCols = { "EmployeeCode", "SalaryFactor", "OvertimeTypeID", "OvertimeAttendanceID", "StartTime", "EndTime", "Note", "UpdatedHistory", "DayOfWeek" };
+            foreach (string col in hideOverCols)
+                if (overtimeAttendanceGV.Columns.Contains(col))
+                    overtimeAttendanceGV.Columns[col].Visible = false;
+
+            string[] hideLeaveCols = { "EmployeeCode", "LeaveTypeCode" };
+            foreach (string col in hideLeaveCols)
+                if (leaveGV.Columns.Contains(col))
+                    leaveGV.Columns[col].Visible = false;
+
+            string[] hideDedCols = { "EmployeeCode", "DeductionTypeCode", "EmployeeDeductionID", "Note", "updateHistory" };
+            foreach (string col in hideDedCols)
+                if (deductionGV.Columns.Contains(col))
+                    deductionGV.Columns[col].Visible = false;
+
+            string[] hideEmpCols = { "IsInsuranceRefund", "HireDate", "RemainingLeave" };
+            foreach (string col in hideEmpCols)
+                if (dataGV.Columns.Contains(col))
+                    dataGV.Columns[col].Visible = false;
+        }
+
+        public async Task SetupGridThemesAsync()
+        {
+            // Tạo danh sách các task để chạy song song
+            var tasks = new List<Task>();
+
+            // Task 1️⃣: Ẩn các cột không cần thiết
+            tasks.Add(Task.Run(() =>
+            {
+                this.Invoke(new Action(() =>
+                {
+                    attendamceGV.Columns["EmployeeCode"].Visible = false;
+                    allowanceGV.Columns["EmployeeCode"].Visible = false;
+                    allowanceGV.Columns["AllowanceTypeID"].Visible = false;
+                    allowanceGV.Columns["ScopeCode"].Visible = false;
+                    overtimeAttendanceGV.Columns["EmployeeCode"].Visible = false;
+                    overtimeAttendanceGV.Columns["SalaryFactor"].Visible = false;
+                    overtimeAttendanceGV.Columns["OvertimeTypeID"].Visible = false;
+                    leaveGV.Columns["EmployeeCode"].Visible = false;
+                    leaveGV.Columns["LeaveTypeCode"].Visible = false;
+                    deductionGV.Columns["EmployeeCode"].Visible = false;
+                    deductionGV.Columns["DeductionTypeCode"].Visible = false;
+                    dataGV.Columns["IsInsuranceRefund"].Visible = false;
+                    dataGV.Columns["HireDate"].Visible = false;
+                    dataGV.Columns["RemainingLeave"].Visible = false;
+                }));
+            }));
+
+            // Task 2️⃣: Header & Width cho allowanceGV
+            tasks.Add(Task.Run(() =>
+            {
+                this.Invoke(new Action(() =>
+                {
+                    allowanceGV.Columns["AllowanceName"].HeaderText = "Phụ Cấp";
+                    allowanceGV.Columns["Amount"].HeaderText = "Số Tiền";
+                    allowanceGV.Columns["IsInsuranceIncluded"].HeaderText = "BHXH";
+                    allowanceGV.Columns["AllowanceName"].Width = 120;
+                    allowanceGV.Columns["Amount"].Width = 70;
+                    allowanceGV.Columns["IsInsuranceIncluded"].Width = 40;
+                }));
+            }));
+
+            // Task 3️⃣: Header & Width cho deductionGV
+            tasks.Add(Task.Run(() =>
+            {
+                this.Invoke(new Action(() =>
+                {
+                    deductionGV.Columns["DeductionDate"].HeaderText = "Ngày Trừ";
+                    deductionGV.Columns["DeductionTypeName"].HeaderText = "Loại Tiền";
+                    deductionGV.Columns["Amount"].HeaderText = "Số Tiền";
+                    deductionGV.Columns["DeductionDate"].Width = 70;
+                    deductionGV.Columns["DeductionTypeName"].Width = 80;
+                    deductionGV.Columns["Amount"].Width = 60;
+                }));
+            }));
+
+            // Task 4️⃣: Setup attendamceGV
+            tasks.Add(Task.Run(() =>
+            {
+                this.Invoke(new Action(() =>
+                {
+                    attendamceGV.Columns["DayOfWeek"].HeaderText = "Thứ";
+                    attendamceGV.Columns["WorkDate"].HeaderText = "Ngày Làm";
+                    attendamceGV.Columns["WorkingHours"].HeaderText = "S.Giờ";
+                    attendamceGV.Columns["DayOfWeek"].Width = 40;
+                    attendamceGV.Columns["WorkDate"].Width = 80;
+                    attendamceGV.Columns["WorkingHours"].Width = 50;
+                }));
+            }));
+
+            // Task 5️⃣: Setup overtimeAttendanceGV
+            tasks.Add(Task.Run(() =>
+            {
+                this.Invoke(new Action(() =>
+                {
+                    overtimeAttendanceGV.Columns["WorkDate"].HeaderText = "Ngày T.Ca";
+                    overtimeAttendanceGV.Columns["OvertimeName"].HeaderText = "Loại T.Ca";
+                    overtimeAttendanceGV.Columns["HourWork"].HeaderText = "S.Giờ";
+                    overtimeAttendanceGV.Columns["OvertimeAttendanceSalary"].HeaderText = "T.Công";
+                    overtimeAttendanceGV.Columns["WorkDate"].Width = 70;
+                    overtimeAttendanceGV.Columns["OvertimeName"].Width = 80;
+                    overtimeAttendanceGV.Columns["HourWork"].Width = 40;
+                    overtimeAttendanceGV.Columns["OvertimeAttendanceSalary"].Width = 60;
+                }));
+            }));
+
+            // Task 6️⃣: Setup leaveGV
+            tasks.Add(Task.Run(() =>
+            {
+                this.Invoke(new Action(() =>
+                {
+                    leaveGV.Columns["LeaveTypeName"].HeaderText = "Loại Ngày Nghỉ";
+                    leaveGV.Columns["DateOff"].HeaderText = "Ngày Nghỉ";
+                    leaveGV.Columns["DateOff"].Width = 80;
+                    leaveGV.Columns["LeaveTypeName"].Width = 150;
+                }));
+            }));
+
+            // Task 7️⃣: Setup dataGV (nhiều nhất)
+            tasks.Add(Task.Run(() =>
+            {
+                this.Invoke(new Action(() =>
+                {
+                    dataGV.Columns["EmployeeCode"].HeaderText = "Mã NV";
+                    dataGV.Columns["FullName"].HeaderText = "Tên Nhân Viên";
+                    dataGV.Columns["ContractTypeName"].HeaderText = "Hợp Đồng";
+                    dataGV.Columns["NetSalary"].HeaderText = "Thực Lãnh";
+                    dataGV.Columns["BaseSalary"].HeaderText = "Lương CB";
+                    dataGV.Columns["InsuranceBaseSalary"].HeaderText = "Lương C.S Đóng BHXH";
+                    dataGV.Columns["TotalInsuranceSalary"].HeaderText = "Lương Tính Đóng BHXH";
+                    dataGV.Columns["TotalSalaryHourWork"].HeaderText = "T.Lương Theo Giờ";
+                    dataGV.Columns["TotalHourWork"].HeaderText = "Giờ Công Làm";
+                    dataGV.Columns["HourSalary"].HeaderText = "Tiền 1 Giờ Làm";
+                    dataGV.Columns["EmployeeInsurancePaid"].HeaderText = "Tiền NV Nộp BHXH";
+                    dataGV.Columns["InsuranceRefund"].HeaderText = "Hoàn Trả BHXH";
+
+                    dataGV.Columns["TotalIncludedInsurance"].HeaderText = "PC Đóng BHXH";
+                    dataGV.Columns["TotalExcludedInsurance"].HeaderText = "PC K.Đóng BHXH";
+
+                    dataGV.Columns["EmployeeCode"].Frozen = true;
+                    dataGV.Columns["FullName"].Frozen = true;
+                    dataGV.Columns["NetSalary"].Frozen = true;
+
+                    dataGV.Columns["EmployeeCode"].Width = 50;
+                    dataGV.Columns["FullName"].Width = 120;
+                    dataGV.Columns["NetSalary"].Width = 70;
+                    dataGV.Columns["BaseSalary"].Width = 70;
+                    dataGV.Columns["TotalSalaryHourWork"].Width = 70;
+                    dataGV.Columns["TotalHourWork"].Width = 50;
+                    dataGV.Columns["HourSalary"].Width = 50;
+                    dataGV.Columns["InsuranceBaseSalary"].Width = 70;
+                    dataGV.Columns["TotalInsuranceSalary"].Width = 70;
+                    dataGV.Columns["EmployeeInsurancePaid"].Width = 50;
+                    dataGV.Columns["InsuranceRefund"].Width = 50;
+                    dataGV.Columns["TotalIncludedInsurance"].Width = 50;
+                    dataGV.Columns["TotalExcludedInsurance"].Width = 50;
+
+                    // 🎨 Màu
+                    dataGV.Columns["NetSalary"].HeaderCell.Style.BackColor = Color.BurlyWood;
+                    dataGV.Columns["InsuranceBaseSalary"].HeaderCell.Style.BackColor = Color.Coral;
+                    dataGV.Columns["TotalInsuranceSalary"].HeaderCell.Style.BackColor = Color.Coral;
+                    dataGV.Columns["EmployeeInsurancePaid"].HeaderCell.Style.BackColor = Color.Coral;
+                    dataGV.Columns["InsuranceRefund"].HeaderCell.Style.BackColor = Color.Coral;
+                    dataGV.Columns["TotalIncludedInsurance"].HeaderCell.Style.BackColor = Color.Coral;
+                    dataGV.Columns["TotalExcludedInsurance"].HeaderCell.Style.BackColor = Color.Coral;
+                }));
+            }));
+
+            // Task 8️⃣: Setup các cột động (Allowance, Overtime, Leave, Deduction)
+            tasks.Add(Task.Run(() =>
+            {
+                this.Invoke(new Action(() =>
+                {
+                    foreach (DataRow adr in mAllowance_dt.Rows)
+                    {
+                        if (adr["ScopeCode"].ToString() == "ONCE")
+                        {
+                            string col = "Allowance" + adr["AllowanceTypeID"];
+                            dataGV.Columns[col].HeaderText = adr["AllowanceName"].ToString();
+                            dataGV.Columns[col].Width = 50;
+                            dataGV.Columns[col].HeaderCell.Style.BackColor = Color.Coral;
+                        }
+                    }
+
+                    foreach (DataRow otdr in mOvertimeType_dt.Rows)
+                    {
+                        string col = "OvertimeType" + otdr["OvertimeTypeID"];
+                        dataGV.Columns["c_" + col].Visible = false;
+                        dataGV.Columns[col].HeaderText = otdr["OvertimeName"].ToString();
+                        dataGV.Columns[col].Width = 50;
+                        dataGV.Columns[col].HeaderCell.Style.BackColor = Color.Yellow;
+                    }
+
+                    foreach (DataRow ltdr in mLeaveType_dt.Rows)
+                    {
+                        string col = "LeaveType" + ltdr["LeaveTypeCode"];
+                        dataGV.Columns["c_" + col].Visible = false;
+                        dataGV.Columns[col].HeaderText = ltdr["LeaveTypeName"].ToString();
+                        dataGV.Columns[col].Width = 50;
+                        dataGV.Columns[col].HeaderCell.Style.BackColor = Color.Aqua;
+                    }
+
+                    foreach (DataRow ltdr in mDeductionType.Rows)
+                    {
+                        string col = "DeductionType" + ltdr["DeductionTypeCode"];
+                        dataGV.Columns[col].HeaderText = ltdr["DeductionTypeName"].ToString();
+                        dataGV.Columns[col].Width = 50;
+                        dataGV.Columns[col].HeaderCell.Style.BackColor = Color.Gray;
+                    }
+                }));
+            }));
+
+            // 🔹 Chờ tất cả Task hoàn tất
+            //await Task.WhenAll(tasks);
+        }
+
+
+
+
+        public void SetupDataGridViewHeaders()
+        {
+            // Task 1️⃣: Allowance
+            var allowanceTask = Task.Run(() =>
+            {
+                var allowanceHeaders = mAllowance_dt.AsEnumerable()
+                    .Where(r => r.Field<string>("ScopeCode") == "ONCE")
+                    .Select(r => new
+                    {
+                        ColumnName = "Allowance" + r["AllowanceTypeID"],
+                        HeaderText = r["AllowanceName"].ToString(),
+                        BackColor = Color.Coral
+                    }).ToList();
+
+                dataGV.Invoke(new Action(() =>
+                {
+                    foreach (var item in allowanceHeaders)
+                    {
+                        if (dataGV.Columns.Contains(item.ColumnName))
+                        {
+                            dataGV.Columns[item.ColumnName].HeaderText = item.HeaderText;
+                            dataGV.Columns[item.ColumnName].Width = 50;
+                            dataGV.Columns[item.ColumnName].HeaderCell.Style.BackColor = item.BackColor;
+                        }
+                    }
+                }));
+            });
+
+            // Task 2️⃣: Overtime
+            var overtimeTask = Task.Run(() =>
+            {
+                var overtimeHeaders = mOvertimeType_dt.AsEnumerable()
+                    .Select(r => new
+                    {
+                        ColumnName = "OvertimeType" + r["OvertimeTypeID"],
+                        HideColumn = "c_OvertimeType" + r["OvertimeTypeID"],
+                        HeaderText = r["OvertimeName"].ToString(),
+                        BackColor = Color.Yellow
+                    }).ToList();
+
+                dataGV.Invoke(new Action(() =>
+                {
+                    foreach (var item in overtimeHeaders)
+                    {
+                        if (dataGV.Columns.Contains(item.HideColumn))
+                            dataGV.Columns[item.HideColumn].Visible = false;
+
+                        if (dataGV.Columns.Contains(item.ColumnName))
+                        {
+                            dataGV.Columns[item.ColumnName].HeaderText = item.HeaderText;
+                            dataGV.Columns[item.ColumnName].Width = 50;
+                            dataGV.Columns[item.ColumnName].HeaderCell.Style.BackColor = item.BackColor;
+                        }
+                    }
+                }));
+            });
+
+            // Task 3️⃣: Leave
+            var leaveTask = Task.Run(() =>
+            {
+                var leaveHeaders = mLeaveType_dt.AsEnumerable()
+                    .Select(r => new
+                    {
+                        ColumnName = "LeaveType" + r["LeaveTypeCode"],
+                        HideColumn = "c_LeaveType" + r["LeaveTypeCode"],
+                        HeaderText = r["LeaveTypeName"].ToString(),
+                        BackColor = Color.Aqua
+                    }).ToList();
+
+                dataGV.Invoke(new Action(() =>
+                {
+                    foreach (var item in leaveHeaders)
+                    {
+                        if (dataGV.Columns.Contains(item.HideColumn))
+                            dataGV.Columns[item.HideColumn].Visible = false;
+
+                        if (dataGV.Columns.Contains(item.ColumnName))
+                        {
+                            dataGV.Columns[item.ColumnName].HeaderText = item.HeaderText;
+                            dataGV.Columns[item.ColumnName].Width = 50;
+                            dataGV.Columns[item.ColumnName].HeaderCell.Style.BackColor = item.BackColor;
+                        }
+                    }
+                }));
+            });
+
+            // Task 4️⃣: Deduction
+            var deductionTask = Task.Run(() =>
+            {
+                var deductionHeaders = mDeductionType.AsEnumerable()
+                    .Select(r => new
+                    {
+                        ColumnName = "DeductionType" + r["DeductionTypeCode"],
+                        HeaderText = r["DeductionTypeName"].ToString(),
+                        BackColor = Color.Gray
+                    }).ToList();
+
+                dataGV.Invoke(new Action(() =>
+                {
+                    foreach (var item in deductionHeaders)
+                    {
+                        if (dataGV.Columns.Contains(item.ColumnName))
+                        {
+                            dataGV.Columns[item.ColumnName].HeaderText = item.HeaderText;
+                            dataGV.Columns[item.ColumnName].Width = 50;
+                            dataGV.Columns[item.ColumnName].HeaderCell.Style.BackColor = item.BackColor;
+                        }
+                    }
+                }));
+            });
+
+            // ✅ Chạy song song cả 4 thread, không chờ đợi (fire and forget)
+            Task.WhenAll(allowanceTask, overtimeTask, leaveTask, deductionTask);
+        }
+
+
+        void AddColumnIfNotExists(DataTable dt, string name, Type type)
+        {
+            if (!dt.Columns.Contains(name))
+                dt.Columns.Add(new DataColumn(name, type));
+        }
+        public async Task AddDynamicColumnsAsync()
+        {
+            // 🔹 1️⃣ Chạy song song các tác vụ để gom danh sách cột
+            var allowanceTask = Task.Run(() =>
+            {
+                return mAllowance_dt.AsEnumerable()
+                    .Where(r => r.Field<string>("ScopeCode") == "ONCE")
+                    .Select(r => "Allowance" + r["AllowanceTypeID"])
+                    .ToList();
+            });
+
+            var overtimeTask = Task.Run(() =>
+            {
+                return mOvertimeType_dt.AsEnumerable()
+                    .SelectMany(r => new[]
+                    {
+                "OvertimeType" + r["OvertimeTypeID"],
+                "c_OvertimeType" + r["OvertimeTypeID"]
+                    })
+                    .ToList();
+            });
+
+            var leaveTask = Task.Run(() =>
+            {
+                return mLeaveType_dt.AsEnumerable()
+                    .SelectMany(r => new[]
+                    {
+                "LeaveType" + r["LeaveTypeCode"],
+                "c_LeaveType" + r["LeaveTypeCode"]
+                    })
+                    .ToList();
+            });
+
+            var deductionTask = Task.Run(() =>
+            {
+                return mDeductionType.AsEnumerable()
+                    .Select(r => "DeductionType" + r["DeductionTypeCode"])
+                    .ToList();
+            });
+
+            var attendamceStask = Task.Run(() =>
+            {
+
+                string[] vietDays = { "CN", "T.2", "T.3", "T.4", "T.5", "T.6", "T.7" };
+
+                foreach (DataRow row in mAttendamce_dt.Rows)
+                {
+                    DateTime dt = Convert.ToDateTime(row["WorkDate"]);
+                    row["DayOfWeek"] = vietDays[(int)dt.DayOfWeek];
+                }
+            });
+
+            // 🔹 2️⃣ Đợi tất cả task hoàn thành
+            await Task.WhenAll(allowanceTask, overtimeTask, leaveTask, deductionTask, attendamceStask);
+
+            // 🔹 3️⃣ Gom danh sách tất cả cột
+            var allCols = allowanceTask.Result
+                .Concat(overtimeTask.Result)
+                .Concat(leaveTask.Result)
+                .Concat(deductionTask.Result)
+                .Distinct()
+                .ToList();
+
+            // 🔹 4️⃣ Thêm cột vào DataTable (chỉ 1 thread thực hiện)
+            foreach (var col in allCols)
+            {
+                AddColumnIfNotExists(mEmployee_dt, col, typeof(decimal));
+            }
         }
 
         private void Load_btn_Click(object sender, EventArgs e)
@@ -529,12 +888,11 @@ namespace RauViet.ui
             if (rowIndex < 0)
                 return;
 
-
-            UpdateAllowanceUI(rowIndex);
-            UpdateOvertimeAttendanceUI(rowIndex);
-            UpdateLeaveAttendanceUI(rowIndex);
-            UpdateDeductionUI(rowIndex);
-            UpdateAttendandeUI(rowIndex);
+            _ = Task.Run(() =>{this.Invoke(new Action(() => UpdateAllowanceUI(rowIndex)));});
+            _ = Task.Run(() => {this.Invoke(new Action(() => UpdateOvertimeAttendanceUI(rowIndex)));});
+            _ = Task.Run(() => { this.Invoke(new Action(() => UpdateLeaveAttendanceUI(rowIndex))); });
+            _ = Task.Run(() => { this.Invoke(new Action(() => UpdateDeductionUI(rowIndex))); });
+            _ = Task.Run(() => { this.Invoke(new Action(() => UpdateAttendandeUI(rowIndex))); });
         }
 
         private void UpdateAttendandeUI(int index)

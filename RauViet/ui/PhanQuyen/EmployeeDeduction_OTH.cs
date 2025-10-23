@@ -17,8 +17,9 @@ namespace RauViet.ui
 {    
     public partial class EmployeeDeduction_OTH : Form
     {
-        private DataTable mEmployeeDeduction_dt, mDeductionType_dt;
+        private DataTable mEmployeeDeduction_dt;
         private const string DeductionTypeCode = "OTH";
+        private string mDeductionname = "";
         public EmployeeDeduction_OTH()
         {
             InitializeComponent();
@@ -71,12 +72,14 @@ namespace RauViet.ui
             {
                 int month = Convert.ToInt32(month_cbb.SelectedItem);
                 int year = Convert.ToInt32(year_tb.Text);
-                var employeeTask = SQLManager.Instance.GetActiveEmployeeAsync();
-                var employeeDeductionAsync = SQLManager.Instance.GetEmployeeDeductionAsync(month, year, DeductionTypeCode);
-
-                await Task.WhenAll(employeeTask, employeeDeductionAsync);
-                DataTable employee_dt = employeeTask.Result;
+                string[] keepColumns = { "EmployeeCode", "FullName", "PositionName", "ContractTypeName", };
+                var employeesTask = SQLStore.Instance.GetEmployeesAsync(keepColumns);
+                var employeeDeductionAsync = SQLStore.Instance.GetDeductionAsync(month, year, DeductionTypeCode);
+                var deductionNameAsync = SQLStore.Instance.GetDeductionNameAsync(DeductionTypeCode);
+                await Task.WhenAll(employeesTask, employeeDeductionAsync, deductionNameAsync);
+                DataTable employee_dt = employeesTask.Result;
                 mEmployeeDeduction_dt = employeeDeductionAsync.Result;
+                mDeductionname = deductionNameAsync.Result;
 
                 foreach (DataRow dr in employee_dt.Rows)
                 {
@@ -91,6 +94,8 @@ namespace RauViet.ui
 
                 employeeDeductionGV.Columns["EmployeeDeductionID"].Visible = false;
                 employeeDeductionGV.Columns["EmployeeCode"].Visible = false;
+                employeeDeductionGV.Columns["DeductionTypeCode"].Visible = false;
+                employeeDeductionGV.Columns["DeductionTypeName"].Visible = false;
 
                 int count = 0;
                 mEmployeeDeduction_dt.Columns["DeductionDate"].SetOrdinal(count++);
@@ -138,6 +143,7 @@ namespace RauViet.ui
             {
                 status_lb.Text = "Thất bại.";
                 status_lb.ForeColor = Color.Red;
+                Console.WriteLine("Err" + ex.Message);
             }
             finally
             {
@@ -270,6 +276,14 @@ namespace RauViet.ui
                                 row.Cells["Amount"].Value = amount;
                                 row.Cells["Note"].Value = note;
                                 row.Cells["UpdateHistory"].Value = updateHistory;
+
+                                DataRowView drv = row.DataBoundItem as DataRowView;
+                                if (drv != null)
+                                {
+                                    DataRow dr = drv.Row;
+                                    SQLStore.Instance.addOrUpdateDeduction(deductionDate.Year, dr);
+                                }
+                               
                             }
                             else
                             {
@@ -302,7 +316,9 @@ namespace RauViet.ui
                         DataRow drToAdd = mEmployeeDeduction_dt.NewRow();
 
                         drToAdd["EmployeeDeductionID"] = employeeDeductionID;
-                        drToAdd["EmployeeCode"] = employeeCode;
+                        drToAdd["DeductionTypeCode"] = DeductionTypeCode;
+                        drToAdd["DeductionTypeName"] = mDeductionname;
+                        drToAdd["EmployeeCode"] = employeeCode;                        
                         drToAdd["DeductionDate"] = deductionDate.Date;
                         drToAdd["Amount"] = amount;
                         drToAdd["Note"] = note;
@@ -314,6 +330,7 @@ namespace RauViet.ui
                         status_lb.Text = "Thành công";
                         status_lb.ForeColor = Color.Green;
 
+                        SQLStore.Instance.addOrUpdateDeduction(deductionDate.Year, drToAdd);
                         newCustomerBtn_Click(null, null);
                     }
                     else
@@ -326,6 +343,7 @@ namespace RauViet.ui
                 {
                     status_lb.Text = "Thất bại.";
                     status_lb.ForeColor = Color.Red;
+                    Console.WriteLine("err" + ex.Message);
                 }
 
             }

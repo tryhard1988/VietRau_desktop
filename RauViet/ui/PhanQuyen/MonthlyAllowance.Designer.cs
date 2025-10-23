@@ -31,8 +31,12 @@ namespace RauViet.ui
         {
             this.panel1 = new System.Windows.Forms.Panel();
             this.info_gb = new System.Windows.Forms.GroupBox();
+            this.label3 = new System.Windows.Forms.Label();
             this.note_tb = new System.Windows.Forms.TextBox();
+            this.month_cbb = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.year_tb = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
             this.allowanceType_cbb = new System.Windows.Forms.ComboBox();
             this.label5 = new System.Windows.Forms.Label();
             this.amount_tb = new System.Windows.Forms.TextBox();
@@ -45,10 +49,6 @@ namespace RauViet.ui
             this.monthlyAllowanceID_tb = new System.Windows.Forms.TextBox();
             this.dataGV = new System.Windows.Forms.DataGridView();
             this.allowanceGV = new System.Windows.Forms.DataGridView();
-            this.label3 = new System.Windows.Forms.Label();
-            this.month_cbb = new System.Windows.Forms.ComboBox();
-            this.year_tb = new System.Windows.Forms.TextBox();
-            this.label4 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.info_gb.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
@@ -60,7 +60,6 @@ namespace RauViet.ui
             this.panel1.Controls.Add(this.info_gb);
             this.panel1.Controls.Add(this.delete_btn);
             this.panel1.Controls.Add(this.loading_lb);
-            this.panel1.Controls.Add(this.status_lb);
             this.panel1.Controls.Add(this.newCustomerBtn);
             this.panel1.Controls.Add(this.LuuThayDoiBtn);
             this.panel1.Controls.Add(this.monthlyAllowanceID_tb);
@@ -75,6 +74,7 @@ namespace RauViet.ui
             this.info_gb.Controls.Add(this.label3);
             this.info_gb.Controls.Add(this.note_tb);
             this.info_gb.Controls.Add(this.month_cbb);
+            this.info_gb.Controls.Add(this.status_lb);
             this.info_gb.Controls.Add(this.label1);
             this.info_gb.Controls.Add(this.year_tb);
             this.info_gb.Controls.Add(this.label4);
@@ -88,30 +88,67 @@ namespace RauViet.ui
             this.info_gb.TabIndex = 28;
             this.info_gb.TabStop = false;
             // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label3.Location = new System.Drawing.Point(188, 44);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(12, 16);
+            this.label3.TabIndex = 22;
+            this.label3.Text = "/";
+            // 
             // note_tb
             // 
             this.note_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.note_tb.Location = new System.Drawing.Point(146, 123);
+            this.note_tb.Location = new System.Drawing.Point(146, 149);
             this.note_tb.Multiline = true;
             this.note_tb.Name = "note_tb";
             this.note_tb.Size = new System.Drawing.Size(246, 54);
             this.note_tb.TabIndex = 27;
             // 
+            // month_cbb
+            // 
+            this.month_cbb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.month_cbb.FormattingEnabled = true;
+            this.month_cbb.Location = new System.Drawing.Point(146, 41);
+            this.month_cbb.Name = "month_cbb";
+            this.month_cbb.Size = new System.Drawing.Size(39, 21);
+            this.month_cbb.TabIndex = 21;
+            // 
             // label1
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(73, 140);
+            this.label1.Location = new System.Drawing.Point(73, 166);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(56, 16);
             this.label1.TabIndex = 26;
             this.label1.Text = "Ghi Chú:";
             // 
+            // year_tb
+            // 
+            this.year_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.year_tb.Location = new System.Drawing.Point(206, 41);
+            this.year_tb.Name = "year_tb";
+            this.year_tb.Size = new System.Drawing.Size(48, 23);
+            this.year_tb.TabIndex = 20;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label4.Location = new System.Drawing.Point(81, 42);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(48, 16);
+            this.label4.TabIndex = 10;
+            this.label4.Text = "Tháng:";
+            // 
             // allowanceType_cbb
             // 
             this.allowanceType_cbb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.allowanceType_cbb.FormattingEnabled = true;
-            this.allowanceType_cbb.Location = new System.Drawing.Point(143, 50);
+            this.allowanceType_cbb.Location = new System.Drawing.Point(143, 76);
             this.allowanceType_cbb.Name = "allowanceType_cbb";
             this.allowanceType_cbb.Size = new System.Drawing.Size(256, 21);
             this.allowanceType_cbb.TabIndex = 25;
@@ -120,7 +157,7 @@ namespace RauViet.ui
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(43, 51);
+            this.label5.Location = new System.Drawing.Point(43, 77);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(86, 16);
             this.label5.TabIndex = 24;
@@ -129,7 +166,7 @@ namespace RauViet.ui
             // amount_tb
             // 
             this.amount_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.amount_tb.Location = new System.Drawing.Point(143, 85);
+            this.amount_tb.Location = new System.Drawing.Point(143, 111);
             this.amount_tb.Name = "amount_tb";
             this.amount_tb.Size = new System.Drawing.Size(137, 23);
             this.amount_tb.TabIndex = 17;
@@ -138,7 +175,7 @@ namespace RauViet.ui
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(77, 88);
+            this.label2.Location = new System.Drawing.Point(77, 114);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(56, 16);
             this.label2.TabIndex = 10;
@@ -148,7 +185,7 @@ namespace RauViet.ui
             // 
             this.delete_btn.BackColor = System.Drawing.Color.Red;
             this.delete_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.delete_btn.Location = new System.Drawing.Point(285, 439);
+            this.delete_btn.Location = new System.Drawing.Point(253, 439);
             this.delete_btn.Name = "delete_btn";
             this.delete_btn.Size = new System.Drawing.Size(113, 47);
             this.delete_btn.TabIndex = 27;
@@ -170,7 +207,7 @@ namespace RauViet.ui
             this.status_lb.AutoSize = true;
             this.status_lb.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.status_lb.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.status_lb.Location = new System.Drawing.Point(202, 154);
+            this.status_lb.Location = new System.Drawing.Point(175, 4);
             this.status_lb.Name = "status_lb";
             this.status_lb.Size = new System.Drawing.Size(55, 23);
             this.status_lb.TabIndex = 26;
@@ -180,9 +217,9 @@ namespace RauViet.ui
             // 
             this.newCustomerBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
             this.newCustomerBtn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.newCustomerBtn.Location = new System.Drawing.Point(159, 439);
+            this.newCustomerBtn.Location = new System.Drawing.Point(354, 173);
             this.newCustomerBtn.Name = "newCustomerBtn";
-            this.newCustomerBtn.Size = new System.Drawing.Size(113, 47);
+            this.newCustomerBtn.Size = new System.Drawing.Size(87, 32);
             this.newCustomerBtn.TabIndex = 25;
             this.newCustomerBtn.Text = "Tạo mới";
             this.newCustomerBtn.UseVisualStyleBackColor = false;
@@ -191,7 +228,7 @@ namespace RauViet.ui
             // 
             this.LuuThayDoiBtn.BackColor = System.Drawing.SystemColors.Highlight;
             this.LuuThayDoiBtn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LuuThayDoiBtn.Location = new System.Drawing.Point(36, 439);
+            this.LuuThayDoiBtn.Location = new System.Drawing.Point(92, 439);
             this.LuuThayDoiBtn.Name = "LuuThayDoiBtn";
             this.LuuThayDoiBtn.Size = new System.Drawing.Size(113, 47);
             this.LuuThayDoiBtn.TabIndex = 25;
@@ -230,43 +267,6 @@ namespace RauViet.ui
             this.allowanceGV.ReadOnly = true;
             this.allowanceGV.Size = new System.Drawing.Size(383, 724);
             this.allowanceGV.TabIndex = 11;
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(188, 18);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(12, 16);
-            this.label3.TabIndex = 22;
-            this.label3.Text = "/";
-            // 
-            // month_cbb
-            // 
-            this.month_cbb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.month_cbb.FormattingEnabled = true;
-            this.month_cbb.Location = new System.Drawing.Point(146, 15);
-            this.month_cbb.Name = "month_cbb";
-            this.month_cbb.Size = new System.Drawing.Size(39, 21);
-            this.month_cbb.TabIndex = 21;
-            // 
-            // year_tb
-            // 
-            this.year_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.year_tb.Location = new System.Drawing.Point(206, 15);
-            this.year_tb.Name = "year_tb";
-            this.year_tb.Size = new System.Drawing.Size(48, 23);
-            this.year_tb.TabIndex = 20;
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(81, 16);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(48, 16);
-            this.label4.TabIndex = 10;
-            this.label4.Text = "Tháng:";
             // 
             // MonthlyAllowance
             // 

@@ -46,7 +46,7 @@ namespace RauViet.ui
             try
             {
                 // Chạy truy vấn trên thread riêng
-                var postionTask = SQLManager.Instance.GetPositionAsync();
+                var postionTask = SQLStore.Instance.GetPositionAsync();
 
                 await Task.WhenAll(postionTask);
                 DataTable postion_dt = postionTask.Result;

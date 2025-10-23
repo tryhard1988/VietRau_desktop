@@ -50,7 +50,6 @@ namespace RauViet.ui
             // 
             this.panel1.Controls.Add(this.info_gb);
             this.panel1.Controls.Add(this.loading_lb);
-            this.panel1.Controls.Add(this.status_lb);
             this.panel1.Controls.Add(this.LuuThayDoiBtn);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Right;
             this.panel1.Location = new System.Drawing.Point(955, 0);
@@ -62,6 +61,7 @@ namespace RauViet.ui
             // 
             this.info_gb.Controls.Add(this.capphep_btn);
             this.info_gb.Controls.Add(this.label1);
+            this.info_gb.Controls.Add(this.status_lb);
             this.info_gb.Controls.Add(this.load_btn);
             this.info_gb.Controls.Add(this.month_cbb);
             this.info_gb.Controls.Add(this.year_tb);
@@ -76,7 +76,7 @@ namespace RauViet.ui
             // 
             this.capphep_btn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
             this.capphep_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.capphep_btn.Location = new System.Drawing.Point(20, 59);
+            this.capphep_btn.Location = new System.Drawing.Point(20, 91);
             this.capphep_btn.Name = "capphep_btn";
             this.capphep_btn.Size = new System.Drawing.Size(114, 46);
             this.capphep_btn.TabIndex = 32;
@@ -87,7 +87,7 @@ namespace RauViet.ui
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(125, 19);
+            this.label1.Location = new System.Drawing.Point(125, 51);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(17, 23);
             this.label1.TabIndex = 31;
@@ -97,7 +97,7 @@ namespace RauViet.ui
             // 
             this.load_btn.BackColor = System.Drawing.SystemColors.Highlight;
             this.load_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.load_btn.Location = new System.Drawing.Point(140, 59);
+            this.load_btn.Location = new System.Drawing.Point(140, 91);
             this.load_btn.Name = "load_btn";
             this.load_btn.Size = new System.Drawing.Size(95, 46);
             this.load_btn.TabIndex = 30;
@@ -108,7 +108,7 @@ namespace RauViet.ui
             // 
             this.month_cbb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.month_cbb.FormattingEnabled = true;
-            this.month_cbb.Location = new System.Drawing.Point(78, 21);
+            this.month_cbb.Location = new System.Drawing.Point(78, 53);
             this.month_cbb.Name = "month_cbb";
             this.month_cbb.Size = new System.Drawing.Size(39, 21);
             this.month_cbb.TabIndex = 21;
@@ -116,7 +116,7 @@ namespace RauViet.ui
             // year_tb
             // 
             this.year_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.year_tb.Location = new System.Drawing.Point(146, 19);
+            this.year_tb.Location = new System.Drawing.Point(146, 51);
             this.year_tb.Name = "year_tb";
             this.year_tb.Size = new System.Drawing.Size(48, 23);
             this.year_tb.TabIndex = 20;
@@ -125,7 +125,7 @@ namespace RauViet.ui
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(23, 22);
+            this.label2.Location = new System.Drawing.Point(23, 54);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(48, 16);
             this.label2.TabIndex = 10;
@@ -146,7 +146,7 @@ namespace RauViet.ui
             this.status_lb.AutoSize = true;
             this.status_lb.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.status_lb.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.status_lb.Location = new System.Drawing.Point(116, 121);
+            this.status_lb.Location = new System.Drawing.Point(87, 3);
             this.status_lb.Name = "status_lb";
             this.status_lb.Size = new System.Drawing.Size(55, 23);
             this.status_lb.TabIndex = 26;
@@ -154,9 +154,9 @@ namespace RauViet.ui
             // 
             // LuuThayDoiBtn
             // 
-            this.LuuThayDoiBtn.BackColor = System.Drawing.SystemColors.Highlight;
+            this.LuuThayDoiBtn.BackColor = System.Drawing.Color.Red;
             this.LuuThayDoiBtn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LuuThayDoiBtn.Location = new System.Drawing.Point(49, 357);
+            this.LuuThayDoiBtn.Location = new System.Drawing.Point(95, 357);
             this.LuuThayDoiBtn.Name = "LuuThayDoiBtn";
             this.LuuThayDoiBtn.Size = new System.Drawing.Size(110, 47);
             this.LuuThayDoiBtn.TabIndex = 25;

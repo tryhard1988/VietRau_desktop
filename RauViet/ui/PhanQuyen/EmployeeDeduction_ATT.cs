@@ -161,19 +161,7 @@ namespace RauViet.ui
 
         private async void Load_btn_Click(object sender, EventArgs e)
         {
-            int month = Convert.ToInt32(month_cbb.SelectedItem);
-            int year = Convert.ToInt32(year_tb.Text);
-
-            var employeeDeductionAsync = SQLManager.Instance.GetEmployeeLeave_PT_KP_Async(month, year);
-
-            await Task.WhenAll(employeeDeductionAsync);
-            mEmployeeLeave_dt = employeeDeductionAsync.Result;
-
-            if (dataGV.CurrentRow != null)
-            {
-                int selectedIndex = dataGV.CurrentRow?.Index ?? -1;
-                UpdateEmployeeDeductionUI(selectedIndex);
-            }
+            ShowData();
         }
 
         private void Tb_KeyPress_OnlyNumber(object sender, KeyPressEventArgs e)
@@ -282,7 +270,7 @@ namespace RauViet.ui
             int amount = Convert.ToInt32(amount_tb.Text);
             string updateHistory = DateTime.Now.ToString("MM/yyyy") + ":" + UserManager.Instance.employeeCode + ";";
 
-            if(month != curMonth || year != curMonth)
+            if(month != curMonth || year != curYear)
             {
                 MessageBox.Show("Tháng, Năm có vẫn đề.", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;

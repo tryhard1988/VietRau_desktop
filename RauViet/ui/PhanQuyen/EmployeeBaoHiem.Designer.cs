@@ -49,7 +49,6 @@ namespace RauViet.ui
             // 
             this.panel1.Controls.Add(this.info_gb);
             this.panel1.Controls.Add(this.loading_lb);
-            this.panel1.Controls.Add(this.status_lb);
             this.panel1.Controls.Add(this.LuuThayDoiBtn);
             this.panel1.Controls.Add(this.employeeCode_tb);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -62,6 +61,7 @@ namespace RauViet.ui
             // 
             this.info_gb.Controls.Add(this.bhxh_tb);
             this.info_gb.Controls.Add(this.label2);
+            this.info_gb.Controls.Add(this.status_lb);
             this.info_gb.Controls.Add(this.label3);
             this.info_gb.Controls.Add(this.bhyt_tb);
             this.info_gb.Location = new System.Drawing.Point(61, 177);
@@ -121,7 +121,7 @@ namespace RauViet.ui
             this.status_lb.AutoSize = true;
             this.status_lb.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.status_lb.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.status_lb.Location = new System.Drawing.Point(247, 103);
+            this.status_lb.Location = new System.Drawing.Point(192, 16);
             this.status_lb.Name = "status_lb";
             this.status_lb.Size = new System.Drawing.Size(55, 23);
             this.status_lb.TabIndex = 26;

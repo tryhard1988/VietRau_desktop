@@ -30,9 +30,6 @@ namespace RauViet.ui
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
-            this.loading_lb = new System.Windows.Forms.Label();
-            this.employeeCode_tb = new System.Windows.Forms.TextBox();
-            this.dataGV = new System.Windows.Forms.DataGridView();
             this.info_gb = new System.Windows.Forms.GroupBox();
             this.bankName_tb = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
@@ -44,15 +41,17 @@ namespace RauViet.ui
             this.bankBranch_tb = new System.Windows.Forms.TextBox();
             this.status_lb = new System.Windows.Forms.Label();
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
+            this.loading_lb = new System.Windows.Forms.Label();
+            this.employeeCode_tb = new System.Windows.Forms.TextBox();
+            this.dataGV = new System.Windows.Forms.DataGridView();
             this.panel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
             this.info_gb.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
             this.SuspendLayout();
             // 
             // panel1
             // 
             this.panel1.Controls.Add(this.info_gb);
-            this.panel1.Controls.Add(this.status_lb);
             this.panel1.Controls.Add(this.LuuThayDoiBtn);
             this.panel1.Controls.Add(this.loading_lb);
             this.panel1.Controls.Add(this.employeeCode_tb);
@@ -62,40 +61,10 @@ namespace RauViet.ui
             this.panel1.Size = new System.Drawing.Size(486, 681);
             this.panel1.TabIndex = 9;
             // 
-            // loading_lb
-            // 
-            this.loading_lb.AutoSize = true;
-            this.loading_lb.Dock = System.Windows.Forms.DockStyle.Top;
-            this.loading_lb.Location = new System.Drawing.Point(0, 0);
-            this.loading_lb.Name = "loading_lb";
-            this.loading_lb.Size = new System.Drawing.Size(55, 13);
-            this.loading_lb.TabIndex = 10;
-            this.loading_lb.Text = "loading_lb";
-            // 
-            // employeeCode_tb
-            // 
-            this.employeeCode_tb.Location = new System.Drawing.Point(144, 582);
-            this.employeeCode_tb.Name = "employeeCode_tb";
-            this.employeeCode_tb.ReadOnly = true;
-            this.employeeCode_tb.Size = new System.Drawing.Size(32, 20);
-            this.employeeCode_tb.TabIndex = 16;
-            this.employeeCode_tb.Visible = false;
-            // 
-            // dataGV
-            // 
-            this.dataGV.AllowUserToAddRows = false;
-            this.dataGV.AllowUserToDeleteRows = false;
-            this.dataGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGV.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dataGV.Location = new System.Drawing.Point(0, 0);
-            this.dataGV.Name = "dataGV";
-            this.dataGV.ReadOnly = true;
-            this.dataGV.Size = new System.Drawing.Size(778, 681);
-            this.dataGV.TabIndex = 10;
-            // 
             // info_gb
             // 
             this.info_gb.Controls.Add(this.bankName_tb);
+            this.info_gb.Controls.Add(this.status_lb);
             this.info_gb.Controls.Add(this.label4);
             this.info_gb.Controls.Add(this.bankAccountNumber_tb);
             this.info_gb.Controls.Add(this.label1);
@@ -186,7 +155,7 @@ namespace RauViet.ui
             this.status_lb.AutoSize = true;
             this.status_lb.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.status_lb.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.status_lb.Location = new System.Drawing.Point(238, 96);
+            this.status_lb.Location = new System.Drawing.Point(219, 0);
             this.status_lb.Name = "status_lb";
             this.status_lb.Size = new System.Drawing.Size(55, 23);
             this.status_lb.TabIndex = 30;
@@ -203,6 +172,37 @@ namespace RauViet.ui
             this.LuuThayDoiBtn.Text = "Lưu";
             this.LuuThayDoiBtn.UseVisualStyleBackColor = false;
             // 
+            // loading_lb
+            // 
+            this.loading_lb.AutoSize = true;
+            this.loading_lb.Dock = System.Windows.Forms.DockStyle.Top;
+            this.loading_lb.Location = new System.Drawing.Point(0, 0);
+            this.loading_lb.Name = "loading_lb";
+            this.loading_lb.Size = new System.Drawing.Size(55, 13);
+            this.loading_lb.TabIndex = 10;
+            this.loading_lb.Text = "loading_lb";
+            // 
+            // employeeCode_tb
+            // 
+            this.employeeCode_tb.Location = new System.Drawing.Point(144, 582);
+            this.employeeCode_tb.Name = "employeeCode_tb";
+            this.employeeCode_tb.ReadOnly = true;
+            this.employeeCode_tb.Size = new System.Drawing.Size(32, 20);
+            this.employeeCode_tb.TabIndex = 16;
+            this.employeeCode_tb.Visible = false;
+            // 
+            // dataGV
+            // 
+            this.dataGV.AllowUserToAddRows = false;
+            this.dataGV.AllowUserToDeleteRows = false;
+            this.dataGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGV.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dataGV.Location = new System.Drawing.Point(0, 0);
+            this.dataGV.Name = "dataGV";
+            this.dataGV.ReadOnly = true;
+            this.dataGV.Size = new System.Drawing.Size(778, 681);
+            this.dataGV.TabIndex = 10;
+            // 
             // EmployeeNganHang
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -214,9 +214,9 @@ namespace RauViet.ui
             this.Text = "FormTableData";
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGV)).EndInit();
             this.info_gb.ResumeLayout(false);
             this.info_gb.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGV)).EndInit();
             this.ResumeLayout(false);
 
         }

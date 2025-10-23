@@ -71,11 +71,12 @@ namespace RauViet.ui
             {
                 int month = Convert.ToInt32(month_cbb.SelectedItem);
                 int year = Convert.ToInt32(year_tb.Text);
-                var employeeTask = SQLManager.Instance.GetActiveEmployeeAsync();
+                string[] keepColumns = { "EmployeeCode", "FullName", "PositionName", "ContractTypeName", };
+                var employeesTask = SQLStore.Instance.GetEmployeesAsync(keepColumns);
                 var employeeDeductionAsync = SQLManager.Instance.GetEmployeeDeductionAsync(month, year, DeductionTypeCode);
 
-                await Task.WhenAll(employeeTask, employeeDeductionAsync);
-                DataTable employee_dt = employeeTask.Result;
+                await Task.WhenAll(employeesTask, employeeDeductionAsync);
+                DataTable employee_dt = employeesTask.Result;
                 mEmployeeDeduction_dt = employeeDeductionAsync.Result;
 
                 foreach (DataRow dr in employee_dt.Rows)

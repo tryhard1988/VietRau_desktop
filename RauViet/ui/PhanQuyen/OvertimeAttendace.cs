@@ -82,12 +82,13 @@ namespace RauViet.ui
                 int month = Convert.ToInt32(month_cbb.SelectedItem);
                 int year = Convert.ToInt32(year_tb.Text);
                 // Chạy truy vấn trên thread riêng
-                var employeeTask = SQLManager.Instance.GetEmployeesForEttendamceAsync();
-                var overtimeAttendamceTask = SQLManager.Instance.GetOvertimeAttendamceAsync(month, year);
-                var overtimeTypeTask = SQLManager.Instance.GetOvertimeTypeAsync(true);
+                string[] keepColumns = { "EmployeeCode", "FullName", "PositionName", "ContractTypeName"};
+                var employeesTask = SQLStore.Instance.GetEmployeesAsync(keepColumns);
+                var overtimeAttendamceTask = SQLStore.Instance.GetOvertimeAttendamceAsync(month, year);
+                var overtimeTypeTask = SQLStore.Instance.GetOvertimeTypeAsync(true);
 
-                await Task.WhenAll(employeeTask, overtimeAttendamceTask, overtimeTypeTask);
-                mEmployee_dt = employeeTask.Result;
+                await Task.WhenAll(employeesTask, overtimeAttendamceTask, overtimeTypeTask);
+                mEmployee_dt = employeesTask.Result;
                 mOvertimeAttendamce_dt = overtimeAttendamceTask.Result;
                 mOvertimeType = overtimeTypeTask.Result;
 
@@ -95,31 +96,15 @@ namespace RauViet.ui
                 overtimeType_cbb.DisplayMember = "OvertimeName";
                 overtimeType_cbb.ValueMember = "OvertimeTypeID";
 
-                employeeDict = mEmployee_dt.AsEnumerable()
-                                .ToDictionary(
-                                    r => r.Field<string>("EmployeeCode"),
-                                    r => (
-                                        PositionCode: r.Field<string>("PositionCode"),
-                                        ContractTypeCode: r.Field<string>("ContractTypeCode")
-                                    )
-                                );
-
-
-                mEmployee_dt.Columns.Add(new DataColumn("TotalWorkingHour", typeof(double)));
 
                 dataGV.DataSource = mEmployee_dt;
                 dataGV.Columns["EmployeeCode"].HeaderText = "Mã Nhân Viên";
                 dataGV.Columns["FullName"].HeaderText = "Tên Nhân Viên";
-                dataGV.Columns["TotalWorkingHour"].HeaderText = "Tổng G.Làm";
                 dataGV.Columns["ContractTypeName"].HeaderText = "Loại H.Đồng";
                 dataGV.Columns["PositionName"].HeaderText = "Chức Vụ";
 
-                dataGV.Columns["PositionCode"].Visible = false;
-                dataGV.Columns["ContractTypeCode"].Visible = false;
-
                 dataGV.Columns["EmployeeCode"].Width = 50;
                 dataGV.Columns["FullName"].Width = 160;
-                dataGV.Columns["TotalWorkingHour"].Width = 50;
                 dataGV.Columns["ContractTypeName"].Width = 70;
                 dataGV.Columns["PositionName"].Width = 70;
 
@@ -155,28 +140,7 @@ namespace RauViet.ui
         {
             attendanceGV.SelectionChanged -= this.attendanceGV_CellClick;
 
-            mOvertimeAttendamce_dt.Columns.Add("DayOfWeek", typeof(string));
-            mOvertimeAttendamce_dt.Columns.Add("OvertimeName", typeof(string));
-            mOvertimeAttendamce_dt.Columns.Add("WorkingHours", typeof(string));
-
-            foreach (DataRow row in mOvertimeAttendamce_dt.Rows)
-            {
-                DateTime dt = Convert.ToDateTime(row["WorkDate"]);
-                string[] vietDays = { "CN", "T.2", "T.3", "T.4", "T.5", "T.6", "T.7" };
-                row["DayOfWeek"] = vietDays[(int)dt.DayOfWeek];
-
-
-                int overtimeTypeID = Convert.ToInt32(row["OvertimeTypeID"]);
-                DataRow[] rows = mOvertimeType.Select($"OvertimeTypeID = {overtimeTypeID}");
-                if (rows.Length > 0)
-                    row["OvertimeName"] = rows[0]["OvertimeName"].ToString();
-
-                TimeSpan startTime = (TimeSpan)row["StartTime"];
-                TimeSpan endTime = (TimeSpan)row["EndTime"];
-
-                TimeSpan duration = endTime - startTime;
-                row["WorkingHours"] = Math.Round(duration.TotalHours, 1);
-            }
+           
 
             int count = 0;
             mOvertimeAttendamce_dt.Columns["DayOfWeek"].SetOrdinal(count++);
@@ -184,7 +148,7 @@ namespace RauViet.ui
             mOvertimeAttendamce_dt.Columns["OvertimeName"].SetOrdinal(count++);
             mOvertimeAttendamce_dt.Columns["StartTime"].SetOrdinal(count++);
             mOvertimeAttendamce_dt.Columns["EndTime"].SetOrdinal(count++);
-            mOvertimeAttendamce_dt.Columns["WorkingHours"].SetOrdinal(count++);            
+            mOvertimeAttendamce_dt.Columns["HourWork"].SetOrdinal(count++);            
             mOvertimeAttendamce_dt.Columns["Note"].SetOrdinal(count++);
             mOvertimeAttendamce_dt.Columns["UpdatedHistory"].SetOrdinal(count++);
 
@@ -193,12 +157,14 @@ namespace RauViet.ui
             attendanceGV.Columns["OvertimeAttendanceID"].Visible = false;
             attendanceGV.Columns["OvertimeTypeID"].Visible = false;
             attendanceGV.Columns["UpdatedHistory"].Visible = false;
+           // attendanceGV.Columns["SalaryFactor"].Visible = false;
+           // attendanceGV.Columns["HourWork"].Visible = false;
 
             attendanceGV.Columns["WorkDate"].DefaultCellStyle.Format = "dd/MM/yyyy";
-            attendanceGV.Columns["WorkingHours"].DefaultCellStyle.Format = "0.##";
+            attendanceGV.Columns["HourWork"].DefaultCellStyle.Format = "0.##";
 
             attendanceGV.Columns["WorkDate"].HeaderText = "Ngày Làm";
-            attendanceGV.Columns["WorkingHours"].HeaderText = "Số G.Làm";
+            attendanceGV.Columns["HourWork"].HeaderText = "Số G.Làm";
             attendanceGV.Columns["DayOfWeek"].HeaderText = "Thứ";
             attendanceGV.Columns["OvertimeName"].HeaderText = "Loại Tăng Ca";
             attendanceGV.Columns["StartTime"].HeaderText = "Giờ Bắt Đầu";
@@ -207,7 +173,7 @@ namespace RauViet.ui
 
             attendanceGV.Columns["DayOfWeek"].Width = 40;
             attendanceGV.Columns["WorkDate"].Width = 70;
-            attendanceGV.Columns["WorkingHours"].Width = 50;
+            attendanceGV.Columns["HourWork"].Width = 50;
             attendanceGV.Columns["OvertimeName"].Width = 120;
             attendanceGV.Columns["Note"].Width = 150;
             attendanceGV.Columns["StartTime"].Width = 65;
@@ -247,8 +213,9 @@ namespace RauViet.ui
             int month = Convert.ToInt32(month_cbb.SelectedItem);
             int year = Convert.ToInt32(year_tb.Text);
 
-            var overtimeAttendamceTask = SQLManager.Instance.GetOvertimeAttendamceAsync(month, year);
-            
+            var overtimeAttendamceTask = SQLStore.Instance.GetOvertimeAttendamceAsync(month, year);
+
+
             await Task.WhenAll(overtimeAttendamceTask);
 
             mOvertimeAttendamce_dt = overtimeAttendamceTask.Result;
@@ -344,13 +311,13 @@ namespace RauViet.ui
                                 row.Cells["OvertimeTypeID"].Value = overtimeTypeID;
                                 row.Cells["Note"].Value = note;
                                 row.Cells["UpdatedHistory"].Value = updatedHistory;
+                                row.Cells["HourWork"].Value = (endTime - startTime).TotalHours;
+                                row.Cells["SalaryFactor"].Value = SQLStore.Instance.GetOvertime_SalaryFactor(overtimeTypeID);
 
                                 DataRow[] rows = mOvertimeType.Select($"OvertimeTypeID = {overtimeTypeID}");
                                 if (rows.Length > 0)
                                     row.Cells["OvertimeName"].Value = rows[0]["OvertimeName"].ToString();
 
-                                TimeSpan duration = endTime - startTime;
-                                row.Cells["WorkingHours"].Value = Math.Round(duration.TotalHours, 1);
 
                                 string[] vietDays = { "CN", "T.2", "T.3", "T.4", "T.5", "T.6", "T.7" };
                                 row.Cells["DayOfWeek"].Value = vietDays[(int)workDate.DayOfWeek];
@@ -404,13 +371,12 @@ namespace RauViet.ui
                         drToAdd["OvertimeTypeID"] = overtimeTypeID;
                         drToAdd["Note"] = note;
                         drToAdd["UpdatedHistory"] = updatedHistory;
+                        drToAdd["HourWork"] = (endTime - startTime).TotalHours;
+                        drToAdd["SalaryFactor"] = SQLStore.Instance.GetOvertime_SalaryFactor(overtimeTypeID);
 
                         DataRow[] rows = mOvertimeType.Select($"OvertimeTypeID = {overtimeTypeID}");
                         if (rows.Length > 0)
                             drToAdd["OvertimeName"] = rows[0]["OvertimeName"].ToString();
-
-                        TimeSpan duration = endTime - startTime;
-                        drToAdd["WorkingHours"] = Math.Round(duration.TotalHours, 1);
 
                         string[] vietDays = { "CN", "T.2", "T.3", "T.4", "T.5", "T.6", "T.7" };
                         drToAdd["DayOfWeek"] = vietDays[(int)workDate.DayOfWeek];

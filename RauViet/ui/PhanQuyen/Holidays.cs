@@ -35,7 +35,10 @@ namespace RauViet.ui
             newCustomerBtn.Click += newCustomerBtn_Click;
             delete_btn.Click += deleteBtn_Click;
             dataGV.SelectionChanged += this.dataGV_CellClick;
+
+            holidayDate_dtp.ValueChanged += HolidayDate_dtp_ValueChanged;
         }
+
 
         public async void ShowData()
         {
@@ -47,7 +50,7 @@ namespace RauViet.ui
             try
             {
                 // Chạy truy vấn trên thread riêng
-                var holidayAsync = SQLManager.Instance.GetHolidayAsync();
+                var holidayAsync = SQLStore.Instance.GetHolidaysAsync();
 
                 await Task.WhenAll(holidayAsync);
                 DataTable holiday_dt = holidayAsync.Result;
@@ -136,7 +139,8 @@ namespace RauViet.ui
                         int rowIndex = dataGV.Rows.Count - 1;
                         dataGV.Rows[rowIndex].Selected = true;
                         UpdateRightUI(dataGV.Rows.Count - 1);
-                        
+
+                        SQLStore.Instance.removeLeaveAttendances(holidayDate.Year);
 
                         status_lb.Text = "Thành công";
                         status_lb.ForeColor = Color.Green;
@@ -175,6 +179,8 @@ namespace RauViet.ui
 
                             if (isScussess == true)
                             {
+                                SQLStore.Instance.removeLeaveAttendances(holidayDate.Year);
+
                                 status_lb.Text = "Thành công.";
                                 status_lb.ForeColor = Color.Green;
 
@@ -204,6 +210,14 @@ namespace RauViet.ui
             string holidayName = holidayName_tb.Text;
 
             createNew(holidayDate, holidayName);
+        }
+
+        private async void HolidayDate_dtp_ValueChanged(object sender, EventArgs e)
+        {
+            DateTime holidayDate = holidayDate_dtp.Value;
+            bool isLock = await SQLStore.Instance.IsSalaryLockAsync(holidayDate.Month, holidayDate.Year);
+            newCustomerBtn.Visible = !isLock;
+            delete_btn.Visible = !isLock;
         }
     }
 }

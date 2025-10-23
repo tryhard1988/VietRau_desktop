@@ -46,14 +46,8 @@ namespace RauViet.ui
 
             try
             {
-                // Chạy truy vấn trên thread riêng
-                var employeesTask = SQLManager.Instance.GetEmployeesAsync();
-                var departmentTask = SQLManager.Instance.GetActiveDepartmentAsync();
-                var positionTask = SQLManager.Instance.GetActivePositionAsync();
-                var contractTypeTask = SQLManager.Instance.GetContractTypeAsync();
-                var salaryGradeTask = SQLManager.Instance.GetActiveSalaryGradeAsync();
-
-                await Task.WhenAll(employeesTask, departmentTask, positionTask, contractTypeTask, salaryGradeTask);
+                var employeesTask = SQLStore.Instance.GetEmployeesAsync();
+                await Task.WhenAll(employeesTask);
                 mEmployees_dt = employeesTask.Result;              
 
                 birthdate_dtp.Format = DateTimePickerFormat.Custom;
@@ -62,15 +56,6 @@ namespace RauViet.ui
                 hireDate_dtp.CustomFormat = "dd/MM/yyyy";
                 issueDate_dtp.Format = DateTimePickerFormat.Custom;
                 issueDate_dtp.CustomFormat = "dd/MM/yyyy";
-
-                mEmployees_dt.Columns.Add(new DataColumn("GenderName", typeof(string)));
-
-                foreach (DataRow dr in mEmployees_dt.Rows)
-                {
-                    int age = DateTime.Now.Year - Convert.ToDateTime(dr["BirthDate"]).Year;
-                    Boolean gender = Convert.ToBoolean(dr["Gender"]);
-                    dr["GenderName"] = (gender == true? "Nam" : "Nữ  ") + " - " + age;
-                }
 
                 int count = 0;
                 mEmployees_dt.Columns["EmployeeCode"].SetOrdinal(count++);
@@ -104,6 +89,18 @@ namespace RauViet.ui
                 dataGV.Columns["BirthDate"].DefaultCellStyle.Format = "dd/MM/yyyy";
                 dataGV.Columns["HireDate"].DefaultCellStyle.Format = "dd/MM/yyyy";
                 dataGV.Columns["IssueDate"].DefaultCellStyle.Format = "dd/MM/yyyy";
+
+                dataGV.Columns["PositionID"].Visible = false;
+                dataGV.Columns["DepartmentID"].Visible = false;
+                dataGV.Columns["ContractTypeID"].Visible = false;
+                dataGV.Columns["CreatedAt"].Visible = false;
+                dataGV.Columns["SalaryGradeID"].Visible = false;
+                dataGV.Columns["BankName"].Visible = false;
+                dataGV.Columns["BankBranch"].Visible = false;
+                dataGV.Columns["BankAccountNumber"].Visible = false;
+                dataGV.Columns["BankAccountHolder"].Visible = false;
+                dataGV.Columns["SocialInsuranceNumber"].Visible = false;
+                dataGV.Columns["HealthInsuranceNumber"].Visible = false;
 
                 dataGV.Columns["Gender"].Visible = false;
                 dataGV.Columns["EmployeeID"].Visible = false;                

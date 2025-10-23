@@ -53,12 +53,13 @@ namespace RauViet.ui
 
             try
             {
-                var employeeTask = SQLManager.Instance.GetActiveEmployeeAsync();
+                string[] keepColumns = { "EmployeeCode", "FullName", "PositionName", "ContractTypeName", };
+                var employeesTask = SQLStore.Instance.GetEmployeesAsync(keepColumns);
                 var employeeAllowanceAsync = SQLManager.Instance.GetEmployeeAllowanceAsybc();
                 var allowanceTypeAsync = SQLManager.Instance.GetAllowanceTypeAsync("EMP");
 
-                await Task.WhenAll(employeeTask, employeeAllowanceAsync, allowanceTypeAsync);
-                DataTable employee_dt = employeeTask.Result;
+                await Task.WhenAll(employeesTask, employeeAllowanceAsync, allowanceTypeAsync);
+                DataTable employee_dt = employeesTask.Result;
                 mEmployeeAllowance_dt = employeeAllowanceAsync.Result;
                 mAllowanceType_dt = allowanceTypeAsync.Result;
 

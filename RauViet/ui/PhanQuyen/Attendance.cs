@@ -81,12 +81,13 @@ namespace RauViet.ui
                 int month = Convert.ToInt32(month_cbb.SelectedItem);
                 int year = Convert.ToInt32(year_tb.Text);
                 // Chạy truy vấn trên thread riêng
-                var employeeTask = SQLManager.Instance.GetEmployeesForEttendamceAsync();
-                var attendamceTask = SQLManager.Instance.GetAttendamceAsync(month, year);
-                var holidayTask = SQLManager.Instance.GetHolidayAsync(month, year);
+                string[] keepColumns = { "EmployeeCode", "FullName", "PositionName", "ContractTypeName", "PositionCode", "ContractTypeCode" };
+                var employeesTask = SQLStore.Instance.GetEmployeesAsync(keepColumns);
+                var attendamceTask = SQLStore.Instance.GetAttendamceAsync(null, month, year);
+                var holidayTask = SQLStore.Instance.GetHolidaysAsync(month, year);
 
-                await Task.WhenAll(employeeTask, attendamceTask, holidayTask);
-                mEmployee_dt = employeeTask.Result;
+                await Task.WhenAll(employeesTask, attendamceTask, holidayTask);
+                mEmployee_dt = employeesTask.Result;
                 mAttendamce_dt = attendamceTask.Result;
                 mHoliday_dt = holidayTask.Result;
 
@@ -184,14 +185,7 @@ namespace RauViet.ui
 
         private void Attendamce()
         {
-            mAttendamce_dt.Columns.Add("DayOfWeek", typeof(string));
-
-            foreach (DataRow row in mAttendamce_dt.Rows)
-            {
-                DateTime dt = Convert.ToDateTime(row["WorkDate"]);
-                string[] vietDays = { "CN", "T.2", "T.3", "T.4", "T.5", "T.6", "T.7" };
-                row["DayOfWeek"] = vietDays[(int)dt.DayOfWeek];
-            }
+            
 
             int count = 0;
             mAttendamce_dt.Columns["DayOfWeek"].SetOrdinal(count++);
@@ -417,9 +411,8 @@ namespace RauViet.ui
                                     month_cbb.SelectedItem = month;
                                     year_tb.Text = year.ToString();
 
-                                    var attendamceTask = SQLManager.Instance.GetAttendamceAsync(month, year);
-                                    
-
+                                    SQLStore.Instance.removeAttendamce(month, year);
+                                    var attendamceTask = SQLStore.Instance.GetAttendamceAsync(null, month, year);
                                     await Task.WhenAll(attendamceTask);
                                     mAttendamce_dt = attendamceTask.Result;
 
@@ -445,8 +438,8 @@ namespace RauViet.ui
             int month = Convert.ToInt32(month_cbb.SelectedItem);
             int year = Convert.ToInt32(year_tb.Text);
 
-            var attendamceTask = SQLManager.Instance.GetAttendamceAsync(month, year);
-            var holidayTask = SQLManager.Instance.GetHolidayAsync(month, year);
+            var attendamceTask = SQLStore.Instance.GetAttendamceAsync(null, month, year);
+            var holidayTask = SQLStore.Instance.GetHolidaysAsync(month, year);
             
             await Task.WhenAll(attendamceTask, holidayTask);
 
@@ -472,8 +465,7 @@ namespace RauViet.ui
 
         private void cal_WorkingHour_WorkingDay()
         {
-            var summaryDict = mAttendamce_dt.AsEnumerable()
-            .GroupBy(r => r.Field<string>("EmployeeCode"))
+            var summaryDict = mAttendamce_dt.AsEnumerable() .GroupBy(r => r.Field<string>("EmployeeCode"))
             .ToDictionary(
                 g => g.Key,
                 g => new

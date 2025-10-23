@@ -63,13 +63,12 @@ namespace RauViet.ui
             try
             {
                 int year = Convert.ToInt32(year_tb.Text);
-                var employeeTask = SQLManager.Instance.GetAnnualLeaveBalanceAsync(year);
-                await Task.WhenAll(employeeTask);
-                mEmployee_dt = employeeTask.Result;
+                var employeeALBTask = SQLStore.Instance.GetAnnualLeaveBalanceAsync(year);
+
+                await Task.WhenAll(employeeALBTask);
+                mEmployee_dt = employeeALBTask.Result;
 
                 DefineEmployeeGV();
-
-                
             }
             catch (Exception ex)
             {
@@ -85,18 +84,13 @@ namespace RauViet.ui
 
         private void DefineEmployeeGV()
         {
-            mEmployee_dt.Columns.Add(new DataColumn("RemainingLeave", typeof(int)));
-            foreach (DataRow dr in mEmployee_dt.Rows)
-            {
-                List<int> monthList = new List<int>();
-                string month_str = Convert.ToString(dr["Month"]);
-                if (!string.IsNullOrEmpty(month_str))
-                {
-                    monthList = month_str.Split(',', (char)StringSplitOptions.RemoveEmptyEntries).Select(m => int.Parse(m.Trim())).ToList();
-                }
+            int year = Convert.ToInt32(year_tb.Text);
 
-                dr["RemainingLeave"] = monthList.Count - Convert.ToInt32(dr["LeaveCount"]);
-            }
+            int count = 0;
+            mEmployee_dt.Columns["EmployeeCode"].SetOrdinal(count++);
+            mEmployee_dt.Columns["FullName"].SetOrdinal(count++);
+            mEmployee_dt.Columns["PositionName"].SetOrdinal(count++);
+            mEmployee_dt.Columns["Year"].SetOrdinal(count++);
 
             dataGV.ReadOnly = false;
             
@@ -118,8 +112,6 @@ namespace RauViet.ui
             dataGV.Columns["Year"].HeaderText = "Năm Cấp phép";
             dataGV.Columns["LeaveCount"].HeaderText = "Đã Dùng";
             dataGV.Columns["RemainingLeave"].HeaderText = "Còn Lại";
-
-            dataGV.Columns["EmployeeID"].Visible = false;
 
             dataGV.Columns["EmployeeCode"].Width = 70;
             dataGV.Columns["FullName"].Width = 200;
@@ -191,7 +183,7 @@ namespace RauViet.ui
         private async void Load_btn_Click(object sender, EventArgs e)
         {
             int year = Convert.ToInt32(year_tb.Text);
-            var annualLeaveBalance = SQLManager.Instance.GetAnnualLeaveBalanceAsync(year);            
+            var annualLeaveBalance = SQLStore.Instance.GetAnnualLeaveBalanceAsync(year);            
             await Task.WhenAll(annualLeaveBalance);
             mEmployee_dt = annualLeaveBalance.Result;
 
