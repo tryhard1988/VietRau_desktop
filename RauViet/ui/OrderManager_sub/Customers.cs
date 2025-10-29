@@ -13,7 +13,9 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
 namespace RauViet.ui
 {
     public partial class Customers : Form
-    {        public Customers()
+    {
+        bool isNewState = false;
+        public Customers()
         {
             InitializeComponent();
 
@@ -33,15 +35,14 @@ namespace RauViet.ui
             delete_btn.Click += deleteBtn_Click;
             dataGV.SelectionChanged += this.dataGV_CellClick;
             this.dataGV.RowPrePaint += new System.Windows.Forms.DataGridViewRowPrePaintEventHandler(this.dataGV_RowPrePaint);
+
+            edit_btn.Click += Edit_btn_Click;
+            readOnly_btn.Click += ReadOnly_btn_Click;
+            ReadOnly_btn_Click(null, null);
         }
 
         public async void ShowData()
         {
-            
-
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Dock = DockStyle.Fill;
-
             loading_lb.Visible = true;            
 
             try
@@ -103,6 +104,7 @@ namespace RauViet.ui
 
         private void UpdateRightUI(int index)
         {
+            if (isNewState) return;
             var cells = dataGV.Rows[index].Cells;
             string maKH = cells["CustomerID"].Value.ToString();
             string fullName = cells["FullName"].Value.ToString();
@@ -113,7 +115,6 @@ namespace RauViet.ui
             maKH_tb.Text = maKH;
             delete_btn.Enabled = true;
 
-            info_gb.BackColor = Color.DarkGray;
             status_lb.Text = "";
         }
 
@@ -288,7 +289,39 @@ namespace RauViet.ui
             delete_btn.Enabled = false;
             info_gb.BackColor = Color.Green;
             dataGV.ClearSelection();
-            return;            
+
+            name_tb.Focus();
+            info_gb.BackColor = newCustomerBtn.BackColor;
+            edit_btn.Visible = false;
+            newCustomerBtn.Visible = false;
+            readOnly_btn.Visible = true;
+            LuuThayDoiBtn.Visible = true;
+            delete_btn.Visible = false;
+            isNewState = true;
+            LuuThayDoiBtn.Text = "Lưu Mới";
+        }
+
+        private void ReadOnly_btn_Click(object sender, EventArgs e)
+        {
+            edit_btn.Visible = true;
+            newCustomerBtn.Visible = true;
+            readOnly_btn.Visible = false;
+            LuuThayDoiBtn.Visible = false;
+            delete_btn.Visible = false;
+            info_gb.BackColor = Color.DarkGray;
+            isNewState = false;
+        }
+
+        private void Edit_btn_Click(object sender, EventArgs e)
+        {
+            edit_btn.Visible = false;
+            newCustomerBtn.Visible = false;
+            readOnly_btn.Visible = true;
+            LuuThayDoiBtn.Visible = true;
+            delete_btn.Visible = true;
+            info_gb.BackColor = edit_btn.BackColor;
+            isNewState = false;
+            LuuThayDoiBtn.Text = "Lưu C.Sửa";
         }
     }
 }

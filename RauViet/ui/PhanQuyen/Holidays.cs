@@ -1,14 +1,17 @@
-﻿using System;
+﻿using DocumentFormat.OpenXml.Wordprocessing;
+using RauViet.classes;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using RauViet.classes;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
+using Color = System.Drawing.Color;
 
 namespace RauViet.ui
 {
@@ -29,14 +32,18 @@ namespace RauViet.ui
             loading_lb.Visible = false;
             delete_btn.Enabled = false;
 
-            holidayDate_dtp.Format = DateTimePickerFormat.Custom;
-            holidayDate_dtp.CustomFormat = "dd/MM/yyyy";
+            holidayDateStart_dtp.Format = DateTimePickerFormat.Custom;
+            holidayDateStart_dtp.CustomFormat = "dd/MM/yyyy";
+
+            holidayDateEnd_dtp.Format = DateTimePickerFormat.Custom;
+            holidayDateEnd_dtp.CustomFormat = "dd/MM/yyyy";
 
             newCustomerBtn.Click += newCustomerBtn_Click;
             delete_btn.Click += deleteBtn_Click;
             dataGV.SelectionChanged += this.dataGV_CellClick;
 
-            holidayDate_dtp.ValueChanged += HolidayDate_dtp_ValueChanged;
+            holidayDateStart_dtp.ValueChanged += HolidayDateStart_dtp_ValueChanged;
+            holidayDateEnd_dtp.ValueChanged += HolidayDateEnd_dtp_ValueChanged;
         }
 
 
@@ -105,7 +112,8 @@ namespace RauViet.ui
             DateTime holidayDate = Convert.ToDateTime(cells["HolidayDate"].Value);
             string holidayName = cells["HolidayName"].Value.ToString();
 
-            holidayDate_dtp.Value = holidayDate.Date;
+            holidayDateStart_dtp.Value = holidayDate.Date;
+            holidayDateEnd_dtp.Value = holidayDate.Date;
             holidayName_tb.Text = holidayName;
 
             delete_btn.Enabled = true;
@@ -114,56 +122,67 @@ namespace RauViet.ui
             status_lb.Text = "";
         }
 
-        private async void createNew(DateTime holidayDate, string holidayName)
+        private async Task createNew(DateTime holidayDateStart, DateTime holidayDateEnd, string holidayName)
         {
+            for (DateTime date = holidayDateStart.Date; date <= holidayDateEnd.Date; date = date.AddDays(1))
+            {
+                bool isLock = await SQLStore.Instance.IsSalaryLockAsync(date.Month, date.Year);
+                if (isLock)
+                {
+                    MessageBox.Show("Tháng/Năm Đã Bị Khóa", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+            }
+
             DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
-            if (dialogResult == DialogResult.Yes)
+            if (dialogResult != DialogResult.Yes)
+                return;
+            
+            DataTable dataTable = (DataTable)dataGV.DataSource;
+            bool hasError = false;
+            dataGV.SuspendLayout();            
+            
+            for (DateTime date = holidayDateStart.Date; date <= holidayDateEnd.Date; date = date.AddDays(1))
             {
                 try
                 {
-                    bool isSuccess = await SQLManager.Instance.insertHolidayAsync(holidayDate, holidayName);
+
+                    bool isSuccess = await SQLManager.Instance.insertHolidayAsync(date, holidayName);
                     if (isSuccess)
                     {
 
-                        DataTable dataTable = (DataTable)dataGV.DataSource;
+                            
                         DataRow drToAdd = dataTable.NewRow();
 
-                        drToAdd["HolidayDate"] = holidayDate.Date;
+                        drToAdd["HolidayDate"] = date.Date;
                         drToAdd["HolidayName"] = holidayName;
-
-                        dataTable.Rows.Add(drToAdd);
-                        dataTable.AcceptChanges();
-
-                        dataGV.ClearSelection(); // bỏ chọn row cũ
-                        int rowIndex = dataGV.Rows.Count - 1;
-                        dataGV.Rows[rowIndex].Selected = true;
-                        UpdateRightUI(dataGV.Rows.Count - 1);
-
-                        SQLStore.Instance.removeLeaveAttendances(holidayDate.Year);
-
-                        status_lb.Text = "Thành công";
-                        status_lb.ForeColor = Color.Green;
+                        dataTable.Rows.Add(drToAdd); 
                     }
                     else
                     {
-                        status_lb.Text = "Thất bại";
-                        status_lb.ForeColor = Color.Red;
+                        hasError = true;
                     }
                 }
                 catch (Exception ex)
                 {
-                    status_lb.Text = "Thất bại.";
-                    status_lb.ForeColor = Color.Red;
+                    hasError = true;
                 }
-                
             }
+
+            dataGV.ResumeLayout();
+            dataTable.AcceptChanges();
+            SQLStore.Instance.removeLeaveAttendances(holidayDateStart.Year);
+            SQLStore.Instance.removeLeaveAttendances(holidayDateEnd.Year);
+            status_lb.Text = hasError ? "Có lỗi trong quá trình thêm." : "Thêm thành công tất cả.";
+            status_lb.ForeColor = hasError ? Color.Red : Color.Green;
+            
         }
         private async void deleteBtn_Click(object sender, EventArgs e)
         {
             if (dataGV.SelectedRows.Count == 0) return;
 
-            DateTime date = holidayDate_dtp.Value;
+            DateTime date = holidayDateStart_dtp.Value;
 
             foreach (DataGridViewRow row in dataGV.Rows)
             {
@@ -204,20 +223,33 @@ namespace RauViet.ui
             }
         }
 
-        private void newCustomerBtn_Click(object sender, EventArgs e)
+        private async void newCustomerBtn_Click(object sender, EventArgs e)
         {
-            DateTime holidayDate = holidayDate_dtp.Value;
+            DateTime holidayDateStart = holidayDateStart_dtp.Value;
+            DateTime holidayDateEnd = holidayDateEnd_dtp.Value;
             string holidayName = holidayName_tb.Text;
 
-            createNew(holidayDate, holidayName);
+            await createNew(holidayDateStart, holidayDateEnd, holidayName);
         }
 
-        private async void HolidayDate_dtp_ValueChanged(object sender, EventArgs e)
+        private async void HolidayDateStart_dtp_ValueChanged(object sender, EventArgs e)
         {
-            DateTime holidayDate = holidayDate_dtp.Value;
-            bool isLock = await SQLStore.Instance.IsSalaryLockAsync(holidayDate.Month, holidayDate.Year);
-            newCustomerBtn.Visible = !isLock;
+            DateTime holidayDateStart = holidayDateStart_dtp.Value.Date;
+            DateTime holidayDateEnd = holidayDateEnd_dtp.Value.Date;
+            if (holidayDateStart > holidayDateEnd)
+                holidayDateEnd_dtp.Value = holidayDateStart;
+
+            bool isLock = await SQLStore.Instance.IsSalaryLockAsync(holidayDateStart.Month, holidayDateStart.Year);
             delete_btn.Visible = !isLock;
+        }
+
+        private void HolidayDateEnd_dtp_ValueChanged(object sender, EventArgs e)
+        {
+            DateTime holidayDateStart = holidayDateStart_dtp.Value.Date;
+            DateTime holidayDateEnd = holidayDateEnd_dtp.Value.Date;
+            if (holidayDateStart > holidayDateEnd)
+                holidayDateEnd_dtp.Value = holidayDateStart;
+
         }
     }
 }

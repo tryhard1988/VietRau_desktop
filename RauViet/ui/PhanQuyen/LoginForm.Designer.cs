@@ -76,9 +76,9 @@
             // 
             this.login_btn.BackColor = System.Drawing.SystemColors.HotTrack;
             this.login_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.login_btn.Location = new System.Drawing.Point(1, 164);
+            this.login_btn.Location = new System.Drawing.Point(6, 164);
             this.login_btn.Name = "login_btn";
-            this.login_btn.Size = new System.Drawing.Size(135, 50);
+            this.login_btn.Size = new System.Drawing.Size(130, 50);
             this.login_btn.TabIndex = 2;
             this.login_btn.Text = "Đăng Nhập";
             this.login_btn.UseVisualStyleBackColor = false;
@@ -118,9 +118,9 @@
             // 
             this.changePass_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.changePass_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.changePass_btn.Location = new System.Drawing.Point(153, 164);
+            this.changePass_btn.Location = new System.Drawing.Point(144, 164);
             this.changePass_btn.Name = "changePass_btn";
-            this.changePass_btn.Size = new System.Drawing.Size(135, 50);
+            this.changePass_btn.Size = new System.Drawing.Size(130, 50);
             this.changePass_btn.TabIndex = 6;
             this.changePass_btn.Text = "Đổi Mật Khẩu";
             this.changePass_btn.UseVisualStyleBackColor = false;
@@ -161,7 +161,7 @@
             // 
             this.back_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.back_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.back_btn.Location = new System.Drawing.Point(150, 237);
+            this.back_btn.Location = new System.Drawing.Point(145, 237);
             this.back_btn.Name = "back_btn";
             this.back_btn.Size = new System.Drawing.Size(135, 50);
             this.back_btn.TabIndex = 7;

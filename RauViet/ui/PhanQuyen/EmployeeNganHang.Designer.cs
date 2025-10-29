@@ -41,7 +41,6 @@ namespace RauViet.ui
             this.bankBranch_tb = new System.Windows.Forms.TextBox();
             this.status_lb = new System.Windows.Forms.Label();
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
-            this.loading_lb = new System.Windows.Forms.Label();
             this.employeeCode_tb = new System.Windows.Forms.TextBox();
             this.dataGV = new System.Windows.Forms.DataGridView();
             this.panel1.SuspendLayout();
@@ -52,8 +51,8 @@ namespace RauViet.ui
             // panel1
             // 
             this.panel1.Controls.Add(this.info_gb);
+            this.panel1.Controls.Add(this.status_lb);
             this.panel1.Controls.Add(this.LuuThayDoiBtn);
-            this.panel1.Controls.Add(this.loading_lb);
             this.panel1.Controls.Add(this.employeeCode_tb);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Right;
             this.panel1.Location = new System.Drawing.Point(778, 0);
@@ -64,7 +63,6 @@ namespace RauViet.ui
             // info_gb
             // 
             this.info_gb.Controls.Add(this.bankName_tb);
-            this.info_gb.Controls.Add(this.status_lb);
             this.info_gb.Controls.Add(this.label4);
             this.info_gb.Controls.Add(this.bankAccountNumber_tb);
             this.info_gb.Controls.Add(this.label1);
@@ -155,7 +153,7 @@ namespace RauViet.ui
             this.status_lb.AutoSize = true;
             this.status_lb.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.status_lb.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.status_lb.Location = new System.Drawing.Point(219, 0);
+            this.status_lb.Location = new System.Drawing.Point(3, 423);
             this.status_lb.Name = "status_lb";
             this.status_lb.Size = new System.Drawing.Size(55, 23);
             this.status_lb.TabIndex = 30;
@@ -171,16 +169,6 @@ namespace RauViet.ui
             this.LuuThayDoiBtn.TabIndex = 29;
             this.LuuThayDoiBtn.Text = "Lưu";
             this.LuuThayDoiBtn.UseVisualStyleBackColor = false;
-            // 
-            // loading_lb
-            // 
-            this.loading_lb.AutoSize = true;
-            this.loading_lb.Dock = System.Windows.Forms.DockStyle.Top;
-            this.loading_lb.Location = new System.Drawing.Point(0, 0);
-            this.loading_lb.Name = "loading_lb";
-            this.loading_lb.Size = new System.Drawing.Size(55, 13);
-            this.loading_lb.TabIndex = 10;
-            this.loading_lb.Text = "loading_lb";
             // 
             // employeeCode_tb
             // 
@@ -223,7 +211,6 @@ namespace RauViet.ui
 
         #endregion
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Label loading_lb;
         private System.Windows.Forms.TextBox employeeCode_tb;
         private System.Windows.Forms.DataGridView dataGV;
         private System.Windows.Forms.GroupBox info_gb;

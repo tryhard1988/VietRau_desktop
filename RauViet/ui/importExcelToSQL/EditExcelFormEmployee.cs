@@ -99,6 +99,10 @@ namespace RauViet.ui
                         case "Thử việc":
                             row.Cells["ContractTypeID"].Value = 2;
                             break;
+                        default:
+                            row.Cells["ContractTypeID"].Value = 3;
+                            break;
+
                     }
                 }
             }
@@ -110,48 +114,51 @@ namespace RauViet.ui
             {
                 if (row.Cells["PositionID"].Value != null)
                 {
-                    string positionName = row.Cells["PositionID"].Value.ToString();
+                    string positionName = row.Cells["PositionID"].Value.ToString().Replace(" ", "").ToLower();
 
                     switch (positionName)
                     {
-                        case "Công nhân":
+                        case "côngnhân":
                             row.Cells["PositionID"].Value = 22;
                             break;
-                        case "Tổ trưởng":
+                        case "tổtrưởng":
                             row.Cells["PositionID"].Value = 17;
                             break;
-                        case "Nhân viên văn phòng":
+                        case "nhânviênvănphòng":
                             row.Cells["PositionID"].Value = 21;
                             break;
-                        case "Bảo vệ":
+                        case "bảovệ":
                             row.Cells["PositionID"].Value = 24;
                             break;
-                        case "Nhân viên IT":
+                        case "nhânviênIT":
                             row.Cells["PositionID"].Value = 19;
                             break;
-                        case "Nhân viên media":
+                        case "nhânviênmedia":
                             row.Cells["PositionID"].Value = 20;
                             break;
-                        case "Giám Đốc Điều Hành":
+                        case "giámđốcđiềuhành":
                             row.Cells["PositionID"].Value = 13;
                             break;
-                        case "Nhân viên kỹ thuật":
+                        case "nhânviênkỹthuật":
                             row.Cells["PositionID"].Value = 17;
                             break;
-                        case "Quản đốc":
+                        case "quảnđốc":
                             row.Cells["PositionID"].Value = 16;
                             break;
-                        case "Quản lý xưởng":
+                        case "quảnlýxưởng":
                             row.Cells["PositionID"].Value = 15;
                             break;
-                        case "Trưởng phòng":
+                        case "trưởngphòng":
                             row.Cells["PositionID"].Value = 14;
                             break;
-                        case "Tài xế":
+                        case "tàixế":
                             row.Cells["PositionID"].Value = 23;
                             break;
-                        case "Nhân viên":
+                        case "nhânviên":
                             row.Cells["PositionID"].Value = 23;
+                            break;
+                        default:
+                            row.Cells["PositionID"].Value = 27; // mặc định
                             break;
                     }
                 }
@@ -200,6 +207,9 @@ namespace RauViet.ui
                             break;
                         case "Phòng kỹ thuật trồng trọt":
                             row.Cells["DepartmentID"].Value = 32;
+                            break;
+                        default:
+                            row.Cells["DepartmentID"].Value = 36;
                             break;
                     }
                 }
@@ -393,6 +403,17 @@ namespace RauViet.ui
                     string address = row.Cells["Address"].Value?.ToString();
                     string citizenID = row.Cells["CitizenID"].Value?.ToString();                    
                     string issuePlace = row.Cells["IssuePlace"].Value?.ToString();
+                    int SalaryGradeID = Convert.ToInt32(row.Cells["SalaryGradeID"].Value?.ToString());
+
+                    string SocialInsuranceNumber = row.Cells["SocialInsuranceNumber"].Value?.ToString();
+                    string HealthInsuranceNumber = row.Cells["HealthInsuranceNumber"].Value?.ToString();
+
+                    string BankName = row.Cells["BankName"].Value?.ToString();
+                    string BankBranch = row.Cells["BankBranch"].Value?.ToString();
+                    string BankAccountNumber = row.Cells["BankAccountNumber"].Value?.ToString();
+                    string BankAccountHolder = row.Cells["BankAccountHolder"].Value?.ToString();
+
+                    string PhoneNumber = row.Cells["PhoneNumber"].Value?.ToString();
 
                     int? positionID = row.Cells["PositionID"].Value != null ? Convert.ToInt32(row.Cells["PositionID"].Value) : (int?)null;
                     int? departmentID = row.Cells["DepartmentID"].Value != null ? Convert.ToInt32(row.Cells["DepartmentID"].Value) : (int?)null;
@@ -402,17 +423,29 @@ namespace RauViet.ui
             INSERT INTO Employee
             (EmployeeID, EmployeeCode, FullName, BirthDate, HireDate, Gender,
              Hometown, Address, CitizenID, IssueDate, IssuePlace,
-             PositionID, DepartmentID, ContractTypeID)
+             PositionID, DepartmentID, ContractTypeID, SalaryGradeID, SocialInsuranceNumber, HealthInsuranceNumber,
+            BankName, BankBranch, BankAccountNumber, BankAccountHolder, PhoneNumber, NoteResign)
             VALUES
             (@EmployeeID, @EmployeeCode, @FullName, @BirthDate, @HireDate, @Gender,
              @Hometown, @Address, @CitizenID, @IssueDate, @IssuePlace,
-             @PositionID, @DepartmentID, @ContractTypeID)";
+             @PositionID, @DepartmentID, @ContractTypeID, @SalaryGradeID, @SocialInsuranceNumber, @HealthInsuranceNumber,
+            @BankName, @BankBranch, @BankAccountNumber, @BankAccountHolder, @PhoneNumber, @NoteResign)";
 
                     using (SqlCommand cmd = new SqlCommand(sql, conn))
                     {
                         cmd.Parameters.AddWithValue("@EmployeeID", employeeID);
                         cmd.Parameters.AddWithValue("@EmployeeCode", employeeCode);
                         cmd.Parameters.AddWithValue("@FullName", fullName);
+                        cmd.Parameters.AddWithValue("@SalaryGradeID", SalaryGradeID);
+                        cmd.Parameters.AddWithValue("@SocialInsuranceNumber", SocialInsuranceNumber);
+                        cmd.Parameters.AddWithValue("@HealthInsuranceNumber", HealthInsuranceNumber);
+                        cmd.Parameters.AddWithValue("@BankName", BankName);
+                        cmd.Parameters.AddWithValue("@BankBranch", BankBranch);
+                        cmd.Parameters.AddWithValue("@BankAccountNumber", BankAccountNumber);
+                        cmd.Parameters.AddWithValue("@BankAccountHolder", BankAccountHolder);
+                        cmd.Parameters.AddWithValue("@PhoneNumber", PhoneNumber);
+                        cmd.Parameters.AddWithValue("@NoteResign", "");
+
                         cmd.Parameters.AddWithValue("@BirthDate", (object)birthDate ?? DBNull.Value);
                         cmd.Parameters.AddWithValue("@HireDate", (object)hireDate ?? DBNull.Value);
                         cmd.Parameters.AddWithValue("@Gender", (object)gender ?? DBNull.Value);
@@ -451,7 +484,14 @@ namespace RauViet.ui
                 if (row.Cells["BirthDate1"].Value != null)
                 {
                     string birthDate = row.Cells["BirthDate1"].Value.ToString().Trim();
-                    row.Cells["BirthDate"].Value = Convert.ToDateTime(birthDate).Date;
+                    if (DateTime.TryParse(birthDate?.ToString(), out DateTime parsedDate))
+                    {
+                        row.Cells["BirthDate"].Value = parsedDate.Date;
+                    }
+                    else
+                    {
+                        row.Cells["BirthDate"].Value = DBNull.Value; // hoặc để trống
+                    }
                 }
             }
 
@@ -519,6 +559,42 @@ namespace RauViet.ui
             if (dt.Columns.Contains("IssueDate1"))
             {
                 dt.Columns.Remove("IssueDate1");
+            }
+        }
+
+        private void SalaryGrade_btn_Click(object sender, EventArgs e)
+        {
+            foreach (DataGridViewRow row in dataGV.Rows)
+            {
+                if (row.Cells["SalaryGradeID"].Value != null)
+                {
+                    string name = row.Cells["SalaryGradeID"].Value.ToString();
+
+                    switch (name)
+                    {
+                        case "Bậc 2.1":
+                            row.Cells["SalaryGradeID"].Value = 5;
+                            break;
+                        case "Bậc 1.1.2":
+                            row.Cells["SalaryGradeID"].Value = 1;
+                            break;
+                        case "Bậc 3.1":
+                            row.Cells["SalaryGradeID"].Value = 7;
+                            break;
+                        case "Bậc 1.2":
+                            row.Cells["SalaryGradeID"].Value = 4;
+                            break;
+                        case "Bậc 1.1":
+                            row.Cells["SalaryGradeID"].Value = 3;
+                            break;
+                        case "Bậc 1.1.3":
+                            row.Cells["SalaryGradeID"].Value = 2;
+                            break;
+                        default:
+                            row.Cells["SalaryGradeID"].Value = 11;
+                            break;
+                    }
+                }
             }
         }
     }

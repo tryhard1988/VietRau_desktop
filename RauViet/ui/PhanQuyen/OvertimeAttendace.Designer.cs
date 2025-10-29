@@ -31,6 +31,8 @@ namespace RauViet.ui
         {
             this.dataGV = new System.Windows.Forms.DataGridView();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.readOnly_btn = new System.Windows.Forms.Button();
+            this.edit_btn = new System.Windows.Forms.Button();
             this.updatedHistory_tb = new System.Windows.Forms.TextBox();
             this.overtimeAttendaceID_tb = new System.Windows.Forms.TextBox();
             this.newBtn = new System.Windows.Forms.Button();
@@ -45,14 +47,13 @@ namespace RauViet.ui
             this.label4 = new System.Windows.Forms.Label();
             this.label15 = new System.Windows.Forms.Label();
             this.note_tb = new System.Windows.Forms.TextBox();
+            this.status_lb = new System.Windows.Forms.Label();
             this.load_gb = new System.Windows.Forms.GroupBox();
             this.loadAttandance_btn = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.month_cbb = new System.Windows.Forms.ComboBox();
             this.year_tb = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
-            this.loading_lb = new System.Windows.Forms.Label();
-            this.status_lb = new System.Windows.Forms.Label();
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
             this.attendanceGV = new System.Windows.Forms.DataGridView();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
@@ -76,18 +77,42 @@ namespace RauViet.ui
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.readOnly_btn);
+            this.panel1.Controls.Add(this.edit_btn);
             this.panel1.Controls.Add(this.updatedHistory_tb);
             this.panel1.Controls.Add(this.overtimeAttendaceID_tb);
             this.panel1.Controls.Add(this.newBtn);
             this.panel1.Controls.Add(this.info_gb);
+            this.panel1.Controls.Add(this.status_lb);
             this.panel1.Controls.Add(this.load_gb);
-            this.panel1.Controls.Add(this.loading_lb);
             this.panel1.Controls.Add(this.LuuThayDoiBtn);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Right;
             this.panel1.Location = new System.Drawing.Point(966, 0);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(343, 681);
             this.panel1.TabIndex = 11;
+            // 
+            // readOnly_btn
+            // 
+            this.readOnly_btn.BackColor = System.Drawing.Color.MediumSlateBlue;
+            this.readOnly_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.readOnly_btn.Location = new System.Drawing.Point(288, 226);
+            this.readOnly_btn.Name = "readOnly_btn";
+            this.readOnly_btn.Size = new System.Drawing.Size(42, 32);
+            this.readOnly_btn.TabIndex = 34;
+            this.readOnly_btn.Text = "X";
+            this.readOnly_btn.UseVisualStyleBackColor = false;
+            // 
+            // edit_btn
+            // 
+            this.edit_btn.BackColor = System.Drawing.SystemColors.MenuHighlight;
+            this.edit_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.edit_btn.Location = new System.Drawing.Point(152, 226);
+            this.edit_btn.Name = "edit_btn";
+            this.edit_btn.Size = new System.Drawing.Size(94, 32);
+            this.edit_btn.TabIndex = 33;
+            this.edit_btn.Text = "Chỉnh sửa";
+            this.edit_btn.UseVisualStyleBackColor = false;
             // 
             // updatedHistory_tb
             // 
@@ -111,9 +136,9 @@ namespace RauViet.ui
             // 
             this.newBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
             this.newBtn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.newBtn.Location = new System.Drawing.Point(239, 217);
+            this.newBtn.Location = new System.Drawing.Point(247, 226);
             this.newBtn.Name = "newBtn";
-            this.newBtn.Size = new System.Drawing.Size(91, 36);
+            this.newBtn.Size = new System.Drawing.Size(83, 32);
             this.newBtn.TabIndex = 30;
             this.newBtn.Text = "Tạo mới";
             this.newBtn.UseVisualStyleBackColor = false;
@@ -126,7 +151,6 @@ namespace RauViet.ui
             this.info_gb.Controls.Add(this.startTime_dtp);
             this.info_gb.Controls.Add(this.label7);
             this.info_gb.Controls.Add(this.workDate_dtp);
-            this.info_gb.Controls.Add(this.status_lb);
             this.info_gb.Controls.Add(this.overtimeType_cbb);
             this.info_gb.Controls.Add(this.label4);
             this.info_gb.Controls.Add(this.label15);
@@ -226,6 +250,17 @@ namespace RauViet.ui
             this.note_tb.Size = new System.Drawing.Size(195, 67);
             this.note_tb.TabIndex = 18;
             // 
+            // status_lb
+            // 
+            this.status_lb.AutoSize = true;
+            this.status_lb.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.status_lb.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.status_lb.Location = new System.Drawing.Point(6, 501);
+            this.status_lb.Name = "status_lb";
+            this.status_lb.Size = new System.Drawing.Size(55, 23);
+            this.status_lb.TabIndex = 26;
+            this.status_lb.Text = "Email";
+            // 
             // load_gb
             // 
             this.load_gb.Controls.Add(this.loadAttandance_btn);
@@ -287,32 +322,11 @@ namespace RauViet.ui
             this.label2.TabIndex = 10;
             this.label2.Text = "Tháng:";
             // 
-            // loading_lb
-            // 
-            this.loading_lb.AutoSize = true;
-            this.loading_lb.Dock = System.Windows.Forms.DockStyle.Top;
-            this.loading_lb.Location = new System.Drawing.Point(0, 0);
-            this.loading_lb.Name = "loading_lb";
-            this.loading_lb.Size = new System.Drawing.Size(55, 13);
-            this.loading_lb.TabIndex = 10;
-            this.loading_lb.Text = "loading_lb";
-            // 
-            // status_lb
-            // 
-            this.status_lb.AutoSize = true;
-            this.status_lb.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.status_lb.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.status_lb.Location = new System.Drawing.Point(136, 0);
-            this.status_lb.Name = "status_lb";
-            this.status_lb.Size = new System.Drawing.Size(55, 23);
-            this.status_lb.TabIndex = 26;
-            this.status_lb.Text = "Email";
-            // 
             // LuuThayDoiBtn
             // 
             this.LuuThayDoiBtn.BackColor = System.Drawing.SystemColors.Highlight;
             this.LuuThayDoiBtn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LuuThayDoiBtn.Location = new System.Drawing.Point(112, 490);
+            this.LuuThayDoiBtn.Location = new System.Drawing.Point(136, 490);
             this.LuuThayDoiBtn.Name = "LuuThayDoiBtn";
             this.LuuThayDoiBtn.Size = new System.Drawing.Size(110, 47);
             this.LuuThayDoiBtn.TabIndex = 25;
@@ -359,7 +373,6 @@ namespace RauViet.ui
         private System.Windows.Forms.GroupBox load_gb;
         private System.Windows.Forms.TextBox year_tb;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label loading_lb;
         private System.Windows.Forms.Label status_lb;
         private System.Windows.Forms.Button LuuThayDoiBtn;
         private System.Windows.Forms.ComboBox month_cbb;
@@ -380,5 +393,7 @@ namespace RauViet.ui
         private System.Windows.Forms.Button newBtn;
         private System.Windows.Forms.TextBox overtimeAttendaceID_tb;
         private System.Windows.Forms.TextBox updatedHistory_tb;
+        private System.Windows.Forms.Button readOnly_btn;
+        private System.Windows.Forms.Button edit_btn;
     }
 }

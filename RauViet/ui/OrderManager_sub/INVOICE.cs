@@ -14,6 +14,7 @@ namespace RauViet.ui
     public partial class INVOICE : Form
     {
         DataTable mExportCode_dt, mOrdersTotal_dt, mCustomerOrdersTotal_dt, mCartonOrdersTotal_dt;
+        private LoadingOverlay loadingOverlay;
         public INVOICE()
         {
             InitializeComponent();
@@ -25,8 +26,6 @@ namespace RauViet.ui
             dataGV.MultiSelect = true;
 
             status_lb.Text = "";
-            loading_lb.Text = "Đang tải dữ liệu, vui lòng chờ...";
-            loading_lb.Visible = false;
 
 
             LuuThayDoiBtn.Click += saveBtn_Click;           
@@ -40,15 +39,18 @@ namespace RauViet.ui
 
         public async void ShowData()
         {
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Dock = DockStyle.Fill;
-
-            loading_lb.Visible = true;            
+            await Task.Delay(50);
+            loadingOverlay = new LoadingOverlay(this);
+            loadingOverlay.Show();
+            await Task.Delay(50);          
 
             try
             {
+                
+                string[] keepColumns = { "ExportCodeID", "ExportCode" };
+                var parameters = new Dictionary<string, object> { { "Complete", false } };
+                var exportCodeTask = SQLStore.Instance.getExportCodesAsync(keepColumns, parameters);
                 var ordersPackingTask = SQLManager.Instance.getOrdersINVOICEAsync();
-                var exportCodeTask = SQLManager.Instance.getExportCodes_Incomplete();
                 var customersOrdersTask = SQLManager.Instance.GetCustomersOrdersAsync();
                 var cartonOrdersTask = SQLManager.Instance.GetExportCartonCountsAsync();
 
@@ -74,8 +76,8 @@ namespace RauViet.ui
             }
             finally
             {
-                loading_lb.Visible = false; // ẩn loading
-                loading_lb.Enabled = true; // enable lại button
+                await Task.Delay(200);
+                loadingOverlay.Hide();
             }
         }
 

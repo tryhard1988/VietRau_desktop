@@ -20,10 +20,21 @@ namespace RauViet.ui
     {
         System.Data.DataTable mOvertimeAttendamce_dt, mEmployee_dt, mOvertimeType;
         Dictionary<string, (string PositionCode, string ContractTypeCode)> employeeDict;
-       // DataTable mShift_dt;
+        bool isNewState = false;
+        // DataTable mShift_dt;
         public OvertimeAttendace()
         {
             InitializeComponent();
+
+            Utils.SetTabStopRecursive(this, false);
+
+            int countTab = 0;
+            workDate_dtp.TabIndex = countTab++; workDate_dtp.TabStop = true;
+            startTime_dtp.TabIndex = countTab++; startTime_dtp.TabStop = true;
+            endTime_dtp.TabIndex = countTab++; endTime_dtp.TabStop = true;
+            overtimeType_cbb.TabIndex = countTab++; overtimeType_cbb.TabStop = true;
+            note_tb.TabIndex = countTab++; note_tb.TabStop = true;
+            LuuThayDoiBtn.TabIndex = countTab++; LuuThayDoiBtn.TabStop = true;
 
             month_cbb.Items.Clear();
             for (int m = 1; m <= 12; m++)
@@ -45,8 +56,6 @@ namespace RauViet.ui
             attendanceGV.MultiSelect = false;
 
             status_lb.Text = "";
-            loading_lb.Text = "Đang tải dữ liệu, vui lòng chờ...";
-            loading_lb.Visible = false;
 
             workDate_dtp.Format = DateTimePickerFormat.Custom;
             workDate_dtp.CustomFormat = "dd/MM/yyyy";
@@ -67,6 +76,10 @@ namespace RauViet.ui
 
             loadAttandance_btn.Click += LoadAttandance_btn_Click;
             newBtn.Click += NewBtn_Click;
+
+            edit_btn.Click += Edit_btn_Click;
+            readOnly_btn.Click += ReadOnly_btn_Click;
+            ReadOnly_btn_Click(null, null);
         }
 
         public async void ShowData()
@@ -75,7 +88,10 @@ namespace RauViet.ui
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Dock = DockStyle.Fill;
 
-            loading_lb.Visible = true;            
+
+            await Task.Delay(50);
+            LoadingOverlay loadingOverlay = new LoadingOverlay(this);
+            loadingOverlay.Show();
 
             try
             {
@@ -122,6 +138,7 @@ namespace RauViet.ui
 
                 bool isLock = await SQLStore.Instance.IsSalaryLockAsync(month, year);
                 LuuThayDoiBtn.Visible = !isLock;
+                edit_btn.Visible = !isLock;
                 newBtn.Visible = !isLock;
             }
             catch (Exception ex)
@@ -131,8 +148,8 @@ namespace RauViet.ui
             }
             finally
             {
-                loading_lb.Visible = false; // ẩn loading
-                loading_lb.Enabled = true; // enable lại button
+                await Task.Delay(100);
+                loadingOverlay.Hide();
             }
         }
 
@@ -210,6 +227,10 @@ namespace RauViet.ui
 
         private async void LoadAttandance_btn_Click(object sender, EventArgs e)
         {
+            await Task.Delay(50);
+            LoadingOverlay loadingOverlay = new LoadingOverlay(this);
+            loadingOverlay.Show();
+
             int month = Convert.ToInt32(month_cbb.SelectedItem);
             int year = Convert.ToInt32(year_tb.Text);
 
@@ -222,8 +243,13 @@ namespace RauViet.ui
             Attendamce();
 
             bool isLock = await SQLStore.Instance.IsSalaryLockAsync(month, year);
-            LuuThayDoiBtn.Visible = !isLock;
+
             newBtn.Visible = !isLock;
+            edit_btn.Visible = !isLock;
+
+            ReadOnly_btn_Click(null, null);
+            await Task.Delay(100);
+            loadingOverlay.Hide();
         }
 
         private void dataGV_CellClick(object sender, EventArgs e)
@@ -454,8 +480,36 @@ namespace RauViet.ui
         {
             overtimeAttendaceID_tb.Text = "";
             note_tb.Text = "";
-           // workDate_dtp.Value = DateTime.Now.Date;
-            info_gb.BackColor = Color.Green;
+            workDate_dtp.Value = new DateTime(Convert.ToInt32(year_tb.Text), Convert.ToInt32(month_cbb.SelectedItem), workDate_dtp.Value.Day);
+            workDate_dtp.Focus();
+            info_gb.BackColor = newBtn.BackColor;
+            edit_btn.Visible = false;
+            newBtn.Visible = false;
+            readOnly_btn.Visible = true;
+            LuuThayDoiBtn.Visible = true;
+            isNewState = true;
+            LuuThayDoiBtn.Text = "Lưu Mới";
+        }
+
+        private void ReadOnly_btn_Click(object sender, EventArgs e)
+        {
+            edit_btn.Visible = true;
+            newBtn.Visible = true;
+            readOnly_btn.Visible = false;
+            LuuThayDoiBtn.Visible = false;
+            info_gb.BackColor = Color.DarkGray;
+            isNewState = false;
+        }
+
+        private void Edit_btn_Click(object sender, EventArgs e)
+        {
+            edit_btn.Visible = false;
+            newBtn.Visible = false;
+            readOnly_btn.Visible = true;
+            LuuThayDoiBtn.Visible = true;
+            info_gb.BackColor = edit_btn.BackColor;
+            isNewState = false;
+            LuuThayDoiBtn.Text = "Lưu C.Sửa";
         }
     }
 }

@@ -13,6 +13,7 @@ namespace RauViet.ui
 {
     public partial class DetailPackingTotal : Form
     {
+        private LoadingOverlay loadingOverlay;
         DataTable mExportCode_dt, mOrdersTotal_dt;
         public DetailPackingTotal()
         {
@@ -26,13 +27,9 @@ namespace RauViet.ui
             
 
             status_lb.Text = "";
-            loading_lb.Text = "Đang tải dữ liệu, vui lòng chờ...";
-            loading_lb.Visible = false;
 
 
-            LuuThayDoiBtn.Click += saveBtn_Click;           
-        //    dataGV.RowPrePaint += new System.Windows.Forms.DataGridViewRowPrePaintEventHandler(this.dataGV_RowPrePaint);
-            //dataGV.CellEndEdit += dataGV_CellEndEdit;
+            LuuThayDoiBtn.Click += saveBtn_Click;          
 
             exportCode_cbb.SelectedIndexChanged += exportCode_search_cbb_SelectedIndexChanged;
         }
@@ -41,15 +38,17 @@ namespace RauViet.ui
 
         public async void ShowData()
         {
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Dock = DockStyle.Fill;
-
-            loading_lb.Visible = true;            
+            await Task.Delay(50);
+            loadingOverlay = new LoadingOverlay(this);
+            loadingOverlay.Show();
+            await Task.Delay(50);
 
             try
             {
                 var ordersPackingTask = SQLManager.Instance.GetDetailPackingTotalByExportCode_incompleteAsync();
-                var exportCodeTask = SQLManager.Instance.getExportCodes_Incomplete();
+                string[] keepColumns = { "ExportCodeID", "ExportCode" };
+                var parameters = new Dictionary<string, object> { { "Complete", false } };
+                var exportCodeTask = SQLStore.Instance.getExportCodesAsync(keepColumns, parameters);
 
                 await Task.WhenAll(ordersPackingTask, exportCodeTask);
 
@@ -189,8 +188,8 @@ namespace RauViet.ui
             }
             finally
             {
-                loading_lb.Visible = false; // ẩn loading
-                loading_lb.Enabled = true; // enable lại button
+                await Task.Delay(200);
+                loadingOverlay.Hide();
             }
         }
 

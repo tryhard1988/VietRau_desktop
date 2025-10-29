@@ -23,6 +23,8 @@ namespace RauViet.ui
     {
         System.Data.DataTable mProductPacking_dt, mCustomers_dt, mProduct_dt, mExportCode_dt, mOrders_dt;
         private Timer debounceTimer = new Timer { Interval = 300 };
+        private LoadingOverlay loadingOverlay;
+        bool isNewState = false;
         // private DataView dvProducts;
         public OrdersList()
         {
@@ -45,9 +47,6 @@ namespace RauViet.ui
             dataGV.MultiSelect = false;
 
             status_lb.Text = "";
-            loading_lb.Text = "Đang tải dữ liệu, vui lòng chờ...";
-            loading_lb.Visible = false;
-            delete_btn.Enabled = false;
 
             exportExcel_TD_btn.Click += exportExcel_TD_btn_Click;
             newCustomerBtn.Click += newCustomerBtn_Click;
@@ -67,10 +66,9 @@ namespace RauViet.ui
 
 
             debounceTimer.Tick += DebounceTimer_Tick;
-            //orderId_tb.Visible = false;
-            //label1.Visible = false;
-            //priceCNF_tb.Visible = false;
-            //label4.Visible = false;
+            edit_btn.Click += Edit_btn_Click;
+            readOnly_btn.Click += ReadOnly_btn_Click;
+            ReadOnly_btn_Click(null, null);
         }
 
         public async void ShowData()
@@ -78,15 +76,21 @@ namespace RauViet.ui
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Dock = DockStyle.Fill;
 
-            loading_lb.Visible = true;            
+            await Task.Delay(50);
+            loadingOverlay = new LoadingOverlay(this);
+            loadingOverlay.Show();
+            await Task.Delay(50);
 
             try
             {
                 var othersTask = SQLManager.Instance.getOrdersAsync();
                 var customersTask = SQLManager.Instance.getCustomersAsync();
-                var productTask = SQLManager.Instance.getProductSKUAsync();
-                var packingTask = SQLManager.Instance.getProductpackingAsync();
-                var exportCodeTask = SQLManager.Instance.getExportCodes_Incomplete();
+                var productTask = SQLStore.Instance.getProductSKUAsync();
+                var packingTask = SQLStore.Instance.getProductpackingAsync();
+
+                string[] keepColumns = { "ExportCodeID", "ExportCode" };
+                var parameters = new Dictionary<string, object>{{ "Complete", false }};
+                var exportCodeTask = SQLStore.Instance.getExportCodesAsync(keepColumns, parameters);
 
                 await Task.WhenAll(othersTask, customersTask, productTask, packingTask, exportCodeTask);
 
@@ -151,11 +155,6 @@ namespace RauViet.ui
                     DataRow[] exportCodeRows = mExportCode_dt.Select($"ExportCodeID = {exportCodeID}");
                     dr["ExportCode"] = exportCodeRows.Length > 0 ? exportCodeRows[0]["ExportCode"].ToString() : "Unknown";
                 }
-
-
-                exportCode_cbb.DataSource = mExportCode_dt;
-                exportCode_cbb.DisplayMember = "ExportCode";  // hiển thị tên
-                exportCode_cbb.ValueMember = "ExportCodeID";
 
                 customer_ccb.DataSource = mCustomers_dt;
                 customer_ccb.DisplayMember = "FullName";  // hiển thị tên
@@ -230,8 +229,8 @@ namespace RauViet.ui
             }
             finally
             {
-                loading_lb.Visible = false; // ẩn loading
-                loading_lb.Enabled = true; // enable lại button
+                await Task.Delay(200);
+                loadingOverlay.Hide();
             }
         }
 
@@ -369,7 +368,7 @@ namespace RauViet.ui
 
         private void updateRightUI(int indexRowSelected)
         {
-            if (indexRowSelected < 0)
+            if (indexRowSelected < 0 || isNewState)
                 return;
             var cells = dataGV.Rows[indexRowSelected].Cells;
             string orderId = cells["OrderId"].Value.ToString();
@@ -382,7 +381,6 @@ namespace RauViet.ui
 
             orderId_tb.Text = orderId;
             customer_ccb.SelectedValue = customerID;
-            exportCode_cbb.SelectedValue = exportCodeId;
 
             DataRow[] packingRows = mProductPacking_dt.Select($"ProductPackingID = {packingID}");
             if(packingRows.Length > 0) 
@@ -393,10 +391,6 @@ namespace RauViet.ui
             priceCNF_tb.Text = orderPackingPriceCNF;
 
             product_ccb_SelectedIndexChanged(null, null);
-
-
-            delete_btn.Enabled = true;
-            info_gb.BackColor = System.Drawing.Color.DarkGray;
         }
 
         private void updateNetWeight() {
@@ -590,7 +584,7 @@ namespace RauViet.ui
                 return;
             }
 
-            int exportCodeId = Convert.ToInt32(exportCode_cbb.SelectedValue);
+            int exportCodeId = Convert.ToInt32(exportCode_search_cbb.SelectedValue);
             int customerId = Convert.ToInt32(customer_ccb.SelectedValue);
             int packingId = Convert.ToInt32(packing_ccb.SelectedValue);
             int PCSOther = int.TryParse(PCSOther_tb.Text, out var value) ? value : 0;
@@ -667,9 +661,6 @@ namespace RauViet.ui
                     break; // Dừng vòng lặp sau khi xóa
                 }
             }
-            //dataGV.DataSource = mOrders_dt;
-
-            //delete_btn.Enabled = false;
         }
 
         private void Tb_KeyPress_OnlyNumber(object sender, KeyPressEventArgs e)
@@ -697,17 +688,41 @@ namespace RauViet.ui
             orderId_tb.Text = "";
             PCSOther_tb.Text = "";
             netWeight_tb.Text= "";
-            info_gb.BackColor = System.Drawing.Color.Green;
             customer_ccb.Focus();
-
-            if (exportCode_cbb.SelectedItem == null && exportCode_cbb.Items.Count > 0)
-            {
-                exportCode_cbb.SelectedIndex = 0; // chọn item đầu tiên
-            }
 
             product_ccb_SelectedIndexChanged(null, null);
 
-            delete_btn.Enabled = false;
+            info_gb.BackColor = newCustomerBtn.BackColor;
+            edit_btn.Visible = false;
+            newCustomerBtn.Visible = false;
+            readOnly_btn.Visible = true;
+            LuuThayDoiBtn.Visible = true;
+            delete_btn.Visible = false;
+            isNewState = true;
+            LuuThayDoiBtn.Text = "Lưu Mới";
+        }
+
+        private void ReadOnly_btn_Click(object sender, EventArgs e)
+        {
+            edit_btn.Visible = true;
+            newCustomerBtn.Visible = true;
+            readOnly_btn.Visible = false;
+            LuuThayDoiBtn.Visible = false;
+            delete_btn.Visible = false;
+            info_gb.BackColor = System.Drawing.Color.DarkGray;
+            isNewState = false;
+        }
+
+        private void Edit_btn_Click(object sender, EventArgs e)
+        {
+            edit_btn.Visible = false;
+            newCustomerBtn.Visible = false;
+            readOnly_btn.Visible = true;
+            LuuThayDoiBtn.Visible = true;
+            delete_btn.Visible = true;
+            info_gb.BackColor = edit_btn.BackColor;
+            isNewState = false;
+            LuuThayDoiBtn.Text = "Lưu C.Sửa";
         }
 
         private void PCSOrder_tb_TextChanged(object sender, EventArgs e)
@@ -794,14 +809,14 @@ namespace RauViet.ui
 
         private async void exportExcel_TD_btn_Click(object sender, EventArgs e)
         {
-            if (exportCode_cbb.SelectedItem == null) return;
+            if (exportCode_search_cbb.SelectedItem == null) return;
 
             DataRowView pakingData = (DataRowView)exportCode_search_cbb.SelectedItem;
             string exportCode = pakingData["ExportCode"].ToString();
 
             System.Data.DataTable pendingOrderSummary = await SQLManager.Instance.getPendingOrderSummary(Convert.ToInt32(pakingData["ExportCodeID"]));
 
-            DateTime exportDate = Convert.ToDateTime(((DataRowView)exportCode_cbb.SelectedItem)["ExportDate"]);
+            DateTime exportDate = Convert.ToDateTime(((DataRowView)exportCode_search_cbb.SelectedItem)["ExportDate"]);
             try
             {
                 using (var wb = new XLWorkbook())

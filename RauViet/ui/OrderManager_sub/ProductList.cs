@@ -18,6 +18,8 @@ namespace RauViet.ui
     {
         DataTable mSKU_dt;
         private Timer debounceTimer = new Timer { Interval = 300 };
+        bool isNewState = false;
+        private LoadingOverlay loadingOverlay;
         public ProductList()
         {
             InitializeComponent();
@@ -31,9 +33,6 @@ namespace RauViet.ui
             dataGV.MultiSelect = false;
 
             status_lb.Text = "";
-            loading_lb.Text = "Đang tải dữ liệu, vui lòng chờ...";
-            loading_lb.Visible = false;
-            delete_btn.Enabled = false;
 
             newCustomerBtn.Click += newBtn_Click;
             LuuThayDoiBtn.Click += saveBtn_Click;
@@ -46,16 +45,22 @@ namespace RauViet.ui
 
             debounceTimer.Tick += DebounceTimer_Tick;
 
+            edit_btn.Click += Edit_btn_Click;
+            readOnly_btn.Click += ReadOnly_btn_Click;
+            ReadOnly_btn_Click(null, null);
+
         }
 
         public async void ShowData()
-        {   
-            loading_lb.Visible = true;
+        {
+            await Task.Delay(50);
+            loadingOverlay = new LoadingOverlay(this);
+            loadingOverlay.Show();
 
             try
             {
-                var skuTask = SQLManager.Instance.getProductSKUAsync();
-                var packingTask = SQLManager.Instance.getProductpackingAsync();
+                var skuTask = SQLStore.Instance.getProductSKUAsync();
+                var packingTask = SQLStore.Instance.getProductpackingAsync();
 
                 await Task.WhenAll(skuTask, packingTask);
 
@@ -186,8 +191,8 @@ namespace RauViet.ui
             }
             finally
             {
-                loading_lb.Visible = false; // ẩn loading
-                loading_lb.Enabled = true; // enable lại button
+                await Task.Delay(200);
+                loadingOverlay.Hide();
             }
 
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
@@ -492,13 +497,41 @@ namespace RauViet.ui
             barCodeEAN13_tb.Text = "";
             artNr_tb.Text = "";
             GGN_tb.Text = "";
-            delete_btn.Enabled = false;
-            barCode_tb.Focus();
-            
+            barCode_tb.Focus();           
 
-            info_gb.BackColor = Color.Green;
             sku_cbb_SelectedIndexChanged(sender, e);
-            return;            
+
+            info_gb.BackColor = newCustomerBtn.BackColor;
+            edit_btn.Visible = false;
+            newCustomerBtn.Visible = false;
+            readOnly_btn.Visible = true;
+            LuuThayDoiBtn.Visible = true;
+            delete_btn.Visible = false;
+            isNewState = true;
+            LuuThayDoiBtn.Text = "Lưu Mới";
+        }
+
+        private void ReadOnly_btn_Click(object sender, EventArgs e)
+        {
+            edit_btn.Visible = true;
+            newCustomerBtn.Visible = true;
+            readOnly_btn.Visible = false;
+            LuuThayDoiBtn.Visible = false;
+            delete_btn.Visible = false;
+            info_gb.BackColor = Color.DarkGray;
+            isNewState = false;
+        }
+
+        private void Edit_btn_Click(object sender, EventArgs e)
+        {
+            edit_btn.Visible = false;
+            newCustomerBtn.Visible = false;
+            readOnly_btn.Visible = true;
+            LuuThayDoiBtn.Visible = true;
+            delete_btn.Visible = true;
+            info_gb.BackColor = edit_btn.BackColor;
+            isNewState = false;
+            LuuThayDoiBtn.Text = "Lưu C.Sửa";
         }
 
         private void sku_cbb_SelectedIndexChanged(object sender, EventArgs e)
@@ -555,6 +588,8 @@ namespace RauViet.ui
 
         private void updateDataTextBoxFlowSKU()
         {
+            if (isNewState) return;
+
             if (dataGV.SelectedRows.Count > 0)
             {
                 var cells = dataGV.SelectedRows[0].Cells;
@@ -613,8 +648,6 @@ namespace RauViet.ui
                     }
                 }
 
-                info_gb.BackColor = Color.DarkGray;
-                delete_btn.Enabled = true;
                 status_lb.Text = "";
             }
         }

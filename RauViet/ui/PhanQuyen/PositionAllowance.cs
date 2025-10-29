@@ -17,10 +17,19 @@ namespace RauViet.ui
 {    
     public partial class PositionAllowance : Form
     {
-        private DataTable mPostion_dt, mPositionAllowance_dt, mAllowanceType_dt;
+        bool isNewState = false;
+        private DataTable  mPositionAllowance_dt, mAllowanceType_dt;
         public PositionAllowance()
         {
             InitializeComponent();
+
+            Utils.SetTabStopRecursive(this, false);
+
+            int countTab = 0;
+            allowanceType_cbb.TabIndex = countTab++; allowanceType_cbb.TabStop = true;
+            amount_tb.TabIndex = countTab++; amount_tb.TabStop = true;
+            note_tb.TabIndex = countTab++; note_tb.TabStop = true;
+            LuuThayDoiBtn.TabIndex = countTab++; LuuThayDoiBtn.TabStop = true;
 
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Dock = DockStyle.Fill;
@@ -34,7 +43,6 @@ namespace RauViet.ui
             status_lb.Text = "";
             loading_lb.Text = "Đang tải dữ liệu, vui lòng chờ...";
             loading_lb.Visible = false;
-            delete_btn.Enabled = false;
 
             newCustomerBtn.Click += newCustomerBtn_Click;
             LuuThayDoiBtn.Click += saveBtn_Click;
@@ -43,13 +51,14 @@ namespace RauViet.ui
             allowanceGV.SelectionChanged += this.allowanceGV_CellClick;
 
             amount_tb.KeyPress += Tb_KeyPress_OnlyNumber;
+
+            edit_btn.Click += Edit_btn_Click;
+            readOnly_btn.Click += ReadOnly_btn_Click;
+            ReadOnly_btn_Click(null, null);
         }
 
         public async void ShowData()
         {
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Dock = DockStyle.Fill;
-
             loading_lb.Visible = true;            
 
             try
@@ -192,6 +201,7 @@ namespace RauViet.ui
         }
         private void UpdateRightUI(int index)
         {
+            if (isNewState) return;
             var cells = allowanceGV.Rows[index].Cells;
             int positionAllowanceID = Convert.ToInt32(cells["PositionAllowanceID"].Value);
             int allowanceTypeID = Convert.ToInt32(cells["AllowanceTypeID"].Value);
@@ -202,10 +212,6 @@ namespace RauViet.ui
             amount_tb.Text = amount.ToString();
             note_tb.Text = note;
             allowanceType_cbb.SelectedValue = allowanceTypeID;
-
-            delete_btn.Enabled = true;
-
-            info_gb.BackColor = Color.DarkGray;
             status_lb.Text = "";
         }
         
@@ -367,9 +373,39 @@ namespace RauViet.ui
 
             status_lb.Text = "";
             delete_btn.Enabled = false;
-            info_gb.BackColor = Color.Green;
-         //   dataGV.ClearSelection();
-            return;            
+
+            allowanceType_cbb.Focus();
+            info_gb.BackColor = newCustomerBtn.BackColor;
+            edit_btn.Visible = false;
+            newCustomerBtn.Visible = false;
+            readOnly_btn.Visible = true;
+            LuuThayDoiBtn.Visible = true;
+            delete_btn.Visible = false;
+            isNewState = true;
+            LuuThayDoiBtn.Text = "Lưu Mới";
+        }
+
+        private void ReadOnly_btn_Click(object sender, EventArgs e)
+        {
+            edit_btn.Visible = true;
+            newCustomerBtn.Visible = true;
+            readOnly_btn.Visible = false;
+            LuuThayDoiBtn.Visible = false;
+            delete_btn.Visible = false;
+            info_gb.BackColor = Color.DarkGray;
+            isNewState = false;
+        }
+
+        private void Edit_btn_Click(object sender, EventArgs e)
+        {
+            edit_btn.Visible = false;
+            newCustomerBtn.Visible = false;
+            readOnly_btn.Visible = true;
+            LuuThayDoiBtn.Visible = true;
+            delete_btn.Visible = true;
+            info_gb.BackColor = edit_btn.BackColor;
+            isNewState = false;
+            LuuThayDoiBtn.Text = "Lưu C.Sửa";
         }
     }
 }

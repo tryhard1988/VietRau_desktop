@@ -15,9 +15,20 @@ namespace RauViet.ui
     public partial class User : Form
     {
         DataTable mEmployees_dt;
+        bool isNewState = false;
         public User()
         {
             InitializeComponent();
+
+            Utils.SetTabStopRecursive(this, false);
+
+            int countTab = 0;
+            username_tb.TabIndex = countTab++; username_tb.TabStop = true;
+            password_tb.TabIndex = countTab++; password_tb.TabStop = true;
+            employee_cbb.TabIndex = countTab++; employee_cbb.TabStop = true;
+            isActive_cb.TabIndex = countTab++; isActive_cb.TabStop = true;
+            phanquyen_clb.TabIndex = countTab++; phanquyen_clb.TabStop = true;
+            LuuThayDoiBtn.TabIndex = countTab++; LuuThayDoiBtn.TabStop = true;
 
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Dock = DockStyle.Fill;
@@ -28,19 +39,19 @@ namespace RauViet.ui
             status_lb.Text = "";
             loading_lb.Text = "Đang tải dữ liệu, vui lòng chờ...";
             loading_lb.Visible = false;
-            delete_btn.Enabled = false;
 
             newCustomerBtn.Click += newCustomerBtn_Click;
             LuuThayDoiBtn.Click += saveBtn_Click;
             delete_btn.Click += deleteBtn_Click;
             dataGV.SelectionChanged += this.dataGV_CellClick;
+
+            edit_btn.Click += Edit_btn_Click;
+            readOnly_btn.Click += ReadOnly_btn_Click;
+            ReadOnly_btn_Click(null, null);
         }
 
         public async void ShowData()
         {
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Dock = DockStyle.Fill;
-
             loading_lb.Visible = true;            
 
             try
@@ -55,18 +66,14 @@ namespace RauViet.ui
                 DataTable role_dt = rolesTask.Result;
                 mEmployees_dt = employeesTask.Result;
 
-                user_dt.Columns.Add("EmployeeCode", typeof(string));
                 user_dt.Columns.Add("FullName", typeof(string));
                 foreach (DataRow dr in user_dt.Rows)
                 {
-                    Console.WriteLine($"EmployeeCode ReadOnly: {user_dt.Columns["EmployeeCode"].ReadOnly}");
+                    string employeeCode = Convert.ToString(dr["EmployeeCode"]);
 
-                    int employeeID = Convert.ToInt32(dr["EmployeeID"]);
-
-                    var Employees = mEmployees_dt.Select($"EmployeeID = {employeeID}");
+                    var Employees = mEmployees_dt.Select($"EmployeeCode = '{employeeCode}'");
                     if (Employees.Length > 0)
                     {
-                        dr["EmployeeCode"] = Employees[0]["EmployeeCode"].ToString();
                         dr["FullName"] = Employees[0]["FullName"].ToString();
                     }
                 }
@@ -82,7 +89,6 @@ namespace RauViet.ui
 
                 dataGV.DataSource = user_dt;
                 dataGV.Columns["UserID"].Visible = false;
-                dataGV.Columns["EmployeeID"].Visible = false;
                 dataGV.Columns["RoleIDs"].Visible = false;
 
                 dataGV.Columns["Username"].HeaderText = "Tên Đăng Nhập";
@@ -100,7 +106,7 @@ namespace RauViet.ui
 
                 employee_cbb.DataSource = mEmployees_dt;
                 employee_cbb.DisplayMember = "FullName";  // hiển thị tên
-                employee_cbb.ValueMember = "EmployeeID";
+                employee_cbb.ValueMember = "EmployeeCode";
 
                 phanquyen_clb.CheckOnClick = true;
                 phanquyen_clb.DataSource = role_dt;
@@ -145,11 +151,13 @@ namespace RauViet.ui
 
         private void UpdateRightUI(int index)
         {
+            if (isNewState) return;
+
             var cells = dataGV.Rows[index].Cells;
             string userID = cells["UserID"].Value.ToString();
             string username = cells["Username"].Value.ToString();
             string passwordHash = cells["PasswordHash"].Value.ToString();
-            int employeeID = Convert.ToInt32(cells["EmployeeID"].Value);
+            string employeeCode = Convert.ToString(cells["EmployeeCode"].Value);
             Boolean isActive = Convert.ToBoolean(cells["IsActive"].Value);
             string roleIDs = cells["RoleIDs"].Value.ToString();
             List<int> selectedRoleIDs = roleIDs.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
@@ -158,7 +166,7 @@ namespace RauViet.ui
             userID_tb.Text = userID;
             password_tb.Text = passwordHash;
             username_tb.Text = username;
-            employee_cbb.SelectedValue = employeeID;
+            employee_cbb.SelectedValue = employeeCode;
             isActive_cb.Checked = isActive;
 
             for (int i = 0; i < phanquyen_clb.Items.Count; i++)
@@ -175,12 +183,10 @@ namespace RauViet.ui
                 }
             }
 
-            delete_btn.Enabled = true;
-            info_gb.BackColor = Color.DarkGray;
             status_lb.Text = "";
         }
 
-        private async void updateData(int userID, string userName, string password, int employeeID, Boolean isActive, List<int> roleIDs)
+        private async void updateData(int userID, string userName, string password, string employeeCode, Boolean isActive, List<int> roleIDs)
         {
             foreach (DataGridViewRow row in dataGV.Rows)
             {
@@ -200,10 +206,10 @@ namespace RauViet.ui
                             if (isupdatePass)
                             {
                                 passworshHash = Utils.HashPassword(password);
-                                isScussess = await SQLManager.Instance.updateUserAsync(userID, userName, passworshHash, employeeID, isActive, roleIDs);
+                                isScussess = await SQLManager.Instance.updateUserAsync(userID, userName, passworshHash, employeeCode, isActive, roleIDs);
                             }
                             else
-                                isScussess = await SQLManager.Instance.updateUser_notPasswordAsync(userID, userName, employeeID, isActive, roleIDs);
+                                isScussess = await SQLManager.Instance.updateUser_notPasswordAsync(userID, userName, employeeCode, isActive, roleIDs);
 
                             if (isScussess == true)
                             {
@@ -213,16 +219,15 @@ namespace RauViet.ui
 
                                 row.Cells["Username"].Value = userName;
                                 row.Cells["PasswordHash"].Value = passworshHash;
-                                row.Cells["EmployeeID"].Value = employeeID;
+                                row.Cells["EmployeeCode"].Value = employeeCode;
                                 row.Cells["IsActive"].Value = isActive;
                                 row.Cells["RoleIDs"].Value = roleIDsString;
 
 
 
-                                var Employees = mEmployees_dt.Select($"EmployeeID = {employeeID}");
+                                var Employees = mEmployees_dt.Select($"EmployeeCode = '{employeeCode}'");
                                 if (Employees.Length > 0)
                                 {
-                                    row.Cells["EmployeeCode"].Value = Employees[0]["EmployeeCode"].ToString();
                                     row.Cells["FullName"].Value = Employees[0]["FullName"].ToString();
                                 }
                             }
@@ -247,7 +252,7 @@ namespace RauViet.ui
             }
         }
 
-        private async void createNew(string userName, string password, int employeeID, Boolean isActive, List<int> roleIDs)
+        private async void createNew(string userName, string password, string employeeCode, Boolean isActive, List<int> roleIDs)
         {
             DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
@@ -256,7 +261,7 @@ namespace RauViet.ui
                 try
                 {
                     string passworshHash = Utils.HashPassword(password);
-                    int newId = await SQLManager.Instance.insertUserDataAsync(userName, passworshHash, employeeID, isActive, roleIDs);
+                    int newId = await SQLManager.Instance.insertUserDataAsync(userName, passworshHash, employeeCode, isActive, roleIDs);
                     if (newId > 0)
                     {
 
@@ -266,14 +271,13 @@ namespace RauViet.ui
                         drToAdd["UserID"] = newId;
                         drToAdd["Username"] = userName;
                         drToAdd["PasswordHash"] = passworshHash;
-                        drToAdd["EmployeeID"] = employeeID;
+                        drToAdd["EmployeeCode"] = employeeCode;
                         drToAdd["IsActive"] = isActive;
                         userID_tb.Text = newId.ToString();
 
-                        var Employees = mEmployees_dt.Select($"EmployeeID = {employeeID}");
+                        var Employees = mEmployees_dt.Select($"EmployeeCode = '{employeeCode}'");
                         if (Employees.Length > 0)
                         {
-                            drToAdd["EmployeeCode"] = Employees[0]["EmployeeCode"].ToString();
                             drToAdd["FullName"] = Employees[0]["FullName"].ToString();
                         }
 
@@ -324,13 +328,13 @@ namespace RauViet.ui
 
             string username = username_tb.Text;
             string password = password_tb.Text;
-            int employeeID = Convert.ToInt32(employee_cbb.SelectedValue);
+            string employeeCode = Convert.ToString(employee_cbb.SelectedValue);
             Boolean isActive = isActive_cb.Checked;
 
             if (userID_tb.Text.Length != 0)
-                updateData(Convert.ToInt32(userID_tb.Text), username, password, employeeID, isActive, checkedIDs);
+                updateData(Convert.ToInt32(userID_tb.Text), username, password, employeeCode, isActive, checkedIDs);
             else
-                createNew(username, password, employeeID, isActive, checkedIDs);
+                createNew(username, password, employeeCode, isActive, checkedIDs);
 
         }
         private async void deleteBtn_Click(object sender, EventArgs e)
@@ -387,12 +391,42 @@ namespace RauViet.ui
             password_tb.Text = "";
             isActive_cb.Checked = true;
             status_lb.Text = "";
-            delete_btn.Enabled = false;
-            info_gb.BackColor = Color.Green;
 
             for (int i = 0; i < phanquyen_clb.Items.Count; i++)
                 phanquyen_clb.SetItemChecked(i, false);
-            return;            
+
+            username_tb.Focus();
+            info_gb.BackColor = newCustomerBtn.BackColor;
+            edit_btn.Visible = false;
+            newCustomerBtn.Visible = false;
+            readOnly_btn.Visible = true;
+            LuuThayDoiBtn.Visible = true;
+            delete_btn.Visible = false;
+            isNewState = true;
+            LuuThayDoiBtn.Text = "Lưu Mới";
+        }
+
+        private void ReadOnly_btn_Click(object sender, EventArgs e)
+        {
+            edit_btn.Visible = true;
+            newCustomerBtn.Visible = true;
+            readOnly_btn.Visible = false;
+            LuuThayDoiBtn.Visible = false;
+            delete_btn.Visible = false;
+            info_gb.BackColor = Color.DarkGray;
+            isNewState = false;
+        }
+
+        private void Edit_btn_Click(object sender, EventArgs e)
+        {
+            edit_btn.Visible = false;
+            newCustomerBtn.Visible = false;
+            readOnly_btn.Visible = true;
+            LuuThayDoiBtn.Visible = true;
+            delete_btn.Visible = true;
+            info_gb.BackColor = edit_btn.BackColor;
+            isNewState = false;
+            LuuThayDoiBtn.Text = "Lưu C.Sửa";
         }
     }
 }

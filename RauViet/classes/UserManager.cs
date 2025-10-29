@@ -68,13 +68,13 @@ namespace RauViet.classes
             return roleCodes.Contains(roleCode, StringComparer.OrdinalIgnoreCase);
         }
 
-        public bool hasRole_User(){return hasRole("ql_user");}
+        public bool hasRole_User(){return true; hasRole("ql_user");}
         public bool hasRole_NhanSu(){ return true; hasRole("qlns");}
-        public bool hasRole_KhachHang() { return hasRole("qlkh"); }
-        public bool hasRole_SanPham() { return hasRole("qlsp"); }
-        public bool hasRole_HoanThanhDonHang() { return hasRole("htdh"); }
-        public bool hasRole_NhapLieuDonHang() { return  hasRole("nldh"); }
-        public bool hasRole_XuatExcelGuiKH() { return hasRole("xegkh"); }
+        public bool hasRole_KhachHang() { return true; hasRole("qlkh"); }
+        public bool hasRole_SanPham() { return true; hasRole("qlsp"); }
+        public bool hasRole_HoanThanhDonHang() { return true; hasRole("htdh"); }
+        public bool hasRole_NhapLieuDonHang() { return true; hasRole("nldh"); }
+        public bool hasRole_XuatExcelGuiKH() { return true; hasRole("xegkh"); }
         public bool hasRole_ChamCong() { return true; hasRole("xegkh"); }
 
         public void reset()

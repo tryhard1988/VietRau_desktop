@@ -13,6 +13,7 @@ namespace RauViet.ui
     {
         DataTable mExportCode_dt, mLOTCode_dt;
         private bool _dataChanged = false;
+        private LoadingOverlay loadingOverlay;
         public LOTCode()
         {
             InitializeComponent();
@@ -24,8 +25,6 @@ namespace RauViet.ui
             dataGV.MultiSelect = false;
 
             status_lb.Text = "";
-            loading_lb.Text = "Đang tải dữ liệu, vui lòng chờ...";
-            loading_lb.Visible = false;
 
 
             LuuThayDoiBtn.Click += saveBtn_Click;           
@@ -43,17 +42,17 @@ namespace RauViet.ui
 
         public async void ShowData()
         {
-            
-
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Dock = DockStyle.Fill;
-
-            loading_lb.Visible = true;            
+            await Task.Delay(50);
+            loadingOverlay = new LoadingOverlay(this);
+            loadingOverlay.Show();
+            await Task.Delay(50);         
 
             try
             {
                 var LOTCodeTask = SQLManager.Instance.GetLOTCodeByExportCode_inCompleteAsync();
-                var exportCodeTask = SQLManager.Instance.getExportCodes_Incomplete();
+                string[] keepColumns = { "ExportCodeID", "ExportCode" };
+                var parameters = new Dictionary<string, object> { { "Complete", false } };
+                var exportCodeTask = SQLStore.Instance.getExportCodesAsync(keepColumns, parameters);
 
                 await Task.WhenAll(LOTCodeTask, exportCodeTask);
 
@@ -107,8 +106,8 @@ namespace RauViet.ui
             }
             finally
             {
-                loading_lb.Visible = false; // ẩn loading
-                loading_lb.Enabled = true; // enable lại button
+                await Task.Delay(200);
+                loadingOverlay.Hide();
             }
         }
 

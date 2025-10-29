@@ -35,9 +35,8 @@ namespace RauViet.ui
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.bhyt_tb = new System.Windows.Forms.TextBox();
-            this.loading_lb = new System.Windows.Forms.Label();
-            this.status_lb = new System.Windows.Forms.Label();
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
+            this.status_lb = new System.Windows.Forms.Label();
             this.employeeCode_tb = new System.Windows.Forms.TextBox();
             this.dataGV = new System.Windows.Forms.DataGridView();
             this.panel1.SuspendLayout();
@@ -48,8 +47,8 @@ namespace RauViet.ui
             // panel1
             // 
             this.panel1.Controls.Add(this.info_gb);
-            this.panel1.Controls.Add(this.loading_lb);
             this.panel1.Controls.Add(this.LuuThayDoiBtn);
+            this.panel1.Controls.Add(this.status_lb);
             this.panel1.Controls.Add(this.employeeCode_tb);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(718, 0);
@@ -61,7 +60,6 @@ namespace RauViet.ui
             // 
             this.info_gb.Controls.Add(this.bhxh_tb);
             this.info_gb.Controls.Add(this.label2);
-            this.info_gb.Controls.Add(this.status_lb);
             this.info_gb.Controls.Add(this.label3);
             this.info_gb.Controls.Add(this.bhyt_tb);
             this.info_gb.Location = new System.Drawing.Point(61, 177);
@@ -106,27 +104,6 @@ namespace RauViet.ui
             this.bhyt_tb.Size = new System.Drawing.Size(217, 23);
             this.bhyt_tb.TabIndex = 18;
             // 
-            // loading_lb
-            // 
-            this.loading_lb.AutoSize = true;
-            this.loading_lb.Dock = System.Windows.Forms.DockStyle.Top;
-            this.loading_lb.Location = new System.Drawing.Point(0, 0);
-            this.loading_lb.Name = "loading_lb";
-            this.loading_lb.Size = new System.Drawing.Size(55, 13);
-            this.loading_lb.TabIndex = 10;
-            this.loading_lb.Text = "loading_lb";
-            // 
-            // status_lb
-            // 
-            this.status_lb.AutoSize = true;
-            this.status_lb.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.status_lb.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.status_lb.Location = new System.Drawing.Point(192, 16);
-            this.status_lb.Name = "status_lb";
-            this.status_lb.Size = new System.Drawing.Size(55, 23);
-            this.status_lb.TabIndex = 26;
-            this.status_lb.Text = "Email";
-            // 
             // LuuThayDoiBtn
             // 
             this.LuuThayDoiBtn.BackColor = System.Drawing.SystemColors.Highlight;
@@ -137,6 +114,17 @@ namespace RauViet.ui
             this.LuuThayDoiBtn.TabIndex = 25;
             this.LuuThayDoiBtn.Text = "Lưu";
             this.LuuThayDoiBtn.UseVisualStyleBackColor = false;
+            // 
+            // status_lb
+            // 
+            this.status_lb.AutoSize = true;
+            this.status_lb.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.status_lb.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.status_lb.Location = new System.Drawing.Point(6, 397);
+            this.status_lb.Name = "status_lb";
+            this.status_lb.Size = new System.Drawing.Size(55, 23);
+            this.status_lb.TabIndex = 26;
+            this.status_lb.Text = "Email";
             // 
             // employeeCode_tb
             // 
@@ -186,7 +174,6 @@ namespace RauViet.ui
         private System.Windows.Forms.Button LuuThayDoiBtn;
         private System.Windows.Forms.DataGridView dataGV;
         private System.Windows.Forms.Label status_lb;
-        private System.Windows.Forms.Label loading_lb;
         private System.Windows.Forms.GroupBox info_gb;
         private System.Windows.Forms.TextBox employeeCode_tb;
     }

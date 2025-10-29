@@ -30,6 +30,8 @@ namespace RauViet.ui
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
+            this.readOnly_btn = new System.Windows.Forms.Button();
+            this.edit_btn = new System.Windows.Forms.Button();
             this.delete_btn = new System.Windows.Forms.Button();
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
             this.info_gb = new System.Windows.Forms.GroupBox();
@@ -62,9 +64,8 @@ namespace RauViet.ui
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.hometown_tb = new System.Windows.Forms.TextBox();
-            this.newCustomerBtn = new System.Windows.Forms.Button();
-            this.loading_lb = new System.Windows.Forms.Label();
             this.status_lb = new System.Windows.Forms.Label();
+            this.newCustomerBtn = new System.Windows.Forms.Button();
             this.employeeID_tb = new System.Windows.Forms.TextBox();
             this.dataGV = new System.Windows.Forms.DataGridView();
             this.panel1.SuspendLayout();
@@ -74,11 +75,13 @@ namespace RauViet.ui
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.readOnly_btn);
+            this.panel1.Controls.Add(this.edit_btn);
             this.panel1.Controls.Add(this.delete_btn);
             this.panel1.Controls.Add(this.LuuThayDoiBtn);
             this.panel1.Controls.Add(this.info_gb);
+            this.panel1.Controls.Add(this.status_lb);
             this.panel1.Controls.Add(this.newCustomerBtn);
-            this.panel1.Controls.Add(this.loading_lb);
             this.panel1.Controls.Add(this.employeeID_tb);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Right;
             this.panel1.Location = new System.Drawing.Point(811, 0);
@@ -86,11 +89,33 @@ namespace RauViet.ui
             this.panel1.Size = new System.Drawing.Size(453, 724);
             this.panel1.TabIndex = 9;
             // 
+            // readOnly_btn
+            // 
+            this.readOnly_btn.BackColor = System.Drawing.Color.MediumSlateBlue;
+            this.readOnly_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.readOnly_btn.Location = new System.Drawing.Point(399, 62);
+            this.readOnly_btn.Name = "readOnly_btn";
+            this.readOnly_btn.Size = new System.Drawing.Size(42, 32);
+            this.readOnly_btn.TabIndex = 32;
+            this.readOnly_btn.Text = "X";
+            this.readOnly_btn.UseVisualStyleBackColor = false;
+            // 
+            // edit_btn
+            // 
+            this.edit_btn.BackColor = System.Drawing.SystemColors.MenuHighlight;
+            this.edit_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.edit_btn.Location = new System.Drawing.Point(260, 62);
+            this.edit_btn.Name = "edit_btn";
+            this.edit_btn.Size = new System.Drawing.Size(94, 32);
+            this.edit_btn.TabIndex = 31;
+            this.edit_btn.Text = "Chỉnh sửa";
+            this.edit_btn.UseVisualStyleBackColor = false;
+            // 
             // delete_btn
             // 
             this.delete_btn.BackColor = System.Drawing.Color.Red;
             this.delete_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.delete_btn.Location = new System.Drawing.Point(241, 576);
+            this.delete_btn.Location = new System.Drawing.Point(257, 576);
             this.delete_btn.Name = "delete_btn";
             this.delete_btn.Size = new System.Drawing.Size(113, 47);
             this.delete_btn.TabIndex = 27;
@@ -101,7 +126,7 @@ namespace RauViet.ui
             // 
             this.LuuThayDoiBtn.BackColor = System.Drawing.SystemColors.Highlight;
             this.LuuThayDoiBtn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LuuThayDoiBtn.Location = new System.Drawing.Point(103, 576);
+            this.LuuThayDoiBtn.Location = new System.Drawing.Point(138, 576);
             this.LuuThayDoiBtn.Name = "LuuThayDoiBtn";
             this.LuuThayDoiBtn.Size = new System.Drawing.Size(113, 47);
             this.LuuThayDoiBtn.TabIndex = 25;
@@ -115,7 +140,6 @@ namespace RauViet.ui
             this.info_gb.Controls.Add(this.noteResign_tb);
             this.info_gb.Controls.Add(this.label1);
             this.info_gb.Controls.Add(this.phone_tb);
-            this.info_gb.Controls.Add(this.status_lb);
             this.info_gb.Controls.Add(this.label15);
             this.info_gb.Controls.Add(this.probationSalaryPercent_tb);
             this.info_gb.Controls.Add(this.canCreateUserName_cb);
@@ -412,37 +436,27 @@ namespace RauViet.ui
             this.hometown_tb.Size = new System.Drawing.Size(287, 23);
             this.hometown_tb.TabIndex = 18;
             // 
-            // newCustomerBtn
-            // 
-            this.newCustomerBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
-            this.newCustomerBtn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.newCustomerBtn.Location = new System.Drawing.Point(346, 68);
-            this.newCustomerBtn.Name = "newCustomerBtn";
-            this.newCustomerBtn.Size = new System.Drawing.Size(88, 28);
-            this.newCustomerBtn.TabIndex = 25;
-            this.newCustomerBtn.Text = "Tạo mới";
-            this.newCustomerBtn.UseVisualStyleBackColor = false;
-            // 
-            // loading_lb
-            // 
-            this.loading_lb.AutoSize = true;
-            this.loading_lb.Dock = System.Windows.Forms.DockStyle.Top;
-            this.loading_lb.Location = new System.Drawing.Point(0, 0);
-            this.loading_lb.Name = "loading_lb";
-            this.loading_lb.Size = new System.Drawing.Size(55, 13);
-            this.loading_lb.TabIndex = 10;
-            this.loading_lb.Text = "loading_lb";
-            // 
             // status_lb
             // 
             this.status_lb.AutoSize = true;
             this.status_lb.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.status_lb.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.status_lb.Location = new System.Drawing.Point(176, 10);
+            this.status_lb.Location = new System.Drawing.Point(3, 587);
             this.status_lb.Name = "status_lb";
             this.status_lb.Size = new System.Drawing.Size(55, 23);
             this.status_lb.TabIndex = 26;
             this.status_lb.Text = "Email";
+            // 
+            // newCustomerBtn
+            // 
+            this.newCustomerBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
+            this.newCustomerBtn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.newCustomerBtn.Location = new System.Drawing.Point(353, 62);
+            this.newCustomerBtn.Name = "newCustomerBtn";
+            this.newCustomerBtn.Size = new System.Drawing.Size(88, 32);
+            this.newCustomerBtn.TabIndex = 25;
+            this.newCustomerBtn.Text = "Tạo mới";
+            this.newCustomerBtn.UseVisualStyleBackColor = false;
             // 
             // employeeID_tb
             // 
@@ -492,7 +506,6 @@ namespace RauViet.ui
         private System.Windows.Forms.Button LuuThayDoiBtn;
         private System.Windows.Forms.Button newCustomerBtn;
         private System.Windows.Forms.Label status_lb;
-        private System.Windows.Forms.Label loading_lb;
         private System.Windows.Forms.Button delete_btn;
         private System.Windows.Forms.GroupBox info_gb;
         private System.Windows.Forms.CheckBox isActive_cb;
@@ -522,5 +535,7 @@ namespace RauViet.ui
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox noteResign_tb;
         private System.Windows.Forms.CheckBox isInsuranceRefund_CB;
+        private System.Windows.Forms.Button readOnly_btn;
+        private System.Windows.Forms.Button edit_btn;
     }
 }

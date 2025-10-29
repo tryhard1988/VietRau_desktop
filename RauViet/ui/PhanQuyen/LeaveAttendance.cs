@@ -1,5 +1,6 @@
 ﻿using DocumentFormat.OpenXml.Bibliography;
 using DocumentFormat.OpenXml.Drawing.Charts;
+using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 using RauViet.classes;
 using System;
 using System.Collections.Generic;
@@ -21,10 +22,21 @@ namespace RauViet.ui
     {
         System.Data.DataTable mLeaveAttendance_dt, mEmployee_dt, mLeaveType;
         Dictionary<string, (string PositionCode, string ContractTypeCode)> employeeDict;
-       // DataTable mShift_dt;
+        bool isNewState = false;
+        int curYear = -1;
+        // DataTable mShift_dt;
         public LeaveAttendance()
         {
             InitializeComponent();
+
+            Utils.SetTabStopRecursive(this, false);
+
+            int countTab = 0;
+            leaveType_cbb.TabIndex = countTab++; leaveType_cbb.TabStop = true;
+            dateOffStart_dtp.TabIndex = countTab++; dateOffStart_dtp.TabStop = true;
+            hourLeave_tb.TabIndex = countTab++; hourLeave_tb.TabStop = true;
+            note_tb.TabIndex = countTab++; note_tb.TabStop = true;
+            LuuThayDoiBtn.TabIndex = countTab++; LuuThayDoiBtn.TabStop = true;
 
             year_tb.Text = DateTime.Now.Year.ToString();
 
@@ -38,11 +50,11 @@ namespace RauViet.ui
             attendanceGV.MultiSelect = false;
 
             status_lb.Text = "";
-            loading_lb.Text = "Đang tải dữ liệu, vui lòng chờ...";
-            loading_lb.Visible = false;
 
-            dateOff_dtp.Format = DateTimePickerFormat.Custom;
-            dateOff_dtp.CustomFormat = "dd/MM/yyyy";
+            dateOffEnd_dtp.Format = DateTimePickerFormat.Custom;
+            dateOffEnd_dtp.CustomFormat = "dd/MM/yyyy";
+            dateOffStart_dtp.Format = DateTimePickerFormat.Custom;
+            dateOffStart_dtp.CustomFormat = "dd/MM/yyyy";
 
             LuuThayDoiBtn.Click += saveBtn_Click;
             dataGV.SelectionChanged += this.dataGV_CellClick;
@@ -53,17 +65,21 @@ namespace RauViet.ui
             delete_btn.Click += Delete_btn_Click;
             hourLeave_tb.KeyPress += Tb_KeyPress_OnlyNumber;
             year_tb.KeyPress += Tb_KeyPress_OnlyNumber;
-            dateOff_dtp.ValueChanged += DateOff_dtp_ValueChanged;
+            dateOffStart_dtp.ValueChanged += DateOffStart_dtp_ValueChanged;
+            dateOffEnd_dtp.ValueChanged += DateOffEnd_dtp_ValueChanged;
+
+            edit_btn.Click += Edit_btn_Click;
+            readOnly_btn.Click += ReadOnly_btn_Click;
+            ReadOnly_btn_Click(null, null);
         }
 
 
         public async void ShowData()
         {
-            
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Dock = DockStyle.Fill;
 
-            loading_lb.Visible = true;            
+            await Task.Delay(50);
+            LoadingOverlay loadingOverlay = new LoadingOverlay(this);
+            loadingOverlay.Show();
 
             try
             {
@@ -82,6 +98,8 @@ namespace RauViet.ui
                 mEmployee_dt = employeeRemainingLeaveTask.Result;
                 mLeaveAttendance_dt = leaveAttendanceTask.Result;
                 mLeaveType = leaveTypeTask.Result;
+
+                curYear = year;
 
                 leaveType_cbb.DataSource = mLeaveType;
                 leaveType_cbb.DisplayMember = "LeaveTypeName";
@@ -128,13 +146,17 @@ namespace RauViet.ui
             }
             finally
             {
-                loading_lb.Visible = false; // ẩn loading
-                loading_lb.Enabled = true; // enable lại button
+                await Task.Delay(100);
+                loadingOverlay.Hide();
             }
         }
 
-        private void loadLeaveAttendance()
+        private async void loadLeaveAttendance()
         {
+            await Task.Delay(50);
+            LoadingOverlay loadingOverlay = new LoadingOverlay(this);
+            loadingOverlay.Show();
+
             attendanceGV.SelectionChanged -= this.attendanceGV_CellClick;
 
             int count = 0;
@@ -171,6 +193,9 @@ namespace RauViet.ui
                 int selectedIndex = dataGV.CurrentRow?.Index ?? -1;
                 UpdateAttendanceUI(selectedIndex);
             }
+
+            await Task.Delay(100);
+            loadingOverlay.Hide();
         }
 
 
@@ -184,6 +209,8 @@ namespace RauViet.ui
 
             mLeaveAttendance_dt = leaveAttendanceTask.Result;
             loadLeaveAttendance();
+
+            curYear = year;
         }
 
         private void Tb_KeyPress_OnlyNumber(object sender, KeyPressEventArgs e)
@@ -226,6 +253,7 @@ namespace RauViet.ui
 
         private void UpdateRightUI(int rowIndex)
         {
+            if (isNewState) return;
             var cells = attendanceGV.Rows[rowIndex].Cells;
             int leaveID = Convert.ToInt32(cells["LeaveID"].Value);
             string leaveTypeCode = cells["LeaveTypeCode"].Value.ToString();
@@ -235,7 +263,8 @@ namespace RauViet.ui
             decimal hourLeave = Convert.ToDecimal(cells["LeaveHours"].Value);
 
             leaveID_tb.Text = leaveID.ToString();
-            dateOff_dtp.Value = dateOff.Date;
+            dateOffStart_dtp.Value = dateOff.Date;
+            dateOffEnd_dtp.Value = dateOff.Date;
             leaveType_cbb.SelectedValue = leaveTypeCode;
             note_tb.Text = note;
             updatedHistory_tb.Text = updatedHistory;
@@ -243,6 +272,8 @@ namespace RauViet.ui
 
             info_gb.BackColor = Color.DarkGray;
             status_lb.Text = "";
+            dateOffEnd_dtp.Visible = false;
+            label5.Visible = false;
         }
 
         private void UpdateAttendanceUI(int index)
@@ -314,25 +345,29 @@ namespace RauViet.ui
             }
         }
 
-        private async void createNew(string employeeCode, string leaveTypeCode, DateTime dateOff, string Note, string UpdatedHistory, decimal hourLeave)
+        private async void createNew(string employeeCode, string leaveTypeCode, DateTime dateOffStart, DateTime dateOffEnd, string Note, string UpdatedHistory, decimal hourLeave)
         {
             DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
-            if (dialogResult == DialogResult.Yes)
+            if (dialogResult != DialogResult.Yes)
+                return;
+
+            string[] vietDays = { "CN", "T.2", "T.3", "T.4", "T.5", "T.6", "T.7" };
+            bool hasError = false;
+            attendanceGV.SuspendLayout();
+            for (DateTime date = dateOffStart.Date; date <= dateOffEnd.Date; date = date.AddDays(1))
             {
                 try
                 {
-                    int newEmployee = await SQLManager.Instance.insertLeaveAttendanceAsync(employeeCode, leaveTypeCode, dateOff, Note, UpdatedHistory, hourLeave);
+                    int newEmployee = await SQLManager.Instance.insertLeaveAttendanceAsync(employeeCode, leaveTypeCode, date, Note, UpdatedHistory, hourLeave);
                     if (newEmployee > 0)
                     {
                         DataRow drToAdd = mLeaveAttendance_dt.NewRow();
-
-
                         leaveID_tb.Text = newEmployee.ToString();
                         drToAdd["LeaveID"] = newEmployee;
                         drToAdd["EmployeeCode"] = employeeCode;
                         drToAdd["LeaveTypeCode"] = leaveTypeCode;
-                        drToAdd["DateOff"] = dateOff.Date;
+                        drToAdd["DateOff"] = date.Date;
                         drToAdd["Note"] = Note;
                         drToAdd["UpdatedHistory"] = UpdatedHistory;
                         drToAdd["LeaveHours"] = hourLeave;
@@ -342,16 +377,10 @@ namespace RauViet.ui
                         {
                             drToAdd["LeaveTypeName"] = foundRows[0]["LeaveTypeName"].ToString();
                         }
+                        
+                        drToAdd["DayOfWeek"] = vietDays[(int)date.DayOfWeek];
 
-                        string[] vietDays = { "CN", "T.2", "T.3", "T.4", "T.5", "T.6", "T.7" };
-                        drToAdd["DayOfWeek"] = vietDays[(int)dateOff.DayOfWeek];
-
-                        mLeaveAttendance_dt.Rows.Add(drToAdd);
-                        mLeaveAttendance_dt.AcceptChanges();
-
-                        attendanceGV.ClearSelection();
-                        int rowIndex = attendanceGV.Rows.Count - 1;
-                        attendanceGV.Rows[rowIndex].Selected = true;
+                        mLeaveAttendance_dt.Rows.Add(drToAdd);                       
 
                         if (SQLStore.Instance.IsDeductAnnualLeave(leaveTypeCode))
                         {
@@ -366,51 +395,57 @@ namespace RauViet.ui
                                 row["RemainingLeave"] = remaining - 1;
                             }
                         }
-
-                        status_lb.Text = "Thành công";
-                        status_lb.ForeColor = Color.Green;
-
-                        NewBtn_Click(null, null);
                     }
                     else
                     {
-                        status_lb.Text = "Thất bại";
-                        status_lb.ForeColor = Color.Red;
+                        hasError = true;
                     }
                 }
                 catch (Exception ex)
                 {
-                    status_lb.Text = "Thất bại.";
-                    status_lb.ForeColor = Color.Red;
+                    hasError = true;
                 }
-
             }
+
+            attendanceGV.ResumeLayout();
+            mLeaveAttendance_dt.AcceptChanges();
+            NewBtn_Click(null, null);
+            status_lb.Text = hasError ? "Có lỗi trong quá trình thêm." : "Thêm thành công tất cả.";
+            status_lb.ForeColor = hasError ? Color.Red : Color.Green;
         }
+        
 
         private async void saveBtn_Click(object sender, EventArgs e)
         {
             if (leaveType_cbb.SelectedValue == null || dataGV.CurrentRow == null) return;
 
-
-            string employeeCode = dataGV.CurrentRow.Cells["EmployeeCode"].Value?.ToString();
-            DateTime dateOff = dateOff_dtp.Value;
-
-            bool isLock = await SQLStore.Instance.IsSalaryLockAsync(dateOff.Month, dateOff.Year);
-            if (isLock)
+            if (string.IsNullOrEmpty(hourLeave_tb.Text))
             {
-                MessageBox.Show("Tháng " + dateOff.Month + "/" + dateOff.Year + " đã bị khóa.", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Thiếu Dữ Liệu", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
+            string employeeCode = dataGV.CurrentRow.Cells["EmployeeCode"].Value?.ToString();
+            DateTime dateOffStart = dateOffStart_dtp.Value;
+            DateTime dateOffEnd = dateOffEnd_dtp.Value;
             decimal hourLeave = Convert.ToDecimal(hourLeave_tb.Text);
             int year = Convert.ToInt32(year_tb.Text);
 
-            if (dateOff.Year != year)
+            for (DateTime date = dateOffStart.Date; date <= dateOffEnd.Date; date = date.AddDays(1))
             {
-                MessageBox.Show("Tháng hoặc Năm có vẫn đề", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
+                bool isLock = await SQLStore.Instance.IsSalaryLockAsync(date.Month, date.Year);
+                if (isLock)
+                {
+                    MessageBox.Show("Tháng " + date.Month + "/" + date.Year + " đã bị khóa.", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
 
+                if (curYear != year || date.Year < curYear)
+                {
+                    MessageBox.Show("Tháng hoặc Năm có vẫn đề", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+            }
 
             string leaveTypeCode = Convert.ToString(leaveType_cbb.SelectedValue);
             string note = note_tb.Text;
@@ -418,9 +453,9 @@ namespace RauViet.ui
             updatedHistory += DateTime.Now + ": " + UserManager.Instance.fullName + " | ";
 
             if (leaveID_tb.Text.Length != 0)
-                updateData(Convert.ToInt32(leaveID_tb.Text), employeeCode, leaveTypeCode, dateOff, note, updatedHistory, hourLeave);
+                updateData(Convert.ToInt32(leaveID_tb.Text), employeeCode, leaveTypeCode, dateOffStart, note, updatedHistory, hourLeave);
             else
-                createNew(employeeCode, leaveTypeCode, dateOff, note, updatedHistory, hourLeave);
+                createNew(employeeCode, leaveTypeCode, dateOffStart, dateOffEnd, note, updatedHistory, hourLeave);
 
         }
 
@@ -428,7 +463,43 @@ namespace RauViet.ui
         {
             leaveID_tb.Text = "";
             note_tb.Text = "";
-            info_gb.BackColor = Color.Green;
+            leaveType_cbb.Focus();
+            info_gb.BackColor = newBtn.BackColor;
+            edit_btn.Visible = false;
+            newBtn.Visible = false;
+            readOnly_btn.Visible = true;
+            LuuThayDoiBtn.Visible = true;
+            delete_btn.Visible = false;
+            isNewState = true;
+            LuuThayDoiBtn.Text = "Lưu Mới";
+
+            dateOffEnd_dtp.Visible = true;
+            label5.Visible = true;
+        }
+
+        private void ReadOnly_btn_Click(object sender, EventArgs e)
+        {
+            edit_btn.Visible = true;
+            newBtn.Visible = true;
+            readOnly_btn.Visible = false;
+            LuuThayDoiBtn.Visible = false;
+            delete_btn.Visible = false;
+            info_gb.BackColor = Color.DarkGray;
+            isNewState = false;
+            dateOffEnd_dtp.Visible = false;
+            label5.Visible = false;
+        }
+
+        private void Edit_btn_Click(object sender, EventArgs e)
+        {
+            edit_btn.Visible = false;
+            newBtn.Visible = false;
+            readOnly_btn.Visible = true;
+            LuuThayDoiBtn.Visible = true;
+            delete_btn.Visible = true;
+            info_gb.BackColor = edit_btn.BackColor;
+            isNewState = false;
+            LuuThayDoiBtn.Text = "Lưu C.Sửa";
         }
 
         private async void Delete_btn_Click(object sender, EventArgs e)
@@ -497,13 +568,27 @@ namespace RauViet.ui
                 }
             }
         }
-        private async void DateOff_dtp_ValueChanged(object sender, EventArgs e)
+        private async void DateOffStart_dtp_ValueChanged(object sender, EventArgs e)
         {
-            DateTime dayyOff = Convert.ToDateTime(dateOff_dtp.Value);
-            bool isLock = await SQLStore.Instance.IsSalaryLockAsync(dayyOff.Month, dayyOff.Year);
+            DateTime dayyOffStart = dateOffStart_dtp.Value.Date;
+            DateTime dayyOffEnd = dateOffEnd_dtp.Value.Date;
+
+            if (dayyOffStart > dayyOffEnd)
+                dateOffEnd_dtp.Value = dayyOffStart;
+            bool isLock = await SQLStore.Instance.IsSalaryLockAsync(dayyOffStart.Month, dayyOffStart.Year);
             LuuThayDoiBtn.Visible = !isLock;
             newBtn.Visible = !isLock;
             delete_btn.Visible = !isLock;
+            edit_btn.Visible = !isLock;
+        }
+
+        private async void DateOffEnd_dtp_ValueChanged(object sender, EventArgs e)
+        {
+            DateTime dayyOffStart = dateOffStart_dtp.Value.Date;
+            DateTime dayyOffEnd = dateOffEnd_dtp.Value.Date;
+
+            if (dayyOffStart > dayyOffEnd)
+                dateOffEnd_dtp.Value = dayyOffStart;
         }
     }
 }

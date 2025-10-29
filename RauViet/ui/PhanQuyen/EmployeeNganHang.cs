@@ -26,8 +26,6 @@ namespace RauViet.ui
             dataGV.MultiSelect = false;
 
             status_lb.Text = "";
-            loading_lb.Text = "Đang tải dữ liệu, vui lòng chờ...";
-            loading_lb.Visible = false;
 
             LuuThayDoiBtn.Click += saveBtn_Click;
             dataGV.SelectionChanged += this.dataGV_CellClick;
@@ -38,7 +36,9 @@ namespace RauViet.ui
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Dock = DockStyle.Fill;
 
-            loading_lb.Visible = true;            
+            await Task.Delay(50);
+            LoadingOverlay loadingOverlay = new LoadingOverlay(this);
+            loadingOverlay.Show();
 
             try
             {
@@ -80,8 +80,8 @@ namespace RauViet.ui
             }
             finally
             {
-                loading_lb.Visible = false; // ẩn loading
-                loading_lb.Enabled = true; // enable lại button
+                await Task.Delay(100);
+                loadingOverlay.Hide();
             }
 
             

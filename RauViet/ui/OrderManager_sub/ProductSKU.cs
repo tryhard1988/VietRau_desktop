@@ -16,7 +16,11 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
 namespace RauViet.ui
 {
     public partial class ProductSKU : Form
-    {        public ProductSKU()
+    {
+        bool isNewState = false;
+        private LoadingOverlay loadingOverlay;
+        DataTable mPoductSKUHistory_dt;
+        public ProductSKU()
         {
             InitializeComponent();
 
@@ -41,9 +45,6 @@ namespace RauViet.ui
             dataGV.MultiSelect = false;
 
             status_lb.Text = "";
-            loading_lb.Text = "Đang tải dữ liệu, vui lòng chờ...";
-            loading_lb.Visible = false;
-            delete_btn.Enabled = false;
 
             newBtn.Click += newBtn_Click;
             luuBtn.Click += saveBtn_Click;
@@ -55,22 +56,28 @@ namespace RauViet.ui
             lotCodeHeader_tb.KeyPress += Tb_KeyPress_OnlyNumber;
             search_tb.TextChanged += search_txt_TextChanged;
 
+            edit_btn.Click += Edit_btn_Click;
+            readOnly_btn.Click += ReadOnly_btn_Click;
+            ReadOnly_btn_Click(null, null);
 
             sku_tb.Visible = false;
-            label1.Visible = false;
         }
 
         public async void ShowData()
         {
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Dock = DockStyle.Fill;
-
-            loading_lb.Visible = true;            
-
+            await Task.Delay(50);
+            loadingOverlay = new LoadingOverlay(this);
+            loadingOverlay.Show();
+            await Task.Delay(50);
             try
             {
                 // Chạy truy vấn trên thread riêng
-                DataTable dt = await SQLManager.Instance.getProductSKUAsync();
+                var productSKUATask = SQLStore.Instance.getProductSKUAsync();
+                var productSKUHistoryTask = SQLStore.Instance.GetProductSKUHistoryAsync();
+
+                await Task.WhenAll(productSKUATask, productSKUHistoryTask);
+                DataTable dt = productSKUATask.Result;
+                mPoductSKUHistory_dt = productSKUHistoryTask.Result;
 
                 if (!dt.Columns.Contains("ProductNameVN_NoSign"))
                     dt.Columns.Add("ProductNameVN_NoSign", typeof(string));
@@ -93,9 +100,9 @@ namespace RauViet.ui
                 dt.Columns["PriceCNF"].SetOrdinal(count++);
                 dt.Columns["PlantingAreaCode"].SetOrdinal(count++);
                 dt.Columns["LOTCodeHeader"].SetOrdinal(count++);
-                dt.Columns["Priority"].SetOrdinal(count++);                
-                dataGV.DataSource = dt;
-
+                dt.Columns["Priority"].SetOrdinal(count++);
+                priceCNFHisGV.DataSource = mPoductSKUHistory_dt;
+                dataGV.DataSource = dt;                
 
                 dataGV.Columns["ProductNameVN"].HeaderText = "Tên Sản Phẩm (VN)";
                 dataGV.Columns["ProductNameEN"].HeaderText = "Tên Sản Phẩm (EN)";
@@ -122,6 +129,8 @@ namespace RauViet.ui
 
                 dataGV.Columns["ProductNameVN_NoSign"].Visible = false;
                 dataGV.Columns["PackingType"].Visible = false;
+                priceCNFHisGV.Columns["id"].Visible = false;
+                priceCNFHisGV.Columns["SKU"].Visible = false;
                 // dataGV.Columns["SKU"].Visible = false;
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
@@ -145,8 +154,8 @@ namespace RauViet.ui
             }
             finally
             {
-                loading_lb.Visible = false; // ẩn loading
-                loading_lb.Enabled = true; // enable lại button
+                await Task.Delay(200);
+                loadingOverlay.Hide();
             }
 
             
@@ -175,6 +184,8 @@ namespace RauViet.ui
 
         private void UpdateRightUI(int index)
         {
+            if (isNewState) return;
+
             var cells = dataGV.Rows[index].Cells;
 
             string SKU = cells["SKU"].Value.ToString();
@@ -200,9 +211,12 @@ namespace RauViet.ui
             priority_tb.Text = priority;
             plantingareaCode_tb.Text = plantingAreaCode;
             lotCodeHeader_tb.Text = lotCodeHeader;
-            delete_btn.Enabled = true;
 
-            info_gb.BackColor = Color.DarkGray;
+            DataView dv = new DataView(mPoductSKUHistory_dt);
+            dv.RowFilter = $"SKU = '{SKU}'";
+
+            priceCNFHisGV.DataSource = dv;
+
             status_lb.Text = "";
         }
 
@@ -227,8 +241,9 @@ namespace RauViet.ui
 
                             if (isScussess == true)
                             {
-                                status_lb.Text = "Thành công.";
-                                status_lb.ForeColor = Color.Green;
+                                SQLStore.Instance.resetProductpacking();
+
+                                await SQLManager.Instance.SaveProductSKUHistoryAsync(SKU, priceCNF);
 
                                 row.Cells["ProductNameVN"].Value = productNameVN;
                                 row.Cells["ProductNameEN"].Value = productNameEN;
@@ -240,6 +255,9 @@ namespace RauViet.ui
                                 row.Cells["Priority"].Value = priority;
                                 row.Cells["PlantingAreaCode"].Value = plantingareaCode;
                                 row.Cells["LOTCodeHeader"].Value = LOTCodeHeader;
+
+                                status_lb.Text = "Thành công.";
+                                status_lb.ForeColor = Color.Green;
                             }
                             else
                             {
@@ -251,11 +269,7 @@ namespace RauViet.ui
                         {
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;
-                        }
-
-                        
-
-                        
+                        } 
                     }
                     break;
                 }
@@ -275,6 +289,9 @@ namespace RauViet.ui
                         packingList, botanicalName, priceCNF, priority, plantingareaCode, LOTCodeHeader);
                     if (newId > 0)
                     {
+                        SQLStore.Instance.resetProductpacking();
+
+                        await SQLManager.Instance.SaveProductSKUHistoryAsync(newId, priceCNF);
 
                         DataTable dataTable = (DataTable)dataGV.DataSource;
                         DataRow drToAdd = dataTable.NewRow();
@@ -372,6 +389,7 @@ namespace RauViet.ui
 
                             if (isScussess == true)
                             {
+                                SQLStore.Instance.resetProductpacking();
                                 status_lb.Text = "Thành công.";
                                 status_lb.ForeColor = Color.Green;
 
@@ -388,19 +406,11 @@ namespace RauViet.ui
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;
                         }
-
-
-
-
                     }
                     break;
                 }
             }
 
-
-
-
-            delete_btn.Enabled = false;
         }
 
         private void newBtn_Click(object sender, EventArgs e)
@@ -416,10 +426,38 @@ namespace RauViet.ui
             plantingareaCode_tb.Text = "";
             lotCodeHeader_tb.Text = "";
 
-            delete_btn.Enabled = false;
-            info_gb.BackColor = Color.Green;
             product_VN_tb.Focus();
-            return;            
+            info_gb.BackColor = newBtn.BackColor;
+            edit_btn.Visible = false;
+            newBtn.Visible = false;
+            readOnly_btn.Visible = true;
+            luuBtn.Visible = true;
+            delete_btn.Visible = false;
+            isNewState = true;
+            luuBtn.Text = "Lưu Mới";
+        }
+
+        private void ReadOnly_btn_Click(object sender, EventArgs e)
+        {
+            edit_btn.Visible = true;
+            newBtn.Visible = true;
+            readOnly_btn.Visible = false;
+            luuBtn.Visible = false;
+            delete_btn.Visible = false;
+            info_gb.BackColor = Color.DarkGray;
+            isNewState = false;
+        }
+
+        private void Edit_btn_Click(object sender, EventArgs e)
+        {
+            edit_btn.Visible = false;
+            newBtn.Visible = false;
+            readOnly_btn.Visible = true;
+            luuBtn.Visible = true;
+            delete_btn.Visible = true;
+            info_gb.BackColor = edit_btn.BackColor;
+            isNewState = false;
+            luuBtn.Text = "Lưu C.Sửa";
         }
 
         private void Tb_KeyPress_OnlyNumber(object sender, KeyPressEventArgs e)
@@ -451,5 +489,6 @@ namespace RauViet.ui
             dv.RowFilter = $"[ProductNameVN_NoSign] LIKE '%{keyword}%'";
 
         }
+
     }
 }

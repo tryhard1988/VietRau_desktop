@@ -42,7 +42,6 @@
             this.employeeWork_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.department_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.position_mi = new System.Windows.Forms.ToolStripMenuItem();
-            this.employeeSalaryInfo_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.dữLiệuToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.overtimeType_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.holiday_mi = new System.Windows.Forms.ToolStripMenuItem();
@@ -84,6 +83,7 @@
             this.thôngKêToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.reportSalary_Month_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.content_panel = new System.Windows.Forms.Panel();
+            this.employeeSalaryInfo_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1.SuspendLayout();
             this.LOT_menuitem.SuspendLayout();
             this.SuspendLayout();
@@ -155,7 +155,6 @@
             this.sfsdf,
             this.department_mi,
             this.position_mi,
-            this.employeeSalaryInfo_mi,
             this.dữLiệuToolStripMenuItem1});
             this.nhansu_group_mi.Name = "nhansu_group_mi";
             this.nhansu_group_mi.Size = new System.Drawing.Size(70, 21);
@@ -167,9 +166,10 @@
             this.employee_mi,
             this.employeeBH_mi,
             this.employeeBank_mi,
-            this.employeeWork_mi});
+            this.employeeWork_mi,
+            this.employeeSalaryInfo_mi});
             this.sfsdf.Name = "sfsdf";
-            this.sfsdf.Size = new System.Drawing.Size(216, 22);
+            this.sfsdf.Size = new System.Drawing.Size(201, 22);
             this.sfsdf.Text = "Danh Sách Nhân Viên";
             // 
             // employee_mi
@@ -199,20 +199,14 @@
             // department_mi
             // 
             this.department_mi.Name = "department_mi";
-            this.department_mi.Size = new System.Drawing.Size(216, 22);
+            this.department_mi.Size = new System.Drawing.Size(201, 22);
             this.department_mi.Text = "Phòng Ban";
             // 
             // position_mi
             // 
             this.position_mi.Name = "position_mi";
-            this.position_mi.Size = new System.Drawing.Size(216, 22);
+            this.position_mi.Size = new System.Drawing.Size(201, 22);
             this.position_mi.Text = "Chức Vụ";
-            // 
-            // employeeSalaryInfo_mi
-            // 
-            this.employeeSalaryInfo_mi.Name = "employeeSalaryInfo_mi";
-            this.employeeSalaryInfo_mi.Size = new System.Drawing.Size(216, 22);
-            this.employeeSalaryInfo_mi.Text = "Chi Tiết T.Đổi Lương NV";
             // 
             // dữLiệuToolStripMenuItem1
             // 
@@ -222,7 +216,7 @@
             this.allowanceType_mi,
             this.salaryGrade_mi});
             this.dữLiệuToolStripMenuItem1.Name = "dữLiệuToolStripMenuItem1";
-            this.dữLiệuToolStripMenuItem1.Size = new System.Drawing.Size(216, 22);
+            this.dữLiệuToolStripMenuItem1.Size = new System.Drawing.Size(201, 22);
             this.dữLiệuToolStripMenuItem1.Text = "Dữ Liệu";
             // 
             // overtimeType_mi
@@ -503,6 +497,12 @@
             this.content_panel.Size = new System.Drawing.Size(1388, 491);
             this.content_panel.TabIndex = 1;
             // 
+            // employeeSalaryInfo_mi
+            // 
+            this.employeeSalaryInfo_mi.Name = "employeeSalaryInfo_mi";
+            this.employeeSalaryInfo_mi.Size = new System.Drawing.Size(224, 22);
+            this.employeeSalaryInfo_mi.Text = "Lương Cơ Bản";
+            // 
             // FormManager
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -564,7 +564,6 @@
         private System.Windows.Forms.ToolStripMenuItem holiday_mi;
         private System.Windows.Forms.ToolStripMenuItem allowanceType_mi;
         private System.Windows.Forms.ToolStripMenuItem salaryGrade_mi;
-        private System.Windows.Forms.ToolStripMenuItem employeeSalaryInfo_mi;
         private System.Windows.Forms.ToolStripMenuItem employee_mi;
         private System.Windows.Forms.ToolStripMenuItem employeeBH_mi;
         private System.Windows.Forms.ToolStripMenuItem employeeBank_mi;
@@ -578,5 +577,6 @@
         private System.Windows.Forms.ToolStripMenuItem deduction_ATT_mi;
         private System.Windows.Forms.ToolStripMenuItem thôngKêToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem reportSalary_Month_mi;
+        private System.Windows.Forms.ToolStripMenuItem employeeSalaryInfo_mi;
     }
 }

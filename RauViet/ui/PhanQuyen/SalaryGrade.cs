@@ -13,10 +13,20 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
 namespace RauViet.ui
 {
     public partial class SalaryGrade : Form
-    { 
+    {
+        bool isNewState = false;
         public SalaryGrade()
         {
             InitializeComponent();
+
+            Utils.SetTabStopRecursive(this, false);
+
+            int countTab = 0;
+            salaryName_tb.TabIndex = countTab++; salaryName_tb.TabStop = true;
+            salary_tb.TabIndex = countTab++; salary_tb.TabStop = true;
+            description_tb.TabIndex = countTab++; description_tb.TabStop = true;
+            isActive_cb.TabIndex = countTab++; isActive_cb.TabStop = true;
+            LuuThayDoiBtn.TabIndex = countTab++; LuuThayDoiBtn.TabStop = true;
 
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Dock = DockStyle.Fill;
@@ -27,19 +37,19 @@ namespace RauViet.ui
             status_lb.Text = "";
             loading_lb.Text = "Đang tải dữ liệu, vui lòng chờ...";
             loading_lb.Visible = false;
-            delete_btn.Enabled = false;
 
             newCustomerBtn.Click += newCustomerBtn_Click;
             LuuThayDoiBtn.Click += saveBtn_Click;
             delete_btn.Click += deleteBtn_Click;
             dataGV.SelectionChanged += this.dataGV_CellClick;
+
+            edit_btn.Click += Edit_btn_Click;
+            readOnly_btn.Click += ReadOnly_btn_Click;
+            ReadOnly_btn_Click(null, null);
         }
 
         public async void ShowData()
         {
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Dock = DockStyle.Fill;
-
             loading_lb.Visible = true;            
 
             try
@@ -100,6 +110,7 @@ namespace RauViet.ui
 
         private void UpdateRightUI(int index)
         {
+            if (isNewState) return;
             var cells = dataGV.Rows[index].Cells;
             int salaryGradeID = Convert.ToInt32(cells["SalaryGradeID"].Value);
             string gradeName = cells["GradeName"].Value.ToString();
@@ -113,9 +124,6 @@ namespace RauViet.ui
             description_tb.Text = note;      
             isActive_cb.Checked = isActive;
 
-            delete_btn.Enabled = true;
-
-            info_gb.BackColor = Color.DarkGray;
             status_lb.Text = "";
         }
 
@@ -286,15 +294,46 @@ namespace RauViet.ui
 
         private void newCustomerBtn_Click(object sender, EventArgs e)
         {
+            salaryName_tb.Text = "";
             salaryGradeID_tb.Text = "";
             salary_tb.Text = "";
             description_tb.Text = "";
             isActive_cb.Checked = true;
 
             status_lb.Text = "";
-            delete_btn.Enabled = false;
-            info_gb.BackColor = Color.Green;
-            return;            
+            salaryName_tb.Focus();
+            info_gb.BackColor = newCustomerBtn.BackColor;
+            edit_btn.Visible = false;
+            newCustomerBtn.Visible = false;
+            readOnly_btn.Visible = true;
+            LuuThayDoiBtn.Visible = true;
+            delete_btn.Visible = false;
+            isNewState = true;
+            LuuThayDoiBtn.Text = "Lưu Mới";
         }
+
+        private void ReadOnly_btn_Click(object sender, EventArgs e)
+        {
+            edit_btn.Visible = true;
+            newCustomerBtn.Visible = true;
+            readOnly_btn.Visible = false;
+            LuuThayDoiBtn.Visible = false;
+            delete_btn.Visible = false;
+            info_gb.BackColor = Color.DarkGray;
+            isNewState = false;
+        }
+
+        private void Edit_btn_Click(object sender, EventArgs e)
+        {
+            edit_btn.Visible = false;
+            newCustomerBtn.Visible = false;
+            readOnly_btn.Visible = true;
+            LuuThayDoiBtn.Visible = true;
+            delete_btn.Visible = true;
+            info_gb.BackColor = edit_btn.BackColor;
+            isNewState = false;
+            LuuThayDoiBtn.Text = "Lưu C.Sửa";
+        }
+
     }
 }

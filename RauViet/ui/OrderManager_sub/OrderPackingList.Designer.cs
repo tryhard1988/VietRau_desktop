@@ -51,7 +51,6 @@ namespace RauViet.ui
             this.panel4 = new System.Windows.Forms.Panel();
             this.previewPrint_PT_btn = new System.Windows.Forms.Button();
             this.print_btn = new System.Windows.Forms.Button();
-            this.loading_lb = new System.Windows.Forms.Label();
             this.assignPCSReal_btn = new System.Windows.Forms.Button();
             this.PCSReal_tb = new System.Windows.Forms.TextBox();
             this.status_lb = new System.Windows.Forms.Label();
@@ -74,7 +73,6 @@ namespace RauViet.ui
             this.panel1.Controls.Add(this.groupBox1);
             this.panel1.Controls.Add(this.exportCode_cbb);
             this.panel1.Controls.Add(this.panel3);
-            this.panel1.Controls.Add(this.loading_lb);
             this.panel1.Controls.Add(this.assignPCSReal_btn);
             this.panel1.Controls.Add(this.PCSReal_tb);
             this.panel1.Controls.Add(this.status_lb);
@@ -90,7 +88,7 @@ namespace RauViet.ui
             // 
             this.previewPrint_PGH_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.previewPrint_PGH_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.previewPrint_PGH_btn.Location = new System.Drawing.Point(165, 450);
+            this.previewPrint_PGH_btn.Location = new System.Drawing.Point(165, 440);
             this.previewPrint_PGH_btn.Name = "previewPrint_PGH_btn";
             this.previewPrint_PGH_btn.Size = new System.Drawing.Size(162, 45);
             this.previewPrint_PGH_btn.TabIndex = 54;
@@ -101,7 +99,7 @@ namespace RauViet.ui
             // 
             this.InPhieuGiaoHang_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.InPhieuGiaoHang_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.InPhieuGiaoHang_btn.Location = new System.Drawing.Point(165, 399);
+            this.InPhieuGiaoHang_btn.Location = new System.Drawing.Point(165, 389);
             this.InPhieuGiaoHang_btn.Name = "InPhieuGiaoHang_btn";
             this.InPhieuGiaoHang_btn.Size = new System.Drawing.Size(162, 45);
             this.InPhieuGiaoHang_btn.TabIndex = 46;
@@ -222,7 +220,7 @@ namespace RauViet.ui
             // exportCode_cbb
             // 
             this.exportCode_cbb.FormattingEnabled = true;
-            this.exportCode_cbb.Location = new System.Drawing.Point(-3, 12);
+            this.exportCode_cbb.Location = new System.Drawing.Point(0, 3);
             this.exportCode_cbb.Name = "exportCode_cbb";
             this.exportCode_cbb.Size = new System.Drawing.Size(160, 21);
             this.exportCode_cbb.TabIndex = 52;
@@ -233,9 +231,9 @@ namespace RauViet.ui
             this.panel3.Controls.Add(this.fillter_btn);
             this.panel3.Controls.Add(this.panel4);
             this.panel3.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel3.Location = new System.Drawing.Point(333, 13);
+            this.panel3.Location = new System.Drawing.Point(333, 0);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(162, 668);
+            this.panel3.Size = new System.Drawing.Size(162, 681);
             this.panel3.TabIndex = 51;
             // 
             // carton_GV
@@ -244,7 +242,7 @@ namespace RauViet.ui
             this.carton_GV.Dock = System.Windows.Forms.DockStyle.Fill;
             this.carton_GV.Location = new System.Drawing.Point(0, 43);
             this.carton_GV.Name = "carton_GV";
-            this.carton_GV.Size = new System.Drawing.Size(162, 470);
+            this.carton_GV.Size = new System.Drawing.Size(162, 483);
             this.carton_GV.TabIndex = 52;
             // 
             // fillter_btn
@@ -264,7 +262,7 @@ namespace RauViet.ui
             this.panel4.Controls.Add(this.previewPrint_PT_btn);
             this.panel4.Controls.Add(this.print_btn);
             this.panel4.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel4.Location = new System.Drawing.Point(0, 513);
+            this.panel4.Location = new System.Drawing.Point(0, 526);
             this.panel4.Name = "panel4";
             this.panel4.Size = new System.Drawing.Size(162, 155);
             this.panel4.TabIndex = 51;
@@ -291,16 +289,6 @@ namespace RauViet.ui
             this.print_btn.Text = "In Phiếu Thùng";
             this.print_btn.UseVisualStyleBackColor = false;
             // 
-            // loading_lb
-            // 
-            this.loading_lb.AutoSize = true;
-            this.loading_lb.Dock = System.Windows.Forms.DockStyle.Top;
-            this.loading_lb.Location = new System.Drawing.Point(0, 0);
-            this.loading_lb.Name = "loading_lb";
-            this.loading_lb.Size = new System.Drawing.Size(55, 13);
-            this.loading_lb.TabIndex = 10;
-            this.loading_lb.Text = "loading_lb";
-            // 
             // assignPCSReal_btn
             // 
             this.assignPCSReal_btn.Location = new System.Drawing.Point(206, 598);
@@ -324,7 +312,7 @@ namespace RauViet.ui
             this.status_lb.AutoSize = true;
             this.status_lb.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.status_lb.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.status_lb.Location = new System.Drawing.Point(145, 55);
+            this.status_lb.Location = new System.Drawing.Point(12, 484);
             this.status_lb.Name = "status_lb";
             this.status_lb.Size = new System.Drawing.Size(55, 23);
             this.status_lb.TabIndex = 26;
@@ -344,7 +332,7 @@ namespace RauViet.ui
             // 
             this.LuuThayDoiBtn.BackColor = System.Drawing.SystemColors.Highlight;
             this.LuuThayDoiBtn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LuuThayDoiBtn.Location = new System.Drawing.Point(13, 398);
+            this.LuuThayDoiBtn.Location = new System.Drawing.Point(13, 388);
             this.LuuThayDoiBtn.Name = "LuuThayDoiBtn";
             this.LuuThayDoiBtn.Size = new System.Drawing.Size(152, 97);
             this.LuuThayDoiBtn.TabIndex = 25;
@@ -393,7 +381,6 @@ namespace RauViet.ui
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Button LuuThayDoiBtn;
         private System.Windows.Forms.Label status_lb;
-        private System.Windows.Forms.Label loading_lb;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.Panel panel4;

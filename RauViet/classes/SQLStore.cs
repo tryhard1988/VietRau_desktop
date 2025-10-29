@@ -32,14 +32,22 @@ namespace RauViet.classes
         DataTable mSalaryGrade_dt = null;
         DataTable mEmployee_dt = null;
         DataTable mHoliday_dt = null;
-
-        DataTable mEmployeeSalaryInfo_dt;
+        DataTable mEmployeeSalaryInfo_dt = null;
 
         Dictionary<int, DataTable> mAnnualLeaveBalances;
         Dictionary<int, DataTable> mDeductions;
         Dictionary<string, DataTable> mOvertimeAttendaces;
         Dictionary<int, DataTable> mLeaveAttendances;
         Dictionary<string, DataTable> mAttendances;
+        Dictionary<string, DataTable> mSalaryInfoHistories;
+        Dictionary<int, DataTable> mSalarySummaryByYears;
+
+        //suong
+        DataTable mProductSKUHistory_dt = null;
+        DataTable mProductSKU_dt = null;
+        DataTable mProductpacking_dt = null;
+        DataTable mExportCodes_dt = null;        
+        DataTable mEmployeesInDongGoi_dt = null;
         private SQLStore() { }
 
         public static SQLStore Instance
@@ -55,7 +63,30 @@ namespace RauViet.classes
             }
         }
 
-        public async void preload()
+        public async void preload_Suong()
+        {
+            try
+            {
+                var productSKUTask = SQLManager.Instance.getProductSKUAsync();
+                var productPackingTask = SQLManager.Instance.getProductpackingAsync();
+                var exportCodesTask = SQLManager.Instance.getExportCodesAsync();
+                var employeesInDongGoiTask = SQLManager.Instance.GetActiveEmployeesIn_DongGoiAsync();
+                await Task.WhenAll(productSKUTask, productPackingTask, exportCodesTask, employeesInDongGoiTask, employeesInDongGoiTask);
+
+                if (employeesInDongGoiTask.Status == TaskStatus.RanToCompletion && employeesInDongGoiTask.Result != null) mEmployeesInDongGoi_dt = employeesInDongGoiTask.Result;
+                if (exportCodesTask.Status == TaskStatus.RanToCompletion && exportCodesTask.Result != null) mExportCodes_dt = exportCodesTask.Result;
+                if (productSKUTask.Status == TaskStatus.RanToCompletion && productSKUTask.Result != null) mProductSKU_dt = productSKUTask.Result;
+                if (productPackingTask.Status == TaskStatus.RanToCompletion && productPackingTask.Result != null) mProductpacking_dt = productPackingTask.Result;
+
+                editExportCodes();
+            }
+            catch
+            {
+                Console.WriteLine("preload in SQLStore errror");
+            }
+        }
+
+        public async void preload_NhanSu()
         {
             try
             {
@@ -66,6 +97,8 @@ namespace RauViet.classes
                 mOvertimeAttendaces = new Dictionary<string, DataTable>();
                 mLeaveAttendances = new Dictionary<int, DataTable>();
                 mAttendances = new Dictionary<string, DataTable>();
+                mSalaryInfoHistories = new Dictionary<string, DataTable>();
+                mSalarySummaryByYears = new Dictionary<int, DataTable>();
 
                 var salaryLockTask = SQLManager.Instance.GetSalaryLockAsync();
                 var overtimeTypeAsync = SQLManager.Instance.GetOvertimeTypeAsync();
@@ -79,6 +112,7 @@ namespace RauViet.classes
                 var employeesTask = SQLManager.Instance.GetEmployeesAsync();
                 var salaryGradeTask = SQLManager.Instance.GetSalaryGradeAsync();
                 var holidayAsync = SQLManager.Instance.GetHolidayAsync();
+
 
                 await Task.WhenAll(employeesTask, salaryLockTask, overtimeTypeAsync, leaveTypeAsync, deductionTypeAsync, departmentTask, postionTask,
                     allowanceTypeTask, applyScopeAsync, contractTypeTask, salaryGradeTask, holidayAsync);
@@ -104,18 +138,24 @@ namespace RauViet.classes
                 var leaveAttendanceTask2 = SQLManager.Instance.GetLeaveAttendanceAsync(yearCur);
                 var attendamceTask1 = SQLManager.Instance.GetAttendamceAsync(monthCur, yearCur);
                 var attendamceTask2 = SQLManager.Instance.GetAttendamceAsync(monthPre, yearPre);
+                var salaryHistoryTask1 = SQLManager.Instance.GetSalaryHistoryAsyc(monthCur, yearCur);
+                var salaryHistoryTask2 = SQLManager.Instance.GetSalaryHistoryAsyc(monthPre, yearPre);
 
                 await Task.WhenAll(leaveAttendanceTask1, leaveAttendanceTask2, employeeSalaryInfoAsync, employeeALBTask1, employeeALBTask2, 
-                    deductionAsync1, deductionAsync2, overtimeAttendamceTask1, overtimeAttendamceTask2, attendamceTask1, attendamceTask2);
+                    deductionAsync1, deductionAsync2, overtimeAttendamceTask1, overtimeAttendamceTask2, attendamceTask1, attendamceTask2, salaryHistoryTask1, salaryHistoryTask2);
 
-
-                if (attendamceTask1.Status == TaskStatus.RanToCompletion && attendamceTask1.Result != null) mAttendances[monthCur.ToString() + "_" + yearCur.ToString()] = attendamceTask1.Result;
-                if (attendamceTask2.Status == TaskStatus.RanToCompletion && attendamceTask2.Result != null) mAttendances[monthPre.ToString() + "_" + yearPre.ToString()] = attendamceTask2.Result;
+                string keyStrCur = monthCur.ToString() + "_" + yearCur.ToString();
+                string keyStrPre = monthPre.ToString() + "_" + yearPre.ToString();
+                if (attendamceTask1.Status == TaskStatus.RanToCompletion && attendamceTask1.Result != null) mAttendances[keyStrCur] = attendamceTask1.Result;
+                if (attendamceTask2.Status == TaskStatus.RanToCompletion && attendamceTask2.Result != null) mAttendances[keyStrPre] = attendamceTask2.Result;
                 if (leaveAttendanceTask1.Status == TaskStatus.RanToCompletion && leaveAttendanceTask1.Result != null) mLeaveAttendances[yearCur - 1] = leaveAttendanceTask1.Result;
                 if (leaveAttendanceTask2.Status == TaskStatus.RanToCompletion && leaveAttendanceTask2.Result != null) mLeaveAttendances[yearCur] = leaveAttendanceTask2.Result;
                 if (employeeSalaryInfoAsync.Status == TaskStatus.RanToCompletion && employeeSalaryInfoAsync.Result != null) mEmployeeSalaryInfo_dt = employeeSalaryInfoAsync.Result;
-                if (overtimeAttendamceTask1.Status == TaskStatus.RanToCompletion && overtimeAttendamceTask1.Result != null) mOvertimeAttendaces[monthCur.ToString() + "_" + yearCur.ToString()] = overtimeAttendamceTask1.Result;
-                if (overtimeAttendamceTask2.Status == TaskStatus.RanToCompletion && overtimeAttendamceTask2.Result != null) mOvertimeAttendaces[monthPre.ToString() + "_" + yearPre.ToString()] = overtimeAttendamceTask2.Result;
+                if (overtimeAttendamceTask1.Status == TaskStatus.RanToCompletion && overtimeAttendamceTask1.Result != null) mOvertimeAttendaces[keyStrCur] = overtimeAttendamceTask1.Result;
+                if (overtimeAttendamceTask2.Status == TaskStatus.RanToCompletion && overtimeAttendamceTask2.Result != null) mOvertimeAttendaces[keyStrPre] = overtimeAttendamceTask2.Result;
+                if (salaryHistoryTask1.Status == TaskStatus.RanToCompletion && salaryHistoryTask1.Result != null) mSalaryInfoHistories[keyStrCur] = salaryHistoryTask1.Result;
+                if (salaryHistoryTask2.Status == TaskStatus.RanToCompletion && salaryHistoryTask2.Result != null) mSalaryInfoHistories[keyStrPre] = salaryHistoryTask2.Result;
+
                 if (employeeALBTask1.Status == TaskStatus.RanToCompletion && employeeALBTask1.Result != null) mAnnualLeaveBalances[yearCur - 1] = employeeALBTask1.Result;
                 if (employeeALBTask2.Status == TaskStatus.RanToCompletion && employeeALBTask2.Result != null) mAnnualLeaveBalances[yearCur] = employeeALBTask2.Result;
                 if (deductionAsync1.Status == TaskStatus.RanToCompletion && deductionAsync1.Result != null)  mDeductions[yearCur - 1] = deductionAsync1.Result;
@@ -145,9 +185,10 @@ namespace RauViet.classes
                 editAttendamce(attendamceTask1.Result);
                 editAttendamce(attendamceTask2.Result);
             }
-            catch
+            catch (Exception ex)
             {
-                Console.WriteLine("preload in SQLStore errror");
+                Console.WriteLine($"------preload in SQLStore error: {ex.Message}");
+                Console.WriteLine("-----" + ex.StackTrace);
             }
         }
 
@@ -161,13 +202,20 @@ namespace RauViet.classes
             mEmployee_dt.Columns.Add(new DataColumn("ContractTypeCode", typeof(string)));
             mEmployee_dt.Columns.Add(new DataColumn("GradeName", typeof(string)));
 
+            int count = 0;
             foreach (DataRow dr in mEmployee_dt.Rows)
             {
-                int age = DateTime.Now.Year - Convert.ToDateTime(dr["BirthDate"]).Year;
-                Boolean gender = Convert.ToBoolean(dr["Gender"]);
-                dr["GenderName"] = (gender == true ? "Nam" : "Nữ  ") + " - " + age;
+                if (dr["BirthDate"] != DBNull.Value)
+                {
+                    int age = DateTime.Now.Year - Convert.ToDateTime(dr["BirthDate"]).Year;
+                    Boolean gender = Convert.ToBoolean(dr["Gender"]);
+                    dr["GenderName"] = (gender == true ? "Nam" : "Nữ  ") + " - " + age;
+                }
 
+                
 
+                count++;
+                int EmployeeCode = mEmployee_dt.Rows.Count;
                 int? positionID = Utils.GetIntValue(dr["PositionID"]);
                 int? departmentID = Utils.GetIntValue(dr["DepartmentID"]);
                 int? salaryGradeID = Utils.GetIntValue(dr["SalaryGradeID"]);
@@ -211,6 +259,7 @@ namespace RauViet.classes
                         contractTypeCode = contractTypeRows[0]["ContractTypeCode"].ToString();
                     }
                 }
+
                 dr["PositionCode"] = positionCode;
                 dr["PositionName"] = positionName;
                 dr["DepartmentName"] = departmentName;
@@ -365,88 +414,153 @@ namespace RauViet.classes
             return mEmployeeSalaryInfo_dt;
         }
 
+        public async Task<DataTable> GetSalaryHistoryAsyc(int month, int year)
+        {
+            string key = month.ToString() + "_" + year.ToString();
+            if (!mSalaryInfoHistories.ContainsKey(key))
+            {
+                try
+                {
+                    mSalaryInfoHistories[key] = await SQLManager.Instance.GetSalaryHistoryAsyc(month, year);
+                }
+                catch
+                {
+                    Console.WriteLine("error GetSalaryHistoryAsyc SQLStore");
+                }
+            }
+
+            return mSalaryInfoHistories[key];
+        }
+
         public async Task<DataTable> GetEmployeeSalaryInfoAsync(string[] colNames, int monthInput, int yearInput)
         {
-            await GetEmployeeSalaryInfoAsync();
-
-            // 1️⃣ Tạo dictionary lưu bản ghi gần nhất của từng EmployeeCode
-            var latestSalary = mEmployeeSalaryInfo_dt.AsEnumerable()
-                .Where(r =>
-                    r.Field<int>("Year") < yearInput ||
-                    (r.Field<int>("Year") == yearInput && r.Field<int>("Month") <= monthInput))
-                .GroupBy(r => r.Field<string>("EmployeeCode"))
-                .ToDictionary(
-                    g => g.Key,
-                    g => g.OrderByDescending(r => r.Field<int>("Year"))
-                          .ThenByDescending(r => r.Field<int>("Month"))
-                          .First()
-                );
-
-            // 2️⃣ Clone cấu trúc từ mEmployeeSalaryInfo_dt (để có cùng kiểu dữ liệu)
-            DataTable result = mEmployeeSalaryInfo_dt.Clone();
-
-            // 3️⃣ Giữ lại cột cần thiết + EmployeeCode
-            foreach (DataColumn col in result.Columns.Cast<DataColumn>().ToList())
+            bool isLock = await IsSalaryLockAsync(monthInput, yearInput);
+            if (!isLock)
             {
-                if (!colNames.Contains(col.ColumnName) && col.ColumnName != "EmployeeCode")
-                    result.Columns.Remove(col);
-            }
+                await GetEmployeeSalaryInfoAsync();
+                // 1️⃣ Tạo dictionary lưu bản ghi gần nhất của từng EmployeeCode
+                var latestSalary = mEmployeeSalaryInfo_dt.AsEnumerable()
+                    .Where(r =>
+                        r.Field<int>("Year") < yearInput ||
+                        (r.Field<int>("Year") == yearInput && r.Field<int>("Month") <= monthInput))
+                    .GroupBy(r => r.Field<string>("EmployeeCode"))
+                    .ToDictionary(
+                        g => g.Key,
+                        g => g.OrderByDescending(r => r.Field<int>("Year"))
+                              .ThenByDescending(r => r.Field<int>("Month"))
+                              .First()
+                    );
 
-            // 4️⃣ Duyệt toàn bộ nhân viên trong mEmployee_dt
-            foreach (DataRow empRow in mEmployee_dt.AsEnumerable().Where(r => r.Field<bool>("IsActive")))
-            {
-                string empCode = empRow.Field<string>("EmployeeCode");
-                string contractTypeCode = empRow.Field<string>("ContractTypeCode");
-                decimal probationSalaryPercent = empRow.Field<decimal>("ProbationSalaryPercent");
-                DataRow newRow = result.NewRow();
+                // 2️⃣ Clone cấu trúc từ mEmployeeSalaryInfo_dt (để có cùng kiểu dữ liệu)
+                DataTable result = mEmployeeSalaryInfo_dt.Clone();
 
-                newRow["EmployeeCode"] = empCode;
-
-                // Nếu có dữ liệu lương gần nhất
-                if (latestSalary.TryGetValue(empCode, out var salaryRow))
+                // 3️⃣ Giữ lại cột cần thiết + EmployeeCode
+                foreach (DataColumn col in result.Columns.Cast<DataColumn>().ToList())
                 {
-                    foreach (string col in colNames)
+                    if (!colNames.Contains(col.ColumnName) && col.ColumnName != "EmployeeCode")
+                        result.Columns.Remove(col);
+                }
+
+                // 4️⃣ Duyệt toàn bộ nhân viên trong mEmployee_dt
+                foreach (DataRow empRow in mEmployee_dt.AsEnumerable().Where(r => r.Field<bool>("IsActive")))
+                {
+                    string empCode = empRow.Field<string>("EmployeeCode");
+                    string contractTypeCode = empRow.Field<string>("ContractTypeCode");
+                    decimal probationSalaryPercent = empRow.Field<decimal>("ProbationSalaryPercent");
+                    DataRow newRow = result.NewRow();
+
+                    newRow["EmployeeCode"] = empCode;
+
+                    // Nếu có dữ liệu lương gần nhất
+                    if (latestSalary.TryGetValue(empCode, out var salaryRow))
                     {
-                        if (contractTypeCode.CompareTo("t_viec") == 0)
+                        foreach (string col in colNames)
                         {
-                            if (col.CompareTo("BaseSalary") == 0)
+                            if (result.Columns.Contains(col))
                             {
-                                decimal baseSalary = (Convert.ToDecimal(salaryRow[col]) * probationSalaryPercent);
-                                newRow[col] = baseSalary;
+                                if (contractTypeCode.CompareTo("t_viec") == 0)
+                                {
+                                    if (col.CompareTo("BaseSalary") == 0)
+                                    {
+                                        decimal baseSalary = (Convert.ToDecimal(salaryRow[col]) * probationSalaryPercent);
+                                        newRow[col] = baseSalary;
+                                    }
+                                    else if (col.CompareTo("InsuranceBaseSalary") == 0)
+                                        newRow[col] = 0;
+                                    else
+                                        newRow[col] = salaryRow[col];
+                                }
+                                else
+                                {
+                                    newRow[col] = salaryRow[col];
+                                }
                             }
-                            else if (col.CompareTo("InsuranceBaseSalary") == 0)
-                                newRow[col] = 0;
-                            else
-                                newRow[col] = salaryRow[col];
-                        }
-                        else
-                        {
-                            newRow[col] = salaryRow[col];
                         }
                     }
+                    else // Không có dữ liệu → điền 0
+                    {
+                        foreach (string col in colNames)
+                        {
+                            if (result.Columns.Contains(col))
+                            {
+                                // Nếu kiểu là số → điền 0, nếu kiểu khác → DBNull
+                                if (result.Columns[col].DataType == typeof(int) ||
+                                    result.Columns[col].DataType == typeof(decimal) ||
+                                    result.Columns[col].DataType == typeof(double))
+                                {
+                                    newRow[col] = 0;
+                                }
+                                else
+                                {
+                                    newRow[col] = DBNull.Value;
+                                }
+                            }
+                        }
+                    }
+
+                    result.Rows.Add(newRow);
                 }
-                else // Không có dữ liệu → điền 0
+
+                return result;
+            }
+            else
+            {
+                DataTable data = await GetSalaryHistoryAsyc(monthInput, yearInput);
+
+                DataTable result = data.Clone();
+
+                // 3️⃣ Giữ lại cột cần thiết + EmployeeCode
+                foreach (DataColumn col in result.Columns.Cast<DataColumn>().ToList())
                 {
+                    if (!colNames.Contains(col.ColumnName) && col.ColumnName != "EmployeeCode")
+                        result.Columns.Remove(col);
+                }
+
+                if (colNames.Contains("InsuranceBaseSalary") && !result.Columns.Contains("InsuranceBaseSalary"))
+                {
+                    result.Columns.Add("InsuranceBaseSalary", typeof(int));
+                }
+
+                foreach (DataRow row in data.Rows)
+                {
+                    DataRow newRow = result.NewRow();
+                    newRow["EmployeeCode"] = row["EmployeeCode"];
                     foreach (string col in colNames)
                     {
-                        // Nếu kiểu là số → điền 0, nếu kiểu khác → DBNull
-                        if (result.Columns[col].DataType == typeof(int) ||
-                            result.Columns[col].DataType == typeof(decimal) ||
-                            result.Columns[col].DataType == typeof(double))
-                        {
-                            newRow[col] = 0;
-                        }
-                        else
-                        {
-                            newRow[col] = DBNull.Value;
-                        }
+                        if (data.Columns.Contains(col))
+                            newRow[col] = row[col];
                     }
+
+                    if (result.Columns.Contains("InsuranceBaseSalary"))
+                    {
+                        newRow["InsuranceBaseSalary"] = Convert.ToInt32(row["NetInsuranceSalary"]) - Convert.ToInt32(row["InsuranceAllowance"]);
+                    }
+
+                    result.Rows.Add(newRow);
                 }
 
-                result.Rows.Add(newRow);
+                return result;
             }
-
-            return result;
         }
 
         public void editEmployeeSalaryInfo()
@@ -532,6 +646,10 @@ namespace RauViet.classes
             }
         }
 
+        public void ResetlockSalary()
+        {
+            mSalaryLock_dt = null;
+        }
         public async Task<bool> IsSalaryLockAsync(int month, int year)
         {
             if (mSalaryLock_dt == null)
@@ -1061,6 +1179,7 @@ namespace RauViet.classes
                     Console.WriteLine("error GetĐeuctionAsync SQLStore");
                 }
             }
+            
             return mOvertimeAttendaces[key];
         }
 
@@ -1156,6 +1275,192 @@ namespace RauViet.classes
         {
             string key = month.ToString() + "_" + year.ToString();
             mAttendances.Remove(key);
+        }
+
+        public async Task<DataTable> GetSalarySummaryByYearAsync(int year)
+        {
+            if (!mSalarySummaryByYears.ContainsKey(year))
+            {
+                try
+                {
+                    mSalarySummaryByYears[year] = await SQLManager.Instance.GetSalarySummaryByYearAsync(year);
+                    editSalarySummaryByYear(mSalarySummaryByYears[year]);
+                }
+                catch
+                {
+                    Console.WriteLine("error GetSalarySummaryByYearAsync SQLStore");
+                }
+            }
+
+            return mSalarySummaryByYears[year];
+        }
+
+        private void editSalarySummaryByYear(DataTable data)
+        {
+            data.Columns.Add("MonthYear", typeof(string));
+            foreach (DataRow row in data.Rows)
+            {
+                row["MonthYear"] = row["Month"] + "/" + row["Year"];
+            }
+        }
+
+        public async Task<DataTable> getProductSKUAsync()
+        {
+            if (mProductSKU_dt == null)
+            {
+                try
+                {
+                    mProductSKU_dt = await SQLManager.Instance.getProductSKUAsync();
+                }
+                catch
+                {
+                    Console.WriteLine("error getProductSKUAsync SQLStore");
+                }
+            }
+
+            return mProductSKU_dt;
+        }
+
+        public void resetProductpacking()
+        {
+            mProductpacking_dt = null;
+        }
+
+        public async Task<DataTable> getProductpackingAsync()
+        {
+            if (mProductpacking_dt == null)
+            {
+                try
+                {
+                    mProductpacking_dt = await SQLManager.Instance.getProductpackingAsync(); ;
+                }
+                catch
+                {
+                    Console.WriteLine("error getProductpackingAsync SQLStore");
+                }
+            }
+
+            return mProductpacking_dt;
+        }
+
+        public async Task<DataTable> GetActiveEmployeesIn_DongGoiAsync()
+        {
+            if (mEmployeesInDongGoi_dt == null)
+            {
+                try
+                {
+                    mEmployeesInDongGoi_dt = await SQLManager.Instance.GetActiveEmployeesIn_DongGoiAsync();
+                }
+                catch
+                {
+                    Console.WriteLine("error getEmployeesInDongGoiAsync SQLStore");
+                }
+            }
+
+            return mEmployeesInDongGoi_dt;
+        }
+
+        public async Task<DataTable> getExportCodesAsync()
+        {
+            if (mExportCodes_dt == null)
+            {
+                try
+                {
+                    mExportCodes_dt = await SQLManager.Instance.getExportCodesAsync();
+                    editExportCodes();
+                }
+                catch
+                {
+                    Console.WriteLine("error getExportCodesAsync SQLStore");
+                }
+            }
+
+            return mExportCodes_dt;
+        }
+        private void editExportCodes()
+        {            
+            mExportCodes_dt.Columns.Add(new DataColumn("InputByName", typeof(string)));
+            mExportCodes_dt.Columns.Add(new DataColumn("PackingByName", typeof(string)));
+            
+            foreach (DataRow dr in mExportCodes_dt.Rows)
+            {
+                int inputBy = Convert.ToInt32(dr["InputBy"]);
+                int packingBy = Convert.ToInt32(dr["PackingBy"]);
+
+                DataRow[] inputByRow = mEmployeesInDongGoi_dt.Select($"EmployeeID = {inputBy}");
+                DataRow[] packingByRow = mEmployeesInDongGoi_dt.Select($"EmployeeID = {packingBy}");
+
+                if (inputByRow.Length > 0)
+                    dr["InputByName"] = inputByRow[0]["FullName"].ToString();
+
+                if (packingByRow.Length > 0)
+                    dr["PackingByName"] = packingByRow[0]["FullName"].ToString();
+            }
+        }
+
+
+        public async Task<DataTable> getExportCodesAsync(string[] keepColumns, Dictionary<string, object> parameters)
+        {
+            await getExportCodesAsync();
+
+            // 1️⃣ Clone cấu trúc bảng và chỉ giữ lại các cột cần thiết
+            DataTable result = new DataTable();
+            foreach (string col in keepColumns)
+            {
+                if (mExportCodes_dt.Columns.Contains(col))
+                    result.Columns.Add(col, mExportCodes_dt.Columns[col].DataType);
+            }
+
+            // 2️⃣ Lọc dữ liệu theo điều kiện trong parameters
+            IEnumerable<DataRow> filteredRows = mExportCodes_dt.AsEnumerable();
+
+            foreach (var kv in parameters)
+            {
+                string columnName = kv.Key;
+                object value = kv.Value;
+
+                // Kiểm tra tồn tại cột
+                if (mExportCodes_dt.Columns.Contains(columnName))
+                {
+                    filteredRows = filteredRows.Where(row =>
+                    {
+                        var cellValue = row[columnName];
+                        if (cellValue == DBNull.Value) return false;
+                        return cellValue.Equals(value);
+                    });
+                }
+            }
+
+            // 3️⃣ Thêm các dòng đã lọc vào bảng kết quả (chỉ giữ cột cần)
+            foreach (var row in filteredRows)
+            {
+                DataRow newRow = result.NewRow();
+                foreach (string col in keepColumns)
+                {
+                    if (mExportCodes_dt.Columns.Contains(col))
+                        newRow[col] = row[col];
+                }
+                result.Rows.Add(newRow);
+            }
+
+            return result;
+        }
+
+        public async Task<DataTable> GetProductSKUHistoryAsync()
+        {
+            if (mProductSKUHistory_dt == null)
+            {
+                try
+                {
+                    mProductSKUHistory_dt = await SQLManager.Instance.GetProductSKUHistoryAsync();
+                }
+                catch
+                {
+                    Console.WriteLine("error GetProductSKUHistoryAsync SQLStore");
+                }
+            }
+
+            return mProductSKUHistory_dt;
         }
     }
 }

@@ -15,10 +15,11 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
 
 namespace RauViet.ui
 {
-    public partial class AnnualLeaveBalance : Form
+    public partial class AnnualLeaveBalance : Form, ICanSave
     {
         DataTable mEmployee_dt;
-       // DataTable mShift_dt;
+        private bool _dataChanged = false;
+        // DataTable mShift_dt;
         public AnnualLeaveBalance()
         {
             InitializeComponent();
@@ -39,8 +40,6 @@ namespace RauViet.ui
             dataGV.MultiSelect = false;
 
             status_lb.Text = "";
-            loading_lb.Text = "Đang tải dữ liệu, vui lòng chờ...";
-            loading_lb.Visible = false;
 
             dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
@@ -58,7 +57,9 @@ namespace RauViet.ui
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Dock = DockStyle.Fill;
 
-            loading_lb.Visible = true;            
+            await Task.Delay(50);
+            LoadingOverlay loadingOverlay = new LoadingOverlay(this);
+            loadingOverlay.Show();
 
             try
             {
@@ -77,8 +78,8 @@ namespace RauViet.ui
             }
             finally
             {
-                loading_lb.Visible = false; // ẩn loading
-                loading_lb.Enabled = true; // enable lại button
+                await Task.Delay(100);
+                loadingOverlay.Hide();
             }
         }
 
@@ -178,16 +179,25 @@ namespace RauViet.ui
                 dr["Month"] = string.Join(",", monthList);
                 dr["RemainingLeave"] = monthList.Count - Convert.ToInt32(dr["LeaveCount"]);
             }
+
+            _dataChanged = true;
         }
 
         private async void Load_btn_Click(object sender, EventArgs e)
         {
+            await Task.Delay(50);
+            LoadingOverlay loadingOverlay = new LoadingOverlay(this);
+            loadingOverlay.Show();
+
             int year = Convert.ToInt32(year_tb.Text);
             var annualLeaveBalance = SQLStore.Instance.GetAnnualLeaveBalanceAsync(year);            
             await Task.WhenAll(annualLeaveBalance);
             mEmployee_dt = annualLeaveBalance.Result;
 
             DefineEmployeeGV();
+
+            await Task.Delay(100);
+            loadingOverlay.Hide();
         }
 
         private void dataGV_CellClick(object sender, EventArgs e)
@@ -210,6 +220,13 @@ namespace RauViet.ui
 
         private async void saveBtn_Click(object sender, EventArgs e)
         {
+            SaveData(false);
+        }
+
+        public async void SaveData(bool ask = true)
+        {
+            if (!_dataChanged && ask) return;
+
             List<(string EmployeeCode, int year, string month)> albData = new List<(string, int, string)>();
 
             foreach (DataRow dr in mEmployee_dt.Rows)
@@ -219,7 +236,7 @@ namespace RauViet.ui
                 string months = Convert.ToString(dr["Month"]);
 
                 albData.Add((employeeCode, year, months));
-                
+
             }
 
             DialogResult dialogResult = MessageBox.Show($"Sai Là Không sửa lại được đâu đó ?", "Cập Nhật Tồn Phép", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
@@ -232,6 +249,7 @@ namespace RauViet.ui
                     if (iSuccess)
                     {
                         MessageBox.Show("Cập Nhật Thành Công Rồi Đó", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        _dataChanged = false;
                     }
                     else
                     {
@@ -243,6 +261,7 @@ namespace RauViet.ui
                     MessageBox.Show("Thất Bại", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
+            
         }
     }
 }

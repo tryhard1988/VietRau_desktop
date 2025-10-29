@@ -36,11 +36,10 @@ namespace RauViet.ui
             this.calWorkHour_btn = new System.Windows.Forms.Button();
             this.loadAttandance_btn = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
+            this.status_lb = new System.Windows.Forms.Label();
             this.month_cbb = new System.Windows.Forms.ComboBox();
             this.year_tb = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
-            this.loading_lb = new System.Windows.Forms.Label();
-            this.status_lb = new System.Windows.Forms.Label();
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
             this.attendanceGV = new System.Windows.Forms.DataGridView();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
@@ -65,8 +64,8 @@ namespace RauViet.ui
             // 
             this.panel1.Controls.Add(this.excelAttendance_btn);
             this.panel1.Controls.Add(this.info_gb);
-            this.panel1.Controls.Add(this.loading_lb);
             this.panel1.Controls.Add(this.LuuThayDoiBtn);
+            this.panel1.Controls.Add(this.status_lb);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Right;
             this.panel1.Location = new System.Drawing.Point(955, 0);
             this.panel1.Name = "panel1";
@@ -89,7 +88,6 @@ namespace RauViet.ui
             this.info_gb.Controls.Add(this.calWorkHour_btn);
             this.info_gb.Controls.Add(this.loadAttandance_btn);
             this.info_gb.Controls.Add(this.label1);
-            this.info_gb.Controls.Add(this.status_lb);
             this.info_gb.Controls.Add(this.month_cbb);
             this.info_gb.Controls.Add(this.year_tb);
             this.info_gb.Controls.Add(this.label2);
@@ -131,6 +129,17 @@ namespace RauViet.ui
             this.label1.TabIndex = 22;
             this.label1.Text = "/";
             // 
+            // status_lb
+            // 
+            this.status_lb.AutoSize = true;
+            this.status_lb.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.status_lb.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.status_lb.Location = new System.Drawing.Point(3, 357);
+            this.status_lb.Name = "status_lb";
+            this.status_lb.Size = new System.Drawing.Size(55, 23);
+            this.status_lb.TabIndex = 26;
+            this.status_lb.Text = "Email";
+            // 
             // month_cbb
             // 
             this.month_cbb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -158,32 +167,11 @@ namespace RauViet.ui
             this.label2.TabIndex = 10;
             this.label2.Text = "Tháng:";
             // 
-            // loading_lb
-            // 
-            this.loading_lb.AutoSize = true;
-            this.loading_lb.Dock = System.Windows.Forms.DockStyle.Top;
-            this.loading_lb.Location = new System.Drawing.Point(0, 0);
-            this.loading_lb.Name = "loading_lb";
-            this.loading_lb.Size = new System.Drawing.Size(55, 13);
-            this.loading_lb.TabIndex = 10;
-            this.loading_lb.Text = "loading_lb";
-            // 
-            // status_lb
-            // 
-            this.status_lb.AutoSize = true;
-            this.status_lb.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.status_lb.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.status_lb.Location = new System.Drawing.Point(93, 6);
-            this.status_lb.Name = "status_lb";
-            this.status_lb.Size = new System.Drawing.Size(55, 23);
-            this.status_lb.TabIndex = 26;
-            this.status_lb.Text = "Email";
-            // 
             // LuuThayDoiBtn
             // 
             this.LuuThayDoiBtn.BackColor = System.Drawing.Color.Red;
             this.LuuThayDoiBtn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LuuThayDoiBtn.Location = new System.Drawing.Point(74, 372);
+            this.LuuThayDoiBtn.Location = new System.Drawing.Point(120, 346);
             this.LuuThayDoiBtn.Name = "LuuThayDoiBtn";
             this.LuuThayDoiBtn.Size = new System.Drawing.Size(138, 47);
             this.LuuThayDoiBtn.TabIndex = 25;
@@ -229,7 +217,6 @@ namespace RauViet.ui
         private System.Windows.Forms.GroupBox info_gb;
         private System.Windows.Forms.TextBox year_tb;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label loading_lb;
         private System.Windows.Forms.Label status_lb;
         private System.Windows.Forms.Button LuuThayDoiBtn;
         private System.Windows.Forms.ComboBox month_cbb;

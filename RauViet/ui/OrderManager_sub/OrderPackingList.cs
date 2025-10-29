@@ -15,6 +15,7 @@ namespace RauViet.ui
 {
     public partial class OrderPackingList : Form, ICanSave
     {
+        private LoadingOverlay loadingOverlay;
         DataTable mExportCode_dt, mOrders_dt;
         private bool _dataChanged = false;
         public OrderPackingList()
@@ -35,8 +36,6 @@ namespace RauViet.ui
             carton_GV.AllowUserToResizeRows = false;
 
             status_lb.Text = "";
-            loading_lb.Text = "Đang tải dữ liệu, vui lòng chờ...";
-            loading_lb.Visible = false;
 
             checkCarton_btn.Click += checkCarton_btn_click;
             fillter_btn.Click += fillter_btn_Click;
@@ -161,26 +160,21 @@ namespace RauViet.ui
 
         public async void ShowData()
         {
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Dock = DockStyle.Fill;
-
-            loading_lb.Visible = true;            
-
+            await Task.Delay(50);
+            loadingOverlay = new LoadingOverlay(this);
+            loadingOverlay.Show();
+            await Task.Delay(50);
             try
             {
                 var ordersPackingTask = SQLManager.Instance.getOrdersPackingAsync();
-                var exportCodeTask = SQLManager.Instance.getExportCodes_Incomplete();
+                string[] keepColumns = { "ExportCodeID", "ExportCode" };
+                var parameters = new Dictionary<string, object> { { "Complete", false } };
+                var exportCodeTask = SQLStore.Instance.getExportCodesAsync(keepColumns, parameters);
 
                 await Task.WhenAll(ordersPackingTask, exportCodeTask);
 
                 mExportCode_dt = exportCodeTask.Result;
                 mOrders_dt = ordersPackingTask.Result;
-                DataTable copy = mOrders_dt.Copy();
-
-                for (int i = 0; i < 3; i++) // thêm 3 lần
-                {
-                    mOrders_dt.Merge(copy);
-                }
 
                 foreach (DataRow dr in mOrders_dt.Rows)
                 {
@@ -218,14 +212,12 @@ namespace RauViet.ui
                 dataGV.Columns["ExportDate"].Visible = false;
                 dataGV.Columns["ExportCode"].Visible = false;
                 dataGV.Columns["CustomerCode"].Visible = false;
+                dataGV.Columns["PackingType"].Visible = false;
 
                 dataGV.ReadOnly = false;
                 dataGV.Columns["CartonNo"].ReadOnly = false;
                 dataGV.Columns["PCSReal"].ReadOnly = false;
                 dataGV.Columns["CartonSize"].ReadOnly = false;
-                
-                dataGV.Columns["Priority"].Width = 30;
-
                 dataGV.Columns["NWReal"].ReadOnly = true;
                 dataGV.Columns["Priority"].ReadOnly = true;
                 dataGV.Columns["CustomerName"].ReadOnly = true;
@@ -241,13 +233,15 @@ namespace RauViet.ui
                 dataGV.Columns["ProductPackingName"].HeaderText = "Tên Sản Phẩm";
                 dataGV.Columns["CustomerCarton"].HeaderText = "Mã Thùng";
 
-                dataGV.Columns["PCSReal"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["NWReal"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["CartonNo"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["CartonSize"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+                dataGV.Columns["Priority"].Width = 50;
+                dataGV.Columns["PCSReal"].Width = 60;
+                dataGV.Columns["NWReal"].Width = 60;
+                dataGV.Columns["CartonNo"].Width = 60;
+                dataGV.Columns["CartonSize"].Width = 80;
+                dataGV.Columns["CustomerCarton"].Width = 80;
                 //   dataGV.Columns["Priority"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["CustomerName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["ProductPackingName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                dataGV.Columns["CustomerName"].Width = 120;
+                dataGV.Columns["ProductPackingName"].Width = 300;
 
                 dataGV.Columns["CartonNo"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 dataGV.Columns["PCSReal"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
@@ -274,8 +268,8 @@ namespace RauViet.ui
             }
             finally
             {
-                loading_lb.Visible = false; // ẩn loading
-                loading_lb.Enabled = true; // enable lại button
+                await Task.Delay(200);
+                loadingOverlay.Hide();
             }
         }
 
@@ -1071,7 +1065,7 @@ namespace RauViet.ui
                     orders.Add((orderId, pcsReal, nwReal, cartonNo, cartonSize, customerCarton));
                 }
 
-                bool isScussess = await SQLManager.Instance.updatePackOrdersBulkAsync(orders);
+                bool isScussess = await SQLManager.Instance.UpdatePackOrdersBulkAsync(orders);
                 if (isScussess)
                 {
                     _dataChanged = false;

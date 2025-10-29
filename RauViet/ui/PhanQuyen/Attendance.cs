@@ -15,11 +15,12 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
 
 namespace RauViet.ui
 {
-    public partial class Attendance : Form
+    public partial class Attendance : Form, ICanSave
     {
         DataTable mAttendamce_dt, mEmployee_dt, mHoliday_dt;
         Dictionary<string, (string PositionCode, string ContractTypeCode)> employeeDict;
-       // DataTable mShift_dt;
+        LoadingOverlay loadingOverlay;
+        private bool _dataChanged = false;
         public Attendance()
         {
             InitializeComponent();
@@ -52,14 +53,12 @@ namespace RauViet.ui
             dataGV.MultiSelect = false;
 
             status_lb.Text = "";
-            loading_lb.Text = "Đang tải dữ liệu, vui lòng chờ...";
-            loading_lb.Visible = false;
 
             LuuThayDoiBtn.Click += saveBtn_Click;
             dataGV.SelectionChanged += this.dataGV_CellClick;
             attendanceGV.CellFormatting += AttandaceGV_CellFormatting;
             attendanceGV.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.attendanceGV_EditingControlShowing);
-
+            attendanceGV.CellValueChanged += attendanceGV_CellValueChanged;
             year_tb.KeyPress += Tb_KeyPress_OnlyNumber;
 
             excelAttendance_btn.Click += ExcelAttendance_btn_Click;                       
@@ -68,13 +67,17 @@ namespace RauViet.ui
             calWorkHour_btn.Click += CalWorkHour_btn_Click;
         }
 
+
         public async void ShowData()
         {
             
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Dock = DockStyle.Fill;
 
-            loading_lb.Visible = true;            
+
+            await Task.Delay(50);
+            loadingOverlay = new LoadingOverlay(this);
+            loadingOverlay.Show();
 
             try
             {
@@ -130,7 +133,7 @@ namespace RauViet.ui
                     dataGV.Rows[0].Selected = true;
                 }
 
-                Attendamce();
+                Attendamce(month, year);
                 attendanceGV.DataSource = mAttendamce_dt;
                 attendanceGV.Columns["EmployeeCode"].Visible = false;
                 attendanceGV.Columns["LeaveHours"].Visible = false;
@@ -158,7 +161,8 @@ namespace RauViet.ui
                 attendanceGV.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
                 attendanceGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
-                attendanceGV.ReadOnly = false;
+                bool isLock = await SQLStore.Instance.IsSalaryLockAsync(month, year);
+                attendanceGV.ReadOnly = isLock;
                 attendanceGV.Columns["WorkingHours"].ReadOnly = false;
                 attendanceGV.Columns["Note"].ReadOnly = false;
                 attendanceGV.Columns["DayOfWeek"].ReadOnly = true;
@@ -167,7 +171,6 @@ namespace RauViet.ui
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
-                bool isLock = await SQLStore.Instance.IsSalaryLockAsync(month, year);
                 LuuThayDoiBtn.Visible = !isLock;
                 calWorkHour_btn.Visible = !isLock;
             }
@@ -178,15 +181,15 @@ namespace RauViet.ui
             }
             finally
             {
-                loading_lb.Visible = false; // ẩn loading
-                loading_lb.Enabled = true; // enable lại button
+                await Task.Delay(100);
+                loadingOverlay.Hide();
             }
+
+            
         }
 
-        private void Attendamce()
+        private async void Attendamce(int month, int year)
         {
-            
-
             int count = 0;
             mAttendamce_dt.Columns["DayOfWeek"].SetOrdinal(count++);
             mAttendamce_dt.Columns["WorkDate"].SetOrdinal(count++);
@@ -196,7 +199,8 @@ namespace RauViet.ui
             mAttendamce_dt.Columns["OvertimeName"].SetOrdinal(count++);
             mAttendamce_dt.Columns["Note"].SetOrdinal(count);
 
-            
+            bool isLock = await SQLStore.Instance.IsSalaryLockAsync(month, year);
+            attendanceGV.ReadOnly = isLock;
 
             cal_WorkingHour_WorkingDay();            
 
@@ -205,6 +209,10 @@ namespace RauViet.ui
                 int selectedIndex = dataGV.CurrentRow?.Index ?? -1;
                 UpdateRightUI(selectedIndex);
             }
+
+            LuuThayDoiBtn.Visible = !isLock;
+            calWorkHour_btn.Visible = !isLock;
+
         }
 
         private void CalWorkHour_btn_Click(object sender, EventArgs e)
@@ -416,7 +424,7 @@ namespace RauViet.ui
                                     await Task.WhenAll(attendamceTask);
                                     mAttendamce_dt = attendamceTask.Result;
 
-                                    Attendamce();
+                                    Attendamce(month, year);
                                 }
                                 else
                                 {
@@ -435,6 +443,10 @@ namespace RauViet.ui
 
         private async void LoadAttandance_btn_Click(object sender, EventArgs e)
         {
+            await Task.Delay(50);
+            loadingOverlay = new LoadingOverlay(this);
+            loadingOverlay.Show();
+
             int month = Convert.ToInt32(month_cbb.SelectedItem);
             int year = Convert.ToInt32(year_tb.Text);
 
@@ -445,11 +457,10 @@ namespace RauViet.ui
 
             mAttendamce_dt = attendamceTask.Result;
             mHoliday_dt = holidayTask.Result;
-            Attendamce();
-
-            bool isLock = await SQLStore.Instance.IsSalaryLockAsync(month, year);
-            LuuThayDoiBtn.Visible = !isLock;
-            calWorkHour_btn.Visible = !isLock;
+            Attendamce(month, year);
+            await Task.Delay(100);
+            loadingOverlay.Hide();
+            _dataChanged = false;
         }
 
         private void dataGV_CellClick(object sender, EventArgs e)
@@ -505,6 +516,13 @@ namespace RauViet.ui
 
         private async void saveBtn_Click(object sender, EventArgs e)
         {
+            SaveData(false);
+        }
+
+        public async void SaveData(bool ask = true)
+        {
+            if (!_dataChanged && ask) return;
+
             List<(string EmployeeCode, DateTime WorkDate, double WorkingHours, string Note, string log)> attendanceData = new List<(string, DateTime, double, string, string)>();
 
             foreach (DataRow edr in mAttendamce_dt.Rows)
@@ -516,7 +534,7 @@ namespace RauViet.ui
                 string attendanceLog = Convert.ToString(edr["AttendanceLog"]);
 
                 attendanceData.Add((employeeCode, workDate, workingHours, note, attendanceLog));
-                
+
             }
 
             DialogResult dialogResult = MessageBox.Show($"Sai Là Không sửa lại được đâu đó ?", "Chỉnh Sửa Lại Giờ Làm", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
@@ -530,6 +548,7 @@ namespace RauViet.ui
                     {
                         cal_WorkingHour_WorkingDay();
                         MessageBox.Show("Cập Nhật Thành Công Rồi Đó ?", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        _dataChanged = false;
                     }
                     else
                     {
@@ -540,7 +559,11 @@ namespace RauViet.ui
                 {
                     MessageBox.Show("Thất Bại ?", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
-            }
+            }            
+        }
+        private void attendanceGV_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            _dataChanged = true;
         }
     }
 }

@@ -15,9 +15,30 @@ namespace RauViet.ui
     public partial class Employee : Form
     {
         private DataTable mEmployees_dt;
+        bool isNewState = false;
         public Employee()
         {
             InitializeComponent();
+
+            Utils.SetTabStopRecursive(this, false);
+
+            int countTab = 0;
+            nvCode_tb.TabIndex = countTab++; nvCode_tb.TabStop = true;
+            tenNV_tb.TabIndex = countTab++; tenNV_tb.TabStop = true;
+            birthdate_dtp.TabIndex = countTab++; birthdate_dtp.TabStop = true;
+            hireDate_dtp.TabIndex = countTab++; hireDate_dtp.TabStop = true;
+            gender_cb.TabIndex = countTab++; gender_cb.TabStop = true;
+            hometown_tb.TabIndex = countTab++; hometown_tb.TabStop = true;
+            address_tb.TabIndex = countTab++; address_tb.TabStop = true;
+            citizenId_tb.TabIndex = countTab++; citizenId_tb.TabStop = true;
+            issueDate_dtp.TabIndex = countTab++; issueDate_dtp.TabStop = true;
+            issuePlace_tb.TabIndex = countTab++; issuePlace_tb.TabStop = true;
+            phone_tb.TabIndex = countTab++; phone_tb.TabStop = true;
+            probationSalaryPercent_tb.TabIndex = countTab++; probationSalaryPercent_tb.TabStop = true;
+            isActive_cb.TabIndex = countTab++; isActive_cb.TabStop = true;
+            canCreateUserName_cb.TabIndex = countTab++; canCreateUserName_cb.TabStop = true;
+            isInsuranceRefund_CB.TabIndex = countTab++; isInsuranceRefund_CB.TabStop = true;
+            LuuThayDoiBtn.TabIndex = countTab++; LuuThayDoiBtn.TabStop = true;
 
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Dock = DockStyle.Fill;
@@ -26,23 +47,23 @@ namespace RauViet.ui
             dataGV.MultiSelect = false;
 
             status_lb.Text = "";
-            loading_lb.Text = "Đang tải dữ liệu, vui lòng chờ...";
-            loading_lb.Visible = false;
-            delete_btn.Enabled = false;
 
             newCustomerBtn.Click += newCustomerBtn_Click;
             LuuThayDoiBtn.Click += saveBtn_Click;
             delete_btn.Click += deleteBtn_Click;
             dataGV.SelectionChanged += this.dataGV_CellClick;
             probationSalaryPercent_tb.KeyPress += Tb_KeyPress_OnlyNumber;
+
+            edit_btn.Click += Edit_btn_Click;
+            readOnly_btn.Click += ReadOnly_btn_Click;
+            ReadOnly_btn_Click(null, null);
         }
 
         public async void ShowData()
         {
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Dock = DockStyle.Fill;
-
-            loading_lb.Visible = true;            
+            await Task.Delay(50);
+            LoadingOverlay loadingOverlay = new LoadingOverlay(this);
+            loadingOverlay.Show();
 
             try
             {
@@ -102,6 +123,13 @@ namespace RauViet.ui
                 dataGV.Columns["SocialInsuranceNumber"].Visible = false;
                 dataGV.Columns["HealthInsuranceNumber"].Visible = false;
 
+                dataGV.Columns["PositionCode"].Visible = false;
+                dataGV.Columns["PositionName"].Visible = false;
+                dataGV.Columns["DepartmentName"].Visible = false;
+                dataGV.Columns["ContractTypeCode"].Visible = false;
+                dataGV.Columns["ContractTypeName"].Visible = false;
+                dataGV.Columns["GradeName"].Visible = false;
+
                 dataGV.Columns["Gender"].Visible = false;
                 dataGV.Columns["EmployeeID"].Visible = false;                
                 //dataGV.Columns["canCreateUserName"].Visible = false;
@@ -140,8 +168,8 @@ namespace RauViet.ui
             }
             finally
             {
-                loading_lb.Visible = false; // ẩn loading
-                loading_lb.Enabled = true; // enable lại button
+                await Task.Delay(100);
+                loadingOverlay.Hide();
             }
 
             
@@ -189,11 +217,12 @@ namespace RauViet.ui
 
         private void UpdateRightUI(int index)
         {
+            if (isNewState == true) return;
+
             var cells = dataGV.Rows[index].Cells;
             int employeeID = Convert.ToInt32(cells["EmployeeID"].Value);
             string employeeCode = cells["EmployeeCode"].Value.ToString();
             string fullName = cells["FullName"].Value.ToString();
-            DateTime birthDate = Convert.ToDateTime(cells["BirthDate"].Value);
             DateTime hireDate = Convert.ToDateTime(cells["HireDate"].Value);
             Boolean gender = Convert.ToBoolean(cells["Gender"].Value);
             string hometown = cells["Hometown"].Value.ToString();
@@ -202,7 +231,7 @@ namespace RauViet.ui
             string phone = cells["PhoneNumber"].Value.ToString();
             string noteResign = cells["NoteResign"].Value.ToString();
             decimal? probationSalaryPercent = Utils.GetDecimalValue(cells["ProbationSalaryPercent"]);
-
+            DateTime? birthDate = DateTime.TryParse(cells["BirthDate"].Value?.ToString(), out DateTime tmp1) ? tmp1 : (DateTime?)null;
             DateTime? issueDate = DateTime.TryParse(cells["IssueDate"].Value?.ToString(), out DateTime tmp) ? tmp : (DateTime?)null;
 
 
@@ -214,7 +243,7 @@ namespace RauViet.ui
             employeeID_tb.Text = employeeID.ToString();
             nvCode_tb.Text = employeeCode;
             tenNV_tb.Text = fullName;
-            birthdate_dtp.Value = birthDate;
+            birthdate_dtp.Value = birthDate ?? DateTime.Now;
             hireDate_dtp.Value = hireDate;
             gender_cb.Checked = gender;
             hometown_tb.Text = hometown;
@@ -229,9 +258,7 @@ namespace RauViet.ui
             canCreateUserName_cb.Checked = canCreateUserName;
             isInsuranceRefund_CB.Checked = isInsuranceRefund;
             nvCode_tb.Enabled = true;
-            delete_btn.Enabled = true;
 
-            info_gb.BackColor = Color.DarkGray;
             status_lb.Text = "";
         }
         
@@ -492,10 +519,40 @@ namespace RauViet.ui
             canCreateUserName_cb.Checked = false;
 
             status_lb.Text = "";
-            delete_btn.Enabled = false;
             info_gb.BackColor = Color.Green;
-         //   dataGV.ClearSelection();
-            return;            
+
+            nvCode_tb.Focus();
+            info_gb.BackColor = newCustomerBtn.BackColor;
+            edit_btn.Visible = false;
+            newCustomerBtn.Visible = false;
+            readOnly_btn.Visible = true;
+            LuuThayDoiBtn.Visible = true;
+            delete_btn.Visible = false;
+            isNewState = true;
+            LuuThayDoiBtn.Text = "Lưu Mới";
+        }
+
+        private void ReadOnly_btn_Click(object sender, EventArgs e)
+        {
+            edit_btn.Visible = true;
+            newCustomerBtn.Visible = true;
+            readOnly_btn.Visible = false;
+            LuuThayDoiBtn.Visible = false;
+            delete_btn.Visible = false;
+            info_gb.BackColor = Color.DarkGray;
+            isNewState = false;
+        }
+
+        private void Edit_btn_Click(object sender, EventArgs e)
+        {
+            edit_btn.Visible = false;
+            newCustomerBtn.Visible = false;
+            readOnly_btn.Visible = true;
+            LuuThayDoiBtn.Visible = true;
+            delete_btn.Visible = true;
+            info_gb.BackColor = edit_btn.BackColor;
+            isNewState = false;
+            LuuThayDoiBtn.Text = "Lưu C.Sửa";
         }
 
         private bool IsCitizenIDDuplicate(string newCitizenID, string currentEmployeeCode = null)

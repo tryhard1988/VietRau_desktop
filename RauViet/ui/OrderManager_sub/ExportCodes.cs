@@ -11,6 +11,7 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml.Linq;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Button;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
 using Color = System.Drawing.Color;
@@ -20,7 +21,7 @@ namespace RauViet.ui
     public partial class ExportCodes : Form
     {
         System.Data.DataTable _employeesInDongGoi_dt;
-
+        bool isNewState = false;
         public ExportCodes()
         {
             InitializeComponent();
@@ -34,7 +35,6 @@ namespace RauViet.ui
             status_lb.Text = "";
             loading_lb.Text = "Đang tải dữ liệu, vui lòng chờ...";
             loading_lb.Visible = false;
-            delete_btn.Enabled = false;
 
             complete_cb.Visible = UserManager.Instance.hasRole_HoanThanhDonHang();
 
@@ -53,9 +53,13 @@ namespace RauViet.ui
             exportCode_tb.KeyPress += Tb_KeyPress_OnlyNumber;
             exRate_tb.KeyPress += Tb_KeyPress_OnlyNumber;
             shippingCost_tb.KeyPress += Tb_KeyPress_OnlyNumber;
-        }
 
-        
+            edit_btn.Click += Edit_btn_Click;
+            readOnly_btn.Click += ReadOnly_btn_Click;
+            ReadOnly_btn_Click(null, null);
+
+            ToolTipHelper.SetToolTip(updatePrice_btn, "nếu mã xuất cảng đã tạo rồi\nmà giá có thay đổi\nthì cần update lại giá SP");
+        }
 
         private async void updatePrice_btn_click(object sender, EventArgs e)
         {
@@ -137,31 +141,13 @@ namespace RauViet.ui
             try
             {
                 // Chạy truy vấn trên thread riêng
-                var exportCodeTask = SQLManager.Instance.getExportCodesAsync();
-                var employeesInDongGoiTask = SQLManager.Instance.GetActiveEmployeesIn_DongGoiAsync();
+                var exportCodeTask = SQLStore.Instance.getExportCodesAsync();
+                var employeesInDongGoiTask = SQLStore.Instance.GetActiveEmployeesIn_DongGoiAsync();
 
                 await Task.WhenAll(exportCodeTask, employeesInDongGoiTask);
 
                 System.Data.DataTable exportCode_dt = exportCodeTask.Result;
                 _employeesInDongGoi_dt = employeesInDongGoiTask.Result;
-
-                exportCode_dt.Columns.Add(new DataColumn("InputByName", typeof(string)));
-                exportCode_dt.Columns.Add(new DataColumn("PackingByName", typeof(string)));
-
-                foreach (DataRow dr in exportCode_dt.Rows)
-                {
-                    int inputBy = Convert.ToInt32(dr["InputBy"]);
-                    int packingBy = Convert.ToInt32(dr["PackingBy"]);
-
-                    DataRow[] inputByRow = _employeesInDongGoi_dt.Select($"EmployeeID = {inputBy}");
-                    DataRow[] packingByRow  = _employeesInDongGoi_dt.Select($"EmployeeID = {packingBy}");
-
-                    if (inputByRow.Length > 0)
-                        dr["InputByName"] = inputByRow[0]["FullName"].ToString();
-
-                    if (packingByRow.Length > 0)
-                        dr["PackingByName"] = packingByRow[0]["FullName"].ToString();
-                }
 
                 dataGV.DataSource = exportCode_dt;
 
@@ -239,6 +225,8 @@ namespace RauViet.ui
 
         private void updateRightUI(int index)
         {
+            if (isNewState) return;
+
             var cells = dataGV.Rows[index].Cells;
             int exportCodeID = Convert.ToInt32(cells["ExportCodeID"].Value);
             int exportCodeIndex = Convert.ToInt32(cells["ExportCodeIndex"].Value);
@@ -265,15 +253,13 @@ namespace RauViet.ui
             complete_cb.AutoCheck = !complete;
             updatePrice_btn.Enabled = !complete;
             LuuThayDoiBtn.Enabled = !complete;
-            newCustomerBtn.Enabled = !complete;
             exRate_btn.Enabled = !complete;
             exRate_tb.Enabled = !complete;
             shippingCost_tb.Enabled = !complete;
             inputBy_cbb.Enabled = !complete;
             packingBy_cbb.Enabled = !complete;
-            delete_btn.Enabled = !complete; 
-            
-            if(UserManager.Instance.hasRole_HoanThanhDonHang())
+            delete_btn.Enabled = !complete;
+            if (UserManager.Instance.hasRole_HoanThanhDonHang())
                 complete_cb.Visible = true;
             else
                 complete_cb.Visible = false;
@@ -291,7 +277,6 @@ namespace RauViet.ui
                 complete_cb.BackColor = Color.DarkGray; // background
             }
 
-            info_gb.BackColor = Color.DarkGray;
             completeCB_CheckedChanged(null, null);
         }
 
@@ -330,6 +315,12 @@ namespace RauViet.ui
                                 row.Cells["InputByName"].Value = inputByRow[0]["FullName"].ToString(); ;
                                 row.Cells["PackingByName"].Value = packingByRow[0]["FullName"].ToString();
 
+                                if (complete)
+                                {
+                                    updatePrice_btn.Enabled = false;
+                                    LuuThayDoiBtn.Enabled = false;
+                                    delete_btn.Enabled = false;
+                                }
                             }
                             else
                             {
@@ -490,7 +481,6 @@ namespace RauViet.ui
                 }
             }
 
-            delete_btn.Enabled = false;
         }
 
         private void newCustomerBtn_Click(object sender, EventArgs e)
@@ -501,7 +491,6 @@ namespace RauViet.ui
             exportdate_dtp.Value = DateTime.Now;
             complete_cb.Checked = false;
             complete_cb.Visible = false;
-            info_gb.BackColor = Color.Green;
             autoCreateExportId_btn.Enabled = true;
 
             decimal maxShippingCost = 0;
@@ -526,8 +515,37 @@ namespace RauViet.ui
 
             shippingCost_tb.Text = maxShippingCost.ToString();
 
+            info_gb.BackColor = newCustomerBtn.BackColor;
+            edit_btn.Visible = false;
+            newCustomerBtn.Visible = false;
+            readOnly_btn.Visible = true;
+            LuuThayDoiBtn.Visible = true;
+            delete_btn.Visible = false;
+            isNewState = true;
+            LuuThayDoiBtn.Text = "Lưu Mới";
+        }
 
+        private void ReadOnly_btn_Click(object sender, EventArgs e)
+        {
+            edit_btn.Visible = true;
+            newCustomerBtn.Visible = true;
+            readOnly_btn.Visible = false;
+            LuuThayDoiBtn.Visible = false;
+            delete_btn.Visible = false;
+            info_gb.BackColor = Color.DarkGray;
+            isNewState = false;
+        }
 
+        private void Edit_btn_Click(object sender, EventArgs e)
+        {
+            edit_btn.Visible = false;
+            newCustomerBtn.Visible = false;
+            readOnly_btn.Visible = true;
+            LuuThayDoiBtn.Visible = true;
+            delete_btn.Visible = true;
+            info_gb.BackColor = edit_btn.BackColor;
+            isNewState = false;
+            LuuThayDoiBtn.Text = "Lưu C.Sửa";
         }
 
         private void completeCB_CheckedChanged(object sender, EventArgs e)

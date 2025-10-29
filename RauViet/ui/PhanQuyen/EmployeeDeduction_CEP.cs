@@ -18,12 +18,22 @@ namespace RauViet.ui
 {    
     public partial class EmployeeDeduction_CEP : Form
     {
-        private DataTable mEmployeeDeduction_dt, mDeductionType_dt;
+        private DataTable mEmployeeDeduction_dt;
         private const string DeductionTypeCode = "CEP";
         private string mDeductionName = "";
+        bool isNewState = false;
         public EmployeeDeduction_CEP()
         {
             InitializeComponent();
+
+            Utils.SetTabStopRecursive(this, false);
+
+            int countTab = 0;
+            month_cbb.TabIndex = countTab++; month_cbb.TabStop = true;
+            amount_tb.TabIndex = countTab++; amount_tb.TabStop = true;
+            note_tb.TabIndex = countTab++; note_tb.TabStop = true;
+            LuuThayDoiBtn.TabIndex = countTab++; LuuThayDoiBtn.TabStop = true;
+
 
             month_cbb.Items.Clear();
             for (int m = 1; m <= 12; m++)
@@ -45,9 +55,6 @@ namespace RauViet.ui
             employeeDeductionGV.MultiSelect = false;
 
             status_lb.Text = "";
-            loading_lb.Text = "Đang tải dữ liệu, vui lòng chờ...";
-            loading_lb.Visible = false;
-            delete_btn.Enabled = false;
 
             newCustomerBtn.Click += newCustomerBtn_Click;
             LuuThayDoiBtn.Click += saveBtn_Click;
@@ -58,14 +65,17 @@ namespace RauViet.ui
             year_tb.KeyPress += Tb_KeyPress_OnlyNumber;
             load_btn.Click += Load_btn_Click;
             month_cbb.SelectedIndexChanged += Month_cbb_SelectedIndexChanged;
+
+            edit_btn.Click += Edit_btn_Click;
+            readOnly_btn.Click += ReadOnly_btn_Click;
+            ReadOnly_btn_Click(null, null);
         }
 
         public async void ShowData()
         {
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Dock = DockStyle.Fill;
-
-            loading_lb.Visible = true;            
+            await Task.Delay(50);
+            LoadingOverlay loadingOverlay = new LoadingOverlay(this);
+            loadingOverlay.Show();
 
             try
             {
@@ -134,8 +144,8 @@ namespace RauViet.ui
             }
             finally
             {
-                loading_lb.Visible = false; // ẩn loading
-                loading_lb.Enabled = true; // enable lại button
+                await Task.Delay(100);
+                loadingOverlay.Hide();
             }
 
             
@@ -143,9 +153,13 @@ namespace RauViet.ui
 
         private async void Load_btn_Click(object sender, EventArgs e)
         {
+            await Task.Delay(50);
+            LoadingOverlay loadingOverlay = new LoadingOverlay(this);
+            loadingOverlay.Show();
+
             int year = Convert.ToInt32(year_tb.Text);
 
-            var employeeDeductionAsync = SQLManager.Instance.GetEmployeeDeductionAsync(year, DeductionTypeCode);
+            var employeeDeductionAsync = SQLStore.Instance.GetDeductionAsync(year, DeductionTypeCode);
 
             await Task.WhenAll(employeeDeductionAsync);
             mEmployeeDeduction_dt = employeeDeductionAsync.Result;
@@ -155,6 +169,9 @@ namespace RauViet.ui
                 int selectedIndex = dataGV.CurrentRow?.Index ?? -1;
                 UpdateEmployeeDeductionUI(selectedIndex);
             }
+
+            await Task.Delay(100);
+            loadingOverlay.Hide();
         }
 
         private void Tb_KeyPress_OnlyNumber(object sender, KeyPressEventArgs e)
@@ -213,6 +230,8 @@ namespace RauViet.ui
         }
         private void UpdateRightUI(int index)
         {
+            if (isNewState) return;
+
             var cells = employeeDeductionGV.Rows[index].Cells;
             int employeeDeductionID = Convert.ToInt32(cells["EmployeeDeductionID"].Value);
             DateTime deductionDate = Convert.ToDateTime(cells["DeductionDate"].Value);
@@ -226,9 +245,6 @@ namespace RauViet.ui
             amount_tb.Text = amount.ToString();
             note_tb.Text = note;
             updateHistory_tb.Text = updateHistory;
-
-
-            delete_btn.Enabled = true;
 
             info_gb.BackColor = Color.DarkGray;
             status_lb.Text = "";
@@ -427,10 +443,38 @@ namespace RauViet.ui
             updateHistory_tb.Text = null;
 
             status_lb.Text = "";
-            delete_btn.Enabled = false;
-            info_gb.BackColor = Color.Green;
-         //   dataGV.ClearSelection();
-            return;            
+            month_cbb.Focus();
+            info_gb.BackColor = newCustomerBtn.BackColor;
+            edit_btn.Visible = false;
+            newCustomerBtn.Visible = false;
+            readOnly_btn.Visible = true;
+            LuuThayDoiBtn.Visible = true;
+            delete_btn.Visible = false;
+            isNewState = true;
+            LuuThayDoiBtn.Text = "Lưu Mới";
+        }
+
+        private void ReadOnly_btn_Click(object sender, EventArgs e)
+        {
+            edit_btn.Visible = true;
+            newCustomerBtn.Visible = true;
+            readOnly_btn.Visible = false;
+            LuuThayDoiBtn.Visible = false;
+            delete_btn.Visible = false;
+            info_gb.BackColor = Color.DarkGray;
+            isNewState = false;
+        }
+
+        private void Edit_btn_Click(object sender, EventArgs e)
+        {
+            edit_btn.Visible = false;
+            newCustomerBtn.Visible = false;
+            readOnly_btn.Visible = true;
+            LuuThayDoiBtn.Visible = true;
+            delete_btn.Visible = true;
+            info_gb.BackColor = edit_btn.BackColor;
+            isNewState = false;
+            LuuThayDoiBtn.Text = "Lưu C.Sửa";
         }
 
         private bool IsDuplicateDeductionMonth(DataGridView grid, string employeeCode, int month, int year, bool isNew)
@@ -475,6 +519,7 @@ namespace RauViet.ui
             LuuThayDoiBtn.Visible = !isLock;
             newCustomerBtn.Visible = !isLock;
             delete_btn.Visible = !isLock;
+            edit_btn.Visible = !isLock;
         }
     }
 }

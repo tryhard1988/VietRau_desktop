@@ -30,6 +30,11 @@ namespace RauViet.ui
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
+            this.panel4 = new System.Windows.Forms.Panel();
+            this.priceCNFHisGV = new System.Windows.Forms.DataGridView();
+            this.panel5 = new System.Windows.Forms.Panel();
+            this.readOnly_btn = new System.Windows.Forms.Button();
+            this.edit_btn = new System.Windows.Forms.Button();
             this.info_gb = new System.Windows.Forms.GroupBox();
             this.lotCodeHeader_tb = new System.Windows.Forms.TextBox();
             this.label14 = new System.Windows.Forms.Label();
@@ -53,20 +58,19 @@ namespace RauViet.ui
             this.label2 = new System.Windows.Forms.Label();
             this.status_lb = new System.Windows.Forms.Label();
             this.delete_btn = new System.Windows.Forms.Button();
-            this.loading_lb = new System.Windows.Forms.Label();
             this.newBtn = new System.Windows.Forms.Button();
             this.luuBtn = new System.Windows.Forms.Button();
             this.sku_tb = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label9 = new System.Windows.Forms.Label();
             this.packingType_tb = new System.Windows.Forms.TextBox();
-            this.label7 = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
             this.dataGV = new System.Windows.Forms.DataGridView();
             this.panel3 = new System.Windows.Forms.Panel();
             this.label15 = new System.Windows.Forms.Label();
             this.search_tb = new System.Windows.Forms.TextBox();
             this.panel1.SuspendLayout();
+            this.panel4.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.priceCNFHisGV)).BeginInit();
+            this.panel5.SuspendLayout();
             this.info_gb.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
@@ -75,22 +79,73 @@ namespace RauViet.ui
             // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.info_gb);
-            this.panel1.Controls.Add(this.status_lb);
-            this.panel1.Controls.Add(this.delete_btn);
-            this.panel1.Controls.Add(this.loading_lb);
-            this.panel1.Controls.Add(this.newBtn);
-            this.panel1.Controls.Add(this.luuBtn);
+            this.panel1.Controls.Add(this.panel4);
+            this.panel1.Controls.Add(this.panel5);
             this.panel1.Controls.Add(this.sku_tb);
-            this.panel1.Controls.Add(this.label1);
-            this.panel1.Controls.Add(this.label9);
             this.panel1.Controls.Add(this.packingType_tb);
-            this.panel1.Controls.Add(this.label7);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Right;
             this.panel1.Location = new System.Drawing.Point(760, 0);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(504, 681);
             this.panel1.TabIndex = 9;
+            // 
+            // panel4
+            // 
+            this.panel4.Controls.Add(this.priceCNFHisGV);
+            this.panel4.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel4.Location = new System.Drawing.Point(0, 537);
+            this.panel4.Name = "panel4";
+            this.panel4.Size = new System.Drawing.Size(504, 144);
+            this.panel4.TabIndex = 57;
+            // 
+            // priceCNFHisGV
+            // 
+            this.priceCNFHisGV.AllowUserToAddRows = false;
+            this.priceCNFHisGV.AllowUserToDeleteRows = false;
+            this.priceCNFHisGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.priceCNFHisGV.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.priceCNFHisGV.Location = new System.Drawing.Point(0, 0);
+            this.priceCNFHisGV.Name = "priceCNFHisGV";
+            this.priceCNFHisGV.ReadOnly = true;
+            this.priceCNFHisGV.Size = new System.Drawing.Size(504, 144);
+            this.priceCNFHisGV.TabIndex = 0;
+            // 
+            // panel5
+            // 
+            this.panel5.Controls.Add(this.readOnly_btn);
+            this.panel5.Controls.Add(this.edit_btn);
+            this.panel5.Controls.Add(this.info_gb);
+            this.panel5.Controls.Add(this.status_lb);
+            this.panel5.Controls.Add(this.delete_btn);
+            this.panel5.Controls.Add(this.newBtn);
+            this.panel5.Controls.Add(this.luuBtn);
+            this.panel5.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel5.Location = new System.Drawing.Point(0, 0);
+            this.panel5.Name = "panel5";
+            this.panel5.Size = new System.Drawing.Size(504, 537);
+            this.panel5.TabIndex = 56;
+            // 
+            // readOnly_btn
+            // 
+            this.readOnly_btn.BackColor = System.Drawing.Color.MediumSlateBlue;
+            this.readOnly_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.readOnly_btn.Location = new System.Drawing.Point(421, 40);
+            this.readOnly_btn.Name = "readOnly_btn";
+            this.readOnly_btn.Size = new System.Drawing.Size(42, 32);
+            this.readOnly_btn.TabIndex = 60;
+            this.readOnly_btn.Text = "X";
+            this.readOnly_btn.UseVisualStyleBackColor = false;
+            // 
+            // edit_btn
+            // 
+            this.edit_btn.BackColor = System.Drawing.SystemColors.MenuHighlight;
+            this.edit_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.edit_btn.Location = new System.Drawing.Point(291, 40);
+            this.edit_btn.Name = "edit_btn";
+            this.edit_btn.Size = new System.Drawing.Size(94, 32);
+            this.edit_btn.TabIndex = 59;
+            this.edit_btn.Text = "Chỉnh sửa";
+            this.edit_btn.UseVisualStyleBackColor = false;
             // 
             // info_gb
             // 
@@ -117,10 +172,10 @@ namespace RauViet.ui
             this.info_gb.Controls.Add(this.label3);
             this.info_gb.Controls.Add(this.label2);
             this.info_gb.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.info_gb.Location = new System.Drawing.Point(33, 113);
+            this.info_gb.Location = new System.Drawing.Point(33, 75);
             this.info_gb.Name = "info_gb";
             this.info_gb.Size = new System.Drawing.Size(430, 407);
-            this.info_gb.TabIndex = 29;
+            this.info_gb.TabIndex = 58;
             this.info_gb.TabStop = false;
             // 
             // lotCodeHeader_tb
@@ -311,10 +366,10 @@ namespace RauViet.ui
             // 
             this.status_lb.AutoSize = true;
             this.status_lb.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.status_lb.Location = new System.Drawing.Point(210, 91);
+            this.status_lb.Location = new System.Drawing.Point(10, 500);
             this.status_lb.Name = "status_lb";
             this.status_lb.Size = new System.Drawing.Size(50, 19);
-            this.status_lb.TabIndex = 28;
+            this.status_lb.TabIndex = 57;
             this.status_lb.Text = "status";
             // 
             // delete_btn
@@ -322,31 +377,21 @@ namespace RauViet.ui
             this.delete_btn.BackColor = System.Drawing.Color.Red;
             this.delete_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.delete_btn.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.delete_btn.Location = new System.Drawing.Point(334, 535);
+            this.delete_btn.Location = new System.Drawing.Point(268, 488);
             this.delete_btn.Name = "delete_btn";
             this.delete_btn.Size = new System.Drawing.Size(107, 42);
-            this.delete_btn.TabIndex = 27;
+            this.delete_btn.TabIndex = 56;
             this.delete_btn.Text = "Xóa";
             this.delete_btn.UseVisualStyleBackColor = false;
-            // 
-            // loading_lb
-            // 
-            this.loading_lb.AutoSize = true;
-            this.loading_lb.Dock = System.Windows.Forms.DockStyle.Top;
-            this.loading_lb.Location = new System.Drawing.Point(0, 0);
-            this.loading_lb.Name = "loading_lb";
-            this.loading_lb.Size = new System.Drawing.Size(55, 13);
-            this.loading_lb.TabIndex = 10;
-            this.loading_lb.Text = "loading_lb";
             // 
             // newBtn
             // 
             this.newBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
-            this.newBtn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.newBtn.Location = new System.Drawing.Point(214, 535);
+            this.newBtn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.newBtn.Location = new System.Drawing.Point(386, 41);
             this.newBtn.Name = "newBtn";
-            this.newBtn.Size = new System.Drawing.Size(107, 42);
-            this.newBtn.TabIndex = 25;
+            this.newBtn.Size = new System.Drawing.Size(77, 29);
+            this.newBtn.TabIndex = 54;
             this.newBtn.Text = "Tạo mới";
             this.newBtn.UseVisualStyleBackColor = false;
             // 
@@ -354,65 +399,31 @@ namespace RauViet.ui
             // 
             this.luuBtn.BackColor = System.Drawing.SystemColors.HotTrack;
             this.luuBtn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.luuBtn.Location = new System.Drawing.Point(94, 535);
+            this.luuBtn.Location = new System.Drawing.Point(153, 488);
             this.luuBtn.Name = "luuBtn";
             this.luuBtn.Size = new System.Drawing.Size(107, 42);
-            this.luuBtn.TabIndex = 25;
+            this.luuBtn.TabIndex = 55;
             this.luuBtn.Text = "Lưu";
             this.luuBtn.UseVisualStyleBackColor = false;
             // 
             // sku_tb
             // 
             this.sku_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.sku_tb.Location = new System.Drawing.Point(68, 634);
+            this.sku_tb.Location = new System.Drawing.Point(330, 15);
             this.sku_tb.Name = "sku_tb";
             this.sku_tb.ReadOnly = true;
             this.sku_tb.Size = new System.Drawing.Size(38, 23);
             this.sku_tb.TabIndex = 40;
             this.sku_tb.Visible = false;
             // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(30, 634);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(30, 16);
-            this.label1.TabIndex = 35;
-            this.label1.Text = "SKU";
-            this.label1.Visible = false;
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label9.ForeColor = System.Drawing.SystemColors.ControlLight;
-            this.label9.Location = new System.Drawing.Point(331, 638);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(101, 14);
-            this.label9.TabIndex = 51;
-            this.label9.Text = "(vd: Gói, Hộp,...)";
-            this.label9.Visible = false;
-            // 
             // packingType_tb
             // 
             this.packingType_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.packingType_tb.Location = new System.Drawing.Point(239, 633);
+            this.packingType_tb.Location = new System.Drawing.Point(374, 15);
             this.packingType_tb.Name = "packingType_tb";
             this.packingType_tb.Size = new System.Drawing.Size(89, 23);
             this.packingType_tb.TabIndex = 48;
             this.packingType_tb.Visible = false;
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label7.Location = new System.Drawing.Point(105, 636);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(91, 16);
-            this.label7.TabIndex = 47;
-            this.label7.Text = "Loại Đóng Gói:";
-            this.label7.Visible = false;
             // 
             // panel2
             // 
@@ -477,6 +488,10 @@ namespace RauViet.ui
             this.Text = "FormTableData";
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            this.panel4.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.priceCNFHisGV)).EndInit();
+            this.panel5.ResumeLayout(false);
+            this.panel5.PerformLayout();
             this.info_gb.ResumeLayout(false);
             this.info_gb.PerformLayout();
             this.panel2.ResumeLayout(false);
@@ -489,41 +504,42 @@ namespace RauViet.ui
 
         #endregion
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Button luuBtn;
-        private System.Windows.Forms.Button newBtn;
-        private System.Windows.Forms.Label loading_lb;
-        private System.Windows.Forms.Button delete_btn;
-        private System.Windows.Forms.Label status_lb;
+        private System.Windows.Forms.TextBox packingType_tb;
+        private System.Windows.Forms.TextBox sku_tb;
+        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.TextBox search_tb;
+        private System.Windows.Forms.DataGridView dataGV;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.Panel panel5;
+        private System.Windows.Forms.Button readOnly_btn;
+        private System.Windows.Forms.Button edit_btn;
         private System.Windows.Forms.GroupBox info_gb;
+        private System.Windows.Forms.TextBox lotCodeHeader_tb;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.TextBox plantingareaCode_tb;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.TextBox priority_tb;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Label label10;
         private System.Windows.Forms.TextBox packing_tb;
         private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.TextBox packingType_tb;
-        private System.Windows.Forms.Label label7;
         private System.Windows.Forms.TextBox product_EN_tb;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TextBox priceCNF_tb;
         private System.Windows.Forms.TextBox botanicalName_tb;
         private System.Windows.Forms.TextBox package_tb;
         private System.Windows.Forms.TextBox product_VN_tb;
-        private System.Windows.Forms.TextBox sku_tb;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.Label label11;
-        private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.TextBox priority_tb;
-        private System.Windows.Forms.Label label12;
-        private System.Windows.Forms.TextBox plantingareaCode_tb;
-        private System.Windows.Forms.Label label13;
-        private System.Windows.Forms.TextBox lotCodeHeader_tb;
-        private System.Windows.Forms.Label label14;
-        private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.Panel panel3;
-        private System.Windows.Forms.TextBox search_tb;
-        private System.Windows.Forms.DataGridView dataGV;
-        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.Label status_lb;
+        private System.Windows.Forms.Button delete_btn;
+        private System.Windows.Forms.Button newBtn;
+        private System.Windows.Forms.Button luuBtn;
+        private System.Windows.Forms.Panel panel4;
+        private System.Windows.Forms.DataGridView priceCNFHisGV;
     }
 }

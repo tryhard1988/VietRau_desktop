@@ -20,7 +20,7 @@ namespace RauViet.ui
             InitializeComponent();
 
             Task.Run(() =>SQLManager.Instance.AutoUpsertAnnualLeaveMonthListAsync());
-            Task.Run(() => SQLStore.Instance.preload());
+            Task.Run(() => SQLStore.Instance.preload_NhanSu());
 
 
             this.WindowState = FormWindowState.Maximized;
@@ -149,7 +149,7 @@ namespace RauViet.ui
 
         private void ReportSalary_Month_mi_Click(object sender, EventArgs e)
         {
-            SwitchChildForm<ReportSalary_Month>("Tổng Hợp Chi Lương Qua Theo Tháng");
+            SwitchChildForm<ReportSalary_Year>("Tổng Hợp Chi Lương Qua Theo Tháng");
         }
 
         private void SalaryCaculator_mi_Click(object sender, EventArgs e)

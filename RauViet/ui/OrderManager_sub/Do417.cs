@@ -15,6 +15,7 @@ namespace RauViet.ui
     {
         DataTable mExportCode_dt, mOrdersTotal_dt;
         private bool _dataChanged = false;
+        private LoadingOverlay loadingOverlay;
         public Do417()
         {
             InitializeComponent();
@@ -26,8 +27,6 @@ namespace RauViet.ui
             dataGV.MultiSelect = false;
 
             status_lb.Text = "";
-            loading_lb.Text = "Đang tải dữ liệu, vui lòng chờ...";
-            loading_lb.Visible = false;
 
             Reset_btn.Click += resetBtn_Click;
             LuuThayDoiBtn.Click += saveBtn_Click;           
@@ -43,17 +42,17 @@ namespace RauViet.ui
 
         public async void ShowData()
         {
-            
-
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Dock = DockStyle.Fill;
-
-            loading_lb.Visible = true;            
+            await Task.Delay(50);
+            loadingOverlay = new LoadingOverlay(this);
+            loadingOverlay.Show();
+            await Task.Delay(50);
 
             try
             {
                 var ordersPackingTask = SQLManager.Instance.getOrdersTotalAsync();
-                var exportCodeTask = SQLManager.Instance.getExportCodes_Incomplete();
+                string[] keepColumns = { "ExportCodeID", "ExportCode" };
+                var parameters = new Dictionary<string, object> { { "Complete", false } };
+                var exportCodeTask = SQLStore.Instance.getExportCodesAsync(keepColumns, parameters);
 
                 await Task.WhenAll(ordersPackingTask, exportCodeTask);
 
@@ -128,6 +127,8 @@ namespace RauViet.ui
                 dataGV.Columns["Package"].Visible = false;
                 dataGV.Columns["Amount"].Visible = false;
                 dataGV.Columns["packing"].Visible = false;
+                dataGV.Columns["ExportCode"].Visible = false;
+                dataGV.Columns["SKU"].Visible = false;
 
                 dataGV.ReadOnly = false;
                 dataGV.Columns["NetWeightFinal"].ReadOnly = false;
@@ -179,8 +180,8 @@ namespace RauViet.ui
             }
             finally
             {
-                loading_lb.Visible = false; // ẩn loading
-                loading_lb.Enabled = true; // enable lại button
+                await Task.Delay(200);
+                loadingOverlay.Hide();
             }
         }
 

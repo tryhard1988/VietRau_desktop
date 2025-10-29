@@ -32,7 +32,6 @@ namespace RauViet.ui
             this.components = new System.ComponentModel.Container();
             this.panel1 = new System.Windows.Forms.Panel();
             this.exportCode_cbb = new System.Windows.Forms.ComboBox();
-            this.loading_lb = new System.Windows.Forms.Label();
             this.status_lb = new System.Windows.Forms.Label();
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -44,7 +43,6 @@ namespace RauViet.ui
             // panel1
             // 
             this.panel1.Controls.Add(this.exportCode_cbb);
-            this.panel1.Controls.Add(this.loading_lb);
             this.panel1.Controls.Add(this.status_lb);
             this.panel1.Controls.Add(this.LuuThayDoiBtn);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Right;
@@ -56,20 +54,10 @@ namespace RauViet.ui
             // exportCode_cbb
             // 
             this.exportCode_cbb.FormattingEnabled = true;
-            this.exportCode_cbb.Location = new System.Drawing.Point(-3, 12);
+            this.exportCode_cbb.Location = new System.Drawing.Point(0, 3);
             this.exportCode_cbb.Name = "exportCode_cbb";
             this.exportCode_cbb.Size = new System.Drawing.Size(160, 21);
             this.exportCode_cbb.TabIndex = 52;
-            // 
-            // loading_lb
-            // 
-            this.loading_lb.AutoSize = true;
-            this.loading_lb.Dock = System.Windows.Forms.DockStyle.Top;
-            this.loading_lb.Location = new System.Drawing.Point(0, 0);
-            this.loading_lb.Name = "loading_lb";
-            this.loading_lb.Size = new System.Drawing.Size(55, 13);
-            this.loading_lb.TabIndex = 10;
-            this.loading_lb.Text = "loading_lb";
             // 
             // status_lb
             // 
@@ -129,7 +117,6 @@ namespace RauViet.ui
         #endregion
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Button LuuThayDoiBtn;
-        private System.Windows.Forms.Label loading_lb;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.ComboBox exportCode_cbb;
         private System.Windows.Forms.Label status_lb;

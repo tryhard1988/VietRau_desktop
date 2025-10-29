@@ -30,6 +30,8 @@ namespace RauViet.ui
         private void InitializeComponent()
         {
             this.load_gb = new System.Windows.Forms.GroupBox();
+            this.exportPDF_btn = new System.Windows.Forms.Button();
+            this.printPreview_pl_btn = new System.Windows.Forms.Button();
             this.print_pl_btn = new System.Windows.Forms.Button();
             this.load_btn = new System.Windows.Forms.Button();
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
@@ -56,8 +58,6 @@ namespace RauViet.ui
             this.allowancePanel = new System.Windows.Forms.Panel();
             this.allowanceGV = new System.Windows.Forms.DataGridView();
             this.label2 = new System.Windows.Forms.Label();
-            this.printPreview_pl_btn = new System.Windows.Forms.Button();
-            this.exportPDF_btn = new System.Windows.Forms.Button();
             this.load_gb.SuspendLayout();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
@@ -93,11 +93,33 @@ namespace RauViet.ui
             this.load_gb.TabIndex = 29;
             this.load_gb.TabStop = false;
             // 
+            // exportPDF_btn
+            // 
+            this.exportPDF_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.exportPDF_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.exportPDF_btn.Location = new System.Drawing.Point(351, 6);
+            this.exportPDF_btn.Name = "exportPDF_btn";
+            this.exportPDF_btn.Size = new System.Drawing.Size(144, 47);
+            this.exportPDF_btn.TabIndex = 33;
+            this.exportPDF_btn.Text = "Xuất PDF";
+            this.exportPDF_btn.UseVisualStyleBackColor = false;
+            // 
+            // printPreview_pl_btn
+            // 
+            this.printPreview_pl_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.printPreview_pl_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.printPreview_pl_btn.Location = new System.Drawing.Point(651, 4);
+            this.printPreview_pl_btn.Name = "printPreview_pl_btn";
+            this.printPreview_pl_btn.Size = new System.Drawing.Size(144, 47);
+            this.printPreview_pl_btn.TabIndex = 32;
+            this.printPreview_pl_btn.Text = "Xem trước bảng In";
+            this.printPreview_pl_btn.UseVisualStyleBackColor = false;
+            // 
             // print_pl_btn
             // 
             this.print_pl_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.print_pl_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.print_pl_btn.Location = new System.Drawing.Point(666, 4);
+            this.print_pl_btn.Location = new System.Drawing.Point(501, 5);
             this.print_pl_btn.Name = "print_pl_btn";
             this.print_pl_btn.Size = new System.Drawing.Size(144, 47);
             this.print_pl_btn.TabIndex = 31;
@@ -375,28 +397,6 @@ namespace RauViet.ui
             this.label2.TabIndex = 0;
             this.label2.Text = "Phụ Cấp";
             this.label2.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            // 
-            // printPreview_pl_btn
-            // 
-            this.printPreview_pl_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
-            this.printPreview_pl_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.printPreview_pl_btn.Location = new System.Drawing.Point(816, 3);
-            this.printPreview_pl_btn.Name = "printPreview_pl_btn";
-            this.printPreview_pl_btn.Size = new System.Drawing.Size(144, 47);
-            this.printPreview_pl_btn.TabIndex = 32;
-            this.printPreview_pl_btn.Text = "Xem trước bảng In";
-            this.printPreview_pl_btn.UseVisualStyleBackColor = false;
-            // 
-            // exportPDF_btn
-            // 
-            this.exportPDF_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
-            this.exportPDF_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.exportPDF_btn.Location = new System.Drawing.Point(516, 5);
-            this.exportPDF_btn.Name = "exportPDF_btn";
-            this.exportPDF_btn.Size = new System.Drawing.Size(144, 47);
-            this.exportPDF_btn.TabIndex = 33;
-            this.exportPDF_btn.Text = "Xuất PDF";
-            this.exportPDF_btn.UseVisualStyleBackColor = false;
             // 
             // SalaryCaculator
             // 

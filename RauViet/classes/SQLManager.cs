@@ -19,7 +19,12 @@ namespace RauViet.classes
     {
         private static SQLManager ins = null;
         private static readonly object padlock = new object();
-        public readonly string conStr = "Data Source=localhost\\SQLEXPRESS;Initial Catalog=RauVietDB;Integrated Security=true;";
+        public readonly string ql_User_conStr = "Server=192.168.1.179,1433;Database=QL_User;User Id=ql_user;Password=A7t#kP2x;";
+        public readonly string ql_kho_conStr = "Server=192.168.1.179,1433;Database=QL_Kho;User Id=ql_kho;Password=A7t#kP2x;";
+        public readonly string ql_khoHis_conStr = "Server=192.168.1.179,1433;Database=QL_Kho_History;User Id=ql_kho_history;Password=A7t#kP2x;";
+        public readonly string salaryLock_conStr = "Server=192.168.1.179,1433;Database=SalaryLock;User Id=salary_lock;Password=A7t#kP2x;";
+        public readonly string qlnvHis_conStr = "Server=192.168.1.179,1433;Database=QLNV_VR_History;User Id=qlnv_vr_history;Password=A7t#kP2x;";
+        public readonly string conStr = "Server=192.168.1.179,1433;Database=QLNV;User Id=vietrau;Password=A7t#kP2x;";
 
         private SQLManager() { }
 
@@ -61,7 +66,7 @@ namespace RauViet.classes
         public async Task<DataTable> getCustomersAsync()
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(conStr))
+            using (SqlConnection con = new SqlConnection(ql_kho_conStr))
             {
                 await con.OpenAsync();
                 string query = "SELECT * FROM Customers";
@@ -79,7 +84,7 @@ namespace RauViet.classes
             string query = "UPDATE Customers SET FullName=@FullName, CustomerCode=@CustomerCode WHERE CustomerID=@CustomerID";
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -103,7 +108,7 @@ namespace RauViet.classes
                             VALUES (@FullName, @CustomerCode)";
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -125,7 +130,7 @@ namespace RauViet.classes
             string query = "DELETE FROM Customers WHERE CustomerID=@CustomerID";
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -143,7 +148,7 @@ namespace RauViet.classes
         public async Task<DataTable> getProductSKUAsync()
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(conStr))
+            using (SqlConnection con = new SqlConnection(ql_kho_conStr))
             {
                 await con.OpenAsync();
                 string query = @"SELECT * FROM ProductSKU ORDER BY ProductNameVN ASC";
@@ -174,7 +179,7 @@ namespace RauViet.classes
                              WHERE SKU=@SKU";
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -208,7 +213,7 @@ namespace RauViet.classes
                             VALUES (@ProductNameVN, @ProductNameEN, @PackingType, @Package, @PackingList, @BotanicalName, @PriceCNF, @Priority, @PlantingAreaCode, @LOTCodeHeader)";
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -238,7 +243,7 @@ namespace RauViet.classes
             string query = "DELETE FROM ProductSKU WHERE SKU=@SKU";
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -256,7 +261,7 @@ namespace RauViet.classes
         public async Task<DataTable> getProductpackingAsync()
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(conStr))
+            using (SqlConnection con = new SqlConnection(ql_kho_conStr))
             {
                 await con.OpenAsync();
                 string query = @"
@@ -295,7 +300,7 @@ namespace RauViet.classes
                              WHERE ProductPackingID=@ID";
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -325,7 +330,7 @@ namespace RauViet.classes
                              VALUES (@SKU, @BarCode, @PLU, @Amount, @packing, @BarCodeEAN13, @ArtNr, @GGN)";
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -353,7 +358,7 @@ namespace RauViet.classes
             string query = "DELETE FROM ProductPacking WHERE ProductPackingID=@ProductPackingID";
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -371,42 +376,10 @@ namespace RauViet.classes
         public async Task<DataTable> getExportCodesAsync()
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(conStr))
+            using (SqlConnection con = new SqlConnection(ql_kho_conStr))
             {
                 await con.OpenAsync();
                 string query = "SELECT * FROM ExportCodes";
-                using (SqlCommand cmd = new SqlCommand(query, con))
-                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
-                {
-                    dt.Load(reader);
-                }
-            }
-            return dt;
-        }
-
-        public async Task<DataTable> getExportCodes_Incomplete()
-        {
-            DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(conStr))
-            {
-                await con.OpenAsync();
-                string query = @"SELECT 
-                                    ec.ExportCodeID,
-                                    ec.ExportCode,
-                                    ec.ExportDate,
-                                    ec.ExchangeRate,
-                                    ec.ShippingCost,
-                                    ec.ExportCodeIndex,
-                                    ei.FullName AS InputByName,
-                                    ep.FullName AS PackingByName
-                                FROM 
-                                    ExportCodes ec
-                                LEFT JOIN Employee ei ON ec.InputBy = ei.EmployeeID
-                                LEFT JOIN Employee ep ON ec.PackingBy = ep.EmployeeID
-                                WHERE 
-                                    ec.Complete = 0
-                                ORDER BY 
-                                    ec.ExportDate DESC;";
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                 {
@@ -431,7 +404,7 @@ namespace RauViet.classes
                             WHERE ExportCodeID=@ExportCodeID";
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -463,7 +436,7 @@ namespace RauViet.classes
                                 VALUES (@ExportCode, @ExportCodeIndex, @ExportDate, @ExchangeRate, @ShippingCost, @InputBy, @PackingBy)";
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -494,7 +467,7 @@ namespace RauViet.classes
 
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr))
                 {
                     await con.OpenAsync();
 
@@ -538,7 +511,7 @@ namespace RauViet.classes
         public async Task<DataTable> getOrdersAsync()
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(conStr))
+            using (SqlConnection con = new SqlConnection(ql_kho_conStr))
             {
                 await con.OpenAsync();
                 string query = @"SELECT 
@@ -579,7 +552,7 @@ namespace RauViet.classes
                              WHERE OrderId=@OrderId";
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -607,7 +580,7 @@ namespace RauViet.classes
                              VALUES (@CustomerID, @ExportCodeID, @ProductPackingID, @OrderPackingPriceCNF, @PCSOther, @NWOther)";
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -633,7 +606,7 @@ namespace RauViet.classes
             string query = "DELETE FROM Orders WHERE OrderId=@OrderId";
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -651,7 +624,7 @@ namespace RauViet.classes
         {
             DataTable dt = new DataTable();
 
-            using (SqlConnection con = new SqlConnection(conStr))
+            using (SqlConnection con = new SqlConnection(ql_kho_conStr))
             {
                 await con.OpenAsync();
 
@@ -713,7 +686,7 @@ namespace RauViet.classes
         public async Task<DataTable> getOrdersPackingAsync()
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(conStr))
+            using (SqlConnection con = new SqlConnection(ql_kho_conStr))
             {
                 await con.OpenAsync();
                 string query = @"
@@ -753,30 +726,36 @@ namespace RauViet.classes
             return dt;
         }
 
-        public async Task<bool> updatePackOrdersBulkAsync(List<(int orderId, int? pcsReal, decimal? nwReal, int? cartonNo, string cartonSize, string customerCarton)> orders)
+        public async Task<bool> UpdatePackOrdersBulkAsync(List<(int orderId, int? pcsReal, decimal? nwReal, int? cartonNo, string cartonSize, string customerCarton)> orders)
         {
-            string query = @"UPDATE Orders 
-                        SET PCSReal = @PCSReal, 
-                            NWReal = @NWReal, 
-                            CartonNo = @CartonNo, 
-                            CartonSize = @CartonSize,
-                            CustomerCarton = @CustomerCarton
-                        WHERE OrderId = @OrderId";
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr))
                 {
                     await con.OpenAsync();
-                    foreach (var o in orders)
+
+                    using (var dt = new DataTable())
                     {
-                        using (SqlCommand cmd = new SqlCommand(query, con))
+                        dt.Columns.Add("OrderId", typeof(int));
+                        dt.Columns.Add("PCSReal", typeof(int));
+                        dt.Columns.Add("NWReal", typeof(decimal));
+                        dt.Columns.Add("CartonNo", typeof(int));
+                        dt.Columns.Add("CartonSize", typeof(string));
+                        dt.Columns.Add("CustomerCarton", typeof(string));
+
+                        foreach (var o in orders)
                         {
-                            cmd.Parameters.AddWithValue("@OrderId", o.orderId);
-                            cmd.Parameters.AddWithValue("@PCSReal", (object)o.pcsReal ?? DBNull.Value);
-                            cmd.Parameters.AddWithValue("@NWReal", (object)o.nwReal ?? DBNull.Value);
-                            cmd.Parameters.AddWithValue("@CartonNo", (object)o.cartonNo ?? DBNull.Value);
-                            cmd.Parameters.AddWithValue("@CartonSize", (object)o.cartonSize ?? DBNull.Value);
-                            cmd.Parameters.AddWithValue("@CustomerCarton", (object)o.customerCarton ?? DBNull.Value);
+                            dt.Rows.Add(o.orderId, (object)o.pcsReal ?? DBNull.Value, (object)o.nwReal ?? DBNull.Value,
+                                        (object)o.cartonNo ?? DBNull.Value, (object)o.cartonSize ?? DBNull.Value,
+                                        (object)o.customerCarton ?? DBNull.Value);
+                        }
+
+                        using (var cmd = new SqlCommand("dbo.UpdateOrdersBulk", con))
+                        {
+                            cmd.CommandType = CommandType.StoredProcedure;
+                            var param = cmd.Parameters.AddWithValue("@OrderUpdates", dt);
+                            param.SqlDbType = SqlDbType.Structured;
+                            param.TypeName = "dbo.OrderUpdateType";
 
                             await cmd.ExecuteNonQueryAsync();
                         }
@@ -784,13 +763,18 @@ namespace RauViet.classes
                 }
                 return true;
             }
-            catch { return false; }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[UpdatePackOrdersBulkAsync] Error: {ex.Message}");
+                Console.WriteLine(ex.StackTrace);
+                return false;
+            }
         }
 
         public async Task<DataTable> getOrdersTotalAsync()
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(conStr))
+            using (SqlConnection con = new SqlConnection(ql_kho_conStr))
             {
                 await con.OpenAsync();
                 string query = @"SELECT 
@@ -846,7 +830,7 @@ namespace RauViet.classes
             string query = "DELETE FROM OrdersTotal WHERE ExportCodeID =@ExportCodeID ";
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -864,62 +848,40 @@ namespace RauViet.classes
         {
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (var con = new SqlConnection(ql_kho_conStr))
                 {
                     await con.OpenAsync();
 
+                    // 1️⃣ Chuẩn bị DataTable khớp với kiểu TVP
+                    var dt = new DataTable();
+                    dt.Columns.Add("ExportCodeID", typeof(int));
+                    dt.Columns.Add("ProductPackingID", typeof(int));
+                    dt.Columns.Add("NetWeightFinal", typeof(decimal));
+
                     foreach (var item in list)
                     {
-                        string checkQuery = @"SELECT COUNT(1) 
-                                      FROM OrdersTotal
-                                      WHERE ExportCodeID = @ExportCodeID
-                                        AND ProductPackingID = @ProductPackingID";
+                        dt.Rows.Add(item.ExportCodeID, item.ProductPackingID,
+                                    (object)item.NetWeightFinal ?? DBNull.Value);
+                    }
 
-                        using (SqlCommand checkCmd = new SqlCommand(checkQuery, con))
-                        {
-                            checkCmd.Parameters.AddWithValue("@ExportCodeID", item.ExportCodeID);
-                            checkCmd.Parameters.AddWithValue("@ProductPackingID", item.ProductPackingID);
+                    // 2️⃣ Gọi SP
+                    using (var cmd = new SqlCommand("dbo.UpsertOrdersTotalList", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        var param = cmd.Parameters.AddWithValue("@Updates", dt);
+                        param.SqlDbType = SqlDbType.Structured;
+                        param.TypeName = "dbo.OrderTotalUpdateType";
 
-                            int count = (int)await checkCmd.ExecuteScalarAsync();
-
-                            if (count > 0)
-                            {
-                                string updateQuery = @"UPDATE OrdersTotal
-                                               SET NetWeightFinal = @NetWeightFinal
-                                               WHERE ExportCodeID = @ExportCodeID
-                                                 AND ProductPackingID = @ProductPackingID";
-
-                                using (SqlCommand updateCmd = new SqlCommand(updateQuery, con))
-                                {
-                                    updateCmd.Parameters.AddWithValue("@NetWeightFinal", item.NetWeightFinal ?? (object)DBNull.Value);
-                                    updateCmd.Parameters.AddWithValue("@ExportCodeID", item.ExportCodeID);
-                                    updateCmd.Parameters.AddWithValue("@ProductPackingID", item.ProductPackingID);
-
-                                    await updateCmd.ExecuteNonQueryAsync();
-                                }
-                            }
-                            else
-                            {
-                                string insertQuery = @"INSERT INTO OrdersTotal (ExportCodeID, ProductPackingID, NetWeightFinal)
-                                               VALUES (@ExportCodeID, @ProductPackingID, @NetWeightFinal)";
-
-                                using (SqlCommand insertCmd = new SqlCommand(insertQuery, con))
-                                {
-                                    insertCmd.Parameters.AddWithValue("@ExportCodeID", item.ExportCodeID);
-                                    insertCmd.Parameters.AddWithValue("@ProductPackingID", item.ProductPackingID);
-                                    insertCmd.Parameters.AddWithValue("@NetWeightFinal", item.NetWeightFinal ?? (object)DBNull.Value);
-
-                                    await insertCmd.ExecuteNonQueryAsync();
-                                }
-                            }
-                        }
+                        await cmd.ExecuteNonQueryAsync();
                     }
                 }
 
                 return true;
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine($"[UpsertOrdersTotalListAsync] Error: {ex.Message}");
+                Console.WriteLine(ex.StackTrace);
                 return false;
             }
         }
@@ -927,7 +889,7 @@ namespace RauViet.classes
         public async Task<DataTable> getOrdersDKKDAsync()
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(conStr))
+            using (SqlConnection con = new SqlConnection(ql_kho_conStr))
             {
                 await con.OpenAsync();
                 string query = @"SELECT 
@@ -963,7 +925,7 @@ namespace RauViet.classes
         public async Task<DataTable> getOrdersPhytoAsync()
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(conStr))
+            using (SqlConnection con = new SqlConnection(ql_kho_conStr))
             {
                 await con.OpenAsync();
                 string query = @"SELECT 
@@ -998,7 +960,7 @@ namespace RauViet.classes
         public async Task<DataTable> getOrdersINVOICEAsync()
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(conStr))
+            using (SqlConnection con = new SqlConnection(ql_kho_conStr))
             {
                 await con.OpenAsync();
                 string query = @"SELECT
@@ -1052,7 +1014,7 @@ namespace RauViet.classes
         public async Task<DataTable> GetCustomersOrdersAsync()
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(conStr))
+            using (SqlConnection con = new SqlConnection(ql_kho_conStr))
             {
                 await con.OpenAsync();
                 string query = @"SELECT
@@ -1095,7 +1057,7 @@ namespace RauViet.classes
         public async Task<DataTable> GetExportCartonCountsAsync()
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(conStr))
+            using (SqlConnection con = new SqlConnection(ql_kho_conStr))
             {
                 await con.OpenAsync();
                 string query = @"SELECT
@@ -1125,7 +1087,7 @@ namespace RauViet.classes
         public async Task<DataTable> GetLOTCodeByExportCode_inCompleteAsync()
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(conStr))
+            using (SqlConnection con = new SqlConnection(ql_kho_conStr))
             {
                 await con.OpenAsync();
                 string query = @"SELECT DISTINCT
@@ -1156,44 +1118,48 @@ namespace RauViet.classes
         {
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr))
                 {
                     await con.OpenAsync();
 
+                    // Tạo DataTable khớp với kiểu SQL Type
+                    var dt = new DataTable();
+                    dt.Columns.Add("ExportCodeID", typeof(int));
+                    dt.Columns.Add("SKU", typeof(int));
+                    dt.Columns.Add("LOTCode", typeof(string));
+                    dt.Columns.Add("LOTCodeComplete", typeof(string));
+
                     foreach (var item in list)
+                        dt.Rows.Add(item.ExportCodeID, item.SKU,
+                                    (object)item.LOTCode ?? DBNull.Value,
+                                    (object)item.LOTCodeComplete ?? DBNull.Value);
+
+                    using (SqlCommand cmd = new SqlCommand("dbo.UpsertOrdersLotCodesBySKU", con))
                     {
-                        string updateQuery = @"UPDATE o
-                        SET 
-                            o.LOTCode = @LOTCode,
-                            o.LOTCodeComplete = @LOTCodeComplete
-                        FROM Orders o
-                        INNER JOIN ProductPacking p ON o.ProductPackingID = p.ProductPackingID
-                        WHERE o.ExportCodeID = @ExportCodeID
-                          AND p.SKU = @SKU;";
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        var param = cmd.Parameters.AddWithValue("@Updates", dt);
+                        param.SqlDbType = SqlDbType.Structured;
+                        param.TypeName = "dbo.OrderLotUpdateType";
 
-                        using (SqlCommand cmd = new SqlCommand(updateQuery, con))
-                        {
-                            cmd.Parameters.AddWithValue("@LOTCode", item.LOTCode ?? (object)DBNull.Value);
-                            cmd.Parameters.AddWithValue("@LOTCodeComplete", item.LOTCodeComplete ?? (object)DBNull.Value);
-                            cmd.Parameters.AddWithValue("@ExportCodeID", item.ExportCodeID);
-                            cmd.Parameters.AddWithValue("@SKU", item.SKU);
-
-                            await cmd.ExecuteNonQueryAsync();
-                        }
+                        await cmd.ExecuteNonQueryAsync();
                     }
                 }
+
                 return true;
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine($"[UpsertOrdersLotCodesBySKUAsync] Error: {ex.Message}");
+                Console.WriteLine(ex.StackTrace);
                 return false;
             }
         }
 
+
         public async Task<DataTable> GetDetailPackingTotalByExportCode_incompleteAsync()
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(conStr))
+            using (SqlConnection con = new SqlConnection(ql_kho_conStr))
             {
                 await con.OpenAsync();
                 string query = @"SELECT
@@ -1247,7 +1213,7 @@ namespace RauViet.classes
         public async Task<DataTable> GetCustomerDetailPacking_incompleteAsync()
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(conStr))
+            using (SqlConnection con = new SqlConnection(ql_kho_conStr))
             {
                 await con.OpenAsync();
                 string query = @"SELECT
@@ -1306,7 +1272,7 @@ namespace RauViet.classes
                                 AND o.ExportCodeID = @ExportCodeID;";
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -1357,7 +1323,7 @@ namespace RauViet.classes
         public async Task<DataTable> GetRolesAsync()
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(conStr))
+            using (SqlConnection con = new SqlConnection(ql_User_conStr))
             {
                 await con.OpenAsync();
                 string query = @"SELECT RoleID, RoleName FROM Roles;";
@@ -1616,21 +1582,21 @@ namespace RauViet.classes
         public async Task<DataTable> GetUserDataAsync()
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(conStr))
+            using (SqlConnection con = new SqlConnection(ql_User_conStr))
             {
                 await con.OpenAsync();
                 string query = @"SELECT 
                                     u.UserID,
                                     u.Username,
                                     u.PasswordHash,
-                                    u.EmployeeID,
+                                    u.EmployeeCode,
                                     u.IsActive,
                                     STRING_AGG(r.RoleID, ',') AS RoleIDs
                                 FROM Users u
                                 LEFT JOIN UserRoles ur ON u.UserID = ur.UserID
                                 LEFT JOIN Roles r ON ur.RoleID = r.RoleID
                                 GROUP BY 
-                                    u.UserID, u.Username, u.PasswordHash, u.EmployeeID, 
+                                    u.UserID, u.Username, u.PasswordHash, u.EmployeeCode, 
                                     u.IsActive
                                 ORDER BY u.UserID;";
 
@@ -1643,14 +1609,14 @@ namespace RauViet.classes
             return dt;
         }
 
-        public async Task<bool> updateUserAsync(int userID, string userName, string password, int employeeID, Boolean isActive, List<int> roleIDs)
+        public async Task<bool> updateUserAsync(int userID, string userName, string password, string employeeCode, Boolean isActive, List<int> roleIDs)
         {
             string query = @"UPDATE Users SET 
-                                Username=@Username, PasswordHash=@PasswordHash, EmployeeID=@EmployeeID, IsActive=@IsActive 
+                                Username=@Username, PasswordHash=@PasswordHash, EmployeeCode=@EmployeeCode, IsActive=@IsActive 
                             WHERE UserID=@UserID";
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_User_conStr))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -1658,7 +1624,7 @@ namespace RauViet.classes
                         cmd.Parameters.AddWithValue("@UserID", userID);
                         cmd.Parameters.AddWithValue("@Username", userName);
                         cmd.Parameters.AddWithValue("@PasswordHash", password);
-                        cmd.Parameters.AddWithValue("@EmployeeID", employeeID);
+                        cmd.Parameters.AddWithValue("@EmployeeCode", employeeCode);
                         cmd.Parameters.AddWithValue("@IsActive", isActive);
                         await cmd.ExecuteNonQueryAsync();
                     }
@@ -1681,21 +1647,21 @@ namespace RauViet.classes
             }
         }
 
-        public async Task<bool> updateUser_notPasswordAsync(int userID, string userName, int employeeID, Boolean isActive, List<int> roleIDs)
+        public async Task<bool> updateUser_notPasswordAsync(int userID, string userName, string employeeCode, Boolean isActive, List<int> roleIDs)
         {
             string query = @"UPDATE Users SET 
-                                Username=@Username, EmployeeID=@EmployeeID, IsActive=@IsActive 
+                                Username=@Username, EmployeeCode=@EmployeeCode, IsActive=@IsActive 
                             WHERE UserID=@UserID";
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_User_conStr))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
                         cmd.Parameters.AddWithValue("@UserID", userID);
                         cmd.Parameters.AddWithValue("@Username", userName);
-                        cmd.Parameters.AddWithValue("@EmployeeID", employeeID);
+                        cmd.Parameters.AddWithValue("@EmployeeCode", employeeCode);
                         cmd.Parameters.AddWithValue("@IsActive", isActive);
                         await cmd.ExecuteNonQueryAsync();
                     }
@@ -1718,22 +1684,22 @@ namespace RauViet.classes
             }
         }
 
-        public async Task<int> insertUserDataAsync(string userName, string password, int employeeID, Boolean isActive, List<int> roleIDs)
+        public async Task<int> insertUserDataAsync(string userName, string password, string employeeCode, Boolean isActive, List<int> roleIDs)
         {
             int newId = -1;
-            string query = @"INSERT INTO Users (Username, PasswordHash, EmployeeID, IsActive) 
+            string query = @"INSERT INTO Users (Username, PasswordHash, EmployeeCode, IsActive) 
                              OUTPUT INSERTED.UserID
-                            VALUES (@Username, @PasswordHash, @EmployeeID, @IsActive)";
+                            VALUES (@Username, @PasswordHash, @EmployeeCode, @IsActive)";
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_User_conStr))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
                         cmd.Parameters.AddWithValue("@Username", userName);
                         cmd.Parameters.AddWithValue("@PasswordHash", password);
-                        cmd.Parameters.AddWithValue("@EmployeeID", employeeID);
+                        cmd.Parameters.AddWithValue("@EmployeeCode", employeeCode);
                         cmd.Parameters.AddWithValue("@IsActive", isActive);
                         object result = await cmd.ExecuteScalarAsync();
                         if (result != null)
@@ -1765,7 +1731,7 @@ namespace RauViet.classes
             string query = "DELETE FROM Users WHERE UserID=@UserID";
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_User_conStr))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -3461,6 +3427,25 @@ namespace RauViet.classes
             return dt;
         }
 
+        public async Task<DataTable> GetSalaryHistoryAsyc(int month, int year)
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(qlnvHis_conStr))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT * FROM EmployeeSalaryHistory WHERE Month=@Month AND Year=@Year";
+                using (SqlCommand cmd = new SqlCommand(query, con)) {
+                    cmd.Parameters.AddWithValue("@Month", month);
+                    cmd.Parameters.AddWithValue("@Year", year);
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
+        }
+
         public async Task<int> insertEmployeeSalaryInfoAsync(string employeeCode, int month, int year, int baseSalary, int insuranceBaseSalary, string note)
         {
             int newId = -1;
@@ -3794,11 +3779,10 @@ namespace RauViet.classes
         {
             DataTable dt = new DataTable();
 
-            using (SqlConnection con = new SqlConnection(conStr))
+            bool isLock = await SQLStore.Instance.IsSalaryLockAsync(month, year);
+            using (SqlConnection con = new SqlConnection(isLock ? qlnvHis_conStr : conStr))
             {
                 await con.OpenAsync();
-
-                bool isLock = await SQLStore.Instance.IsSalaryLockAsync(month, year);
                 string spStr = isLock ? "sp_GetEmployeeAllowanceHistory_ByMonth" : "sp_GetEmployeeAllowance";
                 using (SqlCommand cmd = new SqlCommand(spStr, con))
                 {
@@ -3835,7 +3819,7 @@ namespace RauViet.classes
                     dt.Rows.Add(item.scopeCode, item.allowanceTypeID, item.EmployeeCode, item.AllowanceName, item.IsInsuranceIncluded, item.Amount, item.Month, item.Year);
                 }
 
-                using (SqlConnection conn = new SqlConnection(conStr))
+                using (SqlConnection conn = new SqlConnection(qlnvHis_conStr))
                 {
                     await conn.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand("sp_SaveEmployeeAllowanceHistory_Batch", conn))
@@ -3853,7 +3837,7 @@ namespace RauViet.classes
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Lỗi khi cập nhật: " + ex.Message);
+                Console.WriteLine("====Lỗi khi cập nhật: " + ex.Message);
                 return false;
             }
         }
@@ -3861,7 +3845,7 @@ namespace RauViet.classes
         public async Task<DataTable> GetSalaryLockAsync()
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(conStr))
+            using (SqlConnection con = new SqlConnection(salaryLock_conStr))
             {
                 await con.OpenAsync();
                 string query = @"SELECT * FROM SalaryLock";
@@ -3881,7 +3865,7 @@ namespace RauViet.classes
         {
             try
             {
-                using (SqlConnection conn = new SqlConnection(conStr))
+                using (SqlConnection conn = new SqlConnection(salaryLock_conStr))
                 {
                     await conn.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand("sp_SetSalaryLock", conn))
@@ -3906,7 +3890,7 @@ namespace RauViet.classes
 
         
         public async Task<bool> UpsertEmployeeSalaryHistoryAsync(List<(string EmployeeCode, string ContractTypeName, int Month, int Year, decimal BaseSalary, decimal NetSalary, decimal NetInsuranceSalary,
-            decimal InsuranceAllowance, decimal NonInsuranceAllowance, decimal OvertimeSalary, decimal LeaveSalary, decimal DeductionAmount)> data)
+            decimal InsuranceAllowance, decimal NonInsuranceAllowance, decimal OvertimeSalary, decimal LeaveSalary, decimal DeductionAmount, bool IsInsuranceRefund)> data)
         {
             try
             {
@@ -3923,15 +3907,16 @@ namespace RauViet.classes
                 dt.Columns.Add("OvertimeSalary", typeof(decimal));
                 dt.Columns.Add("LeaveSalary", typeof(decimal));
                 dt.Columns.Add("DeductionAmount", typeof(decimal));
+                dt.Columns.Add("IsInsuranceRefund", typeof(bool));
 
 
                 foreach (var item in data)
                 {
                     dt.Rows.Add(item.EmployeeCode, item.ContractTypeName, item.Month, item.Year, item.BaseSalary, item.NetSalary, item.NetInsuranceSalary, item.InsuranceAllowance,
-                         item.NonInsuranceAllowance, item.OvertimeSalary, item.LeaveSalary, item.DeductionAmount);
+                         item.NonInsuranceAllowance, item.OvertimeSalary, item.LeaveSalary, item.DeductionAmount, item.IsInsuranceRefund);
                 }
 
-                using (SqlConnection conn = new SqlConnection(conStr))
+                using (SqlConnection conn = new SqlConnection(qlnvHis_conStr))
                 {
                     await conn.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand("sp_UpsertEmployeeSalaryHistory_Batch", conn))
@@ -3952,6 +3937,75 @@ namespace RauViet.classes
                 Console.WriteLine("Lỗi khi cập nhật: " + ex.Message);
                 return false;
             }
+        }
+
+        public async Task<DataTable> GetSalarySummaryByYearAsync(int year)
+        {
+            DataTable dt = new DataTable();
+
+            using (SqlConnection con = new SqlConnection(qlnvHis_conStr))
+            {
+                await con.OpenAsync();
+
+                using (SqlCommand cmd = new SqlCommand("sp_GetSalarySummaryByYear", con))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@Year", year);
+
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+
+            return dt;
+        }
+
+        public async Task<bool> SaveProductSKUHistoryAsync(int SKU, decimal priceCNF)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(ql_khoHis_conStr))
+                {
+                    await conn.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand("sp_SaveProductSKUHistory", conn))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@SKU", SKU);
+                        cmd.Parameters.AddWithValue("@PriceCNF", priceCNF);
+
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Lỗi khi cập nhật: " + ex.Message);
+                return false;
+            }
+        }
+
+        public async Task<DataTable> GetProductSKUHistoryAsync()
+        {
+            DataTable dt = new DataTable();
+
+            using (SqlConnection con = new SqlConnection(ql_khoHis_conStr))
+            {
+                await con.OpenAsync().ConfigureAwait(false);
+
+                string query = @"SELECT * FROM ProductSKUHistory ORDER BY CreateAt ASC";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlDataReader reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false))
+                {
+                    dt.Load(reader);
+                }
+            }
+
+            return dt;
         }
     }
 }

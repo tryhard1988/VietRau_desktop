@@ -138,6 +138,8 @@
     <Compile Include="classes\printer\DeliveryPrinter.cs" />
     <Compile Include="classes\printer\PackingListPrinter.cs" />
     <Compile Include="classes\SQLStore.cs" />
+    <Compile Include="classes\LoadingOverlay.cs" />
+    <Compile Include="classes\ToolTipHelper.cs" />
     <Compile Include="classes\UserManager.cs" />
     <Compile Include="classes\SQLManager.cs" />
     <Compile Include="classes\Utils.cs" />
@@ -149,6 +151,30 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="ui\importExcelToSQL\EditExcelFormAllowance_DEP.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\importExcelToSQL\EditExcelFormAllowance_DEP.Designer.cs">
+      <DependentUpon>EditExcelFormAllowance_DEP.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ui\importExcelToSQL\EditExcelFormAllowance_POS.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\importExcelToSQL\EditExcelFormAllowance_POS.Designer.cs">
+      <DependentUpon>EditExcelFormAllowance_POS.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ui\importExcelToSQL\EditExcelFormAllowance_NV.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\importExcelToSQL\EditExcelFormAllowance_NV.Designer.cs">
+      <DependentUpon>EditExcelFormAllowance_NV.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ui\importExcelToSQL\EditExcelFormSalary.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\importExcelToSQL\EditExcelFormSalary.Designer.cs">
+      <DependentUpon>EditExcelFormSalary.cs</DependentUpon>
     </Compile>
     <Compile Include="ui\importExcelToSQL\EditExcelFormEmployee.cs">
       <SubType>Form</SubType>
@@ -192,11 +218,11 @@
     <Compile Include="ui\PhanQuyen\EmployeeDeduction_ATT.Designer.cs">
       <DependentUpon>EmployeeDeduction_ATT.cs</DependentUpon>
     </Compile>
-    <Compile Include="ui\PhanQuyen\ReportSalary_Month.cs">
+    <Compile Include="ui\PhanQuyen\ReportSalary_Year.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ui\PhanQuyen\ReportSalary_Month.Designer.cs">
-      <DependentUpon>ReportSalary_Month.cs</DependentUpon>
+    <Compile Include="ui\PhanQuyen\ReportSalary_Year.Designer.cs">
+      <DependentUpon>ReportSalary_Year.cs</DependentUpon>
     </Compile>
     <Compile Include="ui\PhanQuyen\SalaryCaculator.cs">
       <SubType>Form</SubType>
@@ -437,6 +463,18 @@
       <SubType>Designer</SubType>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Include="ui\importExcelToSQL\EditExcelFormAllowance_DEP.resx">
+      <DependentUpon>EditExcelFormAllowance_DEP.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\importExcelToSQL\EditExcelFormAllowance_POS.resx">
+      <DependentUpon>EditExcelFormAllowance_POS.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\importExcelToSQL\EditExcelFormAllowance_NV.resx">
+      <DependentUpon>EditExcelFormAllowance_NV.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\importExcelToSQL\EditExcelFormSalary.resx">
+      <DependentUpon>EditExcelFormSalary.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ui\importExcelToSQL\EditExcelFormEmployee.resx">
       <DependentUpon>EditExcelFormEmployee.cs</DependentUpon>
     </EmbeddedResource>
@@ -458,8 +496,8 @@
     <EmbeddedResource Include="ui\PhanQuyen\EmployeeDeduction_ATT.resx">
       <DependentUpon>EmployeeDeduction_ATT.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ui\PhanQuyen\ReportSalary_Month.resx">
-      <DependentUpon>ReportSalary_Month.cs</DependentUpon>
+    <EmbeddedResource Include="ui\PhanQuyen\ReportSalary_Year.resx">
+      <DependentUpon>ReportSalary_Year.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ui\PhanQuyen\SalaryCaculator.resx">
       <DependentUpon>SalaryCaculator.cs</DependentUpon>

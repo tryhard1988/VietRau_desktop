@@ -18,9 +18,18 @@ namespace RauViet.ui
     public partial class EmployeeAllowance : Form
     {
         private DataTable mEmployeeAllowance_dt, mAllowanceType_dt;
+        bool isNewState = false;
         public EmployeeAllowance()
         {
             InitializeComponent();
+
+            Utils.SetTabStopRecursive(this, false);
+
+            int countTab = 0;
+            allowanceType_cbb.TabIndex = countTab++; allowanceType_cbb.TabStop = true;
+            amount_tb.TabIndex = countTab++; amount_tb.TabStop = true;
+            note_tb.TabIndex = countTab++; note_tb.TabStop = true;
+            LuuThayDoiBtn.TabIndex = countTab++; LuuThayDoiBtn.TabStop = true;
 
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Dock = DockStyle.Fill;
@@ -32,9 +41,6 @@ namespace RauViet.ui
             allowanceGV.MultiSelect = false;
 
             status_lb.Text = "";
-            loading_lb.Text = "Đang tải dữ liệu, vui lòng chờ...";
-            loading_lb.Visible = false;
-            delete_btn.Enabled = false;
 
             newCustomerBtn.Click += newCustomerBtn_Click;
             LuuThayDoiBtn.Click += saveBtn_Click;
@@ -42,18 +48,21 @@ namespace RauViet.ui
             dataGV.SelectionChanged += this.dataGV_CellClick;
             allowanceGV.SelectionChanged += this.allowanceGV_CellClick;
             amount_tb.KeyPress += Tb_KeyPress_OnlyNumber;
+
+            edit_btn.Click += Edit_btn_Click;
+            readOnly_btn.Click += ReadOnly_btn_Click;
+            ReadOnly_btn_Click(null, null);
         }
 
         public async void ShowData()
         {
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Dock = DockStyle.Fill;
-
-            loading_lb.Visible = true;            
+            await Task.Delay(50);
+            LoadingOverlay loadingOverlay = new LoadingOverlay(this);
+            loadingOverlay.Show();
 
             try
             {
-                string[] keepColumns = { "EmployeeCode", "FullName", "PositionName", "ContractTypeName", };
+                string[] keepColumns = { "EmployeeCode", "FullName", "DepartmentName", "PositionName", "ContractTypeName", };
                 var employeesTask = SQLStore.Instance.GetEmployeesAsync(keepColumns);
                 var employeeAllowanceAsync = SQLManager.Instance.GetEmployeeAllowanceAsybc();
                 var allowanceTypeAsync = SQLManager.Instance.GetAllowanceTypeAsync("EMP");
@@ -109,6 +118,7 @@ namespace RauViet.ui
                 dataGV.Columns["EmployeeCode"].HeaderText = "Mã NV";
                 dataGV.Columns["PositionName"].HeaderText = "Chức Vụ";
                 dataGV.Columns["ContractTypeName"].HeaderText = "Loại Hợp Đồng";
+                dataGV.Columns["DepartmentName"].HeaderText = "Phòng Ban";
                 //dataGV.Columns["IsActive"].HeaderText = "Đang Hoạt Động";
 
                 //dataGV.Columns["AllowanceTypeID"].Visible = false;
@@ -136,8 +146,8 @@ namespace RauViet.ui
             }
             finally
             {
-                loading_lb.Visible = false; // ẩn loading
-                loading_lb.Enabled = true; // enable lại button
+                await Task.Delay(100);
+                loadingOverlay.Hide();
             }
 
             
@@ -194,6 +204,8 @@ namespace RauViet.ui
         }
         private void UpdateRightUI(int index)
         {
+            if (isNewState) return;
+
             var cells = allowanceGV.Rows[index].Cells;
             int employeeAllowanceID = Convert.ToInt32(cells["EmployeeAllowanceID"].Value);
             int allowanceTypeID = Convert.ToInt32(cells["AllowanceTypeID"].Value);
@@ -205,9 +217,6 @@ namespace RauViet.ui
             note_tb.Text = note;
             allowanceType_cbb.SelectedValue = allowanceTypeID;
 
-            delete_btn.Enabled = true;
-
-            info_gb.BackColor = Color.DarkGray;
             status_lb.Text = "";
         }
         
@@ -368,10 +377,40 @@ namespace RauViet.ui
             amount_tb.Text = "";
 
             status_lb.Text = "";
-            delete_btn.Enabled = false;
             info_gb.BackColor = Color.Green;
-         //   dataGV.ClearSelection();
-            return;            
+
+            allowanceType_cbb.Focus();
+            info_gb.BackColor = newCustomerBtn.BackColor;
+            edit_btn.Visible = false;
+            newCustomerBtn.Visible = false;
+            readOnly_btn.Visible = true;
+            LuuThayDoiBtn.Visible = true;
+            delete_btn.Visible = false;
+            isNewState = true;
+            LuuThayDoiBtn.Text = "Lưu Mới";
+        }
+
+        private void ReadOnly_btn_Click(object sender, EventArgs e)
+        {
+            edit_btn.Visible = true;
+            newCustomerBtn.Visible = true;
+            readOnly_btn.Visible = false;
+            LuuThayDoiBtn.Visible = false;
+            delete_btn.Visible = false;
+            info_gb.BackColor = Color.DarkGray;
+            isNewState = false;
+        }
+
+        private void Edit_btn_Click(object sender, EventArgs e)
+        {
+            edit_btn.Visible = false;
+            newCustomerBtn.Visible = false;
+            readOnly_btn.Visible = true;
+            LuuThayDoiBtn.Visible = true;
+            delete_btn.Visible = true;
+            info_gb.BackColor = edit_btn.BackColor;
+            isNewState = false;
+            LuuThayDoiBtn.Text = "Lưu C.Sửa";
         }
     }
 }

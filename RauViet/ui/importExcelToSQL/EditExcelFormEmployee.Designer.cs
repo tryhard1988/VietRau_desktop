@@ -33,15 +33,16 @@
             this.save_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.importToSQL_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.dataGV = new System.Windows.Forms.DataGridView();
-            this.position_btn = new System.Windows.Forms.Button();
-            this.department_btn = new System.Windows.Forms.Button();
-            this.Contract_btn = new System.Windows.Forms.Button();
-            this.gender_btn = new System.Windows.Forms.Button();
-            this.EmployeeID_btn = new System.Windows.Forms.Button();
-            this.BirthDate_btn = new System.Windows.Forms.Button();
-            this.HireDate_btn = new System.Windows.Forms.Button();
             this.IssueDate_btn = new System.Windows.Forms.Button();
+            this.HireDate_btn = new System.Windows.Forms.Button();
+            this.BirthDate_btn = new System.Windows.Forms.Button();
+            this.EmployeeID_btn = new System.Windows.Forms.Button();
+            this.gender_btn = new System.Windows.Forms.Button();
+            this.Contract_btn = new System.Windows.Forms.Button();
+            this.department_btn = new System.Windows.Forms.Button();
+            this.position_btn = new System.Windows.Forms.Button();
+            this.dataGV = new System.Windows.Forms.DataGridView();
+            this.SalaryGrade_btn = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
@@ -79,6 +80,7 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.SalaryGrade_btn);
             this.panel1.Controls.Add(this.IssueDate_btn);
             this.panel1.Controls.Add(this.HireDate_btn);
             this.panel1.Controls.Add(this.BirthDate_btn);
@@ -93,70 +95,15 @@
             this.panel1.Size = new System.Drawing.Size(315, 623);
             this.panel1.TabIndex = 2;
             // 
-            // dataGV
+            // IssueDate_btn
             // 
-            this.dataGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGV.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dataGV.Location = new System.Drawing.Point(0, 24);
-            this.dataGV.Name = "dataGV";
-            this.dataGV.Size = new System.Drawing.Size(953, 623);
-            this.dataGV.TabIndex = 3;
-            // 
-            // position_btn
-            // 
-            this.position_btn.Location = new System.Drawing.Point(27, 3);
-            this.position_btn.Name = "position_btn";
-            this.position_btn.Size = new System.Drawing.Size(215, 23);
-            this.position_btn.TabIndex = 0;
-            this.position_btn.Text = "Position";
-            this.position_btn.UseVisualStyleBackColor = true;
-            // 
-            // department_btn
-            // 
-            this.department_btn.Location = new System.Drawing.Point(27, 42);
-            this.department_btn.Name = "department_btn";
-            this.department_btn.Size = new System.Drawing.Size(215, 23);
-            this.department_btn.TabIndex = 1;
-            this.department_btn.Text = "department";
-            this.department_btn.UseVisualStyleBackColor = true;
-            // 
-            // Contract_btn
-            // 
-            this.Contract_btn.Location = new System.Drawing.Point(27, 86);
-            this.Contract_btn.Name = "Contract_btn";
-            this.Contract_btn.Size = new System.Drawing.Size(215, 23);
-            this.Contract_btn.TabIndex = 2;
-            this.Contract_btn.Text = "Contract";
-            this.Contract_btn.UseVisualStyleBackColor = true;
-            // 
-            // gender_btn
-            // 
-            this.gender_btn.Location = new System.Drawing.Point(27, 127);
-            this.gender_btn.Name = "gender_btn";
-            this.gender_btn.Size = new System.Drawing.Size(215, 23);
-            this.gender_btn.TabIndex = 3;
-            this.gender_btn.Text = "Gender";
-            this.gender_btn.UseVisualStyleBackColor = true;
-            // 
-            // EmployeeID_btn
-            // 
-            this.EmployeeID_btn.Location = new System.Drawing.Point(27, 173);
-            this.EmployeeID_btn.Name = "EmployeeID_btn";
-            this.EmployeeID_btn.Size = new System.Drawing.Size(215, 23);
-            this.EmployeeID_btn.TabIndex = 4;
-            this.EmployeeID_btn.Text = "Employee ID";
-            this.EmployeeID_btn.UseVisualStyleBackColor = true;
-            this.EmployeeID_btn.Click += new System.EventHandler(this.EmployeeID_btn_Click);
-            // 
-            // BirthDate_btn
-            // 
-            this.BirthDate_btn.Location = new System.Drawing.Point(27, 214);
-            this.BirthDate_btn.Name = "BirthDate_btn";
-            this.BirthDate_btn.Size = new System.Drawing.Size(215, 23);
-            this.BirthDate_btn.TabIndex = 5;
-            this.BirthDate_btn.Text = "BirthDate";
-            this.BirthDate_btn.UseVisualStyleBackColor = true;
-            this.BirthDate_btn.Click += new System.EventHandler(this.BirthDate_btn_Click);
+            this.IssueDate_btn.Location = new System.Drawing.Point(27, 281);
+            this.IssueDate_btn.Name = "IssueDate_btn";
+            this.IssueDate_btn.Size = new System.Drawing.Size(215, 23);
+            this.IssueDate_btn.TabIndex = 7;
+            this.IssueDate_btn.Text = "IssueDate";
+            this.IssueDate_btn.UseVisualStyleBackColor = true;
+            this.IssueDate_btn.Click += new System.EventHandler(this.IssueDate_btn_Click);
             // 
             // HireDate_btn
             // 
@@ -168,15 +115,80 @@
             this.HireDate_btn.UseVisualStyleBackColor = true;
             this.HireDate_btn.Click += new System.EventHandler(this.HireDate_btn_Click);
             // 
-            // IssueDate_btn
+            // BirthDate_btn
             // 
-            this.IssueDate_btn.Location = new System.Drawing.Point(27, 281);
-            this.IssueDate_btn.Name = "IssueDate_btn";
-            this.IssueDate_btn.Size = new System.Drawing.Size(215, 23);
-            this.IssueDate_btn.TabIndex = 7;
-            this.IssueDate_btn.Text = "IssueDate";
-            this.IssueDate_btn.UseVisualStyleBackColor = true;
-            this.IssueDate_btn.Click += new System.EventHandler(this.IssueDate_btn_Click);
+            this.BirthDate_btn.Location = new System.Drawing.Point(27, 214);
+            this.BirthDate_btn.Name = "BirthDate_btn";
+            this.BirthDate_btn.Size = new System.Drawing.Size(215, 23);
+            this.BirthDate_btn.TabIndex = 5;
+            this.BirthDate_btn.Text = "BirthDate";
+            this.BirthDate_btn.UseVisualStyleBackColor = true;
+            this.BirthDate_btn.Click += new System.EventHandler(this.BirthDate_btn_Click);
+            // 
+            // EmployeeID_btn
+            // 
+            this.EmployeeID_btn.Location = new System.Drawing.Point(27, 173);
+            this.EmployeeID_btn.Name = "EmployeeID_btn";
+            this.EmployeeID_btn.Size = new System.Drawing.Size(215, 23);
+            this.EmployeeID_btn.TabIndex = 4;
+            this.EmployeeID_btn.Text = "Employee ID";
+            this.EmployeeID_btn.UseVisualStyleBackColor = true;
+            this.EmployeeID_btn.Click += new System.EventHandler(this.EmployeeID_btn_Click);
+            // 
+            // gender_btn
+            // 
+            this.gender_btn.Location = new System.Drawing.Point(27, 127);
+            this.gender_btn.Name = "gender_btn";
+            this.gender_btn.Size = new System.Drawing.Size(215, 23);
+            this.gender_btn.TabIndex = 3;
+            this.gender_btn.Text = "Gender";
+            this.gender_btn.UseVisualStyleBackColor = true;
+            // 
+            // Contract_btn
+            // 
+            this.Contract_btn.Location = new System.Drawing.Point(27, 86);
+            this.Contract_btn.Name = "Contract_btn";
+            this.Contract_btn.Size = new System.Drawing.Size(215, 23);
+            this.Contract_btn.TabIndex = 2;
+            this.Contract_btn.Text = "Contract";
+            this.Contract_btn.UseVisualStyleBackColor = true;
+            // 
+            // department_btn
+            // 
+            this.department_btn.Location = new System.Drawing.Point(27, 42);
+            this.department_btn.Name = "department_btn";
+            this.department_btn.Size = new System.Drawing.Size(215, 23);
+            this.department_btn.TabIndex = 1;
+            this.department_btn.Text = "department";
+            this.department_btn.UseVisualStyleBackColor = true;
+            // 
+            // position_btn
+            // 
+            this.position_btn.Location = new System.Drawing.Point(27, 3);
+            this.position_btn.Name = "position_btn";
+            this.position_btn.Size = new System.Drawing.Size(215, 23);
+            this.position_btn.TabIndex = 0;
+            this.position_btn.Text = "Position";
+            this.position_btn.UseVisualStyleBackColor = true;
+            // 
+            // dataGV
+            // 
+            this.dataGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGV.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dataGV.Location = new System.Drawing.Point(0, 24);
+            this.dataGV.Name = "dataGV";
+            this.dataGV.Size = new System.Drawing.Size(953, 623);
+            this.dataGV.TabIndex = 3;
+            // 
+            // SalaryGrade_btn
+            // 
+            this.SalaryGrade_btn.Location = new System.Drawing.Point(27, 310);
+            this.SalaryGrade_btn.Name = "SalaryGrade_btn";
+            this.SalaryGrade_btn.Size = new System.Drawing.Size(215, 23);
+            this.SalaryGrade_btn.TabIndex = 8;
+            this.SalaryGrade_btn.Text = "Bậc Lương";
+            this.SalaryGrade_btn.UseVisualStyleBackColor = true;
+            this.SalaryGrade_btn.Click += new System.EventHandler(this.SalaryGrade_btn_Click);
             // 
             // EditExcelFormEmployee
             // 
@@ -214,5 +226,6 @@
         private System.Windows.Forms.Button HireDate_btn;
         private System.Windows.Forms.Button BirthDate_btn;
         private System.Windows.Forms.Button IssueDate_btn;
+        private System.Windows.Forms.Button SalaryGrade_btn;
     }
 }
