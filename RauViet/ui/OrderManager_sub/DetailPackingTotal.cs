@@ -46,7 +46,7 @@ namespace RauViet.ui
             try
             {
                 var ordersPackingTask = SQLManager.Instance.GetDetailPackingTotalByExportCode_incompleteAsync();
-                string[] keepColumns = { "ExportCodeID", "ExportCode" };
+                string[] keepColumns = { "ExportCodeID", "ExportCode" , "ExportDate" };
                 var parameters = new Dictionary<string, object> { { "Complete", false } };
                 var exportCodeTask = SQLStore.Instance.getExportCodesAsync(keepColumns, parameters);
 
@@ -67,6 +67,24 @@ namespace RauViet.ui
 
                     dr.Table.Columns["Packing"].ReadOnly = false; // mở khóa tạm
                     dr.Table.Columns["PCSReal"].ReadOnly = false;
+                    dr.Table.Columns["CartonNo"].ReadOnly = false;
+
+                    string cartonNo = dr["CartonNo"].ToString();
+
+                    // 1️⃣ Tách chuỗi → List<int> (an toàn, bỏ ký tự lỗi)
+                    List<int> cartonNoList = (cartonNo ?? "")
+                        .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                        .Select(s =>
+                        {
+                            int n;
+                            return int.TryParse(s.Trim(), out n) ? n : (int?)null;
+                        })
+                        .Where(n => n.HasValue)
+                        .Select(n => n.Value)
+                        .ToList();
+
+                    cartonNoList.Sort();
+                    dr["CartonNo"] = string.Join(", ", cartonNoList);
 
                     if (string.IsNullOrWhiteSpace(PCS))
                     {

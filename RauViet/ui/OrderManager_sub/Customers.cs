@@ -48,7 +48,7 @@ namespace RauViet.ui
             try
             {
                 // Chạy truy vấn trên thread riêng
-                DataTable dt = await SQLManager.Instance.getCustomersAsync();
+                DataTable dt = await SQLStore.Instance.getCustomersAsync();
                 dataGV.DataSource = dt;
 
                 dataGV.Columns["CustomerID"].HeaderText = "Mã KH";
@@ -299,6 +299,7 @@ namespace RauViet.ui
             delete_btn.Visible = false;
             isNewState = true;
             LuuThayDoiBtn.Text = "Lưu Mới";
+            SetUIReadOnly(false);
         }
 
         private void ReadOnly_btn_Click(object sender, EventArgs e)
@@ -310,6 +311,7 @@ namespace RauViet.ui
             delete_btn.Visible = false;
             info_gb.BackColor = Color.DarkGray;
             isNewState = false;
+            SetUIReadOnly(true);
         }
 
         private void Edit_btn_Click(object sender, EventArgs e)
@@ -322,6 +324,13 @@ namespace RauViet.ui
             info_gb.BackColor = edit_btn.BackColor;
             isNewState = false;
             LuuThayDoiBtn.Text = "Lưu C.Sửa";
+            SetUIReadOnly(false);
+        }
+
+        private void SetUIReadOnly(bool isReadOnly)
+        {
+            name_tb.ReadOnly = isReadOnly;
+            customerCode_tb.ReadOnly = isReadOnly;
         }
     }
 }

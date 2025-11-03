@@ -193,7 +193,11 @@ namespace RauViet.ui
 
                     string employeeCode = row.Cells["EmployeeCode"].Value?.ToString();
                     int allowanceTypeID = Convert.ToInt32(row.Cells["AllowanceTypeID"].Value);
-                    int amount = Convert.ToInt32(row.Cells["Amount"].Value);
+                    int amount = 0;
+                    if (row.Cells["Amount"].Value != null && int.TryParse(row.Cells["Amount"].Value.ToString(), out int temp))
+                    {
+                        amount = temp;
+                    }
 
                     string sql = @"
             INSERT INTO EmployeeAllowance

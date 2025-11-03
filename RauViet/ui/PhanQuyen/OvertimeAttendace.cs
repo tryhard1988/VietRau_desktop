@@ -19,7 +19,6 @@ namespace RauViet.ui
     public partial class OvertimeAttendace : Form
     {
         System.Data.DataTable mOvertimeAttendamce_dt, mEmployee_dt, mOvertimeType;
-        Dictionary<string, (string PositionCode, string ContractTypeCode)> employeeDict;
         bool isNewState = false;
         // DataTable mShift_dt;
         public OvertimeAttendace()
@@ -137,7 +136,6 @@ namespace RauViet.ui
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
                 bool isLock = await SQLStore.Instance.IsSalaryLockAsync(month, year);
-                LuuThayDoiBtn.Visible = !isLock;
                 edit_btn.Visible = !isLock;
                 newBtn.Visible = !isLock;
             }
@@ -489,6 +487,7 @@ namespace RauViet.ui
             LuuThayDoiBtn.Visible = true;
             isNewState = true;
             LuuThayDoiBtn.Text = "Lưu Mới";
+            SetUIReadOnly(false);
         }
 
         private void ReadOnly_btn_Click(object sender, EventArgs e)
@@ -499,6 +498,7 @@ namespace RauViet.ui
             LuuThayDoiBtn.Visible = false;
             info_gb.BackColor = Color.DarkGray;
             isNewState = false;
+            SetUIReadOnly(true);
         }
 
         private void Edit_btn_Click(object sender, EventArgs e)
@@ -510,6 +510,17 @@ namespace RauViet.ui
             info_gb.BackColor = edit_btn.BackColor;
             isNewState = false;
             LuuThayDoiBtn.Text = "Lưu C.Sửa";
+            SetUIReadOnly(false);
         }
+
+        private void SetUIReadOnly(bool isReadOnly)
+        {
+            workDate_dtp.Enabled = !isReadOnly;
+            startTime_dtp.Enabled = !isReadOnly;
+            endTime_dtp.Enabled = !isReadOnly;
+            overtimeType_cbb.Enabled = !isReadOnly;
+            note_tb.ReadOnly = isReadOnly;
+        }
+
     }
 }

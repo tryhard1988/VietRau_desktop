@@ -46,8 +46,7 @@ namespace RauViet.ui
 
             try
             {
-                
-                string[] keepColumns = { "ExportCodeID", "ExportCode" };
+                string[] keepColumns = { "ExportCodeID", "ExportCode", "ExportDate", "ExchangeRate", "ShippingCost" };
                 var parameters = new Dictionary<string, object> { { "Complete", false } };
                 var exportCodeTask = SQLStore.Instance.getExportCodesAsync(keepColumns, parameters);
                 var ordersPackingTask = SQLManager.Instance.getOrdersINVOICEAsync();
@@ -64,6 +63,8 @@ namespace RauViet.ui
                 showOrdersExport();
                 showCustomerOrderGV();
                 showCartonOrderGV();
+
+
 
                 exportCode_cbb.DataSource = mExportCode_dt;
                 exportCode_cbb.DisplayMember = "ExportCode";  // hiển thị tên
@@ -853,6 +854,8 @@ namespace RauViet.ui
                             MessageBox.Show("thành công\n" + sfd.FileName);
                         }
                     }
+
+                    _ = SQLManager.Instance.UpsertExportHistoryAsync(exportCode, exportDate, totalAmount, totalNWReal, (int)totalCarton1, totalFreightCharge);
                 }
             }
             catch (Exception ex)
@@ -860,8 +863,5 @@ namespace RauViet.ui
                 MessageBox.Show("Lỗi khi xuất Excel: " + ex.Message);
             }
         }
-
-
-
     }
 }

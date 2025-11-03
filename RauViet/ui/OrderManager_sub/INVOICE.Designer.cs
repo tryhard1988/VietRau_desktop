@@ -31,6 +31,7 @@ namespace RauViet.ui
         {
             this.components = new System.ComponentModel.Container();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.label3 = new System.Windows.Forms.Label();
             this.exportCode_cbb = new System.Windows.Forms.ComboBox();
             this.status_lb = new System.Windows.Forms.Label();
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
@@ -54,6 +55,7 @@ namespace RauViet.ui
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.label3);
             this.panel1.Controls.Add(this.exportCode_cbb);
             this.panel1.Controls.Add(this.status_lb);
             this.panel1.Controls.Add(this.LuuThayDoiBtn);
@@ -62,6 +64,17 @@ namespace RauViet.ui
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(180, 681);
             this.panel1.TabIndex = 9;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label3.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.label3.Location = new System.Drawing.Point(11, 293);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(149, 32);
+            this.label3.TabIndex = 53;
+            this.label3.Text = "Nhớ Bấm xuất file excel \r\nđể lưu báo cáo đơn hàng";
             // 
             // exportCode_cbb
             // 
@@ -76,7 +89,7 @@ namespace RauViet.ui
             this.status_lb.AutoSize = true;
             this.status_lb.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.status_lb.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.status_lb.Location = new System.Drawing.Point(64, 291);
+            this.status_lb.Location = new System.Drawing.Point(60, 218);
             this.status_lb.Name = "status_lb";
             this.status_lb.Size = new System.Drawing.Size(55, 23);
             this.status_lb.TabIndex = 26;
@@ -226,5 +239,6 @@ namespace RauViet.ui
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.DataGridView cusOrderGV;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label3;
     }
 }

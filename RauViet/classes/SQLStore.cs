@@ -10,6 +10,7 @@ using System.Data.SqlClient;
 using System.IO.Packaging;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using DataTable = System.Data.DataTable;
 
@@ -48,6 +49,11 @@ namespace RauViet.classes
         DataTable mProductpacking_dt = null;
         DataTable mExportCodes_dt = null;        
         DataTable mEmployeesInDongGoi_dt = null;
+        DataTable mCusromer_dt = null;
+        DataTable mOrderList_dt = null;
+
+        Dictionary<int, DataTable> mReportExportByYears;
+
         private SQLStore() { }
 
         public static SQLStore Instance
@@ -63,22 +69,31 @@ namespace RauViet.classes
             }
         }
 
-        public async void preload_Suong()
+        public async Task preload_Suong()
         {
             try
             {
+                mReportExportByYears = new Dictionary<int, DataTable>();
+
                 var productSKUTask = SQLManager.Instance.getProductSKUAsync();
                 var productPackingTask = SQLManager.Instance.getProductpackingAsync();
                 var exportCodesTask = SQLManager.Instance.getExportCodesAsync();
                 var employeesInDongGoiTask = SQLManager.Instance.GetActiveEmployeesIn_DongGoiAsync();
-                await Task.WhenAll(productSKUTask, productPackingTask, exportCodesTask, employeesInDongGoiTask, employeesInDongGoiTask);
+                var customersTask = SQLManager.Instance.getCustomersAsync();
+                var ordersTask = SQLManager.Instance.getOrdersAsync();
+                await Task.WhenAll(productSKUTask, productPackingTask, exportCodesTask, employeesInDongGoiTask, employeesInDongGoiTask, customersTask, ordersTask);
 
                 if (employeesInDongGoiTask.Status == TaskStatus.RanToCompletion && employeesInDongGoiTask.Result != null) mEmployeesInDongGoi_dt = employeesInDongGoiTask.Result;
                 if (exportCodesTask.Status == TaskStatus.RanToCompletion && exportCodesTask.Result != null) mExportCodes_dt = exportCodesTask.Result;
                 if (productSKUTask.Status == TaskStatus.RanToCompletion && productSKUTask.Result != null) mProductSKU_dt = productSKUTask.Result;
                 if (productPackingTask.Status == TaskStatus.RanToCompletion && productPackingTask.Result != null) mProductpacking_dt = productPackingTask.Result;
+                if (customersTask.Status == TaskStatus.RanToCompletion && customersTask.Result != null) mCusromer_dt = customersTask.Result;
+                if (ordersTask.Status == TaskStatus.RanToCompletion && ordersTask.Result != null) mOrderList_dt = ordersTask.Result;
 
                 editExportCodes();
+                editProductpacking();
+                editOrders();
+                editProductSKUA();
             }
             catch
             {
@@ -86,7 +101,7 @@ namespace RauViet.classes
             }
         }
 
-        public async void preload_NhanSu()
+        public async Task preload_NhanSu()
         {
             try
             {
@@ -201,6 +216,7 @@ namespace RauViet.classes
             mEmployee_dt.Columns.Add(new DataColumn("ContractTypeName", typeof(string)));
             mEmployee_dt.Columns.Add(new DataColumn("ContractTypeCode", typeof(string)));
             mEmployee_dt.Columns.Add(new DataColumn("GradeName", typeof(string)));
+            mEmployee_dt.Columns.Add(new DataColumn("SalaryGrade", typeof(int)));
 
             int count = 0;
             foreach (DataRow dr in mEmployee_dt.Rows)
@@ -225,6 +241,7 @@ namespace RauViet.classes
                 string positionCode = "";
                 string departmentName = "";
                 string gradeName = "";
+                int salaryGrade = 0;
                 string contractTypeName = "";
                 string contractTypeCode = "";
                 if (positionID != null)
@@ -247,7 +264,10 @@ namespace RauViet.classes
                 {
                     DataRow[] salaryGradeRows = mSalaryGrade_dt.Select($"SalaryGradeID = {salaryGradeID}");
                     if (salaryGradeRows.Length > 0)
+                    {
                         gradeName = salaryGradeRows[0]["GradeName"].ToString();
+                        salaryGrade = Convert.ToInt32(salaryGradeRows[0]["Salary"]);
+                    }
                 }
 
                 if (contractTypeID != null)
@@ -266,6 +286,7 @@ namespace RauViet.classes
                 dr["ContractTypeName"] = contractTypeName;
                 dr["ContractTypeCode"] = contractTypeCode;
                 dr["GradeName"] = gradeName;
+                dr["SalaryGrade"] = salaryGrade;
             }
         }
 
@@ -281,6 +302,7 @@ namespace RauViet.classes
                 catch
                 {
                     Console.WriteLine("error GetLeaveAttendancesAsync_WithoutCode SQLStore");
+                    return null;
                 }
             }
 
@@ -304,6 +326,7 @@ namespace RauViet.classes
                 catch
                 {
                     Console.WriteLine("error GetLeaveAttendancesAsync_WithoutCode SQLStore");
+                    return null;
                 }
             }
 
@@ -374,6 +397,7 @@ namespace RauViet.classes
                 catch
                 {
                     Console.WriteLine("GetHolidaysAsync errror");
+                    return null;
                 }
             }
 
@@ -408,10 +432,27 @@ namespace RauViet.classes
                 catch
                 {
                     Console.WriteLine("GetEmployeeSalaryInfoAsync errror");
+                    return null;
                 }
             }
 
             return mEmployeeSalaryInfo_dt;
+        }
+        public async Task UpdateEmployeeSalaryInfo(int id,string employeeCode, int month, int year, int baseSalary, int insuranceBaseSalary, string note)
+        {
+            await GetEmployeeSalaryInfoAsync();
+            DataRow drToAdd = mEmployeeSalaryInfo_dt.NewRow();
+            drToAdd["SalaryInfoID"] = id;
+            drToAdd["EmployeeCode"] = employeeCode;
+            drToAdd["Month"] = month;
+            drToAdd["Year"] = year;
+            drToAdd["BaseSalary"] = baseSalary;
+            drToAdd["InsuranceBaseSalary"] = insuranceBaseSalary;
+            drToAdd["Note"] = note;
+            drToAdd["CreatedAt"] = DateTime.Now;
+
+            mEmployeeSalaryInfo_dt.Rows.Add(drToAdd);
+            mEmployeeSalaryInfo_dt.AcceptChanges();
         }
 
         public async Task<DataTable> GetSalaryHistoryAsyc(int month, int year)
@@ -426,6 +467,7 @@ namespace RauViet.classes
                 catch
                 {
                     Console.WriteLine("error GetSalaryHistoryAsyc SQLStore");
+                    return null;
                 }
             }
 
@@ -584,6 +626,7 @@ namespace RauViet.classes
                 catch
                 {
                     Console.WriteLine("GetEmployeesAsync errror");
+                    return null;
                 }
             }
 
@@ -661,6 +704,7 @@ namespace RauViet.classes
                 catch
                 {
                     Console.WriteLine("IsSalaryLockAsync errror");
+                    return false;
                 }
             }
 
@@ -698,6 +742,7 @@ namespace RauViet.classes
                 catch
                 {
                     Console.WriteLine("GetOvertimeTypeAsync errror");
+                    return null;
                 }
             }
             
@@ -742,6 +787,7 @@ namespace RauViet.classes
                 catch
                 {
                     Console.WriteLine("GetLeaveTypeAsync errror");
+                    return null;
                 }
             }
 
@@ -815,6 +861,7 @@ namespace RauViet.classes
                 catch
                 {
                     Console.WriteLine("GetDeductionTypeAsync errror");
+                    return null;
                 }
             }
 
@@ -832,6 +879,7 @@ namespace RauViet.classes
                 catch
                 {
                     Console.WriteLine("GetDeductionNameAsync errror");
+                    return null;
                 }
             }
 
@@ -855,6 +903,7 @@ namespace RauViet.classes
                 catch
                 {
                     Console.WriteLine("GetDepartmentAsync errror");
+                    return null;
                 }
             }
 
@@ -885,6 +934,7 @@ namespace RauViet.classes
                 catch
                 {
                     Console.WriteLine("GetPositionAsync errror");
+                    return null;
                 }
             }
 
@@ -927,6 +977,7 @@ namespace RauViet.classes
                 catch
                 {
                     Console.WriteLine("GetAllowanceTypeAsync errror");
+                    return null;
                 }
             }
 
@@ -944,6 +995,7 @@ namespace RauViet.classes
                 catch
                 {
                     Console.WriteLine("GetApplyScopeAsync errror");
+                    return null;
                 }
             }
 
@@ -961,6 +1013,7 @@ namespace RauViet.classes
                 catch
                 {
                     Console.WriteLine("GetContractTypeAsync errror");
+                    return null;
                 }
             }
 
@@ -978,6 +1031,7 @@ namespace RauViet.classes
                 catch
                 {
                     Console.WriteLine("GetSalaryGradeAsync errror");
+                    return null;
                 }
             }
 
@@ -1009,6 +1063,7 @@ namespace RauViet.classes
                 catch
                 {
                     Console.WriteLine("error GetAnnualLeaveBalanceAsync SQLStore");
+                    return null;
                 }
             }
 
@@ -1058,6 +1113,7 @@ namespace RauViet.classes
                 catch
                 {
                     Console.WriteLine("error GetĐeuctionAsync SQLStore");
+                    return null;
                 }
             }
 
@@ -1177,6 +1233,7 @@ namespace RauViet.classes
                 catch
                 {
                     Console.WriteLine("error GetĐeuctionAsync SQLStore");
+                    return null;
                 }
             }
             
@@ -1226,6 +1283,7 @@ namespace RauViet.classes
                 catch
                 {
                     Console.WriteLine("error GetĐeuctionAsync SQLStore");
+                    return null;
                 }
             }
 
@@ -1289,6 +1347,7 @@ namespace RauViet.classes
                 catch
                 {
                     Console.WriteLine("error GetSalarySummaryByYearAsync SQLStore");
+                    return null;
                 }
             }
 
@@ -1311,14 +1370,28 @@ namespace RauViet.classes
                 try
                 {
                     mProductSKU_dt = await SQLManager.Instance.getProductSKUAsync();
+                    editProductSKUA();
                 }
                 catch
                 {
                     Console.WriteLine("error getProductSKUAsync SQLStore");
+                    return null;
                 }
             }
 
             return mProductSKU_dt;
+        }
+
+        private void editProductSKUA()
+        {
+            mProductSKU_dt.Columns.Add("ProductNameVN_NoSign", typeof(string));
+
+            foreach (DataRow row in mProductSKU_dt.Rows)
+            {
+                string name = row["ProductNameVN"]?.ToString() ?? "";
+                int SKU = Convert.ToInt32(row["SKU"]);
+                row["ProductNameVN_NoSign"] = Utils.RemoveVietnameseSigns(name + " " + SKU).ToLower();
+            }
         }
 
         public void resetProductpacking()
@@ -1326,21 +1399,100 @@ namespace RauViet.classes
             mProductpacking_dt = null;
         }
 
-        public async Task<DataTable> getProductpackingAsync()
+        public async Task<DataTable> getProductpackingAsync(bool loadNew = false)
         {
-            if (mProductpacking_dt == null)
+            if (mProductpacking_dt == null || loadNew)
             {
                 try
                 {
-                    mProductpacking_dt = await SQLManager.Instance.getProductpackingAsync(); ;
+                    mProductpacking_dt = await SQLManager.Instance.getProductpackingAsync();
+                    editProductpacking();
                 }
                 catch
                 {
                     Console.WriteLine("error getProductpackingAsync SQLStore");
+                    return null;
                 }
             }
 
             return mProductpacking_dt;
+        }
+
+
+        private void editProductpacking()
+        {
+            mProductpacking_dt.Columns.Add(new DataColumn("PackingName", typeof(string)));
+            mProductpacking_dt.Columns.Add(new DataColumn("ProductName", typeof(string)));
+            mProductpacking_dt.Columns.Add("ProductNameVN_NoSign", typeof(string));
+
+            mProductpacking_dt.Columns.Add(new DataColumn("PriceCNF", typeof(string)));
+            mProductpacking_dt.Columns.Add(new DataColumn("Name_VN", typeof(string)));
+            mProductpacking_dt.Columns.Add(new DataColumn("Name_EN", typeof(string)));
+
+            foreach (DataRow dr in mProductpacking_dt.Rows)
+            {
+                int sku = Convert.ToInt32(dr["SKU"]);
+                string packing = dr["packing"].ToString();
+                decimal amount = dr["Amount"] == DBNull.Value ? 0 : Convert.ToDecimal(dr["Amount"]);
+                string resultAmount = amount.ToString("0.##");
+
+                dr["PackingName"] = $"{resultAmount} {packing}";
+
+                DataRow[] prodRows = mProductSKU_dt.Select($"SKU = {sku}");
+                if (prodRows.Length > 0)
+                {
+                    string productName = prodRows[0]["ProductNameVN"].ToString();
+                    string package = prodRows[0]["Package"].ToString();
+
+                    if (package.CompareTo("kg") == 0 && packing.CompareTo("") != 0 && amount > 0)
+                    {
+                        string amountStr = amount.ToString("0.##");
+                        dr["ProductName"] = $"{productName} {amountStr} {packing}";
+                    }
+                    else
+                    {
+                        dr["ProductName"] = $"{productName}";
+                    }
+
+                    dr["ProductNameVN_NoSign"] = Utils.RemoveVietnameseSigns(productName + " " + sku).ToLower();
+                }
+                else
+                {
+                    dr["ProductPacking"] = "Unknown";
+                }
+            }
+
+            foreach (DataRow dr in mProductpacking_dt.Rows)
+            {
+                int sku = Convert.ToInt32(dr["SKU"]);
+                DataRow row = mProductSKU_dt.Select($"SKU = '{sku}'")[0];
+
+                string package = row["Package"].ToString();
+                string nameVN = row["ProductNameVN"].ToString();
+                string nameEN = row["ProductNameEN"].ToString();
+                string packingType = row["PackingType"].ToString();
+                decimal amount = dr["Amount"] == DBNull.Value ? 0 : Convert.ToDecimal(dr["Amount"]);
+                string packing = dr["Packing"].ToString();
+                dr["Name_EN"] = nameEN;
+
+                string resultAmount = amount.ToString("0.##");
+                dr["Amount"] = resultAmount;
+
+                if (package.CompareTo("kg") == 0 && packing.CompareTo("") != 0 && amount > 0)
+                {
+
+                    dr["Name_VN"] = nameVN + " " + packingType + " " + resultAmount + " " + packing;
+                    dr["Name_EN"] = nameEN + " " + packingType + " " + resultAmount + " " + packing;
+                }
+                else
+                {
+                    dr["Name_VN"] = nameVN;
+                    dr["Name_EN"] = nameEN;
+                }
+
+                // dr["Package"] = package;
+                dr["PriceCNF"] = row["PriceCNF"].ToString();
+            }
         }
 
         public async Task<DataTable> GetActiveEmployeesIn_DongGoiAsync()
@@ -1354,6 +1506,7 @@ namespace RauViet.classes
                 catch
                 {
                     Console.WriteLine("error getEmployeesInDongGoiAsync SQLStore");
+                    return null;
                 }
             }
 
@@ -1372,6 +1525,7 @@ namespace RauViet.classes
                 catch
                 {
                     Console.WriteLine("error getExportCodesAsync SQLStore");
+                    return null;
                 }
             }
 
@@ -1457,10 +1611,116 @@ namespace RauViet.classes
                 catch
                 {
                     Console.WriteLine("error GetProductSKUHistoryAsync SQLStore");
+                    return null;
                 }
             }
 
             return mProductSKUHistory_dt;
+        }
+        
+        public async Task<DataTable> getCustomersAsync()
+        {
+            if (mCusromer_dt == null)
+            {
+                try
+                {
+                    mCusromer_dt = await SQLManager.Instance.getCustomersAsync();
+                }
+                catch
+                {
+                    Console.WriteLine("error getCustomersAsync SQLStore");
+                    return null;
+                }
+            }
+
+            return mCusromer_dt;
+        }
+
+        public void removeOrders()
+        {
+            mOrderList_dt = null;
+        }
+        public async Task<DataTable> getOrdersAsync(bool isNew = false)
+        {
+            if (mOrderList_dt == null || isNew)
+            {
+                try
+                {
+                    mOrderList_dt = await SQLManager.Instance.getOrdersAsync();
+                    editOrders();
+                }
+                catch
+                {
+                    Console.WriteLine("error getCustomersAsync SQLStore");
+                    return null;
+                }
+            }
+
+            return mOrderList_dt;
+        }
+
+        public async Task<DataTable> getOrdersAsync(string[] colNames)
+        {
+            await getOrdersAsync();
+
+            // Clone chỉ các cột mong muốn
+            DataTable cloneTable = mOrderList_dt.DefaultView.ToTable(false, colNames.ToArray());
+
+            return cloneTable;
+        }
+
+
+        private void editOrders()
+        {
+            mOrderList_dt.Columns.Add(new DataColumn("CustomerName", typeof(string)));
+            mOrderList_dt.Columns.Add(new DataColumn("ProductNameVN", typeof(string)));
+            mOrderList_dt.Columns.Add(new DataColumn("ExportCode", typeof(string)));
+
+            foreach (DataRow dr in mOrderList_dt.Rows)
+            {
+                int customerID = Convert.ToInt32(dr["CustomerID"]);
+                DataRow[] customerRows = mCusromer_dt.Select($"CustomerID = {customerID}");
+                dr["CustomerName"] = customerRows.Length > 0 ? customerRows[0]["FullName"].ToString() : "Unknown";
+
+                int productPackingID = Convert.ToInt32(dr["ProductPackingID"]);
+                DataRow[] packingRows = mProductpacking_dt.Select($"ProductPackingID = {productPackingID}");
+                dr["ProductNameVN"] = packingRows.Length > 0 ? packingRows[0]["ProductName"].ToString() : "Unknown";
+
+                int exportCodeID = Convert.ToInt32(dr["ExportCodeID"]);
+                DataRow[] exportCodeRows = mExportCodes_dt.Select($"ExportCodeID = {exportCodeID}");
+                dr["ExportCode"] = exportCodeRows.Length > 0 ? exportCodeRows[0]["ExportCode"].ToString() : "Unknown";
+            }
+        }
+
+        public async Task<DataTable> GetExportHistoryByYear(int year)
+        {
+            if (!mReportExportByYears.ContainsKey(year))
+            {
+                try
+                {
+                    mReportExportByYears[year] = await SQLManager.Instance.GetExportHistoryAsync(year);
+                }
+                catch
+                {
+                    Console.WriteLine("error GetReportExportByYear SQLStore");
+                    return null;
+                }
+            }
+
+            return mReportExportByYears[year];
+        }
+
+        public async Task<bool> ExportHistoryIsAddedExportCode(string  exportCode, int year)
+        {
+            DataTable dt = await GetExportHistoryByYear(year);
+            if(dt != null)
+            {
+                DataRow[] foundRows = dt.Select($"ExportCode = '{exportCode}'");
+
+                return foundRows.Length > 0;
+            }
+
+            return false;
         }
     }
 }

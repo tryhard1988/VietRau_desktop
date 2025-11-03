@@ -475,6 +475,7 @@ namespace RauViet.ui
 
             dateOffEnd_dtp.Visible = true;
             label5.Visible = true;
+            SetUIReadOnly(false);
         }
 
         private void ReadOnly_btn_Click(object sender, EventArgs e)
@@ -488,6 +489,7 @@ namespace RauViet.ui
             isNewState = false;
             dateOffEnd_dtp.Visible = false;
             label5.Visible = false;
+            SetUIReadOnly(true);
         }
 
         private void Edit_btn_Click(object sender, EventArgs e)
@@ -500,6 +502,7 @@ namespace RauViet.ui
             info_gb.BackColor = edit_btn.BackColor;
             isNewState = false;
             LuuThayDoiBtn.Text = "Lưu C.Sửa";
+            SetUIReadOnly(false);
         }
 
         private async void Delete_btn_Click(object sender, EventArgs e)
@@ -589,6 +592,15 @@ namespace RauViet.ui
 
             if (dayyOffStart > dayyOffEnd)
                 dateOffEnd_dtp.Value = dayyOffStart;
+        }
+
+        private void SetUIReadOnly(bool isReadOnly)
+        {
+            leaveType_cbb.Enabled = !isReadOnly;
+            dateOffStart_dtp.Enabled = !isReadOnly;
+            dateOffEnd_dtp.Enabled = !isReadOnly;
+            hourLeave_tb.ReadOnly = isReadOnly;
+            note_tb.ReadOnly = isReadOnly;
         }
     }
 }

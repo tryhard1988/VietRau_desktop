@@ -43,6 +43,8 @@ namespace RauViet.ui
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
             this.employeeCode_tb = new System.Windows.Forms.TextBox();
             this.dataGV = new System.Windows.Forms.DataGridView();
+            this.readOnly_btn = new System.Windows.Forms.Button();
+            this.edit_btn = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.info_gb.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
@@ -50,6 +52,8 @@ namespace RauViet.ui
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.readOnly_btn);
+            this.panel1.Controls.Add(this.edit_btn);
             this.panel1.Controls.Add(this.info_gb);
             this.panel1.Controls.Add(this.status_lb);
             this.panel1.Controls.Add(this.LuuThayDoiBtn);
@@ -191,6 +195,28 @@ namespace RauViet.ui
             this.dataGV.Size = new System.Drawing.Size(778, 681);
             this.dataGV.TabIndex = 10;
             // 
+            // readOnly_btn
+            // 
+            this.readOnly_btn.BackColor = System.Drawing.Color.MediumSlateBlue;
+            this.readOnly_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.readOnly_btn.Location = new System.Drawing.Point(432, 141);
+            this.readOnly_btn.Name = "readOnly_btn";
+            this.readOnly_btn.Size = new System.Drawing.Size(42, 32);
+            this.readOnly_btn.TabIndex = 35;
+            this.readOnly_btn.Text = "X";
+            this.readOnly_btn.UseVisualStyleBackColor = false;
+            // 
+            // edit_btn
+            // 
+            this.edit_btn.BackColor = System.Drawing.SystemColors.MenuHighlight;
+            this.edit_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.edit_btn.Location = new System.Drawing.Point(380, 141);
+            this.edit_btn.Name = "edit_btn";
+            this.edit_btn.Size = new System.Drawing.Size(94, 32);
+            this.edit_btn.TabIndex = 34;
+            this.edit_btn.Text = "Chỉnh sửa";
+            this.edit_btn.UseVisualStyleBackColor = false;
+            // 
             // EmployeeNganHang
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -224,5 +250,7 @@ namespace RauViet.ui
         private System.Windows.Forms.TextBox bankBranch_tb;
         private System.Windows.Forms.Label status_lb;
         private System.Windows.Forms.Button LuuThayDoiBtn;
+        private System.Windows.Forms.Button readOnly_btn;
+        private System.Windows.Forms.Button edit_btn;
     }
 }

@@ -19,13 +19,25 @@ namespace RauViet.ui
         {
             InitializeComponent();
 
-            Task.Run(() =>SQLManager.Instance.AutoUpsertAnnualLeaveMonthListAsync());
-            Task.Run(() => SQLStore.Instance.preload_NhanSu());
-
-
             this.WindowState = FormWindowState.Maximized;
             this.Text = "Quản Lý Việt Rau - NV: " + UserManager.Instance.fullName + " [" + UserManager.Instance.employeeCode + "]";
 
+            this.Load += FormManager_LoadAsync;
+        }
+
+        private async void FormManager_LoadAsync(object sender, EventArgs e)
+        {
+            await SQLManager.Instance.AutoUpsertAnnualLeaveMonthListAsync();
+            await SQLStore.Instance.preload_NhanSu();
+            await SQLStore.Instance.preload_Suong();
+
+            SetupMenus();
+
+            title_lb.Text = "";
+        }
+
+        private void SetupMenus()
+        {
             if (UserManager.Instance.hasRole_User())
                 user_mi.Click += user_mi_Click;
             else
@@ -100,9 +112,9 @@ namespace RauViet.ui
                 attendanceHC_mi.Click += attendanceHC_mi_Click;
                 overtimeAttendace_mi.Click += OvertimeAttendace_mi_Click;
                 annualLeaveBalance_mi.Click += AnnualLeaveBalance_mi_Click;
-                leaveAttendance_mi.Click += LeaveAttendance_mi_Click;                
-                departmentAllowance_mi.Click += DepartmentAllowance_mi_Click;
-                positionAllowance_mi.Click += PositionAllowance_mi_Click;
+                leaveAttendance_mi.Click += LeaveAttendance_mi_Click;
+                //departmentAllowance_mi.Click += DepartmentAllowance_mi_Click;
+                //positionAllowance_mi.Click += PositionAllowance_mi_Click;
                 employeeAllowance_mi.Click += EmployeeAllowance_mi_Click;
                 monthlyAllowance_mi.Click += MonthlyAllowance_mi_Click;
                 deduction_VEG_mi.Click += deduction_VEG_mi_Click;
@@ -116,11 +128,8 @@ namespace RauViet.ui
                 chamcong_pmi.Visible = false;
 
             reportSalary_Month_mi.Click += ReportSalary_Month_mi_Click;
-
-
-            title_lb.Text = "";
+            reportExportYear_mi.Click += ReportExportYear_mi_Click;
         }
-
 
         private void SwitchChildForm<T>(string title) where T : Form, new()
         {
@@ -149,7 +158,12 @@ namespace RauViet.ui
 
         private void ReportSalary_Month_mi_Click(object sender, EventArgs e)
         {
-            SwitchChildForm<ReportSalary_Year>("Tổng Hợp Chi Lương Qua Theo Tháng");
+            SwitchChildForm<ReportSalary_Year>("Báo Cáo Chi Lương Theo Năm");
+        }
+
+        private void ReportExportYear_mi_Click(object sender, EventArgs e)
+        {
+            SwitchChildForm<ReportExport_Year>("Báo Cáo Đơn Hàng Theo Năm");
         }
 
         private void SalaryCaculator_mi_Click(object sender, EventArgs e)

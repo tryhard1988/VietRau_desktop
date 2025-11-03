@@ -12,7 +12,8 @@ public class OrderSummaryPrinter
     private DataTable data;
     private string exportCode;
     private DateTime exportDate;
-
+    int totalPCS = 0;
+    decimal totalNetWeight = 0;
     // ------------------- Hàm Print Preview -------------------
     public void PrintPreview(DataTable dataTable, string exportCode, DateTime exportDate)
     {
@@ -60,6 +61,8 @@ public class OrderSummaryPrinter
         currentRowIndex = 0;
         firstPage = true;
         yPosition = 0;
+        totalPCS = 0;
+        totalNetWeight = 0;
     }
 
     // ------------------- Hàm PrintPage -------------------
@@ -128,8 +131,7 @@ public class OrderSummaryPrinter
         y += rowHeight;
         
         // ------------------ Dữ liệu ------------------
-        int totalPCS = 0;
-        decimal totalNetWeight = 0;
+        
 
         for (; currentRowIndex < data.Rows.Count; currentRowIndex++)
         {

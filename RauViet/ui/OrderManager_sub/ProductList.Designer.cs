@@ -155,6 +155,7 @@ namespace RauViet.ui
             // sku_cbb
             // 
             this.sku_cbb.FormattingEnabled = true;
+            this.sku_cbb.IntegralHeight = false;
             this.sku_cbb.Location = new System.Drawing.Point(135, 99);
             this.sku_cbb.Name = "sku_cbb";
             this.sku_cbb.Size = new System.Drawing.Size(193, 24);

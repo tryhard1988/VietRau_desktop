@@ -68,6 +68,8 @@ namespace RauViet.ui
             this.newCustomerBtn = new System.Windows.Forms.Button();
             this.employeeID_tb = new System.Windows.Forms.TextBox();
             this.dataGV = new System.Windows.Forms.DataGridView();
+            this.salaryGrade_ccb = new System.Windows.Forms.ComboBox();
+            this.label14 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.info_gb.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
@@ -115,7 +117,7 @@ namespace RauViet.ui
             // 
             this.delete_btn.BackColor = System.Drawing.Color.Red;
             this.delete_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.delete_btn.Location = new System.Drawing.Point(257, 576);
+            this.delete_btn.Location = new System.Drawing.Point(257, 605);
             this.delete_btn.Name = "delete_btn";
             this.delete_btn.Size = new System.Drawing.Size(113, 47);
             this.delete_btn.TabIndex = 27;
@@ -126,7 +128,7 @@ namespace RauViet.ui
             // 
             this.LuuThayDoiBtn.BackColor = System.Drawing.SystemColors.Highlight;
             this.LuuThayDoiBtn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LuuThayDoiBtn.Location = new System.Drawing.Point(138, 576);
+            this.LuuThayDoiBtn.Location = new System.Drawing.Point(138, 605);
             this.LuuThayDoiBtn.Name = "LuuThayDoiBtn";
             this.LuuThayDoiBtn.Size = new System.Drawing.Size(113, 47);
             this.LuuThayDoiBtn.TabIndex = 25;
@@ -135,6 +137,8 @@ namespace RauViet.ui
             // 
             // info_gb
             // 
+            this.info_gb.Controls.Add(this.salaryGrade_ccb);
+            this.info_gb.Controls.Add(this.label14);
             this.info_gb.Controls.Add(this.isInsuranceRefund_CB);
             this.info_gb.Controls.Add(this.label4);
             this.info_gb.Controls.Add(this.noteResign_tb);
@@ -166,14 +170,14 @@ namespace RauViet.ui
             this.info_gb.Controls.Add(this.hometown_tb);
             this.info_gb.Location = new System.Drawing.Point(19, 94);
             this.info_gb.Name = "info_gb";
-            this.info_gb.Size = new System.Drawing.Size(422, 474);
+            this.info_gb.Size = new System.Drawing.Size(422, 505);
             this.info_gb.TabIndex = 28;
             this.info_gb.TabStop = false;
             // 
             // isInsuranceRefund_CB
             // 
             this.isInsuranceRefund_CB.AutoSize = true;
-            this.isInsuranceRefund_CB.Location = new System.Drawing.Point(293, 454);
+            this.isInsuranceRefund_CB.Location = new System.Drawing.Point(293, 477);
             this.isInsuranceRefund_CB.Name = "isInsuranceRefund_CB";
             this.isInsuranceRefund_CB.Size = new System.Drawing.Size(101, 17);
             this.isInsuranceRefund_CB.TabIndex = 52;
@@ -184,7 +188,7 @@ namespace RauViet.ui
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(18, 406);
+            this.label4.Location = new System.Drawing.Point(18, 436);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(104, 16);
             this.label4.TabIndex = 50;
@@ -194,7 +198,7 @@ namespace RauViet.ui
             // 
             this.noteResign_tb.Enabled = false;
             this.noteResign_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.noteResign_tb.Location = new System.Drawing.Point(128, 393);
+            this.noteResign_tb.Location = new System.Drawing.Point(128, 423);
             this.noteResign_tb.Multiline = true;
             this.noteResign_tb.Name = "noteResign_tb";
             this.noteResign_tb.ReadOnly = true;
@@ -205,7 +209,7 @@ namespace RauViet.ui
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(32, 335);
+            this.label1.Location = new System.Drawing.Point(32, 334);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(93, 16);
             this.label1.TabIndex = 48;
@@ -214,7 +218,7 @@ namespace RauViet.ui
             // phone_tb
             // 
             this.phone_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.phone_tb.Location = new System.Drawing.Point(128, 332);
+            this.phone_tb.Location = new System.Drawing.Point(128, 331);
             this.phone_tb.Name = "phone_tb";
             this.phone_tb.Size = new System.Drawing.Size(122, 23);
             this.phone_tb.TabIndex = 49;
@@ -223,7 +227,7 @@ namespace RauViet.ui
             // 
             this.label15.AutoSize = true;
             this.label15.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label15.Location = new System.Drawing.Point(7, 367);
+            this.label15.Location = new System.Drawing.Point(7, 366);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(118, 16);
             this.label15.TabIndex = 46;
@@ -232,7 +236,7 @@ namespace RauViet.ui
             // probationSalaryPercent_tb
             // 
             this.probationSalaryPercent_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.probationSalaryPercent_tb.Location = new System.Drawing.Point(128, 364);
+            this.probationSalaryPercent_tb.Location = new System.Drawing.Point(128, 363);
             this.probationSalaryPercent_tb.Name = "probationSalaryPercent_tb";
             this.probationSalaryPercent_tb.Size = new System.Drawing.Size(113, 23);
             this.probationSalaryPercent_tb.TabIndex = 47;
@@ -240,7 +244,7 @@ namespace RauViet.ui
             // canCreateUserName_cb
             // 
             this.canCreateUserName_cb.AutoSize = true;
-            this.canCreateUserName_cb.Location = new System.Drawing.Point(171, 454);
+            this.canCreateUserName_cb.Location = new System.Drawing.Point(171, 477);
             this.canCreateUserName_cb.Name = "canCreateUserName_cb";
             this.canCreateUserName_cb.Size = new System.Drawing.Size(79, 17);
             this.canCreateUserName_cb.TabIndex = 43;
@@ -393,7 +397,7 @@ namespace RauViet.ui
             // isActive_cb
             // 
             this.isActive_cb.AutoSize = true;
-            this.isActive_cb.Location = new System.Drawing.Point(24, 454);
+            this.isActive_cb.Location = new System.Drawing.Point(24, 477);
             this.isActive_cb.Name = "isActive_cb";
             this.isActive_cb.Size = new System.Drawing.Size(99, 17);
             this.isActive_cb.TabIndex = 21;
@@ -441,7 +445,7 @@ namespace RauViet.ui
             this.status_lb.AutoSize = true;
             this.status_lb.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.status_lb.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.status_lb.Location = new System.Drawing.Point(3, 587);
+            this.status_lb.Location = new System.Drawing.Point(3, 616);
             this.status_lb.Name = "status_lb";
             this.status_lb.Size = new System.Drawing.Size(55, 23);
             this.status_lb.TabIndex = 26;
@@ -478,6 +482,25 @@ namespace RauViet.ui
             this.dataGV.ReadOnly = true;
             this.dataGV.Size = new System.Drawing.Size(811, 724);
             this.dataGV.TabIndex = 10;
+            // 
+            // salaryGrade_ccb
+            // 
+            this.salaryGrade_ccb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.salaryGrade_ccb.FormattingEnabled = true;
+            this.salaryGrade_ccb.Location = new System.Drawing.Point(128, 395);
+            this.salaryGrade_ccb.Name = "salaryGrade_ccb";
+            this.salaryGrade_ccb.Size = new System.Drawing.Size(200, 21);
+            this.salaryGrade_ccb.TabIndex = 47;
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label14.Location = new System.Drawing.Point(54, 397);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(71, 16);
+            this.label14.TabIndex = 46;
+            this.label14.Text = "Bậc Lương:";
             // 
             // Employee
             // 
@@ -537,5 +560,7 @@ namespace RauViet.ui
         private System.Windows.Forms.CheckBox isInsuranceRefund_CB;
         private System.Windows.Forms.Button readOnly_btn;
         private System.Windows.Forms.Button edit_btn;
+        private System.Windows.Forms.ComboBox salaryGrade_ccb;
+        private System.Windows.Forms.Label label14;
     }
 }

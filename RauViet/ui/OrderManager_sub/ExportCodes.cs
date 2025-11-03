@@ -397,16 +397,11 @@ namespace RauViet.ui
 
             }
         }
-        private void saveBtn_Click(object sender, EventArgs e)
+        private async void saveBtn_Click(object sender, EventArgs e)
         {
             if(exportCode_tb.Text.CompareTo("") == 0 || inputBy_cbb.SelectedValue == null || packingBy_cbb.SelectedValue == null)
             {
-                MessageBox.Show(
-                                "Dữ Liệu Không hợp Lệ, Kiểm Tra Lại!",
-                                "Thông Báo",
-                                MessageBoxButtons.OK,
-                                MessageBoxIcon.Warning
-                            );
+                MessageBox.Show("Dữ Liệu Không hợp Lệ, Kiểm Tra Lại!", "Thông Báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -417,6 +412,13 @@ namespace RauViet.ui
             string exportCode = "MXC" + exportCodeIndex + "_"+ exportDate.Day + exportDate.Month + exportDate.Year;
             int inputBy = Convert.ToInt32(inputBy_cbb.SelectedValue);
             int packingBy = Convert.ToInt32(packingBy_cbb.SelectedValue);
+
+            bool isAdded = await SQLStore.Instance.ExportHistoryIsAddedExportCode(exportCode, exportDate.Year);
+            if (complete_cb.Checked && !isAdded)
+            {
+                MessageBox.Show("Chưa xuất invoice, Vui lòng xuất Invoice trước khi Khóa!", "Thông Báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
 
             decimal exRate = 0;
             decimal shippingCost = 0;
@@ -523,6 +525,10 @@ namespace RauViet.ui
             delete_btn.Visible = false;
             isNewState = true;
             LuuThayDoiBtn.Text = "Lưu Mới";
+            rightUIReadOnly(false);
+            updatePrice_btn.Visible = false;
+            exRate_btn.Visible = true;
+            autoCreateExportId_btn.Visible = true;
         }
 
         private void ReadOnly_btn_Click(object sender, EventArgs e)
@@ -534,6 +540,10 @@ namespace RauViet.ui
             delete_btn.Visible = false;
             info_gb.BackColor = Color.DarkGray;
             isNewState = false;
+            rightUIReadOnly(true);
+            updatePrice_btn.Visible = false;
+            exRate_btn.Visible = false;
+            autoCreateExportId_btn.Visible = false;
         }
 
         private void Edit_btn_Click(object sender, EventArgs e)
@@ -546,6 +556,10 @@ namespace RauViet.ui
             info_gb.BackColor = edit_btn.BackColor;
             isNewState = false;
             LuuThayDoiBtn.Text = "Lưu C.Sửa";
+            rightUIReadOnly(false);
+            updatePrice_btn.Visible = true;
+            exRate_btn.Visible = true;
+            autoCreateExportId_btn.Visible = false;
         }
 
         private void completeCB_CheckedChanged(object sender, EventArgs e)
@@ -565,6 +579,16 @@ namespace RauViet.ui
             {
                 MessageBox.Show("Lỗi khi lấy tỷ giá: " + ex.Message);
             }
+        }
+
+        private void rightUIReadOnly(bool isReadOnly)
+        {
+            exportCode_tb.ReadOnly = isReadOnly;
+            exportdate_dtp.Enabled = !isReadOnly;
+            exRate_tb.ReadOnly = isReadOnly;            
+            shippingCost_tb.ReadOnly = isReadOnly;
+            inputBy_cbb.Enabled = !isReadOnly;
+            packingBy_cbb.Enabled = !isReadOnly;
         }
     }
 }

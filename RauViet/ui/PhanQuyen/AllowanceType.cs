@@ -86,7 +86,8 @@ namespace RauViet.ui
                 dataGV.Columns["ScopeName"].HeaderText = "Nhóm Áp dụng";
                 dataGV.Columns["IsInsuranceIncluded"].HeaderText = "Đóng Bảo Hiểm Không";
                 dataGV.Columns["IsActive"].HeaderText = "Đang Hoạt Động";
-              
+                dataGV.Columns["AllowanceCode"].HeaderText = "Mã Phụ Cấp";
+
                 dataGV.Columns["AllowanceTypeID"].Visible = false;
                 dataGV.Columns["ApplyScopeID"].Visible = false;
 
@@ -341,6 +342,7 @@ namespace RauViet.ui
             delete_btn.Visible = false;
             isNewState = true;
             LuuThayDoiBtn.Text = "Lưu Mới";
+            SetUIReadOnly(false);
         }
 
         private void ReadOnly_btn_Click(object sender, EventArgs e)
@@ -352,6 +354,7 @@ namespace RauViet.ui
             delete_btn.Visible = false;
             info_gb.BackColor = Color.DarkGray;
             isNewState = false;
+            SetUIReadOnly(true);
         }
 
         private void Edit_btn_Click(object sender, EventArgs e)
@@ -364,6 +367,16 @@ namespace RauViet.ui
             info_gb.BackColor = edit_btn.BackColor;
             isNewState = false;
             LuuThayDoiBtn.Text = "Lưu C.Sửa";
+            SetUIReadOnly(false);
+        }
+
+        private void SetUIReadOnly(bool isReadOnly)
+        {
+            isInsuranceIncluded_cb.Enabled = !isReadOnly;
+            isActive_cb.Enabled = !isReadOnly;
+            allowanceCode_tb.ReadOnly = isReadOnly;
+            allowanceName_tb.ReadOnly = isReadOnly;
+            ScopeName_cbb.Enabled = !isReadOnly;
         }
     }
 }

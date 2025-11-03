@@ -22,9 +22,10 @@ namespace RauViet.ui
     public partial class OrdersList : Form
     {
         System.Data.DataTable mProductPacking_dt, mCustomers_dt, mProduct_dt, mExportCode_dt, mOrders_dt;
-        private Timer debounceTimer = new Timer { Interval = 300 };
+        private Timer debounceTimer = new Timer { Interval = 150 };
         private LoadingOverlay loadingOverlay;
         bool isNewState = false;
+        private int sortMode = 0;
         // private DataView dvProducts;
         public OrdersList()
         {
@@ -69,6 +70,11 @@ namespace RauViet.ui
             edit_btn.Click += Edit_btn_Click;
             readOnly_btn.Click += ReadOnly_btn_Click;
             ReadOnly_btn_Click(null, null);
+
+            sortByCus_pri_btn.Click += SortByCus_pri_btn_Click;
+            sortByCus_pro_btn.Click += SortByCus_pro_btn_Click;
+            sortBypro_Cus_btn.Click += SortBypro_Cus_btn_Click;
+            sortByPri_Pro_btn.Click += SortByPri_Pro_btn_Click;
         }
 
         public async void ShowData()
@@ -83,12 +89,12 @@ namespace RauViet.ui
 
             try
             {
-                var othersTask = SQLManager.Instance.getOrdersAsync();
-                var customersTask = SQLManager.Instance.getCustomersAsync();
+                var othersTask = SQLStore.Instance.getOrdersAsync();
+                var customersTask = SQLStore.Instance.getCustomersAsync();
                 var productTask = SQLStore.Instance.getProductSKUAsync();
                 var packingTask = SQLStore.Instance.getProductpackingAsync();
 
-                string[] keepColumns = { "ExportCodeID", "ExportCode" };
+                string[] keepColumns = { "ExportCodeID", "ExportCode", "ExportDate", "PackingByName" };
                 var parameters = new Dictionary<string, object>{{ "Complete", false }};
                 var exportCodeTask = SQLStore.Instance.getExportCodesAsync(keepColumns, parameters);
 
@@ -98,63 +104,8 @@ namespace RauViet.ui
                 mCustomers_dt = customersTask.Result;
                 mProduct_dt = productTask.Result;
                 mProductPacking_dt = packingTask.Result;
-                mExportCode_dt = exportCodeTask.Result;
-
-                mProductPacking_dt.Columns.Add(new DataColumn("PackingName", typeof(string)));
-                mProductPacking_dt.Columns.Add(new DataColumn("ProductName", typeof(string)));
-
-                foreach (DataRow dr in mProductPacking_dt.Rows)
-                {
-                    int sku = Convert.ToInt32(dr["SKU"]);
-                    string packing = dr["packing"].ToString();
-                    decimal amount = dr["Amount"] == DBNull.Value ? 0 : Convert.ToDecimal(dr["Amount"]);
-                    string resultAmount = amount.ToString("0.##");
-
-                    dr["PackingName"] = $"{resultAmount} {packing}";
-
-                    DataRow[] prodRows = mProduct_dt.Select($"SKU = {sku}");
-                    if (prodRows.Length > 0)
-                    {
-                        string productName = prodRows[0]["ProductNameVN"].ToString();
-                        string package = prodRows[0]["Package"].ToString();
-
-                        if (package.CompareTo("kg") == 0 && packing.CompareTo("") != 0 && amount > 0)
-                        {
-                            string amountStr = amount.ToString("0.##");
-                            dr["ProductName"] = $"{productName} {amountStr} {packing}";
-                        }
-                        else
-                        {
-                            dr["ProductName"] = $"{productName}";
-                        }
-
-                        
-                    }
-                    else
-                    {
-                        dr["ProductPacking"] = "Unknown";
-                    }
-                }
-
-
-                mOrders_dt.Columns.Add(new DataColumn("CustomerName", typeof(string)));
-                mOrders_dt.Columns.Add(new DataColumn("ProductNameVN", typeof(string)));
-                mOrders_dt.Columns.Add(new DataColumn("ExportCode", typeof(string)));
-
-                foreach (DataRow dr in mOrders_dt.Rows)
-                {
-                    int customerID = Convert.ToInt32(dr["CustomerID"]);
-                    DataRow[] customerRows = mCustomers_dt.Select($"CustomerID = {customerID}");
-                    dr["CustomerName"] = customerRows.Length > 0 ? customerRows[0]["FullName"].ToString() : "Unknown";
-
-                    int productPackingID = Convert.ToInt32(dr["ProductPackingID"]);
-                    DataRow[] packingRows = mProductPacking_dt.Select($"ProductPackingID = {productPackingID}");
-                    dr["ProductNameVN"] = packingRows.Length > 0 ? packingRows[0]["ProductName"].ToString() : "Unknown";
-
-                    int exportCodeID = Convert.ToInt32(dr["ExportCodeID"]);
-                    DataRow[] exportCodeRows = mExportCode_dt.Select($"ExportCodeID = {exportCodeID}");
-                    dr["ExportCode"] = exportCodeRows.Length > 0 ? exportCodeRows[0]["ExportCode"].ToString() : "Unknown";
-                }
+                mExportCode_dt = exportCodeTask.Result;   
+               
 
                 customer_ccb.DataSource = mCustomers_dt;
                 customer_ccb.DisplayMember = "FullName";  // hiển thị tên
@@ -167,20 +118,23 @@ namespace RauViet.ui
                 product_ccb.DisplayMember = "ProductNameVN";
                 product_ccb.ValueMember = "SKU";
                 product_ccb.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
-                product_ccb.AutoCompleteSource = AutoCompleteSource.ListItems;
+               // product_ccb.AutoCompleteSource = AutoCompleteSource.ListItems;
                 product_ccb.SelectedIndexChanged += product_ccb_SelectedIndexChanged;
                 product_ccb.TextUpdate += product_ccb_TextUpdate;
 
                 foreach (DataColumn col in mOrders_dt.Columns)
                     col.ReadOnly = false;
-                mOrders_dt.Columns["ExportCode"].SetOrdinal(0);
-                mOrders_dt.Columns["CustomerName"].SetOrdinal(1);
-                mOrders_dt.Columns["ProductNameVN"].SetOrdinal(2);
-                mOrders_dt.Columns["OrderPackingPriceCNF"].SetOrdinal(3);
-                mOrders_dt.Columns["PCSOther"].SetOrdinal(4);
-                mOrders_dt.Columns["NWOther"].SetOrdinal(5);
-                mOrders_dt.Columns["CustomerID"].SetOrdinal(6);
-                mOrders_dt.Columns["ProductPackingID"].SetOrdinal(7);
+
+                int count = 0;
+                mOrders_dt.Columns["OrderId"].SetOrdinal(count++);
+                mOrders_dt.Columns["ExportCode"].SetOrdinal(count++);
+                mOrders_dt.Columns["CustomerName"].SetOrdinal(count++);
+                mOrders_dt.Columns["ProductNameVN"].SetOrdinal(count++);
+                mOrders_dt.Columns["OrderPackingPriceCNF"].SetOrdinal(count++);
+                mOrders_dt.Columns["PCSOther"].SetOrdinal(count++);
+                mOrders_dt.Columns["NWOther"].SetOrdinal(count++);
+                mOrders_dt.Columns["CustomerID"].SetOrdinal(count++);
+                mOrders_dt.Columns["ProductPackingID"].SetOrdinal(count++);
 
                 // Gán testData cho DataGridView tạm để test
                 dataGV.DataSource = mOrders_dt;
@@ -193,10 +147,11 @@ namespace RauViet.ui
                 dataGV.Columns["NWOther"].HeaderText = "NW Order";
                 dataGV.Columns["Priority"].HeaderText = "ưu tiên";
 
-                dataGV.Columns["OrderId"].Visible = false;
+                //dataGV.Columns["OrderId"].Visible = false;
                 dataGV.Columns["CustomerID"].Visible = false;
                 dataGV.Columns["ProductPackingID"].Visible = false;
                 dataGV.Columns["ExportCodeID"].Visible = false;
+                dataGV.Columns["NWReal"].Visible = false;
                 dataGV.Columns["OrderPackingPriceCNF"].Visible = false;
 
                 dataGV.Columns["OrderId"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
@@ -242,30 +197,34 @@ namespace RauViet.ui
 
         private void DebounceTimer_Tick(object sender, EventArgs e)
         {
-            debounceTimer.Stop();
-            string typed = product_ccb.Text ?? "";
-            string plain = Utils.RemoveVietnameseSigns(typed).ToLower();
+            try
+            {
+                debounceTimer.Stop();
+                string typed = product_ccb.Text ?? "";
+                string plain = Utils.RemoveVietnameseSigns(typed).ToLower();
 
-            // Filter bằng LINQ thay vì RowFilter
-            var filtered = mProduct_dt.AsEnumerable()
-                .Where(r => Utils.RemoveVietnameseSigns(r["ProductNameVN"].ToString().ToLower())
-                .Contains(plain));
+                // Filter bằng LINQ thay vì RowFilter
+                var filtered = mProduct_dt.AsEnumerable()
+                    .Where(r => r["ProductNameVN_NoSign"].ToString()
+                    .Contains(plain));
 
-            System.Data.DataTable temp;
-            if (filtered.Any())
-                temp = filtered.CopyToDataTable();
-            else
-                temp = mProduct_dt.Clone(); // nếu không có kết quả thì trả về table rỗng
+                System.Data.DataTable temp;
+                if (filtered.Any())
+                    temp = filtered.CopyToDataTable();
+                else
+                    temp = mProduct_dt.Clone(); // nếu không có kết quả thì trả về table rỗng
 
-            product_ccb.DataSource = temp;
-            product_ccb.DisplayMember = "ProductNameVN";
-            product_ccb.ValueMember = "SKU";
+                product_ccb.DataSource = temp;
+                product_ccb.DisplayMember = "ProductNameVN";
+                product_ccb.ValueMember = "SKU";
 
-            // Giữ lại text người đang gõ
-            product_ccb.DroppedDown = true;
-            product_ccb.Text = typed;
-            product_ccb.SelectionStart = typed.Length;
-            product_ccb.SelectionLength = 0;
+                // Giữ lại text người đang gõ
+                product_ccb.DroppedDown = true;
+                product_ccb.Text = typed;
+                product_ccb.SelectionStart = typed.Length;
+                product_ccb.SelectionLength = 0;
+            }
+            catch { }
         }
 
         private void exportCode_search_cbb_SelectedIndexChanged(object sender, EventArgs e)
@@ -299,7 +258,7 @@ namespace RauViet.ui
 
             // Lọc packing theo SKU
             DataView dv = new DataView(mProductPacking_dt);
-            dv.RowFilter = $"SKU = {selectedSKU}";
+            dv.RowFilter = $"SKU = '{selectedSKU}'";
 
             packing_ccb.DataSource = dv;
             packing_ccb.DisplayMember = "PackingName"; // cột bạn muốn hiển thị
@@ -311,15 +270,15 @@ namespace RauViet.ui
             {
                 int productPackingID = Convert.ToInt32(dataGV.CurrentRow.Cells["ProductPackingID"].Value);
 
-                if (packing_ccb.DataSource is System.Data.DataTable dt && dt.Rows.Count > 0)
+                var currentDV = packing_ccb.DataSource as DataView;
+                if (currentDV != null && currentDV.Count > 0)
                 {
-                    // Dùng Select để filter
-                    DataRow[] found = dt.Select($"{packing_ccb.ValueMember} = {productPackingID}");
+                    bool exists = currentDV.Cast<DataRowView>().Any(r => Convert.ToInt32(r["ProductPackingID"]) == productPackingID);
 
-                    if (found.Length > 0)
+                    if (exists)
                         packing_ccb.SelectedValue = productPackingID;
                     else
-                        packing_ccb.SelectedIndex = 0; // chọn phần tử đầu tiên
+                        packing_ccb.SelectedIndex = 0;
                 }
             }
 
@@ -366,7 +325,7 @@ namespace RauViet.ui
             updateRightUI(rowIndex);
         }
 
-        private void updateRightUI(int indexRowSelected)
+        private async Task updateRightUI(int indexRowSelected)
         {
             if (indexRowSelected < 0 || isNewState)
                 return;
@@ -383,14 +342,20 @@ namespace RauViet.ui
             customer_ccb.SelectedValue = customerID;
 
             DataRow[] packingRows = mProductPacking_dt.Select($"ProductPackingID = {packingID}");
-            if(packingRows.Length > 0) 
-                product_ccb.SelectedValue = packingRows[0]["SKU"].ToString();
+            string sku = packingRows[0]["SKU"].ToString();
+            if (!product_ccb.Items.Cast<object>().Any(i => ((DataRowView)i)["SKU"].ToString() == sku))
+            {
+                product_ccb.DataSource = mProduct_dt;
+            }
+
+            product_ccb.SelectedValue = sku;
+            packing_ccb.SelectedValue = packingID;
 
             PCSOther_tb.Text = PCSOther;
             netWeight_tb.Text = NWOther;
             priceCNF_tb.Text = orderPackingPriceCNF;
 
-            product_ccb_SelectedIndexChanged(null, null);
+           // product_ccb_SelectedIndexChanged(null, null);
         }
 
         private void updateNetWeight() {
@@ -636,7 +601,7 @@ namespace RauViet.ui
                     {
                         try
                         {
-                            bool isSuccess = await Task.Run(() => SQLManager.Instance.deleteOrderAsync(id));
+                            bool isSuccess = await SQLManager.Instance.deleteOrderAsync(id);
 
                             if (isSuccess)
                             {
@@ -687,8 +652,7 @@ namespace RauViet.ui
         {
             orderId_tb.Text = "";
             PCSOther_tb.Text = "";
-            netWeight_tb.Text= "";
-            customer_ccb.Focus();
+            netWeight_tb.Text= "";           
 
             product_ccb_SelectedIndexChanged(null, null);
 
@@ -699,7 +663,13 @@ namespace RauViet.ui
             LuuThayDoiBtn.Visible = true;
             delete_btn.Visible = false;
             isNewState = true;
-            LuuThayDoiBtn.Text = "Lưu Mới";
+            LuuThayDoiBtn.Text = "Lưu Mới";            
+            setRightUIReadOnly(false);
+            if (dataGV.Rows.Count > 0)
+            {
+                dataGV.FirstDisplayedScrollingRowIndex = dataGV.Rows.Count - 1;
+            }
+            customer_ccb.Focus();
         }
 
         private void ReadOnly_btn_Click(object sender, EventArgs e)
@@ -711,6 +681,8 @@ namespace RauViet.ui
             delete_btn.Visible = false;
             info_gb.BackColor = System.Drawing.Color.DarkGray;
             isNewState = false;
+            product_ccb.DropDownStyle = ComboBoxStyle.DropDownList;
+            setRightUIReadOnly(true);
         }
 
         private void Edit_btn_Click(object sender, EventArgs e)
@@ -723,6 +695,7 @@ namespace RauViet.ui
             info_gb.BackColor = edit_btn.BackColor;
             isNewState = false;
             LuuThayDoiBtn.Text = "Lưu C.Sửa";
+            setRightUIReadOnly(false);
         }
 
         private void PCSOrder_tb_TextChanged(object sender, EventArgs e)
@@ -735,28 +708,12 @@ namespace RauViet.ui
             if (dataGV.Rows.Count == 0)
                 return;
 
-            string selectedExportCode = exportCode_search_cbb.Text;
-            DataView dv = mOrders_dt.DefaultView;
-            dv.RowFilter = $"ExportCode = '{selectedExportCode}'";
-            dv.Sort = "ProductNameVN ASC, Priority ASC";
-            dataGV.DataSource = dv;
-
             PrintDataGridView(dataGV, true);
         }
 
         private async void preview_print_TD_btn_Click(object sender, EventArgs e)
         {
-            if (exportCode_search_cbb.SelectedItem == null) return;
-
-            DataRowView pakingData = (DataRowView)exportCode_search_cbb.SelectedItem;
-            string exportCode = pakingData["ExportCode"].ToString();
-            DateTime exportDate = Convert.ToDateTime(pakingData["ExportDate"]);
-
-            System.Data.DataTable pendingOrderSummary = await SQLManager.Instance.getPendingOrderSummary(Convert.ToInt32(pakingData["ExportCodeID"]));
-
-            OrderSummaryPrinter printer = new OrderSummaryPrinter();
-
-            printer.PrintPreview(pendingOrderSummary, exportCode, exportDate);
+            await PrintPendingOrderSummary(true);
         }
 
         private void printOtherList_btn_Click(object sender, EventArgs err)
@@ -764,18 +721,18 @@ namespace RauViet.ui
             if (dataGV.Rows.Count == 0)
                 return;
 
-            string selectedExportCode = exportCode_search_cbb.Text;
-            DataView dv = mOrders_dt.DefaultView;
-            dv.RowFilter = $"ExportCode = '{selectedExportCode}'";
-            dv.Sort = "ProductNameVN ASC, Priority ASC";
-            dataGV.DataSource = dv;
-
             PrintDataGridView(dataGV);
         }
                 
         private void PrintDataGridView(DataGridView dataGV, bool preview = false)
         {
             if (exportCode_search_cbb.SelectedItem == null) return;
+
+            string selectedExportCode = exportCode_search_cbb.Text;
+            DataView dv = mOrders_dt.DefaultView;
+            dv.RowFilter = $"ExportCode = '{selectedExportCode}'";
+            dv.Sort = "Priority ASC, ProductNameVN ASC, CustomerName ASC";
+            dataGV.DataSource = dv;
 
             DataRowView dataR = (DataRowView)exportCode_search_cbb.SelectedItem;
 
@@ -793,8 +750,12 @@ namespace RauViet.ui
 
         private async void printPendingOrderSummary_btn_Click(object sender, EventArgs e)
         {
-            if (exportCode_search_cbb.SelectedItem == null) return;
+            await PrintPendingOrderSummary(false);
+        }
 
+        private async Task PrintPendingOrderSummary(bool preview = false)
+        {
+            if (exportCode_search_cbb.SelectedItem == null) return;
             DataRowView pakingData = (DataRowView)exportCode_search_cbb.SelectedItem;
             string exportCode = pakingData["ExportCode"].ToString();
             DateTime exportDate = Convert.ToDateTime(pakingData["ExportDate"]);
@@ -803,9 +764,12 @@ namespace RauViet.ui
 
             OrderSummaryPrinter printer = new OrderSummaryPrinter();
 
-            printer.PrintDirect(pendingOrderSummary, exportCode, exportDate);
-           //printer.PrintPreview(pendingOrderSummary, exportCode, exportDate);
+            if(preview)
+                printer.PrintPreview(pendingOrderSummary, exportCode, exportDate);
+            else
+                printer.PrintDirect(pendingOrderSummary, exportCode, exportDate);
         }
+
 
         private async void exportExcel_TD_btn_Click(object sender, EventArgs e)
         {
@@ -969,6 +933,146 @@ namespace RauViet.ui
             //}
 
             //return count;
+        }
+
+        private void setRightUIReadOnly(bool isReadOnly)
+        {
+            customer_ccb.Enabled = !isReadOnly;
+            product_ccb.Enabled = !isReadOnly;
+            packing_ccb.Enabled = !isReadOnly;
+            PCSOther_tb.ReadOnly = isReadOnly;
+            netWeight_tb.ReadOnly = isReadOnly;
+            product_ccb.DropDownStyle = ComboBoxStyle.DropDown;
+
+            print_order_list_btn.Visible = isReadOnly;
+            printPendingOrderSummary_btn.Visible = isReadOnly;
+            prewiew_print_DSDH_btn.Visible = isReadOnly;
+            preview_print_TD_btn.Visible = isReadOnly;
+            exportExcel_TD_btn.Visible = isReadOnly;
+        }
+
+        private void SortByCus_pri_btn_Click(object sender, EventArgs e)
+        {
+            if (dataGV.DataSource == null)
+                return;
+
+            DataView currentView = dataGV.DataSource is DataView dv ? dv : new DataView(mOrders_dt);
+            string sortExpression = "";
+
+            // Xác định kiểu sắp xếp dựa trên sortMode
+            switch (sortMode)
+            {
+                case 0:
+                    sortExpression = "CustomerName ASC, Priority DESC";
+                    break;
+                case 1:
+                    sortExpression = "CustomerName ASC, Priority ASC";
+                    break;
+                case 2:
+                    sortExpression = "CustomerName DESC, Priority DESC";
+                    break;
+                case 3:
+                    sortExpression = "CustomerName DESC, Priority ASC";
+                    break;
+            }
+
+            // Áp dụng sắp xếp
+            currentView.Sort = sortExpression;
+            dataGV.DataSource = currentView;
+            sortMode = (sortMode + 1) % 4;
+        }
+
+        private void SortByCus_pro_btn_Click(object sender, EventArgs e)
+        {
+            if (dataGV.DataSource == null)
+                return;
+
+            DataView currentView = dataGV.DataSource is DataView dv ? dv : new DataView(mOrders_dt);
+            string sortExpression = "";
+
+            // Xác định kiểu sắp xếp dựa trên sortMode
+            switch (sortMode)
+            {
+                case 0:
+                    sortExpression = "CustomerName ASC, ProductNameVN DESC";
+                    break;
+                case 1:
+                    sortExpression = "CustomerName ASC, ProductNameVN ASC";
+                    break;
+                case 2:
+                    sortExpression = "CustomerName DESC, ProductNameVN DESC";
+                    break;
+                case 3:
+                    sortExpression = "CustomerName DESC, ProductNameVN ASC";
+                    break;
+            }
+
+            // Áp dụng sắp xếp
+            currentView.Sort = sortExpression;
+            dataGV.DataSource = currentView;
+            sortMode = (sortMode + 1) % 4;
+        }
+
+        private void SortBypro_Cus_btn_Click(object sender, EventArgs e)
+        {
+            if (dataGV.DataSource == null)
+                return;
+
+            DataView currentView = dataGV.DataSource is DataView dv ? dv : new DataView(mOrders_dt);
+            string sortExpression = "";
+
+            // Xác định kiểu sắp xếp dựa trên sortMode
+            switch (sortMode)
+            {
+                case 0:
+                    sortExpression = "ProductNameVN ASC, CustomerName ASC";
+                    break;
+                case 1:
+                    sortExpression = "ProductNameVN ASC, CustomerName DESC";
+                    break;
+                case 2:
+                    sortExpression = "ProductNameVN DESC, CustomerName DESC";
+                    break;
+                case 3:
+                    sortExpression = "ProductNameVN DESC, CustomerName ASC";
+                    break;
+            }
+
+            // Áp dụng sắp xếp
+            currentView.Sort = sortExpression;
+            dataGV.DataSource = currentView;
+            sortMode = (sortMode + 1) % 4;
+        }
+
+        private void SortByPri_Pro_btn_Click(object sender, EventArgs e)
+        {
+            if (dataGV.DataSource == null)
+                return;
+
+            DataView currentView = dataGV.DataSource is DataView dv ? dv : new DataView(mOrders_dt);
+            string sortExpression = "";
+
+            // Xác định kiểu sắp xếp dựa trên sortMode
+            switch (sortMode)
+            {
+                case 0:
+                    sortExpression = "Priority ASC, ProductNameVN ASC, CustomerName ASC";
+                    break;
+                case 1:
+                    sortExpression = "Priority ASC, ProductNameVN DESC, CustomerName ASC";
+                    break;
+                case 2:
+                    sortExpression = "Priority DESC, ProductNameVN DESC, CustomerName ASC";
+                    break;
+                case 3:
+                    sortExpression = "Priority DESC, ProductNameVN ASC, CustomerName ASC";
+                    break;
+            }
+
+            // Áp dụng sắp xếp
+            currentView.Sort = sortExpression;
+            dataGV.DataSource = currentView;
+            sortMode = (sortMode + 1) % 4;
         }
     }
 }

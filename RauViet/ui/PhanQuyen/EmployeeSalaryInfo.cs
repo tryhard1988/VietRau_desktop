@@ -19,6 +19,7 @@ namespace RauViet.ui
     public partial class EmployeeSalaryInfo : Form
     {
         private DataTable mEmployeeSalaryInfo_dt;
+        bool isNewState = false;
         public EmployeeSalaryInfo()
         {
             InitializeComponent();
@@ -52,6 +53,10 @@ namespace RauViet.ui
             baseSalary_tb.KeyPress += Tb_KeyPress_OnlyNumber;
             insuranceBaseSalary_tb.KeyPress += Tb_KeyPress_OnlyNumber;
             month_cbb.SelectedIndexChanged += Month_cbb_SelectedIndexChanged;
+
+            new_btn.Click += New_btn_Click;
+            readOnly_btn.Click += ReadOnly_btn_Click;
+            ReadOnly_btn_Click(null, null);
         }        
 
         public async void ShowData()
@@ -65,7 +70,7 @@ namespace RauViet.ui
 
             try
             {
-                string[] keepColumns = { "EmployeeCode", "FullName", "PositionName", "ContractTypeName", };
+                string[] keepColumns = { "EmployeeCode", "FullName", "PositionName", "ContractTypeName", "GradeName", "SalaryGrade" };
                 var employeesTask = SQLStore.Instance.GetEmployeesAsync(keepColumns);
                 var employeeSalaryInfoAsync = SQLStore.Instance.GetEmployeeSalaryInfoAsync();
 
@@ -85,6 +90,7 @@ namespace RauViet.ui
                 dataGV.AutoGenerateColumns = true;
                 dataGV.DataSource = employee_dt;
 
+                dataGV.Columns["SalaryGrade"].Visible = false;
                 salaryInfoGV.Columns["Month"].Visible = false;
                 salaryInfoGV.Columns["Year"].Visible = false;
                 salaryInfoGV.Columns["EmployeeCode"].Visible = false;
@@ -107,6 +113,7 @@ namespace RauViet.ui
                 dataGV.Columns["EmployeeCode"].HeaderText = "Mã NV";
                 dataGV.Columns["PositionName"].HeaderText = "Chức Vụ";
                 dataGV.Columns["ContractTypeName"].HeaderText = "Loại Hợp Đồng";
+                dataGV.Columns["GradeName"].HeaderText = "Bậc Lương";
 
                 salaryInfoGV.Columns["Date"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
                 salaryInfoGV.Columns["BaseSalary"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
@@ -182,6 +189,9 @@ namespace RauViet.ui
         {
             var cells = dataGV.Rows[index].Cells;
             string employeeCode = Convert.ToString(cells["EmployeeCode"].Value);
+            string salaryGrade = Convert.ToString(cells["SalaryGrade"].Value);
+
+            salaryGrade_tb.Text = salaryGrade.ToString();
 
             DataView dv = new DataView(mEmployeeSalaryInfo_dt);
             dv.RowFilter = $"EmployeeCode = '{employeeCode}'";
@@ -190,6 +200,7 @@ namespace RauViet.ui
         }
         private void UpdateRightUI(int index)
         {
+            if (isNewState) return;
             var cells = salaryInfoGV.Rows[index].Cells;
             int month = Convert.ToInt32(cells["Month"].Value);
             int year = Convert.ToInt32(cells["Year"].Value);
@@ -204,8 +215,6 @@ namespace RauViet.ui
             note_tb.Text = note;
 
             delete_btn.Enabled = true;
-
-            info_gb.BackColor = Color.DarkGreen;
             status_lb.Text = "";
         }
         
@@ -383,9 +392,38 @@ namespace RauViet.ui
             {
                 LuuThayDoiBtn.Visible = !isLock;
                 delete_btn.Visible = !isLock;
-            }
+            } 
+        }
 
-                
+        private void ReadOnly_btn_Click(object sender, EventArgs e)
+        {
+            new_btn.Visible = true;
+            readOnly_btn.Visible = false;
+            LuuThayDoiBtn.Visible = false;
+            delete_btn.Visible = false;
+            info_gb.BackColor = Color.DarkGray;
+            isNewState = false;
+            SetUIReadOnly(true);
+        }
+
+        private void New_btn_Click(object sender, EventArgs e)
+        {
+            new_btn.Visible = false;
+            readOnly_btn.Visible = true;
+            LuuThayDoiBtn.Visible = true;
+            delete_btn.Visible = true;
+            isNewState = true;
+            info_gb.BackColor = new_btn.BackColor;
+            SetUIReadOnly(false);
+        }
+
+        private void SetUIReadOnly(bool isReadOnly)
+        {
+            month_cbb.Enabled = !isReadOnly;
+            year_tb.Enabled = !isReadOnly;
+            baseSalary_tb.ReadOnly = isReadOnly;
+            insuranceBaseSalary_tb.ReadOnly = isReadOnly;
+            note_tb.ReadOnly = isReadOnly;
         }
     }
 }

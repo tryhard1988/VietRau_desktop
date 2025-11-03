@@ -1,4 +1,5 @@
-﻿using DocumentFormat.OpenXml.Wordprocessing;
+﻿using DocumentFormat.OpenXml.Office2010.Excel;
+using DocumentFormat.OpenXml.Wordprocessing;
 using Mysqlx.Session;
 using MySqlX.XDevAPI.Common;
 using RauViet.classes;
@@ -18,9 +19,12 @@ namespace RauViet.ui
         private LoadingOverlay loadingOverlay;
         DataTable mExportCode_dt, mOrders_dt;
         private bool _dataChanged = false;
+        private int sortMode = 0;
         public OrderPackingList()
         {
             InitializeComponent();
+
+            setUIReadOnly(true);
 
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Dock = DockStyle.Fill;
@@ -60,48 +64,40 @@ namespace RauViet.ui
             dataGV.CellValueChanged += dataGV_CellValueChanged;
             dataGV.KeyDown += dataGV_KeyDown;
             dataGV.CellBeginEdit += dataGV_CellBeginEdit;
-            //dataGV.CellEndEdit += dataGV_CellEndEdit;
+            dataGV.SelectionChanged += DataGV_SelectionChanged;
+            edit_btn.Click += Edit_btn_Click;
+            chiadon_btn.Click += Chiadon_btn_Click;
+            delOrder_btn.Click += DelOrder_btn_Click;
 
             cartonSize_tb.KeyPress += Tb_KeyPress_CartonSize;
             PCSReal_tb.KeyPress += Tb_KeyPress_OnlyNumber;
             cartonNo_tb.KeyPress += Tb_KeyPress_OnlyNumber;
 
             exportCode_cbb.SelectedIndexChanged += exportCode_search_cbb_SelectedIndexChanged;
+
+            sortByCus_pri_btn.Click += SortByCus_pri_btn_Click;
+            sortByCus_pro_btn.Click += SortByCus_pro_btn_Click;
+            sortBypro_Cus_btn.Click += SortBypro_Cus_btn_Click;
+            sortByPri_Pro_btn.Click += SortByPri_Pro_btn_Click;
+
+            ToolTipHelper.SetToolTip(autoFillCartonSize_btn, "Tự động tìm ô có cùng Carton.No và \nđã có Carton Size\nSau đó thêm vào các ô chưa có Carton Size");
+            ToolTipHelper.SetToolTip(autoEditCartonNo_btn, "Tự động chỉnh sửa lại Carton.No \nNếu thứ tự không đúng");
+            ToolTipHelper.SetToolTip(assignCustomerCarton_btn, "Tự động dựa vào\nCarton.No và Khách Hàng \nĐể tạo mã thùng");
+            ToolTipHelper.SetToolTip(chiadon_btn, "Dùng khi 1 đơn hàng cần chia ra 2 thùng \nthì cần tạo ra thêm 1 mã đơn hàng mới\ntừ mã hiện tại");
+            ToolTipHelper.SetToolTip(checkCarton_btn, "Chỉ Kiểm tra dữ liệu nhập vào có đúng không \nkhông thay đổi gì cả");
         }
 
         private void previewPrint_PGH_btn_Click(object sender, EventArgs e)
         {
-            if (exportCode_cbb.SelectedItem == null) return;
-            // Tạo DataTable kết quả
-            DataTable resultTable = new DataTable();
-            resultTable.Columns.Add("CartonSize", typeof(string));
-            resultTable.Columns.Add("Count", typeof(int));
-
-            // Group theo ProductPackingName
-            var groups = dataGV.Rows.Cast<DataGridViewRow>()
-                                    .Where(r =>
-                                        !r.IsNewRow &&
-                                        r.Cells["CartonSize"].Value != null &&
-                                        r.Cells["CartonSize"].Value.ToString().Trim() != "") // bỏ CartonSize rỗng
-                                    .GroupBy(r => r.Cells["CartonSize"].Value.ToString())
-                                    .Select(g => new { CartonSize = g.Key, Count = g.Count() });
-
-            foreach (var g in groups)
-            {
-                resultTable.Rows.Add(g.CartonSize, g.Count);
-            }
-
-            DataRowView exportCodeItem = (DataRowView)exportCode_cbb.SelectedItem;
-
-            string exportCode = exportCodeItem["ExportCode"].ToString();
-            DateTime exportDate = Convert.ToDateTime(exportCodeItem["ExportDate"]);
-
-            DeliveryPrinter deliveryPrinter = new DeliveryPrinter(resultTable, exportCode, exportDate);
-            //deliveryPrinter.PrintDirect();
-            deliveryPrinter.PrintPreview();
+            InPhieuGiaoHang(true);
         }
 
         private void InPhieuGiaoHang_btn_Click(object sender, EventArgs e)
+        {
+            InPhieuGiaoHang(false);
+        }
+
+        private void InPhieuGiaoHang(bool preview = false)
         {
             if (exportCode_cbb.SelectedItem == null) return;
             // Tạo DataTable kết quả
@@ -110,13 +106,21 @@ namespace RauViet.ui
             resultTable.Columns.Add("Count", typeof(int));
 
             // Group theo ProductPackingName
-            var groups = dataGV.Rows.Cast<DataGridViewRow>()
-                                    .Where(r =>
-                                        !r.IsNewRow &&
-                                        r.Cells["CartonSize"].Value != null &&
-                                        r.Cells["CartonSize"].Value.ToString().Trim() != "") // bỏ CartonSize rỗng
-                                    .GroupBy(r => r.Cells["CartonSize"].Value.ToString())
-                                    .Select(g => new { CartonSize = g.Key, Count = g.Count() });
+            var groups = dataGV.Rows.Cast<DataGridViewRow>().Where(r =>
+                                                            !r.IsNewRow &&
+                                                            r.Cells["CartonSize"].Value != null &&
+                                                            r.Cells["CartonSize"].Value.ToString().Trim() != "" &&
+                                                            r.Cells["CartonNo"].Value != null &&
+                                                            r.Cells["CartonNo"].Value.ToString().Trim() != "")
+                                                        .GroupBy(r => r.Cells["CartonSize"].Value.ToString())
+                                                        .Select(g => new
+                                                        {
+                                                            CartonSize = g.Key,
+                                                            Count = g
+                                                                .Select(r => r.Cells["CartonNo"].Value.ToString())
+                                                                .Distinct()
+                                                                .Count()
+                                                        });
 
             foreach (var g in groups)
             {
@@ -129,7 +133,10 @@ namespace RauViet.ui
             DateTime exportDate = Convert.ToDateTime(exportCodeItem["ExportDate"]);
 
             DeliveryPrinter deliveryPrinter = new DeliveryPrinter(resultTable, exportCode, exportDate);
-            deliveryPrinter.PrintDirect();
+            if(!preview)
+                deliveryPrinter.PrintDirect();
+            else
+                deliveryPrinter.PrintPreview();
         }
 
         private void carton_GV_SelectionChanged(object sender, EventArgs e)
@@ -167,7 +174,7 @@ namespace RauViet.ui
             try
             {
                 var ordersPackingTask = SQLManager.Instance.getOrdersPackingAsync();
-                string[] keepColumns = { "ExportCodeID", "ExportCode" };
+                string[] keepColumns = { "ExportCodeID", "ExportCode", "ExportDate" };
                 var parameters = new Dictionary<string, object> { { "Complete", false } };
                 var exportCodeTask = SQLStore.Instance.getExportCodesAsync(keepColumns, parameters);
 
@@ -203,7 +210,7 @@ namespace RauViet.ui
 
                 // Chạy truy vấn trên thread riêng
                 dataGV.DataSource = mOrders_dt;
-                dataGV.Columns["OrderId"].Visible = false;
+                //dataGV.Columns["OrderId"].Visible = false;
                 dataGV.Columns["ExportCodeID"].Visible = false;
                 dataGV.Columns["Amount"].Visible = false;
                 dataGV.Columns["packing"].Visible = false;
@@ -223,9 +230,12 @@ namespace RauViet.ui
                 dataGV.Columns["CustomerName"].ReadOnly = true;
                 dataGV.Columns["ProductPackingName"].ReadOnly = true;
                 dataGV.Columns["CustomerCarton"].ReadOnly = true;
-                
+
+                dataGV.Columns["OrderId"].HeaderText = "ID";
                 dataGV.Columns["PCSReal"].HeaderText = "PCS\nThực Tế";
                 dataGV.Columns["NWReal"].HeaderText = "NW\nThực Tế";
+                dataGV.Columns["PCSOther"].HeaderText = "PCS\nĐặt Hàng";
+                dataGV.Columns["NWOther"].HeaderText = "NW\nĐặt Hàng";
                 dataGV.Columns["CartonNo"].HeaderText = "Carton.No";
                 dataGV.Columns["CartonSize"].HeaderText = "Carton Size";
                 dataGV.Columns["Priority"].HeaderText = "Ưu\nTiên";
@@ -233,15 +243,18 @@ namespace RauViet.ui
                 dataGV.Columns["ProductPackingName"].HeaderText = "Tên Sản Phẩm";
                 dataGV.Columns["CustomerCarton"].HeaderText = "Mã Thùng";
 
-                dataGV.Columns["Priority"].Width = 50;
-                dataGV.Columns["PCSReal"].Width = 60;
-                dataGV.Columns["NWReal"].Width = 60;
+                dataGV.Columns["OrderId"].Width = 50;
+                dataGV.Columns["Priority"].Width = 40;
+                dataGV.Columns["PCSReal"].Width = 50;
+                dataGV.Columns["NWReal"].Width = 50;
+                dataGV.Columns["PCSOther"].Width = 50;
+                dataGV.Columns["NWOther"].Width = 50;
                 dataGV.Columns["CartonNo"].Width = 60;
                 dataGV.Columns["CartonSize"].Width = 80;
                 dataGV.Columns["CustomerCarton"].Width = 80;
                 //   dataGV.Columns["Priority"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["CustomerName"].Width = 120;
-                dataGV.Columns["ProductPackingName"].Width = 300;
+                dataGV.Columns["CustomerName"].Width = 80;
+                dataGV.Columns["ProductPackingName"].Width = 220;
 
                 dataGV.Columns["CartonNo"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 dataGV.Columns["PCSReal"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
@@ -270,6 +283,114 @@ namespace RauViet.ui
             {
                 await Task.Delay(200);
                 loadingOverlay.Hide();
+            }
+        }
+
+        private void Chiadon_btn_Click(object sender, EventArgs e)
+        {
+            DialogResult dialogResult = MessageBox.Show("Tạo ra 1 bảng y hệt bảng hiện tại","Chia Đơn",
+                                           MessageBoxButtons.YesNo,
+                                           MessageBoxIcon.Question // Icon dấu chấm hỏi
+                                       );
+
+            if (dialogResult == DialogResult.No) return;
+
+            _ = Chiadon();
+        }
+        private async Task Chiadon()
+        {
+            try
+            {
+                if (dataGV.SelectedRows.Count <= 0) return;
+                
+                // Lấy dòng được chọn cuối cùng (theo thứ tự hiển thị)
+                DataGridViewRow lastSelectedRow = dataGV.SelectedRows[dataGV.SelectedRows.Count - 1];
+
+                // Ví dụ: lấy giá trị trong cột ExportCodeID
+                int orderId = Convert.ToInt32(lastSelectedRow.Cells["OrderId"].Value);
+
+                int newId = await SQLManager.Instance.CloneOrder_SplitHalfAsync(orderId);
+                DataRow newRow = mOrders_dt.NewRow();
+                foreach (DataGridViewCell cell in lastSelectedRow.Cells)
+                {
+                    string colName = cell.OwningColumn.DataPropertyName;
+                    if (string.IsNullOrEmpty(colName)) continue;
+                    if (mOrders_dt.Columns.Contains(colName))
+                        newRow[colName] = cell.Value ?? DBNull.Value;
+                }
+
+                newRow["OrderId"] = newId;
+                newRow["PCSOther"] = 0;
+                newRow["NWOther"] = 0;
+                newRow["PCSReal"] = DBNull.Value;
+                newRow["NWReal"] = DBNull.Value;
+                newRow["CartonNo"] = DBNull.Value;
+                newRow["CartonSize"] = DBNull.Value;
+                newRow["CustomerCarton"] = DBNull.Value;
+                // Thêm dòng clone vào DataGridView
+                mOrders_dt.Rows.Add(newRow);
+                mOrders_dt.AcceptChanges();
+
+                SQLStore.Instance.removeOrders();
+                
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Lỗi khi chia đơn: {ex.Message}");
+                MessageBox.Show($"Lỗi khi chia đơn: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private async void DelOrder_btn_Click(object sender, EventArgs e)
+        {
+            DialogResult dialogResult = MessageBox.Show("Xóa Đơn Đang Chọn", "Xóa",
+                                           MessageBoxButtons.YesNo,
+                                           MessageBoxIcon.Question // Icon dấu chấm hỏi
+                                       );
+
+            if (dialogResult == DialogResult.No) return;
+
+            try
+            {
+                if (dataGV.SelectedRows.Count <= 0) return;
+
+                // Lấy dòng được chọn cuối cùng (theo thứ tự hiển thị)
+                DataGridViewRow lastSelectedRow = dataGV.SelectedRows[dataGV.SelectedRows.Count - 1];
+
+                // Ví dụ: lấy giá trị trong cột ExportCodeID
+                int id = Convert.ToInt32(lastSelectedRow.Cells["OrderId"].Value);
+
+                bool isSuccess = await SQLManager.Instance.deleteOrderAsync(id);
+
+                if (isSuccess)
+                {
+                    status_lb.Text = "Thành công.";
+                    status_lb.ForeColor = System.Drawing.Color.Green;
+
+                    // Xóa row khỏi DataTable
+                    for (int i = mOrders_dt.Rows.Count - 1; i >= 0; i--)
+                    {
+                        DataRow row = mOrders_dt.Rows[i];
+                        int orderId = Convert.ToInt32(row["OrderId"]);
+                        if (id.CompareTo(orderId) == 0)
+                        {
+                            mOrders_dt.Rows.Remove(row);
+                        }
+                    }
+                }
+                else
+                {
+                    status_lb.Text = "Thất bại.";
+                    status_lb.ForeColor = System.Drawing.Color.Red;
+                }
+
+                SQLStore.Instance.removeOrders();
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Lỗi khi Xóa Đơn: {ex.Message}");
+                MessageBox.Show($"Lỗi khi Xóa Đơn: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -330,7 +451,14 @@ namespace RauViet.ui
         }
 
         private Dictionary<string, System.Drawing.Color> colorMap = new Dictionary<string, System.Drawing.Color>();
-        private System.Drawing.Color[] colors = new System.Drawing.Color[] {System.Drawing.Color.LightBlue, System.Drawing.Color.LightGreen, System.Drawing.Color.LightPink, System.Drawing.Color.LightCyan};
+        private System.Drawing.Color[] colors = new System.Drawing.Color[] {
+            System.Drawing.Color.LightBlue, 
+            System.Drawing.Color.LightGreen, 
+            System.Drawing.Color.LightPink, 
+            System.Drawing.Color.LightCyan, 
+            System.Drawing.Color .LightSeaGreen,
+            System.Drawing.Color .LightSalmon, 
+            System.Drawing.Color .Bisque};
 
         private void dataGV_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
         {
@@ -401,6 +529,18 @@ namespace RauViet.ui
                     row.Cells["NWReal"].ReadOnly = true;
                 }
             }
+            else if (dataGV.Columns[e.ColumnIndex].Name == "PCSOther" || dataGV.Columns[e.ColumnIndex].Name == "NWOther")
+            {
+                var row = dataGV.Rows[e.RowIndex];
+                int PCSOther = int.TryParse(row.Cells["PCSOther"].Value?.ToString(), out var pcs) ? pcs : 0;
+                decimal NWOther = decimal.TryParse(row.Cells["NWOther"].Value?.ToString(), out var nw) ? nw : 0;
+
+
+                if (PCSOther <= 0 && NWOther <= 0)
+                {
+                    e.CellStyle.BackColor = System.Drawing.Color.PaleVioletRed;
+                }
+            }
         }
         private void dataGV_RowPrePaint(object sender, DataGridViewRowPrePaintEventArgs e)
         {
@@ -434,6 +574,7 @@ namespace RauViet.ui
 
         private void dataGV_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
         {
+            e.Cancel = !LuuThayDoiBtn.Visible;
             // Chỉ áp dụng cho cột CartonNo
             /*if (dataGV.Columns[e.ColumnIndex].Name == "NWReal")
             {
@@ -1075,6 +1216,8 @@ namespace RauViet.ui
                 {
                     MessageBox.Show("Cập nhật thất bại!");
                 }
+
+                setUIReadOnly(true);
             }
             catch (Exception ex)
             {
@@ -1114,5 +1257,152 @@ namespace RauViet.ui
             MessageBox.Show("Đã điền xong các ô CartonSize rỗng!");
         }
 
+        private void Edit_btn_Click(object sender, EventArgs e)
+        {
+            setUIReadOnly(false);
+        }
+
+        private void setUIReadOnly(bool isReadOnly)
+        {
+            rightInfo_gb.Visible = !isReadOnly;
+            LuuThayDoiBtn.Visible = !isReadOnly;
+            edit_btn.Visible = isReadOnly;
+            InPhieuGiaoHang_btn.Visible = isReadOnly;
+            previewPrint_PGH_btn.Visible = isReadOnly;
+            print_btn.Visible = isReadOnly;
+            previewPrint_PT_btn.Visible = isReadOnly;
+        }
+
+        private void SortByCus_pri_btn_Click(object sender, EventArgs e)
+        {
+            if (dataGV.DataSource == null)
+                return;
+
+            DataView currentView = dataGV.DataSource is DataView dv ? dv : new DataView(mOrders_dt);
+            string sortExpression = "";
+
+            // Xác định kiểu sắp xếp dựa trên sortMode
+            switch (sortMode)
+            {
+                case 0:
+                    sortExpression = "CustomerName ASC, Priority DESC";
+                    break;
+                case 1:
+                    sortExpression = "CustomerName ASC, Priority ASC";
+                    break;
+                case 2:
+                    sortExpression = "CustomerName DESC, Priority DESC";
+                    break;
+                case 3:
+                    sortExpression = "CustomerName DESC, Priority ASC";
+                    break;
+            }
+
+            // Áp dụng sắp xếp
+            currentView.Sort = sortExpression;
+            dataGV.DataSource = currentView;
+            sortMode = (sortMode + 1) % 4;
+        }
+
+        private void SortByCus_pro_btn_Click(object sender, EventArgs e)
+        {
+            if (dataGV.DataSource == null)
+                return;
+
+            DataView currentView = dataGV.DataSource is DataView dv ? dv : new DataView(mOrders_dt);
+            string sortExpression = "";
+
+            // Xác định kiểu sắp xếp dựa trên sortMode
+            switch (sortMode)
+            {
+                case 0:
+                    sortExpression = "CustomerName ASC, ProductPackingName DESC";
+                    break;
+                case 1:
+                    sortExpression = "CustomerName ASC, ProductPackingName ASC";
+                    break;
+                case 2:
+                    sortExpression = "CustomerName DESC, ProductPackingName DESC";
+                    break;
+                case 3:
+                    sortExpression = "CustomerName DESC, ProductPackingName ASC";
+                    break;
+            }
+
+            // Áp dụng sắp xếp
+            currentView.Sort = sortExpression;
+            dataGV.DataSource = currentView;
+            sortMode = (sortMode + 1) % 4;
+        }
+
+        private void SortBypro_Cus_btn_Click(object sender, EventArgs e)
+        {
+            if (dataGV.DataSource == null)
+                return;
+
+            DataView currentView = dataGV.DataSource is DataView dv ? dv : new DataView(mOrders_dt);
+            string sortExpression = "";
+
+            // Xác định kiểu sắp xếp dựa trên sortMode
+            switch (sortMode)
+            {
+                case 0:
+                    sortExpression = "ProductPackingName ASC, CustomerName ASC";
+                    break;
+                case 1:
+                    sortExpression = "ProductPackingName ASC, CustomerName DESC";
+                    break;
+                case 2:
+                    sortExpression = "ProductPackingName DESC, CustomerName DESC";
+                    break;
+                case 3:
+                    sortExpression = "ProductPackingName DESC, CustomerName ASC";
+                    break;
+            }
+
+            // Áp dụng sắp xếp
+            currentView.Sort = sortExpression;
+            dataGV.DataSource = currentView;
+            sortMode = (sortMode + 1) % 4;
+        }
+
+        private void SortByPri_Pro_btn_Click(object sender, EventArgs e)
+        {
+            if (dataGV.DataSource == null)
+                return;
+
+            DataView currentView = dataGV.DataSource is DataView dv ? dv : new DataView(mOrders_dt);
+            string sortExpression = "";
+
+            // Xác định kiểu sắp xếp dựa trên sortMode
+            switch (sortMode)
+            {
+                case 0:
+                    sortExpression = "Priority ASC, ProductPackingName ASC, CustomerName ASC";
+                    break;
+                case 1:
+                    sortExpression = "Priority ASC, ProductPackingName DESC, CustomerName ASC";
+                    break;
+                case 2:
+                    sortExpression = "Priority DESC, ProductPackingName DESC, CustomerName ASC";
+                    break;
+                case 3:
+                    sortExpression = "Priority DESC, ProductPackingName ASC, CustomerName ASC";
+                    break;
+            }
+
+            // Áp dụng sắp xếp
+            currentView.Sort = sortExpression;
+            dataGV.DataSource = currentView;
+            sortMode = (sortMode + 1) % 4;
+        }
+
+        private void DataGV_SelectionChanged(object sender, EventArgs e)
+        {
+            if (dataGV.CurrentCell == null) return;
+
+            int rowIndex = dataGV.CurrentCell.RowIndex;
+            countRow_lb.Text = "row: " + rowIndex;
+        }
     }
 }

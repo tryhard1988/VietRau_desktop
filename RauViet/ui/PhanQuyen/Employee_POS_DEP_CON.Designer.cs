@@ -32,17 +32,17 @@ namespace RauViet.ui
             this.panel1 = new System.Windows.Forms.Panel();
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
             this.info_gb = new System.Windows.Forms.GroupBox();
-            this.salaryGrade_ccb = new System.Windows.Forms.ComboBox();
-            this.label14 = new System.Windows.Forms.Label();
             this.contractType_cbb = new System.Windows.Forms.ComboBox();
-            this.status_lb = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.position_cbb = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.department_cbb = new System.Windows.Forms.ComboBox();
             this.label4 = new System.Windows.Forms.Label();
             this.employeeCode_tb = new System.Windows.Forms.TextBox();
+            this.status_lb = new System.Windows.Forms.Label();
             this.dataGV = new System.Windows.Forms.DataGridView();
+            this.readOnly_btn = new System.Windows.Forms.Button();
+            this.edit_btn = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.info_gb.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
@@ -50,6 +50,8 @@ namespace RauViet.ui
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.readOnly_btn);
+            this.panel1.Controls.Add(this.edit_btn);
             this.panel1.Controls.Add(this.LuuThayDoiBtn);
             this.panel1.Controls.Add(this.info_gb);
             this.panel1.Controls.Add(this.employeeCode_tb);
@@ -73,8 +75,6 @@ namespace RauViet.ui
             // 
             // info_gb
             // 
-            this.info_gb.Controls.Add(this.salaryGrade_ccb);
-            this.info_gb.Controls.Add(this.label14);
             this.info_gb.Controls.Add(this.contractType_cbb);
             this.info_gb.Controls.Add(this.label5);
             this.info_gb.Controls.Add(this.position_cbb);
@@ -87,25 +87,6 @@ namespace RauViet.ui
             this.info_gb.TabIndex = 28;
             this.info_gb.TabStop = false;
             // 
-            // salaryGrade_ccb
-            // 
-            this.salaryGrade_ccb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.salaryGrade_ccb.FormattingEnabled = true;
-            this.salaryGrade_ccb.Location = new System.Drawing.Point(127, 132);
-            this.salaryGrade_ccb.Name = "salaryGrade_ccb";
-            this.salaryGrade_ccb.Size = new System.Drawing.Size(200, 21);
-            this.salaryGrade_ccb.TabIndex = 45;
-            // 
-            // label14
-            // 
-            this.label14.AutoSize = true;
-            this.label14.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label14.Location = new System.Drawing.Point(53, 134);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(71, 16);
-            this.label14.TabIndex = 44;
-            this.label14.Text = "Bậc Lương:";
-            // 
             // contractType_cbb
             // 
             this.contractType_cbb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -114,17 +95,6 @@ namespace RauViet.ui
             this.contractType_cbb.Name = "contractType_cbb";
             this.contractType_cbb.Size = new System.Drawing.Size(246, 21);
             this.contractType_cbb.TabIndex = 25;
-            // 
-            // status_lb
-            // 
-            this.status_lb.AutoSize = true;
-            this.status_lb.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.status_lb.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.status_lb.Location = new System.Drawing.Point(15, 398);
-            this.status_lb.Name = "status_lb";
-            this.status_lb.Size = new System.Drawing.Size(55, 23);
-            this.status_lb.TabIndex = 26;
-            this.status_lb.Text = "Email";
             // 
             // label5
             // 
@@ -183,6 +153,17 @@ namespace RauViet.ui
             this.employeeCode_tb.TabIndex = 16;
             this.employeeCode_tb.Visible = false;
             // 
+            // status_lb
+            // 
+            this.status_lb.AutoSize = true;
+            this.status_lb.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.status_lb.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.status_lb.Location = new System.Drawing.Point(15, 398);
+            this.status_lb.Name = "status_lb";
+            this.status_lb.Size = new System.Drawing.Size(55, 23);
+            this.status_lb.TabIndex = 26;
+            this.status_lb.Text = "Email";
+            // 
             // dataGV
             // 
             this.dataGV.AllowUserToAddRows = false;
@@ -194,6 +175,28 @@ namespace RauViet.ui
             this.dataGV.ReadOnly = true;
             this.dataGV.Size = new System.Drawing.Size(811, 724);
             this.dataGV.TabIndex = 10;
+            // 
+            // readOnly_btn
+            // 
+            this.readOnly_btn.BackColor = System.Drawing.Color.MediumSlateBlue;
+            this.readOnly_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.readOnly_btn.Location = new System.Drawing.Point(399, 176);
+            this.readOnly_btn.Name = "readOnly_btn";
+            this.readOnly_btn.Size = new System.Drawing.Size(42, 32);
+            this.readOnly_btn.TabIndex = 35;
+            this.readOnly_btn.Text = "X";
+            this.readOnly_btn.UseVisualStyleBackColor = false;
+            // 
+            // edit_btn
+            // 
+            this.edit_btn.BackColor = System.Drawing.SystemColors.MenuHighlight;
+            this.edit_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.edit_btn.Location = new System.Drawing.Point(347, 176);
+            this.edit_btn.Name = "edit_btn";
+            this.edit_btn.Size = new System.Drawing.Size(94, 32);
+            this.edit_btn.TabIndex = 34;
+            this.edit_btn.Text = "Chỉnh sửa";
+            this.edit_btn.UseVisualStyleBackColor = false;
             // 
             // Employee_POS_DEP_CON
             // 
@@ -226,7 +229,7 @@ namespace RauViet.ui
         private System.Windows.Forms.ComboBox position_cbb;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.DataGridView dataGV;
-        private System.Windows.Forms.ComboBox salaryGrade_ccb;
-        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Button readOnly_btn;
+        private System.Windows.Forms.Button edit_btn;
     }
 }

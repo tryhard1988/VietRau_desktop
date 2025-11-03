@@ -13,7 +13,7 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
 namespace RauViet.ui
 {
     public partial class EmployeeBaoHiem : Form
-    { 
+    {
         public EmployeeBaoHiem()
         {
             InitializeComponent();
@@ -28,6 +28,10 @@ namespace RauViet.ui
 
             LuuThayDoiBtn.Click += saveBtn_Click;
             dataGV.SelectionChanged += this.dataGV_CellClick;
+
+            edit_btn.Click += Edit_btn_Click;
+            readOnly_btn.Click += ReadOnly_btn_Click;
+            ReadOnly_btn_Click(null, null);
         }
 
         public async void ShowData()
@@ -104,7 +108,6 @@ namespace RauViet.ui
             bhyt_tb.Text = bhyt;
             bhxh_tb.Text = bhxh;
 
-            info_gb.BackColor = Color.DarkGray;
             status_lb.Text = "";
         }
 
@@ -159,6 +162,31 @@ namespace RauViet.ui
             if (employeeCode_tb.Text.Length != 0)
                 updateData(employeeCode_tb.Text, bhxh_tb.Text, bhyt_tb.Text);
 
+        }
+
+        private void ReadOnly_btn_Click(object sender, EventArgs e)
+        {
+            edit_btn.Visible = true;
+            readOnly_btn.Visible = false;
+            LuuThayDoiBtn.Visible = false;
+            info_gb.BackColor = Color.DarkGray;
+            SetUIReadOnly(true);
+        }
+
+        private void Edit_btn_Click(object sender, EventArgs e)
+        {
+            edit_btn.Visible = false;
+            readOnly_btn.Visible = true;
+            LuuThayDoiBtn.Visible = true;
+            info_gb.BackColor = edit_btn.BackColor;
+            LuuThayDoiBtn.Text = "Lưu C.Sửa";
+            SetUIReadOnly(false);
+        }
+
+        private void SetUIReadOnly(bool isReadOnly)
+        {
+            bhxh_tb.ReadOnly = isReadOnly;
+            bhyt_tb.ReadOnly = isReadOnly;
         }
     }
 }

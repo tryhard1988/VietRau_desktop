@@ -14,7 +14,7 @@ namespace RauViet.ui
 {    
     public partial class Employee_POS_DEP_CON : Form
     {
-        private DataTable mDepartment_dt, mPosition_dt, mContractType_dt, mSalaryGrade_dt, mEmployees_dt;
+        private DataTable mDepartment_dt, mPosition_dt, mContractType_dt, mEmployees_dt;
         public Employee_POS_DEP_CON()
         {
             InitializeComponent();
@@ -29,6 +29,10 @@ namespace RauViet.ui
 
             LuuThayDoiBtn.Click += saveBtn_Click;
             dataGV.SelectionChanged += this.dataGV_CellClick;
+
+            edit_btn.Click += Edit_btn_Click;
+            readOnly_btn.Click += ReadOnly_btn_Click;
+            ReadOnly_btn_Click(null, null);
         }
 
         public async void ShowData()
@@ -43,19 +47,17 @@ namespace RauViet.ui
             try
             {
                 // Chạy truy vấn trên thread riêng
-                string[] keepColumns = { "EmployeeCode", "FullName", "HireDate", "PositionID", "DepartmentID", "ContractTypeID", "SalaryGradeID", "PositionName", "DepartmentName", "ContractTypeName", "GradeName" };
+                string[] keepColumns = { "EmployeeCode", "FullName", "HireDate", "PositionID", "DepartmentID", "ContractTypeID", "PositionName", "DepartmentName", "ContractTypeName"};
                 var employeesTask = SQLStore.Instance.GetEmployeesAsync(keepColumns);
                 var departmentTask = SQLStore.Instance.GetActiveDepartmentAsync();
                 var positionTask = SQLStore.Instance.GetActivePositionAsync();
                 var contractTypeTask = SQLStore.Instance.GetContractTypeAsync();
-                var salaryGradeTask = SQLStore.Instance.GetActiveSalaryGradeAsync();
 
-                await Task.WhenAll(employeesTask, departmentTask, positionTask, contractTypeTask, salaryGradeTask);
+                await Task.WhenAll(employeesTask, departmentTask, positionTask, contractTypeTask);
                 mEmployees_dt = employeesTask.Result;
                 mDepartment_dt = departmentTask.Result;
                 mPosition_dt = positionTask.Result;
                 mContractType_dt = contractTypeTask.Result;
-                mSalaryGrade_dt = salaryGradeTask.Result;
 
                 
                 department_cbb.DataSource = mDepartment_dt;
@@ -70,9 +72,7 @@ namespace RauViet.ui
                 contractType_cbb.DisplayMember = "ContractTypeName";
                 contractType_cbb.ValueMember = "ContractTypeID";
 
-                salaryGrade_ccb.DataSource = mSalaryGrade_dt;
-                salaryGrade_ccb.DisplayMember = "GradeName";
-                salaryGrade_ccb.ValueMember = "SalaryGradeID";                              
+                                            
 
                 int count = 0;
                 mEmployees_dt.Columns["EmployeeCode"].SetOrdinal(count++);
@@ -80,8 +80,7 @@ namespace RauViet.ui
                 mEmployees_dt.Columns["HireDate"].SetOrdinal(count++);
                 mEmployees_dt.Columns["DepartmentName"].SetOrdinal(count++);
                 mEmployees_dt.Columns["PositionName"].SetOrdinal(count++);
-                mEmployees_dt.Columns["ContractTypeName"].SetOrdinal(count++);                
-                mEmployees_dt.Columns["GradeName"].SetOrdinal(count++);
+                mEmployees_dt.Columns["ContractTypeName"].SetOrdinal(count++);        
                 
 
                 dataGV.DataSource = mEmployees_dt;
@@ -92,9 +91,7 @@ namespace RauViet.ui
                 dataGV.Columns["PositionName"].HeaderText = "Chức Vụ";
                 dataGV.Columns["DepartmentName"].HeaderText = "Phòng Ban";
                 dataGV.Columns["ContractTypeName"].HeaderText = "Loại Hợp Đồng";
-                dataGV.Columns["GradeName"].HeaderText = "Bậc Lương";
 
-                dataGV.Columns["SalaryGradeID"].Visible = false;
                 dataGV.Columns["PositionID"].Visible = false;
                 dataGV.Columns["DepartmentID"].Visible = false;
                 dataGV.Columns["ContractTypeID"].Visible = false;
@@ -105,7 +102,6 @@ namespace RauViet.ui
                 dataGV.Columns["PositionName"].Width = 100;
                 dataGV.Columns["DepartmentName"].Width = 120;
                 dataGV.Columns["ContractTypeName"].Width = 90;
-                dataGV.Columns["GradeName"].Width = 90;
 
 
                 if (dataGV.Rows.Count > 0)
@@ -149,7 +145,6 @@ namespace RauViet.ui
             int? positionID = Utils.GetIntValue(cells["PositionID"]);
             int? departmentID = Utils.GetIntValue(cells["DepartmentID"]);
             int? contractTypeID = Utils.GetIntValue(cells["ContractTypeID"]);
-            int? salaryGradeID = Utils.GetIntValue(cells["SalaryGradeID"]);
             string employeeCode = cells["EmployeeCode"].Value.ToString();
             string fullName = cells["FullName"].Value.ToString();
             DateTime hireDate = Convert.ToDateTime(cells["HireDate"].Value);
@@ -158,13 +153,10 @@ namespace RauViet.ui
             Utils.SafeSelectValue(position_cbb, positionID);
             Utils.SafeSelectValue(department_cbb, departmentID);
             Utils.SafeSelectValue(contractType_cbb, contractTypeID);
-            Utils.SafeSelectValue(salaryGrade_ccb, salaryGradeID);
-
-            info_gb.BackColor = Color.DarkGray;
             status_lb.Text = "";
         }
         
-        private async void updateData(string maNV, int department, int position, int contractType, int salaryGrade)
+        private async void updateData(string maNV, int department, int position, int contractType)
         {
             foreach (DataGridViewRow row in dataGV.Rows)
             {
@@ -176,7 +168,7 @@ namespace RauViet.ui
                     {
                         try
                         {
-                            bool isScussess = await SQLManager.Instance.updateEmployeeWorkAsync(maNV, position, department, contractType, salaryGrade);
+                            bool isScussess = await SQLManager.Instance.updateEmployeeWorkAsync(maNV, position, department, contractType);
 
                             if (isScussess == true)
                             {
@@ -187,31 +179,26 @@ namespace RauViet.ui
                                 row.Cells["PositionID"].Value = position;
                                 row.Cells["DepartmentID"].Value = department;
                                 row.Cells["ContractTypeID"].Value = contractType;
-                                row.Cells["SalaryGradeID"].Value = salaryGrade;
 
                                 string positionName = mPosition_dt.Select($"PositionID = {position}")[0]["PositionName"].ToString();
                                 string departmentName = mDepartment_dt.Select($"DepartmentID = {department}")[0]["DepartmentName"].ToString();
                                 string contractTypeName = mContractType_dt.Select($"ContractTypeID = {contractType}")[0]["ContractTypeName"].ToString();
-                                string gradeName = mSalaryGrade_dt.Select($"SalaryGradeID = {salaryGrade}")[0]["GradeName"].ToString();
                                 string positionCode = mPosition_dt.Select($"PositionID = {position}")[0]["PositionCode"].ToString();
                                 string contractTypeCode = mContractType_dt.Select($"ContractTypeID = {contractType}")[0]["ContractTypeCode"].ToString();
 
                                 row.Cells["PositionName"].Value = positionName;
                                 row.Cells["DepartmentName"].Value = departmentName;
                                 row.Cells["ContractTypeName"].Value = contractTypeName;
-                                row.Cells["GradeName"].Value = gradeName;
 
                                 var parameters = new Dictionary<string, object>
                                 {
                                     ["PositionID"] = position,
                                     ["DepartmentID"] = department,
                                     ["ContractTypeID"] = contractType,
-                                    ["SalaryGradeID"] = salaryGrade,
 
                                     ["PositionName"] = positionName,
                                     ["DepartmentName"] = departmentName,
                                     ["ContractTypeName"] = contractTypeName,
-                                    ["GradeName"] = gradeName,
 
                                     ["PositionCode"] = positionCode,
                                     ["ContractTypeCode"] = contractTypeCode
@@ -245,7 +232,7 @@ namespace RauViet.ui
         private void saveBtn_Click(object sender, EventArgs e)
         {
 
-            if (department_cbb.SelectedItem == null || position_cbb.SelectedItem == null || salaryGrade_ccb.SelectedValue == null)
+            if (department_cbb.SelectedItem == null || position_cbb.SelectedItem == null)
             {
                 MessageBox.Show("Sai Dữ Liệu, Kiểm Tra Lại!", "Thông Báo", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
@@ -253,11 +240,36 @@ namespace RauViet.ui
             int department = Convert.ToInt32(department_cbb.SelectedValue);
             int position = Convert.ToInt32(position_cbb.SelectedValue);
             int contractType = Convert.ToInt32(contractType_cbb.SelectedValue);
-            int salaryGrade = Convert.ToInt32(salaryGrade_ccb.SelectedValue);
 
 
             if (employeeCode_tb.Text.Length != 0)
-                updateData(employeeCode_tb.Text, department,position, contractType, salaryGrade);
+                updateData(employeeCode_tb.Text, department,position, contractType);
+        }
+
+        private void ReadOnly_btn_Click(object sender, EventArgs e)
+        {
+            edit_btn.Visible = true;
+            readOnly_btn.Visible = false;
+            LuuThayDoiBtn.Visible = false;
+            info_gb.BackColor = Color.DarkGray;
+            SetUIReadOnly(true);
+        }
+
+        private void Edit_btn_Click(object sender, EventArgs e)
+        {
+            edit_btn.Visible = false;
+            readOnly_btn.Visible = true;
+            LuuThayDoiBtn.Visible = true;
+            info_gb.BackColor = edit_btn.BackColor;
+            LuuThayDoiBtn.Text = "Lưu C.Sửa";
+            SetUIReadOnly(false);
+        }
+
+        private void SetUIReadOnly(bool isReadOnly)
+        {
+            department_cbb.Enabled = !isReadOnly;
+            position_cbb.Enabled = !isReadOnly;
+            contractType_cbb.Enabled = !isReadOnly;
         }
 
     }

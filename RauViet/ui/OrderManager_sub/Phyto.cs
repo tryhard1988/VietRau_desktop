@@ -48,7 +48,7 @@ namespace RauViet.ui
             try
             {
                 var ordersPackingTask = SQLManager.Instance.getOrdersPhytoAsync();
-                string[] keepColumns = { "ExportCodeID", "ExportCode" };
+                string[] keepColumns = { "ExportCodeID", "ExportCode", "ExportDate" };
                 var parameters = new Dictionary<string, object> { { "Complete", false } };
                 var exportCodeTask = SQLStore.Instance.getExportCodesAsync(keepColumns, parameters);
 

@@ -29,8 +29,8 @@ namespace RauViet.ui
             status_lb.Text = "";
 
             Reset_btn.Click += resetBtn_Click;
-            LuuThayDoiBtn.Click += saveBtn_Click;           
-         //   dataGV.RowPrePaint += new System.Windows.Forms.DataGridViewRowPrePaintEventHandler(this.dataGV_RowPrePaint);
+            LuuThayDoiBtn.Click += saveBtn_Click;
+            //   dataGV.RowPrePaint += new System.Windows.Forms.DataGridViewRowPrePaintEventHandler(this.dataGV_RowPrePaint);
             dataGV.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.dataGV_EditingControlShowing);
             dataGV.CellFormatting += dataGV_CellFormatting;
             dataGV.CellValueChanged += dataGV_CellValueChanged;
@@ -84,7 +84,7 @@ namespace RauViet.ui
                         dr["ProductNameVN"] = $"{productName}";
                     }
 
-                    decimal nwReal, nwFinal,nwOrder;
+                    decimal nwReal, nwFinal, nwOrder;
 
                     // thử ép kiểu, nếu không thành công thì bỏ qua
                     bool isNWRealValid = decimal.TryParse(dr["TotalNWReal"]?.ToString(), out nwReal);
@@ -100,7 +100,7 @@ namespace RauViet.ui
                             nwFinal = nwReal;
                             isNWFinalValid = isNWRealValid;
                         }
-                        
+
                     }
 
                     if (isNWRealValid && isNWFinalValid) dr["NWDifference"] = nwReal - nwFinal;
@@ -171,7 +171,7 @@ namespace RauViet.ui
                 exportCode_cbb.DisplayMember = "ExportCode";  // hiển thị tên
                 exportCode_cbb.ValueMember = "ExportCodeID";
 
-                
+                calvalueRightUI();
             }
             catch (Exception ex)
             {
@@ -208,6 +208,8 @@ namespace RauViet.ui
                 // Nếu chưa chọn gì thì hiển thị toàn bộ
                 dataGV.DataSource = mOrdersTotal_dt;
             }
+
+            calvalueRightUI();
         }
 
         private void dataGV_CellValueChanged(object sender, DataGridViewCellEventArgs e)
@@ -221,6 +223,8 @@ namespace RauViet.ui
                 {
                     updateNWDifference(dataGV.Rows[e.RowIndex]);
                 }
+
+                calvalueRightUI();
             }
         }
 
@@ -260,7 +264,7 @@ namespace RauViet.ui
             {
                 dataGV.Rows[e.RowIndex].DefaultCellStyle.BackColor = System.Drawing.Color.Beige;
             }
-        }        
+        }
 
         private void dataGV_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
         {
@@ -404,7 +408,7 @@ namespace RauViet.ui
                 {
                     _dataChanged = false;
                     MessageBox.Show("Cập nhật thành công!");
-                   // status_lb.Text = "Thành công.";
+                    // status_lb.Text = "Thành công.";
                     //status_lb.ForeColor = System.Drawing.Color.Green;
                 }
                 else
@@ -420,6 +424,40 @@ namespace RauViet.ui
                 //status_lb.Text = "Thất bại.";
                 //status_lb.ForeColor = System.Drawing.Color.Red;
             }
+        }
+
+        private void calvalueRightUI()
+        {
+            decimal sumNWRegistration = 0;
+            decimal sumTotalNWOther = 0;
+            decimal sumNetWeightFinal = 0;
+            decimal sumTotalNWReal = 0;
+            decimal sumNWDifference = 0;
+
+            foreach (DataGridViewRow row in dataGV.Rows)
+            {
+                if (row.IsNewRow) continue;
+
+                sumNWRegistration += ToDecimalSafe(row.Cells["NWRegistration"].Value);
+                sumTotalNWOther += ToDecimalSafe(row.Cells["TotalNWOther"].Value);
+                sumNetWeightFinal += ToDecimalSafe(row.Cells["NetWeightFinal"].Value);
+                sumTotalNWReal += ToDecimalSafe(row.Cells["TotalNWReal"].Value);
+                sumNWDifference += ToDecimalSafe(row.Cells["NWDifference"].Value);
+            }
+
+            nwdkkd_tb.Text = sumNWRegistration.ToString("N2");
+            nwdh_tb.Text = sumTotalNWOther.ToString("N2");
+            nwc_tb.Text = sumNetWeightFinal.ToString("N2");
+            nwdt_tb.Text = sumTotalNWReal.ToString("N2");
+            clpvdt_tb.Text = sumNWDifference.ToString("N2");
+        }
+
+        private decimal ToDecimalSafe(object value)
+        {
+            if (value == null || value == DBNull.Value) return 0;
+            if (decimal.TryParse(value.ToString(), out decimal result))
+                return result;
+            return 0;
         }
     }
 }

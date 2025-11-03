@@ -15,12 +15,11 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
 
 namespace RauViet.ui
 {
-    public partial class Attendance : Form, ICanSave
+    public partial class Attendance : Form
     {
         DataTable mAttendamce_dt, mEmployee_dt, mHoliday_dt;
         Dictionary<string, (string PositionCode, string ContractTypeCode)> employeeDict;
         LoadingOverlay loadingOverlay;
-        private bool _dataChanged = false;
         public Attendance()
         {
             InitializeComponent();
@@ -58,7 +57,6 @@ namespace RauViet.ui
             dataGV.SelectionChanged += this.dataGV_CellClick;
             attendanceGV.CellFormatting += AttandaceGV_CellFormatting;
             attendanceGV.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.attendanceGV_EditingControlShowing);
-            attendanceGV.CellValueChanged += attendanceGV_CellValueChanged;
             year_tb.KeyPress += Tb_KeyPress_OnlyNumber;
 
             excelAttendance_btn.Click += ExcelAttendance_btn_Click;                       
@@ -460,7 +458,6 @@ namespace RauViet.ui
             Attendamce(month, year);
             await Task.Delay(100);
             loadingOverlay.Hide();
-            _dataChanged = false;
         }
 
         private void dataGV_CellClick(object sender, EventArgs e)
@@ -521,7 +518,6 @@ namespace RauViet.ui
 
         public async void SaveData(bool ask = true)
         {
-            if (!_dataChanged && ask) return;
 
             List<(string EmployeeCode, DateTime WorkDate, double WorkingHours, string Note, string log)> attendanceData = new List<(string, DateTime, double, string, string)>();
 
@@ -548,7 +544,6 @@ namespace RauViet.ui
                     {
                         cal_WorkingHour_WorkingDay();
                         MessageBox.Show("Cập Nhật Thành Công Rồi Đó ?", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        _dataChanged = false;
                     }
                     else
                     {
@@ -560,10 +555,6 @@ namespace RauViet.ui
                     MessageBox.Show("Thất Bại ?", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }            
-        }
-        private void attendanceGV_CellValueChanged(object sender, DataGridViewCellEventArgs e)
-        {
-            _dataChanged = true;
         }
     }
 }

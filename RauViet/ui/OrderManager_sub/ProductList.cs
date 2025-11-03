@@ -16,7 +16,7 @@ namespace RauViet.ui
 {
     public partial class ProductList : Form
     {
-        DataTable mSKU_dt;
+        DataTable mSKU_dt, packing_dt;
         private Timer debounceTimer = new Timer { Interval = 300 };
         bool isNewState = false;
         private LoadingOverlay loadingOverlay;
@@ -65,68 +65,23 @@ namespace RauViet.ui
                 await Task.WhenAll(skuTask, packingTask);
 
                 mSKU_dt = skuTask.Result;
-                DataTable packing_dt = packingTask.Result;
+                packing_dt = packingTask.Result;
 
                 foreach (DataColumn col in packing_dt.Columns)
                     col.ReadOnly = false;
-
-                if (!packing_dt.Columns.Contains("ProductNameVN_NoSign"))
-                    packing_dt.Columns.Add("ProductNameVN_NoSign", typeof(string));
 
                 sku_cbb.DataSource = mSKU_dt;
                 sku_cbb.DisplayMember = "ProductNameVN";  // hiển thị tên
                 sku_cbb.ValueMember = "SKU";
                 sku_cbb.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
-                sku_cbb.AutoCompleteSource = AutoCompleteSource.ListItems;
+               // sku_cbb.AutoCompleteSource = AutoCompleteSource.ListItems;
                 sku_cbb.SelectedIndexChanged += sku_cbb_SelectedIndexChanged;
                 sku_cbb.TextUpdate += sku_cbb_TextUpdate;
-
-                // Thêm cột vào DataTable
-                packing_dt.Columns.Add(new DataColumn("PriceCNF", typeof(string)));
-                packing_dt.Columns.Add(new DataColumn("Name_VN", typeof(string)));
-                packing_dt.Columns.Add(new DataColumn("Name_EN", typeof(string)));
-               // packing_dt.Columns.Add(new DataColumn("Package", typeof(string)));
-
-                // Chuyển cột vào vị trí mong muốn
 
                 packing_dt.Columns["Name_VN"].SetOrdinal(3); 
                 packing_dt.Columns["Name_EN"].SetOrdinal(4);
                 packing_dt.Columns["Amount"].SetOrdinal(5);
-                // PriceCNF.SetOrdinal(5); // chèn vào vị trí index 3
-                // Gán giá trị cho từng dòng
-                foreach (DataRow dr in packing_dt.Rows)
-                {
-                    int sku = Convert.ToInt32(dr["SKU"]);
-                    DataRow row = mSKU_dt.Select($"SKU = '{sku}'")[0];
-
-                    string package = row["Package"].ToString();
-                    string nameVN = row["ProductNameVN"].ToString();
-                    string nameEN = row["ProductNameEN"].ToString();
-                    string packingType = row["PackingType"].ToString();
-                    decimal amount = dr["Amount"] == DBNull.Value ? 0 : Convert.ToDecimal(dr["Amount"]);
-                    string packing = dr["Packing"].ToString();
-                    dr["Name_EN"] = nameEN;
-
-                    string resultAmount = amount.ToString("0.##");
-                    dr["Amount"] = resultAmount;
-
-                    if (package.CompareTo("kg") == 0 && packing.CompareTo("") != 0 && amount > 0)
-                    {
-                        
-                        dr["Name_VN"] = nameVN + " " + packingType + " " + resultAmount + " " + packing;
-                        dr["Name_EN"] = nameEN + " " + packingType + " " + resultAmount + " " + packing;
-                    }
-                    else
-                    {
-                        dr["Name_VN"] = nameVN;
-                        dr["Name_EN"] = nameEN;
-                    }
-
-                    dr["ProductNameVN_NoSign"] = Utils.RemoveVietnameseSigns(nameVN + " " + sku).ToLower();
-
-                    // dr["Package"] = package;
-                    dr["PriceCNF"] = row["PriceCNF"].ToString();
-                }
+                
 
                 dataGV.DataSource = packing_dt;
                 dataGV.Columns["ProductPackingID"].Visible = false;
@@ -135,9 +90,6 @@ namespace RauViet.ui
                 dataGV.Columns["PriceCNF"].Visible = false;
                 dataGV.Columns["SKU"].Visible = false; 
                 dataGV.Columns["ProductNameVN_NoSign"].Visible = false;
-
-
-                //  dataGV.Columns["SKU"].Visible = false;
 
                 dataGV.Columns["Name_VN"].HeaderText = "Tên Tiếng Việt";
                 dataGV.Columns["Name_EN"].HeaderText = "Tên Tiếng Anh";
@@ -212,32 +164,36 @@ namespace RauViet.ui
 
         private void DebounceTimer_Tick(object sender, EventArgs e)
         {
-            debounceTimer.Stop();
+            try
+            {
+                debounceTimer.Stop();
 
-            string typed = sku_cbb.Text ?? "";
-            string plain = Utils.RemoveVietnameseSigns(typed).ToLower();
+                string typed = sku_cbb.Text ?? "";
+                string plain = Utils.RemoveVietnameseSigns(typed).ToLower();
 
-            // Filter bằng LINQ
-            var filtered = mSKU_dt.AsEnumerable()
-                .Where(r => Utils.RemoveVietnameseSigns(r["ProductNameVN"].ToString().ToLower())
-                .Contains(plain));
+                // Filter bằng LINQ
+                var filtered = mSKU_dt.AsEnumerable()
+                    .Where(r => r["ProductNameVN_NoSign"].ToString()
+                    .Contains(plain));
 
-            DataTable temp;
-            if (filtered.Any())
-                temp = filtered.CopyToDataTable();
-            else
-                temp = mSKU_dt.Clone(); // nếu không có kết quả thì trả về table rỗng
+                DataTable temp;
+                if (filtered.Any())
+                    temp = filtered.CopyToDataTable();
+                else
+                    temp = mSKU_dt.Clone(); // nếu không có kết quả thì trả về table rỗng
 
-            // Gán lại DataSource
-            sku_cbb.DataSource = temp;
-            sku_cbb.DisplayMember = "ProductNameVN";
-            sku_cbb.ValueMember = "SKU";
+                // Gán lại DataSource
+                sku_cbb.DataSource = temp;
+                sku_cbb.DisplayMember = "ProductNameVN";
+                sku_cbb.ValueMember = "SKU";
 
-            // Giữ lại text người đang gõ
-            sku_cbb.DroppedDown = true;
-            sku_cbb.Text = typed;
-            sku_cbb.SelectionStart = typed.Length;
-            sku_cbb.SelectionLength = 0;
+                // Giữ lại text người đang gõ
+                sku_cbb.DroppedDown = true;
+                sku_cbb.Text = typed;
+                sku_cbb.SelectionStart = typed.Length;
+                sku_cbb.SelectionLength = 0;
+            }
+            catch { }
         }
 
         private void dataGV_RowPrePaint(object sender, DataGridViewRowPrePaintEventArgs e)
@@ -296,12 +252,15 @@ namespace RauViet.ui
                                     row.Cells["Name_VN"].Value = productSKUData["ProductNameVN"];
                                     row.Cells["Name_EN"].Value = productSKUData["ProductNameEN"];
                                 }
-                                    row.Cells["Packing"].Value = packing;
+
+                                row.Cells["ProductNameVN_NoSign"].Value = Utils.RemoveVietnameseSigns(productSKUData["ProductNameVN"] + " " + SKU).ToLower();
+                                row.Cells["Packing"].Value = packing;
                                 row.Cells["PriceCNF"].Value = productSKUData["PriceCNF"];
                                 row.Cells["BarCodeEAN13"].Value = barCodeEAN13;
                                 row.Cells["ArtNr"].Value = artNr;
                                 row.Cells["GGN"].Value = GGN;
-                                if(Amount != null)
+                                row.Cells["PackingName"].Value = $"{resultAmount} {packing}";
+                                if (Amount != null)
                                     row.Cells["Amount"].Value = Amount;
                                 else
                                     row.Cells["Amount"].Value = DBNull.Value;
@@ -316,11 +275,7 @@ namespace RauViet.ui
                         {
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;
-                        }
-
-                        
-
-                        
+                        }  
                     }
                     break;
                 }
@@ -360,11 +315,16 @@ namespace RauViet.ui
                             drToAdd["Name_VN"] = productSKUData["ProductNameVN"];
                             drToAdd["Name_EN"] = productSKUData["ProductNameEN"];
                         }
+                        drToAdd["ProductNameVN_NoSign"] = Utils.RemoveVietnameseSigns(productSKUData["ProductNameVN"] + " " + SKU).ToLower();
+
                         drToAdd["Packing"] = packing;
                         drToAdd["PriceCNF"] = productSKUData["PriceCNF"]; ;
                         drToAdd["BarCodeEAN13"] = barCodeEAN13;
                         drToAdd["ArtNr"] = artNr;
                         drToAdd["GGN"] = GGN;
+
+                        drToAdd["PackingName"] = $"{resultAmount} {packing}";
+
                         if (Amount != null)
                             drToAdd["Amount"] = Amount;
                         else
@@ -472,10 +432,6 @@ namespace RauViet.ui
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;
                         }
-
-
-
-
                     }
                     break;
                 }
@@ -509,6 +465,7 @@ namespace RauViet.ui
             delete_btn.Visible = false;
             isNewState = true;
             LuuThayDoiBtn.Text = "Lưu Mới";
+            RightUiReadOnly(false);
         }
 
         private void ReadOnly_btn_Click(object sender, EventArgs e)
@@ -520,6 +477,7 @@ namespace RauViet.ui
             delete_btn.Visible = false;
             info_gb.BackColor = Color.DarkGray;
             isNewState = false;
+            RightUiReadOnly(true);
         }
 
         private void Edit_btn_Click(object sender, EventArgs e)
@@ -532,6 +490,7 @@ namespace RauViet.ui
             info_gb.BackColor = edit_btn.BackColor;
             isNewState = false;
             LuuThayDoiBtn.Text = "Lưu C.Sửa";
+            RightUiReadOnly(false);
         }
 
         private void sku_cbb_SelectedIndexChanged(object sender, EventArgs e)
@@ -588,68 +547,75 @@ namespace RauViet.ui
 
         private void updateDataTextBoxFlowSKU()
         {
-            if (isNewState) return;
-
-            if (dataGV.SelectedRows.Count > 0)
+            try
             {
-                var cells = dataGV.SelectedRows[0].Cells;
+                if (isNewState) return;
 
-                string ID = cells["ProductPackingID"].Value.ToString();
-                string SKU = cells["SKU"].Value.ToString();
-                string barcode = cells["BarCode"].Value.ToString();
-                string PLU = cells["PLU"].Value.ToString();
-                string nameVN = cells["Name_VN"].Value.ToString();
-                string nameEN = cells["Name_EN"].Value.ToString();
-                string amount = cells["Amount"].Value.ToString();
-                string priceCNF = cells["PriceCNF"].Value.ToString();
-                string barCodeEAN13 = cells["BarCodeEAN13"].Value.ToString();
-                string artNr = cells["ArtNr"].Value.ToString();
-                string GGN = cells["GGN"].Value.ToString();
-
-
-                sku_cbb.SelectedValue = SKU;
-                DataRowView productSKUData = (DataRowView)sku_cbb.SelectedItem;
-                if (productSKUData == null) return;
-
-                id_tb.Text = ID;
-                barCode_tb.Text = barcode;
-                PLU_tb.Text = PLU;
-        //        botanicalName_tb.Text = productSKUData["BotanicalName"].ToString();
-                nameVN_tb.Text = productSKUData["ProductNameVN"].ToString();
-                nameEN_tb.Text = productSKUData["ProductNameEN"].ToString();
-                //    packing_tb.Text = packing;
-                amount_tb.Text = amount;
-                priceCNF_tb.Text = priceCNF;
-                barCodeEAN13_tb.Text = barCodeEAN13;
-                artNr_tb.Text = artNr;
-                GGN_tb.Text = GGN;
-
-                packing_panel.Controls.Clear();
-
-                if (productSKUData["PackingList"].ToString().CompareTo("") != 0)
+                if (dataGV.SelectedRows.Count > 0)
                 {
-                    string[] arr = productSKUData["PackingList"].ToString().Split('-');
-                    int top = 00;
+                    var cells = dataGV.SelectedRows[0].Cells;
 
-                    foreach (var item in arr)
+                    string ID = cells["ProductPackingID"].Value.ToString();
+                    string SKU = cells["SKU"].Value.ToString();
+                    string barcode = cells["BarCode"].Value.ToString();
+                    string PLU = cells["PLU"].Value.ToString();
+                    string nameVN = cells["Name_VN"].Value.ToString();
+                    string nameEN = cells["Name_EN"].Value.ToString();
+                    string amount = cells["Amount"].Value.ToString();
+                    string priceCNF = cells["PriceCNF"].Value.ToString();
+                    string barCodeEAN13 = cells["BarCodeEAN13"].Value.ToString();
+                    string artNr = cells["ArtNr"].Value.ToString();
+                    string GGN = cells["GGN"].Value.ToString();
+
+                    if (!sku_cbb.Items.Cast<object>().Any(i => ((DataRowView)i)["SKU"].ToString() == SKU))
                     {
-                        RadioButton rb = new RadioButton();
-                        rb.Text = item;
-                        rb.Location = new Point(top, 5);
-                        rb.AutoSize = true;
-                        packing_panel.Controls.Add(rb);
-
-                        if (item.Equals(cells["Packing"].Value.ToString(), StringComparison.OrdinalIgnoreCase))
-                        {
-                            rb.Checked = true;
-                        }
-
-                        top += 70;
+                        sku_cbb.DataSource = mSKU_dt;
                     }
-                }
+                    sku_cbb.SelectedValue = SKU;
+                    DataRowView productSKUData = (DataRowView)sku_cbb.SelectedItem;
+                    if (productSKUData == null) return;
 
-                status_lb.Text = "";
+                    id_tb.Text = ID;
+                    barCode_tb.Text = barcode;
+                    PLU_tb.Text = PLU;
+                    //        botanicalName_tb.Text = productSKUData["BotanicalName"].ToString();
+                    nameVN_tb.Text = productSKUData["ProductNameVN"].ToString();
+                    nameEN_tb.Text = productSKUData["ProductNameEN"].ToString();
+                    //    packing_tb.Text = packing;
+                    amount_tb.Text = amount;
+                    priceCNF_tb.Text = priceCNF;
+                    barCodeEAN13_tb.Text = barCodeEAN13;
+                    artNr_tb.Text = artNr;
+                    GGN_tb.Text = GGN;
+
+                    packing_panel.Controls.Clear();
+
+                    if (productSKUData["PackingList"].ToString().CompareTo("") != 0)
+                    {
+                        string[] arr = productSKUData["PackingList"].ToString().Split('-');
+                        int top = 00;
+
+                        foreach (var item in arr)
+                        {
+                            RadioButton rb = new RadioButton();
+                            rb.Text = item;
+                            rb.Location = new Point(top, 5);
+                            rb.AutoSize = true;
+                            packing_panel.Controls.Add(rb);
+
+                            if (item.Equals(cells["Packing"].Value.ToString(), StringComparison.OrdinalIgnoreCase))
+                            {
+                                rb.Checked = true;
+                            }
+
+                            top += 70;
+                        }
+                    }
+
+                    status_lb.Text = "";
+                }
             }
+            catch { };
         }
 
         private void priceCNF_tb_TextChanged(object sender, EventArgs e)
@@ -683,12 +649,24 @@ namespace RauViet.ui
             string keyword = Utils.RemoveVietnameseSigns(search_tb.Text.Trim().ToLower())
                      .Replace("'", "''"); // tránh lỗi cú pháp '
 
-            DataTable dt = dataGV.DataSource as DataTable;
-            if (dt == null) return;
+           // DataTable dt = dataGV.DataSource as DataTable;
+           // if (dt == null) return;
 
-            DataView dv = dt.DefaultView;
+            DataView dv = packing_dt.DefaultView;
             dv.RowFilter = $"[ProductNameVN_NoSign] LIKE '%{keyword}%'";
 
+        }
+
+        private void RightUiReadOnly(bool isReadOnly)
+        {
+            barCodeEAN13_tb.ReadOnly = isReadOnly;
+            PLU_tb.ReadOnly = isReadOnly;
+            sku_cbb.Enabled = !isReadOnly;
+            packing_panel.Enabled = !isReadOnly;
+            amount_tb.ReadOnly = isReadOnly;
+            barCode_tb.ReadOnly = isReadOnly;
+            artNr_tb.ReadOnly = isReadOnly;
+            GGN_tb.ReadOnly = isReadOnly;
         }
     }
 }

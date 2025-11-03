@@ -40,6 +40,7 @@
             this.employeeBH_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.employeeBank_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.employeeWork_mi = new System.Windows.Forms.ToolStripMenuItem();
+            this.employeeSalaryInfo_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.department_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.position_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.dữLiệuToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
@@ -55,8 +56,6 @@
             this.annualLeaveBalance_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.phụCấpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.employeeAllowance_mi = new System.Windows.Forms.ToolStripMenuItem();
-            this.positionAllowance_mi = new System.Windows.Forms.ToolStripMenuItem();
-            this.departmentAllowance_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.monthlyAllowance_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.employeeDeduction_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.deduction_VEG_mi = new System.Windows.Forms.ToolStripMenuItem();
@@ -83,7 +82,7 @@
             this.thôngKêToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.reportSalary_Month_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.content_panel = new System.Windows.Forms.Panel();
-            this.employeeSalaryInfo_mi = new System.Windows.Forms.ToolStripMenuItem();
+            this.reportExportYear_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1.SuspendLayout();
             this.LOT_menuitem.SuspendLayout();
             this.SuspendLayout();
@@ -196,6 +195,12 @@
             this.employeeWork_mi.Size = new System.Drawing.Size(224, 22);
             this.employeeWork_mi.Text = "Thông Tin Công Việc";
             // 
+            // employeeSalaryInfo_mi
+            // 
+            this.employeeSalaryInfo_mi.Name = "employeeSalaryInfo_mi";
+            this.employeeSalaryInfo_mi.Size = new System.Drawing.Size(224, 22);
+            this.employeeSalaryInfo_mi.Text = "Lương Cơ Bản";
+            // 
             // department_mi
             // 
             this.department_mi.Name = "department_mi";
@@ -291,8 +296,6 @@
             // 
             this.phụCấpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.employeeAllowance_mi,
-            this.positionAllowance_mi,
-            this.departmentAllowance_mi,
             this.monthlyAllowance_mi});
             this.phụCấpToolStripMenuItem.Name = "phụCấpToolStripMenuItem";
             this.phụCấpToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
@@ -303,18 +306,6 @@
             this.employeeAllowance_mi.Name = "employeeAllowance_mi";
             this.employeeAllowance_mi.Size = new System.Drawing.Size(229, 22);
             this.employeeAllowance_mi.Text = "P.C Nhân Viên";
-            // 
-            // positionAllowance_mi
-            // 
-            this.positionAllowance_mi.Name = "positionAllowance_mi";
-            this.positionAllowance_mi.Size = new System.Drawing.Size(229, 22);
-            this.positionAllowance_mi.Text = "P.C Chức Vụ";
-            // 
-            // departmentAllowance_mi
-            // 
-            this.departmentAllowance_mi.Name = "departmentAllowance_mi";
-            this.departmentAllowance_mi.Size = new System.Drawing.Size(229, 22);
-            this.departmentAllowance_mi.Text = "P.C Phòng Ban";
             // 
             // monthlyAllowance_mi
             // 
@@ -478,6 +469,7 @@
             // thôngKêToolStripMenuItem
             // 
             this.thôngKêToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.reportExportYear_mi,
             this.reportSalary_Month_mi});
             this.thôngKêToolStripMenuItem.Name = "thôngKêToolStripMenuItem";
             this.thôngKêToolStripMenuItem.Size = new System.Drawing.Size(76, 21);
@@ -486,8 +478,8 @@
             // reportSalary_Month_mi
             // 
             this.reportSalary_Month_mi.Name = "reportSalary_Month_mi";
-            this.reportSalary_Month_mi.Size = new System.Drawing.Size(200, 22);
-            this.reportSalary_Month_mi.Text = "Chi Lương Các Tháng";
+            this.reportSalary_Month_mi.Size = new System.Drawing.Size(253, 22);
+            this.reportSalary_Month_mi.Text = "Báo Cáo Lương Theo Năm";
             // 
             // content_panel
             // 
@@ -497,11 +489,11 @@
             this.content_panel.Size = new System.Drawing.Size(1388, 491);
             this.content_panel.TabIndex = 1;
             // 
-            // employeeSalaryInfo_mi
+            // reportExportYear_mi
             // 
-            this.employeeSalaryInfo_mi.Name = "employeeSalaryInfo_mi";
-            this.employeeSalaryInfo_mi.Size = new System.Drawing.Size(224, 22);
-            this.employeeSalaryInfo_mi.Text = "Lương Cơ Bản";
+            this.reportExportYear_mi.Name = "reportExportYear_mi";
+            this.reportExportYear_mi.Size = new System.Drawing.Size(253, 22);
+            this.reportExportYear_mi.Text = "Báo Cáo Đơn Hàng Theo Năm";
             // 
             // FormManager
             // 
@@ -556,8 +548,6 @@
         private System.Windows.Forms.ToolStripMenuItem annualLeaveBalance_mi;
         private System.Windows.Forms.ToolStripMenuItem phụCấpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem employeeAllowance_mi;
-        private System.Windows.Forms.ToolStripMenuItem positionAllowance_mi;
-        private System.Windows.Forms.ToolStripMenuItem departmentAllowance_mi;
         private System.Windows.Forms.ToolStripMenuItem monthlyAllowance_mi;
         private System.Windows.Forms.ToolStripMenuItem dữLiệuToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem overtimeType_mi;
@@ -578,5 +568,6 @@
         private System.Windows.Forms.ToolStripMenuItem thôngKêToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem reportSalary_Month_mi;
         private System.Windows.Forms.ToolStripMenuItem employeeSalaryInfo_mi;
+        private System.Windows.Forms.ToolStripMenuItem reportExportYear_mi;
     }
 }

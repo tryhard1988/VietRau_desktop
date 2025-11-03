@@ -39,6 +39,8 @@ namespace RauViet.ui
             this.status_lb = new System.Windows.Forms.Label();
             this.employeeCode_tb = new System.Windows.Forms.TextBox();
             this.dataGV = new System.Windows.Forms.DataGridView();
+            this.edit_btn = new System.Windows.Forms.Button();
+            this.readOnly_btn = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.info_gb.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
@@ -46,6 +48,8 @@ namespace RauViet.ui
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.readOnly_btn);
+            this.panel1.Controls.Add(this.edit_btn);
             this.panel1.Controls.Add(this.info_gb);
             this.panel1.Controls.Add(this.LuuThayDoiBtn);
             this.panel1.Controls.Add(this.status_lb);
@@ -147,6 +151,28 @@ namespace RauViet.ui
             this.dataGV.Size = new System.Drawing.Size(718, 681);
             this.dataGV.TabIndex = 1;
             // 
+            // edit_btn
+            // 
+            this.edit_btn.BackColor = System.Drawing.SystemColors.MenuHighlight;
+            this.edit_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.edit_btn.Location = new System.Drawing.Point(389, 149);
+            this.edit_btn.Name = "edit_btn";
+            this.edit_btn.Size = new System.Drawing.Size(94, 32);
+            this.edit_btn.TabIndex = 32;
+            this.edit_btn.Text = "Chỉnh sửa";
+            this.edit_btn.UseVisualStyleBackColor = false;
+            // 
+            // readOnly_btn
+            // 
+            this.readOnly_btn.BackColor = System.Drawing.Color.MediumSlateBlue;
+            this.readOnly_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.readOnly_btn.Location = new System.Drawing.Point(441, 149);
+            this.readOnly_btn.Name = "readOnly_btn";
+            this.readOnly_btn.Size = new System.Drawing.Size(42, 32);
+            this.readOnly_btn.TabIndex = 33;
+            this.readOnly_btn.Text = "X";
+            this.readOnly_btn.UseVisualStyleBackColor = false;
+            // 
             // EmployeeBaoHiem
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -176,5 +202,7 @@ namespace RauViet.ui
         private System.Windows.Forms.Label status_lb;
         private System.Windows.Forms.GroupBox info_gb;
         private System.Windows.Forms.TextBox employeeCode_tb;
+        private System.Windows.Forms.Button edit_btn;
+        private System.Windows.Forms.Button readOnly_btn;
     }
 }

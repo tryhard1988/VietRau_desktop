@@ -52,7 +52,7 @@ namespace RauViet.ui
             {
                 var ordersPackingTask = SQLManager.Instance.GetCustomerDetailPacking_incompleteAsync();
 
-                string[] keepColumns = { "ExportCodeID", "ExportCode" };
+                string[] keepColumns = { "ExportCodeID", "ExportCode" , "ExportDate", "ExportCodeIndex" };
                 var parameters = new Dictionary<string, object>{ { "Complete", false }};
                 var exportCodeTask = SQLStore.Instance.getExportCodesAsync(keepColumns, parameters);
 
@@ -64,6 +64,7 @@ namespace RauViet.ui
                 mOrdersTotal_dt.Columns.Add(new DataColumn("No", typeof(string)));
                 mOrdersTotal_dt.Columns.Add(new DataColumn("AmountPacking", typeof(string)));
                 mOrdersTotal_dt.Columns["PCSReal"].ReadOnly = false;
+                mOrdersTotal_dt.Columns["CartonNo"].ReadOnly = false;
                 int count = 1;
                 foreach (DataRow dr in mOrdersTotal_dt.Rows)
                 {
@@ -74,6 +75,22 @@ namespace RauViet.ui
                     string packing = dr["packing"].ToString();
                     string productNameVN = dr["ProductNameVN"].ToString();
                     string productNameEN = dr["ProductNameEN"].ToString();
+                    string cartonNo = dr["CartonNo"].ToString();
+
+                    // 1️⃣ Tách chuỗi → List<int> (an toàn, bỏ ký tự lỗi)
+                    List<int> cartonNoList = (cartonNo ?? "")
+                        .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                        .Select(s =>
+                        {
+                            int n;
+                            return int.TryParse(s.Trim(), out n) ? n : (int?)null;
+                        })
+                        .Where(n => n.HasValue)
+                        .Select(n => n.Value)
+                        .ToList();
+
+                    cartonNoList.Sort();
+                    dr["CartonNo"] = string.Join(", ", cartonNoList);
 
                     if (package.CompareTo("kg") == 0 && packing.CompareTo("") != 0 && amount > 0)
                     {
@@ -124,15 +141,15 @@ namespace RauViet.ui
 
 
                 dataGV.Columns["No"].Width = 30;
-                dataGV.Columns["ProductNameEN"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                dataGV.Columns["ProductNameVN"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                dataGV.Columns["CustomerCarton"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["CartonNo"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["PLU"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["Package"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["NWReal"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["AmountPacking"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["PCSReal"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+                dataGV.Columns["ProductNameEN"].Width = 120;
+                dataGV.Columns["ProductNameVN"].Width = 120;
+                dataGV.Columns["CustomerCarton"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                dataGV.Columns["CartonNo"].Width = 100;
+                dataGV.Columns["PLU"].Width = 50;
+                dataGV.Columns["Package"].Width = 50;
+                dataGV.Columns["NWReal"].Width = 50;
+                dataGV.Columns["AmountPacking"].Width = 50;
+                dataGV.Columns["PCSReal"].Width = 50;
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
@@ -246,7 +263,6 @@ namespace RauViet.ui
                 // Đặt tên file: packingTotal_{exportCode}_{customerName}.xlsx
                 string safeCustomerName = string.Join("_", fullName.Split(Path.GetInvalidFileNameChars()));
                 string filePath = Path.Combine(folderPath, $"PL-{safeCustomerName}-ETD {exportDate.Day}.{exportDate.Month} {exportCodeIndex}.xlsx");
-
 
                 // Xuất ra file excel cho khách hàng này
                 ExportDataTableToExcel(dt, fullName, exportCode, filePath);
@@ -481,14 +497,14 @@ namespace RauViet.ui
 
 
                     // ===== Data bắt đầu từ hàng 7 =====
-                    decimal totalNWOther = 0; // Biến lưu tổng
-                    int totalCarton = 0;
+                    decimal totalNWOther = 0; // Biến lưu tổng                    
                     ws.Column(11).Width = 30;
                     ws.Column(2).Width = 10;
                     ws.Column(10).Width = 20;
 
                     excelColIndex = 1;
                     int rowIndex = headerStartRow + 2;
+                    List<int> CartonNoList = new List<int>();
                     foreach (DataRow row in dt.Rows)
                     {
                         colIndex = 1;
@@ -530,22 +546,33 @@ namespace RauViet.ui
                                 
                                 ws.Row(rowIndex).Height = estimatedLines * (ws.Style.Font.FontSize) * 1.3; // lineHeight ~ font size * 1.2
 
-                                if (col.ColumnName == "CustomerCarton" && cellValue.CompareTo("") != 0)
+                                if (col.ColumnName == "CartonNo" && cellValue.CompareTo("") != 0)
                                 {
-                                    int count = cellValue.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Length;
-                                    totalCarton += count;
+                                    string cellValue1 = Convert.ToString(cellValue).Replace('\u00A0', ' ');
+
+                                    int[] numbers = (cellValue1 ?? "")
+                                         // bỏ khoảng trắng đặc biệt (từ Excel)
+                                        .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                                        .Select(s => {
+                                            int n;
+                                            return int.TryParse(s.Trim(), out n) ? n : (int?)null;
+                                        })
+                                        .Where(n => n.HasValue)
+                                        .Select(n => n.Value)
+                                        .ToArray();
+
+
+                                    CartonNoList.AddRange(numbers);
                                 }
                             }
                             colIndex++;
                         }
 
-                        // Tự động điều chỉnh chiều cao hàng
-                        // ws.Row(rowIndex).Height = 0;
-                        // ws.Row(rowIndex).AdjustToContents();
-
                         rowIndex++;
                        
                     }
+
+                    int totalCarton = CartonNoList.Distinct().Count();
 
                     ws.Columns().AdjustToContents();
                     ws.Column(1).Width = 3;
@@ -601,6 +628,7 @@ namespace RauViet.ui
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Lỗi khi xuất Excel: " + ex.Message);
                 MessageBox.Show("Lỗi khi xuất Excel: " + ex.Message);
             }
         }

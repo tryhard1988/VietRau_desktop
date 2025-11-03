@@ -79,16 +79,6 @@ namespace RauViet.ui
                 DataTable dt = productSKUATask.Result;
                 mPoductSKUHistory_dt = productSKUHistoryTask.Result;
 
-                if (!dt.Columns.Contains("ProductNameVN_NoSign"))
-                    dt.Columns.Add("ProductNameVN_NoSign", typeof(string));
-
-                foreach (DataRow row in dt.Rows)
-                {
-                    string name = row["ProductNameVN"]?.ToString() ?? "";
-                    int SKU = Convert.ToInt32(row["SKU"]);
-                    row["ProductNameVN_NoSign"] = Utils.RemoveVietnameseSigns(name + " " + SKU).ToLower();
-                }
-
                 int count = 0;
                 dt.Columns["SKU"].SetOrdinal(count++);
                 dt.Columns["ProductNameVN"].SetOrdinal(count++);
@@ -255,7 +245,7 @@ namespace RauViet.ui
                                 row.Cells["Priority"].Value = priority;
                                 row.Cells["PlantingAreaCode"].Value = plantingareaCode;
                                 row.Cells["LOTCodeHeader"].Value = LOTCodeHeader;
-
+                                row.Cells["ProductNameVN_NoSign"].Value = Utils.RemoveVietnameseSigns(productNameVN + " " + SKU).ToLower(); ;
                                 status_lb.Text = "Thành công.";
                                 status_lb.ForeColor = Color.Green;
                             }
@@ -307,6 +297,7 @@ namespace RauViet.ui
                         drToAdd["Priority"] = priority;
                         drToAdd["PlantingAreaCode"] = plantingareaCode;
                         drToAdd["LOTCodeHeader"] = LOTCodeHeader;
+                        drToAdd["ProductNameVN_NoSign"] = Utils.RemoveVietnameseSigns(productNameVN + " " + newId).ToLower(); ;
                         sku_tb.Text = newId.ToString();
 
 
@@ -332,7 +323,7 @@ namespace RauViet.ui
                 
             }
         }
-        private void saveBtn_Click(object sender, EventArgs e)
+        private async void saveBtn_Click(object sender, EventArgs e)
         {
             if(package_tb.Text.CompareTo("") == 0 ||
                 product_EN_tb.Text.CompareTo("") == 0 || product_VN_tb.Text.CompareTo("") == 0 || 
@@ -367,6 +358,7 @@ namespace RauViet.ui
                 createNewProductSKU(productNameVN, productNameEN, packingType, package, 
                     packingList, botanicalName_tb.Text, Convert.ToDecimal(priceCNF_tb.Text), Convert.ToInt32(priority_tb.Text), plantingareaCode, lotCode);
             info_gb.BackColor = Color.Gray;
+           // await SQLStore.Instance.getProductpackingAsync(true);
 
         }
         private async void deleteBtn_Click(object sender, EventArgs e)
@@ -411,6 +403,8 @@ namespace RauViet.ui
                 }
             }
 
+            await SQLStore.Instance.getProductpackingAsync(true);
+
         }
 
         private void newBtn_Click(object sender, EventArgs e)
@@ -435,6 +429,7 @@ namespace RauViet.ui
             delete_btn.Visible = false;
             isNewState = true;
             luuBtn.Text = "Lưu Mới";
+            RightUIReadOnly(false);
         }
 
         private void ReadOnly_btn_Click(object sender, EventArgs e)
@@ -446,6 +441,7 @@ namespace RauViet.ui
             delete_btn.Visible = false;
             info_gb.BackColor = Color.DarkGray;
             isNewState = false;
+            RightUIReadOnly(true);
         }
 
         private void Edit_btn_Click(object sender, EventArgs e)
@@ -458,6 +454,7 @@ namespace RauViet.ui
             info_gb.BackColor = edit_btn.BackColor;
             isNewState = false;
             luuBtn.Text = "Lưu C.Sửa";
+            RightUIReadOnly(false);
         }
 
         private void Tb_KeyPress_OnlyNumber(object sender, KeyPressEventArgs e)
@@ -488,6 +485,19 @@ namespace RauViet.ui
             DataView dv = dt.DefaultView;
             dv.RowFilter = $"[ProductNameVN_NoSign] LIKE '%{keyword}%'";
 
+        }
+
+        private void RightUIReadOnly(bool isReadOnly)
+        {
+            product_VN_tb.ReadOnly = isReadOnly;
+            product_EN_tb.ReadOnly = isReadOnly;
+            package_tb.ReadOnly = isReadOnly;
+            packing_tb.ReadOnly = isReadOnly;
+            botanicalName_tb.ReadOnly = isReadOnly;
+            priceCNF_tb.ReadOnly = isReadOnly;
+            plantingareaCode_tb.ReadOnly = isReadOnly;
+            lotCodeHeader_tb.ReadOnly = isReadOnly;
+            priority_tb.ReadOnly = isReadOnly;
         }
 
     }
