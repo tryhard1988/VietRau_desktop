@@ -115,12 +115,13 @@ namespace RauViet.ui
                 dataGV.Columns["canCreateUserName"].HeaderText = "Cấp Quyền";
                 dataGV.Columns["IsInsuranceRefund"].HeaderText = "Hoàn BH";
                 dataGV.Columns["NoteResign"].HeaderText = "Ra/Vào Công Ty";
-                dataGV.Columns["Gradename"].HeaderText = "Bậc Lương";
+                dataGV.Columns["Gradename"].HeaderText = "Bậc\nLương";
 
                 dataGV.Columns["BirthDate"].DefaultCellStyle.Format = "dd/MM/yyyy";
                 dataGV.Columns["HireDate"].DefaultCellStyle.Format = "dd/MM/yyyy";
                 dataGV.Columns["IssueDate"].DefaultCellStyle.Format = "dd/MM/yyyy";
 
+                dataGV.Columns["NoteResign"].Visible = false;
                 dataGV.Columns["PositionID"].Visible = false;
                 dataGV.Columns["DepartmentID"].Visible = false;
                 dataGV.Columns["ContractTypeID"].Visible = false;
@@ -155,11 +156,17 @@ namespace RauViet.ui
                 dataGV.Columns["FullName"].Width = 160;
                 dataGV.Columns["BirthDate"].Width = 70;
                 dataGV.Columns["HireDate"].Width = 70;
-                dataGV.Columns["GenderName"].Width = 70;
+                dataGV.Columns["GenderName"].Width = 60;
                 dataGV.Columns["IsActive"].Width = 50;
                 dataGV.Columns["CitizenID"].Width = 90;
                 dataGV.Columns["NoteResign"].Width = 90;
+                dataGV.Columns["ProbationSalaryPercent"].Width = 65;
+                dataGV.Columns["Gradename"].Width = 70;
+                dataGV.Columns["PhoneNumber"].Width = 70;
 
+                dataGV.Columns["PhoneNumber"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                dataGV.Columns["Gradename"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                dataGV.Columns["ProbationSalaryPercent"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
                 if (dataGV.Rows.Count > 0)
                 {

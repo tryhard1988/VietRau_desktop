@@ -246,7 +246,7 @@ public class PackingListPrinter
             x = startX;
 
             string productEN = row.Cells["ProductNameEN"].Value?.ToString() ?? "";
-            string productVN = row.Cells["ProductPackingName"].Value?.ToString() ?? "";
+            string productVN = row.Cells["ProductNameVN"].Value?.ToString() ?? "";
             string unit = row.Cells["Package"].Value?.ToString() ?? "";
             string nw = row.Cells["NWReal"]?.Value?.ToString() ?? "";
             decimal amount = row.Cells["Amount"].Value == null || row.Cells["Amount"].Value == DBNull.Value? 0 : Convert.ToDecimal(row.Cells["Amount"].Value);

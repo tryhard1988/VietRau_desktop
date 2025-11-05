@@ -178,14 +178,14 @@ namespace RauViet.ui
                 dataGV.Columns["No"].Width = 30;
                 dataGV.Columns["CustomerCarton"].Width = 200;
                 dataGV.Columns["CartonNo"].Width = 120;
-                dataGV.Columns["ProductNameEN"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                dataGV.Columns["ProductNameVN"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                dataGV.Columns["LOTCodeComplete"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["PLU"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["Package"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["NWReal"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["packing"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["PCSReal"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+                dataGV.Columns["ProductNameEN"].Width = 120; ;
+                dataGV.Columns["ProductNameVN"].Width = 150;
+                dataGV.Columns["LOTCodeComplete"].Width = 80;
+                dataGV.Columns["PLU"].Width = 50;
+                dataGV.Columns["Package"].Width = 50;
+                dataGV.Columns["NWReal"].Width = 60;
+                dataGV.Columns["packing"].Width = 70;
+                dataGV.Columns["PCSReal"].Width = 50;
 
                 dataGV.Columns["Priority"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
 

@@ -36,11 +36,11 @@ namespace RauViet.ui
             this.calWorkHour_btn = new System.Windows.Forms.Button();
             this.loadAttandance_btn = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
-            this.status_lb = new System.Windows.Forms.Label();
             this.month_cbb = new System.Windows.Forms.ComboBox();
             this.year_tb = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
+            this.status_lb = new System.Windows.Forms.Label();
             this.attendanceGV = new System.Windows.Forms.DataGridView();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
             this.panel1.SuspendLayout();
@@ -129,17 +129,6 @@ namespace RauViet.ui
             this.label1.TabIndex = 22;
             this.label1.Text = "/";
             // 
-            // status_lb
-            // 
-            this.status_lb.AutoSize = true;
-            this.status_lb.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.status_lb.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.status_lb.Location = new System.Drawing.Point(3, 357);
-            this.status_lb.Name = "status_lb";
-            this.status_lb.Size = new System.Drawing.Size(55, 23);
-            this.status_lb.TabIndex = 26;
-            this.status_lb.Text = "Email";
-            // 
             // month_cbb
             // 
             this.month_cbb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -177,6 +166,17 @@ namespace RauViet.ui
             this.LuuThayDoiBtn.TabIndex = 25;
             this.LuuThayDoiBtn.Text = "Lưu";
             this.LuuThayDoiBtn.UseVisualStyleBackColor = false;
+            // 
+            // status_lb
+            // 
+            this.status_lb.AutoSize = true;
+            this.status_lb.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.status_lb.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.status_lb.Location = new System.Drawing.Point(3, 357);
+            this.status_lb.Name = "status_lb";
+            this.status_lb.Size = new System.Drawing.Size(55, 23);
+            this.status_lb.TabIndex = 26;
+            this.status_lb.Text = "Email";
             // 
             // attendanceGV
             // 

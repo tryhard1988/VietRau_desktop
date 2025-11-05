@@ -158,12 +158,11 @@ namespace RauViet.ui
                 dataGV.Columns["InputByName"].HeaderText = "NV Nhập S.Liệu";
                 dataGV.Columns["PackingByName"].HeaderText = "NV Đóng Gói";
 
-                dataGV.Columns["ExportCode"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["ExportDate"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["Complete"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["InputBy"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["PackingBy"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                //dataGV.Columns["Packing"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+                dataGV.Columns["ExportCode"].Width = 120;
+                dataGV.Columns["ExportDate"].Width = 100;
+                dataGV.Columns["Complete"].Width = 90;
+                dataGV.Columns["InputByName"].Width = 150;
+                dataGV.Columns["PackingByName"].Width = 150;
 
                 dataGV.Columns["ModifiedAt"].AutoSizeMode = DataGridViewAutoSizeColumnMode.ColumnHeader;
 
@@ -171,7 +170,6 @@ namespace RauViet.ui
                 dataGV.Columns["ExportCodeIndex"].Visible = false;
                 dataGV.Columns["InputBy"].Visible = false;
                 dataGV.Columns["PackingBy"].Visible = false;
-                dataGV.AutoResizeColumns();
 
                 inputBy_cbb.DataSource = _employeesInDongGoi_dt;
                 inputBy_cbb.DisplayMember = "FullName";  // hiển thị tên

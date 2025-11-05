@@ -33,12 +33,12 @@ namespace RauViet.ui
             this.info_gb = new System.Windows.Forms.GroupBox();
             this.capphep_btn = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
-            this.status_lb = new System.Windows.Forms.Label();
             this.load_btn = new System.Windows.Forms.Button();
             this.month_cbb = new System.Windows.Forms.ComboBox();
             this.year_tb = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
+            this.status_lb = new System.Windows.Forms.Label();
             this.dataGV = new System.Windows.Forms.DataGridView();
             this.panel1.SuspendLayout();
             this.info_gb.SuspendLayout();
@@ -51,9 +51,9 @@ namespace RauViet.ui
             this.panel1.Controls.Add(this.LuuThayDoiBtn);
             this.panel1.Controls.Add(this.status_lb);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel1.Location = new System.Drawing.Point(955, 0);
+            this.panel1.Location = new System.Drawing.Point(900, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(309, 681);
+            this.panel1.Size = new System.Drawing.Size(364, 681);
             this.panel1.TabIndex = 11;
             // 
             // info_gb
@@ -90,17 +90,6 @@ namespace RauViet.ui
             this.label1.Size = new System.Drawing.Size(17, 23);
             this.label1.TabIndex = 31;
             this.label1.Text = "/";
-            // 
-            // status_lb
-            // 
-            this.status_lb.AutoSize = true;
-            this.status_lb.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.status_lb.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.status_lb.Location = new System.Drawing.Point(6, 357);
-            this.status_lb.Name = "status_lb";
-            this.status_lb.Size = new System.Drawing.Size(55, 23);
-            this.status_lb.TabIndex = 26;
-            this.status_lb.Text = "Email";
             // 
             // load_btn
             // 
@@ -151,6 +140,17 @@ namespace RauViet.ui
             this.LuuThayDoiBtn.Text = "Lưu";
             this.LuuThayDoiBtn.UseVisualStyleBackColor = false;
             // 
+            // status_lb
+            // 
+            this.status_lb.AutoSize = true;
+            this.status_lb.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.status_lb.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.status_lb.Location = new System.Drawing.Point(6, 357);
+            this.status_lb.Name = "status_lb";
+            this.status_lb.Size = new System.Drawing.Size(55, 23);
+            this.status_lb.TabIndex = 26;
+            this.status_lb.Text = "Email";
+            // 
             // dataGV
             // 
             this.dataGV.AllowUserToAddRows = false;
@@ -160,7 +160,7 @@ namespace RauViet.ui
             this.dataGV.Location = new System.Drawing.Point(0, 0);
             this.dataGV.Name = "dataGV";
             this.dataGV.ReadOnly = true;
-            this.dataGV.Size = new System.Drawing.Size(955, 681);
+            this.dataGV.Size = new System.Drawing.Size(900, 681);
             this.dataGV.TabIndex = 12;
             // 
             // AnnualLeaveBalance

@@ -90,10 +90,11 @@ namespace RauViet.classes
                 if (customersTask.Status == TaskStatus.RanToCompletion && customersTask.Result != null) mCusromer_dt = customersTask.Result;
                 if (ordersTask.Status == TaskStatus.RanToCompletion && ordersTask.Result != null) mOrderList_dt = ordersTask.Result;
 
+                editProductSKUA();
                 editExportCodes();
                 editProductpacking();
                 editOrders();
-                editProductSKUA();
+               
             }
             catch
             {
@@ -1422,61 +1423,35 @@ namespace RauViet.classes
         private void editProductpacking()
         {
             mProductpacking_dt.Columns.Add(new DataColumn("PackingName", typeof(string)));
-            mProductpacking_dt.Columns.Add(new DataColumn("ProductName", typeof(string)));
             mProductpacking_dt.Columns.Add("ProductNameVN_NoSign", typeof(string));
 
             mProductpacking_dt.Columns.Add(new DataColumn("PriceCNF", typeof(string)));
             mProductpacking_dt.Columns.Add(new DataColumn("Name_VN", typeof(string)));
             mProductpacking_dt.Columns.Add(new DataColumn("Name_EN", typeof(string)));
+            mProductpacking_dt.Columns.Add(new DataColumn("Priority", typeof(int)));
+            mProductpacking_dt.Columns.Add(new DataColumn("Package", typeof(string)));
 
             foreach (DataRow dr in mProductpacking_dt.Rows)
             {
                 int sku = Convert.ToInt32(dr["SKU"]);
-                string packing = dr["packing"].ToString();
+                DataRow proRow = mProductSKU_dt.Select($"SKU = '{sku}'")[0];
+
+                string package = proRow["Package"].ToString();
+                string nameVN = proRow["ProductNameVN"].ToString();
+                string nameEN = proRow["ProductNameEN"].ToString();
+                string packingType = proRow["PackingType"].ToString();
+                int priority = Convert.ToInt32(proRow["Priority"]);
+
                 decimal amount = dr["Amount"] == DBNull.Value ? 0 : Convert.ToDecimal(dr["Amount"]);
+                string packing = dr["Packing"].ToString();
                 string resultAmount = amount.ToString("0.##");
 
                 dr["PackingName"] = $"{resultAmount} {packing}";
-
-                DataRow[] prodRows = mProductSKU_dt.Select($"SKU = {sku}");
-                if (prodRows.Length > 0)
-                {
-                    string productName = prodRows[0]["ProductNameVN"].ToString();
-                    string package = prodRows[0]["Package"].ToString();
-
-                    if (package.CompareTo("kg") == 0 && packing.CompareTo("") != 0 && amount > 0)
-                    {
-                        string amountStr = amount.ToString("0.##");
-                        dr["ProductName"] = $"{productName} {amountStr} {packing}";
-                    }
-                    else
-                    {
-                        dr["ProductName"] = $"{productName}";
-                    }
-
-                    dr["ProductNameVN_NoSign"] = Utils.RemoveVietnameseSigns(productName + " " + sku).ToLower();
-                }
-                else
-                {
-                    dr["ProductPacking"] = "Unknown";
-                }
-            }
-
-            foreach (DataRow dr in mProductpacking_dt.Rows)
-            {
-                int sku = Convert.ToInt32(dr["SKU"]);
-                DataRow row = mProductSKU_dt.Select($"SKU = '{sku}'")[0];
-
-                string package = row["Package"].ToString();
-                string nameVN = row["ProductNameVN"].ToString();
-                string nameEN = row["ProductNameEN"].ToString();
-                string packingType = row["PackingType"].ToString();
-                decimal amount = dr["Amount"] == DBNull.Value ? 0 : Convert.ToDecimal(dr["Amount"]);
-                string packing = dr["Packing"].ToString();
-                dr["Name_EN"] = nameEN;
-
-                string resultAmount = amount.ToString("0.##");
+                dr["ProductNameVN_NoSign"] = Utils.RemoveVietnameseSigns(nameVN + " " + sku).ToLower();
+                dr["Priority"] = priority;                
                 dr["Amount"] = resultAmount;
+                dr["Package"] = package;
+                dr["PriceCNF"] = proRow["PriceCNF"].ToString();
 
                 if (package.CompareTo("kg") == 0 && packing.CompareTo("") != 0 && amount > 0)
                 {
@@ -1489,9 +1464,7 @@ namespace RauViet.classes
                     dr["Name_VN"] = nameVN;
                     dr["Name_EN"] = nameEN;
                 }
-
-                // dr["Package"] = package;
-                dr["PriceCNF"] = row["PriceCNF"].ToString();
+                
             }
         }
 
@@ -1673,22 +1646,42 @@ namespace RauViet.classes
         private void editOrders()
         {
             mOrderList_dt.Columns.Add(new DataColumn("CustomerName", typeof(string)));
+            mOrderList_dt.Columns.Add(new DataColumn("CustomerCode", typeof(string)));
             mOrderList_dt.Columns.Add(new DataColumn("ProductNameVN", typeof(string)));
+            mOrderList_dt.Columns.Add(new DataColumn("ProductNameEN", typeof(string)));
             mOrderList_dt.Columns.Add(new DataColumn("ExportCode", typeof(string)));
+            mOrderList_dt.Columns.Add(new DataColumn("Priority", typeof(int)));
+            mOrderList_dt.Columns.Add(new DataColumn("Package", typeof(string)));
+            mOrderList_dt.Columns.Add(new DataColumn("packing", typeof(string)));
+        //    mOrderList_dt.Columns.Add(new DataColumn("PackingType", typeof(string)));
+            mOrderList_dt.Columns.Add(new DataColumn("Amount", typeof(int)));            
+            mOrderList_dt.Columns.Add(new DataColumn("ExportDate", typeof(DateTime)));
 
             foreach (DataRow dr in mOrderList_dt.Rows)
             {
                 int customerID = Convert.ToInt32(dr["CustomerID"]);
-                DataRow[] customerRows = mCusromer_dt.Select($"CustomerID = {customerID}");
-                dr["CustomerName"] = customerRows.Length > 0 ? customerRows[0]["FullName"].ToString() : "Unknown";
-
                 int productPackingID = Convert.ToInt32(dr["ProductPackingID"]);
-                DataRow[] packingRows = mProductpacking_dt.Select($"ProductPackingID = {productPackingID}");
-                dr["ProductNameVN"] = packingRows.Length > 0 ? packingRows[0]["ProductName"].ToString() : "Unknown";
-
                 int exportCodeID = Convert.ToInt32(dr["ExportCodeID"]);
+                DataRow[] customerRows = mCusromer_dt.Select($"CustomerID = {customerID}");
+                DataRow[] packingRows = mProductpacking_dt.Select($"ProductPackingID = {productPackingID}");
                 DataRow[] exportCodeRows = mExportCodes_dt.Select($"ExportCodeID = {exportCodeID}");
+                                                
+                dr["CustomerName"] = customerRows.Length > 0 ? customerRows[0]["FullName"].ToString() : "Unknown";
+                dr["CustomerCode"] = customerRows.Length > 0 ? customerRows[0]["CustomerCode"].ToString() : "Unknown";
+                dr["ProductNameVN"] = packingRows.Length > 0 ? packingRows[0]["Name_VN"].ToString() : "Unknown";
+                dr["ProductNameEN"] = packingRows.Length > 0 ? packingRows[0]["Name_EN"].ToString() : "Unknown";
+                dr["Amount"] = packingRows.Length > 0 ? Convert.ToInt32(packingRows[0]["Amount"]) : 0;
+                dr["Priority"] = packingRows.Length > 0 ? packingRows[0]["Priority"] : 100000;  
                 dr["ExportCode"] = exportCodeRows.Length > 0 ? exportCodeRows[0]["ExportCode"].ToString() : "Unknown";
+                dr["ExportDate"] = exportCodeRows.Length > 0 ? Convert.ToDateTime(exportCodeRows[0]["ExportDate"]) : DateTime.Now;
+            //    dr["PackingType"] = packingRows.Length > 0 ? packingRows[0]["PackingType"].ToString() : "";
+                dr["packing"] = packingRows.Length > 0 ? packingRows[0]["packing"].ToString() : "";
+                string package = packingRows.Length > 0 ? packingRows[0]["Package"].ToString() : "";
+                dr["Package"] = package;
+                if (package.CompareTo("weight") == 0)
+                {
+                    dr["PCSReal"] = 0;
+                }
             }
         }
 

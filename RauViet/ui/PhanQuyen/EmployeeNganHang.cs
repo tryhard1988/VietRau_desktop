@@ -63,10 +63,13 @@ namespace RauViet.ui
 
                 dataGV.Columns["EmployeeCode"].Width = 60;
                 dataGV.Columns["FullName"].Width = 160;
-                dataGV.Columns["BankName"].Width = 150;
-                dataGV.Columns["BankBranch"].Width = 320;
-                dataGV.Columns["BankAccountNumber"].Width = 160;
+                dataGV.Columns["BankName"].Width = 130;
+                dataGV.Columns["BankBranch"].Width = 200;
+                dataGV.Columns["BankAccountNumber"].Width = 100;
                 dataGV.Columns["BankAccountHolder"].Width = 160;
+
+                dataGV.Columns["BankName"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                dataGV.Columns["BankAccountNumber"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
                 if (dataGV.Rows.Count > 0)
                 {

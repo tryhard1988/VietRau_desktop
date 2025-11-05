@@ -95,18 +95,17 @@ namespace RauViet.ui
 
                 dataGV_DK.Columns["Priority"].HeaderText = "Ưu\nTiên";
 
-                dataGV_DK.Columns["Priority"].Width = 30;
-                dataGV_DK.Columns["No"].Width = 30;
+                dataGV_DK.Columns["Priority"].Width = 50;
+                dataGV_DK.Columns["No"].Width = 50;
                 // dataGV.Columns["STT"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV_DK.Columns["ProductNameEN"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                dataGV_DK.Columns["ProductNameVN"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                dataGV_DK.Columns["BotanicalName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                dataGV_DK.Columns["NWOther"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV_DK.Columns["Packing"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV_DK.Columns["PCS"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV_DK.Columns["PriceCHF"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV_DK.Columns["AmountCHF"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV_DK.Columns["Priority"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+                dataGV_DK.Columns["ProductNameEN"].Width = 150;
+                dataGV_DK.Columns["ProductNameVN"].Width = 150;
+                dataGV_DK.Columns["BotanicalName"].Width = 130;
+                dataGV_DK.Columns["NWOther"].Width = 100;
+                dataGV_DK.Columns["Packing"].Width = 80;
+                dataGV_DK.Columns["PCS"].Width = 60;
+                dataGV_DK.Columns["PriceCHF"].Width = 80;
+                dataGV_DK.Columns["AmountCHF"].Width = 80;
 
                 dataGV_DK.Columns["Priority"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
                 dataGV_DK.Columns["NWOther"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;

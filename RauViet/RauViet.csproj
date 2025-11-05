@@ -218,6 +218,12 @@
     <Compile Include="ui\PhanQuyen\EmployeeDeduction_ATT.Designer.cs">
       <DependentUpon>EmployeeDeduction_ATT.cs</DependentUpon>
     </Compile>
+    <Compile Include="ui\OrderManager_sub\ReportExport_Year.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\OrderManager_sub\ReportExport_Year.Designer.cs">
+      <DependentUpon>ReportExport_Year.cs</DependentUpon>
+    </Compile>
     <Compile Include="ui\PhanQuyen\ReportSalary_Year.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -495,6 +501,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ui\PhanQuyen\EmployeeDeduction_ATT.resx">
       <DependentUpon>EmployeeDeduction_ATT.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\OrderManager_sub\ReportExport_Year.resx">
+      <DependentUpon>ReportExport_Year.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ui\PhanQuyen\ReportSalary_Year.resx">
       <DependentUpon>ReportSalary_Year.cs</DependentUpon>

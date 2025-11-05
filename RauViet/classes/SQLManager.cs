@@ -19,12 +19,12 @@ namespace RauViet.classes
     {
         private static SQLManager ins = null;
         private static readonly object padlock = new object();
-        public readonly string ql_User_conStr = "Server=192.168.1.179,1433;Database=QL_User;User Id=ql_user;Password=A7t#kP2x;";
-        public readonly string ql_kho_conStr = "Server=192.168.1.179,1433;Database=QL_Kho;User Id=ql_kho;Password=A7t#kP2x;";
-        public readonly string ql_khoHis_conStr = "Server=192.168.1.179,1433;Database=QL_Kho_History;User Id=ql_kho_history;Password=A7t#kP2x;";
-        public readonly string salaryLock_conStr = "Server=192.168.1.179,1433;Database=SalaryLock;User Id=salary_lock;Password=A7t#kP2x;";
-        public readonly string qlnvHis_conStr = "Server=192.168.1.179,1433;Database=QLNV_VR_History;User Id=qlnv_vr_history;Password=A7t#kP2x;";
-        public readonly string conStr = "Server=192.168.1.179,1433;Database=QLNV;User Id=vietrau;Password=A7t#kP2x;";
+        public readonly string ql_User_conStr = "Server=192.168.1.8,1433;Database=QL_User;User Id=ql_user;Password=A7t#kP2x;";
+        public readonly string ql_kho_conStr = "Server=192.168.1.8,1433;Database=QL_Kho;User Id=ql_kho;Password=A7t#kP2x;";
+        public readonly string ql_khoHis_conStr = "Server=192.168.1.8,1433;Database=QL_Kho_History;User Id=ql_kho_history;Password=A7t#kP2x;";
+        public readonly string salaryLock_conStr = "Server=192.168.1.8,1433;Database=SalaryLock;User Id=salary_lock;Password=A7t#kP2x;";
+        public readonly string qlnvHis_conStr = "Server=192.168.1.8,1433;Database=QLNV_VR_History;User Id=qlnv_vr_history;Password=A7t#kP2x;";
+        public readonly string conStr = "Server=192.168.1.8,1433;Database=QLNV;User Id=vietrau;Password=A7t#kP2x;";
 
         private SQLManager() { }
 
@@ -514,24 +514,9 @@ namespace RauViet.classes
             using (SqlConnection con = new SqlConnection(ql_kho_conStr))
             {
                 await con.OpenAsync();
-                string query = @"SELECT 
-                                        o.OrderId,
-                                        o.ExportCodeID,
-                                        c.CustomerID,    
-                                        p.ProductPackingID,
-                                        o.PCSOther,
-                                        o.NWOther,
-                                        o.NWReal,
-                                        o.OrderPackingPriceCNF,
-                                        s.Priority
-
-                                    FROM Orders o
-                                    INNER JOIN Customers c ON o.CustomerID = c.CustomerID
-                                    INNER JOIN ProductPacking p ON o.ProductPackingID = p.ProductPackingID
-                                    INNER JOIN ProductSKU s ON p.SKU = s.SKU
-                                    INNER JOIN ExportCodes ec ON o.ExportCodeID = ec.ExportCodeID
-                                    WHERE ec.Complete = 0
-                                    ORDER BY o.ExportCodeID;";
+                string query = @"SELECT o.* FROM Orders o
+                                        INNER JOIN ExportCodes ec ON o.ExportCodeID = ec.ExportCodeID
+                                        WHERE ec.Complete = 0";
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                 {

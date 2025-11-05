@@ -115,11 +115,17 @@ namespace RauViet.ui
                 dataGV.Columns["ContractTypeName"].HeaderText = "Loại Hợp Đồng";
                 dataGV.Columns["GradeName"].HeaderText = "Bậc Lương";
 
-                salaryInfoGV.Columns["Date"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                salaryInfoGV.Columns["BaseSalary"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                salaryInfoGV.Columns["InsuranceBaseSalary"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                salaryInfoGV.Columns["Note"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                salaryInfoGV.Columns["CreatedAt"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+                dataGV.Columns["FullName"].Width = 150;
+                dataGV.Columns["EmployeeCode"].Width = 60;
+                dataGV.Columns["PositionName"].Width = 80;
+                dataGV.Columns["ContractTypeName"].Width = 80;
+                dataGV.Columns["GradeName"].Width = 70;
+
+                salaryInfoGV.Columns["Date"].Width = 80;
+                salaryInfoGV.Columns["BaseSalary"].Width = 80;
+                salaryInfoGV.Columns["InsuranceBaseSalary"].Width = 80;
+                salaryInfoGV.Columns["Note"].Width = 80;
+                salaryInfoGV.Columns["CreatedAt"].Width = 80;
 
                 if (dataGV.Rows.Count > 0)
                 {

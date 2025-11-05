@@ -18,6 +18,7 @@ namespace RauViet
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+           // Application.Run(new EditExcelFormAllowance_NV());
             Application.Run(new FormManager());
             //Application.Run(new LoginForm());
         }

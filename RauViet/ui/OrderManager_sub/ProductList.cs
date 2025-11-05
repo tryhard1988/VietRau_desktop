@@ -90,25 +90,28 @@ namespace RauViet.ui
                 dataGV.Columns["PriceCNF"].Visible = false;
                 dataGV.Columns["SKU"].Visible = false; 
                 dataGV.Columns["ProductNameVN_NoSign"].Visible = false;
+                dataGV.Columns["PackingName"].Visible = false;
+                dataGV.Columns["Package"].Visible = false;
+                dataGV.Columns["Amount"].Visible = false;
+                dataGV.Columns["Packing"].Visible = false;
 
                 dataGV.Columns["Name_VN"].HeaderText = "Tên Tiếng Việt";
                 dataGV.Columns["Name_EN"].HeaderText = "Tên Tiếng Anh";
                 dataGV.Columns["PriceCNF"].HeaderText = "Giá CNF (CHF/Kg)";
                 dataGV.Columns["BarCodeEAN13"].HeaderText = "Bar code EAN13";
                 dataGV.Columns["ArtNr"].HeaderText = "Art.Nr";
+                dataGV.Columns["Priority"].HeaderText = "Ưu Tiên";
 
 
-                dataGV.Columns["SKU"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["PLU"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["BarCode"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["BarCodeEAN13"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["ArtNr"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["GGN"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["Packing"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["Amount"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+                dataGV.Columns["PLU"].Width = 50;
+                dataGV.Columns["BarCode"].Width = 90;
+                dataGV.Columns["BarCodeEAN13"].Width = 90;
+                dataGV.Columns["ArtNr"].Width = 50;
+                dataGV.Columns["GGN"].Width = 90;
+                dataGV.Columns["Name_VN"].Width = 200;
+                dataGV.Columns["Name_EN"].Width = 200;
+                dataGV.Columns["Priority"].Width = 50;
 
-                dataGV.Columns["PriceCNF"].AutoSizeMode = DataGridViewAutoSizeColumnMode.ColumnHeader;
-                dataGV.AutoResizeColumns();
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
@@ -146,12 +149,7 @@ namespace RauViet.ui
                 await Task.Delay(200);
                 loadingOverlay.Hide();
             }
-
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            dataGV.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            this.Dock = DockStyle.Fill;
-
-            
+ 
         }
 
         

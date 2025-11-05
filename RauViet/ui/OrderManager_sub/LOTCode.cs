@@ -66,6 +66,7 @@ namespace RauViet.ui
                 dataGV.DataSource = mLOTCode_dt;
 
                 dataGV.Columns["SKU"].Visible = false;
+                dataGV.Columns["ExportCode"].Visible = false;
                 dataGV.Columns["ExportCodeID"].Visible = false;
                 dataGV.Columns["LOTCodeHeader"].Visible = false;
 
@@ -82,15 +83,15 @@ namespace RauViet.ui
                 dataGV.Columns["Priority"].HeaderText = "Ưu Tiên";
 
                 dataGV.Columns["Priority"].Width = 50;
-                dataGV.Columns["LOTCodeComplete"].Width = 200;
-                // dataGV.Columns["STT"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["ProductNameVN"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                dataGV.Columns["Priority"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["LotCode"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                
+                dataGV.Columns["LOTCodeComplete"].Width = 120;
+                dataGV.Columns["ProductNameVN"].Width = 150; ;
+                dataGV.Columns["LotCode"].Width = 50;
+
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
-                dataGV.Columns["ProductNameVN"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+
+                dataGV.Columns["LotCode"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                dataGV.Columns["Priority"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
                 _dataChanged = false;
 

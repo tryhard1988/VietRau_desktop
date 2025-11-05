@@ -141,11 +141,12 @@ namespace RauViet.ui
 
                 dataGV.Columns["OrderPackingPriceCNF"].HeaderText = "Giá CNF";
                 dataGV.Columns["ExportCode"].HeaderText = "mã Xuất Cảng";
-                dataGV.Columns["CustomerName"].HeaderText = "Tên Khách Hàng";
+                dataGV.Columns["CustomerName"].HeaderText = "Khách Hàng";
                 dataGV.Columns["ProductNameVN"].HeaderText = "Tên Sản Phẩm";
                 dataGV.Columns["PCSOther"].HeaderText = "PCS Order";
                 dataGV.Columns["NWOther"].HeaderText = "NW Order";
                 dataGV.Columns["Priority"].HeaderText = "ưu tiên";
+                dataGV.Columns["OrderId"].HeaderText = "ID";
 
                 //dataGV.Columns["OrderId"].Visible = false;
                 dataGV.Columns["CustomerID"].Visible = false;
@@ -154,20 +155,34 @@ namespace RauViet.ui
                 dataGV.Columns["NWReal"].Visible = false;
                 dataGV.Columns["OrderPackingPriceCNF"].Visible = false;
 
-                dataGV.Columns["OrderId"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["CustomerName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                dataGV.Columns["ProductNameVN"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                dataGV.Columns["PCSOther"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["NWOther"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+                dataGV.Columns["CartonSize"].Visible = false;
+                dataGV.Columns["CustomerCarton"].Visible = false;
+                dataGV.Columns["LOTCode"].Visible = false;
+                dataGV.Columns["LOTCodeComplete"].Visible = false;
+                dataGV.Columns["CustomerCode"].Visible = false;
+                dataGV.Columns["ProductNameEN"].Visible = false;
+                dataGV.Columns["Package"].Visible = false;
+                dataGV.Columns["packing"].Visible = false;
+                dataGV.Columns["Amount"].Visible = false;
+                dataGV.Columns["ExportDate"].Visible = false;
+                dataGV.Columns["ExportCode"].Visible = false;
+                dataGV.Columns["PCSReal"].Visible = false;
+                dataGV.Columns["CartonNo"].Visible = false;
+
+
+                dataGV.Columns["OrderId"].Width = 60;
+                dataGV.Columns["CustomerName"].Width = 120;
+                dataGV.Columns["ProductNameVN"].Width = 150;
+                dataGV.Columns["PCSOther"].Width = 80;
+                dataGV.Columns["NWOther"].Width = 80;
+                dataGV.Columns["Priority"].Width = 50;
 
                 dataGV.Columns["PCSOther"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 dataGV.Columns["NWOther"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                dataGV.Columns["Priority"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
+                dataGV.Columns["Priority"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                dataGV.Columns["OrderId"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-
-                dataGV.AutoResizeColumns();
-
 
                 exportCode_search_cbb.DataSource = mExportCode_dt.Copy();
                 exportCode_search_cbb.DisplayMember = "ExportCode";  // hiển thị tên
@@ -229,6 +244,7 @@ namespace RauViet.ui
 
         private void exportCode_search_cbb_SelectedIndexChanged(object sender, EventArgs e)
         {
+            return;
             if (mOrders_dt == null || mOrders_dt.Rows.Count == 0)
                 return;
 
@@ -432,7 +448,7 @@ namespace RauViet.ui
                                 row.Cells["CustomerName"].Value = customerRows.Length > 0 ? customerRows[0]["FullName"].ToString() : "Unknown";
 
                                 DataRow[] packingRows = mProductPacking_dt.Select($"ProductPackingID = {packingId}");
-                                row.Cells["ProductNameVN"].Value = packingRows.Length > 0 ? packingRows[0]["ProductName"].ToString() : "Unknown";
+                                row.Cells["ProductNameVN"].Value = packingRows.Length > 0 ? packingRows[0]["Name_VN"].ToString() : "Unknown";
                             }
                             else
                             {
@@ -484,7 +500,7 @@ namespace RauViet.ui
                         DataRow[] customerRows = mCustomers_dt.Select($"CustomerID = {customerId}");
                         drToAdd["CustomerName"] = customerRows.Length > 0 ? customerRows[0]["FullName"].ToString() : "Unknown";
                         DataRow[] packingRows = mProductPacking_dt.Select($"ProductPackingID = {packingId}");
-                        drToAdd["ProductNameVN"] = packingRows.Length > 0 ? packingRows[0]["ProductName"].ToString() : "Unknown";
+                        drToAdd["ProductNameVN"] = packingRows.Length > 0 ? packingRows[0]["Name_VN"].ToString() : "Unknown";
 
 
                         int sku = Convert.ToInt32(packingRows[0]["SKU"]);

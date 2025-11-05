@@ -142,8 +142,8 @@ namespace RauViet.ui
 
                 dataGV.Columns["No"].Width = 30;
                 dataGV.Columns["ProductNameEN"].Width = 120;
-                dataGV.Columns["ProductNameVN"].Width = 120;
-                dataGV.Columns["CustomerCarton"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                dataGV.Columns["ProductNameVN"].Width = 160;
+                dataGV.Columns["CustomerCarton"].Width = 200;
                 dataGV.Columns["CartonNo"].Width = 100;
                 dataGV.Columns["PLU"].Width = 50;
                 dataGV.Columns["Package"].Width = 50;

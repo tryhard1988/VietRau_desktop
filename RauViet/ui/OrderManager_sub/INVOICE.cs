@@ -194,18 +194,18 @@ namespace RauViet.ui
 
             dataGV.Columns["Priority"].HeaderText = "Ưu\nTiên";
 
-            dataGV.Columns["Priority"].Width = 30;
-            dataGV.Columns["No"].Width = 30;
-            dataGV.Columns["PLU"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            dataGV.Columns["ProductNameEN"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            dataGV.Columns["ProductNameVN"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            dataGV.Columns["Package"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            dataGV.Columns["Quantity"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            dataGV.Columns["NWReal"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            dataGV.Columns["Packing"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            dataGV.Columns["PCSReal"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            dataGV.Columns["OrderPackingPriceCNF"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            dataGV.Columns["AmountCHF"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            dataGV.Columns["Priority"].Width = 50;
+            dataGV.Columns["No"].Width = 50;
+            dataGV.Columns["PLU"].Width = 50;
+            dataGV.Columns["ProductNameEN"].Width = 130;
+            dataGV.Columns["ProductNameVN"].Width = 160;
+            dataGV.Columns["Package"].Width = 50;
+            dataGV.Columns["Quantity"].Width = 60;
+            dataGV.Columns["NWReal"].Width = 50;
+            dataGV.Columns["Packing"].Width = 50;
+            dataGV.Columns["PCSReal"].Width = 50;
+            dataGV.Columns["OrderPackingPriceCNF"].Width = 50;
+            dataGV.Columns["AmountCHF"].Width = 70;
 
             dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
         }
@@ -230,9 +230,6 @@ namespace RauViet.ui
 
             cusOrderGV.DataSource = mCustomerOrdersTotal_dt;
             cusOrderGV.Columns["ExportCodeID"].Visible = false;
-           // cusOrderGV.Columns["PCSReal"].Visible = false;
-           // cusOrderGV.Columns["Package"].Visible = false;
-           // cusOrderGV.Columns["OrderPackingPriceCNF"].Visible = false;
             cusOrderGV.Columns["FullName"].HeaderText = "MARK";
             cusOrderGV.Columns["NWReal"].HeaderText = "N.W";
             cusOrderGV.Columns["AmountCHF"].HeaderText = "Amount\nCHF";
@@ -242,12 +239,9 @@ namespace RauViet.ui
             cusOrderGV.Columns["CNTS"].Width = 40;
             cusOrderGV.Columns["NWReal"].Width = 40;
             cusOrderGV.Columns["AmountCHF"].Width = 50;
-            cusOrderGV.Columns["FullName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-           // cusOrderGV.Columns["AmountCHF"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-          //  cusOrderGV.Columns["NWReal"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-          //  cusOrderGV.Columns["CNTS"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            cusOrderGV.Columns["FullName"].Width = 90;
 
-            
+
         }
 
         private void showCartonOrderGV()
@@ -268,8 +262,7 @@ namespace RauViet.ui
             cartonSizeGV.Columns["No"].Width = 30;
             cartonSizeGV.Columns["weight"].Width = 50;
             cartonSizeGV.Columns["CountCarton"].Width = 50;
-            cartonSizeGV.Columns["CartonSize"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-         //   cartonSizeGV.Columns["CountCarton"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            cartonSizeGV.Columns["CartonSize"].Width = 120;
 
             count = 1;
             foreach (DataRow dr in mCartonOrdersTotal_dt.Rows)

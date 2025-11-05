@@ -83,14 +83,13 @@ namespace RauViet.ui
 
                 dataGV.Columns["Priority"].HeaderText = "Ưu\nTiên";
 
-                dataGV.Columns["Priority"].Width = 30;
-                dataGV.Columns["No"].Width = 30;
+                dataGV.Columns["Priority"].Width = 50;
+                dataGV.Columns["No"].Width = 50;
                 // dataGV.Columns["STT"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["ProductNameEN"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                dataGV.Columns["ProductNameVN"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                dataGV.Columns["BotanicalName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                dataGV.Columns["NetWeightFinal"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["Priority"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+                dataGV.Columns["ProductNameEN"].Width = 180;
+                dataGV.Columns["ProductNameVN"].Width = 180;
+                dataGV.Columns["BotanicalName"].Width = 150;
+                dataGV.Columns["NetWeightFinal"].Width = 80;
 
                 dataGV.Columns["Priority"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
                 dataGV.Columns["NetWeightFinal"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;

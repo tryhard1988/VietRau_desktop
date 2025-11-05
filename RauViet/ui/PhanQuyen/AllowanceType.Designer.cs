@@ -29,6 +29,7 @@ namespace RauViet.ui
         /// </summary>
         private void InitializeComponent()
         {
+            this.dataGV = new System.Windows.Forms.DataGridView();
             this.panel1 = new System.Windows.Forms.Panel();
             this.readOnly_btn = new System.Windows.Forms.Button();
             this.edit_btn = new System.Windows.Forms.Button();
@@ -47,11 +48,22 @@ namespace RauViet.ui
             this.newCustomerBtn = new System.Windows.Forms.Button();
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
             this.allowanceTypeID_tb = new System.Windows.Forms.TextBox();
-            this.dataGV = new System.Windows.Forms.DataGridView();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
             this.panel1.SuspendLayout();
             this.info_gb.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
             this.SuspendLayout();
+            // 
+            // dataGV
+            // 
+            this.dataGV.AllowUserToAddRows = false;
+            this.dataGV.AllowUserToDeleteRows = false;
+            this.dataGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGV.Dock = System.Windows.Forms.DockStyle.Left;
+            this.dataGV.Location = new System.Drawing.Point(0, 0);
+            this.dataGV.Name = "dataGV";
+            this.dataGV.ReadOnly = true;
+            this.dataGV.Size = new System.Drawing.Size(637, 724);
+            this.dataGV.TabIndex = 10;
             // 
             // panel1
             // 
@@ -64,11 +76,11 @@ namespace RauViet.ui
             this.panel1.Controls.Add(this.newCustomerBtn);
             this.panel1.Controls.Add(this.LuuThayDoiBtn);
             this.panel1.Controls.Add(this.allowanceTypeID_tb);
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel1.Location = new System.Drawing.Point(811, 0);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel1.Location = new System.Drawing.Point(637, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(453, 724);
-            this.panel1.TabIndex = 9;
+            this.panel1.Size = new System.Drawing.Size(627, 724);
+            this.panel1.TabIndex = 11;
             // 
             // readOnly_btn
             // 
@@ -246,55 +258,43 @@ namespace RauViet.ui
             this.allowanceTypeID_tb.TabIndex = 16;
             this.allowanceTypeID_tb.Visible = false;
             // 
-            // dataGV
-            // 
-            this.dataGV.AllowUserToAddRows = false;
-            this.dataGV.AllowUserToDeleteRows = false;
-            this.dataGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGV.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dataGV.Location = new System.Drawing.Point(0, 0);
-            this.dataGV.Name = "dataGV";
-            this.dataGV.ReadOnly = true;
-            this.dataGV.Size = new System.Drawing.Size(811, 724);
-            this.dataGV.TabIndex = 10;
-            // 
             // AllowanceType
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1264, 724);
-            this.Controls.Add(this.dataGV);
             this.Controls.Add(this.panel1);
+            this.Controls.Add(this.dataGV);
             this.Name = "AllowanceType";
             this.Text = "FormTableData";
+            ((System.ComponentModel.ISupportInitialize)(this.dataGV)).EndInit();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.info_gb.ResumeLayout(false);
             this.info_gb.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGV)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
-        private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.TextBox allowanceName_tb;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Button LuuThayDoiBtn;
-        private System.Windows.Forms.Button newCustomerBtn;
-        private System.Windows.Forms.Label status_lb;
-        private System.Windows.Forms.Label loading_lb;
-        private System.Windows.Forms.Button delete_btn;
-        private System.Windows.Forms.GroupBox info_gb;
-        private System.Windows.Forms.CheckBox isInsuranceIncluded_cb;
-        private System.Windows.Forms.TextBox allowanceTypeID_tb;
         private System.Windows.Forms.DataGridView dataGV;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Button readOnly_btn;
+        private System.Windows.Forms.Button edit_btn;
+        private System.Windows.Forms.GroupBox info_gb;
+        private System.Windows.Forms.TextBox allowanceCode_tb;
+        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.CheckBox isActive_cb;
         private System.Windows.Forms.ComboBox ScopeName_cbb;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.TextBox allowanceCode_tb;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Button readOnly_btn;
-        private System.Windows.Forms.Button edit_btn;
+        private System.Windows.Forms.CheckBox isInsuranceIncluded_cb;
+        private System.Windows.Forms.TextBox allowanceName_tb;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label status_lb;
+        private System.Windows.Forms.Button delete_btn;
+        private System.Windows.Forms.Label loading_lb;
+        private System.Windows.Forms.Button newCustomerBtn;
+        private System.Windows.Forms.Button LuuThayDoiBtn;
+        private System.Windows.Forms.TextBox allowanceTypeID_tb;
     }
 }

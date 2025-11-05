@@ -124,6 +124,7 @@ namespace RauViet.ui
             }
             catch (Exception ex)
             {
+                Console.WriteLine("ERROR:" + ex.Message);
                 status_lb.Text = "Thất bại.";
                 status_lb.ForeColor = Color.Red;
             }

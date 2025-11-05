@@ -173,7 +173,8 @@ namespace RauViet.ui
             await Task.Delay(50);
             try
             {
-                var ordersPackingTask = SQLManager.Instance.getOrdersPackingAsync();
+                //var ordersPackingTask = SQLManager.Instance.getOrdersPackingAsync();
+                var ordersPackingTask = SQLStore.Instance.getOrdersAsync();
                 string[] keepColumns = { "ExportCodeID", "ExportCode", "ExportDate" };
                 var parameters = new Dictionary<string, object> { { "Complete", false } };
                 var exportCodeTask = SQLStore.Instance.getExportCodesAsync(keepColumns, parameters);
@@ -183,43 +184,34 @@ namespace RauViet.ui
                 mExportCode_dt = exportCodeTask.Result;
                 mOrders_dt = ordersPackingTask.Result;
 
-                foreach (DataRow dr in mOrders_dt.Rows)
-                {
-                    string productName = dr["ProductPackingName"].ToString();
-                    string packingType = dr["PackingType"].ToString();
-                    string packing = dr["packing"].ToString();
-                    string package = dr["Package"].ToString();
-
-                    decimal amount = dr["Amount"] == DBNull.Value ? 0 : Convert.ToDecimal(dr["Amount"]);
-
-                    if(package.CompareTo("weight") == 0)
-                    {
-                        dr["PCSReal"] = Convert.ToInt32(0);
-                    }
-
-                    if (package.CompareTo("kg") == 0 && packing.CompareTo("") != 0 && amount > 0)
-                    {
-                        string amountStr = amount.ToString("0.##");
-                        dr["ProductPackingName"] = $"{productName} {packingType} {amountStr} {packing}";
-                    }
-                    else
-                    {
-                        dr["ProductPackingName"] = $"{productName}";
-                    }
-                }
-
                 // Chạy truy vấn trên thread riêng
                 dataGV.DataSource = mOrders_dt;
-                //dataGV.Columns["OrderId"].Visible = false;
                 dataGV.Columns["ExportCodeID"].Visible = false;
                 dataGV.Columns["Amount"].Visible = false;
                 dataGV.Columns["packing"].Visible = false;
-                dataGV.Columns["ProductnameEN"].Visible = false;
+                dataGV.Columns["ProductNameEN"].Visible = false;
                 dataGV.Columns["Package"].Visible = false;
                 dataGV.Columns["ExportDate"].Visible = false;
                 dataGV.Columns["ExportCode"].Visible = false;
                 dataGV.Columns["CustomerCode"].Visible = false;
-                dataGV.Columns["PackingType"].Visible = false;
+                dataGV.Columns["CustomerID"].Visible = false;
+                dataGV.Columns["ProductPackingID"].Visible = false;
+                dataGV.Columns["OrderPackingPriceCNF"].Visible = false;
+                dataGV.Columns["LOTCode"].Visible = false;
+                dataGV.Columns["LOTCodeComplete"].Visible = false;
+
+                int count = 0;
+                mOrders_dt.Columns["OrderId"].SetOrdinal(count++);
+                mOrders_dt.Columns["Customername"].SetOrdinal(count++);
+                mOrders_dt.Columns["ProductNameVN"].SetOrdinal(count++);
+                mOrders_dt.Columns["CustomerCarton"].SetOrdinal(count++);
+                mOrders_dt.Columns["CartonNo"].SetOrdinal(count++);
+                mOrders_dt.Columns["CartonSize"].SetOrdinal(count++);
+                mOrders_dt.Columns["PCSReal"].SetOrdinal(count++);
+                mOrders_dt.Columns["NWReal"].SetOrdinal(count++);
+                mOrders_dt.Columns["PCSOther"].SetOrdinal(count++);
+                mOrders_dt.Columns["NWOther"].SetOrdinal(count++);
+                
 
                 dataGV.ReadOnly = false;
                 dataGV.Columns["CartonNo"].ReadOnly = false;
@@ -228,7 +220,7 @@ namespace RauViet.ui
                 dataGV.Columns["NWReal"].ReadOnly = true;
                 dataGV.Columns["Priority"].ReadOnly = true;
                 dataGV.Columns["CustomerName"].ReadOnly = true;
-                dataGV.Columns["ProductPackingName"].ReadOnly = true;
+                dataGV.Columns["ProductNameVN"].ReadOnly = true;
                 dataGV.Columns["CustomerCarton"].ReadOnly = true;
 
                 dataGV.Columns["OrderId"].HeaderText = "ID";
@@ -240,7 +232,7 @@ namespace RauViet.ui
                 dataGV.Columns["CartonSize"].HeaderText = "Carton Size";
                 dataGV.Columns["Priority"].HeaderText = "Ưu\nTiên";
                 dataGV.Columns["Customername"].HeaderText = "Khách Hàng";
-                dataGV.Columns["ProductPackingName"].HeaderText = "Tên Sản Phẩm";
+                dataGV.Columns["ProductNameVN"].HeaderText = "Tên Sản Phẩm";
                 dataGV.Columns["CustomerCarton"].HeaderText = "Mã Thùng";
 
                 dataGV.Columns["OrderId"].Width = 50;
@@ -254,12 +246,13 @@ namespace RauViet.ui
                 dataGV.Columns["CustomerCarton"].Width = 80;
                 //   dataGV.Columns["Priority"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
                 dataGV.Columns["CustomerName"].Width = 80;
-                dataGV.Columns["ProductPackingName"].Width = 220;
+                dataGV.Columns["ProductNameVN"].Width = 220;
 
                 dataGV.Columns["CartonNo"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 dataGV.Columns["PCSReal"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 dataGV.Columns["NWReal"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                dataGV.Columns["Priority"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
+                dataGV.Columns["Priority"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                dataGV.Columns["OrderId"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
@@ -270,9 +263,7 @@ namespace RauViet.ui
                 exportCode_cbb.DisplayMember = "ExportCode";  // hiển thị tên
                 exportCode_cbb.ValueMember = "ExportCodeID";
 
-                //   dataGV.AutoResizeColumns();
-                
-                fillter_btn_Click(null, null);
+               fillter_btn_Click(null, null);
             }
             catch (Exception ex)
             {
@@ -331,7 +322,6 @@ namespace RauViet.ui
                 mOrders_dt.Rows.Add(newRow);
                 mOrders_dt.AcceptChanges();
 
-                SQLStore.Instance.removeOrders();
                 
             }
             catch (Exception ex)
@@ -383,8 +373,6 @@ namespace RauViet.ui
                     status_lb.Text = "Thất bại.";
                     status_lb.ForeColor = System.Drawing.Color.Red;
                 }
-
-                SQLStore.Instance.removeOrders();
 
             }
             catch (Exception ex)
@@ -1316,16 +1304,16 @@ namespace RauViet.ui
             switch (sortMode)
             {
                 case 0:
-                    sortExpression = "CustomerName ASC, ProductPackingName DESC";
+                    sortExpression = "CustomerName ASC, ProductNameVN DESC";
                     break;
                 case 1:
-                    sortExpression = "CustomerName ASC, ProductPackingName ASC";
+                    sortExpression = "CustomerName ASC, ProductNameVN ASC";
                     break;
                 case 2:
-                    sortExpression = "CustomerName DESC, ProductPackingName DESC";
+                    sortExpression = "CustomerName DESC, ProductNameVN DESC";
                     break;
                 case 3:
-                    sortExpression = "CustomerName DESC, ProductPackingName ASC";
+                    sortExpression = "CustomerName DESC, ProductNameVN ASC";
                     break;
             }
 
@@ -1347,16 +1335,16 @@ namespace RauViet.ui
             switch (sortMode)
             {
                 case 0:
-                    sortExpression = "ProductPackingName ASC, CustomerName ASC";
+                    sortExpression = "ProductNameVN ASC, CustomerName ASC";
                     break;
                 case 1:
-                    sortExpression = "ProductPackingName ASC, CustomerName DESC";
+                    sortExpression = "ProductNameVN ASC, CustomerName DESC";
                     break;
                 case 2:
-                    sortExpression = "ProductPackingName DESC, CustomerName DESC";
+                    sortExpression = "ProductNameVN DESC, CustomerName DESC";
                     break;
                 case 3:
-                    sortExpression = "ProductPackingName DESC, CustomerName ASC";
+                    sortExpression = "ProductNameVN DESC, CustomerName ASC";
                     break;
             }
 
@@ -1378,16 +1366,16 @@ namespace RauViet.ui
             switch (sortMode)
             {
                 case 0:
-                    sortExpression = "Priority ASC, ProductPackingName ASC, CustomerName ASC";
+                    sortExpression = "Priority ASC, ProductNameVN ASC, CustomerName ASC";
                     break;
                 case 1:
-                    sortExpression = "Priority ASC, ProductPackingName DESC, CustomerName ASC";
+                    sortExpression = "Priority ASC, ProductNameVN DESC, CustomerName ASC";
                     break;
                 case 2:
-                    sortExpression = "Priority DESC, ProductPackingName DESC, CustomerName ASC";
+                    sortExpression = "Priority DESC, ProductNameVN DESC, CustomerName ASC";
                     break;
                 case 3:
-                    sortExpression = "Priority DESC, ProductPackingName ASC, CustomerName ASC";
+                    sortExpression = "Priority DESC, ProductNameVN ASC, CustomerName ASC";
                     break;
             }
 

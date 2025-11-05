@@ -29,7 +29,14 @@ namespace RauViet.ui
         /// </summary>
         private void InitializeComponent()
         {
+            this.dataGV = new System.Windows.Forms.DataGridView();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.exportExcel_TD_btn = new System.Windows.Forms.Button();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.sortByPri_Pro_btn = new System.Windows.Forms.Button();
+            this.sortBypro_Cus_btn = new System.Windows.Forms.Button();
+            this.sortByCus_pro_btn = new System.Windows.Forms.Button();
+            this.sortByCus_pri_btn = new System.Windows.Forms.Button();
             this.status_lb = new System.Windows.Forms.Label();
             this.readOnly_btn = new System.Windows.Forms.Button();
             this.newCustomerBtn = new System.Windows.Forms.Button();
@@ -54,18 +61,23 @@ namespace RauViet.ui
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
             this.priceCNF_tb = new System.Windows.Forms.TextBox();
             this.orderId_tb = new System.Windows.Forms.TextBox();
-            this.dataGV = new System.Windows.Forms.DataGridView();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.sortBypro_Cus_btn = new System.Windows.Forms.Button();
-            this.sortByCus_pro_btn = new System.Windows.Forms.Button();
-            this.sortByCus_pri_btn = new System.Windows.Forms.Button();
-            this.exportExcel_TD_btn = new System.Windows.Forms.Button();
-            this.sortByPri_Pro_btn = new System.Windows.Forms.Button();
-            this.panel1.SuspendLayout();
-            this.info_gb.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
+            this.panel1.SuspendLayout();
             this.groupBox1.SuspendLayout();
+            this.info_gb.SuspendLayout();
             this.SuspendLayout();
+            // 
+            // dataGV
+            // 
+            this.dataGV.AllowUserToAddRows = false;
+            this.dataGV.AllowUserToDeleteRows = false;
+            this.dataGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGV.Dock = System.Windows.Forms.DockStyle.Left;
+            this.dataGV.Location = new System.Drawing.Point(0, 0);
+            this.dataGV.Name = "dataGV";
+            this.dataGV.ReadOnly = true;
+            this.dataGV.Size = new System.Drawing.Size(596, 681);
+            this.dataGV.TabIndex = 11;
             // 
             // panel1
             // 
@@ -85,11 +97,83 @@ namespace RauViet.ui
             this.panel1.Controls.Add(this.LuuThayDoiBtn);
             this.panel1.Controls.Add(this.priceCNF_tb);
             this.panel1.Controls.Add(this.orderId_tb);
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel1.Location = new System.Drawing.Point(816, 0);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel1.Location = new System.Drawing.Point(596, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(448, 681);
-            this.panel1.TabIndex = 9;
+            this.panel1.Size = new System.Drawing.Size(668, 681);
+            this.panel1.TabIndex = 12;
+            // 
+            // exportExcel_TD_btn
+            // 
+            this.exportExcel_TD_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.exportExcel_TD_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.exportExcel_TD_btn.Location = new System.Drawing.Point(292, 423);
+            this.exportExcel_TD_btn.Name = "exportExcel_TD_btn";
+            this.exportExcel_TD_btn.Size = new System.Drawing.Size(145, 39);
+            this.exportExcel_TD_btn.TabIndex = 67;
+            this.exportExcel_TD_btn.Text = "Xuất Excel";
+            this.exportExcel_TD_btn.UseVisualStyleBackColor = false;
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.sortByPri_Pro_btn);
+            this.groupBox1.Controls.Add(this.sortBypro_Cus_btn);
+            this.groupBox1.Controls.Add(this.sortByCus_pro_btn);
+            this.groupBox1.Controls.Add(this.sortByCus_pri_btn);
+            this.groupBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.groupBox1.ForeColor = System.Drawing.SystemColors.Highlight;
+            this.groupBox1.Location = new System.Drawing.Point(10, 461);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.groupBox1.Size = new System.Drawing.Size(426, 164);
+            this.groupBox1.TabIndex = 66;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Sắp Xếp";
+            // 
+            // sortByPri_Pro_btn
+            // 
+            this.sortByPri_Pro_btn.BackColor = System.Drawing.SystemColors.ScrollBar;
+            this.sortByPri_Pro_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.sortByPri_Pro_btn.ForeColor = System.Drawing.SystemColors.Highlight;
+            this.sortByPri_Pro_btn.Location = new System.Drawing.Point(225, 24);
+            this.sortByPri_Pro_btn.Name = "sortByPri_Pro_btn";
+            this.sortByPri_Pro_btn.Size = new System.Drawing.Size(195, 41);
+            this.sortByPri_Pro_btn.TabIndex = 68;
+            this.sortByPri_Pro_btn.Text = "*[Ưu Tiên, Tên SP]*\r\n";
+            this.sortByPri_Pro_btn.UseVisualStyleBackColor = false;
+            // 
+            // sortBypro_Cus_btn
+            // 
+            this.sortBypro_Cus_btn.BackColor = System.Drawing.SystemColors.ScrollBar;
+            this.sortBypro_Cus_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.sortBypro_Cus_btn.Location = new System.Drawing.Point(28, 118);
+            this.sortBypro_Cus_btn.Name = "sortBypro_Cus_btn";
+            this.sortBypro_Cus_btn.Size = new System.Drawing.Size(195, 41);
+            this.sortBypro_Cus_btn.TabIndex = 67;
+            this.sortBypro_Cus_btn.Text = "[Tên SP, Khách Hàng]";
+            this.sortBypro_Cus_btn.UseVisualStyleBackColor = false;
+            // 
+            // sortByCus_pro_btn
+            // 
+            this.sortByCus_pro_btn.BackColor = System.Drawing.SystemColors.ScrollBar;
+            this.sortByCus_pro_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.sortByCus_pro_btn.Location = new System.Drawing.Point(28, 71);
+            this.sortByCus_pro_btn.Name = "sortByCus_pro_btn";
+            this.sortByCus_pro_btn.Size = new System.Drawing.Size(195, 41);
+            this.sortByCus_pro_btn.TabIndex = 66;
+            this.sortByCus_pro_btn.Text = "[Khách Hàng, Tên SP]";
+            this.sortByCus_pro_btn.UseVisualStyleBackColor = false;
+            // 
+            // sortByCus_pri_btn
+            // 
+            this.sortByCus_pri_btn.BackColor = System.Drawing.SystemColors.ScrollBar;
+            this.sortByCus_pri_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.sortByCus_pri_btn.Location = new System.Drawing.Point(28, 24);
+            this.sortByCus_pri_btn.Name = "sortByCus_pri_btn";
+            this.sortByCus_pri_btn.Size = new System.Drawing.Size(195, 41);
+            this.sortByCus_pri_btn.TabIndex = 65;
+            this.sortByCus_pri_btn.Text = "[Khách Hàng, Ưu Tiên]";
+            this.sortByCus_pri_btn.UseVisualStyleBackColor = false;
             // 
             // status_lb
             // 
@@ -344,141 +428,57 @@ namespace RauViet.ui
             this.orderId_tb.TabIndex = 16;
             this.orderId_tb.Visible = false;
             // 
-            // dataGV
-            // 
-            this.dataGV.AllowUserToAddRows = false;
-            this.dataGV.AllowUserToDeleteRows = false;
-            this.dataGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGV.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dataGV.Location = new System.Drawing.Point(0, 0);
-            this.dataGV.Name = "dataGV";
-            this.dataGV.ReadOnly = true;
-            this.dataGV.Size = new System.Drawing.Size(816, 681);
-            this.dataGV.TabIndex = 11;
-            // 
-            // groupBox1
-            // 
-            this.groupBox1.Controls.Add(this.sortByPri_Pro_btn);
-            this.groupBox1.Controls.Add(this.sortBypro_Cus_btn);
-            this.groupBox1.Controls.Add(this.sortByCus_pro_btn);
-            this.groupBox1.Controls.Add(this.sortByCus_pri_btn);
-            this.groupBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox1.ForeColor = System.Drawing.SystemColors.Highlight;
-            this.groupBox1.Location = new System.Drawing.Point(10, 461);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.groupBox1.Size = new System.Drawing.Size(426, 164);
-            this.groupBox1.TabIndex = 66;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Sắp Xếp";
-            // 
-            // sortBypro_Cus_btn
-            // 
-            this.sortBypro_Cus_btn.BackColor = System.Drawing.SystemColors.ScrollBar;
-            this.sortBypro_Cus_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.sortBypro_Cus_btn.Location = new System.Drawing.Point(28, 118);
-            this.sortBypro_Cus_btn.Name = "sortBypro_Cus_btn";
-            this.sortBypro_Cus_btn.Size = new System.Drawing.Size(195, 41);
-            this.sortBypro_Cus_btn.TabIndex = 67;
-            this.sortBypro_Cus_btn.Text = "[Tên SP, Khách Hàng]";
-            this.sortBypro_Cus_btn.UseVisualStyleBackColor = false;
-            // 
-            // sortByCus_pro_btn
-            // 
-            this.sortByCus_pro_btn.BackColor = System.Drawing.SystemColors.ScrollBar;
-            this.sortByCus_pro_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.sortByCus_pro_btn.Location = new System.Drawing.Point(28, 71);
-            this.sortByCus_pro_btn.Name = "sortByCus_pro_btn";
-            this.sortByCus_pro_btn.Size = new System.Drawing.Size(195, 41);
-            this.sortByCus_pro_btn.TabIndex = 66;
-            this.sortByCus_pro_btn.Text = "[Khách Hàng, Tên SP]";
-            this.sortByCus_pro_btn.UseVisualStyleBackColor = false;
-            // 
-            // sortByCus_pri_btn
-            // 
-            this.sortByCus_pri_btn.BackColor = System.Drawing.SystemColors.ScrollBar;
-            this.sortByCus_pri_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.sortByCus_pri_btn.Location = new System.Drawing.Point(28, 24);
-            this.sortByCus_pri_btn.Name = "sortByCus_pri_btn";
-            this.sortByCus_pri_btn.Size = new System.Drawing.Size(195, 41);
-            this.sortByCus_pri_btn.TabIndex = 65;
-            this.sortByCus_pri_btn.Text = "[Khách Hàng, Ưu Tiên]";
-            this.sortByCus_pri_btn.UseVisualStyleBackColor = false;
-            // 
-            // exportExcel_TD_btn
-            // 
-            this.exportExcel_TD_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
-            this.exportExcel_TD_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.exportExcel_TD_btn.Location = new System.Drawing.Point(292, 423);
-            this.exportExcel_TD_btn.Name = "exportExcel_TD_btn";
-            this.exportExcel_TD_btn.Size = new System.Drawing.Size(145, 39);
-            this.exportExcel_TD_btn.TabIndex = 67;
-            this.exportExcel_TD_btn.Text = "Xuất Excel";
-            this.exportExcel_TD_btn.UseVisualStyleBackColor = false;
-            // 
-            // sortByPri_Pro_btn
-            // 
-            this.sortByPri_Pro_btn.BackColor = System.Drawing.SystemColors.ScrollBar;
-            this.sortByPri_Pro_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.sortByPri_Pro_btn.ForeColor = System.Drawing.SystemColors.Highlight;
-            this.sortByPri_Pro_btn.Location = new System.Drawing.Point(225, 24);
-            this.sortByPri_Pro_btn.Name = "sortByPri_Pro_btn";
-            this.sortByPri_Pro_btn.Size = new System.Drawing.Size(195, 41);
-            this.sortByPri_Pro_btn.TabIndex = 68;
-            this.sortByPri_Pro_btn.Text = "*[Ưu Tiên, Tên SP]*\r\n";
-            this.sortByPri_Pro_btn.UseVisualStyleBackColor = false;
-            // 
             // OrdersList
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1264, 681);
-            this.Controls.Add(this.dataGV);
             this.Controls.Add(this.panel1);
+            this.Controls.Add(this.dataGV);
             this.Name = "OrdersList";
             this.Text = "FormTableData";
+            ((System.ComponentModel.ISupportInitialize)(this.dataGV)).EndInit();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            this.groupBox1.ResumeLayout(false);
             this.info_gb.ResumeLayout(false);
             this.info_gb.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGV)).EndInit();
-            this.groupBox1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
 
         #endregion
-        private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.TextBox PCSOther_tb;
-        private System.Windows.Forms.TextBox priceCNF_tb;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Button LuuThayDoiBtn;
-        private System.Windows.Forms.TextBox orderId_tb;
-        private System.Windows.Forms.Button delete_btn;
-        private System.Windows.Forms.ComboBox packing_ccb;
-        private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.ComboBox product_ccb;
-        private System.Windows.Forms.ComboBox customer_ccb;
-        private System.Windows.Forms.TextBox netWeight_tb;
-        private System.Windows.Forms.Label label6;
         private System.Windows.Forms.DataGridView dataGV;
-        private System.Windows.Forms.ComboBox exportCode_search_cbb;
-        private System.Windows.Forms.Button print_order_list_btn;
-        private System.Windows.Forms.Button printPendingOrderSummary_btn;
-        private System.Windows.Forms.GroupBox info_gb;
-        private System.Windows.Forms.Button prewiew_print_DSDH_btn;
-        private System.Windows.Forms.Button preview_print_TD_btn;
-        private System.Windows.Forms.Button newCustomerBtn;
-        private System.Windows.Forms.Button edit_btn;
-        private System.Windows.Forms.Button readOnly_btn;
-        private System.Windows.Forms.Label status_lb;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Button exportExcel_TD_btn;
         private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Button sortByPri_Pro_btn;
         private System.Windows.Forms.Button sortBypro_Cus_btn;
         private System.Windows.Forms.Button sortByCus_pro_btn;
         private System.Windows.Forms.Button sortByCus_pri_btn;
-        private System.Windows.Forms.Button exportExcel_TD_btn;
-        private System.Windows.Forms.Button sortByPri_Pro_btn;
+        private System.Windows.Forms.Label status_lb;
+        private System.Windows.Forms.Button readOnly_btn;
+        private System.Windows.Forms.Button newCustomerBtn;
+        private System.Windows.Forms.Button edit_btn;
+        private System.Windows.Forms.Button preview_print_TD_btn;
+        private System.Windows.Forms.Button prewiew_print_DSDH_btn;
+        private System.Windows.Forms.GroupBox info_gb;
+        private System.Windows.Forms.ComboBox customer_ccb;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.TextBox PCSOther_tb;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.ComboBox packing_ccb;
+        private System.Windows.Forms.TextBox netWeight_tb;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.ComboBox product_ccb;
+        private System.Windows.Forms.Button printPendingOrderSummary_btn;
+        private System.Windows.Forms.Button print_order_list_btn;
+        private System.Windows.Forms.ComboBox exportCode_search_cbb;
+        private System.Windows.Forms.Button delete_btn;
+        private System.Windows.Forms.Button LuuThayDoiBtn;
+        private System.Windows.Forms.TextBox priceCNF_tb;
+        private System.Windows.Forms.TextBox orderId_tb;
     }
 }
