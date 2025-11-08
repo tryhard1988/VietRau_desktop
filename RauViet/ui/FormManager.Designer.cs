@@ -79,10 +79,10 @@
             this.invoice_menuitem = new System.Windows.Forms.ToolStripMenuItem();
             this.packingTotal_menuitem = new System.Windows.Forms.ToolStripMenuItem();
             this.customerDetailPacking_mi = new System.Windows.Forms.ToolStripMenuItem();
-            this.thôngKêToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.thongke_main_mi = new System.Windows.Forms.ToolStripMenuItem();
+            this.reportExportYear_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.reportSalary_Month_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.content_panel = new System.Windows.Forms.Panel();
-            this.reportExportYear_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1.SuspendLayout();
             this.LOT_menuitem.SuspendLayout();
             this.SuspendLayout();
@@ -133,7 +133,7 @@
             this.sanpham_group_mi,
             this.donhang_group_mi,
             this.xuatExcelGuiKH_Group_mi,
-            this.thôngKêToolStripMenuItem});
+            this.thongke_main_mi});
             this.LOT_menuitem.Location = new System.Drawing.Point(0, 0);
             this.LOT_menuitem.Name = "LOT_menuitem";
             this.LOT_menuitem.Size = new System.Drawing.Size(1388, 25);
@@ -466,14 +466,20 @@
             this.customerDetailPacking_mi.Size = new System.Drawing.Size(217, 22);
             this.customerDetailPacking_mi.Text = "Customer Detail Packing";
             // 
-            // thôngKêToolStripMenuItem
+            // thongke_main_mi
             // 
-            this.thôngKêToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.thongke_main_mi.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.reportExportYear_mi,
             this.reportSalary_Month_mi});
-            this.thôngKêToolStripMenuItem.Name = "thôngKêToolStripMenuItem";
-            this.thôngKêToolStripMenuItem.Size = new System.Drawing.Size(76, 21);
-            this.thôngKêToolStripMenuItem.Text = "Thống Kê";
+            this.thongke_main_mi.Name = "thongke_main_mi";
+            this.thongke_main_mi.Size = new System.Drawing.Size(76, 21);
+            this.thongke_main_mi.Text = "Thống Kê";
+            // 
+            // reportExportYear_mi
+            // 
+            this.reportExportYear_mi.Name = "reportExportYear_mi";
+            this.reportExportYear_mi.Size = new System.Drawing.Size(253, 22);
+            this.reportExportYear_mi.Text = "Báo Cáo Đơn Hàng Theo Năm";
             // 
             // reportSalary_Month_mi
             // 
@@ -489,16 +495,11 @@
             this.content_panel.Size = new System.Drawing.Size(1388, 491);
             this.content_panel.TabIndex = 1;
             // 
-            // reportExportYear_mi
-            // 
-            this.reportExportYear_mi.Name = "reportExportYear_mi";
-            this.reportExportYear_mi.Size = new System.Drawing.Size(253, 22);
-            this.reportExportYear_mi.Text = "Báo Cáo Đơn Hàng Theo Năm";
-            // 
             // FormManager
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(1388, 547);
             this.Controls.Add(this.content_panel);
             this.Controls.Add(this.panel1);
@@ -565,7 +566,7 @@
         private System.Windows.Forms.ToolStripMenuItem deduction_CEP_mi;
         private System.Windows.Forms.ToolStripMenuItem salaryCaculator_mi;
         private System.Windows.Forms.ToolStripMenuItem deduction_ATT_mi;
-        private System.Windows.Forms.ToolStripMenuItem thôngKêToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem thongke_main_mi;
         private System.Windows.Forms.ToolStripMenuItem reportSalary_Month_mi;
         private System.Windows.Forms.ToolStripMenuItem employeeSalaryInfo_mi;
         private System.Windows.Forms.ToolStripMenuItem reportExportYear_mi;

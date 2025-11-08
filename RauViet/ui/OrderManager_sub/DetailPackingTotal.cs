@@ -492,10 +492,23 @@ namespace RauViet.ui
                             // Tính tổng cột NWOther
                             if (col.Name == "NWReal")
                             {
+                                cell.Style.NumberFormat.Format = "#,##0.00";
                                 if (decimal.TryParse(cellValue, out decimal num))
+                                {
                                     totalNWOther += num;
+                                    cell.Value = num;
+                                }
                             }
-                            else if (col.Name == "PCSReal" || col.Name == "Package" || col.Name == "No" || col.Name == "NWReal")
+                            else if (col.Name == "PCSReal")
+                            {
+                                cell.Style.NumberFormat.Format = "#,##0";
+                                if (int.TryParse(cellValue, out int num))
+                                {
+                                    cell.Value = num;
+                                }
+                            }
+
+                            if (col.Name == "PCSReal" || col.Name == "Package" || col.Name == "No" || col.Name == "NWReal")
                             {
                                 cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
                             }
@@ -506,7 +519,7 @@ namespace RauViet.ui
                                 int estimatedLines = (int)((cellValue.Length * ws.Style.Font.FontSize / columnWidth) + 2);
                                 ws.Row(rowIndex).Height = estimatedLines * ws.Style.Font.FontSize * 1.2; // lineHeight ~ font size * 1.2
 
-                                if(col.Name == "CustomerCarton" && cellValue.CompareTo("") != 0)
+                                if (col.Name == "CustomerCarton" && cellValue.CompareTo("") != 0)
                                 {
                                     int count = cellValue.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Length;
                                     totalCarton += count;
@@ -559,13 +572,15 @@ namespace RauViet.ui
                     ws.Range(totalRow + 1, 1, totalRow + 1, 3).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
 
                     ws.Range(totalRow, 4, totalRow, exportColumns.Count).Merge();
-                    ws.Cell(totalRow, 4).Value = totalNWOther + " kg";
+                    ws.Cell(totalRow, 4).Style.NumberFormat.Format = "#,##0.00 \"kg\"";
+                    ws.Cell(totalRow, 4).Value = totalNWOther;
                     ws.Cell(totalRow, 4).Style.Font.Bold = true;
                     ws.Cell(totalRow, 4).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
                     ws.Range(totalRow, 4, totalRow, exportColumns.Count).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
 
                     ws.Range(totalRow + 1, 4, totalRow + 1, exportColumns.Count).Merge();
-                    ws.Cell(totalRow + 1, 4).Value = totalCarton + " CTNS";
+                    ws.Cell(totalRow + 1, 4).Style.NumberFormat.Format = "#,##0 \"CTNS\"";
+                    ws.Cell(totalRow + 1, 4).Value = totalCarton;
                     ws.Cell(totalRow + 1, 4).Style.Font.Bold = true;
                     ws.Cell(totalRow + 1, 4).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
                     ws.Range(totalRow + 1, 4, totalRow + 1, exportColumns.Count).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;

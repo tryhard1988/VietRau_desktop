@@ -104,8 +104,8 @@ namespace RauViet.ui
                 dataGV.Columns["PlantingAreaCode"].HeaderText = "Mã\nVùng Trồng";
                 dataGV.Columns["LOTCodeHeader"].HeaderText = "Mã LOT\n3 số đầu";
 
-                dataGV.Columns["ProductNameVN"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                dataGV.Columns["ProductNameEN"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                dataGV.Columns["ProductNameVN"].Width = 170;
+                dataGV.Columns["ProductNameEN"].Width = 140;
 
                 dataGV.Columns["BotanicalName"].Width = 100;
                 dataGV.Columns["PlantingAreaCode"].Width = 50;
@@ -119,8 +119,9 @@ namespace RauViet.ui
 
                 dataGV.Columns["ProductNameVN_NoSign"].Visible = false;
                 dataGV.Columns["PackingType"].Visible = false;
+                dataGV.Columns["GroupProduct"].Visible = false;
                 priceCNFHisGV.Columns["id"].Visible = false;
-                priceCNFHisGV.Columns["SKU"].Visible = false;
+                priceCNFHisGV.Columns["SKU"].Visible = false;                
                 // dataGV.Columns["SKU"].Visible = false;
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
@@ -132,7 +133,7 @@ namespace RauViet.ui
                 dataGV.Columns["SKU"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 //dataGV.AutoResizeColumns();
 
-                
+                search_txt_TextChanged(null, null);
 
                 if (dataGV.SelectedRows.Count > 0)
                     UpdateRightUI(0);
@@ -231,7 +232,7 @@ namespace RauViet.ui
 
                             if (isScussess == true)
                             {
-                                SQLStore.Instance.resetProductpacking();
+                                SQLStore.Instance.removeProductpacking();
 
                                 await SQLManager.Instance.SaveProductSKUHistoryAsync(SKU, priceCNF);
 
@@ -279,7 +280,7 @@ namespace RauViet.ui
                         packingList, botanicalName, priceCNF, priority, plantingareaCode, LOTCodeHeader);
                     if (newId > 0)
                     {
-                        SQLStore.Instance.resetProductpacking();
+                        SQLStore.Instance.removeProductpacking();
 
                         await SQLManager.Instance.SaveProductSKUHistoryAsync(newId, priceCNF);
 
@@ -381,7 +382,7 @@ namespace RauViet.ui
 
                             if (isScussess == true)
                             {
-                                SQLStore.Instance.resetProductpacking();
+                                SQLStore.Instance.removeProductpacking();
                                 status_lb.Text = "Thành công.";
                                 status_lb.ForeColor = Color.Green;
 

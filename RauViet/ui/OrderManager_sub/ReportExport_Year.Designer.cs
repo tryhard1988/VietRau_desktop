@@ -248,11 +248,11 @@ namespace RauViet.ui
             this.dataGV.AllowUserToAddRows = false;
             this.dataGV.AllowUserToDeleteRows = false;
             this.dataGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGV.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dataGV.Dock = System.Windows.Forms.DockStyle.Left;
             this.dataGV.Location = new System.Drawing.Point(0, 0);
             this.dataGV.Name = "dataGV";
             this.dataGV.ReadOnly = true;
-            this.dataGV.Size = new System.Drawing.Size(811, 724);
+            this.dataGV.Size = new System.Drawing.Size(485, 724);
             this.dataGV.TabIndex = 10;
             // 
             // ReportExport_Year

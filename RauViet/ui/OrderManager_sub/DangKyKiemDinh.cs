@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using RauViet.classes;
 using ClosedXML.Excel;
+using System.Text.RegularExpressions;
 
 namespace RauViet.ui
 {
@@ -47,7 +48,7 @@ namespace RauViet.ui
             try
             {
                 var ordersPackingTask = SQLManager.Instance.getOrdersDKKDAsync();
-                string[] keepColumns = { "ExportCodeID", "ExportCode", "ExportDate" };
+                string[] keepColumns = { "ExportCodeID", "ExportCodeIndex", "ExportCode", "ExportDate" };
                 var parameters = new Dictionary<string, object>{{ "Complete", false }};
                 var exportCodeTask = SQLStore.Instance.getExportCodesAsync(keepColumns, parameters);
 
@@ -63,6 +64,15 @@ namespace RauViet.ui
                 {
                     dr["No"] = count++;
 
+                    string productNameVN = dr["ProductNameVN"].ToString();
+                    // Xóa nội dung trong ngoặc đơn và khoảng trắng dư
+                    productNameVN = Regex.Replace(productNameVN, @"\s*\([^)]*\)", "").Trim();
+                    dr["ProductNameVN"] = productNameVN;
+
+                    string productNameEN = dr["ProductNameEN"].ToString();
+                    // Xóa nội dung trong ngoặc đơn và khoảng trắng dư
+                    productNameEN = Regex.Replace(productNameEN, @"\s*\([^)]*\)", "").Trim();
+                    dr["ProductNameEN"] = productNameEN;
                 }
 
                 mOrdersTotal_dt.Columns.Add(new DataColumn("Packing", typeof(string)));
@@ -170,7 +180,12 @@ namespace RauViet.ui
         private void ExportDataGridViewToExcel(DataGridView dgv)
         {
             if (exportCode_cbb.SelectedItem == null) return;
+
+            DataView currentView = (DataView)dgv.DataSource;
+            currentView.Sort = "Priority ASC";
+
             string exportCode = ((DataRowView)exportCode_cbb.SelectedItem)["ExportCode"].ToString();
+            int exportindex= Convert.ToInt32(((DataRowView)exportCode_cbb.SelectedItem)["ExportCodeIndex"]);
             DateTime exportDate = Convert.ToDateTime(((DataRowView)exportCode_cbb.SelectedItem)["ExportDate"]);
             try
             {
@@ -240,7 +255,7 @@ namespace RauViet.ui
                     ws.Range(5, 5, 5, exportColumns.Count).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
                     // Hàng 6: Date
                     ws.Range(6, 5, 6, 6).Merge();
-                    ws.Cell(6, 5).Value = "Date:    " + exportDate.ToString("dd/MM/yyyy");
+                    ws.Cell(6, 5).Value = "Date: " + exportDate.ToString("dd/MM/yyyy");
                     ws.Cell(6, 5).Style.Font.FontSize = 10;
                     ws.Cell(6, 5).Style.Font.Bold = true;
                     ws.Cell(6, 5).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
@@ -381,7 +396,11 @@ namespace RauViet.ui
 
                         // Lấy giá trị PlantingAreaCode
                         var plantingCode = row.Cells["PlantingAreaCode"].Value?.ToString();
+                        var priority = row.Cells["Priority"].Value?.ToString();
                         bool highlight = !string.IsNullOrWhiteSpace(plantingCode);
+
+                        if (priority.CompareTo("200000") == 0)
+                            continue;
 
                         colIndex = 1;
                         foreach (var col in exportColumns)
@@ -402,8 +421,12 @@ namespace RauViet.ui
                             // Tính tổng cột NWOther
                             if (col.Name == "NWOther")
                             {
+                                cell.Style.NumberFormat.Format = "#,##0.00";
                                 if (decimal.TryParse(cellValue, out decimal num))
+                                {
                                     totalNWOther += num;
+                                    cell.Value = num;
+                                }
                             }
 
                             // Nếu cần tô màu nền
@@ -429,29 +452,38 @@ namespace RauViet.ui
                     ws.Cell(totalRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
                     ws.Range(totalRow, 1, totalRow, nwOtherColIndex - 1).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
 
+                    ws.Cell(totalRow, nwOtherColIndex).Style.NumberFormat.Format = "#,##0.00";
                     ws.Cell(totalRow, nwOtherColIndex).Value = totalNWOther;
                     ws.Cell(totalRow, nwOtherColIndex).Style.Font.Bold = true;
                     ws.Cell(totalRow, nwOtherColIndex).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
                     ws.Cell(totalRow, nwOtherColIndex).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
 
-
-
                     ws.Columns().AdjustToContents();
                     ws.Column(1).Width = 3;
-                    ws.Column(2).Width += 3;
-                    ws.Column(3).Width += 3;
-                    ws.Column(4).Width += 3;
+                    ws.Column(2).Width = 16;
+                    ws.Column(3).Width = 20;
+                    ws.Column(4).Width = 24;
+                    ws.Column(6).Width = 7;
+                    ws.Column(7).Width = 7;
+                    ws.Row(1).Height += 1;
+                    ws.Row(4).Height += 1;
                     ws.Row(5).Height = 20;
                     ws.Row(6).Height = 45;
                     ws.Row(9).Height = 25;
 
                     ws.Row(11).Height += 5;
                     ws.Row(12).Height += 5;
+
+                    foreach (var col in exportColumns)
+                    {
+                        var column = ws.Column(col.Index + 1);
+                        column.Style.Alignment.WrapText = true;
+                    }
                     // ===== Save file =====
                     using (SaveFileDialog sfd = new SaveFileDialog())
                     {
                         sfd.Filter = "Excel Workbook|*.xlsx";
-                        sfd.FileName = "DKKD_" + exportCode + ".xlsx";
+                        sfd.FileName = "VietRau - Invoice đăng ký kiểm dịch - " + exportindex + ".xlsx";
                         if (sfd.ShowDialog() == DialogResult.OK)
                         {
                             wb.SaveAs(sfd.FileName);

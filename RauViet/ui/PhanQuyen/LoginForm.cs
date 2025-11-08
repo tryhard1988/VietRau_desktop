@@ -27,9 +27,6 @@ namespace RauViet.ui.PhanQuyen
             change_comfirm_tb.TabIndex = 4;
             updatePass_btn.TabIndex = 5;
 
-            userName_tb.Text = "tanthien";
-            password_tb.Text = "123456";
-
             login_panel.Left = (this.ClientSize.Width - login_panel.Width) / 2;
             login_panel.Top = (this.ClientSize.Height - login_panel.Height) / 2;
 
@@ -38,8 +35,7 @@ namespace RauViet.ui.PhanQuyen
 
             changePass_panel.Visible = false;
             login_panel.Visible = true;
-
-            userName_tb.Focus();
+            login_loading_tb.Visible = false;
 
             this.FormBorderStyle = FormBorderStyle.FixedDialog; // hoặc FixedSingle
             this.MaximizeBox = false; // tắt nút maximize
@@ -53,6 +49,8 @@ namespace RauViet.ui.PhanQuyen
             changePass_btn.Click += ChangePass_btn_Click;
             back_btn.Click += Back_btn_Click;
             updatePass_btn.Click += UpdatePass_btn_Click;
+            password_tb.KeyDown += Password_tb_KeyDown;
+            this.Load += LoginForm_Load;
         }
 
         private async void UpdatePass_btn_Click(object sender, EventArgs e)
@@ -129,27 +127,46 @@ namespace RauViet.ui.PhanQuyen
 
             try
             {
-                // ⚙️ Chạy song song 2 truy vấn
+                login_loading_tb.Visible = true;
+
                 var loginTask = SQLManager.Instance.GetPasswordHashFromDatabase(userName);
-                var userInfoTask = SQLManager.Instance.GetInfoUserAsync(userName);
+                var userRoleTask = SQLManager.Instance.GetUserRoleAsync(userName);
 
-                await Task.WhenAll(loginTask, userInfoTask);
-
+                await Task.WhenAll(loginTask, userRoleTask);
                 string passwordDB = loginTask.Result;
-                DataRow data = userInfoTask.Result;
+                DataRow data = userRoleTask.Result;
 
                 bool isPass = true;
 
-                if (userName.CompareTo("thien_admin") != 0 || password.CompareTo("Tn@92x!Qe7$FbLz") != 0)
+                if (userName.CompareTo("vietrau_admin") != 0 || password.CompareTo("Tn@92x!Qe7$FbLz") != 0)
                 {
                     // 🔍 Kiểm tra dữ liệu
                     if (string.IsNullOrEmpty(passwordDB) || data == null)
                         isPass = false;
-                    else if (!Utils.VerifyPassword(password, passwordDB))
+                    else if (Utils.VerifyPassword(password, passwordDB))
+                    {
+                        string employeeCode = data["EmployeeCode"].ToString();
+                        var employeeInfo = await SQLManager.Instance.GetUserInfoAsync(employeeCode);
+                        
+                        if (employeeInfo.Rows.Count <= 0)
+                            isPass = false;
+                        else
+                        {
+                            employeeInfo.Columns.Add("RoleCodes", typeof(string));
+                            employeeInfo.Rows[0]["RoleCodes"] = data["RoleCodes"];
+
+                            data = employeeInfo.Rows[0];
+                        }
+                    }
+                    else
+                    {
                         isPass = false;
+                    }
 
                     if (!isPass)
                     {
+                        login_loading_tb.Visible = false;
+
                         MessageBox.Show("Sai tên đăng nhập hoặc mật khẩu.", "Thông Báo",
                                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
@@ -170,26 +187,53 @@ namespace RauViet.ui.PhanQuyen
                     data["FullName"] = "admin";
                     data["RoleCodes"] = "ql_user";
                 }
-
-                    // ✅ Lưu thông tin user đăng nhập
-                    UserManager.Instance.init(userName, password, data);
-
-                // ✅ Ẩn form login trước khi mở form chính
-                this.Hide();
-
-                // ⚡ Mở form chính (không nên gọi Application.Run ở đây)
-                using (var mainForm = new FormManager())
+                
+                if (userName != Properties.Settings.Default.login_acc)
                 {
-                    mainForm.ShowDialog();
+                    Properties.Settings.Default.login_acc = userName;
+                    Properties.Settings.Default.current_form = "";
+                    Properties.Settings.Default.Save();
                 }
-
-                // Đóng form login sau khi form chính tắt
+                login_loading_tb.Visible = false;
+                UserManager.Instance.init(userName, password, data);
+                this.Hide();
+                using (var loading = new Loading())
+                {
+                    loading.ShowDialog();
+                }
                 this.Close();
             }
             catch (Exception ex)
             {
+                login_loading_tb.Visible = false;
                 MessageBox.Show($"Lỗi khi đăng nhập:\n{ex.Message}", "Lỗi",
                                 MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void Password_tb_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                e.SuppressKeyPress = true; // tránh kêu "ding" khi nhấn Enter
+                login_btn.PerformClick();   // gọi sự kiện click của nút login
+            }
+        }
+
+        private async void LoginForm_Load(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrEmpty(Properties.Settings.Default.login_acc))
+            {
+                userName_tb.Text = Properties.Settings.Default.login_acc;
+                password_tb.Text = "";
+                await Task.Delay(100);
+                password_tb.Focus();
+            }
+            else
+            {
+                userName_tb.Text = "";
+                password_tb.Text = "";
+                userName_tb.Focus();
             }
         }
     }

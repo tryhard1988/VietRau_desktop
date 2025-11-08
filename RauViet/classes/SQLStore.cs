@@ -51,6 +51,7 @@ namespace RauViet.classes
         DataTable mEmployeesInDongGoi_dt = null;
         DataTable mCusromer_dt = null;
         DataTable mOrderList_dt = null;
+        DataTable mCartonSize_dt = null;
 
         Dictionary<int, DataTable> mReportExportByYears;
 
@@ -81,7 +82,8 @@ namespace RauViet.classes
                 var employeesInDongGoiTask = SQLManager.Instance.GetActiveEmployeesIn_DongGoiAsync();
                 var customersTask = SQLManager.Instance.getCustomersAsync();
                 var ordersTask = SQLManager.Instance.getOrdersAsync();
-                await Task.WhenAll(productSKUTask, productPackingTask, exportCodesTask, employeesInDongGoiTask, employeesInDongGoiTask, customersTask, ordersTask);
+                var cartonSizeTask = SQLManager.Instance.getCartonSizeAsync();
+                await Task.WhenAll(productSKUTask, productPackingTask, exportCodesTask, employeesInDongGoiTask, employeesInDongGoiTask, customersTask, ordersTask, cartonSizeTask);
 
                 if (employeesInDongGoiTask.Status == TaskStatus.RanToCompletion && employeesInDongGoiTask.Result != null) mEmployeesInDongGoi_dt = employeesInDongGoiTask.Result;
                 if (exportCodesTask.Status == TaskStatus.RanToCompletion && exportCodesTask.Result != null) mExportCodes_dt = exportCodesTask.Result;
@@ -89,6 +91,7 @@ namespace RauViet.classes
                 if (productPackingTask.Status == TaskStatus.RanToCompletion && productPackingTask.Result != null) mProductpacking_dt = productPackingTask.Result;
                 if (customersTask.Status == TaskStatus.RanToCompletion && customersTask.Result != null) mCusromer_dt = customersTask.Result;
                 if (ordersTask.Status == TaskStatus.RanToCompletion && ordersTask.Result != null) mOrderList_dt = ordersTask.Result;
+                if (cartonSizeTask.Status == TaskStatus.RanToCompletion && cartonSizeTask.Result != null) mCartonSize_dt = cartonSizeTask.Result;
 
                 editProductSKUA();
                 editExportCodes();
@@ -1364,6 +1367,11 @@ namespace RauViet.classes
             }
         }
 
+        public void removeProductSKU()
+        {
+            mProductSKU_dt = null;
+        }
+
         public async Task<DataTable> getProductSKUAsync()
         {
             if (mProductSKU_dt == null)
@@ -1395,7 +1403,7 @@ namespace RauViet.classes
             }
         }
 
-        public void resetProductpacking()
+        public void removeProductpacking()
         {
             mProductpacking_dt = null;
         }
@@ -1484,6 +1492,11 @@ namespace RauViet.classes
             }
 
             return mEmployeesInDongGoi_dt;
+        }
+
+        public void removeExportCodes()
+        {
+            mExportCodes_dt = null;
         }
 
         public async Task<DataTable> getExportCodesAsync()
@@ -1590,7 +1603,12 @@ namespace RauViet.classes
 
             return mProductSKUHistory_dt;
         }
-        
+
+        public void removeCustomers()
+        {
+            mCusromer_dt = null;
+        }
+
         public async Task<DataTable> getCustomersAsync()
         {
             if (mCusromer_dt == null)
@@ -1645,6 +1663,7 @@ namespace RauViet.classes
 
         private void editOrders()
         {
+            mOrderList_dt.Columns.Add(new DataColumn("Search_NoSign", typeof(string)));
             mOrderList_dt.Columns.Add(new DataColumn("CustomerName", typeof(string)));
             mOrderList_dt.Columns.Add(new DataColumn("CustomerCode", typeof(string)));
             mOrderList_dt.Columns.Add(new DataColumn("ProductNameVN", typeof(string)));
@@ -1665,10 +1684,15 @@ namespace RauViet.classes
                 DataRow[] customerRows = mCusromer_dt.Select($"CustomerID = {customerID}");
                 DataRow[] packingRows = mProductpacking_dt.Select($"ProductPackingID = {productPackingID}");
                 DataRow[] exportCodeRows = mExportCodes_dt.Select($"ExportCodeID = {exportCodeID}");
-                                                
-                dr["CustomerName"] = customerRows.Length > 0 ? customerRows[0]["FullName"].ToString() : "Unknown";
+
+                string cusName = customerRows.Length > 0 ? customerRows[0]["FullName"].ToString() : "Unknown";
+                string proVN = packingRows.Length > 0 ? packingRows[0]["Name_VN"].ToString() : "Unknown"; ;
+
+                dr["Search_NoSign"] = Utils.RemoveVietnameseSigns(cusName + " " + proVN).ToLower();
+
+                dr["CustomerName"] = cusName;
                 dr["CustomerCode"] = customerRows.Length > 0 ? customerRows[0]["CustomerCode"].ToString() : "Unknown";
-                dr["ProductNameVN"] = packingRows.Length > 0 ? packingRows[0]["Name_VN"].ToString() : "Unknown";
+                dr["ProductNameVN"] = proVN;
                 dr["ProductNameEN"] = packingRows.Length > 0 ? packingRows[0]["Name_EN"].ToString() : "Unknown";
                 dr["Amount"] = packingRows.Length > 0 ? Convert.ToInt32(packingRows[0]["Amount"]) : 0;
                 dr["Priority"] = packingRows.Length > 0 ? packingRows[0]["Priority"] : 100000;  
@@ -1714,6 +1738,24 @@ namespace RauViet.classes
             }
 
             return false;
+        }
+
+        public async Task<DataTable> GetCartonSize()
+        {
+            if (mCartonSize_dt == null)
+            {
+                try
+                {
+                    mCartonSize_dt = await SQLManager.Instance.getCartonSizeAsync();
+                }
+                catch
+                {
+                    Console.WriteLine("error GetCartonSize SQLStore");
+                    return null;
+                }
+            }
+
+            return mCartonSize_dt;
         }
     }
 }

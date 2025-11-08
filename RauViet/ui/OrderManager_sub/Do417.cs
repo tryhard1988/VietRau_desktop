@@ -11,10 +11,9 @@ using System.Windows.Forms;
 
 namespace RauViet.ui
 {
-    public partial class Do417 : Form, ICanSave
+    public partial class Do417 : Form
     {
         DataTable mExportCode_dt, mOrdersTotal_dt;
-        private bool _dataChanged = false;
         private LoadingOverlay loadingOverlay;
         public Do417()
         {
@@ -29,11 +28,10 @@ namespace RauViet.ui
             status_lb.Text = "";
 
             Reset_btn.Click += resetBtn_Click;
-            LuuThayDoiBtn.Click += saveBtn_Click;
             //   dataGV.RowPrePaint += new System.Windows.Forms.DataGridViewRowPrePaintEventHandler(this.dataGV_RowPrePaint);
             dataGV.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.dataGV_EditingControlShowing);
             dataGV.CellFormatting += dataGV_CellFormatting;
-            dataGV.CellValueChanged += dataGV_CellValueChanged;
+            dataGV .CellEndEdit += DataGV_CellValueChanged;
             dataGV.KeyDown += dataGV_KeyDown;
             //dataGV.CellEndEdit += dataGV_CellEndEdit;
 
@@ -165,7 +163,6 @@ namespace RauViet.ui
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
-                _dataChanged = false;
 
                 exportCode_cbb.DataSource = mExportCode_dt;
                 exportCode_cbb.DisplayMember = "ExportCode";  // hiển thị tên
@@ -192,8 +189,6 @@ namespace RauViet.ui
 
             string selectedExportCode = ((DataRowView)exportCode_cbb.SelectedItem)["ExportCodeID"].ToString();
 
-            SaveData();
-
             if (!string.IsNullOrEmpty(selectedExportCode))
             {
                 // Tạo DataView để filter
@@ -212,9 +207,8 @@ namespace RauViet.ui
             calvalueRightUI();
         }
 
-        private void dataGV_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        private async void DataGV_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
-            _dataChanged = true;
             if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
             {
                 var columnName = dataGV.Columns[e.ColumnIndex].Name;
@@ -225,6 +219,39 @@ namespace RauViet.ui
                 }
 
                 calvalueRightUI();
+
+                await Task.Delay(100);
+
+                var row = dataGV.Rows[e.RowIndex];
+                var list = new List<(int ExportCodeID, int ProductPackingID, decimal? NetWeightFinal)>();
+                int exportCodeID = Convert.ToInt32(row.Cells["ExportCodeID"].Value);
+                int productPackingID = Convert.ToInt32(row.Cells["ProductPackingID"].Value);
+                
+                decimal? netWeightFinal = null;
+                var nwValue = row.Cells["NetWeightFinal"].Value;
+                if (nwValue != null && nwValue != DBNull.Value)
+                    netWeightFinal = Convert.ToDecimal(nwValue);
+
+                list.Add((exportCodeID, productPackingID, netWeightFinal));
+                try
+                {
+                    // Gọi hàm upsert
+                    bool result = await SQLManager.Instance.UpsertOrdersTotalListAsync(list);
+
+                    if (result)
+                    {
+                        status_lb.Text = "Thành công.";
+                        status_lb.ForeColor = System.Drawing.Color.Green;
+                    }
+                    else
+                    {
+                        MessageBox.Show("Cập nhật thất bại!");
+                    }
+                }
+                catch
+                {
+                    MessageBox.Show("Cập nhật thất bại!");
+                }
             }
         }
 
@@ -353,23 +380,9 @@ namespace RauViet.ui
 
             }
         }
-        private void saveBtn_Click(object sender, EventArgs e)
-        {
-            SaveData(false);
-        }
 
         public async void SaveData(bool ask = true)
         {
-            if (!_dataChanged && ask) return;
-            DialogResult dialogResult = MessageBox.Show(
-                                            "Chắc chắn chưa?",
-                                            "Thay đổi",
-                                            MessageBoxButtons.YesNo,
-                                            MessageBoxIcon.Question // Icon dấu chấm hỏi
-                                        );
-            if (dialogResult == DialogResult.No)
-                return;
-            // Giả sử datagridview là dgvOrdersTotal
             var list = new List<(int ExportCodeID, int ProductPackingID, decimal? NetWeightFinal)>();
 
             foreach (DataGridViewRow row in dataGV.Rows)
@@ -406,10 +419,8 @@ namespace RauViet.ui
 
                 if (result)
                 {
-                    _dataChanged = false;
-                    MessageBox.Show("Cập nhật thành công!");
-                    // status_lb.Text = "Thành công.";
-                    //status_lb.ForeColor = System.Drawing.Color.Green;
+                    status_lb.Text = "Thành công.";
+                    status_lb.ForeColor = System.Drawing.Color.Green;
                 }
                 else
                 {

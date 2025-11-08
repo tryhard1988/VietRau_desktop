@@ -28,14 +28,15 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LoginForm));
             this.label1 = new System.Windows.Forms.Label();
             this.userName_tb = new System.Windows.Forms.TextBox();
             this.login_btn = new System.Windows.Forms.Button();
             this.password_tb = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.login_loading_tb = new System.Windows.Forms.Label();
             this.changePass_btn = new System.Windows.Forms.Button();
             this.login_panel = new System.Windows.Forms.Panel();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.changePass_panel = new System.Windows.Forms.Panel();
             this.back_btn = new System.Windows.Forms.Button();
             this.change_comfirm_tb = new System.Windows.Forms.TextBox();
@@ -48,8 +49,9 @@
             this.change_pass_tb = new System.Windows.Forms.TextBox();
             this.change_user_tb = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.label2 = new System.Windows.Forms.Label();
             this.login_panel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.changePass_panel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             this.SuspendLayout();
@@ -92,27 +94,16 @@
             this.password_tb.Size = new System.Drawing.Size(162, 23);
             this.password_tb.TabIndex = 4;
             // 
-            // label2
+            // login_loading_tb
             // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(39, 121);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(73, 16);
-            this.label2.TabIndex = 3;
-            this.label2.Text = "Mật Khẩu:";
-            // 
-            // pictureBox1
-            // 
-            this.pictureBox1.ErrorImage = null;
-            this.pictureBox1.Image = global::RauViet.Properties.Resources.logo_vr;
-            this.pictureBox1.InitialImage = null;
-            this.pictureBox1.Location = new System.Drawing.Point(60, 2);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(178, 58);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
-            this.pictureBox1.TabIndex = 5;
-            this.pictureBox1.TabStop = false;
+            this.login_loading_tb.AutoSize = true;
+            this.login_loading_tb.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.login_loading_tb.ForeColor = System.Drawing.Color.MediumTurquoise;
+            this.login_loading_tb.Location = new System.Drawing.Point(82, 232);
+            this.login_loading_tb.Name = "login_loading_tb";
+            this.login_loading_tb.Size = new System.Drawing.Size(88, 19);
+            this.login_loading_tb.TabIndex = 3;
+            this.login_loading_tb.Text = "Loading...";
             // 
             // changePass_btn
             // 
@@ -127,20 +118,35 @@
             // 
             // login_panel
             // 
+            this.login_panel.BackColor = System.Drawing.Color.Transparent;
+            this.login_panel.Controls.Add(this.label2);
             this.login_panel.Controls.Add(this.pictureBox1);
             this.login_panel.Controls.Add(this.changePass_btn);
             this.login_panel.Controls.Add(this.login_btn);
             this.login_panel.Controls.Add(this.label1);
             this.login_panel.Controls.Add(this.password_tb);
             this.login_panel.Controls.Add(this.userName_tb);
-            this.login_panel.Controls.Add(this.label2);
+            this.login_panel.Controls.Add(this.login_loading_tb);
             this.login_panel.Location = new System.Drawing.Point(37, 12);
             this.login_panel.Name = "login_panel";
             this.login_panel.Size = new System.Drawing.Size(286, 311);
             this.login_panel.TabIndex = 7;
             // 
+            // pictureBox1
+            // 
+            this.pictureBox1.ErrorImage = null;
+            this.pictureBox1.Image = global::RauViet.Properties.Resources.logo_vr;
+            this.pictureBox1.InitialImage = null;
+            this.pictureBox1.Location = new System.Drawing.Point(60, 2);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(178, 58);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBox1.TabIndex = 5;
+            this.pictureBox1.TabStop = false;
+            // 
             // changePass_panel
             // 
+            this.changePass_panel.BackColor = System.Drawing.Color.Transparent;
             this.changePass_panel.Controls.Add(this.back_btn);
             this.changePass_panel.Controls.Add(this.change_comfirm_tb);
             this.changePass_panel.Controls.Add(this.label6);
@@ -181,7 +187,7 @@
             // 
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label6.Location = new System.Drawing.Point(6, 194);
+            this.label6.Location = new System.Drawing.Point(22, 194);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(94, 16);
             this.label6.TabIndex = 8;
@@ -200,7 +206,7 @@
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(7, 157);
+            this.label5.Location = new System.Drawing.Point(17, 157);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(99, 16);
             this.label5.TabIndex = 6;
@@ -233,7 +239,7 @@
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(3, 86);
+            this.label3.Location = new System.Drawing.Point(7, 86);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(109, 16);
             this.label3.TabIndex = 0;
@@ -260,25 +266,37 @@
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(39, 121);
+            this.label4.Location = new System.Drawing.Point(43, 121);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(73, 16);
             this.label4.TabIndex = 3;
             this.label4.Text = "Mật Khẩu:";
             // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.Location = new System.Drawing.Point(39, 121);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(73, 16);
+            this.label2.TabIndex = 7;
+            this.label2.Text = "Mật Khẩu:";
+            // 
             // LoginForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.SystemColors.ControlLight;
-            this.ClientSize = new System.Drawing.Size(704, 424);
+            this.BackColor = System.Drawing.SystemColors.Info;
+            this.BackgroundImage = global::RauViet.Properties.Resources.bg1;
+            this.ClientSize = new System.Drawing.Size(704, 411);
             this.Controls.Add(this.changePass_panel);
             this.Controls.Add(this.login_panel);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "LoginForm";
             this.Text = "Login";
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.login_panel.ResumeLayout(false);
             this.login_panel.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.changePass_panel.ResumeLayout(false);
             this.changePass_panel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
@@ -292,7 +310,7 @@
         private System.Windows.Forms.TextBox userName_tb;
         private System.Windows.Forms.Button login_btn;
         private System.Windows.Forms.TextBox password_tb;
-        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label login_loading_tb;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Button changePass_btn;
         private System.Windows.Forms.Panel login_panel;
@@ -308,5 +326,6 @@
         private System.Windows.Forms.TextBox change_user_tb;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button back_btn;
+        private System.Windows.Forms.Label label2;
     }
 }

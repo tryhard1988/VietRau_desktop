@@ -73,8 +73,8 @@ namespace RauViet.ui
                 dataGV.Columns["NumberCarton"].HeaderText = "Tổng Số Thùng";
                 dataGV.Columns["FreightCharge"].HeaderText = "Phí Vận Chuyển";
 
-                int sizeWidth = 120;
-                dataGV.Columns["ExportCode"].Width = 100;
+                int sizeWidth = 70;
+                dataGV.Columns["ExportCode"].Width = 110;
                 dataGV.Columns["ExportDate"].Width = sizeWidth;
                 dataGV.Columns["TotalMoney"].Width = sizeWidth;
                 dataGV.Columns["TotalNW"].Width = sizeWidth;
@@ -91,6 +91,7 @@ namespace RauViet.ui
                 freightCharge_tb.Text = (totalFreightCharge).ToString();
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                dataGV.Columns["NumberCarton"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
             catch (Exception ex)
             {

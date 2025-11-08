@@ -45,7 +45,7 @@ namespace RauViet.classes
         {
             string hash = "";
 
-            using (SqlConnection con = new SqlConnection(conStr))
+            using (SqlConnection con = new SqlConnection(ql_User_conStr))
             {
                 await con.OpenAsync();
                 using (var cmd = new SqlCommand("SELECT PasswordHash FROM Users WHERE Username = @Username AND IsActive = 1", con))
@@ -813,35 +813,20 @@ namespace RauViet.classes
             using (SqlConnection con = new SqlConnection(ql_kho_conStr))
             {
                 await con.OpenAsync();
-                string query = @"SELECT 
-                                    p.ProductNameVN,
-                                    p.ProductNameEN,
-                                    o.ExportCodeID,
-                                    p.BotanicalName,
-                                    p.Priority,
-                                    p.PlantingAreaCode,
-                                    FORMAT(SUM(o.NWOther) * 1.1, 'N2') AS NWOther
-                                FROM Orders o
-                                INNER JOIN ProductPacking pp ON o.ProductPackingID = pp.ProductPackingID
-                                INNER JOIN ProductSKU p ON pp.SKU = p.SKU
-                                INNER JOIN ExportCodes e ON o.ExportCodeID = e.ExportCodeID
-                                WHERE e.Complete = 0
-                                GROUP BY 
-                                    p.ProductNameVN,
-                                    p.ProductNameEN,
-                                    o.ExportCodeID,
-                                    p.BotanicalName,
-                                    p.PlantingAreaCode,
-                                    p.Priority
-                                ORDER BY p.Priority DESC";
-                using (SqlCommand cmd = new SqlCommand(query, con))
-                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+
+                using (SqlCommand cmd = new SqlCommand("sp_GetOrdersDKKD", con))
                 {
-                    dt.Load(reader);
+                    cmd.CommandType = CommandType.StoredProcedure; // <--- Gọi SP
+
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
                 }
             }
             return dt;
         }
+
 
         public async Task<DataTable> getOrdersPhytoAsync()
         {
@@ -850,25 +835,25 @@ namespace RauViet.classes
             {
                 await con.OpenAsync();
                 string query = @"SELECT 
-                                    p.ProductNameVN,
-                                    p.ProductNameEN,
+                                    p.GroupProduct,
                                     o.ExportCodeID,
-                                    p.BotanicalName,
-                                    p.Priority,
+                                    MIN(p.ProductNameVN) AS ProductNameVN,
+                                    MIN(p.ProductNameEN) AS ProductNameEN,
+                                    MIN(p.BotanicalName) AS BotanicalName,
+                                    MIN(p.PlantingAreaCode) AS PlantingAreaCode,
+                                    MIN(p.Priority) AS Priority,
                                     SUM(o.NetWeightFinal) AS NetWeightFinal
                                 FROM OrdersTotal o
                                 INNER JOIN ProductPacking pp ON o.ProductPackingID = pp.ProductPackingID
                                 INNER JOIN ProductSKU p ON pp.SKU = p.SKU
                                 INNER JOIN ExportCodes e ON o.ExportCodeID = e.ExportCodeID
-                                WHERE e.Complete = 0
+                                WHERE e.Complete = 0 AND p.Priority <> 200000
                                 GROUP BY 
-                                    p.ProductNameVN,
-                                    p.ProductNameEN,
-                                    o.ExportCodeID,
-                                    p.BotanicalName,
-                                    p.PlantingAreaCode,
-                                    p.Priority
-                                ORDER BY p.Priority DESC";
+                                    p.GroupProduct,
+                                    o.ExportCodeID
+                                ORDER BY 
+                                    MAX(p.Priority) ASC;
+                                ";
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                 {
@@ -1726,28 +1711,23 @@ namespace RauViet.classes
             catch { return false; }
         }
 
-        public async Task<DataRow> GetInfoUserAsync(string userName)
+        public async Task<DataRow> GetUserRoleAsync(string userName)
         {
             DataTable dt = new DataTable();
 
-            using (SqlConnection con = new SqlConnection(conStr))
+            using (SqlConnection con = new SqlConnection(ql_User_conStr))
             {
                 await con.OpenAsync();
 
                 string query = @"SELECT 
-                                    e.EmployeeID,
-                                    e.EmployeeCode,
-                                    e.FullName,
+                                    u.EmployeeCode,
                                     STRING_AGG(r.RoleCode, ',') AS RoleCodes
                                 FROM Users u
-                                INNER JOIN Employee e ON u.EmployeeID = e.EmployeeID
                                 LEFT JOIN UserRoles ur ON u.UserID = ur.UserID
                                 LEFT JOIN Roles r ON ur.RoleID = r.RoleID
                                 WHERE u.Username = @Username
                                     AND u.IsActive = 1
-                                    AND e.IsActive = 1
-                                GROUP BY e.EmployeeID, e.EmployeeCode, e.FullName;
-";
+                                GROUP BY u.EmployeeCode;";
 
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 {
@@ -1764,6 +1744,31 @@ namespace RauViet.classes
             return dt.Rows.Count > 0 ? dt.Rows[0] : null;
         }
 
+        public async Task<DataTable> GetUserInfoAsync(string employeeCode)
+        {
+            DataTable dt = new DataTable();
+
+            using (SqlConnection con = new SqlConnection(conStr))
+            {
+                await con.OpenAsync();
+
+                string query = @"SELECT EmployeeID, EmployeeCode, FullName FROM Employee WHERE EmployeeCode = @EmployeeCode AND IsActive = 1";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    cmd.Parameters.AddWithValue("@EmployeeCode", employeeCode);
+
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+
+            // Trả về dòng đầu tiên nếu có
+            return dt;
+        }
+
         public async Task<bool> ChangePasswordAsync(string username, string oldPassword, string newPassword)
         {
             try
@@ -1777,7 +1782,7 @@ namespace RauViet.classes
 
                 string newHash = Utils.HashPassword(newPassword);
 
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_User_conStr))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand("sp_ChangeUserPassword", con))
@@ -3897,6 +3902,22 @@ namespace RauViet.classes
                 Console.WriteLine("Lỗi khi cập nhật: " + ex.Message);
                 return newOrderId;
             }
+        }
+
+        public async Task<DataTable> getCartonSizeAsync()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_kho_conStr))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT * FROM CartonSize";
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                {
+                    dt.Load(reader);
+                }
+            }
+            return dt;
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using MySql.Data.MySqlClient;
+using RauViet.classes;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -8,8 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using MySql.Data.MySqlClient;
-using RauViet.classes;
+using static RauViet.ui.FormManager;
 
 namespace RauViet.ui
 {
@@ -27,13 +28,8 @@ namespace RauViet.ui
 
         private async void FormManager_LoadAsync(object sender, EventArgs e)
         {
-            await SQLManager.Instance.AutoUpsertAnnualLeaveMonthListAsync();
-            await SQLStore.Instance.preload_NhanSu();
-            await SQLStore.Instance.preload_Suong();
-
+            title_lb.Text = "Đã Sẵn Sàng Rồi";
             SetupMenus();
-
-            title_lb.Text = "";
         }
 
         private void SetupMenus()
@@ -127,8 +123,21 @@ namespace RauViet.ui
             else
                 chamcong_pmi.Visible = false;
 
-            reportSalary_Month_mi.Click += ReportSalary_Month_mi_Click;
-            reportExportYear_mi.Click += ReportExportYear_mi_Click;
+            if (UserManager.Instance.hasRole_ThongKe())
+            {
+                reportSalary_Month_mi.Click += ReportSalary_Month_mi_Click;
+                reportExportYear_mi.Click += ReportExportYear_mi_Click;
+            }
+            else
+            {
+                thongke_main_mi.Visible = false;
+            }
+
+            string saved = Properties.Settings.Default.current_form;
+            if (Enum.TryParse(saved, out EForm status))
+            {
+                openCurrentForm(status);
+            }
         }
 
         private void SwitchChildForm<T>(string title) where T : Form, new()
@@ -155,209 +164,226 @@ namespace RauViet.ui
 
             form.Show();
         }
-
-        private void ReportSalary_Month_mi_Click(object sender, EventArgs e)
+        public enum EForm
         {
-            SwitchChildForm<ReportSalary_Year>("Báo Cáo Chi Lương Theo Năm");
+            ProductSKU,
+            ProductList,
+            ReportSalary_Year,
+            ReportExport_Year,
+            SalaryCaculator,
+            EmployeeDeduction_ATT,
+            EmployeeDeduction_ADV,
+            EmployeeDeduction_CEP,
+            EmployeeDeduction_OTH,
+            EmployeeDeduction_VEG,
+            Employee_POS_DEP_CON,
+            EmployeeNganHang,
+            EmployeeBaoHiem,
+            EmployeeSalaryInfo,
+            SalaryGrade,
+            MonthlyAllowance,
+            EmployeeAllowance,
+            PositionAllowance,
+            DepartmentAllowance,
+            AllowanceType,
+            LeaveAttendance,
+            AnnualLeaveBalance,
+            OvertimeAttendace,
+            OvertimeType,
+            Holidays,
+            Attendance,
+            CustomerDetailPackingTotal,
+            DetailPackingTotal,
+            LOTCode,
+            INVOICE,
+            Phyto,
+            DangKyKiemDinh,
+            Do417,
+            OrderPackingList,
+            ExportCodes,
+            Customers,
+            OrdersList,
+            User,
+            Employee,
+            Department,
+            Position
         }
 
-        private void ReportExportYear_mi_Click(object sender, EventArgs e)
-        {
-            SwitchChildForm<ReportExport_Year>("Báo Cáo Đơn Hàng Theo Năm");
-        }
+        private void openCurrentForm(EForm status)
+        {            
+            switch (status)
+            {
+                case EForm.ProductSKU:
+                    SwitchChildForm<ProductSKU>("Danh Sách Sản Phẩm Chính");
+                    break;
 
-        private void SalaryCaculator_mi_Click(object sender, EventArgs e)
-        {
-            SwitchChildForm<SalaryCaculator>("Bảng Tính Lương Nhân Viên");
-        }
+                case EForm.ProductList:
+                    SwitchChildForm<ProductList>("Danh Sách Sản Phẩm Quy Cách");
+                    break;
+                case EForm.ReportSalary_Year:
+                    SwitchChildForm<ReportSalary_Year>("Báo Cáo Chi Lương Theo Năm");
+                    break;
+                case EForm.ReportExport_Year:
+                    SwitchChildForm<ReportExport_Year>("Báo Cáo Đơn Hàng Theo Năm");
+                    break;
+                case EForm.SalaryCaculator:
+                    SwitchChildForm<SalaryCaculator>("Bảng Tính Lương Nhân Viên");
+                    break;
+                case EForm.EmployeeDeduction_ATT:
+                    SwitchChildForm<EmployeeDeduction_ATT>("Trừ Chuyên Cần");
+                    break;
+                case EForm.EmployeeDeduction_ADV:
+                    SwitchChildForm<EmployeeDeduction_ADV>("Ứng Lương Cho Nhân Viên");
+                    break;
+                case EForm.EmployeeDeduction_CEP:
+                    SwitchChildForm<EmployeeDeduction_CEP>("Thu Hộ CEP");
+                    break;
+                case EForm.EmployeeDeduction_OTH:
+                    SwitchChildForm<EmployeeDeduction_OTH>("Các Khoản Trừ Khác Của Nhân Viên");
+                    break;
+                case EForm.EmployeeDeduction_VEG:
+                    SwitchChildForm<EmployeeDeduction_VEG>("Tiền Rau Của Nhân Viên");
+                    break;
+                case EForm.Employee_POS_DEP_CON:
+                    SwitchChildForm<Employee_POS_DEP_CON>("Thông Tin Công Việc Nhân Viên");
+                    break;
+                case EForm.EmployeeNganHang:
+                    SwitchChildForm<EmployeeNganHang>("Thông Tin Tài Khoản Ngân Hàng Của Nhân Viên");
+                    break;
+                case EForm.EmployeeBaoHiem:
+                    SwitchChildForm<EmployeeBaoHiem>("Thông Tin Bảo Hiểm");
+                    break;
+                case EForm.EmployeeSalaryInfo:
+                    SwitchChildForm<EmployeeSalaryInfo>("Chi Tiết Thay Đổi Lương");
+                    break;
+                case EForm.SalaryGrade:
+                    SwitchChildForm<SalaryGrade>("Bảng Bậc Lương");
+                    break;
+                case EForm.MonthlyAllowance:
+                    SwitchChildForm<MonthlyAllowance>("Phụ Cấp Phát Sinh Trong Tháng");
+                    break;
+                case EForm.EmployeeAllowance:
+                    SwitchChildForm<EmployeeAllowance>("Phụ Cấp Theo Từng Nhân Viên");
+                    break;
+                case EForm.PositionAllowance:
+                    SwitchChildForm<PositionAllowance>("Phụ Cấp Theo Chức Vụ");
+                    break;
+                case EForm.DepartmentAllowance:
+                    SwitchChildForm<DepartmentAllowance>("Phụ Cấp Theo Phòng Ban");
+                    break;
+                case EForm.AllowanceType:
+                    SwitchChildForm<AllowanceType>("Loại Phụ Cấp");
+                    break;
+                case EForm.LeaveAttendance:
+                    SwitchChildForm<LeaveAttendance>("Bảng Đơn Nghỉ Phép");
+                    break;
+                case EForm.AnnualLeaveBalance:
+                    SwitchChildForm<AnnualLeaveBalance>("Bảng Tồn Phép Nghỉ");
+                    break;
+                case EForm.OvertimeAttendace:
+                    SwitchChildForm<OvertimeAttendace>("Bảng Chấm Công Tăng Ca");
+                    break;
+                case EForm.OvertimeType:
+                    SwitchChildForm<OvertimeType>("Bảng Loại Tăng Ca");
+                    break;
+                case EForm.Holidays:
+                    SwitchChildForm<Holidays>("Lập Ngày Nghỉ Lễ");
+                    break;
+                case EForm.Attendance:
+                    SwitchChildForm<Attendance>("Chấm CôngHành Chính");
+                    break;
+                case EForm.CustomerDetailPackingTotal:
+                    SwitchChildForm<CustomerDetailPackingTotal>("Customer Detail Packing");
+                    break;
+                case EForm.DetailPackingTotal:
+                    SwitchChildForm<DetailPackingTotal>("Packing Total");
+                    break;
+                case EForm.LOTCode:
+                    SwitchChildForm<LOTCode>("Nhập Mã LOT");
+                    break;
+                case EForm.INVOICE:
+                    SwitchChildForm<INVOICE>("INVOICE");
+                    break;
+                case EForm.Phyto:
+                    SwitchChildForm<Phyto>("PHYTO");
+                    break;
+                case EForm.DangKyKiemDinh:
+                    SwitchChildForm<DangKyKiemDinh>("Đăng Ký Kiểm Dịch");
+                    break;
+                case EForm.Do417:
+                    SwitchChildForm<Do417>("Dò 417");
+                    break;
+                case EForm.OrderPackingList:
+                    SwitchChildForm<OrderPackingList>("Danh Sách Đóng Thùng");
+                    break;
+                case EForm.ExportCodes:
+                    SwitchChildForm<ExportCodes>("Danh Sách Mã Xuất Cảng");
+                    break;
+                case EForm.Customers:
+                    SwitchChildForm<Customers>("Danh Sách Khách Hàng");
+                    break;
+                case EForm.OrdersList:
+                    SwitchChildForm<OrdersList>("Danh Sách Đơn Hàng");
+                    break;
+                case EForm.User:
+                    SwitchChildForm<User>("Danh Sách User");
+                    break;
+                case EForm.Employee:
+                    SwitchChildForm<Employee>("Danh Sách Nhân Viên");
+                    break;
+                case EForm.Department:
+                    SwitchChildForm<Department>("Danh Sách Phòng Ban");
+                    break;
+                case EForm.Position:
+                    SwitchChildForm<Position>("Danh Sách Vị Trí Nhân Viên");
+                    break;
 
-        private void Deduction_ATT_mi_Click(object sender, EventArgs e)
-        {
-            SwitchChildForm<EmployeeDeduction_ATT>("Trừ Chuyên Cần");
+            }
+            
+            Properties.Settings.Default.current_form = status.ToString();
+            Properties.Settings.Default.Save();
         }
-
-        private void Deduction_ADV_mi_Click(object sender, EventArgs e)
-        {
-            SwitchChildForm<EmployeeDeduction_ADV>("Ứng Lương Cho Nhân Viên");
-        }
-
-        private void Deduction_CEP_mi_Click(object sender, EventArgs e)
-        {
-           SwitchChildForm<EmployeeDeduction_CEP>("Thu Hộ CEP");
-        }
-
-        private void Deduction_OTH_mi_Click(object sender, EventArgs e)
-        {
-            SwitchChildForm<EmployeeDeduction_OTH>("Các Khoản Trừ Khác Của Nhân Viên");
-        }
-
-        private void deduction_VEG_mi_Click(object sender, EventArgs e)
-        {
-            SwitchChildForm<EmployeeDeduction_VEG>("Tiền Rau Của Nhân Viên");
-        }
-
-        private void EmployeeWork_mi_Click(object sender, EventArgs e)
-        {
-            SwitchChildForm<Employee_POS_DEP_CON>("Thông Tin Công Việc Nhân Viên");
-        }
-
-        private void EmployeeBank_mi_Click(object sender, EventArgs e)
-        {
-            SwitchChildForm<EmployeeNganHang>("Thông Tin Tài Khoản Ngân Hàng Của Nhân Viên");
-        }
-
-        private void EmployeeBH_mi_Click(object sender, EventArgs e)
-        {
-            SwitchChildForm<EmployeeBaoHiem>("Thông Tin Bảo Hiểm");
-        }
-
-        private void EmployeeSalaryInfo_mi_Click(object sender, EventArgs e)
-        {
-            SwitchChildForm<EmployeeSalaryInfo>("Chi Tiết Thay Đổi Lương");
-        }
-
-        private void SalaryGrade_mi_Click(object sender, EventArgs e)
-        {
-            SwitchChildForm<SalaryGrade>("Bảng Bậc Lương");
-        }
-
-        private void MonthlyAllowance_mi_Click(object sender, EventArgs e)
-        {
-            SwitchChildForm<MonthlyAllowance>("Phụ Cấp Phát Sinh Trong Tháng");
-        }
-
-        private void EmployeeAllowance_mi_Click(object sender, EventArgs e)
-        {
-            SwitchChildForm<EmployeeAllowance>("Phụ Cấp Theo Từng Nhân Viên");
-        }
-
-        private void PositionAllowance_mi_Click(object sender, EventArgs e)
-        {
-            SwitchChildForm<PositionAllowance>("Phụ Cấp Theo Chức Vụ");
-        }
-
-        private void DepartmentAllowance_mi_Click(object sender, EventArgs e)
-        {
-            SwitchChildForm<DepartmentAllowance>("Phụ Cấp Theo Phòng Ban");
-        }
-
-        private void AllowanceType_mi_Click(object sender, EventArgs e)
-        {
-            SwitchChildForm<AllowanceType>("Loại Phụ Cấp");
-        }
-
-        private void LeaveAttendance_mi_Click(object sender, EventArgs e)
-        {
-            SwitchChildForm<LeaveAttendance>("Bảng Đơn Nghỉ Phép");
-        }
-
-        private void AnnualLeaveBalance_mi_Click(object sender, EventArgs e)
-        {
-            SwitchChildForm<AnnualLeaveBalance>("Bảng Tồn Phép Nghỉ");
-        }
-
-        private void OvertimeAttendace_mi_Click(object sender, EventArgs e)
-        {
-            SwitchChildForm<OvertimeAttendace>("Bảng Chấm Công Tăng Ca");
-        }
-        private void OvertimeType_mi_Click(object sender, EventArgs e)
-        {
-            SwitchChildForm<OvertimeType>("Bảng Loại Tăng Ca");
-        }
-
-        private void Holiday_mi_Click(object sender, EventArgs e)
-        {
-            SwitchChildForm<Holidays>("Lập Ngày Nghỉ Lễ");
-        }
-
-        private void attendanceHC_mi_Click(object sender, EventArgs e)
-        {
-            SwitchChildForm<Attendance>("Chấm CôngHành Chính");
-        }
-        private void customerDetailPacking_mi_Click(object sender, EventArgs e)
-        {
-            SwitchChildForm<CustomerDetailPackingTotal>("Customer Detail Packing");
-        }
-
-        private void packingTotal_btn_Click(object sender, EventArgs e)
-        {
-            SwitchChildForm<DetailPackingTotal>("Packing Total");
-        }
-
-        private void lotCode_btn_Click(object sender, EventArgs e)
-        {
-            SwitchChildForm<LOTCode>("Nhập Mã LOT");
-        }
-
-        private void invoice_btn_Click(object sender, EventArgs e)
-        {
-            SwitchChildForm<INVOICE>("INVOICE");
-        }
-
-        private void phyto_btn_Click(object sender, EventArgs e)
-        {
-            SwitchChildForm<Phyto>("PHYTO");
-        }
-
-        private void dkkd_btn_Click(object sender, EventArgs e)
-        {
-            SwitchChildForm<DangKyKiemDinh>("Đăng Ký Kiểm Dịch");
-        }
-
-        private void orderTotal_btn_Click(object sender, EventArgs e)
-        {
-            SwitchChildForm<Do417>("Dò 417");
-        }
-
-        private void orderpackingList_btn_Click(object sender, EventArgs e)
-        {
-            SwitchChildForm<OrderPackingList>("Danh Sách Đóng Thùng");
-        }
-
-        private void exportCode_btn_Click(object sender, EventArgs e)
-        {
-            SwitchChildForm<ExportCodes>("Danh Sách Mã Xuất Cảng");
-        }
-
-        private void Products_SKU_btn_Click(object sender, EventArgs e)
-        {
-            SwitchChildForm<ProductSKU>("Danh Sách Sản Phẩm Chính");
-        }
-
-        private void productPacking_btn_Click(object sender, EventArgs e)
-        {
-            SwitchChildForm<ProductList>("Danh Sách Sản Phẩm Quy Cách");
-        }
-
-        private void khachhang_btn_Click(object sender, EventArgs e)
-        {
-            SwitchChildForm<Customers>("Danh Sách Khách Hàng");
-        }
-
-
-        private void others_btn_Click(object sender, EventArgs e)
-        {
-            SwitchChildForm<OrdersList>("Danh Sách Đơn Hàng");
-        }
-
-        private void user_mi_Click(object sender, EventArgs e)
-        {
-            SwitchChildForm<User>("Danh Sách User");
-        }
-
-        private void employee_mi_Click(object sender, EventArgs e)
-        {
-            SwitchChildForm<Employee>("Danh Sách Nhân Viên");
-        }
-
-        private void department_mi_Click(object sender, EventArgs e)
-        {
-            SwitchChildForm<Department>("Danh Sách Phòng Ban");
-        }
-
-        private void position_mi_Click(object sender, EventArgs e)
-        {
-            SwitchChildForm<Position>("Danh Sách Vị Trí Nhân Viên");
-        }
+        
+        private void ReportSalary_Month_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.ReportSalary_Year); }
+        private void ReportExportYear_mi_Click(object sender, EventArgs e){ openCurrentForm(EForm.ReportExport_Year); }
+        private void SalaryCaculator_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.SalaryCaculator); }
+        private void Deduction_ATT_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.EmployeeDeduction_ATT); }
+        private void Deduction_ADV_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.EmployeeDeduction_ADV); }
+        private void Deduction_CEP_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.EmployeeDeduction_CEP); }
+        private void Deduction_OTH_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.EmployeeDeduction_OTH); }
+        private void deduction_VEG_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.EmployeeDeduction_VEG); }
+        private void EmployeeWork_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.Employee_POS_DEP_CON); }
+        private void EmployeeBank_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.EmployeeNganHang); }
+        private void EmployeeBH_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.EmployeeBaoHiem); }
+        private void EmployeeSalaryInfo_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.EmployeeSalaryInfo); }
+        private void SalaryGrade_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.SalaryGrade); }
+        private void MonthlyAllowance_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.MonthlyAllowance); }
+        private void EmployeeAllowance_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.EmployeeAllowance); }
+        private void PositionAllowance_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.PositionAllowance); }
+        private void DepartmentAllowance_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.DepartmentAllowance); }
+        private void AllowanceType_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.AllowanceType); }
+        private void LeaveAttendance_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.LeaveAttendance); }
+        private void AnnualLeaveBalance_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.AnnualLeaveBalance); }
+        private void OvertimeAttendace_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.OvertimeAttendace); }
+        private void OvertimeType_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.OvertimeType); }
+        private void Holiday_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.Holidays); }
+        private void attendanceHC_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.Attendance); }
+        private void customerDetailPacking_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.CustomerDetailPackingTotal); }
+        private void packingTotal_btn_Click(object sender, EventArgs e) { openCurrentForm(EForm.DetailPackingTotal); }
+        private void lotCode_btn_Click(object sender, EventArgs e) { openCurrentForm(EForm.LOTCode); }
+        private void invoice_btn_Click(object sender, EventArgs e) { openCurrentForm(EForm.INVOICE); }
+        private void phyto_btn_Click(object sender, EventArgs e) { openCurrentForm(EForm.Phyto); }
+        private void dkkd_btn_Click(object sender, EventArgs e) { openCurrentForm(EForm.DangKyKiemDinh); }
+        private void orderTotal_btn_Click(object sender, EventArgs e) { openCurrentForm(EForm.Do417); }
+        private void orderpackingList_btn_Click(object sender, EventArgs e) { openCurrentForm(EForm.OrderPackingList); }
+        private void exportCode_btn_Click(object sender, EventArgs e) { openCurrentForm(EForm.ExportCodes); }
+        private void Products_SKU_btn_Click(object sender, EventArgs e)  { openCurrentForm(EForm.ProductSKU);  }
+        private void productPacking_btn_Click(object sender, EventArgs e) { openCurrentForm(EForm.ProductList); }
+        private void khachhang_btn_Click(object sender, EventArgs e) { openCurrentForm(EForm.Customers); }
+        private void others_btn_Click(object sender, EventArgs e) { openCurrentForm(EForm.OrdersList); }
+        private void user_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.User); }
+        private void employee_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.Employee); }
+        private void department_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.Department); }
+        private void position_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.Position); }
     }
 }

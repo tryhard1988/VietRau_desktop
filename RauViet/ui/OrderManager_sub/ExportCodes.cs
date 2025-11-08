@@ -74,6 +74,7 @@ namespace RauViet.ui
                         bool isScussess = await SQLManager.Instance.updateNewPriceInOrderListWithExportCodeAsync(exportCodeID);
                         if(isScussess == true)
                         {
+                            _= SQLStore.Instance.getOrdersAsync(true);
                             MessageBox.Show("Thành Công", " Thay Đổi Giá", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         }
                         else
@@ -407,7 +408,7 @@ namespace RauViet.ui
 
             DateTime exportDate = exportdate_dtp.Value.Date;
             int exportCodeIndex = Convert.ToInt32(exportCode_tb.Text);
-            string exportCode = "MXC" + exportCodeIndex + "_"+ exportDate.Day + exportDate.Month + exportDate.Year;
+            string exportCode = "MXC" + exportCodeIndex + "_"+ exportDate.ToString("dd") + exportDate.ToString("MM") + exportDate.Year;
             int inputBy = Convert.ToInt32(inputBy_cbb.SelectedValue);
             int packingBy = Convert.ToInt32(packingBy_cbb.SelectedValue);
 
@@ -463,7 +464,10 @@ namespace RauViet.ui
                                 status_lb.Text = "Thành công.";
                                 status_lb.ForeColor = Color.Green;
 
+                                System.Data.DataTable dataTable = (System.Data.DataTable)dataGV.DataSource;
                                 dataGV.Rows.Remove(row);
+                                dataTable.AcceptChanges();
+
                             }
                             else
                             {
@@ -489,7 +493,6 @@ namespace RauViet.ui
             exportCode_tb.Text = "";
             exRate_tb.Text = "";
             exportdate_dtp.Value = DateTime.Now;
-            complete_cb.Checked = false;
             complete_cb.Visible = false;
             autoCreateExportId_btn.Enabled = true;
 
@@ -527,6 +530,12 @@ namespace RauViet.ui
             updatePrice_btn.Visible = false;
             exRate_btn.Visible = true;
             autoCreateExportId_btn.Visible = true;
+            exRate_btn.Enabled = true;
+            LuuThayDoiBtn.Enabled = true;
+            exRate_tb.Enabled = true;
+            shippingCost_tb.Enabled = true;
+            complete_cb.Checked = false;
+            complete_cb.AutoCheck = true;
         }
 
         private void ReadOnly_btn_Click(object sender, EventArgs e)

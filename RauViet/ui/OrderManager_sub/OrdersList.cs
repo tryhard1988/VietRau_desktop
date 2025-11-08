@@ -1,6 +1,7 @@
 ﻿using ClosedXML.Excel;
 using DocumentFormat.OpenXml.Drawing.Charts;
 using DocumentFormat.OpenXml.Spreadsheet;
+using DocumentFormat.OpenXml.Vml.Office;
 using DocumentFormat.OpenXml.Wordprocessing;
 using Mysqlx.Crud;
 using RauViet.classes;
@@ -75,13 +76,24 @@ namespace RauViet.ui
             sortByCus_pro_btn.Click += SortByCus_pro_btn_Click;
             sortBypro_Cus_btn.Click += SortBypro_Cus_btn_Click;
             sortByPri_Pro_btn.Click += SortByPri_Pro_btn_Click;
+
+            Refesh_btn.Click += Refesh_btn_Click;
+            search_tb.TextChanged += search_txt_TextChanged;
+        }
+
+        private void Refesh_btn_Click(object sender, EventArgs e)
+        {
+            SQLStore.Instance.removeOrders();
+            SQLStore.Instance.removeCustomers();
+            SQLStore.Instance.removeProductSKU();
+            SQLStore.Instance.removeProductpacking();
+            SQLStore.Instance.removeExportCodes();
+
+            ShowData();
         }
 
         public async void ShowData()
         {
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Dock = DockStyle.Fill;
-
             await Task.Delay(50);
             loadingOverlay = new LoadingOverlay(this);
             loadingOverlay.Show();
@@ -89,16 +101,16 @@ namespace RauViet.ui
 
             try
             {
-                var othersTask = SQLStore.Instance.getOrdersAsync();
+                string[] keepColumns = { "ExportCodeID", "ExportCode", "ExportDate", "PackingByName" };
+                var parameters = new Dictionary<string, object> { { "Complete", false } };
+                var exportCodeTask = SQLStore.Instance.getExportCodesAsync(keepColumns, parameters);
                 var customersTask = SQLStore.Instance.getCustomersAsync();
                 var productTask = SQLStore.Instance.getProductSKUAsync();
-                var packingTask = SQLStore.Instance.getProductpackingAsync();
+                var packingTask = SQLStore.Instance.getProductpackingAsync();                
 
-                string[] keepColumns = { "ExportCodeID", "ExportCode", "ExportDate", "PackingByName" };
-                var parameters = new Dictionary<string, object>{{ "Complete", false }};
-                var exportCodeTask = SQLStore.Instance.getExportCodesAsync(keepColumns, parameters);
-
-                await Task.WhenAll(othersTask, customersTask, productTask, packingTask, exportCodeTask);
+                await Task.WhenAll(customersTask, productTask, packingTask, exportCodeTask);
+                var othersTask = SQLStore.Instance.getOrdersAsync();
+                await Task.WhenAll(othersTask);
 
                 mOrders_dt = othersTask.Result;
                 mCustomers_dt = customersTask.Result;
@@ -118,7 +130,7 @@ namespace RauViet.ui
                 product_ccb.DisplayMember = "ProductNameVN";
                 product_ccb.ValueMember = "SKU";
                 product_ccb.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
-               // product_ccb.AutoCompleteSource = AutoCompleteSource.ListItems;
+                product_ccb.AutoCompleteSource = AutoCompleteSource.ListItems;
                 product_ccb.SelectedIndexChanged += product_ccb_SelectedIndexChanged;
                 product_ccb.TextUpdate += product_ccb_TextUpdate;
 
@@ -150,6 +162,7 @@ namespace RauViet.ui
 
                 //dataGV.Columns["OrderId"].Visible = false;
                 dataGV.Columns["CustomerID"].Visible = false;
+                dataGV.Columns["Search_NoSign"].Visible = false;
                 dataGV.Columns["ProductPackingID"].Visible = false;
                 dataGV.Columns["ExportCodeID"].Visible = false;
                 dataGV.Columns["NWReal"].Visible = false;
@@ -194,6 +207,7 @@ namespace RauViet.ui
             }
             catch (Exception ex)
             {
+                Console.WriteLine("ERROR:" + ex.Message);
                 status_lb.Text = "Thất bại.";
                 status_lb.ForeColor = System.Drawing.Color.Red;
             }
@@ -244,7 +258,6 @@ namespace RauViet.ui
 
         private void exportCode_search_cbb_SelectedIndexChanged(object sender, EventArgs e)
         {
-            return;
             if (mOrders_dt == null || mOrders_dt.Rows.Count == 0)
                 return;
 
@@ -339,6 +352,36 @@ namespace RauViet.ui
                 return;
 
             updateRightUI(rowIndex);
+
+            int CustomerID = Convert.ToInt32(dataGV.Rows[rowIndex].Cells["CustomerID"].Value);
+            decimal sumNW_cus = 0;
+            int sumPCS_cus = 0;
+            decimal sumNW = 0;
+            int sumPCS = 0;
+
+            // Duyệt toàn bộ các dòng trong DataGridView
+            foreach (DataGridViewRow row in dataGV.Rows)
+            {
+                if (row.IsNewRow) continue; // bỏ qua dòng trống cuối
+
+                decimal nw = 0;
+                int pcs = 0;
+                decimal.TryParse(row.Cells["NWOther"].Value?.ToString(), out nw);
+                int.TryParse(row.Cells["PCSOther"].Value?.ToString(), out pcs);
+                int cus = Convert.ToInt32(row.Cells["CustomerID"].Value);
+                if (cus == CustomerID)
+                {
+                    sumNW_cus += nw;
+                    sumPCS_cus += pcs;
+                }
+                sumNW += nw;
+                sumPCS += pcs;
+            }
+            string mess = "TOTAL: " + sumPCS + " PCS, " + sumNW + " NW";
+            mess += (" ----- " +Convert.ToString(dataGV.Rows[rowIndex].Cells["CustomerName"].Value) + ": ");
+            mess += (sumPCS_cus.ToString() + " PCS, ");
+            mess += (sumNW_cus.ToString() + " NW");
+            log_label.Text = mess;
         }
 
         private async Task updateRightUI(int indexRowSelected)
@@ -442,13 +485,17 @@ namespace RauViet.ui
                                 row.Cells["OrderPackingPriceCNF"].Value = priceCNF;
 
                                 DataRow[] exportCodeRows = mExportCode_dt.Select($"ExportCodeID = {exportCodeId}");
-                                row.Cells["ExportCode"].Value = exportCodeRows.Length > 0 ? exportCodeRows[0]["ExportCode"].ToString() : "Unknown";
-
                                 DataRow[] customerRows = mCustomers_dt.Select($"CustomerID = {customerId}");
-                                row.Cells["CustomerName"].Value = customerRows.Length > 0 ? customerRows[0]["FullName"].ToString() : "Unknown";
-
                                 DataRow[] packingRows = mProductPacking_dt.Select($"ProductPackingID = {packingId}");
-                                row.Cells["ProductNameVN"].Value = packingRows.Length > 0 ? packingRows[0]["Name_VN"].ToString() : "Unknown";
+                                string cusName = customerRows.Length > 0 ? customerRows[0]["FullName"].ToString() : "Unknown";
+                                string proVN = packingRows.Length > 0 ? packingRows[0]["Name_VN"].ToString() : "Unknown";
+                                row.Cells["ExportCode"].Value = exportCodeRows.Length > 0 ? exportCodeRows[0]["ExportCode"].ToString() : "Unknown";
+                                row.Cells["Amount"].Value = packingRows.Length > 0 ? Convert.ToInt32(packingRows[0]["Amount"]) : 0;
+                                row.Cells["Package"].Value = packingRows.Length > 0 ? packingRows[0]["Package"].ToString() : "";
+                                row.Cells["packing"].Value = packingRows.Length > 0 ? packingRows[0]["packing"].ToString() : "";
+                                row.Cells["CustomerName"].Value = cusName;                                
+                                row.Cells["ProductNameVN"].Value = proVN;                                
+                                row.Cells["Search_NoSign"].Value = Utils.RemoveVietnameseSigns(cusName + " " + proVN).ToLower();
                             }
                             else
                             {
@@ -492,16 +539,22 @@ namespace RauViet.ui
                         drToAdd["ProductPackingID"] = packingId;
                         drToAdd["PCSOther"] = PCSOther;
                         drToAdd["NWOther"] = NWOther;
+                        
                         drToAdd["OrderPackingPriceCNF"] = priceCNF;
                         
 
                         DataRow[] exportCodeRows = mExportCode_dt.Select($"ExportCodeID = {exportCodeId}");
-                        drToAdd["ExportCode"] = exportCodeRows.Length > 0 ? exportCodeRows[0]["ExportCode"].ToString() : "Unknown";
                         DataRow[] customerRows = mCustomers_dt.Select($"CustomerID = {customerId}");
-                        drToAdd["CustomerName"] = customerRows.Length > 0 ? customerRows[0]["FullName"].ToString() : "Unknown";
                         DataRow[] packingRows = mProductPacking_dt.Select($"ProductPackingID = {packingId}");
-                        drToAdd["ProductNameVN"] = packingRows.Length > 0 ? packingRows[0]["Name_VN"].ToString() : "Unknown";
-
+                        string cusName = customerRows.Length > 0 ? customerRows[0]["FullName"].ToString() : "Unknown";
+                        string proVN = packingRows.Length > 0 ? packingRows[0]["Name_VN"].ToString() : "Unknown";
+                        drToAdd["Amount"] = packingRows.Length > 0 ? Convert.ToInt32(packingRows[0]["Amount"]) : 0;
+                        drToAdd["Package"] = packingRows.Length > 0 ? packingRows[0]["Package"].ToString() : "";
+                        drToAdd["packing"] = packingRows.Length > 0 ? packingRows[0]["packing"].ToString() : "";
+                        drToAdd["ExportCode"] = exportCodeRows.Length > 0 ? exportCodeRows[0]["ExportCode"].ToString() : "Unknown";
+                        drToAdd["CustomerName"] = cusName;
+                        drToAdd["ProductNameVN"] = proVN;
+                        drToAdd["Search_NoSign"] = Utils.RemoveVietnameseSigns(cusName + " " + proVN).ToLower();
 
                         int sku = Convert.ToInt32(packingRows[0]["SKU"]);
                         DataRow[] prodRows = mProduct_dt.Select($"SKU = {sku}");
@@ -1089,6 +1142,29 @@ namespace RauViet.ui
             currentView.Sort = sortExpression;
             dataGV.DataSource = currentView;
             sortMode = (sortMode + 1) % 4;
+        }
+
+        private void search_txt_TextChanged(object sender, EventArgs e)
+        {
+            string selectedExportCode = exportCode_search_cbb.Text;
+
+            if (string.IsNullOrEmpty(selectedExportCode))
+                return;
+
+            string keyword = Utils.RemoveVietnameseSigns(search_tb.Text.Trim().ToLower()).Replace("'", "''"); // tránh lỗi cú pháp '
+
+            DataView currentView = dataGV.DataSource is DataView dv ? dv : new DataView(mOrders_dt);
+            string filter = "";
+            if (!string.IsNullOrEmpty(keyword))
+                filter += $"[Search_NoSign] LIKE '%{keyword.Replace("'", "''")}%'";  // escape dấu nháy đơn
+
+            if (!string.IsNullOrEmpty(selectedExportCode))
+            {
+                if (filter.Length > 0) filter += " AND ";
+                filter += $"ExportCode = '{selectedExportCode.Replace("'", "''")}'";
+            }
+            currentView.RowFilter = filter;
+            dataGV.DataSource = currentView;
         }
     }
 }

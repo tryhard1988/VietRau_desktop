@@ -1,4 +1,7 @@
-﻿using System;
+﻿using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Spreadsheet;
+using RauViet.classes;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
@@ -6,8 +9,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using RauViet.classes;
-using ClosedXML.Excel;
+using Color = System.Drawing.Color;
 
 namespace RauViet.ui
 {
@@ -46,7 +48,7 @@ namespace RauViet.ui
 
             try
             {
-                string[] keepColumns = { "ExportCodeID", "ExportCode", "ExportDate", "ExchangeRate", "ShippingCost" };
+                string[] keepColumns = { "ExportCodeID", "ExportCode", "ExportDate", "ExchangeRate", "ShippingCost", "ExportCodeIndex" };
                 var parameters = new Dictionary<string, object> { { "Complete", false } };
                 var exportCodeTask = SQLStore.Instance.getExportCodesAsync(keepColumns, parameters);
                 var ordersPackingTask = SQLManager.Instance.getOrdersINVOICEAsync();
@@ -191,6 +193,8 @@ namespace RauViet.ui
             dataGV.Columns["OrderPackingPriceCNF"].HeaderText = "Price (CHF)";
             dataGV.Columns["AmountCHF"].HeaderText = "Amount (CHF)";
 
+            dataGV.Columns["AmountCHF"].DefaultCellStyle.Format = "N2";
+            dataGV.Columns["Quantity"].DefaultCellStyle.Format = "N2";
 
             dataGV.Columns["Priority"].HeaderText = "Ưu\nTiên";
 
@@ -332,6 +336,7 @@ namespace RauViet.ui
             if (exportCode_cbb.SelectedItem == null) return;
 
             string exportCode = ((DataRowView)exportCode_cbb.SelectedItem)["ExportCode"].ToString();
+            int exportCodeIndex = Convert.ToInt32(((DataRowView)exportCode_cbb.SelectedItem)["ExportCodeIndex"]);
             DateTime exportDate = Convert.ToDateTime(((DataRowView)exportCode_cbb.SelectedItem)["ExportDate"]);
             decimal exRate = Convert.ToDecimal(((DataRowView)exportCode_cbb.SelectedItem)["ExchangeRate"]);
             decimal ShippingCost = Convert.ToDecimal(((DataRowView)exportCode_cbb.SelectedItem)["ShippingCost"]);
@@ -566,16 +571,24 @@ namespace RauViet.ui
                             else
                                 cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
 
-                            if (col.Name == "PCSReal" || col.Name == "Package" || col.Name == "Packing")
+                            if (col.Name == "PCSReal" || col.Name == "Package" || col.Name == "Packing" || col.Name == "No" || col.Name == "PLU")
                                 cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                            // Thêm border
+                            else if (col.Name == "AmountCHF")
+                            {
+                                cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
+                            }
+
                             cell.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
 
                             // Tính tổng cột NWOther
                             if (col.Name == "NWReal")
                             {
                                 if (decimal.TryParse(cellValue, out decimal num))
+                                {
+                                    cell.Value = Math.Round(num, 2);
+                                    cell.Style.NumberFormat.Format = "0.00";
                                     totalNWReal += num;
+                                }
                             }
 
                             if (col.Name == "AmountCHF")
@@ -583,7 +596,25 @@ namespace RauViet.ui
                                 if (decimal.TryParse(cellValue, out decimal num))
                                 {
                                     cell.Value = Math.Round(num, 2);
+                                    cell.Style.NumberFormat.Format = "0.00";
                                     totalAmount += num;
+                                }
+                            }
+
+                            if (col.Name == "OrderPackingPriceCNF" || col.Name == "Quantity")
+                            {
+                                if (decimal.TryParse(cellValue, out decimal num))
+                                {
+                                    cell.Value = Math.Round(num, 2);
+                                    cell.Style.NumberFormat.Format = "0.00";
+                                }
+                            }
+
+                            if (col.Name == "PCSReal")
+                            {
+                                if (int.TryParse(cellValue, out int num))
+                                {
+                                    cell.Value = num;
                                 }
                             }
 
@@ -617,18 +648,20 @@ namespace RauViet.ui
                     ws.Range(totalRow, 1, totalRow, 2).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
 
                     ws.Cell(totalRow, nwOtherColIndex).Value = totalNWReal;
+                    ws.Cell(totalRow, nwOtherColIndex).Style.NumberFormat.Format = "#,##0.00";
                     ws.Cell(totalRow, nwOtherColIndex).Style.Font.Bold = true;
                     ws.Cell(totalRow, nwOtherColIndex).Style.Font.FontSize = 10;
                     ws.Cell(totalRow, nwOtherColIndex).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
                     ws.Cell(totalRow, nwOtherColIndex).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
 
                     ws.Cell(totalRow, nwAmountColIndex).Value = Math.Round(totalAmount, 2);
+                    ws.Cell(totalRow, nwAmountColIndex).Style.NumberFormat.Format = "#,##0.00";
                     ws.Cell(totalRow, nwAmountColIndex).Style.Font.Bold = true;
                     ws.Cell(totalRow, nwAmountColIndex).Style.Font.FontSize = 10;
                     ws.Cell(totalRow, nwAmountColIndex).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
                     ws.Cell(totalRow, nwAmountColIndex).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
 
-                    totalRow += 2;
+                    totalRow += 1;
                     ws.Range(totalRow, 1, totalRow, 3).Merge();
                     ws.Cell(totalRow, 1).Value = "Total Amount (FOB HCM):";
                     ws.Cell(totalRow, 1).Style.Font.Bold = true;
@@ -637,7 +670,8 @@ namespace RauViet.ui
                     ws.Range(totalRow, 1, totalRow, 3).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
 
                     ws.Range(totalRow, 4, totalRow, exportColumns.Count).Merge();
-                    ws.Cell(totalRow, 4).Value = Math.Round(totalAmount - totalFreightCharge, 2) + " CHF";
+                    ws.Cell(totalRow, 4).Value = Math.Round(totalAmount - totalFreightCharge, 2);
+                    ws.Cell(totalRow, 4).Style.NumberFormat.Format = "#,##0.00 \"CHF\"";
                     ws.Cell(totalRow, 4).Style.Font.Bold = true;
                     ws.Cell(totalRow, 4).Style.Font.FontSize = 10;
                     ws.Cell(totalRow, 4).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
@@ -652,7 +686,8 @@ namespace RauViet.ui
                     ws.Range(totalRow, 1, totalRow, 3).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
 
                     ws.Range(totalRow, 4, totalRow, exportColumns.Count).Merge();
-                    ws.Cell(totalRow, 4).Value = Math.Round(totalFreightCharge, 2) + " CHF";
+                    ws.Cell(totalRow, 4).Style.NumberFormat.Format = "#,##0.00 \"CHF\"";
+                    ws.Cell(totalRow, 4).Value = Math.Round(totalFreightCharge, 2);
                     ws.Cell(totalRow, 4).Style.Font.Bold = true;
                     ws.Cell(totalRow, 4).Style.Font.FontSize = 10;
                     ws.Cell(totalRow, 4).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
@@ -667,7 +702,8 @@ namespace RauViet.ui
                     ws.Range(totalRow, 1, totalRow, 3).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
 
                     ws.Range(totalRow, 4, totalRow, exportColumns.Count).Merge();
-                    ws.Cell(totalRow, 4).Value = Math.Round(totalAmount, 2) + " CHF";
+                    ws.Cell(totalRow, 4).Style.NumberFormat.Format = "#,##0.00 \"CHF\"";
+                    ws.Cell(totalRow, 4).Value = Math.Round(totalAmount, 2);
                     ws.Cell(totalRow, 4).Style.Font.Bold = true;
                     ws.Cell(totalRow, 4).Style.Font.FontSize = 10;
                     ws.Cell(totalRow, 4).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
@@ -682,7 +718,8 @@ namespace RauViet.ui
                     ws.Range(totalRow, 1, totalRow, 3).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
 
                     ws.Range(totalRow, 4, totalRow, exportColumns.Count).Merge();
-                    ws.Cell(totalRow, 4).Value = Math.Round(totalNWReal, 2) + " kg";
+                    ws.Cell(totalRow, 4).Style.NumberFormat.Format = "#,##0.00 \"kg\"";
+                    ws.Cell(totalRow, 4).Value = Math.Round(totalNWReal, 2);
                     ws.Cell(totalRow, 4).Style.Font.Bold = true;
                     ws.Cell(totalRow, 4).Style.Font.FontSize = 10;
                     ws.Cell(totalRow, 4).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
@@ -774,20 +811,29 @@ namespace RauViet.ui
                             if (col.Name == "CNTS")
                             {
                                 cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
-                                cell.Value = cellValue + " CTN";
+                                cell.Style.NumberFormat.Format = "#,##0 \"CTN\"";
+
                                 if (decimal.TryParse(cellValue, out decimal num))
+                                {
+                                    cell.Value = num;
                                     totalCarton1 += num;
+                                }
                             }
                             else if (col.Name == "NWReal")
                             {
                                 cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
-                                cell.Value = cellValue + " kg";
+                                cell.Style.NumberFormat.Format = "#,##0.00 \"kg\"";
+
                                 if (decimal.TryParse(cellValue, out decimal num))
+                                {
+                                    cell.Value = num;
                                     totalNW1 += num;
+                                }
                             }
                             else if (col.Name == "AmountCHF")
                             {
                                 cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
+                                cell.Style.NumberFormat.Format = "#,##0";
                                 if (decimal.TryParse(cellValue, out decimal num))
                                 {
                                     cell.Value = Math.Round(num, 2);
@@ -817,30 +863,33 @@ namespace RauViet.ui
                     ws.Range(totalRow1, 2, totalRow1, 2).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
 
                     ws.Cell(totalRow1, nwColIndex).Value = totalNW1;
+                    ws.Cell(totalRow1, nwColIndex).Style.NumberFormat.Format = "#,##0.00";
                     ws.Cell(totalRow1, nwColIndex).Style.Font.Bold = true;
                     ws.Cell(totalRow1, nwColIndex).Style.Font.FontSize = 10;
                     ws.Cell(totalRow1, nwColIndex).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
                     ws.Cell(totalRow1, nwColIndex).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
 
                     ws.Cell(totalRow1, amountColIndex).Value = Math.Round(totalAmount1, 2);
+                    ws.Cell(totalRow1, amountColIndex).Style.NumberFormat.Format = "#,##0.00";
                     ws.Cell(totalRow1, amountColIndex).Style.Font.Bold = true;
                     ws.Cell(totalRow1, amountColIndex).Style.Font.FontSize = 10;
                     ws.Cell(totalRow1, amountColIndex).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
                     ws.Cell(totalRow1, amountColIndex).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
 
                     ws.Cell(totalRow1, CTNSColIndex).Value = totalCarton1;
+                    ws.Cell(totalRow1, CTNSColIndex).Style.NumberFormat.Format = "#,##0";
                     ws.Cell(totalRow1, CTNSColIndex).Style.Font.Bold = true;
                     ws.Cell(totalRow1, CTNSColIndex).Style.Font.FontSize = 10;
                     ws.Cell(totalRow1, CTNSColIndex).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
                     ws.Cell(totalRow1, CTNSColIndex).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
 
-
-                    ws.Cell(totalRow, 4).Value = totalCarton1 + " CTNS";
+                    ws.Cell(totalRow, 4).Style.NumberFormat.Format = "#,##0 \"CTNS\"";
+                    ws.Cell(totalRow, 4).Value = totalCarton1;
                     // ===== Save file =====
                     using (SaveFileDialog sfd = new SaveFileDialog())
                     {
                         sfd.Filter = "Excel Workbook|*.xlsx";
-                        sfd.FileName = "INVOICE_" + exportCode + ".xlsx";
+                        sfd.FileName = " Invoice CNF - Final - N.W 2 ETD " + exportDate.ToString("dd")+"."+ exportDate.ToString("MM") + " " + exportCodeIndex + ".xlsx";
                         if (sfd.ShowDialog() == DialogResult.OK)
                         {
                             wb.SaveAs(sfd.FileName);

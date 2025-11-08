@@ -9,10 +9,9 @@ using RauViet.classes;
 
 namespace RauViet.ui
 {
-    public partial class LOTCode : Form, ICanSave
+    public partial class LOTCode : Form
     {
         DataTable mExportCode_dt, mLOTCode_dt;
-        private bool _dataChanged = false;
         private LoadingOverlay loadingOverlay;
         public LOTCode()
         {
@@ -25,13 +24,11 @@ namespace RauViet.ui
             dataGV.MultiSelect = false;
 
             status_lb.Text = "";
-
-
-            LuuThayDoiBtn.Click += saveBtn_Click;           
+          
          //   dataGV.RowPrePaint += new System.Windows.Forms.DataGridViewRowPrePaintEventHandler(this.dataGV_RowPrePaint);
             dataGV.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.dataGV_EditingControlShowing);
             dataGV.CellFormatting += dataGV_CellFormatting;
-            dataGV.CellValueChanged += dataGV_CellValueChanged;
+            dataGV.CellEndEdit += dataGV_CellValueChanged;
             dataGV.KeyDown += dataGV_KeyDown;
             //dataGV.CellEndEdit += dataGV_CellEndEdit;
 
@@ -93,8 +90,6 @@ namespace RauViet.ui
                 dataGV.Columns["LotCode"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 dataGV.Columns["Priority"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
-                _dataChanged = false;
-
                 exportCode_cbb.DataSource = mExportCode_dt;
                 exportCode_cbb.DisplayMember = "ExportCode";  // hiển thị tên
                 exportCode_cbb.ValueMember = "ExportCodeID";
@@ -116,8 +111,6 @@ namespace RauViet.ui
         {
             if (mLOTCode_dt == null || mExportCode_dt.Rows.Count == 0)
                 return;
-
-            SaveData();
             string selectedExportCode = ((DataRowView)exportCode_cbb.SelectedItem)["ExportCodeID"].ToString();
 
             if (!string.IsNullOrEmpty(selectedExportCode))
@@ -136,9 +129,8 @@ namespace RauViet.ui
             }
         }
 
-        private void dataGV_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        private async void dataGV_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
-            _dataChanged = true;
             if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
             {
                 var columnName = dataGV.Columns[e.ColumnIndex].Name;
@@ -146,6 +138,35 @@ namespace RauViet.ui
                 if (columnName == "LOTCode")
                 {
                     updateLotCodeComplete(dataGV.Rows[e.RowIndex]);
+                }
+
+                await Task.Delay(100);
+                var row = dataGV.Rows[e.RowIndex];
+                var list = new List<(int ExportCodeID, int SKU, string LOTCode, string LOTCodeComplete)>();
+                int exportCodeID = Convert.ToInt32(row.Cells["ExportCodeID"].Value);
+                int sku = Convert.ToInt32(row.Cells["SKU"].Value);
+                string lotCode = row.Cells["LOTCode"].Value?.ToString();
+                string lotCodeComplete = row.Cells["LOTCodeComplete"].Value?.ToString();
+
+                list.Add((exportCodeID, sku, lotCode, lotCodeComplete));
+
+                try
+                {
+                    bool result = await SQLManager.Instance.UpsertOrdersLotCodesBySKUAsync(list);
+
+                    if (result)
+                    {
+                        status_lb.Text = "Thành công.";
+                        status_lb.ForeColor = System.Drawing.Color.Green;
+                    }
+                    else
+                    {
+                        MessageBox.Show("Cập nhật thất bại!");
+                    }
+                }
+                catch
+                {
+                    MessageBox.Show("Cập nhật thất bại!");
                 }
             }
         }
@@ -240,24 +261,8 @@ namespace RauViet.ui
             }
         }
 
-        private void saveBtn_Click(object sender, EventArgs e)
-        {
-            SaveData(false);
-        }
-
         public async void SaveData(bool ask = true)
         {
-            if (!_dataChanged && ask) return;
-
-            DialogResult dialogResult = MessageBox.Show(
-                                           "Chắc chắn chưa?",
-                                           "Thay đổi",
-                                           MessageBoxButtons.YesNo,
-                                           MessageBoxIcon.Question // Icon dấu chấm hỏi
-                                       );
-            if (dialogResult == DialogResult.No)
-                return;
-
             var list = new List<(int ExportCodeID, int SKU, string LOTCode, string LOTCodeComplete)>();
 
             foreach (DataGridViewRow row in dataGV.Rows)
@@ -279,8 +284,8 @@ namespace RauViet.ui
 
                 if (result)
                 {
-                    MessageBox.Show("Cập nhật thành công!");
-                    _dataChanged = false;
+                    status_lb.Text = "Thành công.";
+                    status_lb.ForeColor = System.Drawing.Color.Green;
                 }
                 else
                 {

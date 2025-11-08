@@ -623,6 +623,9 @@ namespace RauViet.ui
             issuePlace_tb.ReadOnly = isReadOnly;
             phone_tb.ReadOnly = isReadOnly;
             probationSalaryPercent_tb.ReadOnly = isReadOnly;
+            isActive_cb.Enabled = !isReadOnly;
+            canCreateUserName_cb.Enabled = !isReadOnly;
+            isInsuranceRefund_CB.Enabled = !isReadOnly;
         }
     }
 }

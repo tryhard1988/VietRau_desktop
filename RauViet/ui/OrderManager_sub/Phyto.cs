@@ -1,15 +1,16 @@
-﻿using System;
+﻿using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Drawing.Spreadsheet;
+using RauViet.classes;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using ClosedXML.Excel;
-using DocumentFormat.OpenXml.Drawing.Spreadsheet;
-using RauViet.classes;
 
 namespace RauViet.ui
 {
@@ -48,7 +49,7 @@ namespace RauViet.ui
             try
             {
                 var ordersPackingTask = SQLManager.Instance.getOrdersPhytoAsync();
-                string[] keepColumns = { "ExportCodeID", "ExportCode", "ExportDate" };
+                string[] keepColumns = { "ExportCodeID", "ExportCode", "ExportDate", "ExportCodeIndex" };
                 var parameters = new Dictionary<string, object> { { "Complete", false } };
                 var exportCodeTask = SQLStore.Instance.getExportCodesAsync(keepColumns, parameters);
 
@@ -59,11 +60,22 @@ namespace RauViet.ui
 
                 mOrdersTotal_dt.Columns.Add(new DataColumn("No", typeof(string)));
 
+                mOrdersTotal_dt.Columns["ProductNameVN"].ReadOnly = false; ;
+                mOrdersTotal_dt.Columns["ProductNameEN"].ReadOnly = false; ;
                 int count = 1;
                 foreach (DataRow dr in mOrdersTotal_dt.Rows)
                 {
                     dr["No"] = count++;
 
+                    string productNameVN = dr["ProductNameVN"].ToString();
+                    // Xóa nội dung trong ngoặc đơn và khoảng trắng dư
+                    productNameVN = Regex.Replace(productNameVN, @"\s*\([^)]*\)", "").Trim();
+                    dr["ProductNameVN"] = productNameVN;
+
+                    string productNameEN = dr["ProductNameEN"].ToString();
+                    // Xóa nội dung trong ngoặc đơn và khoảng trắng dư
+                    productNameEN = Regex.Replace(productNameEN, @"\s*\([^)]*\)", "").Trim();
+                    dr["ProductNameEN"] = productNameEN;
                 }
 
                 count = 0;
@@ -155,6 +167,7 @@ namespace RauViet.ui
         {
             if (exportCode_cbb.SelectedItem == null) return;
             string exportCode = ((DataRowView)exportCode_cbb.SelectedItem)["ExportCode"].ToString();
+            string exportCodeIndex = ((DataRowView)exportCode_cbb.SelectedItem)["ExportCodeIndex"].ToString();
             DateTime exportDate = Convert.ToDateTime(((DataRowView)exportCode_cbb.SelectedItem)["ExportDate"]);
             try
             {
@@ -311,8 +324,12 @@ namespace RauViet.ui
                             // Tính tổng cột NWOther
                             if (col.Name == "NetWeightFinal")
                             {
+                                cell.Style.NumberFormat.Format = "0.00";
                                 if (decimal.TryParse(cellValue, out decimal num))
+                                {
                                     totalNWOther += num;
+                                    cell.Value = num;
+                                }
                             }
                         }
                         rowIndex++;
@@ -330,13 +347,14 @@ namespace RauViet.ui
                     ws.Range(totalRow, 1, totalRow, nwOtherColIndex - 1).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
 
                     ws.Cell(totalRow, nwOtherColIndex).Value = totalNWOther;
+                    ws.Cell(totalRow, nwOtherColIndex).Style.NumberFormat.Format = "#,##0.00";
                     ws.Cell(totalRow, nwOtherColIndex).Style.Font.Bold = true;
                     ws.Cell(totalRow, nwOtherColIndex).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
                     ws.Cell(totalRow, nwOtherColIndex).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
 
                     totalRow += 3;
                     ws.Range(totalRow, 5, totalRow, 8).Merge();
-                    ws.Cell(totalRow, 5).Value = "Place of issue, HO CHI MINH CITY FEB.     " + exportDate.ToString("dd/mm/yyyy");
+                    ws.Cell(totalRow, 5).Value = "Place of issue, HO CHI MINH CITY FEB.     " + exportDate.ToString("dd/MM/yyyy");
                     ws.Cell(totalRow, 5).Style.Font.Bold = true;
                     ws.Cell(totalRow, 5).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
                    
@@ -383,7 +401,7 @@ namespace RauViet.ui
                     using (SaveFileDialog sfd = new SaveFileDialog())
                     {
                         sfd.Filter = "Excel Workbook|*.xlsx";
-                        sfd.FileName = "PHYTO_" + exportCode + ".xlsx";
+                        sfd.FileName = "Attachment to Phytosanitary - " + exportCodeIndex + ".xlsx";
                         if (sfd.ShowDialog() == DialogResult.OK)
                         {
                             wb.SaveAs(sfd.FileName);
