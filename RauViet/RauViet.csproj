@@ -59,7 +59,7 @@
     <GenerateManifests>true</GenerateManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <SignManifests>true</SignManifests>
+    <SignManifests>false</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>ic_logo.ico</ApplicationIcon>
@@ -698,7 +698,6 @@
     <Content Include="images\folder_icon.ico" />
     <Content Include="images\notes_icon.ico" />
     <Content Include="Resources\bg1.png" />
-    <None Include="RauViet_TemporaryKey.pfx" />
     <None Include="Resources\ic_logo.png" />
     <Content Include="Resources\logo_vr.png" />
     <Content Include="Resources\logo_vr_1.png" />

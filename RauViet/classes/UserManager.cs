@@ -22,6 +22,7 @@ namespace RauViet.classes
         public int employeeID = -1;
         public string employeeCode = "";
         public string fullName = "";
+        public string fullName_NoSign = "";
         public List<string> roleCodes = new List<string>();
 
         private UserManager() { }
@@ -49,7 +50,7 @@ namespace RauViet.classes
                 this.employeeID = Convert.ToInt32(userInfo["EmployeeID"]);
                 this.employeeCode = userInfo["EmployeeCode"].ToString();
                 this.fullName = userInfo["FullName"].ToString();
-
+                this.fullName_NoSign = Utils.RemoveVietnameseSigns(this.fullName).Replace(" ", "");
                 string roleCodeStr = userInfo["RoleCodes"].ToString();
 
                 if (!string.IsNullOrWhiteSpace(roleCodeStr))

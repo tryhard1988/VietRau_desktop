@@ -87,11 +87,6 @@ namespace RauViet.ui
 
             exportCode_cbb.SelectedIndexChanged += exportCode_search_cbb_SelectedIndexChanged;
 
-            sortByCus_pri_btn.Click += SortByCus_pri_btn_Click;
-            sortByCus_pro_btn.Click += SortByCus_pro_btn_Click;
-            sortBypro_Cus_btn.Click += SortBypro_Cus_btn_Click;
-            sortByPri_Pro_btn.Click += SortByPri_Pro_btn_Click;
-
            // ToolTipHelper.SetToolTip(autoFillCartonSize_btn, "Tự động tìm ô có cùng Carton.No và \nđã có Carton Size\nSau đó thêm vào các ô chưa có Carton Size");
            // ToolTipHelper.SetToolTip(autoEditCartonNo_btn, "Tự động chỉnh sửa lại Carton.No \nNếu thứ tự không đúng");
             ToolTipHelper.SetToolTip(assignCustomerCarton_btn, "Tự động dựa vào\nCarton.No và Khách Hàng \nĐể tạo mã thùng");
@@ -194,7 +189,7 @@ namespace RauViet.ui
             {
                 var cartonSizeTask = SQLStore.Instance.GetCartonSize();
                 var ordersPackingTask = SQLStore.Instance.getOrdersAsync();
-                string[] keepColumns = { "ExportCodeID", "ExportCode", "ExportDate" };
+                string[] keepColumns = { "ExportCodeID", "ExportCode", "ExportDate", "InputByName_NoSign" };
                 var parameters = new Dictionary<string, object> { { "Complete", false } };
                 var exportCodeTask = SQLStore.Instance.getExportCodesAsync(keepColumns, parameters);
 
@@ -430,7 +425,7 @@ namespace RauViet.ui
                 dv.RowFilter = $"ExportCode = '{selectedExportCode}'";
 
                 // Gán lại cho DataGridView
-                dataGV.DataSource = dv;
+                dataGV.DataSource = dv;                
             }
             else
             {
@@ -438,6 +433,7 @@ namespace RauViet.ui
                 dataGV.DataSource = mOrders_dt;
             }
 
+            setUIReadOnly(true);
             fillter_btn_Click(null, null);
         }
 
@@ -1446,8 +1442,24 @@ namespace RauViet.ui
 
         private void setUIReadOnly(bool isReadOnly)
         {
+            if (exportCode_cbb.SelectedItem != null)
+            {
+                DataRowView dataR = (DataRowView)exportCode_cbb.SelectedItem;
+
+                string staff = dataR["InputByName_NoSign"].ToString();
+                if (UserManager.Instance.fullName_NoSign.CompareTo(staff) != 0)
+                {
+                    edit_btn.Visible = false;
+                    readOnly_btn.Visible = false;
+                    rightInfo_gb.Visible = false;
+                    InPhieuGiaoHang_btn.Visible = true;
+                    previewPrint_PGH_btn.Visible = true;
+                    print_btn.Visible = true;
+                    previewPrint_PT_btn.Visible = true;
+                    return;
+                }
+            }
             rightInfo_gb.Visible = !isReadOnly;
-           // LuuThayDoiBtn.Visible = !isReadOnly;
             edit_btn.Visible = isReadOnly;
             readOnly_btn.Visible = !isReadOnly;
             InPhieuGiaoHang_btn.Visible = isReadOnly;
@@ -1455,137 +1467,16 @@ namespace RauViet.ui
             print_btn.Visible = isReadOnly;
             previewPrint_PT_btn.Visible = isReadOnly;
         }
-
-        private void SortByCus_pri_btn_Click(object sender, EventArgs e)
-        {
-            if (dataGV.DataSource == null)
-                return;
-
-            DataView currentView = dataGV.DataSource is DataView dv ? dv : new DataView(mOrders_dt);
-            string sortExpression = "";
-
-            // Xác định kiểu sắp xếp dựa trên sortMode
-            switch (sortMode)
-            {
-                case 0:
-                    sortExpression = "CustomerName ASC, Priority DESC";
-                    break;
-                case 1:
-                    sortExpression = "CustomerName ASC, Priority ASC";
-                    break;
-                case 2:
-                    sortExpression = "CustomerName DESC, Priority DESC";
-                    break;
-                case 3:
-                    sortExpression = "CustomerName DESC, Priority ASC";
-                    break;
-            }
-
-            // Áp dụng sắp xếp
-            currentView.Sort = sortExpression;
-            dataGV.DataSource = currentView;
-            sortMode = (sortMode + 1) % 4;
-        }
-
-        private void SortByCus_pro_btn_Click(object sender, EventArgs e)
-        {
-            if (dataGV.DataSource == null)
-                return;
-
-            DataView currentView = dataGV.DataSource is DataView dv ? dv : new DataView(mOrders_dt);
-            string sortExpression = "";
-
-            // Xác định kiểu sắp xếp dựa trên sortMode
-            switch (sortMode)
-            {
-                case 0:
-                    sortExpression = "CustomerName ASC, ProductNameVN DESC";
-                    break;
-                case 1:
-                    sortExpression = "CustomerName ASC, ProductNameVN ASC";
-                    break;
-                case 2:
-                    sortExpression = "CustomerName DESC, ProductNameVN DESC";
-                    break;
-                case 3:
-                    sortExpression = "CustomerName DESC, ProductNameVN ASC";
-                    break;
-            }
-
-            // Áp dụng sắp xếp
-            currentView.Sort = sortExpression;
-            dataGV.DataSource = currentView;
-            sortMode = (sortMode + 1) % 4;
-        }
-
-        private void SortBypro_Cus_btn_Click(object sender, EventArgs e)
-        {
-            if (dataGV.DataSource == null)
-                return;
-
-            DataView currentView = dataGV.DataSource is DataView dv ? dv : new DataView(mOrders_dt);
-            string sortExpression = "";
-
-            // Xác định kiểu sắp xếp dựa trên sortMode
-            switch (sortMode)
-            {
-                case 0:
-                    sortExpression = "ProductNameVN ASC, CustomerName ASC";
-                    break;
-                case 1:
-                    sortExpression = "ProductNameVN ASC, CustomerName DESC";
-                    break;
-                case 2:
-                    sortExpression = "ProductNameVN DESC, CustomerName DESC";
-                    break;
-                case 3:
-                    sortExpression = "ProductNameVN DESC, CustomerName ASC";
-                    break;
-            }
-
-            // Áp dụng sắp xếp
-            currentView.Sort = sortExpression;
-            dataGV.DataSource = currentView;
-            sortMode = (sortMode + 1) % 4;
-        }
-
-        private void SortByPri_Pro_btn_Click(object sender, EventArgs e)
-        {
-            if (dataGV.DataSource == null)
-                return;
-
-            DataView currentView = dataGV.DataSource is DataView dv ? dv : new DataView(mOrders_dt);
-            string sortExpression = "";
-
-            // Xác định kiểu sắp xếp dựa trên sortMode
-            switch (sortMode)
-            {
-                case 0:
-                    sortExpression = "Priority ASC, ProductNameVN ASC, CustomerName ASC";
-                    break;
-                case 1:
-                    sortExpression = "Priority ASC, ProductNameVN DESC, CustomerName ASC";
-                    break;
-                case 2:
-                    sortExpression = "Priority DESC, ProductNameVN DESC, CustomerName ASC";
-                    break;
-                case 3:
-                    sortExpression = "Priority DESC, ProductNameVN ASC, CustomerName ASC";
-                    break;
-            }
-
-            // Áp dụng sắp xếp
-            currentView.Sort = sortExpression;
-            dataGV.DataSource = currentView;
-            sortMode = (sortMode + 1) % 4;
-        }
-
+      
         private void DataGV_SelectionChanged(object sender, EventArgs e)
         {
             if (dataGV.CurrentCell == null) return;
 
             int rowIndex = dataGV.CurrentCell.RowIndex;
             object val = dataGV.Rows[rowIndex].Cells["CartonNo"].Value;
+
+            if (!int.TryParse(val?.ToString(), out int result))
+                return;
 
             int CustomerID = Convert.ToInt32(dataGV.Rows[rowIndex].Cells["CustomerID"].Value);            
             int CartonNo = val != DBNull.Value && val != null ? Convert.ToInt32(val) : -1;

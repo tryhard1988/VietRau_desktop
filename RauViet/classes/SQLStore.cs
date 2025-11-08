@@ -1520,6 +1520,7 @@ namespace RauViet.classes
         private void editExportCodes()
         {            
             mExportCodes_dt.Columns.Add(new DataColumn("InputByName", typeof(string)));
+            mExportCodes_dt.Columns.Add(new DataColumn("InputByName_NoSign", typeof(string)));
             mExportCodes_dt.Columns.Add(new DataColumn("PackingByName", typeof(string)));
             
             foreach (DataRow dr in mExportCodes_dt.Rows)
@@ -1531,7 +1532,12 @@ namespace RauViet.classes
                 DataRow[] packingByRow = mEmployeesInDongGoi_dt.Select($"EmployeeID = {packingBy}");
 
                 if (inputByRow.Length > 0)
-                    dr["InputByName"] = inputByRow[0]["FullName"].ToString();
+                {
+                    string employeeName = inputByRow[0]["FullName"].ToString();
+                    dr["InputByName"] = employeeName;
+                    dr["InputByName_NoSign"] = Utils.RemoveVietnameseSigns(employeeName).Replace(" ", "");
+
+                }
 
                 if (packingByRow.Length > 0)
                     dr["PackingByName"] = packingByRow[0]["FullName"].ToString();
