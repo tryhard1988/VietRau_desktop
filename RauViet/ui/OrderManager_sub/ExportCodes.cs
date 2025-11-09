@@ -314,6 +314,7 @@ namespace RauViet.ui
                                 row.Cells["PackingBy"].Value = packingBy;
                                 row.Cells["InputByName"].Value = inputByRow[0]["FullName"].ToString(); ;
                                 row.Cells["PackingByName"].Value = packingByRow[0]["FullName"].ToString();
+                                row.Cells["InputByName_NoSign"].Value = Utils.RemoveVietnameseSigns(inputByRow[0]["FullName"].ToString()).Replace(" ", "");
 
                                 if (complete)
                                 {
@@ -372,7 +373,8 @@ namespace RauViet.ui
                         drToAdd["PackingBy"] = packingBy;
                         drToAdd["InputByName"] = inputByRow[0]["FullName"].ToString(); ;
                         drToAdd["PackingByName"] = packingByRow[0]["FullName"].ToString();
-
+                        drToAdd["InputByName_NoSign"] = Utils.RemoveVietnameseSigns(inputByRow[0]["FullName"].ToString()).Replace(" ", "");
+                        
 
                         exportCodeId_tb.Text = newId.ToString();
 

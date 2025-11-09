@@ -30,13 +30,7 @@ namespace RauViet.ui
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.exportCode_cbb = new System.Windows.Forms.ComboBox();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.panel2 = new System.Windows.Forms.Panel();
-            this.dataGV = new System.Windows.Forms.DataGridView();
-            this.panel5 = new System.Windows.Forms.Panel();
-            this.search_tb = new System.Windows.Forms.TextBox();
-            this.label15 = new System.Windows.Forms.Label();
             this.panel6 = new System.Windows.Forms.Panel();
             this.dongthung_cn_lable = new System.Windows.Forms.Label();
             this.dongthung_cn_name_lable = new System.Windows.Forms.Label();
@@ -79,81 +73,27 @@ namespace RauViet.ui
             this.assignPCSReal_btn = new System.Windows.Forms.Button();
             this.PCSReal_tb = new System.Windows.Forms.TextBox();
             this.status_lb = new System.Windows.Forms.Label();
-            this.panel2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
-            this.panel5.SuspendLayout();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.dataGV = new System.Windows.Forms.DataGridView();
+            this.panel5 = new System.Windows.Forms.Panel();
+            this.search_tb = new System.Windows.Forms.TextBox();
+            this.label15 = new System.Windows.Forms.Label();
+            this.exportCode_cbb = new System.Windows.Forms.ComboBox();
             this.panel6.SuspendLayout();
             this.panel1.SuspendLayout();
             this.rightInfo_gb.SuspendLayout();
             this.panel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.carton_GV)).BeginInit();
             this.panel4.SuspendLayout();
+            this.panel2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
+            this.panel5.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // exportCode_cbb
-            // 
-            this.exportCode_cbb.FormattingEnabled = true;
-            this.exportCode_cbb.Location = new System.Drawing.Point(3, 0);
-            this.exportCode_cbb.Name = "exportCode_cbb";
-            this.exportCode_cbb.Size = new System.Drawing.Size(160, 21);
-            this.exportCode_cbb.TabIndex = 52;
             // 
             // contextMenuStrip1
             // 
             this.contextMenuStrip1.Name = "contextMenuStrip1";
             this.contextMenuStrip1.Size = new System.Drawing.Size(61, 4);
-            // 
-            // panel2
-            // 
-            this.panel2.Controls.Add(this.dataGV);
-            this.panel2.Controls.Add(this.panel5);
-            this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel2.Location = new System.Drawing.Point(0, 0);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(1346, 681);
-            this.panel2.TabIndex = 10;
-            // 
-            // dataGV
-            // 
-            this.dataGV.AllowUserToAddRows = false;
-            this.dataGV.AllowUserToDeleteRows = false;
-            this.dataGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGV.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dataGV.Location = new System.Drawing.Point(0, 26);
-            this.dataGV.Name = "dataGV";
-            this.dataGV.ReadOnly = true;
-            this.dataGV.Size = new System.Drawing.Size(1346, 655);
-            this.dataGV.TabIndex = 75;
-            // 
-            // panel5
-            // 
-            this.panel5.Controls.Add(this.search_tb);
-            this.panel5.Controls.Add(this.label15);
-            this.panel5.Controls.Add(this.exportCode_cbb);
-            this.panel5.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel5.Location = new System.Drawing.Point(0, 0);
-            this.panel5.Name = "panel5";
-            this.panel5.Size = new System.Drawing.Size(1346, 26);
-            this.panel5.TabIndex = 73;
-            // 
-            // search_tb
-            // 
-            this.search_tb.BackColor = System.Drawing.SystemColors.InactiveBorder;
-            this.search_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.search_tb.Location = new System.Drawing.Point(593, 3);
-            this.search_tb.Name = "search_tb";
-            this.search_tb.Size = new System.Drawing.Size(252, 23);
-            this.search_tb.TabIndex = 63;
-            // 
-            // label15
-            // 
-            this.label15.AutoSize = true;
-            this.label15.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label15.Location = new System.Drawing.Point(521, 7);
-            this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(66, 16);
-            this.label15.TabIndex = 64;
-            this.label15.Text = "Tìm Kiếm:";
             // 
             // panel6
             // 
@@ -639,20 +579,77 @@ namespace RauViet.ui
             this.status_lb.TabIndex = 26;
             this.status_lb.Text = "Email";
             // 
+            // panel2
+            // 
+            this.panel2.Controls.Add(this.dataGV);
+            this.panel2.Controls.Add(this.panel5);
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel2.Location = new System.Drawing.Point(0, 0);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(851, 662);
+            this.panel2.TabIndex = 77;
+            // 
+            // dataGV
+            // 
+            this.dataGV.AllowUserToAddRows = false;
+            this.dataGV.AllowUserToDeleteRows = false;
+            this.dataGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGV.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dataGV.Location = new System.Drawing.Point(0, 26);
+            this.dataGV.Name = "dataGV";
+            this.dataGV.ReadOnly = true;
+            this.dataGV.Size = new System.Drawing.Size(851, 636);
+            this.dataGV.TabIndex = 75;
+            // 
+            // panel5
+            // 
+            this.panel5.Controls.Add(this.search_tb);
+            this.panel5.Controls.Add(this.label15);
+            this.panel5.Controls.Add(this.exportCode_cbb);
+            this.panel5.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel5.Location = new System.Drawing.Point(0, 0);
+            this.panel5.Name = "panel5";
+            this.panel5.Size = new System.Drawing.Size(851, 26);
+            this.panel5.TabIndex = 73;
+            // 
+            // search_tb
+            // 
+            this.search_tb.BackColor = System.Drawing.SystemColors.InactiveBorder;
+            this.search_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.search_tb.Location = new System.Drawing.Point(593, 3);
+            this.search_tb.Name = "search_tb";
+            this.search_tb.Size = new System.Drawing.Size(252, 23);
+            this.search_tb.TabIndex = 63;
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label15.Location = new System.Drawing.Point(521, 7);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(66, 16);
+            this.label15.TabIndex = 64;
+            this.label15.Text = "Tìm Kiếm:";
+            // 
+            // exportCode_cbb
+            // 
+            this.exportCode_cbb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.exportCode_cbb.FormattingEnabled = true;
+            this.exportCode_cbb.Location = new System.Drawing.Point(3, 0);
+            this.exportCode_cbb.Name = "exportCode_cbb";
+            this.exportCode_cbb.Size = new System.Drawing.Size(160, 21);
+            this.exportCode_cbb.TabIndex = 52;
+            // 
             // OrderPackingList
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1346, 681);
+            this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.panel6);
-            this.Controls.Add(this.panel2);
             this.Name = "OrderPackingList";
             this.Text = "FormTableData";
-            this.panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dataGV)).EndInit();
-            this.panel5.ResumeLayout(false);
-            this.panel5.PerformLayout();
             this.panel6.ResumeLayout(false);
             this.panel6.PerformLayout();
             this.panel1.ResumeLayout(false);
@@ -663,18 +660,16 @@ namespace RauViet.ui
             ((System.ComponentModel.ISupportInitialize)(this.carton_GV)).EndInit();
             this.panel4.ResumeLayout(false);
             this.panel4.PerformLayout();
+            this.panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dataGV)).EndInit();
+            this.panel5.ResumeLayout(false);
+            this.panel5.PerformLayout();
             this.ResumeLayout(false);
 
         }
 
         #endregion
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
-        private System.Windows.Forms.ComboBox exportCode_cbb;
-        private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.Panel panel5;
-        private System.Windows.Forms.TextBox search_tb;
-        private System.Windows.Forms.Label label15;
-        private System.Windows.Forms.DataGridView dataGV;
         private System.Windows.Forms.Panel panel6;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Button readOnly_btn;
@@ -717,5 +712,11 @@ namespace RauViet.ui
         private System.Windows.Forms.Button cartonNo_tang1_btn;
         private System.Windows.Forms.Label CountCarton_tb;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.DataGridView dataGV;
+        private System.Windows.Forms.Panel panel5;
+        private System.Windows.Forms.TextBox search_tb;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.ComboBox exportCode_cbb;
     }
 }

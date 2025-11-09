@@ -38,13 +38,16 @@ namespace RauViet.ui.PhanQuyen
             await SQLStore.Instance.preload_NhanSu();
             await SQLStore.Instance.preload_Suong();
             await Task.Delay(500);
-
-            this.Hide();
-            using (var form = new FormManager())
+            try
             {
-                form.ShowDialog();
+                this.Hide();
+                using (var form = new FormManager())
+                {
+                    form.ShowDialog();
+                }
+                this.Close();
             }
-            this.Close();
+            catch { }
         }
     }
 }

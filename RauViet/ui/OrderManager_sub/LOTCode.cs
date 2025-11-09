@@ -30,7 +30,7 @@ namespace RauViet.ui
             dataGV.CellFormatting += dataGV_CellFormatting;
             dataGV.CellEndEdit += dataGV_CellValueChanged;
             dataGV.KeyDown += dataGV_KeyDown;
-            //dataGV.CellEndEdit += dataGV_CellEndEdit;
+            dataGV.CellBeginEdit += dataGV_CellBeginEdit;
 
             exportCode_cbb.SelectedIndexChanged += exportCode_search_cbb_SelectedIndexChanged;
         }
@@ -47,7 +47,7 @@ namespace RauViet.ui
             try
             {
                 var LOTCodeTask = SQLManager.Instance.GetLOTCodeByExportCode_inCompleteAsync();
-                string[] keepColumns = { "ExportCodeID", "ExportCode" };
+                string[] keepColumns = { "ExportCodeID", "ExportCode", "InputByName_NoSign" };
                 var parameters = new Dictionary<string, object> { { "Complete", false } };
                 var exportCodeTask = SQLStore.Instance.getExportCodesAsync(keepColumns, parameters);
 
@@ -295,6 +295,20 @@ namespace RauViet.ui
             catch
             {
                 MessageBox.Show("Cập nhật thất bại!");
+            }
+        }
+
+        private void dataGV_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
+        {
+            if (exportCode_cbb.SelectedItem != null)
+            {
+                DataRowView dataR = (DataRowView)exportCode_cbb.SelectedItem;
+                string staff = dataR["InputByName_NoSign"].ToString();
+                if (UserManager.Instance.fullName_NoSign.CompareTo(staff) != 0)
+                {
+                    e.Cancel = true;
+                    return;
+                }
             }
         }
     }

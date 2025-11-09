@@ -36,6 +36,7 @@ namespace RauViet.ui
             //dataGV.CellEndEdit += dataGV_CellEndEdit;
 
             exportCode_cbb.SelectedIndexChanged += exportCode_search_cbb_SelectedIndexChanged;
+            dataGV.CellBeginEdit += dataGV_CellBeginEdit;
         }
 
         public async void ShowData()
@@ -48,7 +49,7 @@ namespace RauViet.ui
             try
             {
                 var ordersPackingTask = SQLManager.Instance.getOrdersTotalAsync();
-                string[] keepColumns = { "ExportCodeID", "ExportCode" };
+                string[] keepColumns = { "ExportCodeID", "ExportCode", "InputByName_NoSign" };
                 var parameters = new Dictionary<string, object> { { "Complete", false } };
                 var exportCodeTask = SQLStore.Instance.getExportCodesAsync(keepColumns, parameters);
 
@@ -205,6 +206,17 @@ namespace RauViet.ui
             }
 
             calvalueRightUI();
+
+            DataRowView dataR = (DataRowView)exportCode_cbb.SelectedItem;
+            string staff = dataR["InputByName_NoSign"].ToString();
+            if (UserManager.Instance.fullName_NoSign.CompareTo(staff) != 0)
+            {
+                Reset_btn.Visible = false;
+            }
+            else
+            {
+                Reset_btn.Visible = true;
+            }
         }
 
         private async void DataGV_CellValueChanged(object sender, DataGridViewCellEventArgs e)
@@ -469,6 +481,20 @@ namespace RauViet.ui
             if (decimal.TryParse(value.ToString(), out decimal result))
                 return result;
             return 0;
+        }
+
+        private void dataGV_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
+        {
+            if (exportCode_cbb.SelectedItem != null)
+            {
+                DataRowView dataR = (DataRowView)exportCode_cbb.SelectedItem;
+                string staff = dataR["InputByName_NoSign"].ToString();
+                if (UserManager.Instance.fullName_NoSign.CompareTo(staff) != 0)
+                {
+                    e.Cancel = true;
+                    return;
+                }
+            }
         }
     }
 }

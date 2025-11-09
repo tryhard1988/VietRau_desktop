@@ -196,6 +196,13 @@ namespace RauViet.ui
                 exportCode_search_cbb.DisplayMember = "ExportCode";  // hiển thị tên
                 exportCode_search_cbb.ValueMember = "ExportCodeID";
 
+                if (mExportCode_dt.Rows.Count > 0)
+                {
+                    int maxID = Convert.ToInt32(mExportCode_dt.AsEnumerable()
+                                   .Max(r => r.Field<int>("ExportCodeID")));
+                    exportCode_search_cbb.SelectedValue = maxID;
+                }
+
                 if (dataGV.SelectedRows.Count > 0)
                     _ = updateRightUI(0);
 
@@ -237,16 +244,19 @@ namespace RauViet.ui
 
                 System.Data.DataTable temp;
                 if (filtered.Any())
+                {
                     temp = filtered.CopyToDataTable();
+                    product_ccb.DroppedDown = true;
+                }
                 else
+                {
                     temp = mProduct_dt.Clone(); // nếu không có kết quả thì trả về table rỗng
-
+                    product_ccb.DroppedDown = false;
+                }
                 product_ccb.DataSource = temp;
                 product_ccb.DisplayMember = "ProductNameVN";
                 product_ccb.ValueMember = "SKU";
 
-                // Giữ lại text người đang gõ
-                product_ccb.DroppedDown = true;
                 product_ccb.Text = typed;
                 product_ccb.SelectionStart = typed.Length;
                 product_ccb.SelectionLength = 0;
@@ -265,7 +275,8 @@ namespace RauViet.ui
             {
                 // Tạo DataView để filter
                 DataView dv = new DataView(mOrders_dt);
-                dv.RowFilter = $"ExportCode = '{selectedExportCode}'";
+                var safeCode = selectedExportCode.Replace("'", "''"); // escape ký tự '
+                dv.RowFilter = $"ExportCode = '{safeCode}' AND (PCSOther > 0 OR NWOther > 0)";
 
                 // Gán lại cho DataGridView
                 dataGV.DataSource = dv;
@@ -353,7 +364,12 @@ namespace RauViet.ui
 
             updateRightUI(rowIndex);
 
-            int CustomerID = Convert.ToInt32(dataGV.Rows[rowIndex].Cells["CustomerID"].Value);
+            int CustomerID = -1;
+            var CustomerIDVal = dataGV.Rows[rowIndex].Cells["CustomerID"].Value;
+
+            int.TryParse(CustomerIDVal?.ToString() ?? "0", out CustomerID);
+
+            if (CustomerID < 0) return;
             decimal sumNW_cus = 0;
             int sumPCS_cus = 0;
             decimal sumNW = 0;
@@ -627,6 +643,17 @@ namespace RauViet.ui
             decimal NWOther = Convert.ToDecimal(netWeight_tb.Text);
             decimal priceCNF = Convert.ToDecimal(priceCNF_tb.Text);
 
+            if(PCSOther <= 0 && NWOther <= 0)
+            {
+                MessageBox.Show(
+                                "PCS hoặc Net Weight phải lớn hơn 0",
+                                "Thông Báo",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Warning
+                            );
+                return; 
+            }
+
             if (CountDuplicateInDataGridView(dataGV, customerId, packingId, exportCodeId) == 0)
             {
                 if (orderId_tb.Text.Length != 0)
@@ -643,7 +670,7 @@ namespace RauViet.ui
             else
             {
                 DialogResult dialogResult = MessageBox.Show(
-                                       "Trùng Dữ Liệu Rồi",
+                                       "Khách hàng đã đặt đơn hàng này rồi",
                                        "Thông Báo",
                                        MessageBoxButtons.OK,
                                        MessageBoxIcon.Warning); // Icon dấu chấm hỏi
@@ -985,25 +1012,24 @@ namespace RauViet.ui
 
         private int CountDuplicateInDataGridView(DataGridView dgv, int customerId, int productPackingId, int exportCodeId)
         {
-            return 0;
-            //int count = 0;
+            int count = 0;
 
-            //foreach (DataGridViewRow row in dgv.Rows)
-            //{
-            //    if (row.IsNewRow) continue;
+            foreach (DataGridViewRow row in dgv.Rows)
+            {
+                if (row.IsNewRow) continue;
 
-            //    // ép về int, nếu null thì gán 0
-            //    int cust = row.Cells["CustomerID"].Value == null ? -1 : Convert.ToInt32(row.Cells["CustomerID"].Value);
-            //    int prod = row.Cells["ProductPackingID"].Value == null ? -1 : Convert.ToInt32(row.Cells["ProductPackingID"].Value);
-            //    int export = row.Cells["ExportCodeID"].Value == null ? -1 : Convert.ToInt32(row.Cells["ExportCodeID"].Value);
+                // ép về int, nếu null thì gán 0
+                int cust = row.Cells["CustomerID"].Value == null ? -1 : Convert.ToInt32(row.Cells["CustomerID"].Value);
+                int prod = row.Cells["ProductPackingID"].Value == null ? -1 : Convert.ToInt32(row.Cells["ProductPackingID"].Value);
+                int export = row.Cells["ExportCodeID"].Value == null ? -1 : Convert.ToInt32(row.Cells["ExportCodeID"].Value);
 
-            //    if (cust == customerId && prod == productPackingId && export == exportCodeId)
-            //    {
-            //        count++;
-            //    }
-            //}
+                if (cust == customerId && prod == productPackingId && export == exportCodeId)
+                {
+                    count++;
+                }
+            }
 
-            //return count;
+            return count;
         }
 
         private void setRightUIReadOnly(bool isReadOnly)
@@ -1053,13 +1079,16 @@ namespace RauViet.ui
             DataView currentView = dataGV.DataSource is DataView dv ? dv : new DataView(mOrders_dt);
             string filter = "";
             if (!string.IsNullOrEmpty(keyword))
-                filter += $"[Search_NoSign] LIKE '%{keyword.Replace("'", "''")}%'";  // escape dấu nháy đơn
+                filter += $"[Search_NoSign] LIKE '%{keyword}%'";  // escape dấu nháy đơn
 
             if (!string.IsNullOrEmpty(selectedExportCode))
             {
                 if (filter.Length > 0) filter += " AND ";
-                filter += $"ExportCode = '{selectedExportCode.Replace("'", "''")}'";
+                filter += $"ExportCode = '{selectedExportCode}'";
             }
+
+            if (filter.Length > 0) filter += " AND ";
+            filter += "(PCSOther > 0 OR NWOther > 0)";
             currentView.RowFilter = filter;
             dataGV.DataSource = currentView;
         }

@@ -140,7 +140,7 @@ namespace RauViet.ui
             }
         }
 
-        private void SwitchChildForm<T>(string title) where T : Form, new()
+        private async void SwitchChildForm<T>(string title) where T : Form, new()
         {
             // Lưu form hiện tại nếu có
             if (this.content_panel.Controls.Count > 0)
@@ -148,9 +148,9 @@ namespace RauViet.ui
                 if (this.content_panel.Controls[0] is ICanSave currentForm)
                     currentForm.SaveData();
 
+                await Task.Delay(300);
                 this.content_panel.Controls.Clear();
             }
-
             // Tạo form mới
             var form = new T();
             title_lb.Text = title;
