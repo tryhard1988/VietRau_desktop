@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO.Packaging;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
@@ -3918,6 +3919,98 @@ namespace RauViet.classes
                 }
             }
             return dt;
+        }
+
+        public async Task updateMachineInfoWhenLoginAsync(string userName)
+        {
+            if (string.IsNullOrWhiteSpace(userName))
+                return;
+
+            string computerName = Environment.MachineName;
+            string ipAddress = System.Net.Dns.GetHostAddresses(System.Net.Dns.GetHostName())
+                                              .FirstOrDefault(ip => ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)?
+                                              .ToString();
+
+            string machineInfo = $"{computerName} - {ipAddress}";
+
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_User_conStr))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand("sp_UpdateUserMachineInfo", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@Username", userName);
+                        cmd.Parameters.AddWithValue("@MachineInfo", machineInfo);
+                        await cmd.ExecuteNonQueryAsync();
+
+                        UserManager.Instance.machineInfo = machineInfo;
+                    }
+                }
+            }
+            catch { }
+        }
+
+        public async Task<bool> HaveOtherComputerLoginAsync()
+        {
+            using (SqlConnection con = new SqlConnection(ql_User_conStr))
+            {
+                await con.OpenAsync();
+                string query = "SELECT MachineInfo FROM Users WHERE UserName = @UserName";
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    cmd.Parameters.AddWithValue("@UserName", UserManager.Instance.userName);
+                    var result = await cmd.ExecuteScalarAsync();
+
+                    if (result != null && result.ToString() != UserManager.Instance.machineInfo)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        public async Task AutoDeleteLoginHistoryAsync()
+        {
+            string query = "DELETE FROM UserLoginHistory WHERE  LoginTime < DATEADD(MONTH, -6, GETDATE());";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_User_conStr))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error deleting login history: {ex.Message}");
+            }
+        }
+
+        public async Task AutoUpdateCompleteExportCodeAsync()
+        {
+            string query = "UPDATE ExportCodes SET Complete = 1 WHERE ExportCodeID IN (SELECT TOP 5 ExportCodeID FROM ExportCodes WHERE ExportDate <= DATEADD(DAY, -10, GETDATE()) AND Complete = 0 ORDER BY ExportCodeID DESC);";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error Auto Update ExportCode: {ex.Message}");
+            }
         }
     }
 }

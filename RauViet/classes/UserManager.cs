@@ -18,6 +18,7 @@ namespace RauViet.classes
         private static readonly object padlock = new object();
 
         public string userName = "";
+        public string machineInfo = "";
         public string password = "";
         public int employeeID = -1;
         public string employeeCode = "";

@@ -36,6 +36,7 @@
             this.login_loading_tb = new System.Windows.Forms.Label();
             this.changePass_btn = new System.Windows.Forms.Button();
             this.login_panel = new System.Windows.Forms.Panel();
+            this.label2 = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.changePass_panel = new System.Windows.Forms.Panel();
             this.back_btn = new System.Windows.Forms.Button();
@@ -49,7 +50,6 @@
             this.change_pass_tb = new System.Windows.Forms.TextBox();
             this.change_user_tb = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
             this.login_panel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.changePass_panel.SuspendLayout();
@@ -99,11 +99,11 @@
             this.login_loading_tb.AutoSize = true;
             this.login_loading_tb.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.login_loading_tb.ForeColor = System.Drawing.Color.MediumTurquoise;
-            this.login_loading_tb.Location = new System.Drawing.Point(82, 232);
+            this.login_loading_tb.Location = new System.Drawing.Point(18, 219);
             this.login_loading_tb.Name = "login_loading_tb";
-            this.login_loading_tb.Size = new System.Drawing.Size(88, 19);
+            this.login_loading_tb.Size = new System.Drawing.Size(240, 19);
             this.login_loading_tb.TabIndex = 3;
-            this.login_loading_tb.Text = "Loading...";
+            this.login_loading_tb.Text = "Đang kết nối đến máy chủ ...";
             // 
             // changePass_btn
             // 
@@ -131,6 +131,16 @@
             this.login_panel.Name = "login_panel";
             this.login_panel.Size = new System.Drawing.Size(286, 311);
             this.login_panel.TabIndex = 7;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.Location = new System.Drawing.Point(39, 121);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(73, 16);
+            this.label2.TabIndex = 7;
+            this.label2.Text = "Mật Khẩu:";
             // 
             // pictureBox1
             // 
@@ -271,16 +281,6 @@
             this.label4.Size = new System.Drawing.Size(73, 16);
             this.label4.TabIndex = 3;
             this.label4.Text = "Mật Khẩu:";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(39, 121);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(73, 16);
-            this.label2.TabIndex = 7;
-            this.label2.Text = "Mật Khẩu:";
             // 
             // LoginForm
             // 

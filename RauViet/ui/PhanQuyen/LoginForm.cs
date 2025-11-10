@@ -138,54 +138,38 @@ namespace RauViet.ui.PhanQuyen
 
                 bool isPass = true;
 
-                if (userName.CompareTo("vietrau_admin") != 0 || password.CompareTo("Tn@92x!Qe7$FbLz") != 0)
+                // 🔍 Kiểm tra dữ liệu
+                if (string.IsNullOrEmpty(passwordDB) || data == null)
+                    isPass = false;
+                else if (Utils.VerifyPassword(password, passwordDB))
                 {
-                    // 🔍 Kiểm tra dữ liệu
-                    if (string.IsNullOrEmpty(passwordDB) || data == null)
+                    string employeeCode = data["EmployeeCode"].ToString();
+                    var employeeInfoTask = SQLManager.Instance.GetUserInfoAsync(employeeCode);
+                    var machineInfoTask = SQLManager.Instance.updateMachineInfoWhenLoginAsync(userName);
+                    await Task.WhenAll(employeeInfoTask, machineInfoTask);
+                    var employeeInfo = employeeInfoTask.Result;
+                    if (employeeInfo.Rows.Count <= 0)
                         isPass = false;
-                    else if (Utils.VerifyPassword(password, passwordDB))
-                    {
-                        string employeeCode = data["EmployeeCode"].ToString();
-                        var employeeInfo = await SQLManager.Instance.GetUserInfoAsync(employeeCode);
-                        
-                        if (employeeInfo.Rows.Count <= 0)
-                            isPass = false;
-                        else
-                        {
-                            employeeInfo.Columns.Add("RoleCodes", typeof(string));
-                            employeeInfo.Rows[0]["RoleCodes"] = data["RoleCodes"];
-
-                            data = employeeInfo.Rows[0];
-                        }
-                    }
                     else
                     {
-                        isPass = false;
-                    }
+                        employeeInfo.Columns.Add("RoleCodes", typeof(string));
+                        employeeInfo.Rows[0]["RoleCodes"] = data["RoleCodes"];
 
-                    if (!isPass)
-                    {
-                        login_loading_tb.Visible = false;
-
-                        MessageBox.Show("Sai tên đăng nhập hoặc mật khẩu.", "Thông Báo",
-                                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        return;
+                        data = employeeInfo.Rows[0];
                     }
                 }
                 else
                 {
-                    DataTable dt = new DataTable();
-                    dt.Columns.Add("EmployeeID", typeof(int));
-                    dt.Columns.Add("FullName", typeof(string));
-                    dt.Columns.Add("EmployeeCode", typeof(string));
-                    dt.Columns.Add("RoleCodes", typeof(string));
+                    isPass = false;
+                }
 
-                    // Tạo dòng mới
-                    data = dt.NewRow();
-                    data["EmployeeID"] = 1;
-                    data["EmployeeCode"] = "admin";
-                    data["FullName"] = "admin";
-                    data["RoleCodes"] = "ql_user";
+                if (!isPass)
+                {
+                    login_loading_tb.Visible = false;
+
+                    MessageBox.Show("Sai tên đăng nhập hoặc mật khẩu.", "Thông Báo",
+                                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
                 }
                 
                 if (userName != Properties.Settings.Default.login_acc)
@@ -196,6 +180,7 @@ namespace RauViet.ui.PhanQuyen
                 }
                 login_loading_tb.Visible = false;
                 UserManager.Instance.init(userName, password, data);
+
                 this.Hide();
                 using (var loading = new Loading())
                 {

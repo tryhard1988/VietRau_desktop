@@ -59,8 +59,6 @@ namespace RauViet.ui
             InPhieuGiaoHang_btn.Click += InPhieuGiaoHang_btn_Click;
             previewPrint_PGH_btn.Click += previewPrint_PGH_btn_Click;
             assignCartonNoBtn.Click += AssignCartonNoBtn_Click;
-           // autoEditCartonNo_btn.Click += autoEditCartonNo_btn_Click;
-            assignPCSReal_btn.Click += AssignPCSRealBtn_Click;
             assignCartonSize_btn.Click += assignCartonSizeBtn_Click;
             assignCustomerCarton_btn.Click += assignCustomerCarton_btn_Click;
            // autoFillCartonSize_btn.Click += btnFillCartonSize_Click;
@@ -81,10 +79,7 @@ namespace RauViet.ui
             delOrder_btn.Click += DelOrder_btn_Click;
             cartonNo_tang1_btn.Click += CartonNo_tang1_btn_Click;
 
-            
-            PCSReal_tb.KeyPress += Tb_KeyPress_OnlyNumber1;
             cartonNo_tb.KeyPress += Tb_KeyPress_OnlyNumber1;
-
             exportCode_cbb.SelectedIndexChanged += exportCode_search_cbb_SelectedIndexChanged;
 
            // ToolTipHelper.SetToolTip(autoFillCartonSize_btn, "Tự động tìm ô có cùng Carton.No và \nđã có Carton Size\nSau đó thêm vào các ô chưa có Carton Size");
@@ -482,22 +477,35 @@ namespace RauViet.ui
 
                     if (columnName == "PCSReal")
                     {
-                        row.Cells["CustomerCarton"].Value = DBNull.Value;
                         UpdateNWReal(row);
                     }
 
-                    if (columnName == "NWReal")
+                    if (columnName == "CartonNo")
                     {
                         row.Cells["CustomerCarton"].Value = DBNull.Value;
                     }
 
                     if (columnName == "PCSReal" || columnName == "NWReal")
                     {
-                        if (int.TryParse(cartonNo_tb.Text, out int cartonNo1))
+                        if (!int.TryParse(row.Cells["PCSReal"].Value.ToString(), out int PCSReal) ||
+                            !decimal.TryParse(row.Cells["NWReal"].Value.ToString(), out decimal NWReal))
                         {
+                            row.Cells["CartonNo"].Value = DBNull.Value;
+                            row.Cells["CartonSize"].Value = DBNull.Value;
+                            row.Cells["CustomerCarton"].Value = DBNull.Value;
+                        }
+                        else if (int.TryParse(cartonNo_tb.Text, out int cartonNo1))
+                        {
+                            if (int.TryParse(row.Cells["CartonNo"].Value.ToString(), out int cartonNo2)) {
+                                if (cartonNo2 != cartonNo1)
+                                    row.Cells["CustomerCarton"].Value = DBNull.Value;
+                            }
+                            else
+                                row.Cells["CustomerCarton"].Value = DBNull.Value;
+
                             row.Cells["CartonNo"].Value = cartonNo1;
                             row.Cells["CartonSize"].Value = cartonSize_cbb.Text;
-
+                            
                             if (cartonNoTuTang_cb.Checked)
                                 cartonNo_tb.Text = (cartonNo1 + 1).ToString();
                         }
@@ -843,7 +851,7 @@ namespace RauViet.ui
         private async Task autoCreateCustomverCarton()
         {
             search_tb.Text = "";
-            await Task.Delay(500);
+            await Task.Delay(200);
             DataTable dt = null;
 
             if (dataGV.DataSource is DataTable)
@@ -963,7 +971,7 @@ namespace RauViet.ui
         }
 
 
-        private void assignCartonSizeBtn_Click(object sender, EventArgs e)
+        private async void assignCartonSizeBtn_Click(object sender, EventArgs e)
         {
             DataTable dt = null;
 
@@ -979,6 +987,7 @@ namespace RauViet.ui
             string cartonSize = cartonSize_cbb.Text;
 
             var selectedRows = dataGV.SelectedCells.Cast<DataGridViewCell>().Select(c => c.OwningRow).Distinct().ToList();
+            var orders = new List<(int, int?, decimal?, int?, string, string)>();
             foreach (DataGridViewRow row in selectedRows)
             {
                 DataRow rowOrder = mOrders_dt.AsEnumerable()
@@ -995,44 +1004,28 @@ namespace RauViet.ui
                     row.Cells["CartonSize"].Value = cartonSize;
                     rowOrder["CartonSize"] = cartonSize;
                 }
+
+                int orderId = Convert.ToInt32(row.Cells["OrderId"].Value);
+                int? pcsReal = int.TryParse(row.Cells["PCSReal"]?.Value?.ToString(), out int pcs) ? pcs : (int?)null;
+                decimal? nwReal = decimal.TryParse(row.Cells["NWReal"]?.Value?.ToString(), out decimal nw) ? nw : (decimal?)null;
+                int? cartonNo1 = int.TryParse(row.Cells["CartonNo"]?.Value?.ToString(), out int carton) ? carton : (int?)null;
+                string cartonSize1 = row.Cells["CartonSize"]?.Value?.ToString();
+                string customerCarton = row.Cells["CustomerCarton"]?.Value?.ToString();
+
+                orders.Add((orderId, pcsReal, nwReal, cartonNo1, cartonSize1, customerCarton));
+            }
+
+            bool isScussess = await SQLManager.Instance.UpdatePackOrdersBulkAsync(orders);
+            if (!isScussess)
+                MessageBox.Show($"Cập Nhật Thất Bại", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            else
+            {
+                status_lb.Text = "Thành công.";
+                status_lb.ForeColor = System.Drawing.Color.Green;
             }
         }
-        private void AssignPCSRealBtn_Click(object sender, EventArgs e)
-        {
-            DataTable dt = null;
-
-            if (dataGV.DataSource is DataTable)
-            {
-                dt = (DataTable)dataGV.DataSource;
-            }
-            else if (dataGV.DataSource is DataView)
-            {
-                dt = ((DataView)dataGV.DataSource).ToTable();
-            }
-            dt.DefaultView.Sort = "";
-            string cartonNo = PCSReal_tb.Text;
-
-            var selectedRows = dataGV.SelectedCells.Cast<DataGridViewCell>().Select(c => c.OwningRow).Distinct().ToList();
-            foreach (DataGridViewRow row in selectedRows)
-            {
-                DataRow rowOrder = mOrders_dt.AsEnumerable()
-                                        .FirstOrDefault(r => r.Field<int>("OrderId") == Convert.ToInt32(row.Cells["OrderId"].Value));
-                if (string.IsNullOrWhiteSpace(cartonNo))
-                {
-                    // Xóa dữ liệu ô CartonNo
-                    row.Cells["PCSReal"].Value = DBNull.Value;
-                    rowOrder["PCSReal"] = DBNull.Value;
-                }
-                else
-                {
-                    // Gán giá trị mới
-                    row.Cells["PCSReal"].Value = cartonNo;
-                    rowOrder["PCSReal"] = cartonNo;
-                }
-            }
-            mOrders_dt.AcceptChanges();
-        }
-        private void AssignCartonNoBtn_Click(object sender, EventArgs e)
+        
+        private async void AssignCartonNoBtn_Click(object sender, EventArgs e)
         {
             if (dataGV.SelectedCells.Count <= 0) return;
             DataTable dt = null;
@@ -1049,7 +1042,7 @@ namespace RauViet.ui
             string cartonNo = cartonNo_tb.Text;
 
             var selectedRows = dataGV.SelectedCells.Cast<DataGridViewCell>().Select(c => c.OwningRow).Distinct().ToList();
-
+            var orders = new List<(int, int?, decimal?, int?, string, string)>();
             foreach (DataGridViewRow row in selectedRows)
             {
                 DataRow rowOrder = mOrders_dt.AsEnumerable()
@@ -1059,6 +1052,7 @@ namespace RauViet.ui
                     // Xóa dữ liệu ô CartonNo
                     row.Cells["CartonNo"].Value = DBNull.Value;
                     rowOrder["CartonNo"] = DBNull.Value;
+                    
                 }
                 else
                 {
@@ -1066,6 +1060,28 @@ namespace RauViet.ui
                     row.Cells["CartonNo"].Value = cartonNo;
                     rowOrder["CartonNo"] = cartonNo;
                 }
+
+                row.Cells["CustomerCarton"].Value = DBNull.Value;
+                rowOrder["CustomerCarton"] = DBNull.Value;
+
+                int orderId = Convert.ToInt32(row.Cells["OrderId"].Value);
+                int? pcsReal = int.TryParse(row.Cells["PCSReal"]?.Value?.ToString(), out int pcs) ? pcs : (int?)null;
+                decimal? nwReal = decimal.TryParse(row.Cells["NWReal"]?.Value?.ToString(), out decimal nw) ? nw : (decimal?)null;
+                int? cartonNo1 = int.TryParse(row.Cells["CartonNo"]?.Value?.ToString(), out int carton) ? carton : (int?)null;
+                string cartonSize = row.Cells["CartonSize"]?.Value?.ToString();
+                string customerCarton = row.Cells["CustomerCarton"]?.Value?.ToString();
+
+                orders.Add((orderId, pcsReal, nwReal, cartonNo1, cartonSize, customerCarton));
+            }
+
+            
+            bool isScussess = await SQLManager.Instance.UpdatePackOrdersBulkAsync(orders);
+            if (!isScussess)
+                MessageBox.Show($"Cập Nhật Thất Bại", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            else
+            {
+                status_lb.Text = "Thành công.";
+                status_lb.ForeColor = System.Drawing.Color.Green;
             }
         }
 
@@ -1221,28 +1237,28 @@ namespace RauViet.ui
             {
                 if (row.IsNewRow) continue;
 
+                int pcs = 0;
+                decimal nw = 0;
+
                 string carton = row.Cells[cartonColName].Value?.ToString();
                 string customer = row.Cells[customerColName].Value?.ToString();
-                string cartonSize = row.Cells[sizeColName].Value?.ToString();
-                string PCS = row.Cells[PCSReal].Value?.ToString();
-                string NW = row.Cells[NWReal].Value?.ToString();
+                string cartonSize = row.Cells[sizeColName].Value?.ToString();               
 
-                if (string.IsNullOrEmpty(carton))
-                {
-                    MessageBox.Show($"Khách Hàng: {customer}\n CartonNo: Có Ô Chưa Nhập Số Liệu","Thiếu Dữ Liệu",MessageBoxButtons.OK,MessageBoxIcon.Warning);
-                    return false;
-                }
+                int.TryParse(row.Cells["PCSReal"].Value?.ToString(), out pcs);
+                decimal.TryParse(row.Cells["NWReal"].Value?.ToString(), out nw);
 
-                if (string.IsNullOrEmpty(cartonSize))
-                {
-                    MessageBox.Show($"Khách Hàng: {customer}\n Carton Size: Có Ô Chưa Nhập Số Liệu", "Thiếu Dữ Liệu", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return false;
-                }
+                if (pcs > 0 || nw > 0) {
+                    if (string.IsNullOrEmpty(carton))
+                    {
+                        MessageBox.Show($"Khách Hàng: {customer}\n CartonNo: Có Ô Chưa Nhập Số Liệu", "Thiếu Dữ Liệu", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return false;
+                    }
 
-                if (string.IsNullOrEmpty(PCS) && string.IsNullOrEmpty(NW))
-                {
-                    MessageBox.Show($"Khách Hàng: {customer}\n PCS hoặc NW: Có Ô Chưa Nhập Số Liệu", "Thiếu Dữ Liệu", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return false;
+                    if (string.IsNullOrEmpty(cartonSize))
+                    {
+                        MessageBox.Show($"Khách Hàng: {customer}\n Carton Size: Có Ô Chưa Nhập Số Liệu", "Thiếu Dữ Liệu", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return false;
+                    }
                 }
             }
 
@@ -1454,7 +1470,7 @@ namespace RauViet.ui
                 int.TryParse(row.Cells["PCSReal"].Value?.ToString(), out pcstt);
                 int cus = Convert.ToInt32(row.Cells["CustomerID"].Value);
 
-                object val1 = dataGV.Rows[rowIndex].Cells["CartonNo"].Value;
+                object val1 = row.Cells["CartonNo"].Value;
                 int cn = val1 != DBNull.Value && val1 != null ? Convert.ToInt32(val1) : -1;
                 if (cus == CustomerID)
                 {
@@ -1467,8 +1483,8 @@ namespace RauViet.ui
                 {
                     sumNW_cn += nw;
                     sumPCS_cn += pcs;
-                    sumNW_tt_cn = nwtt;
-                    sumPCS_tt_cn = pcstt;
+                    sumNW_tt_cn += nwtt;
+                    sumPCS_tt_cn += pcstt;
                 }
                 sumNW += nw;
                 sumPCS += pcs;
