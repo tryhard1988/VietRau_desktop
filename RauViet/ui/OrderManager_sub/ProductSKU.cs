@@ -288,6 +288,7 @@ namespace RauViet.ui
                         DataRow drToAdd = dataTable.NewRow();
 
                         drToAdd["SKU"] = newId;
+                        drToAdd["GroupProduct"] = newId;
                         drToAdd["ProductNameVN"] = productNameVN;
                         drToAdd["ProductNameEN"] = productNameEN;
                         drToAdd["PackingType"] = packingType;
