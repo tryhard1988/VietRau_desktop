@@ -70,8 +70,6 @@ namespace RauViet.ui
             this.label2 = new System.Windows.Forms.Label();
             this.previewPrint_PT_btn = new System.Windows.Forms.Button();
             this.print_btn = new System.Windows.Forms.Button();
-            this.assignPCSReal_btn = new System.Windows.Forms.Button();
-            this.PCSReal_tb = new System.Windows.Forms.TextBox();
             this.status_lb = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
             this.dataGV = new System.Windows.Forms.DataGridView();
@@ -267,8 +265,6 @@ namespace RauViet.ui
             this.panel1.Controls.Add(this.InPhieuGiaoHang_btn);
             this.panel1.Controls.Add(this.rightInfo_gb);
             this.panel1.Controls.Add(this.panel3);
-            this.panel1.Controls.Add(this.assignPCSReal_btn);
-            this.panel1.Controls.Add(this.PCSReal_tb);
             this.panel1.Controls.Add(this.status_lb);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Right;
             this.panel1.Location = new System.Drawing.Point(851, 0);
@@ -550,24 +546,6 @@ namespace RauViet.ui
             this.print_btn.Text = "In Phiếu Thùng";
             this.print_btn.UseVisualStyleBackColor = false;
             // 
-            // assignPCSReal_btn
-            // 
-            this.assignPCSReal_btn.Location = new System.Drawing.Point(246, 32);
-            this.assignPCSReal_btn.Name = "assignPCSReal_btn";
-            this.assignPCSReal_btn.Size = new System.Drawing.Size(64, 30);
-            this.assignPCSReal_btn.TabIndex = 53;
-            this.assignPCSReal_btn.Text = "Assign";
-            this.assignPCSReal_btn.UseVisualStyleBackColor = true;
-            this.assignPCSReal_btn.Visible = false;
-            // 
-            // PCSReal_tb
-            // 
-            this.PCSReal_tb.Location = new System.Drawing.Point(217, 36);
-            this.PCSReal_tb.Name = "PCSReal_tb";
-            this.PCSReal_tb.Size = new System.Drawing.Size(23, 20);
-            this.PCSReal_tb.TabIndex = 52;
-            this.PCSReal_tb.Visible = false;
-            // 
             // status_lb
             // 
             this.status_lb.AutoSize = true;
@@ -693,8 +671,6 @@ namespace RauViet.ui
         private System.Windows.Forms.Panel panel4;
         private System.Windows.Forms.Button previewPrint_PT_btn;
         private System.Windows.Forms.Button print_btn;
-        private System.Windows.Forms.Button assignPCSReal_btn;
-        private System.Windows.Forms.TextBox PCSReal_tb;
         private System.Windows.Forms.Label status_lb;
         private System.Windows.Forms.Label tongdathang_name_label;
         private System.Windows.Forms.Label tongdongthung_lable;

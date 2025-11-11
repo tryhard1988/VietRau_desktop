@@ -33,11 +33,13 @@ namespace RauViet.ui.PhanQuyen
 
         private async void Loading_Load(object sender, EventArgs e)
         {
-            await Task.Delay(500);
+            await Task.Delay(200);
+            _ = SQLManager.Instance.AutoDeleteLoginHistoryAsync();
+            _ = SQLManager.Instance.AutoUpdateCompleteExportCodeAsync();
             await SQLManager.Instance.AutoUpsertAnnualLeaveMonthListAsync();
             await SQLStore.Instance.preload_NhanSu();
             await SQLStore.Instance.preload_Suong();
-            await Task.Delay(500);
+            await Task.Delay(200);
             try
             {
                 this.Hide();

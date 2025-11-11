@@ -111,7 +111,14 @@ namespace RauViet.ui
                 exportCode_cbb.DataSource = mExportCode_dt;
                 exportCode_cbb.DisplayMember = "ExportCode";  // hiển thị tên
                 exportCode_cbb.ValueMember = "ExportCodeID";
-                
+
+                if (mExportCode_dt.Rows.Count > 0)
+                {
+                    int maxID = Convert.ToInt32(mExportCode_dt.AsEnumerable()
+                                   .Max(r => r.Field<int>("ExportCodeID")));
+                    exportCode_cbb.SelectedValue = maxID;
+                }
+
             }
             catch (Exception ex)
             {

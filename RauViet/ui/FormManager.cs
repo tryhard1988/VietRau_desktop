@@ -1,5 +1,6 @@
 ﻿using MySql.Data.MySqlClient;
 using RauViet.classes;
+using RauViet.ui.PhanQuyen;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -16,13 +17,13 @@ namespace RauViet.ui
 {
     public partial class FormManager : Form
     {
+        private Timer checkLoginTimer = new Timer { Interval = 20000 };
         public FormManager()
         {
             InitializeComponent();
 
             this.WindowState = FormWindowState.Maximized;
-            this.Text = "Quản Lý Việt Rau - NV: " + UserManager.Instance.fullName + " [" + UserManager.Instance.employeeCode + "]";
-
+            this.Text = "Quản Lý Việt Rau - NV: " + UserManager.Instance.fullName + " [" + UserManager.Instance.employeeCode + "]";            
             this.Load += FormManager_LoadAsync;
         }
 
@@ -30,6 +31,9 @@ namespace RauViet.ui
         {
             title_lb.Text = "Đã Sẵn Sàng Rồi";
             SetupMenus();
+
+            checkLoginTimer.Tick += checkLoginTimer_Tick;
+            checkLoginTimer.Start();
         }
 
         private void SetupMenus()
@@ -385,5 +389,24 @@ namespace RauViet.ui
         private void employee_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.Employee); }
         private void department_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.Department); }
         private void position_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.Position); }
+
+        private async void checkLoginTimer_Tick(object sender, EventArgs e)
+        {
+            var isHave = await SQLManager.Instance.HaveOtherComputerLoginAsync();
+            if (isHave)
+            {
+                this.Hide();
+                using (var loginForm = new LoginForm())
+                {
+                    checkLoginTimer.Stop(); // dừng timer
+                    MessageBox.Show("Tài khoản của bạn đã đăng nhập ở máy khác.\nChương trình sẽ tự thoát.",
+                                    "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+                    loginForm.ShowDialog();
+                }
+                this.Close();
+            }
+
+        }
     }
 }
