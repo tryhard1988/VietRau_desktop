@@ -146,8 +146,6 @@ namespace RauViet.ui
                 {
                     updateLotCodeComplete(dataGV.Rows[e.RowIndex]);
                 }
-
-                await Task.Delay(100);
                 var row = dataGV.Rows[e.RowIndex];
                 var list = new List<(int ExportCodeID, int SKU, string LOTCode, string LOTCodeComplete)>();
                 int exportCodeID = Convert.ToInt32(row.Cells["ExportCodeID"].Value);

@@ -36,7 +36,7 @@ public class OrderListPrinter
     }
 
     // ------------------- Xem trước -------------------
-    public void PrintPreview(DataGridView dgv, string exportCode, DateTime exportDate, string staff)
+    public void PrintPreview(DataGridView dgv, string exportCode, DateTime exportDate, string staff, Form owner)
     {
         if (dgv.Rows.Count == 0) return;
 
@@ -54,7 +54,7 @@ public class OrderListPrinter
             Width = 1000,
             Height = 800
         };
-        preview.ShowDialog();
+        preview.ShowDialog(owner);
     }
 
     // ------------------- Khởi tạo chung -------------------

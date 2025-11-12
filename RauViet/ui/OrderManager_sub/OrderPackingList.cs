@@ -106,9 +106,15 @@ namespace RauViet.ui
             InPhieuGiaoHang(false);
         }
 
-        private void InPhieuGiaoHang(bool preview = false)
+        private async void InPhieuGiaoHang(bool preview = false)
         {
             if (exportCode_cbb.SelectedItem == null) return;
+
+            loadingOverlay = new LoadingOverlay(this);
+            loadingOverlay.Message = "Đang xử lý ...";
+            loadingOverlay.Show();
+            await Task.Delay(100);
+
             // Tạo DataTable kết quả
             DataTable resultTable = new DataTable();
             resultTable.Columns.Add("CartonSize", typeof(string));
@@ -145,7 +151,10 @@ namespace RauViet.ui
             if(!preview)
                 deliveryPrinter.PrintDirect();
             else
-                deliveryPrinter.PrintPreview();
+                deliveryPrinter.PrintPreview(this);
+
+            await Task.Delay(200);
+            loadingOverlay.Hide();
         }
 
         private void carton_GV_SelectionChanged(object sender, EventArgs e)
@@ -232,11 +241,11 @@ namespace RauViet.ui
                 dataGV.Columns["Priority"].ReadOnly = true;
                 dataGV.Columns["CustomerName"].ReadOnly = true;
                 dataGV.Columns["ProductNameVN"].ReadOnly = true;
-                dataGV.Columns["CustomerCarton"].ReadOnly = true;
+                dataGV.Columns["CustomerCarton"].ReadOnly = false;
 
                 dataGV.Columns["OrderId"].HeaderText = "ID";
-                dataGV.Columns["PCSReal"].HeaderText = "PCS\nThực Tế";
-                dataGV.Columns["NWReal"].HeaderText = "NW\nThực Tế";
+                dataGV.Columns["PCSReal"].HeaderText = "PCS\nĐóng Thùng";
+                dataGV.Columns["NWReal"].HeaderText = "NW\nTĐóng Thùng";
                 dataGV.Columns["PCSOther"].HeaderText = "PCS\nĐặt Hàng";
                 dataGV.Columns["NWOther"].HeaderText = "NW\nĐặt Hàng";
                 dataGV.Columns["CartonNo"].HeaderText = "Carton.No";
@@ -470,11 +479,6 @@ namespace RauViet.ui
                     var row = dataGV.Rows[e.RowIndex];
                     var columnName = dataGV.Columns[e.ColumnIndex].Name;
 
-                    if (columnName == "CustomerCarton")
-                    {
-                        return;
-                    }
-
                     if (columnName == "PCSReal")
                     {
                         UpdateNWReal(row);
@@ -505,9 +509,6 @@ namespace RauViet.ui
 
                             row.Cells["CartonNo"].Value = cartonNo1;
                             row.Cells["CartonSize"].Value = cartonSize_cbb.Text;
-                            
-                            if (cartonNoTuTang_cb.Checked)
-                                cartonNo_tb.Text = (cartonNo1 + 1).ToString();
                         }
                     }
 
@@ -599,7 +600,8 @@ namespace RauViet.ui
                 }
             }
             else if (dataGV.Columns[e.ColumnIndex].Name == "CartonNo" ||
-                    dataGV.Columns[e.ColumnIndex].Name == "CartonSize")
+                    dataGV.Columns[e.ColumnIndex].Name == "CartonSize" ||
+                    dataGV.Columns[e.ColumnIndex].Name == "CustomerCarton")
             {
                 e.CellStyle.BackColor = System.Drawing.Color.LightGray;
             }
@@ -851,6 +853,9 @@ namespace RauViet.ui
         private async Task autoCreateCustomverCarton()
         {
             search_tb.Text = "";
+            loadingOverlay = new LoadingOverlay(this);
+            loadingOverlay.Message = "Đang xử lý ...";
+            loadingOverlay.Show();
             await Task.Delay(200);
             DataTable dt = null;
 
@@ -937,11 +942,28 @@ namespace RauViet.ui
                 }
 
                 // Bước 5: gán CustomerCarton cho các CartonNo mới
+                // Lấy tất cả số đang dùng (đã có)
+                var usedNumbers = new HashSet<int>();
+                foreach (var val in usedCustomerCartons)
+                {
+                    if (val.StartsWith(customer + "."))
+                    {
+                        string part = val.Substring(customer.Length + 1);
+                        if (int.TryParse(part, out int num))
+                            usedNumbers.Add(num);
+                    }
+                }
+
                 foreach (var key in distinctKeysToAssign)
                 {
-                    maxIdx++;
-                    string newCCarton = $"{customer}.{maxIdx}";
+                    // Tìm số nhỏ nhất chưa dùng
+                    int nextNum = 1;
+                    while (usedNumbers.Contains(nextNum))
+                        nextNum++;
+
+                    string newCCarton = $"{customer}.{nextNum}";
                     existingCartonNos[key] = newCCarton;
+                    usedNumbers.Add(nextNum);
                 }
 
                 // Bước 6: gán CustomerCarton cho toàn bộ row
@@ -968,6 +990,7 @@ namespace RauViet.ui
             fillter_btn_Click(null, null);
             await Task.Delay(300);
             SaveData();
+            loadingOverlay.Hide();
         }
 
 
@@ -1108,7 +1131,6 @@ namespace RauViet.ui
             // Xóa dữ liệu cũ trong carton_GV
             carton_GV.Rows.Clear();
 
-            // Thêm cột nếu chưa có
             if (!carton_GV.Columns.Contains("CustomerCarton"))
             {
                 carton_GV.Columns.Add("CustomerCarton", "Customer\nCarton");
@@ -1123,7 +1145,7 @@ namespace RauViet.ui
                 carton_GV.Columns["CartonNo"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 carton_GV.Columns["CartonNo"].ReadOnly = true;
             }
-
+            
             // Đổ dữ liệu mới vào
             foreach (var item in customerCartons)
             {
@@ -1133,34 +1155,21 @@ namespace RauViet.ui
             CountCarton_tb.Text = carton_GV.Rows.Count.ToString();
         }
 
-        private void previewPrint_PT_btn_Click(object sender, EventArgs e)
+        private async void previewPrint_PT_btn_Click(object sender, EventArgs e)
         {
-            // Giả sử dataGV là DataGridView của bạn
-            List<string> selectedCartons = new List<string>();
-            foreach (DataGridViewCell cell in carton_GV.SelectedCells)
-            {
-                // chỉ lấy ô ở cột CustomerCarton
-                if (carton_GV.Columns[cell.ColumnIndex].Name == "CustomerCarton")
-                {
-                    if (cell.Value != null && !string.IsNullOrWhiteSpace(cell.Value.ToString()))
-                    {
-                        selectedCartons.Add(cell.Value.ToString());
-                    }
-                }
-            }
-
-            if (selectedCartons.Count <= 0) return;
-
-            PackingListPrinter printer = new PackingListPrinter(dataGV, "Asiaway AG", "Schwamendingenstrasse 10, 8050 Zürich, Switzerland", selectedCartons);
-
-            // Gọi phương thức in
-            // printer.Print(selectedCartons.Count);
-
-            printer.PrintPreview();
+            _= PrintPhieuThung(true);
         }
         private void print_btn_Click(object sender, EventArgs e)
         {
+            _ = PrintPhieuThung(false);
+        }
 
+        private async Task PrintPhieuThung(bool isPreview)
+        {
+            loadingOverlay = new LoadingOverlay(this);
+            loadingOverlay.Message = "Đang xử lý ...";
+            loadingOverlay.Show();
+            await Task.Delay(100);
             // Giả sử dataGV là DataGridView của bạn
             List<string> selectedCartons = new List<string>();
             foreach (DataGridViewCell cell in carton_GV.SelectedCells)
@@ -1175,24 +1184,94 @@ namespace RauViet.ui
                 }
             }
 
-            if (selectedCartons.Count <= 0) return;
+            if (selectedCartons.Count <= 0)
+            {
+                await Task.Delay(200);
+                loadingOverlay.Hide();
+                return;
+            }
 
             PackingListPrinter printer = new PackingListPrinter(dataGV, "Asiaway AG", "Schwamendingenstrasse 10, 8050 Zürich, Switzerland", selectedCartons);
 
             // Gọi phương thức in
-             printer.Print(selectedCartons.Count);
+            if(!isPreview)
+                printer.Print(selectedCartons.Count);
+            else
+                printer.PrintPreview(this);
 
+            await Task.Delay(200);
+            loadingOverlay.Hide();
         }
 
         private void checkCarton_btn_click(object sender, EventArgs e)
         {
 
-            if (checkCartonNo())
+            if (checkCartonNo() && CheckCustomerCartonSequence())
             {
                 MessageBox.Show("Data Không Vẫn Đề Gì", "CartonNo", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
 
         }
+
+        private bool CheckCustomerCartonSequence()
+        {
+            if (dataGV.Rows.Count == 0)
+                return true; // Không có dữ liệu => xem như hợp lệ
+
+            // Gom nhóm theo CustomerCode
+            var rows = dataGV.Rows
+                .Cast<DataGridViewRow>()
+                .Where(r => !r.IsNewRow)
+                .ToList();
+
+            var groups = rows.GroupBy(r => (r.Cells["CustomerCode"].Value ?? "").ToString().Trim());
+
+            var missingList = new List<string>(); // chứa danh sách lỗi
+
+            foreach (var grp in groups)
+            {
+                string customer = grp.Key;
+                if (string.IsNullOrEmpty(customer)) continue;
+
+                // Lấy danh sách CustomerCarton dạng "Customer.X"
+                var numbers = grp.Select(r => (r.Cells["CustomerCarton"].Value ?? "").ToString().Trim())
+                                 .Where(v => v.StartsWith(customer + "."))
+                                 .Select(v =>
+                                 {
+                                     string numPart = v.Substring(customer.Length + 1);
+                                     return int.TryParse(numPart, out int n) ? n : -1;
+                                 })
+                                 .Where(n => n > 0)
+                                 .Distinct()
+                                 .OrderBy(n => n)
+                                 .ToList();
+
+                if (numbers.Count == 0) continue;
+
+                // Kiểm tra dãy có liên tục không
+                int expected = numbers.First();
+                foreach (int actual in numbers)
+                {
+                    while (expected < actual)
+                    {
+                        // Phát hiện số bị thiếu
+                        missingList.Add($"{customer}: thiếu {expected}");
+                        expected++;
+                    }
+                    expected = actual + 1;
+                }
+            }
+
+            if (missingList.Count > 0)
+            {
+                string msg = "⚠️ Phát hiện mã thùng bị nhảy cóc:\n" +
+                             string.Join("\n", missingList);
+                MessageBox.Show(msg, "Kiểm tra Mã Thùng", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+            return true;
+        }
+
 
         private bool checkCartonNo()
         {
@@ -1209,6 +1288,18 @@ namespace RauViet.ui
                 {
                     if (int.TryParse(row.Cells[cartonColName].Value?.ToString(), out int carton))
                     {
+                        string customerCarton = row.Cells["CustomerCarton"].Value?.ToString();
+                        if (string.IsNullOrEmpty(customerCarton))
+                        {
+                            MessageBox.Show(
+                                $"CartonNo '{carton}' có nhưng CustomerCarton bị trống!",
+                                "Thiếu CustomerCarton",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Warning
+                            );
+                            return false;
+                        }
+
                         cartonNumbers.Add(carton);
                     }
                 }
@@ -1337,6 +1428,44 @@ namespace RauViet.ui
                 );
                 return false;
             }
+
+            Dictionary<string, HashSet<string>> cartonCustomerCartonDict = new Dictionary<string, HashSet<string>>();
+            errorCartons.Clear();
+
+            foreach (DataGridViewRow row in dataGV.Rows)
+            {
+                if (row.IsNewRow) continue;
+
+                string carton = row.Cells[cartonColName].Value?.ToString();
+                string customerCarton = row.Cells["CustomerCarton"].Value?.ToString();
+
+                if (string.IsNullOrEmpty(carton) || string.IsNullOrEmpty(customerCarton))
+                    continue;
+
+                if (!cartonCustomerCartonDict.ContainsKey(carton))
+                    cartonCustomerCartonDict[carton] = new HashSet<string>();
+
+                cartonCustomerCartonDict[carton].Add(customerCarton);
+
+                if (cartonCustomerCartonDict[carton].Count > 1)
+                {
+                    if (!errorCartons.Contains(carton))
+                        errorCartons.Add(carton);
+                }
+            }
+
+            if (errorCartons.Count > 0)
+            {
+                string cartons = string.Join(", ", errorCartons);
+                MessageBox.Show(
+                    $"Các CartonNo sau có nhiều Mã Thùng khác nhau: {cartons}",
+                    "CustomerCarton",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning
+                );
+                return false;
+            }
+
 
             return true;
         }
@@ -1491,25 +1620,21 @@ namespace RauViet.ui
                 sumNW_tt += nwtt;
                 sumPCS_tt += pcstt;
             }
-            tongdathang_name_label.Text = "T.Đặt hàng:";
-            tongdathang_label.Text =  sumPCS + " pcs, " + sumNW + "kg";
-            tongdongthung_name_lable.Text = "T.Đóng thùng:";
-            tongdongthung_lable.Text =  sumPCS_tt + " pcs, " + sumNW_tt + " kg";
-            dathang_cus_name_lable.Text = "KH Đặt:";
-            dathang_cus_lable.Text = sumPCS_cus + " pcs, " + sumNW_cus + " kg";
-            dongthung_cus_name_lable.Text = "KH Nhận:";
-            dongthung_cus_lable.Text = sumPCS_cus_tt + " pcs, " + sumNW_cus_tt + " kg";
+            tongdathang_label.Text = "[" + sumPCS + " pcs, " + sumNW + "kg" + "]";
+            tongdongthung_lable.Text = "[" + sumPCS_tt + " pcs, " + sumNW_tt + " kg" + "]";
+            dathang_cus_lable.Text = "[" + sumPCS_cus + " pcs, " + sumNW_cus + " kg" + "]";
+            dongthung_cus_lable.Text = "[" + sumPCS_cus_tt + " pcs, " + sumNW_cus_tt + " kg" + "]";
             if (CartonNo >= 0)
             {
                 dathang_cn_name_lable.Text = "Thùng " + CartonNo + " Đặt:";
-                dathang_cn_lable.Text = sumPCS_cn + " pcs, " + sumNW_cn + " kg";
+                dathang_cn_lable.Text = "[" + sumPCS_cn + " pcs, " + sumNW_cn + " kg" + "]";
                 dongthung_cn_name_lable.Text = "Thùng " + CartonNo + " Nhận:";
-                dongthung_cn_lable.Text = sumPCS_tt_cn + " pcs, " + sumNW_tt_cn + " kg";
+                dongthung_cn_lable.Text = "[" + sumPCS_tt_cn + " pcs, " + sumNW_tt_cn + " kg" + "]";
             }
             else
             {
-                dathang_cn_lable.Text = "null";
-                dongthung_cn_lable.Text = "null";
+                dathang_cn_lable.Text = "[null]";
+                dongthung_cn_lable.Text = "[null]";
             }
         }
 

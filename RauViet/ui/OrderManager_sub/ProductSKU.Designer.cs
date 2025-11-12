@@ -441,28 +441,28 @@ namespace RauViet.ui
             this.dataGV.AllowUserToDeleteRows = false;
             this.dataGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGV.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dataGV.Location = new System.Drawing.Point(0, 38);
+            this.dataGV.Location = new System.Drawing.Point(0, 32);
             this.dataGV.Name = "dataGV";
             this.dataGV.ReadOnly = true;
-            this.dataGV.Size = new System.Drawing.Size(760, 643);
+            this.dataGV.Size = new System.Drawing.Size(760, 649);
             this.dataGV.TabIndex = 14;
             // 
             // panel3
             // 
-            this.panel3.BackColor = System.Drawing.SystemColors.ActiveBorder;
+            this.panel3.BackColor = System.Drawing.SystemColors.Control;
             this.panel3.Controls.Add(this.label15);
             this.panel3.Controls.Add(this.search_tb);
             this.panel3.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel3.Location = new System.Drawing.Point(0, 0);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(760, 38);
+            this.panel3.Size = new System.Drawing.Size(760, 32);
             this.panel3.TabIndex = 13;
             // 
             // label15
             // 
             this.label15.AutoSize = true;
             this.label15.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label15.Location = new System.Drawing.Point(430, 13);
+            this.label15.Location = new System.Drawing.Point(6, 7);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(66, 16);
             this.label15.TabIndex = 60;
@@ -470,9 +470,9 @@ namespace RauViet.ui
             // 
             // search_tb
             // 
-            this.search_tb.BackColor = System.Drawing.SystemColors.InactiveBorder;
+            this.search_tb.BackColor = System.Drawing.Color.DarkSeaGreen;
             this.search_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.search_tb.Location = new System.Drawing.Point(502, 9);
+            this.search_tb.Location = new System.Drawing.Point(78, 3);
             this.search_tb.Name = "search_tb";
             this.search_tb.Size = new System.Drawing.Size(252, 23);
             this.search_tb.TabIndex = 12;

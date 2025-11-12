@@ -25,6 +25,7 @@ namespace RauViet.ui
             this.WindowState = FormWindowState.Maximized;
             this.Text = "Quản Lý Việt Rau - NV: " + UserManager.Instance.fullName + " [" + UserManager.Instance.employeeCode + "]";            
             this.Load += FormManager_LoadAsync;
+            
         }
 
         private async void FormManager_LoadAsync(object sender, EventArgs e)
@@ -82,6 +83,7 @@ namespace RauViet.ui
                 dsDongThung_menuitem.Click += orderpackingList_btn_Click;
                 do417_menuitem.Click += orderTotal_btn_Click;
                 lotCode_menuitem.Click += lotCode_btn_Click;
+                doCBM_mi.Click += DoCBM_mi_Click;
             }
             else if (UserManager.Instance.hasRole_HoanThanhDonHang())
             {
@@ -90,6 +92,7 @@ namespace RauViet.ui
                 dsDongThung_menuitem.Visible = false;
                 do417_menuitem.Visible = false;
                 lotCode_menuitem.Visible = false;
+                doCBM_mi.Visible = false;
             }
             else
             {
@@ -143,6 +146,8 @@ namespace RauViet.ui
                 openCurrentForm(status);
             }
         }
+
+        
 
         private async void SwitchChildForm<T>(string title) where T : Form, new()
         {
@@ -210,7 +215,8 @@ namespace RauViet.ui
             User,
             Employee,
             Department,
-            Position
+            Position,
+            DoCBM
         }
 
         private void openCurrentForm(EForm status)
@@ -294,7 +300,7 @@ namespace RauViet.ui
                     SwitchChildForm<Holidays>("Lập Ngày Nghỉ Lễ");
                     break;
                 case EForm.Attendance:
-                    SwitchChildForm<Attendance>("Chấm CôngHành Chính");
+                    SwitchChildForm<Attendance>("Chấm Công Hành Chính");
                     break;
                 case EForm.CustomerDetailPackingTotal:
                     SwitchChildForm<CustomerDetailPackingTotal>("Customer Detail Packing");
@@ -340,6 +346,9 @@ namespace RauViet.ui
                     break;
                 case EForm.Position:
                     SwitchChildForm<Position>("Danh Sách Vị Trí Nhân Viên");
+                    break;
+                case EForm.DoCBM:
+                    SwitchChildForm<Do_CBM>("Do CBM");
                     break;
 
             }
@@ -389,7 +398,7 @@ namespace RauViet.ui
         private void employee_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.Employee); }
         private void department_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.Department); }
         private void position_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.Position); }
-
+        private void DoCBM_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.DoCBM); }
         private async void checkLoginTimer_Tick(object sender, EventArgs e)
         {
             var isHave = await SQLManager.Instance.HaveOtherComputerLoginAsync();
@@ -408,5 +417,6 @@ namespace RauViet.ui
             }
 
         }
+
     }
 }

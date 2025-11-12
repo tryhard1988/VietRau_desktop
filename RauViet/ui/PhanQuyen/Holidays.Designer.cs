@@ -31,6 +31,8 @@ namespace RauViet.ui
         {
             this.panel1 = new System.Windows.Forms.Panel();
             this.info_gb = new System.Windows.Forms.GroupBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.holidayDateEnd_dtp = new System.Windows.Forms.DateTimePicker();
             this.holidayDateStart_dtp = new System.Windows.Forms.DateTimePicker();
             this.label1 = new System.Windows.Forms.Label();
             this.holidayName_tb = new System.Windows.Forms.TextBox();
@@ -38,11 +40,12 @@ namespace RauViet.ui
             this.delete_btn = new System.Windows.Forms.Button();
             this.loading_lb = new System.Windows.Forms.Label();
             this.status_lb = new System.Windows.Forms.Label();
-            this.newCustomerBtn = new System.Windows.Forms.Button();
+            this.saveBtn = new System.Windows.Forms.Button();
             this.dataGV = new System.Windows.Forms.DataGridView();
             this.mySqlCommand1 = new MySql.Data.MySqlClient.MySqlCommand();
-            this.holidayDateEnd_dtp = new System.Windows.Forms.DateTimePicker();
-            this.label3 = new System.Windows.Forms.Label();
+            this.readOnly_btn = new System.Windows.Forms.Button();
+            this.newBtn = new System.Windows.Forms.Button();
+            this.linkStartEnd_cb = new System.Windows.Forms.CheckBox();
             this.panel1.SuspendLayout();
             this.info_gb.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
@@ -50,11 +53,13 @@ namespace RauViet.ui
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.readOnly_btn);
+            this.panel1.Controls.Add(this.newBtn);
             this.panel1.Controls.Add(this.info_gb);
             this.panel1.Controls.Add(this.delete_btn);
             this.panel1.Controls.Add(this.loading_lb);
             this.panel1.Controls.Add(this.status_lb);
-            this.panel1.Controls.Add(this.newCustomerBtn);
+            this.panel1.Controls.Add(this.saveBtn);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(718, 0);
             this.panel1.Name = "panel1";
@@ -63,6 +68,7 @@ namespace RauViet.ui
             // 
             // info_gb
             // 
+            this.info_gb.Controls.Add(this.linkStartEnd_cb);
             this.info_gb.Controls.Add(this.label3);
             this.info_gb.Controls.Add(this.holidayDateEnd_dtp);
             this.info_gb.Controls.Add(this.holidayDateStart_dtp);
@@ -75,11 +81,28 @@ namespace RauViet.ui
             this.info_gb.TabIndex = 28;
             this.info_gb.TabStop = false;
             // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label3.Location = new System.Drawing.Point(217, 46);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(34, 16);
+            this.label3.TabIndex = 26;
+            this.label3.Text = "==>";
+            // 
+            // holidayDateEnd_dtp
+            // 
+            this.holidayDateEnd_dtp.Location = new System.Drawing.Point(257, 43);
+            this.holidayDateEnd_dtp.Name = "holidayDateEnd_dtp";
+            this.holidayDateEnd_dtp.Size = new System.Drawing.Size(95, 20);
+            this.holidayDateEnd_dtp.TabIndex = 25;
+            // 
             // holidayDateStart_dtp
             // 
-            this.holidayDateStart_dtp.Location = new System.Drawing.Point(103, 43);
+            this.holidayDateStart_dtp.Location = new System.Drawing.Point(107, 43);
             this.holidayDateStart_dtp.Name = "holidayDateStart_dtp";
-            this.holidayDateStart_dtp.Size = new System.Drawing.Size(111, 20);
+            this.holidayDateStart_dtp.Size = new System.Drawing.Size(86, 20);
             this.holidayDateStart_dtp.TabIndex = 23;
             // 
             // label1
@@ -115,7 +138,7 @@ namespace RauViet.ui
             // 
             this.delete_btn.BackColor = System.Drawing.Color.Red;
             this.delete_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.delete_btn.Location = new System.Drawing.Point(281, 415);
+            this.delete_btn.Location = new System.Drawing.Point(364, 415);
             this.delete_btn.Name = "delete_btn";
             this.delete_btn.Size = new System.Drawing.Size(113, 47);
             this.delete_btn.TabIndex = 27;
@@ -135,24 +158,24 @@ namespace RauViet.ui
             // status_lb
             // 
             this.status_lb.AutoSize = true;
-            this.status_lb.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.status_lb.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.status_lb.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.status_lb.Location = new System.Drawing.Point(6, 426);
             this.status_lb.Name = "status_lb";
-            this.status_lb.Size = new System.Drawing.Size(55, 23);
+            this.status_lb.Size = new System.Drawing.Size(48, 19);
             this.status_lb.TabIndex = 26;
             this.status_lb.Text = "Email";
             // 
-            // newCustomerBtn
+            // saveBtn
             // 
-            this.newCustomerBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
-            this.newCustomerBtn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.newCustomerBtn.Location = new System.Drawing.Point(162, 415);
-            this.newCustomerBtn.Name = "newCustomerBtn";
-            this.newCustomerBtn.Size = new System.Drawing.Size(113, 47);
-            this.newCustomerBtn.TabIndex = 25;
-            this.newCustomerBtn.Text = "Lưu Mới";
-            this.newCustomerBtn.UseVisualStyleBackColor = false;
+            this.saveBtn.BackColor = System.Drawing.SystemColors.HotTrack;
+            this.saveBtn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.saveBtn.Location = new System.Drawing.Point(191, 415);
+            this.saveBtn.Name = "saveBtn";
+            this.saveBtn.Size = new System.Drawing.Size(113, 47);
+            this.saveBtn.TabIndex = 25;
+            this.saveBtn.Text = "Lưu Mới";
+            this.saveBtn.UseVisualStyleBackColor = false;
             // 
             // dataGV
             // 
@@ -173,22 +196,38 @@ namespace RauViet.ui
             this.mySqlCommand1.EnableCaching = false;
             this.mySqlCommand1.Transaction = null;
             // 
-            // holidayDateEnd_dtp
+            // readOnly_btn
             // 
-            this.holidayDateEnd_dtp.Location = new System.Drawing.Point(283, 43);
-            this.holidayDateEnd_dtp.Name = "holidayDateEnd_dtp";
-            this.holidayDateEnd_dtp.Size = new System.Drawing.Size(133, 20);
-            this.holidayDateEnd_dtp.TabIndex = 25;
+            this.readOnly_btn.BackColor = System.Drawing.Color.MediumSlateBlue;
+            this.readOnly_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.readOnly_btn.Location = new System.Drawing.Point(440, 148);
+            this.readOnly_btn.Name = "readOnly_btn";
+            this.readOnly_btn.Size = new System.Drawing.Size(42, 32);
+            this.readOnly_btn.TabIndex = 38;
+            this.readOnly_btn.Text = "X";
+            this.readOnly_btn.UseVisualStyleBackColor = false;
             // 
-            // label3
+            // newBtn
             // 
-            this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(227, 46);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(34, 16);
-            this.label3.TabIndex = 26;
-            this.label3.Text = "==>";
+            this.newBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
+            this.newBtn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.newBtn.Location = new System.Drawing.Point(399, 148);
+            this.newBtn.Name = "newBtn";
+            this.newBtn.Size = new System.Drawing.Size(84, 32);
+            this.newBtn.TabIndex = 36;
+            this.newBtn.Text = "Tạo mới";
+            this.newBtn.UseVisualStyleBackColor = false;
+            // 
+            // linkStartEnd_cb
+            // 
+            this.linkStartEnd_cb.AutoSize = true;
+            this.linkStartEnd_cb.Checked = true;
+            this.linkStartEnd_cb.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.linkStartEnd_cb.Location = new System.Drawing.Point(200, 47);
+            this.linkStartEnd_cb.Name = "linkStartEnd_cb";
+            this.linkStartEnd_cb.Size = new System.Drawing.Size(15, 14);
+            this.linkStartEnd_cb.TabIndex = 27;
+            this.linkStartEnd_cb.UseVisualStyleBackColor = true;
             // 
             // Holidays
             // 
@@ -212,7 +251,7 @@ namespace RauViet.ui
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.TextBox holidayName_tb;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Button newCustomerBtn;
+        private System.Windows.Forms.Button saveBtn;
         private System.Windows.Forms.DataGridView dataGV;
         private System.Windows.Forms.Label status_lb;
         private System.Windows.Forms.Label loading_lb;
@@ -223,5 +262,8 @@ namespace RauViet.ui
         private MySql.Data.MySqlClient.MySqlCommand mySqlCommand1;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.DateTimePicker holidayDateEnd_dtp;
+        private System.Windows.Forms.Button readOnly_btn;
+        private System.Windows.Forms.Button newBtn;
+        private System.Windows.Forms.CheckBox linkStartEnd_cb;
     }
 }

@@ -244,6 +244,12 @@
     <Compile Include="ui\OrderManager_sub\CustomerDetailPackingTotal.Designer.cs">
       <DependentUpon>CustomerDetailPackingTotal.cs</DependentUpon>
     </Compile>
+    <Compile Include="ui\OrderManager_sub\Do_CBM.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\OrderManager_sub\Do_CBM.Designer.cs">
+      <DependentUpon>Do_CBM.cs</DependentUpon>
+    </Compile>
     <Compile Include="ui\PhanQuyen\EmployeeDeduction_ATT.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -536,6 +542,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ui\OrderManager_sub\CustomerDetailPackingTotal.resx">
       <DependentUpon>CustomerDetailPackingTotal.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\OrderManager_sub\Do_CBM.resx">
+      <DependentUpon>Do_CBM.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ui\PhanQuyen\EmployeeDeduction_ATT.resx">
       <DependentUpon>EmployeeDeduction_ATT.cs</DependentUpon>

@@ -1,4 +1,5 @@
 ﻿using DocumentFormat.OpenXml.Wordprocessing;
+using MySqlX.XDevAPI.Common;
 using RauViet.classes;
 using System;
 using System.Collections.Generic;
@@ -38,14 +39,18 @@ namespace RauViet.ui
             holidayDateEnd_dtp.Format = DateTimePickerFormat.Custom;
             holidayDateEnd_dtp.CustomFormat = "dd/MM/yyyy";
 
-            newCustomerBtn.Click += newCustomerBtn_Click;
+            saveBtn.Click += newCustomerBtn_Click;
             delete_btn.Click += deleteBtn_Click;
             dataGV.SelectionChanged += this.dataGV_CellClick;
 
             holidayDateStart_dtp.ValueChanged += HolidayDateStart_dtp_ValueChanged;
             holidayDateEnd_dtp.ValueChanged += HolidayDateEnd_dtp_ValueChanged;
-        }
 
+            newBtn.Click += NewBtn_Click;
+            readOnly_btn.Click += ReadOnly_btn_Click;
+            ReadOnly_btn_Click(null, null);
+            linkStartEnd_cb.CheckedChanged += LinkStartEnd_cb_CheckedChanged;
+        }
 
         public async void ShowData()
         {
@@ -141,8 +146,10 @@ namespace RauViet.ui
             
             DataTable dataTable = (DataTable)dataGV.DataSource;
             bool hasError = false;
-            dataGV.SuspendLayout();            
-            
+            dataGV.SuspendLayout();
+
+            List<DateTime> datetimeErrorList = new List<DateTime>();
+            string errorMessage = "";
             for (DateTime date = holidayDateStart.Date; date <= holidayDateEnd.Date; date = date.AddDays(1))
             {
                 try
@@ -162,11 +169,14 @@ namespace RauViet.ui
                     else
                     {
                         hasError = true;
+                        datetimeErrorList.Add(date.Date);
                     }
                 }
                 catch (Exception ex)
                 {
+                    Console.WriteLine("ERROR: " + ex.Message);
                     hasError = true;
+                    errorMessage = ex.Message;
                 }
             }
 
@@ -174,8 +184,25 @@ namespace RauViet.ui
             dataTable.AcceptChanges();
             SQLStore.Instance.removeLeaveAttendances(holidayDateStart.Year);
             SQLStore.Instance.removeLeaveAttendances(holidayDateEnd.Year);
-            status_lb.Text = hasError ? "Có lỗi trong quá trình thêm." : "Thêm thành công tất cả.";
-            status_lb.ForeColor = hasError ? Color.Red : Color.Green;
+
+            if (!hasError)
+            {
+                status_lb.Text =  "Thành công.";
+                status_lb.ForeColor = Color.Green;
+            }
+            else
+            {
+                if (datetimeErrorList.Count > 0)
+                {
+                    string result = string.Join(", ", datetimeErrorList.Select(d => d.ToString("dd/MM/yyyy")));
+                    MessageBox.Show("Lỗi: " + result);
+                }
+                else
+                {
+                    MessageBox.Show(errorMessage);
+                }
+            }
+            
             
         }
         private async void deleteBtn_Click(object sender, EventArgs e)
@@ -183,7 +210,7 @@ namespace RauViet.ui
             if (dataGV.SelectedRows.Count == 0) return;
 
             DateTime date = holidayDateStart_dtp.Value;
-
+            DataTable dataTable = (DataTable)dataGV.DataSource;
             foreach (DataGridViewRow row in dataGV.Rows)
             {
                 DateTime holidayDate = Convert.ToDateTime(row.Cells["HolidayDate"].Value);
@@ -221,6 +248,7 @@ namespace RauViet.ui
                     break;
                 }
             }
+            dataTable.AcceptChanges();
         }
 
         private async void newCustomerBtn_Click(object sender, EventArgs e)
@@ -230,15 +258,27 @@ namespace RauViet.ui
             string holidayName = holidayName_tb.Text;
 
             await createNew(holidayDateStart, holidayDateEnd, holidayName);
+            SQLStore.Instance.removeAttendamce(holidayDateStart.Month, holidayDateStart.Year);
+            SQLStore.Instance.removeAttendamce(holidayDateEnd.Month, holidayDateEnd.Year);
+            SQLStore.Instance.removeLeaveAttendances(holidayDateStart.Year);
+
+            ReadOnly_btn_Click(null, null);
         }
 
         private async void HolidayDateStart_dtp_ValueChanged(object sender, EventArgs e)
         {
             DateTime holidayDateStart = holidayDateStart_dtp.Value.Date;
-            DateTime holidayDateEnd = holidayDateEnd_dtp.Value.Date;
-            if (holidayDateStart > holidayDateEnd)
+            if (linkStartEnd_cb.Checked)
+            {
                 holidayDateEnd_dtp.Value = holidayDateStart;
-
+            }
+            else
+            {
+                DateTime holidayDateEnd = holidayDateEnd_dtp.Value.Date;
+                if (holidayDateStart > holidayDateEnd)
+                    holidayDateEnd_dtp.Value = holidayDateStart;
+            }
+                
             bool isLock = await SQLStore.Instance.IsSalaryLockAsync(holidayDateStart.Month, holidayDateStart.Year);
             delete_btn.Visible = !isLock;
         }
@@ -250,6 +290,52 @@ namespace RauViet.ui
             if (holidayDateStart > holidayDateEnd)
                 holidayDateEnd_dtp.Value = holidayDateStart;
 
+        }
+
+        private void NewBtn_Click(object sender, EventArgs e)
+        {
+            info_gb.BackColor = newBtn.BackColor;
+            newBtn.Visible = false;
+            delete_btn.Visible = false;
+            readOnly_btn.Visible = true;
+            saveBtn.Text = "Lưu Mới";
+            SetUIReadOnly(false);
+        }
+
+        private void ReadOnly_btn_Click(object sender, EventArgs e)
+        {
+            newBtn.Visible = true;
+            delete_btn.Visible = true;
+            readOnly_btn.Visible = false;
+            saveBtn.Visible = false;
+            info_gb.BackColor = Color.DarkGray;
+            SetUIReadOnly(true);
+        }
+
+        private void SetUIReadOnly(bool isReadOnly)
+        {
+            holidayDateStart_dtp.Enabled = !isReadOnly;
+            holidayDateEnd_dtp.Visible = !isReadOnly;
+            label3.Visible = !isReadOnly;
+            holidayName_tb.Enabled = !isReadOnly;
+            linkStartEnd_cb.Visible = !isReadOnly;
+
+            if (!isReadOnly)
+            {
+                LinkStartEnd_cb_CheckedChanged(null, null);
+            }
+        }
+
+        private void LinkStartEnd_cb_CheckedChanged(object sender, EventArgs e)
+        {
+            holidayDateEnd_dtp.Visible = !linkStartEnd_cb.Checked;
+            label3.Visible = !linkStartEnd_cb.Checked;
+
+            if (linkStartEnd_cb.Checked)
+            {
+                DateTime dayStart = holidayDateStart_dtp.Value.Date;
+                holidayDateEnd_dtp.Value = dayStart;
+            }
         }
     }
 }

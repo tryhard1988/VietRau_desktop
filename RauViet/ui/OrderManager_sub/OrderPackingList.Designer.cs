@@ -51,7 +51,6 @@ namespace RauViet.ui
             this.InPhieuGiaoHang_btn = new System.Windows.Forms.Button();
             this.rightInfo_gb = new System.Windows.Forms.GroupBox();
             this.cartonNo_tang1_btn = new System.Windows.Forms.Button();
-            this.cartonNoTuTang_cb = new System.Windows.Forms.CheckBox();
             this.cartonSize_cbb = new System.Windows.Forms.ComboBox();
             this.delOrder_btn = new System.Windows.Forms.Button();
             this.chiadon_btn = new System.Windows.Forms.Button();
@@ -95,6 +94,7 @@ namespace RauViet.ui
             // 
             // panel6
             // 
+            this.panel6.BackColor = System.Drawing.SystemColors.Info;
             this.panel6.Controls.Add(this.dongthung_cn_lable);
             this.panel6.Controls.Add(this.dongthung_cn_name_lable);
             this.panel6.Controls.Add(this.dathang_cn_lable);
@@ -119,7 +119,7 @@ namespace RauViet.ui
             this.dongthung_cn_lable.Dock = System.Windows.Forms.DockStyle.Left;
             this.dongthung_cn_lable.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.dongthung_cn_lable.ForeColor = System.Drawing.Color.DarkMagenta;
-            this.dongthung_cn_lable.Location = new System.Drawing.Point(391, 0);
+            this.dongthung_cn_lable.Location = new System.Drawing.Point(551, 0);
             this.dongthung_cn_lable.Name = "dongthung_cn_lable";
             this.dongthung_cn_lable.Size = new System.Drawing.Size(35, 16);
             this.dongthung_cn_lable.TabIndex = 108;
@@ -131,7 +131,7 @@ namespace RauViet.ui
             this.dongthung_cn_name_lable.Dock = System.Windows.Forms.DockStyle.Left;
             this.dongthung_cn_name_lable.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.dongthung_cn_name_lable.ForeColor = System.Drawing.SystemColors.InactiveCaptionText;
-            this.dongthung_cn_name_lable.Location = new System.Drawing.Point(355, 0);
+            this.dongthung_cn_name_lable.Location = new System.Drawing.Point(515, 0);
             this.dongthung_cn_name_lable.Name = "dongthung_cn_name_lable";
             this.dongthung_cn_name_lable.Size = new System.Drawing.Size(36, 16);
             this.dongthung_cn_name_lable.TabIndex = 107;
@@ -143,7 +143,7 @@ namespace RauViet.ui
             this.dathang_cn_lable.Dock = System.Windows.Forms.DockStyle.Left;
             this.dathang_cn_lable.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.dathang_cn_lable.ForeColor = System.Drawing.Color.SlateBlue;
-            this.dathang_cn_lable.Location = new System.Drawing.Point(320, 0);
+            this.dathang_cn_lable.Location = new System.Drawing.Point(480, 0);
             this.dathang_cn_lable.Name = "dathang_cn_lable";
             this.dathang_cn_lable.Size = new System.Drawing.Size(35, 16);
             this.dathang_cn_lable.TabIndex = 105;
@@ -155,7 +155,7 @@ namespace RauViet.ui
             this.dathang_cn_name_lable.Dock = System.Windows.Forms.DockStyle.Left;
             this.dathang_cn_name_lable.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.dathang_cn_name_lable.ForeColor = System.Drawing.SystemColors.InactiveCaptionText;
-            this.dathang_cn_name_lable.Location = new System.Drawing.Point(284, 0);
+            this.dathang_cn_name_lable.Location = new System.Drawing.Point(444, 0);
             this.dathang_cn_name_lable.Name = "dathang_cn_name_lable";
             this.dathang_cn_name_lable.Size = new System.Drawing.Size(36, 16);
             this.dathang_cn_name_lable.TabIndex = 104;
@@ -167,7 +167,7 @@ namespace RauViet.ui
             this.dongthung_cus_lable.Dock = System.Windows.Forms.DockStyle.Left;
             this.dongthung_cus_lable.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.dongthung_cus_lable.ForeColor = System.Drawing.Color.MidnightBlue;
-            this.dongthung_cus_lable.Location = new System.Drawing.Point(249, 0);
+            this.dongthung_cus_lable.Location = new System.Drawing.Point(409, 0);
             this.dongthung_cus_lable.Name = "dongthung_cus_lable";
             this.dongthung_cus_lable.Size = new System.Drawing.Size(35, 16);
             this.dongthung_cus_lable.TabIndex = 101;
@@ -179,11 +179,11 @@ namespace RauViet.ui
             this.dongthung_cus_name_lable.Dock = System.Windows.Forms.DockStyle.Left;
             this.dongthung_cus_name_lable.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.dongthung_cus_name_lable.ForeColor = System.Drawing.SystemColors.InactiveCaptionText;
-            this.dongthung_cus_name_lable.Location = new System.Drawing.Point(213, 0);
+            this.dongthung_cus_name_lable.Location = new System.Drawing.Point(344, 0);
             this.dongthung_cus_name_lable.Name = "dongthung_cus_name_lable";
-            this.dongthung_cus_name_lable.Size = new System.Drawing.Size(36, 16);
+            this.dongthung_cus_name_lable.Size = new System.Drawing.Size(65, 16);
             this.dongthung_cus_name_lable.TabIndex = 98;
-            this.dongthung_cus_name_lable.Text = "PCS:";
+            this.dongthung_cus_name_lable.Text = "KH Nhận:";
             // 
             // dathang_cus_lable
             // 
@@ -191,7 +191,7 @@ namespace RauViet.ui
             this.dathang_cus_lable.Dock = System.Windows.Forms.DockStyle.Left;
             this.dathang_cus_lable.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.dathang_cus_lable.ForeColor = System.Drawing.Color.DarkGoldenrod;
-            this.dathang_cus_lable.Location = new System.Drawing.Point(178, 0);
+            this.dathang_cus_lable.Location = new System.Drawing.Point(309, 0);
             this.dathang_cus_lable.Name = "dathang_cus_lable";
             this.dathang_cus_lable.Size = new System.Drawing.Size(35, 16);
             this.dathang_cus_lable.TabIndex = 94;
@@ -203,11 +203,11 @@ namespace RauViet.ui
             this.dathang_cus_name_lable.Dock = System.Windows.Forms.DockStyle.Left;
             this.dathang_cus_name_lable.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.dathang_cus_name_lable.ForeColor = System.Drawing.SystemColors.InactiveCaptionText;
-            this.dathang_cus_name_lable.Location = new System.Drawing.Point(142, 0);
+            this.dathang_cus_name_lable.Location = new System.Drawing.Point(252, 0);
             this.dathang_cus_name_lable.Name = "dathang_cus_name_lable";
-            this.dathang_cus_name_lable.Size = new System.Drawing.Size(36, 16);
+            this.dathang_cus_name_lable.Size = new System.Drawing.Size(57, 16);
             this.dathang_cus_name_lable.TabIndex = 93;
-            this.dathang_cus_name_lable.Text = "PCS:";
+            this.dathang_cus_name_lable.Text = "KH Đặt:";
             // 
             // tongdongthung_lable
             // 
@@ -215,7 +215,7 @@ namespace RauViet.ui
             this.tongdongthung_lable.Dock = System.Windows.Forms.DockStyle.Left;
             this.tongdongthung_lable.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tongdongthung_lable.ForeColor = System.Drawing.Color.SeaGreen;
-            this.tongdongthung_lable.Location = new System.Drawing.Point(107, 0);
+            this.tongdongthung_lable.Location = new System.Drawing.Point(217, 0);
             this.tongdongthung_lable.Name = "tongdongthung_lable";
             this.tongdongthung_lable.Size = new System.Drawing.Size(35, 16);
             this.tongdongthung_lable.TabIndex = 88;
@@ -227,11 +227,11 @@ namespace RauViet.ui
             this.tongdongthung_name_lable.Dock = System.Windows.Forms.DockStyle.Left;
             this.tongdongthung_name_lable.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tongdongthung_name_lable.ForeColor = System.Drawing.SystemColors.InactiveCaptionText;
-            this.tongdongthung_name_lable.Location = new System.Drawing.Point(71, 0);
+            this.tongdongthung_name_lable.Location = new System.Drawing.Point(118, 0);
             this.tongdongthung_name_lable.Name = "tongdongthung_name_lable";
-            this.tongdongthung_name_lable.Size = new System.Drawing.Size(36, 16);
+            this.tongdongthung_name_lable.Size = new System.Drawing.Size(99, 16);
             this.tongdongthung_name_lable.TabIndex = 87;
-            this.tongdongthung_name_lable.Text = "PCS:";
+            this.tongdongthung_name_lable.Text = "T.Đóng thùng:";
             // 
             // tongdathang_label
             // 
@@ -239,7 +239,7 @@ namespace RauViet.ui
             this.tongdathang_label.Dock = System.Windows.Forms.DockStyle.Left;
             this.tongdathang_label.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tongdathang_label.ForeColor = System.Drawing.SystemColors.Highlight;
-            this.tongdathang_label.Location = new System.Drawing.Point(36, 0);
+            this.tongdathang_label.Location = new System.Drawing.Point(83, 0);
             this.tongdathang_label.Name = "tongdathang_label";
             this.tongdathang_label.Size = new System.Drawing.Size(35, 16);
             this.tongdathang_label.TabIndex = 81;
@@ -253,9 +253,9 @@ namespace RauViet.ui
             this.tongdathang_name_label.ForeColor = System.Drawing.SystemColors.InactiveCaptionText;
             this.tongdathang_name_label.Location = new System.Drawing.Point(0, 0);
             this.tongdathang_name_label.Name = "tongdathang_name_label";
-            this.tongdathang_name_label.Size = new System.Drawing.Size(36, 16);
+            this.tongdathang_name_label.Size = new System.Drawing.Size(83, 16);
             this.tongdathang_name_label.TabIndex = 80;
-            this.tongdathang_name_label.Text = "PCS:";
+            this.tongdathang_name_label.Text = "T.Đặt hàng:";
             // 
             // panel1
             // 
@@ -320,7 +320,6 @@ namespace RauViet.ui
             // 
             this.rightInfo_gb.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.rightInfo_gb.Controls.Add(this.cartonNo_tang1_btn);
-            this.rightInfo_gb.Controls.Add(this.cartonNoTuTang_cb);
             this.rightInfo_gb.Controls.Add(this.cartonSize_cbb);
             this.rightInfo_gb.Controls.Add(this.delOrder_btn);
             this.rightInfo_gb.Controls.Add(this.chiadon_btn);
@@ -348,17 +347,6 @@ namespace RauViet.ui
             this.cartonNo_tang1_btn.TabIndex = 68;
             this.cartonNo_tang1_btn.Text = "+1";
             this.cartonNo_tang1_btn.UseVisualStyleBackColor = false;
-            // 
-            // cartonNoTuTang_cb
-            // 
-            this.cartonNoTuTang_cb.AutoSize = true;
-            this.cartonNoTuTang_cb.ForeColor = System.Drawing.Color.Maroon;
-            this.cartonNoTuTang_cb.Location = new System.Drawing.Point(17, 13);
-            this.cartonNoTuTang_cb.Name = "cartonNoTuTang_cb";
-            this.cartonNoTuTang_cb.Size = new System.Drawing.Size(280, 20);
-            this.cartonNoTuTang_cb.TabIndex = 67;
-            this.cartonNoTuTang_cb.Text = "Carton No Tự Tăng lên 1 sau Khi Nhấn Enter";
-            this.cartonNoTuTang_cb.UseVisualStyleBackColor = true;
             // 
             // cartonSize_cbb
             // 
@@ -485,7 +473,7 @@ namespace RauViet.ui
             this.fillter_btn.Name = "fillter_btn";
             this.fillter_btn.Size = new System.Drawing.Size(162, 43);
             this.fillter_btn.TabIndex = 46;
-            this.fillter_btn.Text = "Lấy Danh Sách Thùng";
+            this.fillter_btn.Text = "Danh Sách Thùng";
             this.fillter_btn.UseVisualStyleBackColor = false;
             // 
             // panel4
@@ -592,9 +580,9 @@ namespace RauViet.ui
             // 
             // search_tb
             // 
-            this.search_tb.BackColor = System.Drawing.SystemColors.InactiveBorder;
+            this.search_tb.BackColor = System.Drawing.Color.DarkSeaGreen;
             this.search_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.search_tb.Location = new System.Drawing.Point(593, 3);
+            this.search_tb.Location = new System.Drawing.Point(86, 1);
             this.search_tb.Name = "search_tb";
             this.search_tb.Size = new System.Drawing.Size(252, 23);
             this.search_tb.TabIndex = 63;
@@ -603,7 +591,7 @@ namespace RauViet.ui
             // 
             this.label15.AutoSize = true;
             this.label15.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label15.Location = new System.Drawing.Point(521, 7);
+            this.label15.Location = new System.Drawing.Point(14, 5);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(66, 16);
             this.label15.TabIndex = 64;
@@ -611,11 +599,13 @@ namespace RauViet.ui
             // 
             // exportCode_cbb
             // 
+            this.exportCode_cbb.BackColor = System.Drawing.Color.White;
+            this.exportCode_cbb.Dock = System.Windows.Forms.DockStyle.Right;
             this.exportCode_cbb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.exportCode_cbb.FormattingEnabled = true;
-            this.exportCode_cbb.Location = new System.Drawing.Point(3, 0);
+            this.exportCode_cbb.Location = new System.Drawing.Point(676, 0);
             this.exportCode_cbb.Name = "exportCode_cbb";
-            this.exportCode_cbb.Size = new System.Drawing.Size(160, 21);
+            this.exportCode_cbb.Size = new System.Drawing.Size(175, 21);
             this.exportCode_cbb.TabIndex = 52;
             // 
             // OrderPackingList
@@ -684,7 +674,6 @@ namespace RauViet.ui
         private System.Windows.Forms.Label dongthung_cus_lable;
         private System.Windows.Forms.Label dongthung_cn_lable;
         private System.Windows.Forms.Label dongthung_cn_name_lable;
-        private System.Windows.Forms.CheckBox cartonNoTuTang_cb;
         private System.Windows.Forms.Button cartonNo_tang1_btn;
         private System.Windows.Forms.Label CountCarton_tb;
         private System.Windows.Forms.Label label2;

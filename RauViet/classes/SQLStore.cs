@@ -408,6 +408,15 @@ namespace RauViet.classes
             return mHoliday_dt;
         }
 
+        public async Task<bool> IsHolidaysAsync(DateTime date)
+        {
+            await GetHolidaysAsync();
+
+            DataRow[] rows = mHoliday_dt.Select($"HolidayDate = #{date:MM/dd/yyyy}#");
+
+            return rows.Length > 0;
+        }
+
         public async Task<DataTable> GetHolidaysAsync(int month, int year)
         {
             await GetHolidaysAsync();
@@ -1274,7 +1283,7 @@ namespace RauViet.classes
             }
         }
 
-        public async Task<DataTable> GetAttendamceAsync(string[] colnames, int month, int year)
+        public async Task<DataTable> GetAttendamceAsync(int month, int year)
         {
             string key = month.ToString() + "_" + year.ToString();
             if (!mAttendances.ContainsKey(key))
@@ -1290,6 +1299,13 @@ namespace RauViet.classes
                     return null;
                 }
             }
+
+            return mAttendances[key];
+        }
+        public async Task<DataTable> GetAttendamceAsync(string[] colnames, int month, int year)
+        {
+            await GetAttendamceAsync(month, year);
+            string key = month.ToString() + "_" + year.ToString();
 
             
             if (colnames == null)

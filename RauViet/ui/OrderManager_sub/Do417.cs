@@ -1,10 +1,8 @@
-﻿using DocumentFormat.OpenXml.Bibliography;
-using DocumentFormat.OpenXml.Office2010.Excel;
-using RauViet.classes;
+﻿using RauViet.classes;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Drawing;
+
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -238,8 +236,6 @@ namespace RauViet.ui
                 }
 
                 calvalueRightUI();
-
-                await Task.Delay(100);
 
                 var row = dataGV.Rows[e.RowIndex];
                 var list = new List<(int ExportCodeID, int ProductPackingID, decimal? NetWeightFinal)>();

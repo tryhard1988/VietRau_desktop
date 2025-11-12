@@ -15,7 +15,7 @@ public class OrderSummaryPrinter
     int totalPCS = 0;
     decimal totalNetWeight = 0;
     // ------------------- Hàm Print Preview -------------------
-    public void PrintPreview(DataTable dataTable, string exportCode, DateTime exportDate)
+    public void PrintPreview(DataTable dataTable, string exportCode, DateTime exportDate, Form owner)
     {
         if (dataTable == null || dataTable.Rows.Count == 0)
             return;
@@ -31,7 +31,7 @@ public class OrderSummaryPrinter
             Width = 1000,
             Height = 800
         };
-        preview.ShowDialog();
+        preview.ShowDialog(owner);
     }
 
     // ------------------- Hàm Print trực tiếp -------------------

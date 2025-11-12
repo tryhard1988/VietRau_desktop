@@ -97,13 +97,14 @@
             // login_loading_tb
             // 
             this.login_loading_tb.AutoSize = true;
-            this.login_loading_tb.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.login_loading_tb.ForeColor = System.Drawing.Color.MediumTurquoise;
-            this.login_loading_tb.Location = new System.Drawing.Point(18, 219);
+            this.login_loading_tb.BackColor = System.Drawing.Color.Linen;
+            this.login_loading_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.login_loading_tb.ForeColor = System.Drawing.Color.Black;
+            this.login_loading_tb.Location = new System.Drawing.Point(82, 218);
             this.login_loading_tb.Name = "login_loading_tb";
-            this.login_loading_tb.Size = new System.Drawing.Size(240, 19);
+            this.login_loading_tb.Size = new System.Drawing.Size(104, 16);
             this.login_loading_tb.TabIndex = 3;
-            this.login_loading_tb.Text = "Đang kết nối đến máy chủ ...";
+            this.login_loading_tb.Text = "Đang kiểm tra ...";
             // 
             // changePass_btn
             // 

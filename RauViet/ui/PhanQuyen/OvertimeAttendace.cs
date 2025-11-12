@@ -75,7 +75,6 @@ namespace RauViet.ui
 
             loadAttandance_btn.Click += LoadAttandance_btn_Click;
             newBtn.Click += NewBtn_Click;
-
             edit_btn.Click += Edit_btn_Click;
             readOnly_btn.Click += ReadOnly_btn_Click;
             ReadOnly_btn_Click(null, null);
@@ -472,6 +471,7 @@ namespace RauViet.ui
             else
                 createNew(employeeCode, workDate, startTime, endTime, overtimeAttendanceID, note, updatedHistory);
 
+            SQLStore.Instance.removeAttendamce(workDate.Month, workDate.Year);
         }
 
         private void NewBtn_Click(object sender, EventArgs e)

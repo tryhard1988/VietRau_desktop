@@ -201,24 +201,21 @@ namespace RauViet.ui
                 // Nếu chưa chọn gì thì hiển thị toàn bộ
                 dataGV.DataSource = mOrdersTotal_dt;
             }
-        }
-
-        private void dataGV_RowPrePaint(object sender, DataGridViewRowPrePaintEventArgs e)
-        {
-            if (e.RowIndex % 2 == 0)
-            {
-                dataGV.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.Beige;
-            }
-        }        
+        }     
         
         private async void saveBtn_Click(object sender, EventArgs e)
         {
             ExportGroupedByCustomer(dataGV);
         }
 
-        private void ExportGroupedByCustomer(DataGridView dgv)
+        private async void ExportGroupedByCustomer(DataGridView dgv)
         {
             if (exportCode_cbb.SelectedItem == null) return;
+
+            loadingOverlay = new LoadingOverlay(this);
+            loadingOverlay.Message = "Đang xử lý ...";
+            loadingOverlay.Show();
+            await Task.Delay(100);
 
             string exportCode = ((DataRowView)exportCode_cbb.SelectedItem)["ExportCode"].ToString();
             string exportCodeIndex = ((DataRowView)exportCode_cbb.SelectedItem)["ExportCodeIndex"].ToString();
@@ -233,6 +230,8 @@ namespace RauViet.ui
                 }
                 else
                 {
+                    await Task.Delay(200);
+                    loadingOverlay.Hide();
                     return; // Người dùng bấm Cancel
                 }
             }
@@ -276,13 +275,14 @@ namespace RauViet.ui
             }
 
             MessageBox.Show("Xuất xong tất cả khách hàng!");
+            await Task.Delay(200);
+            loadingOverlay.Hide();
         }
 
         private void ExportDataTableToExcel(DataTable dt, string customerName, string exportCode, string filePath)
-        {
+        {            
             try
             {
-
                 DateTime exportDate = Convert.ToDateTime(((DataRowView)exportCode_cbb.SelectedItem)["ExportDate"]);
 
                 using (var wb = new XLWorkbook())
@@ -637,7 +637,7 @@ namespace RauViet.ui
             {
                 Console.WriteLine("Lỗi khi xuất Excel: " + ex.Message);
                 MessageBox.Show("Lỗi khi xuất Excel: " + ex.Message);
-            }
+            }            
         }
 
     }

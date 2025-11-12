@@ -116,9 +116,9 @@ namespace RauViet.ui
             this.panel2.Controls.Add(this.panel4);
             this.panel2.Controls.Add(this.panel3);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel2.Location = new System.Drawing.Point(787, 0);
+            this.panel2.Location = new System.Drawing.Point(677, 0);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(297, 681);
+            this.panel2.Size = new System.Drawing.Size(407, 681);
             this.panel2.TabIndex = 14;
             // 
             // panel4
@@ -128,7 +128,7 @@ namespace RauViet.ui
             this.panel4.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panel4.Location = new System.Drawing.Point(0, 328);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(297, 353);
+            this.panel4.Size = new System.Drawing.Size(407, 353);
             this.panel4.TabIndex = 15;
             // 
             // cartonSizeGV
@@ -140,7 +140,7 @@ namespace RauViet.ui
             this.cartonSizeGV.Location = new System.Drawing.Point(0, 16);
             this.cartonSizeGV.Name = "cartonSizeGV";
             this.cartonSizeGV.ReadOnly = true;
-            this.cartonSizeGV.Size = new System.Drawing.Size(297, 337);
+            this.cartonSizeGV.Size = new System.Drawing.Size(407, 337);
             this.cartonSizeGV.TabIndex = 14;
             // 
             // label2
@@ -162,7 +162,7 @@ namespace RauViet.ui
             this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel3.Location = new System.Drawing.Point(0, 0);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(297, 681);
+            this.panel3.Size = new System.Drawing.Size(407, 681);
             this.panel3.TabIndex = 14;
             // 
             // cusOrderGV
@@ -174,7 +174,7 @@ namespace RauViet.ui
             this.cusOrderGV.Location = new System.Drawing.Point(0, 16);
             this.cusOrderGV.Name = "cusOrderGV";
             this.cusOrderGV.ReadOnly = true;
-            this.cusOrderGV.Size = new System.Drawing.Size(297, 665);
+            this.cusOrderGV.Size = new System.Drawing.Size(407, 665);
             this.cusOrderGV.TabIndex = 12;
             // 
             // label1
@@ -198,7 +198,7 @@ namespace RauViet.ui
             this.dataGV.Location = new System.Drawing.Point(0, 0);
             this.dataGV.Name = "dataGV";
             this.dataGV.ReadOnly = true;
-            this.dataGV.Size = new System.Drawing.Size(787, 681);
+            this.dataGV.Size = new System.Drawing.Size(677, 681);
             this.dataGV.TabIndex = 15;
             // 
             // INVOICE

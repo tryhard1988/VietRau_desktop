@@ -394,7 +394,7 @@ namespace RauViet.ui
             // 
             this.label15.AutoSize = true;
             this.label15.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label15.Location = new System.Drawing.Point(531, 13);
+            this.label15.Location = new System.Drawing.Point(6, 9);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(66, 16);
             this.label15.TabIndex = 62;
@@ -402,22 +402,22 @@ namespace RauViet.ui
             // 
             // search_tb
             // 
-            this.search_tb.BackColor = System.Drawing.SystemColors.InactiveBorder;
+            this.search_tb.BackColor = System.Drawing.Color.DarkSeaGreen;
             this.search_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.search_tb.Location = new System.Drawing.Point(603, 9);
+            this.search_tb.Location = new System.Drawing.Point(78, 5);
             this.search_tb.Name = "search_tb";
             this.search_tb.Size = new System.Drawing.Size(252, 23);
             this.search_tb.TabIndex = 61;
             // 
             // panel2
             // 
-            this.panel2.BackColor = System.Drawing.SystemColors.ActiveBorder;
+            this.panel2.BackColor = System.Drawing.SystemColors.Control;
             this.panel2.Controls.Add(this.search_tb);
             this.panel2.Controls.Add(this.label15);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel2.Location = new System.Drawing.Point(0, 0);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(861, 42);
+            this.panel2.Size = new System.Drawing.Size(861, 36);
             this.panel2.TabIndex = 63;
             // 
             // dataGV
@@ -426,10 +426,10 @@ namespace RauViet.ui
             this.dataGV.AllowUserToDeleteRows = false;
             this.dataGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGV.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dataGV.Location = new System.Drawing.Point(0, 42);
+            this.dataGV.Location = new System.Drawing.Point(0, 36);
             this.dataGV.Name = "dataGV";
             this.dataGV.ReadOnly = true;
-            this.dataGV.Size = new System.Drawing.Size(861, 639);
+            this.dataGV.Size = new System.Drawing.Size(861, 645);
             this.dataGV.TabIndex = 64;
             // 
             // ProductList

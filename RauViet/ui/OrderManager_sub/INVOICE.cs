@@ -200,8 +200,8 @@ namespace RauViet.ui
             dataGV.Columns["OrderPackingPriceCNF"].HeaderText = "Price (CHF)";
             dataGV.Columns["AmountCHF"].HeaderText = "Amount (CHF)";
 
-            dataGV.Columns["AmountCHF"].DefaultCellStyle.Format = "N2";
-            dataGV.Columns["Quantity"].DefaultCellStyle.Format = "N2";
+            dataGV.Columns["AmountCHF"].DefaultCellStyle.Format = "N3";
+            dataGV.Columns["Quantity"].DefaultCellStyle.Format = "N3";
 
             dataGV.Columns["Priority"].HeaderText = "Ưu\nTiên";
 
@@ -244,15 +244,14 @@ namespace RauViet.ui
             cusOrderGV.Columns["FullName"].HeaderText = "MARK";
             cusOrderGV.Columns["NWReal"].HeaderText = "N.W";
             cusOrderGV.Columns["AmountCHF"].HeaderText = "Amount\nCHF";
-            cusOrderGV.Columns["CNTS"].HeaderText = "CTNS";
 
             cusOrderGV.Columns["No"].Width = 30;
             cusOrderGV.Columns["CNTS"].Width = 40;
-            cusOrderGV.Columns["NWReal"].Width = 40;
-            cusOrderGV.Columns["AmountCHF"].Width = 50;
-            cusOrderGV.Columns["FullName"].Width = 90;
+            cusOrderGV.Columns["NWReal"].Width = 70;
+            cusOrderGV.Columns["AmountCHF"].Width = 70;
+            cusOrderGV.Columns["FullName"].Width = 100;
 
-
+            cusOrderGV.Columns["AmountCHF"].DefaultCellStyle.Format = "N3";
         }
 
         private void showCartonOrderGV()
@@ -271,10 +270,10 @@ namespace RauViet.ui
             cartonSizeGV.Columns["CountCarton"].HeaderText = "Quantity";
 
             cartonSizeGV.Columns["No"].Width = 30;
-            cartonSizeGV.Columns["weight"].Width = 50;
+            cartonSizeGV.Columns["Weight"].Width = 60;
             cartonSizeGV.Columns["CountCarton"].Width = 50;
             cartonSizeGV.Columns["CartonSize"].Width = 120;
-
+            
             count = 1;
             foreach (DataRow dr in mCartonOrdersTotal_dt.Rows)
             {
@@ -336,11 +335,14 @@ namespace RauViet.ui
             ExportDataGVToExcel(dataGV);
         }
 
-
-
-        private void ExportDataGVToExcel(DataGridView dgv)
+        private async void ExportDataGVToExcel(DataGridView dgv)
         {
             if (exportCode_cbb.SelectedItem == null) return;
+
+            loadingOverlay = new LoadingOverlay(this);
+            loadingOverlay.Message = "Đang xử lý ...";
+            loadingOverlay.Show();
+            await Task.Delay(100);
 
             string exportCode = ((DataRowView)exportCode_cbb.SelectedItem)["ExportCode"].ToString();
             int exportCodeIndex = Convert.ToInt32(((DataRowView)exportCode_cbb.SelectedItem)["ExportCodeIndex"]);
@@ -592,8 +594,8 @@ namespace RauViet.ui
                             {
                                 if (decimal.TryParse(cellValue, out decimal num))
                                 {
-                                    cell.Value = Math.Round(num, 2);
-                                    cell.Style.NumberFormat.Format = "0.00";
+                                    cell.Value = Math.Round(num, 3);
+                                    cell.Style.NumberFormat.Format = "0.000";
                                     totalNWReal += num;
                                 }
                             }
@@ -602,9 +604,9 @@ namespace RauViet.ui
                             {
                                 if (decimal.TryParse(cellValue, out decimal num))
                                 {
-                                    cell.Value = Math.Round(num, 2);
-                                    cell.Style.NumberFormat.Format = "0.00";
-                                    totalAmount += num;
+                                    cell.Value = Math.Round(num, 3);
+                                    cell.Style.NumberFormat.Format = "0.000";
+                                    totalAmount += Math.Round(num, 3);
                                 }
                             }
 
@@ -612,8 +614,8 @@ namespace RauViet.ui
                             {
                                 if (decimal.TryParse(cellValue, out decimal num))
                                 {
-                                    cell.Value = Math.Round(num, 2);
-                                    cell.Style.NumberFormat.Format = "0.00";
+                                    cell.Value = Math.Round(num, 3);
+                                    cell.Style.NumberFormat.Format = "0.000";
                                 }
                             }
 
@@ -647,12 +649,12 @@ namespace RauViet.ui
                     int nwOtherColIndex = exportColumns.FindIndex(c => c.Name == "NWReal") + 1;
                     int nwAmountColIndex = exportColumns.FindIndex(c => c.Name == "AmountCHF") + 1;
 
-                    ws.Range(totalRow, 1, totalRow, 2).Merge();
+                    ws.Range(totalRow, 1, totalRow, 3).Merge();
                     ws.Cell(totalRow, 1).Value = "TOTAL";
                     ws.Cell(totalRow, 1).Style.Font.Bold = true;
                     ws.Cell(totalRow, 1).Style.Font.FontSize = 10;
                     ws.Cell(totalRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
-                    ws.Range(totalRow, 1, totalRow, 2).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                    ws.Range(totalRow, 1, totalRow, 3).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
 
                     ws.Cell(totalRow, nwOtherColIndex).Value = totalNWReal;
                     ws.Cell(totalRow, nwOtherColIndex).Style.NumberFormat.Format = "#,##0.00";
@@ -752,7 +754,7 @@ namespace RauViet.ui
                     ws.Column(2).Width += 3;
                     ws.Column(3).Width += 3;
                     ws.Column(4).Width += 3;
-                    ws.Column(5).Width = 8.5;
+                    ws.Column(5).Width = 12.4;
                     ws.Column(6).Width = 8.5;
                     ws.Column(7).Width = 8.5;
                     ws.Column(8).Width = 8.5;
@@ -829,7 +831,7 @@ namespace RauViet.ui
                             else if (col.Name == "NWReal")
                             {
                                 cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
-                                cell.Style.NumberFormat.Format = "#,##0.00 \"kg\"";
+                                cell.Style.NumberFormat.Format = "#,##0.000 \"kg\"";
 
                                 if (decimal.TryParse(cellValue, out decimal num))
                                 {
@@ -840,10 +842,10 @@ namespace RauViet.ui
                             else if (col.Name == "AmountCHF")
                             {
                                 cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
-                                cell.Style.NumberFormat.Format = "#,##0";
+                                cell.Style.NumberFormat.Format = "#,##0.000";
                                 if (decimal.TryParse(cellValue, out decimal num))
                                 {
-                                    cell.Value = Math.Round(num, 2);
+                                    cell.Value = Math.Round(num, 3);
                                     totalAmount1 += num;
                                 }
                             }
@@ -863,11 +865,12 @@ namespace RauViet.ui
                     int amountColIndex = export1Columns.FindIndex(c => c.Name == "AmountCHF") + 2;
                     int CTNSColIndex = export1Columns.FindIndex(c => c.Name == "CNTS") + 2;
 
+                    ws.Range(totalRow1, 2, totalRow1, 3).Merge();
                     ws.Cell(totalRow1, 2).Value = "TOTAL";
                     ws.Cell(totalRow1, 2).Style.Font.Bold = true;
                     ws.Cell(totalRow1, 2).Style.Font.FontSize = 10;
-                    ws.Cell(totalRow1, 2).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
-                    ws.Range(totalRow1, 2, totalRow1, 2).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                    ws.Cell(totalRow1, 2).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    ws.Range(totalRow1, 2, totalRow1, 3).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
 
                     ws.Cell(totalRow1, nwColIndex).Value = totalNW1;
                     ws.Cell(totalRow1, nwColIndex).Style.NumberFormat.Format = "#,##0.00";
@@ -900,7 +903,22 @@ namespace RauViet.ui
                         if (sfd.ShowDialog() == DialogResult.OK)
                         {
                             wb.SaveAs(sfd.FileName);
-                            MessageBox.Show("thành công\n" + sfd.FileName);
+                            DialogResult result = MessageBox.Show("Bạn có muốn mở file này không?", "Lưu file thành công", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                            if (result == DialogResult.Yes)
+                            {
+                                try
+                                {
+                                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo()
+                                    {
+                                        FileName = sfd.FileName,
+                                        UseShellExecute = true
+                                    });
+                                }
+                                catch (Exception ex)
+                                {
+                                    MessageBox.Show("Không thể mở file: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                }
+                            }
                         }
                     }
 
@@ -911,6 +929,12 @@ namespace RauViet.ui
             {
                 MessageBox.Show("Lỗi khi xuất Excel: " + ex.Message);
             }
+            finally
+            {
+                await Task.Delay(200);
+                loadingOverlay.Hide();
+            }
+
         }
     }
 }

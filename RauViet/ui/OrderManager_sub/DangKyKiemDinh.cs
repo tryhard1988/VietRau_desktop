@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using RauViet.classes;
@@ -168,14 +167,7 @@ namespace RauViet.ui
                 dataGV_DK.DataSource = mOrdersTotal_dt;
             }
         }
-
-        private void dataGV_RowPrePaint(object sender, DataGridViewRowPrePaintEventArgs e)
-        {
-            if (e.RowIndex % 2 == 0)
-            {
-                dataGV_DK.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.Beige;
-            }
-        }        
+      
         
         private async void saveBtn_Click(object sender, EventArgs e)
         {
@@ -184,9 +176,14 @@ namespace RauViet.ui
 
 
 
-        private void ExportDataGridViewToExcel(DataGridView dgv)
+        private async void ExportDataGridViewToExcel(DataGridView dgv)
         {
             if (exportCode_cbb.SelectedItem == null) return;
+
+            loadingOverlay = new LoadingOverlay(this);
+            loadingOverlay.Message = "Đang xử lý ...";
+            loadingOverlay.Show();
+            await Task.Delay(100);
 
             DataView currentView = (DataView)dgv.DataSource;
             currentView.Sort = "Priority ASC";
@@ -494,7 +491,22 @@ namespace RauViet.ui
                         if (sfd.ShowDialog() == DialogResult.OK)
                         {
                             wb.SaveAs(sfd.FileName);
-                            MessageBox.Show("thành công\n" + sfd.FileName);
+                            DialogResult result = MessageBox.Show("Bạn có muốn mở file này không?", "Lưu file thành công", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                            if (result == DialogResult.Yes)
+                            {
+                                try
+                                {
+                                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo()
+                                    {
+                                        FileName = sfd.FileName,
+                                        UseShellExecute = true
+                                    });
+                                }
+                                catch (Exception ex)
+                                {
+                                    MessageBox.Show("Không thể mở file: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                }
+                            }
                         }
                     }
                 }
@@ -502,6 +514,11 @@ namespace RauViet.ui
             catch (Exception ex)
             {
                 MessageBox.Show("Lỗi khi xuất Excel: " + ex.Message);
+            }
+            finally
+            {
+                await Task.Delay(200);
+                loadingOverlay.Hide();
             }
         }
 

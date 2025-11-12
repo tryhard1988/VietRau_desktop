@@ -37,14 +37,17 @@ public class DeliveryPrinter
         g.DrawString(text, font, Brushes.Black, rect, format);
     }
 
-    public void PrintPreview()
+    public void PrintPreview(Form owner)
     {
         rowIndex = 0; // reset trước khi in
         PrintDocument pd = new PrintDocument();
+
         pd.PrintPage += Pd_PrintPage;
         PrintPreviewDialog preview = new PrintPreviewDialog();
         preview.Document = pd;
-        preview.ShowDialog();
+        preview.Width = 1123;
+        preview.Height = 794;
+        preview.ShowDialog(owner);
     }
 
     public void PrintDirect()

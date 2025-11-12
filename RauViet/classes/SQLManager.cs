@@ -835,30 +835,14 @@ namespace RauViet.classes
             using (SqlConnection con = new SqlConnection(ql_kho_conStr))
             {
                 await con.OpenAsync();
-                string query = @"SELECT 
-                                    p.GroupProduct,
-                                    o.ExportCodeID,
-                                    MIN(p.ProductNameVN) AS ProductNameVN,
-                                    MIN(p.ProductNameEN) AS ProductNameEN,
-                                    MIN(p.BotanicalName) AS BotanicalName,
-                                    MIN(p.PlantingAreaCode) AS PlantingAreaCode,
-                                    MIN(p.Priority) AS Priority,
-                                    SUM(o.NetWeightFinal) AS NetWeightFinal
-                                FROM OrdersTotal o
-                                INNER JOIN ProductPacking pp ON o.ProductPackingID = pp.ProductPackingID
-                                INNER JOIN ProductSKU p ON pp.SKU = p.SKU
-                                INNER JOIN ExportCodes e ON o.ExportCodeID = e.ExportCodeID
-                                WHERE e.Complete = 0 AND p.Priority <> 200000
-                                GROUP BY 
-                                    p.GroupProduct,
-                                    o.ExportCodeID
-                                ORDER BY 
-                                    MAX(p.Priority) ASC;
-                                ";
-                using (SqlCommand cmd = new SqlCommand(query, con))
-                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                using (SqlCommand cmd = new SqlCommand("SP_GetOrdersPhyto", con))
                 {
-                    dt.Load(reader);
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
                 }
             }
             return dt;
@@ -912,25 +896,15 @@ namespace RauViet.classes
             using (SqlConnection con = new SqlConnection(ql_kho_conStr))
             {
                 await con.OpenAsync();
-                string query = @"SELECT
-                                    o.ExportCodeID,
-                                    o.CartonSize,
-                                    COUNT(DISTINCT NULLIF(LTRIM(RTRIM(o.CartonNo)), '')) AS CountCarton
-                                FROM Orders o
-                                INNER JOIN ExportCodes ec
-                                    ON o.ExportCodeID = ec.ExportCodeID
-                                WHERE ec.Complete = 0
-                                GROUP BY
-                                    o.ExportCodeID,
-                                    o.CartonSize
-                                ORDER BY
-                                    o.ExportCodeID,
-                                    o.CartonSize;";
 
-                using (SqlCommand cmd = new SqlCommand(query, con))
-                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                using (SqlCommand cmd = new SqlCommand("SP_GetCartonCountByExportCode", con))
                 {
-                    dt.Load(reader);
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
                 }
             }
             return dt;
@@ -1006,7 +980,6 @@ namespace RauViet.classes
                 return false;
             }
         }
-
 
         public async Task<DataTable> GetDetailPackingTotalByExportCode_incompleteAsync()
         {
@@ -4012,5 +3985,28 @@ namespace RauViet.classes
                 Console.WriteLine($"Error Auto Update ExportCode: {ex.Message}");
             }
         }
+
+        public async Task<bool> deleteOrderNotUseAsync(int exportCodeID)
+        {
+            string query = @"DELETE FROM Orders
+                                    WHERE (PCSReal IS NULL OR PCSReal <= 0)
+                                        AND (NWReal IS NULL OR NWReal <= 0)
+                                        AND (CartonSize IS NULL OR LTRIM(RTRIM(CartonSize)) = '')
+                                        AND ExportCodeID = @ExportCodeID;";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+                return true;
+            }
+            catch { return false; }
+        }
+
     }
 }

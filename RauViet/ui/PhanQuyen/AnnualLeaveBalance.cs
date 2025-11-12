@@ -15,10 +15,9 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
 
 namespace RauViet.ui
 {
-    public partial class AnnualLeaveBalance : Form, ICanSave
+    public partial class AnnualLeaveBalance : Form
     {
         DataTable mEmployee_dt;
-        private bool _dataChanged = false;
         // DataTable mShift_dt;
         public AnnualLeaveBalance()
         {
@@ -42,14 +41,16 @@ namespace RauViet.ui
             status_lb.Text = "";
 
             dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-
-            LuuThayDoiBtn.Click += saveBtn_Click;
+            dataGV.CellFormatting += DataGV_CellFormatting;
             dataGV.SelectionChanged += this.dataGV_CellClick;
             year_tb.KeyPress += Tb_KeyPress_OnlyNumber;
 
             load_btn.Click += Load_btn_Click;
             capphep_btn.Click += Capphep_btn_Click;
+
+            dataGV.CellEndEdit += DataGV_CellEndEdit; ;
         }
+
 
         public async void ShowData()
         {
@@ -148,8 +149,15 @@ namespace RauViet.ui
 
         private void Capphep_btn_Click(object sender, EventArgs e)
         {
+
             int year = Convert.ToInt32(year_tb.Text);
             int month = Convert.ToInt32(month_cbb.SelectedItem);
+
+            DialogResult dialogResult = MessageBox.Show($"Cấp phép tháng {month}/{year} cho toàn bộ nhân viên ?", "Cập Nhật Tồn Phép", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (dialogResult != DialogResult.Yes)
+                return;
+                
 
             foreach (DataRow dr in mEmployee_dt.Rows)
             {
@@ -180,7 +188,7 @@ namespace RauViet.ui
                 dr["RemainingLeave"] = monthList.Count - Convert.ToInt32(dr["LeaveCount"]);
             }
 
-            _dataChanged = true;
+            SaveData(false);
         }
 
         private async void Load_btn_Click(object sender, EventArgs e)
@@ -188,6 +196,7 @@ namespace RauViet.ui
             await Task.Delay(50);
             LoadingOverlay loadingOverlay = new LoadingOverlay(this);
             loadingOverlay.Show();
+            await Task.Delay(50);
 
             int year = Convert.ToInt32(year_tb.Text);
             var annualLeaveBalance = SQLStore.Instance.GetAnnualLeaveBalanceAsync(year);            
@@ -196,7 +205,7 @@ namespace RauViet.ui
 
             DefineEmployeeGV();
 
-            await Task.Delay(100);
+            await Task.Delay(500);
             loadingOverlay.Hide();
         }
 
@@ -218,15 +227,8 @@ namespace RauViet.ui
             string employeeCode = cells["EmployeeCode"].Value.ToString();
         }
 
-        private async void saveBtn_Click(object sender, EventArgs e)
-        {
-            SaveData(false);
-        }
-
         public async void SaveData(bool ask = true)
         {
-            if (!_dataChanged && ask) return;
-
             List<(string EmployeeCode, int year, string month)> albData = new List<(string, int, string)>();
 
             foreach (DataRow dr in mEmployee_dt.Rows)
@@ -239,29 +241,71 @@ namespace RauViet.ui
 
             }
 
-            DialogResult dialogResult = MessageBox.Show($"Sai Là Không sửa lại được đâu đó ?", "Cập Nhật Tồn Phép", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-
-            if (dialogResult == DialogResult.Yes)
+            try
             {
+                Boolean iSuccess = await SQLManager.Instance.UpsertAnnualLeaveBalanceBatchAsync(albData);
+                if (iSuccess)
+                {
+                    status_lb.Text = "Thành Công.";
+                    status_lb.ForeColor = Color.Green;
+                }
+                else
+                {
+                    status_lb.Text = "";
+                    MessageBox.Show("Thất Bại", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            catch
+            {
+                status_lb.Text = "";
+                MessageBox.Show("Thất Bại", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            
+        }
+
+        private void DataGV_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            if (e.RowIndex < 0) return;
+
+            if (dataGV.Columns[e.ColumnIndex].Name == "Month")
+            {
+                e.CellStyle.BackColor = System.Drawing.Color.LightGray;
+            }
+        }
+
+        private async void DataGV_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
+            {
+                var row = dataGV.Rows[e.RowIndex];
+
+                List<(string EmployeeCode, int year, string month)> albData = new List<(string, int, string)>();
+                string employeeCode = Convert.ToString(row.Cells["EmployeeCode"].Value);
+                int year = Convert.ToInt32(row.Cells["Year"].Value);
+                string months = Convert.ToString(row.Cells["Month"].Value);
+
+                albData.Add((employeeCode, year, months));
+
                 try
                 {
                     Boolean iSuccess = await SQLManager.Instance.UpsertAnnualLeaveBalanceBatchAsync(albData);
                     if (iSuccess)
                     {
-                        MessageBox.Show("Cập Nhật Thành Công Rồi Đó", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        _dataChanged = false;
+                        status_lb.Text = "Thành Công.";
+                        status_lb.ForeColor = Color.Green;
                     }
                     else
                     {
+                        status_lb.Text = "";
                         MessageBox.Show("Thất Bại", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
                 catch
                 {
+                    status_lb.Text = "";
                     MessageBox.Show("Thất Bại", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
-            
         }
     }
 }

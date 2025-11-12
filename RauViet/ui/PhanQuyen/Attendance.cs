@@ -20,6 +20,8 @@ namespace RauViet.ui
         DataTable mAttendamce_dt, mEmployee_dt, mHoliday_dt;
         Dictionary<string, (string PositionCode, string ContractTypeCode)> employeeDict;
         LoadingOverlay loadingOverlay;
+        int mCurrentMonth = -1;
+        int mCurrentYear = -1;
         public Attendance()
         {
             InitializeComponent();
@@ -53,11 +55,13 @@ namespace RauViet.ui
 
             status_lb.Text = "";
 
-            LuuThayDoiBtn.Click += saveBtn_Click;
             dataGV.SelectionChanged += this.dataGV_CellClick;
             attendanceGV.CellFormatting += AttandaceGV_CellFormatting;
             attendanceGV.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.attendanceGV_EditingControlShowing);
             year_tb.KeyPress += Tb_KeyPress_OnlyNumber;
+
+            attendanceGV.CellBeginEdit += AttendanceGV_CellBeginEdit;
+            attendanceGV.CellEndEdit += AttendanceGV_CellEndEdit;
 
             excelAttendance_btn.Click += ExcelAttendance_btn_Click;                       
 
@@ -65,6 +69,7 @@ namespace RauViet.ui
             calWorkHour_btn.Click += CalWorkHour_btn_Click;
         }
 
+        
 
         public async void ShowData()
         {
@@ -91,6 +96,9 @@ namespace RauViet.ui
                 mEmployee_dt = employeesTask.Result;
                 mAttendamce_dt = attendamceTask.Result;
                 mHoliday_dt = holidayTask.Result;
+
+                mCurrentMonth = month;
+                mCurrentYear = year;
 
                 employeeDict = mEmployee_dt.AsEnumerable()
                                 .ToDictionary(
@@ -169,11 +177,11 @@ namespace RauViet.ui
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
-                LuuThayDoiBtn.Visible = !isLock;
                 calWorkHour_btn.Visible = !isLock;
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Error: " + ex.Message);
                 status_lb.Text = "Thất bại.";
                 status_lb.ForeColor = Color.Red;
             }
@@ -208,7 +216,6 @@ namespace RauViet.ui
                 UpdateRightUI(selectedIndex);
             }
 
-            LuuThayDoiBtn.Visible = !isLock;
             calWorkHour_btn.Visible = !isLock;
 
         }
@@ -222,7 +229,7 @@ namespace RauViet.ui
             }
         }
 
-        private void AttandaceGV_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        private async void AttandaceGV_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
             if (e.RowIndex < 0) return;
             
@@ -231,6 +238,27 @@ namespace RauViet.ui
             {
                 e.CellStyle.BackColor = System.Drawing.Color.LightGray;
             }
+            else if (attendanceGV.Columns[e.ColumnIndex].Name == "DayOfWeek")
+            {
+                if (e.Value != null && e.Value.ToString() == "CN")
+                {
+                    e.CellStyle.BackColor = Color.LightPink;
+                    e.CellStyle.ForeColor = Color.Red;
+                }
+            }
+            else if (attendanceGV.Columns[e.ColumnIndex].Name == "WorkDate")
+            {
+                if (e.Value != null)
+                {
+                    bool isHoliday = mHoliday_dt.AsEnumerable().Any(r => r.Field<DateTime>("HolidayDate").Date == Convert.ToDateTime(e.Value).Date);
+                    if (isHoliday)
+                    {
+                        e.CellStyle.BackColor = Color.LightPink;
+                        e.CellStyle.ForeColor = Color.Red;
+                    }
+                }
+            }
+
         }
 
         private void attendanceGV_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
@@ -267,175 +295,195 @@ namespace RauViet.ui
 
         private async void ExcelAttendance_btn_Click(object sender, EventArgs e)
         {
-            using (OpenFileDialog ofd = new OpenFileDialog())
+            loadingOverlay = new LoadingOverlay(this);
+            loadingOverlay.Message = "Đang xử lý ...";
+            loadingOverlay.Show();
+            await Task.Delay(100);
+            try
             {
-                ofd.Title = "Chọn file Excel";
-                ofd.Filter = "Excel Files|*.xlsx;*.xls|All Files|*.*";
-                ofd.Multiselect = false; // chỉ cho chọn 1 file
-
-                if (ofd.ShowDialog() == DialogResult.OK)
+                using (OpenFileDialog ofd = new OpenFileDialog())
                 {
-                    string filePath = ofd.FileName;
-                    DataTable excelData = Utils.LoadExcel_NoHeader(filePath);
+                    ofd.Title = "Chọn file Excel";
+                    ofd.Filter = "Excel Files|*.xlsx;*.xls|All Files|*.*";
+                    ofd.Multiselect = false; // chỉ cho chọn 1 file
 
-                    List<(string EmployeeCode, DateTime WorkDate, double WorkingHours, string Note, string log)> attendanceData = new List<(string, DateTime, double, string, string)>();
-
-                    TimeSpan startTime_Morning = new TimeSpan(9, 30, 0);
-                    TimeSpan startTime_AfterNoon_1 = new TimeSpan(12, 30, 0);
-                    TimeSpan startTime_AfterNoon_2 = new TimeSpan(13, 30, 0);
-                    int month = -1;
-                    int year = -1;
-                                        
-                    foreach (DataRow edr in excelData.Rows)
+                    if (ofd.ShowDialog() == DialogResult.OK)
                     {
-                        int employeeID = Convert.ToInt32(edr["Column1"]);
-                        string employeeCode = $"VR{employeeID:D4}";
-                        if (!employeeDict.ContainsKey(employeeCode))
-                            continue;
+                        string filePath = ofd.FileName;
+                        DataTable excelData = Utils.LoadExcel_NoHeader(filePath);
 
-                        string positionCode = employeeDict[employeeCode].PositionCode;
-                        string contractTypeCode = employeeDict[employeeCode].ContractTypeCode;
+                        List<(string EmployeeCode, DateTime WorkDate, double WorkingHours, string Note, string log)> attendanceData = new List<(string, DateTime, double, string, string)>();
 
-                        DateTime workDate = Convert.ToDateTime(edr["Column2"]).Date;
-                        
+                        TimeSpan startTime_Morning = new TimeSpan(9, 30, 0);
+                        TimeSpan startTime_AfterNoon = new TimeSpan(13, 20, 0);
+                        int month = -1;
+                        int year = -1;
 
-                        if((month != -1 && month != workDate.Month) ||
-                            year != -1 && year != workDate.Year)
+                        foreach (DataRow edr in excelData.Rows)
                         {
-                            month = -1;
-                            break;
-                        }
-                        else
-                        {
-                            if(month == -1)
-                            {
-                                var holidayTask = SQLManager.Instance.GetHolidayAsync(workDate.Month, workDate.Year);
-                                await Task.WhenAll(holidayTask);
-                                mHoliday_dt = holidayTask.Result;
-                            }
-                            month = workDate.Month;
-                            year = workDate.Year;
-                        }
-                        bool isWork_Morning = false;
-                        bool isWork_Afternoon = false;
+                            int employeeID = Convert.ToInt32(edr["Column1"]);
+                            string employeeCode = $"VR{employeeID:D4}";
+                            if (!employeeDict.ContainsKey(employeeCode))
+                                continue;
 
-                        string log = "";
-                        for (int colIndex = 2; colIndex < excelData.Columns.Count; colIndex++)
-                        {
-                            var cellValue = edr[colIndex];
-                            if (cellValue != null && cellValue != DBNull.Value)
-                            {
-                                if (TimeSpan.TryParse(cellValue.ToString(), out TimeSpan checkInTime))
-                                {
-                                    if (log.CompareTo("") != 0) log += " => ";
-                                    log += checkInTime;
+                            string positionCode = employeeDict[employeeCode].PositionCode;
+                            string contractTypeCode = employeeDict[employeeCode].ContractTypeCode;
 
-                                    if (checkInTime < startTime_Morning)
-                                        isWork_Morning = true;
-                                    else if (checkInTime > startTime_AfterNoon_2)
-                                        isWork_Afternoon = true;
-                                }
-                            }
-                            else
+                            DateTime workDate = Convert.ToDateTime(edr["Column3"]).Date;
+
+
+                            if ((month != -1 && month != workDate.Month) ||
+                                year != -1 && year != workDate.Year)
                             {
+                                month = -1;
                                 break;
                             }
-                        }
-
-                        float workingHours = 0;
-                        bool isSunDay = workDate.DayOfWeek == DayOfWeek.Sunday;
-                        bool isHoliday = mHoliday_dt.AsEnumerable().Any(r => r.Field<DateTime>("HolidayDate").Date == workDate.Date);
-                        string note = "";
-                        if (positionCode.CompareTo("bao_ve") == 0)
-                        {
-                            workingHours = 12f;
-                        }
-                        else if (isHoliday) {
-                            workingHours = 0;
-                            note = "NL";
-                        }
-                        else if (!isSunDay) { 
-                            if (contractTypeCode.CompareTo("t_vu") == 0)
-                            {
-                                workingHours = 8f;
-                            }
                             else
                             {
-                                if (isWork_Morning) workingHours += 4.5f;
-                                if (isWork_Afternoon) workingHours += 3.5f;
-                            }
-
-                        }
-                        attendanceData.Add((employeeCode, workDate, workingHours, note, log));
-                    }
-
-
-
-                    if (month == -1 || year == -1)
-                    {
-                        MessageBox.Show("Dữ Liệu Ngày Làm Có Vấn Đề Hoặc File Đang Mở ?", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                    else
-                    {
-                        bool isLock = await SQLStore.Instance.IsSalaryLockAsync(month, year);
-                        if (isLock)
-                        {
-                            MessageBox.Show($"File Excel Là Dữ Liệu Của Tháng {month}/{year} \n Nhưng Tháng Này Đã Bị Khóa Rồi ?", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            return;
-                        }
-                        //tạo dữ liệu cho nhân viên thời vụ
-                        var thoiVuList = employeeDict
-                                            .Where(kv => kv.Value.ContractTypeCode.Equals("thoi_vu", StringComparison.OrdinalIgnoreCase))
-                                            .Select(kv => kv.Key) // chỉ lấy EmployeeCode
-                                            .ToList();
-
-                        int daysInMonth = DateTime.DaysInMonth(year, month);
-
-                        foreach (var employeeCode in thoiVuList)
-                        {
-                            for(int day = 1; day <= daysInMonth; day++)
-                            {
-                                var workDate = new DateTime(year, month, day);
-                                if(workDate.DayOfWeek != DayOfWeek.Sunday)
+                                if (month == -1)
                                 {
-                                    attendanceData.Add((employeeCode, workDate, 8, "", ""));
+                                    var holidayTask = SQLManager.Instance.GetHolidayAsync(workDate.Month, workDate.Year);
+                                    await Task.WhenAll(holidayTask);
+                                    mHoliday_dt = holidayTask.Result;
                                 }
+                                month = workDate.Month;
+                                year = workDate.Year;
                             }
-                        }
+                            bool isWork_Morning = false;
+                            bool isWork_Afternoon = false;
 
-
-                        DialogResult dialogResult = MessageBox.Show($"File Excel Là Dữ Liệu Của Tháng {month}/{year} \nSai Là Không sửa lại được đâu đó ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-
-                        if (dialogResult == DialogResult.Yes)
-                        {
-                            try
+                            string log = "";
+                            for (int colIndex = 4; colIndex < excelData.Columns.Count; colIndex++)
                             {
-                                
-                                Boolean iSuccess = await SQLManager.Instance.UpsertAttendanceBatchAsync(attendanceData);
-                                if (iSuccess)
+                                var cellValue = edr[colIndex];
+                                if (cellValue != null && cellValue != DBNull.Value)
                                 {
-                                    month_cbb.SelectedItem = month;
-                                    year_tb.Text = year.ToString();
+                                    if (TimeSpan.TryParse(cellValue.ToString(), out TimeSpan checkInTime))
+                                    {
+                                        if (log.CompareTo("") != 0) log += " => ";
+                                        log += checkInTime;
 
-                                    SQLStore.Instance.removeAttendamce(month, year);
-                                    var attendamceTask = SQLStore.Instance.GetAttendamceAsync(null, month, year);
-                                    await Task.WhenAll(attendamceTask);
-                                    mAttendamce_dt = attendamceTask.Result;
-
-                                    Attendamce(month, year);
+                                        if (checkInTime < startTime_Morning)
+                                            isWork_Morning = true;
+                                        else if (checkInTime > startTime_AfterNoon)
+                                            isWork_Afternoon = true;
+                                    }
                                 }
                                 else
                                 {
+                                    break;
+                                }
+                            }
+
+                            float workingHours = 0;
+                            bool isSunDay = workDate.DayOfWeek == DayOfWeek.Sunday;
+                            bool isHoliday = mHoliday_dt.AsEnumerable().Any(r => r.Field<DateTime>("HolidayDate").Date == workDate.Date);
+                            string note = "";
+                            if (positionCode.CompareTo("bao_ve") == 0)
+                            {
+                                workingHours = 12f;
+                            }
+                            else if (isHoliday)
+                            {
+                                workingHours = 0;
+                            }
+                            else if (!isSunDay)
+                            {
+                                if (contractTypeCode.CompareTo("t_vu") == 0)
+                                {
+                                    workingHours = 8f;
+                                }
+                                else
+                                {
+                                    if (isWork_Morning) workingHours += 4.5f;
+                                    if (isWork_Afternoon) workingHours += 3.5f;
+                                }
+
+                            }
+                            attendanceData.Add((employeeCode, workDate, workingHours, note, log));
+                        }
+
+
+
+                        if (month == -1 || year == -1)
+                        {
+                            MessageBox.Show("Dữ Liệu Ngày Làm Có Vấn Đề Hoặc File Đang Mở ?", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                        else
+                        {
+                            bool isLock = await SQLStore.Instance.IsSalaryLockAsync(month, year);
+                            if (isLock)
+                            {
+                                await Task.Delay(200);
+                                loadingOverlay.Hide();
+                                MessageBox.Show($"File Excel Là Dữ Liệu Của Tháng {month}/{year} \n Nhưng Tháng Này Đã Bị Khóa Rồi ?", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                return;
+                            }
+                            //tạo dữ liệu cho nhân viên thời vụ
+                            var thoiVuList = employeeDict
+                                                .Where(kv => kv.Value.ContractTypeCode.Equals("thoi_vu", StringComparison.OrdinalIgnoreCase))
+                                                .Select(kv => kv.Key) // chỉ lấy EmployeeCode
+                                                .ToList();
+
+                            int daysInMonth = DateTime.DaysInMonth(year, month);
+
+                            foreach (var employeeCode in thoiVuList)
+                            {
+                                for (int day = 1; day <= daysInMonth; day++)
+                                {
+                                    var workDate = new DateTime(year, month, day);
+                                    if (workDate.DayOfWeek != DayOfWeek.Sunday)
+                                    {
+                                        attendanceData.Add((employeeCode, workDate, 8, "", ""));
+                                    }
+                                }
+                            }
+
+
+                            DialogResult dialogResult = MessageBox.Show($"File Excel Là Dữ Liệu Của Tháng {month}/{year} \nSai Là Không sửa lại được đâu đó ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+                            if (dialogResult == DialogResult.Yes)
+                            {
+                                try
+                                {
+
+                                    Boolean iSuccess = await SQLManager.Instance.UpsertAttendanceBatchAsync(attendanceData);
+                                    if (iSuccess)
+                                    {
+                                        month_cbb.SelectedItem = month;
+                                        year_tb.Text = year.ToString();
+
+                                        SQLStore.Instance.removeAttendamce(month, year);
+                                        var attendamceTask = SQLStore.Instance.GetAttendamceAsync(null, month, year);
+                                        await Task.WhenAll(attendamceTask);
+                                        mAttendamce_dt = attendamceTask.Result;
+
+                                        Attendamce(month, year);
+                                    }
+                                    else
+                                    {
+                                        MessageBox.Show("Thất Bại ?", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    }
+                                }
+                                catch
+                                {
+                                    await Task.Delay(200);
+                                    loadingOverlay.Hide();
                                     MessageBox.Show("Thất Bại ?", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                 }
                             }
-                            catch
-                            {
-                                MessageBox.Show("Thất Bại ?", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            }
                         }
                     }
+
+                    await Task.Delay(200);
+                    loadingOverlay.Hide();
                 }
+            }
+            catch
+            {
+                MessageBox.Show("Thất Bại ?", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                await Task.Delay(200);
+                loadingOverlay.Hide();
             }
         }
 
@@ -444,7 +492,7 @@ namespace RauViet.ui
             await Task.Delay(50);
             loadingOverlay = new LoadingOverlay(this);
             loadingOverlay.Show();
-
+            await Task.Delay(50);
             int month = Convert.ToInt32(month_cbb.SelectedItem);
             int year = Convert.ToInt32(year_tb.Text);
 
@@ -453,23 +501,36 @@ namespace RauViet.ui
             
             await Task.WhenAll(attendamceTask, holidayTask);
 
+            mCurrentYear = year;
+            mCurrentMonth = month;
+
             mAttendamce_dt = attendamceTask.Result;
             mHoliday_dt = holidayTask.Result;
             Attendamce(month, year);
-            await Task.Delay(100);
+            await Task.Delay(500);
             loadingOverlay.Hide();
         }
 
-        private void dataGV_CellClick(object sender, EventArgs e)
+        private async void dataGV_CellClick(object sender, EventArgs e)
         {
             if (dataGV.CurrentRow == null) return;
             int rowIndex = dataGV.CurrentRow.Index;
-            if (rowIndex < 0)
-                return;
+            if (rowIndex < 0) return;
 
+            string employeeCode = dataGV.Rows[rowIndex].Cells["EmployeeCode"].Value.ToString();
 
-            UpdateRightUI(rowIndex);
+            // Tính toán dữ liệu trên thread pool
+            DataView dv = await Task.Run(() =>
+            {
+                DataView view = new DataView(mAttendamce_dt);
+                view.RowFilter = $"EmployeeCode = '{employeeCode}'";
+                return view;
+            });
+
+            // Update UI trên UI thread
+            attendanceGV.DataSource = dv;
         }
+
 
         private void cal_WorkingHour_WorkingDay()
         {
@@ -511,50 +572,42 @@ namespace RauViet.ui
             attendanceGV.DataSource = dv;
         }
 
-        private async void saveBtn_Click(object sender, EventArgs e)
+        private async void AttendanceGV_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
         {
-            SaveData(false);
+            bool isLock = await SQLStore.Instance.IsSalaryLockAsync(mCurrentMonth, mCurrentYear);
+            if (isLock)
+                e.Cancel = true;
         }
 
-        public async void SaveData(bool ask = true)
+        private async void AttendanceGV_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
-
-            List<(string EmployeeCode, DateTime WorkDate, double WorkingHours, string Note, string log)> attendanceData = new List<(string, DateTime, double, string, string)>();
-
-            foreach (DataRow edr in mAttendamce_dt.Rows)
+            if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
             {
-                string employeeCode = Convert.ToString(edr["EmployeeCode"]);
-                DateTime workDate = Convert.ToDateTime(edr["WorkDate"]);
-                double workingHours = Convert.ToDouble(edr["WorkingHours"]);
-                string note = Convert.ToString(edr["Note"]);
-                string attendanceLog = Convert.ToString(edr["AttendanceLog"]);
+                var row = attendanceGV.Rows[e.RowIndex];
+
+                List<(string EmployeeCode, DateTime WorkDate, double WorkingHours, string Note, string log)> attendanceData = new List<(string, DateTime, double, string, string)>();
+
+                string employeeCode = Convert.ToString(row.Cells["EmployeeCode"].Value);
+                DateTime workDate = Convert.ToDateTime(row.Cells["WorkDate"].Value);
+                double workingHours = Convert.ToDouble(row.Cells["WorkingHours"].Value);
+                string note = Convert.ToString(row.Cells["Note"].Value);
+                string attendanceLog = Convert.ToString(row.Cells["AttendanceLog"].Value);
 
                 attendanceData.Add((employeeCode, workDate, workingHours, note, attendanceLog));
 
-            }
-
-            DialogResult dialogResult = MessageBox.Show($"Sai Là Không sửa lại được đâu đó ?", "Chỉnh Sửa Lại Giờ Làm", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-
-            if (dialogResult == DialogResult.Yes)
-            {
                 try
                 {
                     Boolean iSuccess = await SQLManager.Instance.UpsertAttendanceBatchAsync(attendanceData);
-                    if (iSuccess)
+                    if (!iSuccess)
                     {
-                        cal_WorkingHour_WorkingDay();
-                        MessageBox.Show("Cập Nhật Thành Công Rồi Đó ?", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    }
-                    else
-                    {
-                        MessageBox.Show("Thất Bại ?", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show("Cập nhật thất bại!");
                     }
                 }
                 catch
                 {
                     MessageBox.Show("Thất Bại ?", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
-            }            
+            }
         }
     }
 }

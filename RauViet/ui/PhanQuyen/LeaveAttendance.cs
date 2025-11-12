@@ -15,6 +15,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
+using DataTable = System.Data.DataTable;
 
 namespace RauViet.ui
 {
@@ -71,6 +72,8 @@ namespace RauViet.ui
             edit_btn.Click += Edit_btn_Click;
             readOnly_btn.Click += ReadOnly_btn_Click;
             ReadOnly_btn_Click(null, null);
+
+            linkStartEnd_cb.CheckedChanged += LinkStartEnd_cb_CheckedChanged;
         }
 
 
@@ -354,6 +357,8 @@ namespace RauViet.ui
 
             string[] vietDays = { "CN", "T.2", "T.3", "T.4", "T.5", "T.6", "T.7" };
             bool hasError = false;
+            List<DateTime> datetimeErrorList = new List<DateTime>();
+            string errorMessage = "";
             attendanceGV.SuspendLayout();
             for (DateTime date = dateOffStart.Date; date <= dateOffEnd.Date; date = date.AddDays(1))
             {
@@ -399,10 +404,13 @@ namespace RauViet.ui
                     else
                     {
                         hasError = true;
+                        datetimeErrorList.Add(date);
                     }
                 }
                 catch (Exception ex)
                 {
+                    Console.WriteLine("Error:" + ex.Message);
+                    errorMessage = "Error:" + ex.Message;
                     hasError = true;
                 }
             }
@@ -410,8 +418,23 @@ namespace RauViet.ui
             attendanceGV.ResumeLayout();
             mLeaveAttendance_dt.AcceptChanges();
             NewBtn_Click(null, null);
-            status_lb.Text = hasError ? "Có lỗi trong quá trình thêm." : "Thêm thành công tất cả.";
-            status_lb.ForeColor = hasError ? Color.Red : Color.Green;
+            if (!hasError)
+            {
+                status_lb.Text = "Thành công.";
+                status_lb.ForeColor = Color.Green;
+            }
+            else
+            {
+                if (datetimeErrorList.Count > 0)
+                {
+                    string result = string.Join(", ", datetimeErrorList.Select(d => d.ToString("dd/MM/yyyy")));
+                    MessageBox.Show("Lỗi: " + result);
+                }
+                else
+                {
+                    MessageBox.Show(errorMessage);
+                }
+            }
         }
         
 
@@ -457,6 +480,8 @@ namespace RauViet.ui
             else
                 createNew(employeeCode, leaveTypeCode, dateOffStart, dateOffEnd, note, updatedHistory, hourLeave);
 
+            SQLStore.Instance.removeAttendamce(dateOffStart.Month, dateOffStart.Year);
+            SQLStore.Instance.removeAttendamce(dateOffEnd.Month, dateOffEnd.Year);
         }
 
         private void NewBtn_Click(object sender, EventArgs e)
@@ -476,6 +501,7 @@ namespace RauViet.ui
             dateOffEnd_dtp.Visible = true;
             label5.Visible = true;
             SetUIReadOnly(false);
+            linkStartEnd_cb.Visible = true;
         }
 
         private void ReadOnly_btn_Click(object sender, EventArgs e)
@@ -502,7 +528,10 @@ namespace RauViet.ui
             info_gb.BackColor = edit_btn.BackColor;
             isNewState = false;
             LuuThayDoiBtn.Text = "Lưu C.Sửa";
+            
             SetUIReadOnly(false);
+            linkStartEnd_cb.Checked = true;
+            linkStartEnd_cb.Visible = false;
         }
 
         private async void Delete_btn_Click(object sender, EventArgs e)
@@ -510,7 +539,6 @@ namespace RauViet.ui
             if (attendanceGV.SelectedRows.Count == 0 || string.IsNullOrEmpty(leaveID_tb.Text)) return;
 
             int id = Convert.ToInt32(leaveID_tb.Text);
-
             foreach (DataGridViewRow row in attendanceGV.Rows)
             {
                 int leaveID = Convert.ToInt32(row.Cells["LeaveID"].Value);
@@ -550,6 +578,8 @@ namespace RauViet.ui
                                 status_lb.Text = "Thành công.";
                                 status_lb.ForeColor = Color.Green;
                                 attendanceGV.Rows.Remove(row);
+
+                                mLeaveAttendance_dt.AcceptChanges();
                             }
                             else
                             {
@@ -562,10 +592,6 @@ namespace RauViet.ui
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;
                         }
-
-
-
-
                     }
                     break;
                 }
@@ -574,15 +600,24 @@ namespace RauViet.ui
         private async void DateOffStart_dtp_ValueChanged(object sender, EventArgs e)
         {
             DateTime dayyOffStart = dateOffStart_dtp.Value.Date;
-            DateTime dayyOffEnd = dateOffEnd_dtp.Value.Date;
-
-            if (dayyOffStart > dayyOffEnd)
+            if (linkStartEnd_cb.Checked)
+            {
                 dateOffEnd_dtp.Value = dayyOffStart;
+            }
+            else
+            {
+                DateTime dayyOffEnd = dateOffEnd_dtp.Value.Date;
+
+                if (dayyOffStart > dayyOffEnd)
+                    dateOffEnd_dtp.Value = dayyOffStart;
+            }
+
             bool isLock = await SQLStore.Instance.IsSalaryLockAsync(dayyOffStart.Month, dayyOffStart.Year);
-            LuuThayDoiBtn.Visible = !isLock;
-            newBtn.Visible = !isLock;
-            delete_btn.Visible = !isLock;
-            edit_btn.Visible = !isLock;
+
+            LuuThayDoiBtn.Enabled = !isLock;
+            newBtn.Enabled = !isLock;
+            delete_btn.Enabled = !isLock;
+            edit_btn.Enabled = !isLock;
         }
 
         private async void DateOffEnd_dtp_ValueChanged(object sender, EventArgs e)
@@ -601,6 +636,23 @@ namespace RauViet.ui
             dateOffEnd_dtp.Enabled = !isReadOnly;
             hourLeave_tb.ReadOnly = isReadOnly;
             note_tb.ReadOnly = isReadOnly;
+            linkStartEnd_cb.Visible = !isReadOnly;
+            if (!isReadOnly)
+            {
+                LinkStartEnd_cb_CheckedChanged(null, null);
+            }
+        }
+
+        private void LinkStartEnd_cb_CheckedChanged(object sender, EventArgs e)
+        {
+            dateOffEnd_dtp.Visible = !linkStartEnd_cb.Checked;
+            label5.Visible = !linkStartEnd_cb.Checked;
+                        
+            if (linkStartEnd_cb.Checked)
+            {
+                DateTime dayyOffStart = dateOffStart_dtp.Value.Date;
+                dateOffEnd_dtp.Value = dayyOffStart;
+            }
         }
     }
 }

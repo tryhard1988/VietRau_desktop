@@ -33,7 +33,7 @@ public class PackingListPrinter
         _printDoc.PrintPage += PrintDoc_PrintPage;
     }
 
-    public void PrintPreview()
+    public void PrintPreview(Form owner)
     {
         PreparePrintRows();
         ResetPrintState();
@@ -43,7 +43,7 @@ public class PackingListPrinter
             preview.Document = _printDoc;
             preview.Width = 1123;
             preview.Height = 794;
-            preview.ShowDialog();
+            preview.ShowDialog(owner);
         }
     }
 

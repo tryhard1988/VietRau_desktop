@@ -38,6 +38,9 @@ namespace RauViet.ui
             this.leaveID_tb = new System.Windows.Forms.TextBox();
             this.newBtn = new System.Windows.Forms.Button();
             this.info_gb = new System.Windows.Forms.GroupBox();
+            this.dateOffEnd_dtp = new System.Windows.Forms.DateTimePicker();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.hourLeave_tb = new System.Windows.Forms.TextBox();
             this.label8 = new System.Windows.Forms.Label();
@@ -53,9 +56,7 @@ namespace RauViet.ui
             this.label2 = new System.Windows.Forms.Label();
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
             this.attendanceGV = new System.Windows.Forms.DataGridView();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
-            this.dateOffEnd_dtp = new System.Windows.Forms.DateTimePicker();
+            this.linkStartEnd_cb = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
             this.panel1.SuspendLayout();
             this.info_gb.SuspendLayout();
@@ -157,6 +158,7 @@ namespace RauViet.ui
             // 
             // info_gb
             // 
+            this.info_gb.Controls.Add(this.linkStartEnd_cb);
             this.info_gb.Controls.Add(this.dateOffEnd_dtp);
             this.info_gb.Controls.Add(this.label5);
             this.info_gb.Controls.Add(this.label3);
@@ -173,6 +175,34 @@ namespace RauViet.ui
             this.info_gb.Size = new System.Drawing.Size(370, 228);
             this.info_gb.TabIndex = 29;
             this.info_gb.TabStop = false;
+            // 
+            // dateOffEnd_dtp
+            // 
+            this.dateOffEnd_dtp.Location = new System.Drawing.Point(266, 81);
+            this.dateOffEnd_dtp.Name = "dateOffEnd_dtp";
+            this.dateOffEnd_dtp.Size = new System.Drawing.Size(98, 20);
+            this.dateOffEnd_dtp.TabIndex = 36;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label5.Location = new System.Drawing.Point(237, 81);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(25, 16);
+            this.label5.TabIndex = 35;
+            this.label5.Text = "=>";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label3.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.label3.Location = new System.Drawing.Point(187, 113);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(48, 13);
+            this.label3.TabIndex = 34;
+            this.label3.Text = "(1 ngày)";
             // 
             // label1
             // 
@@ -250,11 +280,11 @@ namespace RauViet.ui
             // status_lb
             // 
             this.status_lb.AutoSize = true;
-            this.status_lb.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.status_lb.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.status_lb.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.status_lb.Location = new System.Drawing.Point(6, 544);
+            this.status_lb.Location = new System.Drawing.Point(6, 490);
             this.status_lb.Name = "status_lb";
-            this.status_lb.Size = new System.Drawing.Size(55, 23);
+            this.status_lb.Size = new System.Drawing.Size(48, 19);
             this.status_lb.TabIndex = 26;
             this.status_lb.Text = "Email";
             // 
@@ -321,33 +351,16 @@ namespace RauViet.ui
             this.attendanceGV.Size = new System.Drawing.Size(518, 681);
             this.attendanceGV.TabIndex = 12;
             // 
-            // label3
+            // linkStartEnd_cb
             // 
-            this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.label3.Location = new System.Drawing.Point(187, 113);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(48, 13);
-            this.label3.TabIndex = 34;
-            this.label3.Text = "(1 ngày)";
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(216, 81);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(25, 16);
-            this.label5.TabIndex = 35;
-            this.label5.Text = "=>";
-            // 
-            // dateOffEnd_dtp
-            // 
-            this.dateOffEnd_dtp.Location = new System.Drawing.Point(245, 81);
-            this.dateOffEnd_dtp.Name = "dateOffEnd_dtp";
-            this.dateOffEnd_dtp.Size = new System.Drawing.Size(98, 20);
-            this.dateOffEnd_dtp.TabIndex = 36;
+            this.linkStartEnd_cb.AutoSize = true;
+            this.linkStartEnd_cb.Checked = true;
+            this.linkStartEnd_cb.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.linkStartEnd_cb.Location = new System.Drawing.Point(216, 83);
+            this.linkStartEnd_cb.Name = "linkStartEnd_cb";
+            this.linkStartEnd_cb.Size = new System.Drawing.Size(15, 14);
+            this.linkStartEnd_cb.TabIndex = 37;
+            this.linkStartEnd_cb.UseVisualStyleBackColor = true;
             // 
             // LeaveAttendance
             // 
@@ -399,5 +412,6 @@ namespace RauViet.ui
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.DateTimePicker dateOffEnd_dtp;
         private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.CheckBox linkStartEnd_cb;
     }
 }

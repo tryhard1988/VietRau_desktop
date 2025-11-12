@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using RauViet.classes;
@@ -240,25 +239,20 @@ namespace RauViet.ui
                 dataGV.DataSource = mOrdersTotal_dt;
             }
         }
-
-        private void dataGV_RowPrePaint(object sender, DataGridViewRowPrePaintEventArgs e)
-        {
-            if (e.RowIndex % 2 == 0)
-            {
-                dataGV.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.Beige;
-            }
-        }        
-        
+     
         private async void saveBtn_Click(object sender, EventArgs e)
         {
             ExportDataGridViewToExcel(dataGV);
         }
 
-
-
-        private void ExportDataGridViewToExcel(DataGridView dgv)
+        private async void ExportDataGridViewToExcel(DataGridView dgv)
         {
             if (exportCode_cbb.SelectedItem == null) return;
+
+            loadingOverlay = new LoadingOverlay(this);
+            loadingOverlay.Message = "Đang xử lý ...";
+            loadingOverlay.Show();
+            await Task.Delay(100);
             string exportCode = ((DataRowView)exportCode_cbb.SelectedItem)["ExportCode"].ToString();
             DateTime exportDate = Convert.ToDateTime(((DataRowView)exportCode_cbb.SelectedItem)["ExportDate"]);
             try
@@ -468,10 +462,10 @@ namespace RauViet.ui
 
                     // ===== Data bắt đầu từ hàng 7 =====
                     decimal totalNWOther = 0; // Biến lưu tổng
-                    int totalCarton = 0;
                     ws.Column(11).Width = 30;
                     ws.Column(2).Width = 15;
 
+                    List<int> cartonNoList = new List<int>();
                     int rowIndex = headerStartRow + 2;
                     foreach (DataGridViewRow row in dgv.Rows)
                     {
@@ -499,7 +493,7 @@ namespace RauViet.ui
                             // Tính tổng cột NWOther
                             if (col.Name == "NWReal")
                             {
-                                cell.Style.NumberFormat.Format = "#,##0.00";
+                                cell.Style.NumberFormat.Format = "#,##0.000";
                                 if (decimal.TryParse(cellValue, out decimal num))
                                 {
                                     totalNWOther += num;
@@ -526,10 +520,20 @@ namespace RauViet.ui
                                 int estimatedLines = (int)((cellValue.Length * ws.Style.Font.FontSize / columnWidth) + 2);
                                 ws.Row(rowIndex).Height = estimatedLines * ws.Style.Font.FontSize * 1.2; // lineHeight ~ font size * 1.2
 
-                                if (col.Name == "CustomerCarton" && cellValue.CompareTo("") != 0)
+                                if (col.Name == "CartonNo" && cellValue.CompareTo("") != 0)
                                 {
-                                    int count = cellValue.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Length;
-                                    totalCarton += count;
+                                    string[] parts = cellValue.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+
+                                    foreach (string part in parts)
+                                    {
+                                        if (int.TryParse(part.Trim(), out int number))
+                                        {
+                                            if (!cartonNoList.Contains(number))
+                                            {
+                                                cartonNoList.Add(number);
+                                            }
+                                        }
+                                    }
                                 }
                             }
                             colIndex++;
@@ -587,7 +591,7 @@ namespace RauViet.ui
 
                     ws.Range(totalRow + 1, 4, totalRow + 1, exportColumns.Count).Merge();
                     ws.Cell(totalRow + 1, 4).Style.NumberFormat.Format = "#,##0 \"CTNS\"";
-                    ws.Cell(totalRow + 1, 4).Value = totalCarton;
+                    ws.Cell(totalRow + 1, 4).Value = cartonNoList.Count;
                     ws.Cell(totalRow + 1, 4).Style.Font.Bold = true;
                     ws.Cell(totalRow + 1, 4).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
                     ws.Range(totalRow + 1, 4, totalRow + 1, exportColumns.Count).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
@@ -600,7 +604,22 @@ namespace RauViet.ui
                         if (sfd.ShowDialog() == DialogResult.OK)
                         {
                             wb.SaveAs(sfd.FileName);
-                            MessageBox.Show("thành công\n" + sfd.FileName);
+                            DialogResult result = MessageBox.Show("Bạn có muốn mở file này không?", "Lưu file thành công", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                            if (result == DialogResult.Yes)
+                            {
+                                try
+                                {
+                                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo()
+                                    {
+                                        FileName = sfd.FileName,
+                                        UseShellExecute = true
+                                    });
+                                }
+                                catch (Exception ex)
+                                {
+                                    MessageBox.Show("Không thể mở file: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                }
+                            }
                         }
                     }
                 }
@@ -608,6 +627,11 @@ namespace RauViet.ui
             catch (Exception ex)
             {
                 MessageBox.Show("Lỗi khi xuất Excel: " + ex.Message);
+            }
+            finally
+            {
+                await Task.Delay(200);
+                loadingOverlay.Hide();
             }
         }
     }
