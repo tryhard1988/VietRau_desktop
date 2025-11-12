@@ -209,16 +209,15 @@ namespace RauViet.classes
         {
             int newId = -1;
 
-            string query = @"INSERT INTO ProductSKU (ProductNameVN, ProductNameEN, PackingType, Package, PackingList, BotanicalName, PriceCNF, Priority, PlantingAreaCode, LOTCodeHeader)
-                            OUTPUT INSERTED.SKU                             
-                            VALUES (@ProductNameVN, @ProductNameEN, @PackingType, @Package, @PackingList, @BotanicalName, @PriceCNF, @Priority, @PlantingAreaCode, @LOTCodeHeader)";
             try
             {
                 using (SqlConnection con = new SqlConnection(ql_kho_conStr))
                 {
                     await con.OpenAsync();
-                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    using (SqlCommand cmd = new SqlCommand("SP_InsertProductSKU", con))
                     {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
                         cmd.Parameters.AddWithValue("@ProductNameVN", ProductNameVN);
                         cmd.Parameters.AddWithValue("@ProductNameEN", ProductNameEN);
                         cmd.Parameters.AddWithValue("@PackingType", PackingType);
@@ -229,14 +228,24 @@ namespace RauViet.classes
                         cmd.Parameters.AddWithValue("@Priority", priority);
                         cmd.Parameters.AddWithValue("@PlantingAreaCode", plantingareaCode);
                         cmd.Parameters.AddWithValue("@LOTCodeHeader", LOTCodeHeader);
-                        object result = await cmd.ExecuteScalarAsync();
-                        if (result != null)
-                            newId = Convert.ToInt32(result);
+
+                        var outParam = new SqlParameter("@NewSKU", SqlDbType.Int)
+                        {
+                            Direction = ParameterDirection.Output
+                        };
+                        cmd.Parameters.Add(outParam);
+
+                        await cmd.ExecuteNonQueryAsync();
+                        newId = Convert.ToInt32(outParam.Value);
                     }
                 }
-                return newId;
             }
-            catch { return -1; }
+            catch
+            {
+                newId = -1;
+            }
+
+            return newId;
         }
 
         public async Task<bool> deleteProductSKUAsync(int SKU)
