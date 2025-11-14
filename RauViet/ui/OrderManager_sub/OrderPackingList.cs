@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -589,11 +590,11 @@ namespace RauViet.ui
 
             var colName = dataGV.CurrentCell.OwningColumn.Name;
 
-            if ( colName == "CartonNo" || colName == "NWReal")
+            if ( colName == "NWReal")
             {
                 tb.KeyPress += Tb_KeyPress_OnlyNumber;
             }
-            else if (colName == "PCSReal" )
+            else if (colName == "PCSReal" || colName == "CartonNo")
             {
                 tb.KeyPress += Tb_KeyPress_OnlyNumber1;
             }
@@ -608,13 +609,13 @@ namespace RauViet.ui
         {
             if (exportCode_cbb.SelectedItem != null)
             {
-                DataRowView dataR = (DataRowView)exportCode_cbb.SelectedItem;
+                DataRowView dataR = (DataRowView)exportCode_cbb.SelectedItem; 
                 string staff = dataR["InputByName_NoSign"].ToString();
-                if (UserManager.Instance.fullName_NoSign.CompareTo(staff) != 0)
-                {
-                    e.Cancel = true;
-                    return;
-                }
+                //if (UserManager.Instance.fullName_NoSign.CompareTo(staff) != 0)
+                //{
+                //    e.Cancel = true;
+                //    return;
+                //}
             }
             e.Cancel = edit_btn.Visible;
         }
@@ -1235,6 +1236,13 @@ namespace RauViet.ui
                         MessageBox.Show($"Khách Hàng: {customer}\n Carton Size: Có Ô Chưa Nhập Số Liệu", "Thiếu Dữ Liệu", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return false;
                     }
+                    
+                    if(!Regex.IsMatch(cartonSize, @"^\d+x\d+x\d+$", RegexOptions.IgnoreCase))
+                    {
+                        MessageBox.Show($"Thùng Số: {carton}\n Carton Size:{cartonSize} sai định dạng", "Thiếu Dữ Liệu", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return false;
+                    }
+
                 }
             }
 
@@ -1402,16 +1410,16 @@ namespace RauViet.ui
                 DataRowView dataR = (DataRowView)exportCode_cbb.SelectedItem;
 
                 string staff = dataR["InputByName_NoSign"].ToString();
-                if (UserManager.Instance.fullName_NoSign.CompareTo(staff) != 0)
-                {
-                    edit_btn.Visible = false;
-                    readOnly_btn.Visible = false;
-                    rightInfo_gb.Visible = false;
-                    InPhieuGiaoHang_btn.Visible = true;
-                    previewPrint_PGH_btn.Visible = true;
-                    previewPrint_PT_btn.Visible = true;
-                    return;
-                }
+                //if (UserManager.Instance.fullName_NoSign.CompareTo(staff) != 0)
+                //{
+                //    edit_btn.Visible = false;
+                //    readOnly_btn.Visible = false;
+                //    rightInfo_gb.Visible = false;
+                //    InPhieuGiaoHang_btn.Visible = true;
+                //    previewPrint_PGH_btn.Visible = true;
+                //    previewPrint_PT_btn.Visible = true;
+                //    return;
+                //}
             }
             rightInfo_gb.Visible = !isReadOnly;
             edit_btn.Visible = isReadOnly;
