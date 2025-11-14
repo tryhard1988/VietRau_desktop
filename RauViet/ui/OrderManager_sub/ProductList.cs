@@ -1,16 +1,10 @@
 ﻿using RauViet.classes;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
-using System.IO.Packaging;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
 
 namespace RauViet.ui
 {
@@ -38,7 +32,6 @@ namespace RauViet.ui
             LuuThayDoiBtn.Click += saveBtn_Click;
             delete_btn.Click += deleteBtn_Click;
             dataGV.SelectionChanged += this.dataGV_CellClick;
-        //    this.dataGV.RowPrePaint += new System.Windows.Forms.DataGridViewRowPrePaintEventHandler(this.dataGV_RowPrePaint);
             priceCNF_tb.TextChanged += priceCNF_tb_TextChanged;
             search_tb.TextChanged += search_txt_TextChanged;
             amount_tb.KeyPress += Tb_KeyPress_OnlyNumber;
@@ -193,27 +186,17 @@ namespace RauViet.ui
             }
             catch { }
         }
-
-        private void dataGV_RowPrePaint(object sender, DataGridViewRowPrePaintEventArgs e)
-        {
-            if (e.RowIndex % 2 == 0)
-            {
-                dataGV.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.Beige;
-            }
-        }
-        
+                
         private void dataGV_CellClick(object sender, EventArgs e)
         {
             updateDataTextBoxFlowSKU();            
         }
 
-       
-
         private async void updateProductPacking(int ID, int SKU, string BarCode, string PLU, int? Amount, string packing, string barCodeEAN13, string artNr, string GGN)
         {
-            foreach (DataGridViewRow row in dataGV.Rows)
+            foreach (DataRow row in packing_dt.Rows)
             {
-                int productPackingID = Convert.ToInt32(row.Cells["ProductPackingID"].Value);
+                int productPackingID = Convert.ToInt32(row["ProductPackingID"]);
                 if (productPackingID.CompareTo(ID) == 0)
                 {
                     DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
@@ -237,31 +220,31 @@ namespace RauViet.ui
 
 
 
-                                row.Cells["SKU"].Value = SKU;
-                                row.Cells["BarCode"].Value = BarCode;
-                                row.Cells["PLU"].Value = PLU;
+                                row["SKU"] = SKU;
+                                row["BarCode"] = BarCode;
+                                row["PLU"] = PLU;
                                 if (package.CompareTo("kg") == 0 && packing.CompareTo("") != 0 && amount > 0)
                                 {
-                                    row.Cells["Name_VN"].Value = productSKUData["ProductNameVN"] + " " + productSKUData["PackingType"] + " " + resultAmount + " " + packing; 
-                                    row.Cells["Name_EN"].Value = productSKUData["ProductNameEN"] + " " + productSKUData["PackingType"] + " " + resultAmount + " " + packing; 
+                                    row["Name_VN"] = productSKUData["ProductNameVN"] + " " + productSKUData["PackingType"] + " " + resultAmount + " " + packing; 
+                                    row["Name_EN"] = productSKUData["ProductNameEN"] + " " + productSKUData["PackingType"] + " " + resultAmount + " " + packing; 
                                 }
                                 else
                                 {
-                                    row.Cells["Name_VN"].Value = productSKUData["ProductNameVN"];
-                                    row.Cells["Name_EN"].Value = productSKUData["ProductNameEN"];
+                                    row["Name_VN"] = productSKUData["ProductNameVN"];
+                                    row["Name_EN"] = productSKUData["ProductNameEN"];
                                 }
 
-                                row.Cells["ProductNameVN_NoSign"].Value = Utils.RemoveVietnameseSigns(productSKUData["ProductNameVN"] + " " + SKU).ToLower();
-                                row.Cells["Packing"].Value = packing;
-                                row.Cells["PriceCNF"].Value = productSKUData["PriceCNF"];
-                                row.Cells["BarCodeEAN13"].Value = barCodeEAN13;
-                                row.Cells["ArtNr"].Value = artNr;
-                                row.Cells["GGN"].Value = GGN;
-                                row.Cells["PackingName"].Value = $"{resultAmount} {packing}";
+                                row["ProductNameVN_NoSign"] = Utils.RemoveVietnameseSigns(productSKUData["ProductNameVN"] + " " + SKU).ToLower();
+                                row["Packing"] = packing;
+                                row["PriceCNF"] = productSKUData["PriceCNF"];
+                                row["BarCodeEAN13"] = barCodeEAN13;
+                                row["ArtNr"] = artNr;
+                                row["GGN"] = GGN;
+                                row["PackingName"] = $"{resultAmount} {packing}";
                                 if (Amount != null)
-                                    row.Cells["Amount"].Value = Amount;
+                                    row["Amount"] = Amount;
                                 else
-                                    row.Cells["Amount"].Value = DBNull.Value;
+                                    row["Amount"] = DBNull.Value;
                             }
                             else
                             {
@@ -292,8 +275,7 @@ namespace RauViet.ui
                     if (newId > 0)
                     {
                         DataRowView productSKUData = (DataRowView)sku_cbb.SelectedItem;
-                        DataTable dataTable = (DataTable)dataGV.DataSource;
-                        DataRow drToAdd = dataTable.NewRow();
+                        DataRow drToAdd = packing_dt.NewRow();
 
                         string package = productSKUData["Package"].ToString();
                         decimal amount = Amount ?? 0;
@@ -332,8 +314,8 @@ namespace RauViet.ui
                         // SKU_tb.Text = newCustomerID.ToString();
 
                         id_tb.Text = newId.ToString();
-                        dataTable.Rows.Add(drToAdd);
-                        dataTable.AcceptChanges();
+                        packing_dt.Rows.Add(drToAdd);
+                        packing_dt.AcceptChanges();
 
                         // chuyển selected vào row mới
                         dataGV.ClearSelection(); // bỏ chọn row cũ
@@ -399,9 +381,9 @@ namespace RauViet.ui
         {
             string id = id_tb.Text;
 
-            foreach (DataGridViewRow row in dataGV.Rows)
+            foreach (DataRow row in packing_dt.Rows)
             {
-                string productPackingID = row.Cells["ProductPackingID"].Value.ToString();
+                string productPackingID = row["ProductPackingID"].ToString();
                 if (productPackingID.CompareTo(id) == 0)
                 {
                     DialogResult dialogResult = MessageBox.Show("Xóa Nha, Chắc Chắn Chưa!", "Thông Báo", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
@@ -417,7 +399,8 @@ namespace RauViet.ui
                                 status_lb.Text = "Thành công.";
                                 status_lb.ForeColor = Color.Green;
 
-                                dataGV.Rows.Remove(row);
+                                packing_dt.Rows.Remove(row);
+                                packing_dt.AcceptChanges();
                             }
                             else
                             {

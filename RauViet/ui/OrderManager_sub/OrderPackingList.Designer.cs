@@ -52,6 +52,8 @@ namespace RauViet.ui
             this.exportCode_cbb = new System.Windows.Forms.ComboBox();
             this.panel1 = new System.Windows.Forms.Panel();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
@@ -66,9 +68,7 @@ namespace RauViet.ui
             this.delOrder_btn = new System.Windows.Forms.Button();
             this.chiadon_btn = new System.Windows.Forms.Button();
             this.assignCustomerCarton_btn = new System.Windows.Forms.Button();
-            this.assignCartonSize_btn = new System.Windows.Forms.Button();
             this.label8 = new System.Windows.Forms.Label();
-            this.assignCartonNoBtn = new System.Windows.Forms.Button();
             this.cartonNo_tb = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.panel3 = new System.Windows.Forms.Panel();
@@ -77,8 +77,6 @@ namespace RauViet.ui
             this.panel4 = new System.Windows.Forms.Panel();
             this.previewPrint_PT_btn = new System.Windows.Forms.Button();
             this.status_lb = new System.Windows.Forms.Label();
-            this.label9 = new System.Windows.Forms.Label();
-            this.label10 = new System.Windows.Forms.Label();
             this.panel6.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
@@ -359,6 +357,28 @@ namespace RauViet.ui
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Phím Tắt";
             // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label10.ForeColor = System.Drawing.Color.OliveDrab;
+            this.label10.Location = new System.Drawing.Point(11, 163);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(302, 15);
+            this.label10.TabIndex = 74;
+            this.label10.Text = "★   Nhấp đôi  vào Mã Thùng để in phiếu thùng";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label9.ForeColor = System.Drawing.Color.DarkGreen;
+            this.label9.Location = new System.Drawing.Point(11, 138);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(228, 15);
+            this.label9.TabIndex = 73;
+            this.label9.Text = "★   Delete:     Xóa dòng đang chọn";
+            // 
             // label7
             // 
             this.label7.AutoSize = true;
@@ -466,9 +486,7 @@ namespace RauViet.ui
             this.rightInfo_gb.Controls.Add(this.delOrder_btn);
             this.rightInfo_gb.Controls.Add(this.chiadon_btn);
             this.rightInfo_gb.Controls.Add(this.assignCustomerCarton_btn);
-            this.rightInfo_gb.Controls.Add(this.assignCartonSize_btn);
             this.rightInfo_gb.Controls.Add(this.label8);
-            this.rightInfo_gb.Controls.Add(this.assignCartonNoBtn);
             this.rightInfo_gb.Controls.Add(this.cartonNo_tb);
             this.rightInfo_gb.Controls.Add(this.label6);
             this.rightInfo_gb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -516,17 +534,6 @@ namespace RauViet.ui
             this.assignCustomerCarton_btn.Text = "Tạo Mã Thùng";
             this.assignCustomerCarton_btn.UseVisualStyleBackColor = false;
             // 
-            // assignCartonSize_btn
-            // 
-            this.assignCartonSize_btn.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.assignCartonSize_btn.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.assignCartonSize_btn.Location = new System.Drawing.Point(224, 78);
-            this.assignCartonSize_btn.Name = "assignCartonSize_btn";
-            this.assignCartonSize_btn.Size = new System.Drawing.Size(64, 30);
-            this.assignCartonSize_btn.TabIndex = 56;
-            this.assignCartonSize_btn.Text = "Assign";
-            this.assignCartonSize_btn.UseVisualStyleBackColor = false;
-            // 
             // label8
             // 
             this.label8.AutoSize = true;
@@ -535,17 +542,6 @@ namespace RauViet.ui
             this.label8.Size = new System.Drawing.Size(78, 16);
             this.label8.TabIndex = 54;
             this.label8.Text = "Carton Size:";
-            // 
-            // assignCartonNoBtn
-            // 
-            this.assignCartonNoBtn.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.assignCartonNoBtn.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.assignCartonNoBtn.Location = new System.Drawing.Point(178, 39);
-            this.assignCartonNoBtn.Name = "assignCartonNoBtn";
-            this.assignCartonNoBtn.Size = new System.Drawing.Size(64, 27);
-            this.assignCartonNoBtn.TabIndex = 50;
-            this.assignCartonNoBtn.Text = "Assign";
-            this.assignCartonNoBtn.UseVisualStyleBackColor = false;
             // 
             // cartonNo_tb
             // 
@@ -626,28 +622,6 @@ namespace RauViet.ui
             this.status_lb.TabIndex = 26;
             this.status_lb.Text = "Email";
             // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label9.ForeColor = System.Drawing.Color.DarkGreen;
-            this.label9.Location = new System.Drawing.Point(11, 138);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(228, 15);
-            this.label9.TabIndex = 73;
-            this.label9.Text = "★   Delete:     Xóa dòng đang chọn";
-            // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label10.ForeColor = System.Drawing.Color.OliveDrab;
-            this.label10.Location = new System.Drawing.Point(11, 163);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(302, 15);
-            this.label10.TabIndex = 74;
-            this.label10.Text = "★   Nhấp đôi  vào Mã Thùng để in phiếu thùng";
-            // 
             // OrderPackingList
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -714,9 +688,7 @@ namespace RauViet.ui
         private System.Windows.Forms.Button delOrder_btn;
         private System.Windows.Forms.Button chiadon_btn;
         private System.Windows.Forms.Button assignCustomerCarton_btn;
-        private System.Windows.Forms.Button assignCartonSize_btn;
         private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.Button assignCartonNoBtn;
         private System.Windows.Forms.TextBox cartonNo_tb;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Panel panel3;

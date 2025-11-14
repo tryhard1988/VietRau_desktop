@@ -26,7 +26,6 @@ namespace RauViet.ui
             status_lb.Text = "";
 
             Reset_btn.Click += resetBtn_Click;
-            //   dataGV.RowPrePaint += new System.Windows.Forms.DataGridViewRowPrePaintEventHandler(this.dataGV_RowPrePaint);
             dataGV.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.dataGV_EditingControlShowing);
             dataGV.CellFormatting += dataGV_CellFormatting;
             dataGV .CellEndEdit += DataGV_CellValueChanged;
@@ -88,17 +87,6 @@ namespace RauViet.ui
                     bool isNWFinalValid = decimal.TryParse(dr["NetWeightFinal"]?.ToString(), out nwFinal);
                     bool isNWOrderValid = decimal.TryParse(dr["TotalNWOther"]?.ToString(), out nwOrder);
 
-                    //if (!isNWFinalValid && isNWRealValid)
-                    //{
-                    //    if ((package.CompareTo("kg") == 0 || package.CompareTo("weight") == 0) &&
-                    //        SKU < 1000)
-                    //    {
-                    //        dr["NetWeightFinal"] = nwReal;
-                    //        nwFinal = nwReal;
-                    //        isNWFinalValid = isNWRealValid;
-                    //    }
-
-                    //}
 
                     if (isNWRealValid && isNWFinalValid) dr["NWDifference"] = nwReal - nwFinal;
                     else dr["NWDifference"] = DBNull.Value;
@@ -226,18 +214,18 @@ namespace RauViet.ui
 
         private async void DataGV_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
+            if (dataGV.CurrentRow != null)
             {
                 var columnName = dataGV.Columns[e.ColumnIndex].Name;
 
                 if (columnName == "NetWeightFinal")
                 {
-                    updateNWDifference(dataGV.Rows[e.RowIndex]);
+                    updateNWDifference(dataGV.CurrentRow);
                 }
 
                 calvalueRightUI();
 
-                var row = dataGV.Rows[e.RowIndex];
+                var row = dataGV.CurrentRow;
                 var list = new List<(int ExportCodeID, int ProductPackingID, decimal? NetWeightFinal)>();
                 int exportCodeID = Convert.ToInt32(row.Cells["ExportCodeID"].Value);
                 int productPackingID = Convert.ToInt32(row.Cells["ProductPackingID"].Value);
@@ -298,13 +286,6 @@ namespace RauViet.ui
             if (dataGV.Columns[e.ColumnIndex].Name == "NetWeightFinal")
             {
                 e.CellStyle.BackColor = System.Drawing.Color.LightGray;
-            }
-        }
-        private void dataGV_RowPrePaint(object sender, DataGridViewRowPrePaintEventArgs e)
-        {
-            if (e.RowIndex % 2 == 0)
-            {
-                dataGV.Rows[e.RowIndex].DefaultCellStyle.BackColor = System.Drawing.Color.Beige;
             }
         }
 
@@ -393,62 +374,6 @@ namespace RauViet.ui
 
 
 
-            }
-        }
-
-        public async void SaveData(bool ask = true)
-        {
-            var list = new List<(int ExportCodeID, int ProductPackingID, decimal? NetWeightFinal)>();
-
-            foreach (DataGridViewRow row in dataGV.Rows)
-            {
-                // Bỏ qua row mới hoặc null
-                if (row.IsNewRow) continue;
-
-                try
-                {
-                    int exportCodeID = Convert.ToInt32(row.Cells["ExportCodeID"].Value);
-                    int productPackingID = Convert.ToInt32(row.Cells["ProductPackingID"].Value);
-
-                    // NetWeightFinal có thể null
-                    decimal? netWeightFinal = null;
-                    var nwValue = row.Cells["NetWeightFinal"].Value;
-                    if (nwValue != null && nwValue != DBNull.Value)
-                    {
-                        netWeightFinal = Convert.ToDecimal(nwValue);
-                    }
-
-                    list.Add((exportCodeID, productPackingID, netWeightFinal));
-                }
-                catch
-                {
-                    // Nếu row có dữ liệu sai định dạng, bỏ qua
-                    continue;
-                }
-            }
-
-            try
-            {
-                // Gọi hàm upsert
-                bool result = await SQLManager.Instance.UpsertOrdersTotalListAsync(list);
-
-                if (result)
-                {
-                    status_lb.Text = "Thành công.";
-                    status_lb.ForeColor = System.Drawing.Color.Green;
-                }
-                else
-                {
-                    MessageBox.Show("Cập nhật thất bại!");
-                    //status_lb.Text = "Thất bại.";
-                    //status_lb.ForeColor = System.Drawing.Color.Red;
-                }
-            }
-            catch
-            {
-                MessageBox.Show("Cập nhật thất bại!");
-                //status_lb.Text = "Thất bại.";
-                //status_lb.ForeColor = System.Drawing.Color.Red;
             }
         }
 

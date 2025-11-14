@@ -1,17 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
-using System.IO.Packaging;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Newtonsoft.Json;
 using RauViet.classes;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
 
 namespace RauViet.ui
 {
@@ -19,7 +11,7 @@ namespace RauViet.ui
     {
         bool isNewState = false;
         private LoadingOverlay loadingOverlay;
-        DataTable mPoductSKUHistory_dt;
+        DataTable mPoductSKUHistory_dt, mProductSKU_dt;
         public ProductSKU()
         {
             InitializeComponent();
@@ -50,7 +42,6 @@ namespace RauViet.ui
             luuBtn.Click += saveBtn_Click;
             delete_btn.Click += deleteBtn_Click;
             dataGV.SelectionChanged += this.dataGV_CellClick;
-    //        this.dataGV.RowPrePaint += new System.Windows.Forms.DataGridViewRowPrePaintEventHandler(this.dataGV_RowPrePaint);
             priceCNF_tb.KeyPress += Tb_KeyPress_OnlyNumber;
             priority_tb.KeyPress += Tb_KeyPress_OnlyNumber;
             lotCodeHeader_tb.KeyPress += Tb_KeyPress_OnlyNumber;
@@ -76,23 +67,23 @@ namespace RauViet.ui
                 var productSKUHistoryTask = SQLStore.Instance.GetProductSKUHistoryAsync();
 
                 await Task.WhenAll(productSKUATask, productSKUHistoryTask);
-                DataTable dt = productSKUATask.Result;
+                mProductSKU_dt = productSKUATask.Result;
                 mPoductSKUHistory_dt = productSKUHistoryTask.Result;
 
                 int count = 0;
-                dt.Columns["SKU"].SetOrdinal(count++);
-                dt.Columns["ProductNameVN"].SetOrdinal(count++);
-                dt.Columns["ProductNameEN"].SetOrdinal(count++);
-                dt.Columns["PackingType"].SetOrdinal(count++);
-                dt.Columns["Package"].SetOrdinal(count++);
-                dt.Columns["PackingList"].SetOrdinal(count++);
-                dt.Columns["BotanicalName"].SetOrdinal(count++);
-                dt.Columns["PriceCNF"].SetOrdinal(count++);
-                dt.Columns["PlantingAreaCode"].SetOrdinal(count++);
-                dt.Columns["LOTCodeHeader"].SetOrdinal(count++);
-                dt.Columns["Priority"].SetOrdinal(count++);
+                mProductSKU_dt.Columns["SKU"].SetOrdinal(count++);
+                mProductSKU_dt.Columns["ProductNameVN"].SetOrdinal(count++);
+                mProductSKU_dt.Columns["ProductNameEN"].SetOrdinal(count++);
+                mProductSKU_dt.Columns["PackingType"].SetOrdinal(count++);
+                mProductSKU_dt.Columns["Package"].SetOrdinal(count++);
+                mProductSKU_dt.Columns["PackingList"].SetOrdinal(count++);
+                mProductSKU_dt.Columns["BotanicalName"].SetOrdinal(count++);
+                mProductSKU_dt.Columns["PriceCNF"].SetOrdinal(count++);
+                mProductSKU_dt.Columns["PlantingAreaCode"].SetOrdinal(count++);
+                mProductSKU_dt.Columns["LOTCodeHeader"].SetOrdinal(count++);
+                mProductSKU_dt.Columns["Priority"].SetOrdinal(count++);
                 priceCNFHisGV.DataSource = mPoductSKUHistory_dt;
-                dataGV.DataSource = dt;                
+                dataGV.DataSource = mProductSKU_dt;                
 
                 dataGV.Columns["ProductNameVN"].HeaderText = "Tên Sản Phẩm (VN)";
                 dataGV.Columns["ProductNameEN"].HeaderText = "Tên Sản Phẩm (EN)";
@@ -151,15 +142,7 @@ namespace RauViet.ui
 
             
         }
-
-        private void dataGV_RowPrePaint(object sender, DataGridViewRowPrePaintEventArgs e)
-        {
-            if (e.RowIndex % 2 == 0)
-            {
-                dataGV.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.Beige;
-            }
-        }
-        
+                
         private void dataGV_CellClick(object sender, EventArgs e)
         {
             if (dataGV.CurrentRow == null) 
@@ -217,9 +200,9 @@ namespace RauViet.ui
         private async void updateProductSKU(int SKU, string productNameVN, string productNameEN, string packingType, string package, 
             string packingList, string botanicalName, decimal priceCNF, int priority, string plantingareaCode, string LOTCodeHeader)
         {
-            foreach (DataGridViewRow row in dataGV.Rows)
+            foreach (DataRow row in mProductSKU_dt.Rows)
             {
-                int _SKU =Convert.ToInt32(row.Cells["SKU"].Value);
+                int _SKU =Convert.ToInt32(row["SKU"]);
                 if (_SKU.CompareTo(SKU) == 0)
                 {
                     DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
@@ -236,17 +219,17 @@ namespace RauViet.ui
 
                                 await SQLManager.Instance.SaveProductSKUHistoryAsync(SKU, priceCNF);
 
-                                row.Cells["ProductNameVN"].Value = productNameVN;
-                                row.Cells["ProductNameEN"].Value = productNameEN;
-                                row.Cells["PackingType"].Value = packingType;
-                                row.Cells["Package"].Value = package;
-                                row.Cells["PackingList"].Value = packingList;
-                                row.Cells["BotanicalName"].Value = botanicalName;
-                                row.Cells["PriceCNF"].Value = priceCNF;
-                                row.Cells["Priority"].Value = priority;
-                                row.Cells["PlantingAreaCode"].Value = plantingareaCode;
-                                row.Cells["LOTCodeHeader"].Value = LOTCodeHeader;
-                                row.Cells["ProductNameVN_NoSign"].Value = Utils.RemoveVietnameseSigns(productNameVN + " " + SKU).ToLower(); ;
+                                row["ProductNameVN"] = productNameVN;
+                                row["ProductNameEN"] = productNameEN;
+                                row["PackingType"] = packingType;
+                                row["Package"] = package;
+                                row["PackingList"] = packingList;
+                                row["BotanicalName"] = botanicalName;
+                                row["PriceCNF"] = priceCNF;
+                                row["Priority"] = priority;
+                                row["PlantingAreaCode"] = plantingareaCode;
+                                row["LOTCodeHeader"] = LOTCodeHeader;
+                                row["ProductNameVN_NoSign"] = Utils.RemoveVietnameseSigns(productNameVN + " " + SKU).ToLower(); ;
                                 status_lb.Text = "Thành công.";
                                 status_lb.ForeColor = Color.Green;
                             }
@@ -369,9 +352,9 @@ namespace RauViet.ui
 
             string SKU = sku_tb.Text;
 
-            foreach (DataGridViewRow row in dataGV.Rows)
+            foreach (DataRow row in mProductSKU_dt.Rows)
             {
-                string maKH = row.Cells["SKU"].Value.ToString();
+                string maKH = row["SKU"].ToString();
                 if (maKH.CompareTo(SKU) == 0)
                 {
                     DialogResult dialogResult = MessageBox.Show("XÓA THÔNG TIN KHÁCH HÀNG ĐÓ NHA \n Chắc chắn chưa ?", " Xóa Thông Tin Khách Hàng", MessageBoxButtons.YesNo);
@@ -387,7 +370,8 @@ namespace RauViet.ui
                                 status_lb.Text = "Thành công.";
                                 status_lb.ForeColor = Color.Green;
 
-                                dataGV.Rows.Remove(row);
+                                mProductSKU_dt.Rows.Remove(row);
+                                mProductSKU_dt.AcceptChanges();
                             }
                             else
                             {

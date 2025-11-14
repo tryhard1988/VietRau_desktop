@@ -141,12 +141,12 @@ namespace RauViet.ui
             if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
             {
                 var columnName = dataGV.Columns[e.ColumnIndex].Name;
-
+                var row = dataGV.CurrentRow;
                 if (columnName == "LOTCode")
                 {
-                    updateLotCodeComplete(dataGV.Rows[e.RowIndex]);
+                    updateLotCodeComplete(row);
                 }
-                var row = dataGV.Rows[e.RowIndex];
+                
                 var list = new List<(int ExportCodeID, int SKU, string LOTCode, string LOTCodeComplete)>();
                 int exportCodeID = Convert.ToInt32(row.Cells["ExportCodeID"].Value);
                 int sku = Convert.ToInt32(row.Cells["SKU"].Value);
@@ -205,14 +205,7 @@ namespace RauViet.ui
                     row.Cells["LOTCode"].ReadOnly = true;
                 }
             }
-        }
-        private void dataGV_RowPrePaint(object sender, DataGridViewRowPrePaintEventArgs e)
-        {
-            if (e.RowIndex % 2 == 0)
-            {
-                dataGV.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.Beige;
-            }
-        }        
+        }       
 
         private void dataGV_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
         {
@@ -270,14 +263,12 @@ namespace RauViet.ui
         {
             var list = new List<(int ExportCodeID, int SKU, string LOTCode, string LOTCodeComplete)>();
 
-            foreach (DataGridViewRow row in dataGV.Rows)
+            foreach (DataRow row in mLOTCode_dt.Rows)
             {
-                if (row.IsNewRow) continue;
-
-                int exportCodeID = Convert.ToInt32(row.Cells["ExportCodeID"].Value);
-                int sku = Convert.ToInt32(row.Cells["SKU"].Value);
-                string lotCode = row.Cells["LOTCode"].Value?.ToString();
-                string lotCodeComplete = row.Cells["LOTCodeComplete"].Value?.ToString();
+                int exportCodeID = Convert.ToInt32(row["ExportCodeID"]);
+                int sku = Convert.ToInt32(row["SKU"]);
+                string lotCode = row["LOTCode"]?.ToString();
+                string lotCodeComplete = row["LOTCodeComplete"]?.ToString();
 
                 list.Add((exportCodeID, sku, lotCode, lotCodeComplete));
             }
