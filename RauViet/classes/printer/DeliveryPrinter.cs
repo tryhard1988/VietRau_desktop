@@ -45,8 +45,29 @@ public class DeliveryPrinter
         pd.PrintPage += Pd_PrintPage;
         PrintPreviewDialog preview = new PrintPreviewDialog();
         preview.Document = pd;
-        preview.Width = 1123;
-        preview.Height = 794;
+        preview.WindowState = FormWindowState.Maximized;  // phóng to toàn màn hình
+        preview.StartPosition = FormStartPosition.CenterScreen;
+
+        foreach (Control c in preview.Controls)
+        {
+            if (c is ToolStrip ts)
+            {
+                foreach (ToolStripItem item in ts.Items)
+                {
+                    if (
+                        item.Name.Equals("print", StringComparison.OrdinalIgnoreCase) ||
+                        item.Name.Equals("printButton", StringComparison.OrdinalIgnoreCase) ||
+                        item.Name.Equals("toolStripButton1", StringComparison.OrdinalIgnoreCase) ||
+                        (item.ToolTipText?.Contains("Print") ?? false) ||
+                        (item.Text?.Contains("Print") ?? false)
+                       )
+                    {
+                        item.Visible = false;
+                    }
+                }
+            }
+        }
+
         preview.ShowDialog(owner);
     }
 

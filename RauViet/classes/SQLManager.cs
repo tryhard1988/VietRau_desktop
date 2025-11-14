@@ -70,7 +70,7 @@ namespace RauViet.classes
             using (SqlConnection con = new SqlConnection(ql_kho_conStr))
             {
                 await con.OpenAsync();
-                string query = "SELECT * FROM Customers";
+                string query = "SELECT * FROM Customers ORDER BY Priority ASC;";
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                 {
@@ -80,9 +80,9 @@ namespace RauViet.classes
             return dt;
         }
 
-        public async Task<bool> updateCustomerAsync(int customerID, string name, string code)
+        public async Task<bool> updateCustomerAsync(int customerID, string name, string code, int Priority)
         {
-            string query = "UPDATE Customers SET FullName=@FullName, CustomerCode=@CustomerCode WHERE CustomerID=@CustomerID";
+            string query = "UPDATE Customers SET FullName=@FullName, CustomerCode=@CustomerCode, Priority=@Priority WHERE CustomerID=@CustomerID";
             try
             {
                 using (SqlConnection con = new SqlConnection(ql_kho_conStr))
@@ -93,6 +93,7 @@ namespace RauViet.classes
                         cmd.Parameters.AddWithValue("@CustomerID", customerID);
                         cmd.Parameters.AddWithValue("@FullName", name);
                         cmd.Parameters.AddWithValue("@CustomerCode", code);
+                        cmd.Parameters.AddWithValue("@Priority", Priority);
                         await cmd.ExecuteNonQueryAsync();
                     }
                 }
@@ -101,12 +102,12 @@ namespace RauViet.classes
             catch { return false; }
         }
 
-        public async Task<int> insertCustomerAsync(string name, string code)
+        public async Task<int> insertCustomerAsync(string name, string code, int priority)
         {
             int newId = -1;
-            string query = @"INSERT INTO Customers (FullName, CustomerCode) 
+            string query = @"INSERT INTO Customers (FullName, CustomerCode, Priority ) 
                              OUTPUT INSERTED.CustomerID
-                            VALUES (@FullName, @CustomerCode)";
+                            VALUES (@FullName, @CustomerCode, @CustomerCode)";
             try
             {
                 using (SqlConnection con = new SqlConnection(ql_kho_conStr))
@@ -116,6 +117,7 @@ namespace RauViet.classes
                     {
                         cmd.Parameters.AddWithValue("@FullName", name);
                         cmd.Parameters.AddWithValue("@CustomerCode", code);
+                        cmd.Parameters.AddWithValue("@Priority", priority);
                         object result = await cmd.ExecuteScalarAsync();
                         if (result != null)
                             newId = Convert.ToInt32(result);
@@ -4017,5 +4019,28 @@ namespace RauViet.classes
             catch { return false; }
         }
 
+        public async Task<DataTable> get3LatestOrdersAsync()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_kho_conStr))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT DISTINCT
+                                    o.CustomerID,
+                                    o.ProductPackingID
+                                FROM Orders o
+                                WHERE o.ExportCodeID IN (
+                                    SELECT TOP 3 ExportCodeID
+                                    FROM ExportCodes
+                                    ORDER BY ExportCodeID DESC
+                                );";
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                {
+                    dt.Load(reader);
+                }
+            }
+            return dt;
+        }
     }
 }

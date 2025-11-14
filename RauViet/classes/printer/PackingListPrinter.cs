@@ -8,23 +8,23 @@ using System.Windows.Forms;
 
 public class PackingListPrinter
 {
-    private List<List<DataGridViewRow>> _groupedOrders; // Gom nhóm theo CustomerCarton
+    private List<List<DataRow>> _groupedOrders; // Gom nhóm theo CustomerCarton
     private int _currentGroupIndex; // Nhóm hiện tại
     private int _currentRowIndex;   // Dòng hiện tại trong nhóm
     private int _yPosition;
     private int sttCount;
     private bool _firstPage;
 
-    private DataGridView _dataGridView;
+    private DataTable _datatable;
     private string _customerName;
     private string _customerAddress;
     private PrintDocument _printDoc;
 
     private List<string> _selectedCartons; // Danh sách CustomerCarton cần in
 
-    public PackingListPrinter(DataGridView dgv, string customerName, string customerAddress, List<string> selectedCartons)
+    public PackingListPrinter(DataTable dgv, string customerName, string customerAddress, List<string> selectedCartons)
     {
-        _dataGridView = dgv;
+        _datatable = dgv;
         _customerName = customerName;
         _customerAddress = customerAddress;
         _selectedCartons = selectedCartons ?? new List<string>();
@@ -41,10 +41,31 @@ public class PackingListPrinter
         using (PrintPreviewDialog preview = new PrintPreviewDialog())
         {
             preview.Document = _printDoc;
-            preview.Width = 1123;
-            preview.Height = 794;
+            preview.WindowState = FormWindowState.Maximized;  // phóng to toàn màn hình
+            preview.StartPosition = FormStartPosition.CenterScreen;
+
+            foreach (Control c in preview.Controls)
+            {
+                if (c is ToolStrip ts)
+                {
+                    foreach (ToolStripItem item in ts.Items)
+                    {
+                        if (
+                            item.Name.Equals("print", StringComparison.OrdinalIgnoreCase) ||
+                            item.Name.Equals("printButton", StringComparison.OrdinalIgnoreCase) ||
+                            item.Name.Equals("toolStripButton1", StringComparison.OrdinalIgnoreCase) ||
+                            (item.ToolTipText?.Contains("Print") ?? false) ||
+                            (item.Text?.Contains("Print") ?? false)
+                           )
+                        {
+                            item.Visible = false;
+                        }
+                    }
+                }
+            }
+
             preview.ShowDialog(owner);
-        }
+        }        
     }
 
     public void Print(int number)
@@ -59,14 +80,26 @@ public class PackingListPrinter
         }
     }
 
+    public void Print(string cusCarton)
+    {
+        DialogResult dialogResult = MessageBox.Show($"Mã Thùng: {cusCarton}\nBạn có chắc chắn muốn in không?", "Xác nhận in ấn", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+        if (dialogResult == DialogResult.Yes)
+        {
+            PreparePrintRows();
+            ResetPrintState();
+            _printDoc.Print();
+        }
+    }
+
     /// <summary>
     /// Chuẩn bị dữ liệu in: gom nhóm theo CustomerCarton nhưng chỉ lấy những carton nằm trong danh sách chọn.
     /// </summary>
     private void PreparePrintRows()
     {
-        var rows = _dataGridView.Rows.Cast<DataGridViewRow>()
-            .Where(r => !r.IsNewRow)
-            .ToList();
+        var rows = _datatable.AsEnumerable()
+                            .Where(r => r.Field<int?>("CartonNo").HasValue) // CartonNo có giá trị
+                            .ToList();
 
         // Lọc theo danh sách carton được chọn
         if (_selectedCartons != null && _selectedCartons.Count > 0)
@@ -74,7 +107,7 @@ public class PackingListPrinter
             rows = rows
                 .Where(r =>
                 {
-                    string carton = r.Cells["CustomerCarton"].Value?.ToString();
+                    string carton = r["CustomerCarton"]?.ToString();
                     return !string.IsNullOrEmpty(carton) && _selectedCartons.Contains(carton);
                 })
                 .ToList();
@@ -82,8 +115,8 @@ public class PackingListPrinter
 
         // Gom nhóm theo CustomerCarton
         _groupedOrders = rows
-            .Where(r => r.Cells["CustomerCarton"].Value != null && !string.IsNullOrEmpty(r.Cells["CustomerCarton"].Value.ToString()))
-            .GroupBy(r => r.Cells["CustomerCarton"].Value.ToString())
+            .Where(r => r["CustomerCarton"] != null && !string.IsNullOrEmpty(r["CustomerCarton"].ToString()))
+            .GroupBy(r => r["CustomerCarton"].ToString())
             .Select(g => g.ToList())
             .ToList();
     }
@@ -113,9 +146,11 @@ public class PackingListPrinter
         int pageWidth = e.PageBounds.Width - 60;
         int pageHeight = e.MarginBounds.Bottom;
 
-        Font fontHeader = new Font("Arial", 12, FontStyle.Bold);
-        Font fontRegular = new Font("Arial", 10);
-        Font fontLarge = new Font("Arial", 32, FontStyle.Bold);
+        Font fontLarge1 = new Font("Times New Roman", 14);
+        Font fontLarge1Bold = new Font("Times New Roman", 18, FontStyle.Bold);
+        Font fontHeader = new Font("Times New Roman", 12, FontStyle.Bold);
+        Font fontRegular = new Font("Times New Roman", 11);
+        Font fontLarge = new Font("Times New Roman", 52, FontStyle.Bold);
         Brush brush = Brushes.Black;
 
         int y = _yPosition;
@@ -123,8 +158,8 @@ public class PackingListPrinter
         // ================= HEADER =================
         if (_firstPage)
         {
-            int leftWidth = pageWidth / 3;
-            Rectangle leftRect = new Rectangle(startX, y, leftWidth, lineHeight * 7);
+            int leftWidth = pageWidth / 3 - 80;
+            Rectangle leftRect = new Rectangle(startX, y, leftWidth, (lineHeight + 10) * 7);
             g.DrawRectangle(Pens.Black, leftRect);
 
             g.DrawString("Consignee:", fontHeader, brush,
@@ -137,8 +172,8 @@ public class PackingListPrinter
             int rightX = startX + leftWidth;
             int rightWidth = pageWidth - leftWidth;
 
-            int cartHeight = lineHeight * 4;
-            string customerCarton = currentGroup[0].Cells["CustomerCarton"].Value?.ToString() ?? "";
+            int cartHeight = (lineHeight + 10) * 4;
+            string customerCarton = currentGroup[0]["CustomerCarton"]?.ToString() ?? "";
 
             Rectangle rectCarton = new Rectangle(rightX, y, rightWidth, cartHeight);
             g.DrawRectangle(Pens.Black, rectCarton);
@@ -148,48 +183,48 @@ public class PackingListPrinter
 
             int halfWidth = rightWidth / 3;
 
-            Rectangle rectCartonNo = new Rectangle(rightX, y + cartHeight, rightWidth, lineHeight);
+            Rectangle rectCartonNo = new Rectangle(rightX, y + cartHeight, rightWidth, lineHeight + 10);
             g.DrawRectangle(Pens.Black, rectCartonNo);
             Rectangle rectLabelCartonNo = new Rectangle(rectCartonNo.X, rectCartonNo.Y, halfWidth, rectCartonNo.Height);
             Rectangle rectValueCartonNo = new Rectangle(rectCartonNo.X + halfWidth, rectCartonNo.Y, halfWidth * 2, rectCartonNo.Height);
 
-            string cartonNo = currentGroup[0].Cells["CartonNo"].Value?.ToString() ?? "";
+            string cartonNo = currentGroup[0]["CartonNo"]?.ToString() ?? "";
             g.DrawRectangle(Pens.Black, rectLabelCartonNo);
-            g.DrawRectangle(Pens.Black, rectValueCartonNo);
-            g.DrawString("Carton No:", fontRegular, brush, rectLabelCartonNo);
-            g.DrawString(cartonNo, fontRegular, brush, rectValueCartonNo);
+           // g.DrawRectangle(Pens.Black, rectValueCartonNo);
+            g.DrawString("Carton No:", fontLarge1, brush, rectLabelCartonNo, new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
+            g.DrawString(cartonNo, fontLarge1Bold, brush, rectValueCartonNo, new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
 
-            Rectangle rectExportDate = new Rectangle(rightX, y + cartHeight + lineHeight, rightWidth, lineHeight);
+            Rectangle rectExportDate = new Rectangle(rightX, y + cartHeight + lineHeight + 10, rightWidth, lineHeight + 10);
             g.DrawRectangle(Pens.Black, rectExportDate);
             Rectangle rectLabelExportDate = new Rectangle(rectExportDate.X, rectExportDate.Y, halfWidth, rectExportDate.Height);
             Rectangle rectValueExportDate = new Rectangle(rectExportDate.X + halfWidth, rectExportDate.Y, halfWidth * 2, rectExportDate.Height);
 
-            string exportDate = currentGroup[0].Cells["ExportDate"].Value?.ToString() ?? "";
+            string exportDate = ((DateTime)currentGroup[0]["ExportDate"]).ToString("dd/MM/yy");
             g.DrawRectangle(Pens.Black, rectLabelExportDate);
-            g.DrawRectangle(Pens.Black, rectValueExportDate);
-            g.DrawString("Export Date:", fontRegular, brush, rectLabelExportDate);
-            g.DrawString(exportDate, fontRegular, brush, rectValueExportDate);
+           // g.DrawRectangle(Pens.Black, rectValueExportDate);
+            g.DrawString("Export Date:", fontLarge1, brush, rectLabelExportDate, new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
+            g.DrawString(exportDate, fontLarge1Bold, brush, rectValueExportDate, new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
 
-            Rectangle rectCartonSize = new Rectangle(rightX, y + cartHeight + lineHeight * 2, rightWidth, lineHeight);
+            Rectangle rectCartonSize = new Rectangle(rightX, y + cartHeight + (lineHeight + 10) * 2, rightWidth, lineHeight + 10);
             g.DrawRectangle(Pens.Black, rectCartonSize);
             Rectangle rectLabelCartonSize = new Rectangle(rectCartonSize.X, rectCartonSize.Y, halfWidth, rectCartonSize.Height);
             Rectangle rectValueCartonSize = new Rectangle(rectCartonSize.X + halfWidth, rectCartonSize.Y, halfWidth * 2, rectCartonSize.Height);
 
-            string cartonSize = currentGroup[0].Cells["CartonSize"].Value?.ToString() ?? "";
+            string cartonSize = currentGroup[0]["CartonSize"]?.ToString() ?? "";
             g.DrawRectangle(Pens.Black, rectLabelCartonSize);
-            g.DrawRectangle(Pens.Black, rectValueCartonSize);
-            g.DrawString("Carton Size:", fontRegular, brush, rectLabelCartonSize);
-            g.DrawString(cartonSize, fontRegular, brush, rectValueCartonSize);
+           // g.DrawRectangle(Pens.Black, rectValueCartonSize);
+            g.DrawString("Carton Size:", fontLarge1, brush, rectLabelCartonSize, new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
+            g.DrawString(cartonSize, fontLarge1Bold, brush, rectValueCartonSize, new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
 
-            y += cartHeight + lineHeight * 3;
+            y += cartHeight + (lineHeight + 10) * 3;
             _firstPage = false;
         }
 
         // ================= Table Header =================
         float colNoWidth = 40;
-        float colQuantityWidth = 100;
+        float colQuantityWidth = 120;
         float colPackingWidth = 75;
-        float colPCSWidth = 50;
+        float colPCSWidth = 60;
         float colNameWidth = pageWidth - colNoWidth - colQuantityWidth - colPackingWidth - colPCSWidth;
 
         float x = startX;
@@ -203,15 +238,15 @@ public class PackingListPrinter
         g.DrawString("Name of Goods", fontHeader, brush, new RectangleF(x, y, colNameWidth, lineHeight),
             new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
 
-        g.DrawRectangle(Pens.Black, x, y + lineHeight, colNameWidth / 2 - 50, lineHeight);
-        g.DrawString("English Name", fontHeader, brush, new RectangleF(x, y + lineHeight, colNameWidth / 2 - 50, lineHeight),
+        g.DrawRectangle(Pens.Black, x, y + lineHeight, colNameWidth / 2, lineHeight);
+        g.DrawString("English Name", fontHeader, brush, new RectangleF(x, y + lineHeight, colNameWidth / 2, lineHeight),
             new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
-        x += colNameWidth / 2 - 50;
+        x += colNameWidth / 2;
 
-        g.DrawRectangle(Pens.Black, x, y + lineHeight, colNameWidth / 2 + 50, lineHeight);
-        g.DrawString("Vietnamese Name", fontHeader, brush, new RectangleF(x, y + lineHeight, colNameWidth / 2 + 50, lineHeight),
+        g.DrawRectangle(Pens.Black, x, y + lineHeight, colNameWidth / 2, lineHeight);
+        g.DrawString("Vietnamese Name", fontHeader, brush, new RectangleF(x, y + lineHeight, colNameWidth / 2, lineHeight),
             new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
-        x += colNameWidth / 2 + 50;
+        x += colNameWidth / 2;
 
         g.DrawRectangle(Pens.Black, x, y, colQuantityWidth, lineHeight);
         g.DrawString("Quantity", fontHeader, brush, new RectangleF(x, y, colQuantityWidth, lineHeight),
@@ -239,24 +274,28 @@ public class PackingListPrinter
         y += lineHeight * 2;
 
         // ================= Table Data =================
-        
+
+        decimal totalNW = 0;
+        float xNW = 0;
         for (; _currentRowIndex < currentGroup.Count; _currentRowIndex++)
         {
             var row = currentGroup[_currentRowIndex];
             x = startX;
 
-            string productEN = row.Cells["ProductNameEN"].Value?.ToString() ?? "";
-            string productVN = row.Cells["ProductNameVN"].Value?.ToString() ?? "";
-            string unit = row.Cells["Package"].Value?.ToString() ?? "";
-            string nw = row.Cells["NWReal"]?.Value?.ToString() ?? "";
-            decimal amount = row.Cells["Amount"].Value == null || row.Cells["Amount"].Value == DBNull.Value? 0 : Convert.ToDecimal(row.Cells["Amount"].Value);
-            string packing = row.Cells["Packing"].Value?.ToString() ?? "";
+            string productEN = row["ProductNameEN"]?.ToString() ?? "";
+            string productVN = row["ProductNameVN"]?.ToString() ?? "";
+            string unit = row["Package"]?.ToString() ?? "";
+            string nw = row["NWReal"]?.ToString() ?? "";
+            decimal amount = row["Amount"] == null || row["Amount"] == DBNull.Value ? 0 : Convert.ToDecimal(row["Amount"]);
+            string packing = row["Packing"]?.ToString() ?? "";
             string packingCalc = "";
-            string pcs = row.Cells["PCSReal"]?.Value?.ToString() ?? "";
+            string pcs = row["PCSReal"]?.ToString() ?? "";
 
             string name = productEN.Length > productVN.Length ? productEN : productVN;
-            RectangleF rect = new RectangleF(x, y, colNameWidth, 9999);
-            SizeF textSize = e.Graphics.MeasureString(name, fontRegular, (int)colNameWidth, StringFormat.GenericDefault);
+
+            // RectangleF rect = new RectangleF(x, y, colNameWidth, 9999);
+            float colNameWidthTemp = colNameWidth / 2 - 20;
+            SizeF textSize = e.Graphics.MeasureString(name, fontRegular, (int)colNameWidthTemp, StringFormat.GenericDefault);
             int dynamicHeight = Math.Max(lineHeight, (int)textSize.Height);
 
             if (amount > 0 && packing.CompareTo("") != 0)
@@ -280,15 +319,15 @@ public class PackingListPrinter
                 new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
             x += colNoWidth;
 
-            g.DrawRectangle(Pens.Black, x, y, colNameWidth / 2 - 50, dynamicHeight);
-            g.DrawString(productEN, fontRegular, brush, new RectangleF(x + 5, y, colNameWidth / 2 - 50, dynamicHeight),
+            g.DrawRectangle(Pens.Black, x, y, colNameWidth / 2, dynamicHeight);
+            g.DrawString(productEN, fontRegular, brush, new RectangleF(x + 5, y, colNameWidth / 2 - 5, dynamicHeight),
                 new StringFormat { Alignment = StringAlignment.Near, LineAlignment = StringAlignment.Center });
-            x += colNameWidth / 2 - 50;
+            x += colNameWidth / 2;
 
-            g.DrawRectangle(Pens.Black, x, y, colNameWidth / 2 + 50, dynamicHeight);
-            g.DrawString(productVN, fontRegular, brush, new RectangleF(x + 5, y, colNameWidth / 2 + 50, dynamicHeight),
+            g.DrawRectangle(Pens.Black, x, y, colNameWidth / 2, dynamicHeight);
+            g.DrawString(productVN, fontRegular, brush, new RectangleF(x + 5, y, colNameWidth / 2 - 5, dynamicHeight),
                 new StringFormat { Alignment = StringAlignment.Near, LineAlignment = StringAlignment.Center });
-            x += colNameWidth / 2 + 50;
+            x += colNameWidth / 2;
 
             g.DrawRectangle(Pens.Black, x, y, colQuantityWidth / 2, dynamicHeight);
             g.DrawString(unit, fontRegular, brush, new RectangleF(x, y, colQuantityWidth / 2, dynamicHeight),
@@ -298,7 +337,9 @@ public class PackingListPrinter
             g.DrawRectangle(Pens.Black, x, y, colQuantityWidth / 2, dynamicHeight);
             g.DrawString(nw, fontRegular, brush, new RectangleF(x, y, colQuantityWidth / 2, dynamicHeight),
                 new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
+            xNW = x;
             x += colQuantityWidth / 2;
+            totalNW += Convert.ToDecimal(nw);
 
             g.DrawRectangle(Pens.Black, x, y, colPackingWidth, dynamicHeight);
             g.DrawString(packingCalc, fontRegular, brush, new RectangleF(x, y, colPackingWidth, dynamicHeight),
@@ -306,13 +347,25 @@ public class PackingListPrinter
             x += colPackingWidth;
 
             g.DrawRectangle(Pens.Black, x, y, colPCSWidth, dynamicHeight);
-            g.DrawString(pcs, fontRegular, brush, new RectangleF(x, y, colPCSWidth, dynamicHeight),
-                new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
+            if (Convert.ToInt32(pcs) > 0)
+            {
+                g.DrawRectangle(Pens.Black, x, y, colPCSWidth, dynamicHeight);
+                g.DrawString(pcs, fontRegular, brush, new RectangleF(x, y, colPCSWidth, dynamicHeight),
+                    new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
+            }
 
             y += dynamicHeight;
             sttCount++;
         }
 
+        g.DrawRectangle(Pens.Black, xNW + colQuantityWidth / 2, y, colPCSWidth + colPackingWidth, lineHeight);
+        g.DrawRectangle(Pens.Black, startX, y, xNW - startX, lineHeight);
+        g.DrawString("N.W Total", fontHeader, brush, new RectangleF(startX, y, xNW - startX, lineHeight),
+            new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
+
+        g.DrawRectangle(Pens.Black, xNW, y, colQuantityWidth / 2, lineHeight);
+        g.DrawString(totalNW.ToString("F2"), fontHeader, brush, new RectangleF(xNW, y, colQuantityWidth / 2, lineHeight),
+            new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
         // Xong 1 group
         _currentGroupIndex++;
         _currentRowIndex = 0;

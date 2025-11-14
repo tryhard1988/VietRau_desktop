@@ -88,17 +88,17 @@ namespace RauViet.ui
                     bool isNWFinalValid = decimal.TryParse(dr["NetWeightFinal"]?.ToString(), out nwFinal);
                     bool isNWOrderValid = decimal.TryParse(dr["TotalNWOther"]?.ToString(), out nwOrder);
 
-                    if (!isNWFinalValid && isNWRealValid)
-                    {
-                        if ((package.CompareTo("kg") == 0 || package.CompareTo("weight") == 0) &&
-                            SKU < 1000)
-                        {
-                            dr["NetWeightFinal"] = nwReal;
-                            nwFinal = nwReal;
-                            isNWFinalValid = isNWRealValid;
-                        }
+                    //if (!isNWFinalValid && isNWRealValid)
+                    //{
+                    //    if ((package.CompareTo("kg") == 0 || package.CompareTo("weight") == 0) &&
+                    //        SKU < 1000)
+                    //    {
+                    //        dr["NetWeightFinal"] = nwReal;
+                    //        nwFinal = nwReal;
+                    //        isNWFinalValid = isNWRealValid;
+                    //    }
 
-                    }
+                    //}
 
                     if (isNWRealValid && isNWFinalValid) dr["NWDifference"] = nwReal - nwFinal;
                     else dr["NWDifference"] = DBNull.Value;

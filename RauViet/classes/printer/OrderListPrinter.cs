@@ -16,24 +16,34 @@ public class OrderListPrinter
     private List<DataGridViewRow> printRows;
 
     // ------------------- In trực tiếp -------------------
-    public void PrintDirect(DataGridView dgv, string exportCode, DateTime exportDate, string staff)
+    public void PrintDirect(DataGridView dgv, string exportCode, DateTime exportDate, string staff, bool isIn2Mat)
     {
         if (dgv.Rows.Count == 0) return;
 
-        DialogResult dialogResult = MessageBox.Show($"Chắc chắn Chưa?", "Xác nhận in ấn", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
-        if (dialogResult == DialogResult.Yes)
+        SetupPrint(dgv);
+
+        PrintDocument printDoc = new PrintDocument();
+        printDoc.PrintPage += (s, e) =>
         {
-            SetupPrint(dgv);
+            DrawPrintPage(e, exportCode, exportDate, staff);
+        };
+        printDoc.PrinterSettings.Duplex = isIn2Mat ? Duplex.Vertical : Duplex.Simplex;
 
-            PrintDocument printDoc = new PrintDocument();
-            printDoc.PrintPage += (s, e) =>
+        // Hiển thị hộp thoại chọn máy in
+        using (PrintDialog printDialog = new PrintDialog())
+        {
+            printDialog.Document = printDoc;
+            printDialog.AllowSomePages = true;  // cho phép chọn trang
+            printDialog.AllowSelection = true;   // cho phép chọn dữ liệu
+
+            if (printDialog.ShowDialog() == DialogResult.OK)
             {
-                DrawPrintPage(e, exportCode, exportDate, staff);
-            };
-            printDoc.Print();
-        } 
+                printDoc.Print(); // in ra máy in được chọn
+            }
+        }
     }
+
 
     // ------------------- Xem trước -------------------
     public void PrintPreview(DataGridView dgv, string exportCode, DateTime exportDate, string staff, Form owner)
@@ -50,10 +60,31 @@ public class OrderListPrinter
 
         PrintPreviewDialog preview = new PrintPreviewDialog
         {
-            Document = printDoc,
-            Width = 1000,
-            Height = 800
+            Document = printDoc
         };
+        preview.WindowState = FormWindowState.Maximized;  // phóng to toàn màn hình
+        preview.StartPosition = FormStartPosition.CenterScreen;
+
+        foreach (Control c in preview.Controls)
+        {
+            if (c is ToolStrip ts)
+            {
+                foreach (ToolStripItem item in ts.Items)
+                {
+                    if (
+                        item.Name.Equals("print", StringComparison.OrdinalIgnoreCase) ||
+                        item.Name.Equals("printButton", StringComparison.OrdinalIgnoreCase) ||
+                        item.Name.Equals("toolStripButton1", StringComparison.OrdinalIgnoreCase) ||
+                        (item.ToolTipText?.Contains("Print") ?? false) ||
+                        (item.Text?.Contains("Print") ?? false)
+                       )
+                    {
+                        item.Visible = false;
+                    }
+                }
+            }
+        }
+
         preview.ShowDialog(owner);
     }
 
@@ -73,9 +104,10 @@ public class OrderListPrinter
     {
         Graphics g = e.Graphics;
         int left = e.MarginBounds.Left / 3;
-        int rowHeight = 25;
+        int rowHeight = 30;
         int pageWidth = e.MarginBounds.Width + left * 4 - 10;
         int pageHeight = e.MarginBounds.Bottom;
+        int paddingBottom = e.PageBounds.Bottom - e.MarginBounds.Bottom;
 
         Font fontTitle = new Font("Times New Roman", 16, FontStyle.Bold);
         Font fontHeader = new Font("Times New Roman", 12, FontStyle.Bold);
@@ -121,6 +153,12 @@ public class OrderListPrinter
             string pcs = row.Cells["PCSOther"].Value?.ToString() ?? "";
             string nw = row.Cells["NWOther"].Value?.ToString() ?? "";
 
+            nw = double.TryParse(nw, out double nwValue) ? nwValue.ToString("F2") : "0.00";
+            if (int.TryParse(pcs, out int pcsValue))
+                pcs = pcsValue > 0 ? pcs : ""; 
+            else
+                pcs = "";
+
             if (product != currentProduct)
             {
                 currentProduct = product;
@@ -164,7 +202,7 @@ public class OrderListPrinter
             y += rowHeight;
             stt++;
 
-            if (y + rowHeight > pageHeight)
+            if (y + rowHeight > pageHeight + paddingBottom / 2)
             {
                 currentRowIndex++;
                 yPosition = e.MarginBounds.Top;
@@ -189,7 +227,7 @@ public class OrderListPrinter
     // ------------------- Vẽ header bảng -------------------
     private void DrawTableHeader(Graphics g, int left, ref int y, int rowHeight, int pageWidth, Font fontHeader)
     {
-        int colSTT = 35, colCustomer = 150, colPCS = 40, colNW = 42, colActualPCS = 40, colActualNW = 42, colPackingPCS = 300,
+        int colSTT = 35, colCustomer = 150, colPCS = 40, colNW = 45, colActualPCS = 40, colActualNW = 45, colPackingPCS = 300,
             colPackingNote = pageWidth - colSTT - colCustomer - colPCS - colNW - colActualPCS - colActualNW - colPackingPCS;
         int x = left;
 

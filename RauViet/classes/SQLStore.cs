@@ -52,6 +52,7 @@ namespace RauViet.classes
         DataTable mCusromer_dt = null;
         DataTable mOrderList_dt = null;
         DataTable mCartonSize_dt = null;
+        DataTable mlatestOrders_dt = null;
 
         Dictionary<int, DataTable> mReportExportByYears;
 
@@ -1778,6 +1779,59 @@ namespace RauViet.classes
             }
 
             return mCartonSize_dt;
+        }
+
+        public void removeLatestOrdersAsync()
+        {
+            mlatestOrders_dt = null;
+        }
+        public async Task<DataTable> get3LatestOrdersAsync()
+        {
+            if (mlatestOrders_dt == null)
+            {
+                try
+                {
+                    mlatestOrders_dt = await SQLManager.Instance.get3LatestOrdersAsync();
+                    edit3LatestOrders();
+                }
+                catch
+                {
+                    Console.WriteLine("error get3GetLatestOrdersAsync SQLStore");
+                    return null;
+                }                
+            }
+
+            return mlatestOrders_dt;
+        }
+
+        private void edit3LatestOrders()
+        {
+            mlatestOrders_dt.Columns.Add(new DataColumn("ProductNameVN", typeof(string)));
+            mlatestOrders_dt.Columns.Add(new DataColumn("OrderPackingPriceCNF", typeof(string)));
+            mlatestOrders_dt.Columns.Add(new DataColumn("PCSOther", typeof(int)));
+            mlatestOrders_dt.Columns.Add(new DataColumn("NWOther", typeof(decimal)));
+            mlatestOrders_dt.Columns.Add(new DataColumn("Package", typeof(string)));
+            mlatestOrders_dt.Columns.Add(new DataColumn("packing", typeof(string)));
+            mlatestOrders_dt.Columns.Add(new DataColumn("Amount", typeof(decimal)));
+
+            foreach (DataRow dr in mlatestOrders_dt.Rows)
+            {
+                int productPackingID = Convert.ToInt32(dr["ProductPackingID"]);
+                DataRow[] packingRows = mProductpacking_dt.Select($"ProductPackingID = {productPackingID}");
+
+                string proVN = packingRows.Length > 0 ? packingRows[0]["Name_VN"].ToString() : "Unknown"; ;
+
+                dr["ProductNameVN"] = proVN;
+                string package = packingRows.Length > 0 ? packingRows[0]["Package"].ToString() : "";
+                dr["Package"] = package;
+                dr["OrderPackingPriceCNF"] = packingRows.Length > 0 ? Convert.ToDecimal(packingRows[0]["PriceCNF"]) : 0;
+                dr["packing"] = packingRows.Length > 0 ? packingRows[0]["packing"].ToString() : "";
+                dr["Amount"] = packingRows.Length > 0 ? Convert.ToDecimal(packingRows[0]["Amount"]) : 0;
+                if (package.CompareTo("weight") == 0)
+                {
+                    dr["PCSOther"] = 0;
+                }
+            }
         }
     }
 }

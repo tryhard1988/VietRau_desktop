@@ -45,6 +45,8 @@ namespace RauViet.ui
             this.maKH_tb = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.dataGV = new System.Windows.Forms.DataGridView();
+            this.label4 = new System.Windows.Forms.Label();
+            this.priority_tb = new System.Windows.Forms.TextBox();
             this.panel1.SuspendLayout();
             this.info_gb.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
@@ -103,13 +105,15 @@ namespace RauViet.ui
             // 
             // info_gb
             // 
+            this.info_gb.Controls.Add(this.label4);
+            this.info_gb.Controls.Add(this.priority_tb);
             this.info_gb.Controls.Add(this.name_tb);
             this.info_gb.Controls.Add(this.label2);
             this.info_gb.Controls.Add(this.label3);
             this.info_gb.Controls.Add(this.customerCode_tb);
             this.info_gb.Location = new System.Drawing.Point(61, 177);
             this.info_gb.Name = "info_gb";
-            this.info_gb.Size = new System.Drawing.Size(422, 128);
+            this.info_gb.Size = new System.Drawing.Size(422, 177);
             this.info_gb.TabIndex = 28;
             this.info_gb.TabStop = false;
             // 
@@ -153,7 +157,7 @@ namespace RauViet.ui
             // 
             this.delete_btn.BackColor = System.Drawing.Color.Red;
             this.delete_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.delete_btn.Location = new System.Drawing.Point(293, 311);
+            this.delete_btn.Location = new System.Drawing.Point(293, 360);
             this.delete_btn.Name = "delete_btn";
             this.delete_btn.Size = new System.Drawing.Size(113, 47);
             this.delete_btn.TabIndex = 27;
@@ -175,7 +179,7 @@ namespace RauViet.ui
             this.status_lb.AutoSize = true;
             this.status_lb.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.status_lb.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.status_lb.Location = new System.Drawing.Point(6, 322);
+            this.status_lb.Location = new System.Drawing.Point(6, 371);
             this.status_lb.Name = "status_lb";
             this.status_lb.Size = new System.Drawing.Size(55, 23);
             this.status_lb.TabIndex = 26;
@@ -185,7 +189,7 @@ namespace RauViet.ui
             // 
             this.LuuThayDoiBtn.BackColor = System.Drawing.SystemColors.Highlight;
             this.LuuThayDoiBtn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LuuThayDoiBtn.Location = new System.Drawing.Point(174, 311);
+            this.LuuThayDoiBtn.Location = new System.Drawing.Point(174, 360);
             this.LuuThayDoiBtn.Name = "LuuThayDoiBtn";
             this.LuuThayDoiBtn.Size = new System.Drawing.Size(113, 47);
             this.LuuThayDoiBtn.TabIndex = 25;
@@ -223,6 +227,24 @@ namespace RauViet.ui
             this.dataGV.Size = new System.Drawing.Size(718, 681);
             this.dataGV.TabIndex = 1;
             // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label4.Location = new System.Drawing.Point(14, 133);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(72, 16);
+            this.label4.TabIndex = 19;
+            this.label4.Text = "Độ Ưu Tiên";
+            // 
+            // priority_tb
+            // 
+            this.priority_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.priority_tb.Location = new System.Drawing.Point(154, 130);
+            this.priority_tb.Name = "priority_tb";
+            this.priority_tb.Size = new System.Drawing.Size(84, 23);
+            this.priority_tb.TabIndex = 20;
+            // 
             // Customers
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -258,5 +280,7 @@ namespace RauViet.ui
         private System.Windows.Forms.Button readOnly_btn;
         private System.Windows.Forms.Button newCustomerBtn;
         private System.Windows.Forms.Button edit_btn;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.TextBox priority_tb;
     }
 }

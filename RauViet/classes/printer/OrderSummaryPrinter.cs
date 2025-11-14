@@ -27,30 +27,118 @@ public class OrderSummaryPrinter
 
         PrintPreviewDialog preview = new PrintPreviewDialog
         {
-            Document = printDoc,
-            Width = 1000,
-            Height = 800
+            Document = printDoc
         };
+        preview.WindowState = FormWindowState.Maximized;  // phóng to toàn màn hình
+        preview.StartPosition = FormStartPosition.CenterScreen;
+
+        foreach (Control c in preview.Controls)
+        {
+            if (c is ToolStrip ts)
+            {
+                foreach (ToolStripItem item in ts.Items)
+                {
+                    if (
+                        item.Name.Equals("print", StringComparison.OrdinalIgnoreCase) ||
+                        item.Name.Equals("printButton", StringComparison.OrdinalIgnoreCase) ||
+                        item.Name.Equals("toolStripButton1", StringComparison.OrdinalIgnoreCase) ||
+                        (item.ToolTipText?.Contains("Print") ?? false) ||
+                        (item.Text?.Contains("Print") ?? false)
+                       )
+                    {
+                        item.Visible = false;
+                    }
+                }
+            }
+        }
+
         preview.ShowDialog(owner);
     }
 
     // ------------------- Hàm Print trực tiếp -------------------
-    public void PrintDirect(DataTable dataTable, string exportCode, DateTime exportDate)
+    public void PrintDirect(DataTable dataTable, string exportCode, DateTime exportDate, bool isIn2Mat)
     {
         if (dataTable == null || dataTable.Rows.Count == 0)
             return;
 
-        DialogResult dialogResult = MessageBox.Show($"Chắc chắn Chưa?", "Xác nhận in ấn", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+        SetupPrint(dataTable, exportCode, exportDate);
 
-        if (dialogResult == DialogResult.Yes)
+        PrintDocument printDoc = new PrintDocument();
+        printDoc.PrintPage += PrintDoc_PrintPage;
+        printDoc.PrinterSettings.Duplex = isIn2Mat ? Duplex.Vertical : Duplex.Simplex;
+
+        // Hiển thị hộp thoại chọn máy in
+        using (PrintDialog printDialog = new PrintDialog())
         {
-            SetupPrint(dataTable, exportCode, exportDate);
-
-            PrintDocument printDoc = new PrintDocument();
-            printDoc.PrintPage += PrintDoc_PrintPage;
-            printDoc.Print(); // in trực tiếp ra máy in mặc định
-        } 
+            printDialog.Document = printDoc;
+            printDialog.AllowSomePages = true; // cho phép chọn trang
+            printDialog.AllowSelection = true;  // cho phép chọn lựa
+            if (printDialog.ShowDialog() == DialogResult.OK)
+            {
+                printDoc.Print(); // in ra máy in được chọn
+            }
+        }
     }
+
+    public void PrintDirectToPdf(DataTable dataTable, string exportCode, DateTime exportDate)
+    {
+        if (dataTable == null || dataTable.Rows.Count == 0)
+            return;
+
+        SetupPrint(dataTable, exportCode, exportDate);
+
+        using (SaveFileDialog saveDlg = new SaveFileDialog())
+        {
+            saveDlg.Title = "Chọn nơi lưu file PDF";
+            saveDlg.Filter = "PDF File|*.pdf";
+            saveDlg.FileName = $"Export_{exportCode}_{exportDate:yyyyMMdd}.pdf";
+
+            if (saveDlg.ShowDialog() != DialogResult.OK)
+                return;
+
+            string outputPath = saveDlg.FileName;
+
+            try
+            {
+                PrintDocument printDoc = new PrintDocument();
+
+                // Gán sự kiện vẽ nội dung
+                printDoc.PrintPage += PrintDoc_PrintPage;
+
+                // Thiết lập máy in ảo PDF
+                printDoc.PrinterSettings.PrinterName = "Microsoft Print to PDF";
+                printDoc.PrinterSettings.PrintToFile = true;
+                printDoc.PrinterSettings.PrintFileName = outputPath;
+
+                // Bắt đầu "in" ra PDF
+                printDoc.Print();
+
+                DialogResult openResult = MessageBox.Show($"✅ Đã xuất PDF thành công:\n{outputPath}\n\nBạn có muốn mở file ngay không?",
+                                        "Hoàn tất", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+                if (openResult == DialogResult.Yes)
+                {
+                    try
+                    {
+                        System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo()
+                        {
+                            FileName = outputPath,
+                            UseShellExecute = true // mở file theo ứng dụng mặc định
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"❌ Không thể mở file:\n{ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"❌ Lỗi khi xuất PDF:\n{ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+    }
+
 
     // ------------------- Setup dữ liệu chung -------------------
     private void SetupPrint(DataTable dataTable, string exportCode, DateTime exportDate)
@@ -68,6 +156,7 @@ public class OrderSummaryPrinter
     // ------------------- Hàm PrintPage -------------------
     private void PrintDoc_PrintPage(object sender, PrintPageEventArgs e)
     {
+        int paddingBottom = e.PageBounds.Bottom - e.MarginBounds.Bottom;
         int startX = 50;
         int startY = firstPage ? 50 : yPosition;
         int rowHeight = 30;
@@ -158,8 +247,9 @@ public class OrderSummaryPrinter
 
             // TotalPCSOther
             int pcs = Convert.ToInt32(row["TotalPCSOther"] ?? 0);
+            string pcsStr = pcs > 0 ? pcs.ToString() : "";
             e.Graphics.DrawRectangle(Pens.Black, x, y, colWidth_pcs, dynamicHeight);
-            e.Graphics.DrawString(pcs.ToString(), fontContent, brush, new RectangleF(x, y, colWidth_pcs, rowHeight), sfDataCenter);
+            e.Graphics.DrawString(pcsStr, fontContent, brush, new RectangleF(x, y, colWidth_pcs, rowHeight), sfDataCenter);
             totalPCS += pcs;
             x += colWidth_pcs;
 
@@ -175,7 +265,8 @@ public class OrderSummaryPrinter
             y += dynamicHeight;
 
             // Kiểm tra phân trang
-            if (y + rowHeight > e.MarginBounds.Bottom)
+
+            if (y + rowHeight > e.MarginBounds.Bottom + paddingBottom/2)
             {
                 currentRowIndex++;
                 yPosition = e.MarginBounds.Top;

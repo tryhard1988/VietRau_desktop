@@ -109,16 +109,18 @@ namespace RauViet.ui
             string maKH = cells["CustomerID"].Value.ToString();
             string fullName = cells["FullName"].Value.ToString();
             string customerCode = cells["CustomerCode"].Value.ToString();
+            int priority = Convert.ToInt32(cells["Priority"].Value);
 
             name_tb.Text = fullName;
             customerCode_tb.Text = customerCode;
+            priority_tb.Text = priority.ToString();
             maKH_tb.Text = maKH;
             delete_btn.Enabled = true;
 
             status_lb.Text = "";
         }
 
-        private async void updateData(int customerId, string fullName, string code)
+        private async void updateData(int customerId, string fullName, string code, int priority)
         {
             foreach (DataGridViewRow row in dataGV.Rows)
             {
@@ -130,7 +132,7 @@ namespace RauViet.ui
                     {
                         try
                         {
-                            bool isScussess = await SQLManager.Instance.updateCustomerAsync(customerId, fullName, code);
+                            bool isScussess = await SQLManager.Instance.updateCustomerAsync(customerId, fullName, code, priority);
 
                             if (isScussess == true)
                             {
@@ -139,6 +141,7 @@ namespace RauViet.ui
 
                                 row.Cells["FullName"].Value = fullName;
                                 row.Cells["CustomerCode"].Value = code;
+                                row.Cells["Priority"].Value = priority;
                             }
                             else
                             {
@@ -161,7 +164,7 @@ namespace RauViet.ui
             }
         }
 
-        private async void createNew(string fullName, string code)
+        private async void createNew(string fullName, string code, int priority)
         {
             DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
@@ -169,7 +172,7 @@ namespace RauViet.ui
             {
                 try
                 {
-                    int newId = await SQLManager.Instance.insertCustomerAsync(fullName, code);
+                    int newId = await SQLManager.Instance.insertCustomerAsync(fullName, code, priority);
                     if (newId > 0 )
                     {
 
@@ -179,6 +182,7 @@ namespace RauViet.ui
                         drToAdd["CustomerID"] = newId;
                         drToAdd["FullName"] = fullName;
                         drToAdd["CustomerCode"] = code;
+                        drToAdd["Priority"] = priority;
                         maKH_tb.Text = newId.ToString();
 
 
@@ -210,7 +214,7 @@ namespace RauViet.ui
         }
         private void saveBtn_Click(object sender, EventArgs e)
         {
-            if (name_tb.Text.CompareTo("") == 0)
+            if (name_tb.Text.CompareTo("") == 0 || customerCode_tb.Text.CompareTo("") == 0 || priority_tb.Text.CompareTo("") == 0)
             {
                 MessageBox.Show(
                                 "Thiếu Dữ Liệu, Kiểm Tra Lại!",
@@ -223,14 +227,15 @@ namespace RauViet.ui
 
             string name = name_tb.Text;
             string code = customerCode_tb.Text;
+            int priority = Convert.ToInt32(priority_tb.Text);
 
             if (code.CompareTo("") == 0)
                 code = name;
 
             if (maKH_tb.Text.Length != 0)
-                updateData(Convert.ToInt32(maKH_tb.Text), name, code);
+                updateData(Convert.ToInt32(maKH_tb.Text), name, code, priority);
             else
-                createNew(name, code);
+                createNew(name, code, priority);
 
         }
         private async void deleteBtn_Click(object sender, EventArgs e)

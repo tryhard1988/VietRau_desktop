@@ -44,17 +44,27 @@ namespace RauViet.ui
             this.tongdongthung_name_lable = new System.Windows.Forms.Label();
             this.tongdathang_label = new System.Windows.Forms.Label();
             this.tongdathang_name_label = new System.Windows.Forms.Label();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.dataGV = new System.Windows.Forms.DataGridView();
+            this.panel5 = new System.Windows.Forms.Panel();
+            this.search_tb = new System.Windows.Forms.TextBox();
+            this.label15 = new System.Windows.Forms.Label();
+            this.exportCode_cbb = new System.Windows.Forms.ComboBox();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
             this.readOnly_btn = new System.Windows.Forms.Button();
             this.edit_btn = new System.Windows.Forms.Button();
             this.previewPrint_PGH_btn = new System.Windows.Forms.Button();
             this.InPhieuGiaoHang_btn = new System.Windows.Forms.Button();
             this.rightInfo_gb = new System.Windows.Forms.GroupBox();
-            this.cartonNo_tang1_btn = new System.Windows.Forms.Button();
             this.cartonSize_cbb = new System.Windows.Forms.ComboBox();
             this.delOrder_btn = new System.Windows.Forms.Button();
             this.chiadon_btn = new System.Windows.Forms.Button();
-            this.checkCarton_btn = new System.Windows.Forms.Button();
             this.assignCustomerCarton_btn = new System.Windows.Forms.Button();
             this.assignCartonSize_btn = new System.Windows.Forms.Button();
             this.label8 = new System.Windows.Forms.Label();
@@ -65,26 +75,20 @@ namespace RauViet.ui
             this.carton_GV = new System.Windows.Forms.DataGridView();
             this.fillter_btn = new System.Windows.Forms.Button();
             this.panel4 = new System.Windows.Forms.Panel();
-            this.CountCarton_tb = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
             this.previewPrint_PT_btn = new System.Windows.Forms.Button();
-            this.print_btn = new System.Windows.Forms.Button();
             this.status_lb = new System.Windows.Forms.Label();
-            this.panel2 = new System.Windows.Forms.Panel();
-            this.dataGV = new System.Windows.Forms.DataGridView();
-            this.panel5 = new System.Windows.Forms.Panel();
-            this.search_tb = new System.Windows.Forms.TextBox();
-            this.label15 = new System.Windows.Forms.Label();
-            this.exportCode_cbb = new System.Windows.Forms.ComboBox();
+            this.label9 = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
             this.panel6.SuspendLayout();
+            this.panel2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
+            this.panel5.SuspendLayout();
             this.panel1.SuspendLayout();
+            this.groupBox1.SuspendLayout();
             this.rightInfo_gb.SuspendLayout();
             this.panel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.carton_GV)).BeginInit();
             this.panel4.SuspendLayout();
-            this.panel2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
-            this.panel5.SuspendLayout();
             this.SuspendLayout();
             // 
             // contextMenuStrip1
@@ -110,7 +114,7 @@ namespace RauViet.ui
             this.panel6.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panel6.Location = new System.Drawing.Point(0, 662);
             this.panel6.Name = "panel6";
-            this.panel6.Size = new System.Drawing.Size(1346, 19);
+            this.panel6.Size = new System.Drawing.Size(1745, 19);
             this.panel6.TabIndex = 75;
             // 
             // dongthung_cn_lable
@@ -257,8 +261,72 @@ namespace RauViet.ui
             this.tongdathang_name_label.TabIndex = 80;
             this.tongdathang_name_label.Text = "T.Đặt hàng:";
             // 
+            // panel2
+            // 
+            this.panel2.Controls.Add(this.dataGV);
+            this.panel2.Controls.Add(this.panel5);
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Left;
+            this.panel2.Location = new System.Drawing.Point(0, 0);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(925, 662);
+            this.panel2.TabIndex = 77;
+            // 
+            // dataGV
+            // 
+            this.dataGV.AllowUserToAddRows = false;
+            this.dataGV.AllowUserToDeleteRows = false;
+            this.dataGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGV.Dock = System.Windows.Forms.DockStyle.Left;
+            this.dataGV.Location = new System.Drawing.Point(0, 26);
+            this.dataGV.Name = "dataGV";
+            this.dataGV.ReadOnly = true;
+            this.dataGV.Size = new System.Drawing.Size(919, 636);
+            this.dataGV.TabIndex = 75;
+            // 
+            // panel5
+            // 
+            this.panel5.Controls.Add(this.search_tb);
+            this.panel5.Controls.Add(this.label15);
+            this.panel5.Controls.Add(this.exportCode_cbb);
+            this.panel5.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel5.Location = new System.Drawing.Point(0, 0);
+            this.panel5.Name = "panel5";
+            this.panel5.Size = new System.Drawing.Size(925, 26);
+            this.panel5.TabIndex = 73;
+            // 
+            // search_tb
+            // 
+            this.search_tb.BackColor = System.Drawing.Color.DarkSeaGreen;
+            this.search_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.search_tb.Location = new System.Drawing.Point(86, 1);
+            this.search_tb.Name = "search_tb";
+            this.search_tb.Size = new System.Drawing.Size(252, 23);
+            this.search_tb.TabIndex = 63;
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label15.Location = new System.Drawing.Point(14, 5);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(66, 16);
+            this.label15.TabIndex = 64;
+            this.label15.Text = "Tìm Kiếm:";
+            // 
+            // exportCode_cbb
+            // 
+            this.exportCode_cbb.BackColor = System.Drawing.Color.White;
+            this.exportCode_cbb.Dock = System.Windows.Forms.DockStyle.Right;
+            this.exportCode_cbb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.exportCode_cbb.FormattingEnabled = true;
+            this.exportCode_cbb.Location = new System.Drawing.Point(750, 0);
+            this.exportCode_cbb.Name = "exportCode_cbb";
+            this.exportCode_cbb.Size = new System.Drawing.Size(175, 21);
+            this.exportCode_cbb.TabIndex = 52;
+            // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.groupBox1);
             this.panel1.Controls.Add(this.readOnly_btn);
             this.panel1.Controls.Add(this.edit_btn);
             this.panel1.Controls.Add(this.previewPrint_PGH_btn);
@@ -266,17 +334,92 @@ namespace RauViet.ui
             this.panel1.Controls.Add(this.rightInfo_gb);
             this.panel1.Controls.Add(this.panel3);
             this.panel1.Controls.Add(this.status_lb);
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel1.Location = new System.Drawing.Point(851, 0);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Left;
+            this.panel1.Location = new System.Drawing.Point(925, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(495, 662);
-            this.panel1.TabIndex = 76;
+            this.panel1.Size = new System.Drawing.Size(503, 662);
+            this.panel1.TabIndex = 78;
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.BackColor = System.Drawing.Color.PapayaWhip;
+            this.groupBox1.Controls.Add(this.label10);
+            this.groupBox1.Controls.Add(this.label9);
+            this.groupBox1.Controls.Add(this.label7);
+            this.groupBox1.Controls.Add(this.label5);
+            this.groupBox1.Controls.Add(this.label4);
+            this.groupBox1.Controls.Add(this.label3);
+            this.groupBox1.Controls.Add(this.label1);
+            this.groupBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.groupBox1.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.groupBox1.Location = new System.Drawing.Point(9, 9);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(326, 190);
+            this.groupBox1.TabIndex = 67;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Phím Tắt";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label7.ForeColor = System.Drawing.Color.OliveDrab;
+            this.label7.Location = new System.Drawing.Point(11, 115);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(196, 15);
+            this.label7.TabIndex = 71;
+            this.label7.Text = "★   F4:           Kiểm tra dữ liệu";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label5.ForeColor = System.Drawing.Color.DarkGreen;
+            this.label5.Location = new System.Drawing.Point(11, 93);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(232, 15);
+            this.label5.TabIndex = 70;
+            this.label5.Text = "★   F3:           Copy dòng đang chọn";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label4.ForeColor = System.Drawing.Color.OliveDrab;
+            this.label4.Location = new System.Drawing.Point(11, 71);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(311, 15);
+            this.label4.TabIndex = 69;
+            this.label4.Text = "★   F2:           Tạo Mã Thùng + In (có thông báo)";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label3.ForeColor = System.Drawing.Color.DarkGreen;
+            this.label3.Location = new System.Drawing.Point(11, 49);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(189, 15);
+            this.label3.TabIndex = 68;
+            this.label3.Text = "★   F1:           Vào ô tìm kiếm";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.BackColor = System.Drawing.Color.Transparent;
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.ForeColor = System.Drawing.Color.OliveDrab;
+            this.label1.Location = new System.Drawing.Point(11, 27);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(227, 15);
+            this.label1.TabIndex = 67;
+            this.label1.Text = "★   +, -:         Tăng/giảm Carton No";
             // 
             // readOnly_btn
             // 
             this.readOnly_btn.BackColor = System.Drawing.Color.MediumSlateBlue;
             this.readOnly_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.readOnly_btn.Location = new System.Drawing.Point(285, 84);
+            this.readOnly_btn.Location = new System.Drawing.Point(277, 223);
             this.readOnly_btn.Name = "readOnly_btn";
             this.readOnly_btn.Size = new System.Drawing.Size(42, 32);
             this.readOnly_btn.TabIndex = 66;
@@ -287,7 +430,7 @@ namespace RauViet.ui
             // 
             this.edit_btn.BackColor = System.Drawing.SystemColors.MenuHighlight;
             this.edit_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.edit_btn.Location = new System.Drawing.Point(80, 203);
+            this.edit_btn.Location = new System.Drawing.Point(80, 342);
             this.edit_btn.Name = "edit_btn";
             this.edit_btn.Size = new System.Drawing.Size(162, 45);
             this.edit_btn.TabIndex = 61;
@@ -298,7 +441,7 @@ namespace RauViet.ui
             // 
             this.previewPrint_PGH_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.previewPrint_PGH_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.previewPrint_PGH_btn.Location = new System.Drawing.Point(80, 318);
+            this.previewPrint_PGH_btn.Location = new System.Drawing.Point(80, 457);
             this.previewPrint_PGH_btn.Name = "previewPrint_PGH_btn";
             this.previewPrint_PGH_btn.Size = new System.Drawing.Size(162, 45);
             this.previewPrint_PGH_btn.TabIndex = 60;
@@ -309,7 +452,7 @@ namespace RauViet.ui
             // 
             this.InPhieuGiaoHang_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.InPhieuGiaoHang_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.InPhieuGiaoHang_btn.Location = new System.Drawing.Point(80, 267);
+            this.InPhieuGiaoHang_btn.Location = new System.Drawing.Point(80, 401);
             this.InPhieuGiaoHang_btn.Name = "InPhieuGiaoHang_btn";
             this.InPhieuGiaoHang_btn.Size = new System.Drawing.Size(162, 45);
             this.InPhieuGiaoHang_btn.TabIndex = 59;
@@ -319,11 +462,9 @@ namespace RauViet.ui
             // rightInfo_gb
             // 
             this.rightInfo_gb.BackColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.rightInfo_gb.Controls.Add(this.cartonNo_tang1_btn);
             this.rightInfo_gb.Controls.Add(this.cartonSize_cbb);
             this.rightInfo_gb.Controls.Add(this.delOrder_btn);
             this.rightInfo_gb.Controls.Add(this.chiadon_btn);
-            this.rightInfo_gb.Controls.Add(this.checkCarton_btn);
             this.rightInfo_gb.Controls.Add(this.assignCustomerCarton_btn);
             this.rightInfo_gb.Controls.Add(this.assignCartonSize_btn);
             this.rightInfo_gb.Controls.Add(this.label8);
@@ -331,22 +472,11 @@ namespace RauViet.ui
             this.rightInfo_gb.Controls.Add(this.cartonNo_tb);
             this.rightInfo_gb.Controls.Add(this.label6);
             this.rightInfo_gb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rightInfo_gb.Location = new System.Drawing.Point(16, 124);
+            this.rightInfo_gb.Location = new System.Drawing.Point(8, 263);
             this.rightInfo_gb.Name = "rightInfo_gb";
             this.rightInfo_gb.Size = new System.Drawing.Size(314, 278);
             this.rightInfo_gb.TabIndex = 53;
             this.rightInfo_gb.TabStop = false;
-            // 
-            // cartonNo_tang1_btn
-            // 
-            this.cartonNo_tang1_btn.BackColor = System.Drawing.Color.LimeGreen;
-            this.cartonNo_tang1_btn.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.cartonNo_tang1_btn.Location = new System.Drawing.Point(248, 39);
-            this.cartonNo_tang1_btn.Name = "cartonNo_tang1_btn";
-            this.cartonNo_tang1_btn.Size = new System.Drawing.Size(40, 27);
-            this.cartonNo_tang1_btn.TabIndex = 68;
-            this.cartonNo_tang1_btn.Text = "+1";
-            this.cartonNo_tang1_btn.UseVisualStyleBackColor = false;
             // 
             // cartonSize_cbb
             // 
@@ -359,9 +489,9 @@ namespace RauViet.ui
             // delOrder_btn
             // 
             this.delOrder_btn.BackColor = System.Drawing.Color.Red;
-            this.delOrder_btn.Location = new System.Drawing.Point(155, 207);
+            this.delOrder_btn.Location = new System.Drawing.Point(83, 224);
             this.delOrder_btn.Name = "delOrder_btn";
-            this.delOrder_btn.Size = new System.Drawing.Size(148, 39);
+            this.delOrder_btn.Size = new System.Drawing.Size(148, 35);
             this.delOrder_btn.TabIndex = 62;
             this.delOrder_btn.Text = "Xóa Dòng Đang Chọn";
             this.delOrder_btn.UseVisualStyleBackColor = false;
@@ -369,30 +499,19 @@ namespace RauViet.ui
             // chiadon_btn
             // 
             this.chiadon_btn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
-            this.chiadon_btn.Location = new System.Drawing.Point(9, 207);
+            this.chiadon_btn.Location = new System.Drawing.Point(83, 174);
             this.chiadon_btn.Name = "chiadon_btn";
-            this.chiadon_btn.Size = new System.Drawing.Size(144, 39);
+            this.chiadon_btn.Size = new System.Drawing.Size(148, 35);
             this.chiadon_btn.TabIndex = 61;
             this.chiadon_btn.Text = "Copy Dòng Đang Chọn";
             this.chiadon_btn.UseVisualStyleBackColor = false;
             // 
-            // checkCarton_btn
-            // 
-            this.checkCarton_btn.BackColor = System.Drawing.Color.Gold;
-            this.checkCarton_btn.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.checkCarton_btn.Location = new System.Drawing.Point(19, 144);
-            this.checkCarton_btn.Name = "checkCarton_btn";
-            this.checkCarton_btn.Size = new System.Drawing.Size(132, 43);
-            this.checkCarton_btn.TabIndex = 59;
-            this.checkCarton_btn.Text = "Kiểm Tra Dữ Liệu";
-            this.checkCarton_btn.UseVisualStyleBackColor = false;
-            // 
             // assignCustomerCarton_btn
             // 
             this.assignCustomerCarton_btn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
-            this.assignCustomerCarton_btn.Location = new System.Drawing.Point(165, 146);
+            this.assignCustomerCarton_btn.Location = new System.Drawing.Point(83, 120);
             this.assignCustomerCarton_btn.Name = "assignCustomerCarton_btn";
-            this.assignCustomerCarton_btn.Size = new System.Drawing.Size(132, 43);
+            this.assignCustomerCarton_btn.Size = new System.Drawing.Size(148, 35);
             this.assignCustomerCarton_btn.TabIndex = 57;
             this.assignCustomerCarton_btn.Text = "Tạo Mã Thùng";
             this.assignCustomerCarton_btn.UseVisualStyleBackColor = false;
@@ -450,7 +569,7 @@ namespace RauViet.ui
             this.panel3.Controls.Add(this.fillter_btn);
             this.panel3.Controls.Add(this.panel4);
             this.panel3.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel3.Location = new System.Drawing.Point(333, 0);
+            this.panel3.Location = new System.Drawing.Point(341, 0);
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(162, 662);
             this.panel3.TabIndex = 51;
@@ -461,7 +580,7 @@ namespace RauViet.ui
             this.carton_GV.Dock = System.Windows.Forms.DockStyle.Fill;
             this.carton_GV.Location = new System.Drawing.Point(0, 43);
             this.carton_GV.Name = "carton_GV";
-            this.carton_GV.Size = new System.Drawing.Size(162, 464);
+            this.carton_GV.Size = new System.Drawing.Size(162, 529);
             this.carton_GV.TabIndex = 52;
             // 
             // fillter_btn
@@ -478,160 +597,82 @@ namespace RauViet.ui
             // 
             // panel4
             // 
-            this.panel4.Controls.Add(this.CountCarton_tb);
-            this.panel4.Controls.Add(this.label2);
             this.panel4.Controls.Add(this.previewPrint_PT_btn);
-            this.panel4.Controls.Add(this.print_btn);
             this.panel4.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel4.Location = new System.Drawing.Point(0, 507);
+            this.panel4.Location = new System.Drawing.Point(0, 572);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(162, 155);
+            this.panel4.Size = new System.Drawing.Size(162, 90);
             this.panel4.TabIndex = 51;
-            // 
-            // CountCarton_tb
-            // 
-            this.CountCarton_tb.AutoSize = true;
-            this.CountCarton_tb.Dock = System.Windows.Forms.DockStyle.Left;
-            this.CountCarton_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.CountCarton_tb.ForeColor = System.Drawing.Color.DarkMagenta;
-            this.CountCarton_tb.Location = new System.Drawing.Point(71, 0);
-            this.CountCarton_tb.Name = "CountCarton_tb";
-            this.CountCarton_tb.Size = new System.Drawing.Size(35, 16);
-            this.CountCarton_tb.TabIndex = 110;
-            this.CountCarton_tb.Text = "PCS:";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Dock = System.Windows.Forms.DockStyle.Left;
-            this.label2.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.ForeColor = System.Drawing.SystemColors.InactiveCaptionText;
-            this.label2.Location = new System.Drawing.Point(0, 0);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(71, 16);
-            this.label2.TabIndex = 109;
-            this.label2.Text = "Số Thùng:";
             // 
             // previewPrint_PT_btn
             // 
             this.previewPrint_PT_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.previewPrint_PT_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.previewPrint_PT_btn.Location = new System.Drawing.Point(3, 96);
+            this.previewPrint_PT_btn.Location = new System.Drawing.Point(13, 6);
             this.previewPrint_PT_btn.Name = "previewPrint_PT_btn";
-            this.previewPrint_PT_btn.Size = new System.Drawing.Size(162, 43);
+            this.previewPrint_PT_btn.Size = new System.Drawing.Size(130, 43);
             this.previewPrint_PT_btn.TabIndex = 46;
-            this.previewPrint_PT_btn.Text = "Xem Trước Bản In";
+            this.previewPrint_PT_btn.Text = "Xem Phiếu Thùng";
             this.previewPrint_PT_btn.UseVisualStyleBackColor = false;
-            // 
-            // print_btn
-            // 
-            this.print_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
-            this.print_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.print_btn.Location = new System.Drawing.Point(0, 46);
-            this.print_btn.Name = "print_btn";
-            this.print_btn.Size = new System.Drawing.Size(162, 45);
-            this.print_btn.TabIndex = 45;
-            this.print_btn.Text = "In Phiếu Thùng";
-            this.print_btn.UseVisualStyleBackColor = false;
             // 
             // status_lb
             // 
             this.status_lb.AutoSize = true;
             this.status_lb.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.status_lb.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.status_lb.Location = new System.Drawing.Point(12, 439);
+            this.status_lb.Location = new System.Drawing.Point(12, 555);
             this.status_lb.Name = "status_lb";
             this.status_lb.Size = new System.Drawing.Size(55, 23);
             this.status_lb.TabIndex = 26;
             this.status_lb.Text = "Email";
             // 
-            // panel2
+            // label9
             // 
-            this.panel2.Controls.Add(this.dataGV);
-            this.panel2.Controls.Add(this.panel5);
-            this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel2.Location = new System.Drawing.Point(0, 0);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(851, 662);
-            this.panel2.TabIndex = 77;
+            this.label9.AutoSize = true;
+            this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label9.ForeColor = System.Drawing.Color.DarkGreen;
+            this.label9.Location = new System.Drawing.Point(11, 138);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(228, 15);
+            this.label9.TabIndex = 73;
+            this.label9.Text = "★   Delete:     Xóa dòng đang chọn";
             // 
-            // dataGV
+            // label10
             // 
-            this.dataGV.AllowUserToAddRows = false;
-            this.dataGV.AllowUserToDeleteRows = false;
-            this.dataGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGV.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dataGV.Location = new System.Drawing.Point(0, 26);
-            this.dataGV.Name = "dataGV";
-            this.dataGV.ReadOnly = true;
-            this.dataGV.Size = new System.Drawing.Size(851, 636);
-            this.dataGV.TabIndex = 75;
-            // 
-            // panel5
-            // 
-            this.panel5.Controls.Add(this.search_tb);
-            this.panel5.Controls.Add(this.label15);
-            this.panel5.Controls.Add(this.exportCode_cbb);
-            this.panel5.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel5.Location = new System.Drawing.Point(0, 0);
-            this.panel5.Name = "panel5";
-            this.panel5.Size = new System.Drawing.Size(851, 26);
-            this.panel5.TabIndex = 73;
-            // 
-            // search_tb
-            // 
-            this.search_tb.BackColor = System.Drawing.Color.DarkSeaGreen;
-            this.search_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.search_tb.Location = new System.Drawing.Point(86, 1);
-            this.search_tb.Name = "search_tb";
-            this.search_tb.Size = new System.Drawing.Size(252, 23);
-            this.search_tb.TabIndex = 63;
-            // 
-            // label15
-            // 
-            this.label15.AutoSize = true;
-            this.label15.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label15.Location = new System.Drawing.Point(14, 5);
-            this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(66, 16);
-            this.label15.TabIndex = 64;
-            this.label15.Text = "Tìm Kiếm:";
-            // 
-            // exportCode_cbb
-            // 
-            this.exportCode_cbb.BackColor = System.Drawing.Color.White;
-            this.exportCode_cbb.Dock = System.Windows.Forms.DockStyle.Right;
-            this.exportCode_cbb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.exportCode_cbb.FormattingEnabled = true;
-            this.exportCode_cbb.Location = new System.Drawing.Point(676, 0);
-            this.exportCode_cbb.Name = "exportCode_cbb";
-            this.exportCode_cbb.Size = new System.Drawing.Size(175, 21);
-            this.exportCode_cbb.TabIndex = 52;
+            this.label10.AutoSize = true;
+            this.label10.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label10.ForeColor = System.Drawing.Color.OliveDrab;
+            this.label10.Location = new System.Drawing.Point(11, 163);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(302, 15);
+            this.label10.TabIndex = 74;
+            this.label10.Text = "★   Nhấp đôi  vào Mã Thùng để in phiếu thùng";
             // 
             // OrderPackingList
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1346, 681);
-            this.Controls.Add(this.panel2);
+            this.ClientSize = new System.Drawing.Size(1745, 681);
             this.Controls.Add(this.panel1);
+            this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel6);
             this.Name = "OrderPackingList";
             this.Text = "FormTableData";
             this.panel6.ResumeLayout(false);
             this.panel6.PerformLayout();
+            this.panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dataGV)).EndInit();
+            this.panel5.ResumeLayout(false);
+            this.panel5.PerformLayout();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.rightInfo_gb.ResumeLayout(false);
             this.rightInfo_gb.PerformLayout();
             this.panel3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.carton_GV)).EndInit();
             this.panel4.ResumeLayout(false);
-            this.panel4.PerformLayout();
-            this.panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dataGV)).EndInit();
-            this.panel5.ResumeLayout(false);
-            this.panel5.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -639,29 +680,6 @@ namespace RauViet.ui
         #endregion
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.Panel panel6;
-        private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Button readOnly_btn;
-        private System.Windows.Forms.Button edit_btn;
-        private System.Windows.Forms.Button previewPrint_PGH_btn;
-        private System.Windows.Forms.Button InPhieuGiaoHang_btn;
-        private System.Windows.Forms.GroupBox rightInfo_gb;
-        private System.Windows.Forms.ComboBox cartonSize_cbb;
-        private System.Windows.Forms.Button delOrder_btn;
-        private System.Windows.Forms.Button chiadon_btn;
-        private System.Windows.Forms.Button checkCarton_btn;
-        private System.Windows.Forms.Button assignCustomerCarton_btn;
-        private System.Windows.Forms.Button assignCartonSize_btn;
-        private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.Button assignCartonNoBtn;
-        private System.Windows.Forms.TextBox cartonNo_tb;
-        private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.Panel panel3;
-        private System.Windows.Forms.DataGridView carton_GV;
-        private System.Windows.Forms.Button fillter_btn;
-        private System.Windows.Forms.Panel panel4;
-        private System.Windows.Forms.Button previewPrint_PT_btn;
-        private System.Windows.Forms.Button print_btn;
-        private System.Windows.Forms.Label status_lb;
         private System.Windows.Forms.Label tongdathang_name_label;
         private System.Windows.Forms.Label tongdongthung_lable;
         private System.Windows.Forms.Label tongdongthung_name_lable;
@@ -674,14 +692,40 @@ namespace RauViet.ui
         private System.Windows.Forms.Label dongthung_cus_lable;
         private System.Windows.Forms.Label dongthung_cn_lable;
         private System.Windows.Forms.Label dongthung_cn_name_lable;
-        private System.Windows.Forms.Button cartonNo_tang1_btn;
-        private System.Windows.Forms.Label CountCarton_tb;
-        private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.DataGridView dataGV;
         private System.Windows.Forms.Panel panel5;
         private System.Windows.Forms.TextBox search_tb;
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.ComboBox exportCode_cbb;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Button readOnly_btn;
+        private System.Windows.Forms.Button edit_btn;
+        private System.Windows.Forms.Button previewPrint_PGH_btn;
+        private System.Windows.Forms.Button InPhieuGiaoHang_btn;
+        private System.Windows.Forms.GroupBox rightInfo_gb;
+        private System.Windows.Forms.ComboBox cartonSize_cbb;
+        private System.Windows.Forms.Button delOrder_btn;
+        private System.Windows.Forms.Button chiadon_btn;
+        private System.Windows.Forms.Button assignCustomerCarton_btn;
+        private System.Windows.Forms.Button assignCartonSize_btn;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Button assignCartonNoBtn;
+        private System.Windows.Forms.TextBox cartonNo_tb;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.DataGridView carton_GV;
+        private System.Windows.Forms.Button fillter_btn;
+        private System.Windows.Forms.Panel panel4;
+        private System.Windows.Forms.Button previewPrint_PT_btn;
+        private System.Windows.Forms.Label status_lb;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Label label10;
     }
 }
