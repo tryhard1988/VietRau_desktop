@@ -5,27 +5,23 @@ using System.Drawing.Printing;
 using System.Windows.Forms;
 using static ClosedXML.Excel.XLPredefinedFormat;
 
-public class DeliveryPrinter
+public class PhieuCanHangPrinter
 {
     private DataTable dt;
     private string exportCode;
     private System.DateTime exportDate;
-    private int totalCount = 0;
 
     private int rowIndex = 0; // để phân trang
     private int startX = 50;
-    private int lineHeight = 40;
+    private int lineHeight = 27;
     private int lineHeight1 = 25;
-    private string note = "";
-    public DeliveryPrinter(DataTable data, string exportCode, System.DateTime exportDate, string note)
+
+    public PhieuCanHangPrinter(DataTable data, string exportCode, System.DateTime exportDate)
     {
         dt = data;
         this.exportCode = exportCode;
         this.exportDate = exportDate;
 
-        foreach (DataRow row in dt.Rows)
-            totalCount += Convert.ToInt32(row["count"]);
-        this.note = note;
     }
 
     private void DrawCellText(Graphics g, string text, Font font, Rectangle rect, StringAlignment alignment = StringAlignment.Center)
@@ -93,14 +89,13 @@ public class DeliveryPrinter
         int pageHeight = e.PageBounds.Height - 50; // margin dưới
 
         // Cột
-        int col1Width = 50, col2Width = 200, col3Width = 80, col4Width = 80, col5Width = 80;
+        int col1Width = 60, col2Width = 200, col3Width = 120, col4Width = 120;
         int col1 = startX;
         int col2 = col1 + col1Width;
         int col3 = col2 + col2Width;
         int col4 = col3 + col3Width;
         int col5 = col4 + col4Width;
-        int col6 = col5 + col5Width;
-        int col6Width = pageWidth - startX - col6;
+        int col5Width = pageWidth - startX - col5;
 
         Font headerFont = new Font("Times New Roman", 14, FontStyle.Bold);
         Font normalFont = new Font("Times New Roman", 10);
@@ -111,38 +106,23 @@ public class DeliveryPrinter
         // Header chỉ in 1 lần ở đầu trang
         if (rowIndex == 0)
         {
-            string headerText = "PHIẾU GIAO HÀNG";
-            SizeF headerSize = g.MeasureString(headerText, headerFont);
-            g.DrawString(headerText, headerFont, Brushes.Black, (pageWidth - headerSize.Width) / 2, y);
-            y += lineHeight1 * 2;
-
-            string etdEta = $"ETD: {exportDate:dd/MM/yyyy}                                   ETA: {exportDate.AddDays(1):dd/MM/yyyy}";
-            SizeF etdSize = g.MeasureString(etdEta, normalFont);
-            g.DrawString(etdEta, normalFont, Brushes.Black, (pageWidth - etdSize.Width) / 2, y);
-            y += lineHeight1;
-
             SizeF codeSize = g.MeasureString(exportCode, headerFont);
             g.DrawString(exportCode, headerFont, Brushes.Black, (pageWidth - codeSize.Width) / 2, y);
-            y += lineHeight1;
-
-            g.DrawString("Chi tiết kích thước thùng hàng", normalFont, Brushes.Black, startX, y);
             y += lineHeight1;
         }
 
         // Table Header
-        g.DrawRectangle(Pens.Black, col1, y, col6 + col6Width - col1, lineHeight);
+        g.DrawRectangle(Pens.Black, col1, y, col5 + col5Width - col1, lineHeight);
         g.DrawLine(Pens.Black, col2, y, col2, y + lineHeight);
         g.DrawLine(Pens.Black, col3, y, col3, y + lineHeight);
         g.DrawLine(Pens.Black, col4, y, col4, y + lineHeight);
         g.DrawLine(Pens.Black, col5, y, col5, y + lineHeight);
-        g.DrawLine(Pens.Black, col6, y, col6, y + lineHeight);
 
         DrawCellText(g, "STT", tableHeaderFont, new Rectangle(col1, y, col2 - col1, lineHeight));
-        DrawCellText(g, "Kích thước thùng xốp", tableHeaderFont, new Rectangle(col2, y, col3 - col2, lineHeight));
-        DrawCellText(g, "Số lượng giao", tableHeaderFont, new Rectangle(col3, y, col4 - col3, lineHeight));
-        DrawCellText(g, "Số lượng nhận", tableHeaderFont, new Rectangle(col4, y, col5 - col4, lineHeight));
-        DrawCellText(g, "Ký nhận", tableHeaderFont, new Rectangle(col5, y, col6 - col5, lineHeight));
-        DrawCellText(g, "Ghi chú", tableHeaderFont, new Rectangle(col6, y, col6Width, lineHeight));
+        DrawCellText(g, "KHÁCH HÀNG", tableHeaderFont, new Rectangle(col2, y, col3 - col2, lineHeight));
+        DrawCellText(g, "KÍCH THƯỚC", tableHeaderFont, new Rectangle(col3, y, col4 - col3, lineHeight));
+        DrawCellText(g, "ĐÁ GEL", tableHeaderFont, new Rectangle(col4, y, col5 - col4, lineHeight));
+        DrawCellText(g, "KG", tableHeaderFont, new Rectangle(col5, y, col5Width, lineHeight));
 
         y += lineHeight;
 
@@ -157,19 +137,16 @@ public class DeliveryPrinter
 
             DataRow row = dt.Rows[rowIndex];
 
-            g.DrawRectangle(Pens.Black, col1, y, col6 + col6Width - col1, lineHeight);
+            g.DrawRectangle(Pens.Black, col1, y, col5 + col5Width - col1, lineHeight);
             g.DrawLine(Pens.Black, col2, y, col2, y + lineHeight);
             g.DrawLine(Pens.Black, col3, y, col3, y + lineHeight);
             g.DrawLine(Pens.Black, col4, y, col4, y + lineHeight);
             g.DrawLine(Pens.Black, col5, y, col5, y + lineHeight);
-            g.DrawLine(Pens.Black, col6, y, col6, y + lineHeight);
 
-            DrawCellText(g, (rowIndex + 1).ToString(), normalFont, new Rectangle(col1, y, col2 - col1, lineHeight));
-            DrawCellText(g, row["CartonSize"].ToString(), normalFont, new Rectangle(col2, y, col3 - col2, lineHeight));
-            DrawCellText(g, row["count"].ToString(), normalFont, new Rectangle(col3, y, col4 - col3, lineHeight));
-            DrawCellText(g, "", normalFont, new Rectangle(col4, y, col5 - col4, lineHeight));
-            DrawCellText(g, "", normalFont, new Rectangle(col5, y, col6 - col5, lineHeight));
-            DrawCellText(g, "", normalFont, new Rectangle(col6, y, col6Width, lineHeight));
+            DrawCellText(g, row["CartonNo"].ToString(), normalFont, new Rectangle(col1, y, col2 - col1, lineHeight));
+            DrawCellText(g, row["CustomerName"].ToString(), normalFont, new Rectangle(col2, y, col3 - col2, lineHeight));
+            DrawCellText(g, row["CartonSize"].ToString(), normalFont, new Rectangle(col3, y, col4 - col3, lineHeight));
+            DrawCellText(g, row["GEL"].ToString(), normalFont, new Rectangle(col4, y, col5 - col4, lineHeight));
 
             y += lineHeight;
             rowIndex++;
@@ -177,29 +154,22 @@ public class DeliveryPrinter
 
         e.HasMorePages = false;
 
-        g.DrawRectangle(Pens.Black, col1, y, col6 + col6Width - col1, lineHeight);
-        string totalLabel = "Tổng cộng:";
-        string totalValue = $"{totalCount} thùng";        
-        Rectangle countCell = new Rectangle(col3, y, col4 - col3, lineHeight);
-        SizeF textSize = g.MeasureString(totalValue, headerFont);
-        float x = countCell.X + (countCell.Width - textSize.Width) / 2;
-        float yy = countCell.Y + (countCell.Height - textSize.Height) / 2;
-        g.DrawString(totalLabel, headerFont, Brushes.Black, col1, yy);
-        g.DrawString(totalValue, headerFont, Brushes.Black, x, yy);
+        // Tổng cộng và chữ ký (chỉ in ở trang cuối)
+        //y += 5;
+        //string totalLabel = "Tổng cộng (Count):";
+        //string totalValue = $"{totalCount} thùng";
+        //g.DrawString(totalLabel, headerFont, Brushes.Black, col1, y);
+        //Rectangle countCell = new Rectangle(col3, y, col4 - col3, lineHeight);
+        //SizeF textSize = g.MeasureString(totalValue, headerFont);
+        //float x = countCell.X + (countCell.Width - textSize.Width) / 2;
+        //float yy = countCell.Y + (countCell.Height - textSize.Height) / 2;
+        //g.DrawString(totalValue, headerFont, Brushes.Black, x, yy);
 
-        y += lineHeight;
-        g.DrawRectangle(Pens.Black, col1, y, col6 + col6Width - col1, lineHeight);
-        countCell = new Rectangle(col3, y, col4 - col3, lineHeight);
-        textSize = g.MeasureString(totalValue, headerFont);
-        float yyy = countCell.Y + (countCell.Height - textSize.Height) / 2;
-        g.DrawString("Ghi chú:", headerFont, Brushes.Black, col1, yyy);
-        g.DrawString(note, headerFont, Brushes.Black, x, yyy);
+        //y += lineHeight1 * 2;
 
-        y += lineHeight1 * 3;
-
-        g.DrawString("Người giao hàng", normalFont, Brushes.Black, col2, y);
-        g.DrawString("Người nhận hàng", normalFont, Brushes.Black, col5, y);
-        g.DrawString("(Ký, ghi rõ họ tên)", normalFont, Brushes.Black, col2, y + lineHeight1);
-        g.DrawString("(Ký, ghi rõ họ tên)", normalFont, Brushes.Black, col5, y + lineHeight1);
+        //g.DrawString("Người giao hàng", normalFont, Brushes.Black, col2, y);
+        //g.DrawString("Người nhận hàng", normalFont, Brushes.Black, col5, y);
+        //g.DrawString("(Ký, ghi rõ họ tên)", normalFont, Brushes.Black, col2, y + lineHeight1);
+        //g.DrawString("(Ký, ghi rõ họ tên)", normalFont, Brushes.Black, col5, y + lineHeight1);
     }
 }

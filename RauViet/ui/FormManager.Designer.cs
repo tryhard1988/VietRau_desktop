@@ -85,6 +85,7 @@
             this.reportExportYear_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.reportSalary_Month_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.content_panel = new System.Windows.Forms.Panel();
+            this.chotphyto_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1.SuspendLayout();
             this.LOT_menuitem.SuspendLayout();
             this.SuspendLayout();
@@ -448,6 +449,7 @@
             this.xuatExcelGuiKH_Group_mi.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.dkkd_menuitem,
             this.phyto_menuitem,
+            this.chotphyto_mi,
             this.invoice_menuitem,
             this.packingTotal_menuitem,
             this.customerDetailPacking_mi});
@@ -524,6 +526,12 @@
             this.content_panel.Name = "content_panel";
             this.content_panel.Size = new System.Drawing.Size(1388, 491);
             this.content_panel.TabIndex = 1;
+            // 
+            // chotphyto_mi
+            // 
+            this.chotphyto_mi.Name = "chotphyto_mi";
+            this.chotphyto_mi.Size = new System.Drawing.Size(224, 22);
+            this.chotphyto_mi.Text = "Chốt PHYTO";
             // 
             // FormManager
             // 
@@ -602,5 +610,6 @@
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
         private System.Windows.Forms.ToolStripMenuItem doCBM_mi;
+        private System.Windows.Forms.ToolStripMenuItem chotphyto_mi;
     }
 }

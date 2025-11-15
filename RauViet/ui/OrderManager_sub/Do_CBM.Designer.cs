@@ -35,6 +35,8 @@ namespace RauViet.ui
             this.cusGroupGV = new System.Windows.Forms.DataGridView();
             this.panel1 = new System.Windows.Forms.Panel();
             this.info_gb = new System.Windows.Forms.GroupBox();
+            this.totalFreightCharge_tb = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
             this.totalAmount_tb = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.netWeight_tb = new System.Windows.Forms.TextBox();
@@ -45,8 +47,8 @@ namespace RauViet.ui
             this.label2 = new System.Windows.Forms.Label();
             this.exportCode_cbb = new System.Windows.Forms.ComboBox();
             this.status_lb = new System.Windows.Forms.Label();
-            this.totalFreightCharge_tb = new System.Windows.Forms.TextBox();
-            this.label5 = new System.Windows.Forms.Label();
+            this.totalCBM_tb = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.cartonSizeGroupGV)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.cusGroupGV)).BeginInit();
             this.panel1.SuspendLayout();
@@ -95,6 +97,8 @@ namespace RauViet.ui
             // 
             // info_gb
             // 
+            this.info_gb.Controls.Add(this.totalCBM_tb);
+            this.info_gb.Controls.Add(this.label6);
             this.info_gb.Controls.Add(this.totalFreightCharge_tb);
             this.info_gb.Controls.Add(this.label5);
             this.info_gb.Controls.Add(this.totalAmount_tb);
@@ -111,6 +115,26 @@ namespace RauViet.ui
             this.info_gb.Size = new System.Drawing.Size(346, 298);
             this.info_gb.TabIndex = 55;
             this.info_gb.TabStop = false;
+            // 
+            // totalFreightCharge_tb
+            // 
+            this.totalFreightCharge_tb.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.totalFreightCharge_tb.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.totalFreightCharge_tb.Location = new System.Drawing.Point(157, 115);
+            this.totalFreightCharge_tb.Name = "totalFreightCharge_tb";
+            this.totalFreightCharge_tb.ReadOnly = true;
+            this.totalFreightCharge_tb.Size = new System.Drawing.Size(157, 27);
+            this.totalFreightCharge_tb.TabIndex = 40;
+            this.totalFreightCharge_tb.Text = "vxcv";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(21, 121);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(130, 16);
+            this.label5.TabIndex = 39;
+            this.label5.Text = "Tổng Freight Charge:";
             // 
             // totalAmount_tb
             // 
@@ -211,25 +235,25 @@ namespace RauViet.ui
             this.status_lb.TabIndex = 26;
             this.status_lb.Text = "Email";
             // 
-            // totalFreightCharge_tb
+            // totalCBM_tb
             // 
-            this.totalFreightCharge_tb.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.totalFreightCharge_tb.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.totalFreightCharge_tb.Location = new System.Drawing.Point(157, 115);
-            this.totalFreightCharge_tb.Name = "totalFreightCharge_tb";
-            this.totalFreightCharge_tb.ReadOnly = true;
-            this.totalFreightCharge_tb.Size = new System.Drawing.Size(157, 27);
-            this.totalFreightCharge_tb.TabIndex = 40;
-            this.totalFreightCharge_tb.Text = "vxcv";
+            this.totalCBM_tb.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.totalCBM_tb.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.totalCBM_tb.Location = new System.Drawing.Point(157, 231);
+            this.totalCBM_tb.Name = "totalCBM_tb";
+            this.totalCBM_tb.ReadOnly = true;
+            this.totalCBM_tb.Size = new System.Drawing.Size(157, 27);
+            this.totalCBM_tb.TabIndex = 42;
+            this.totalCBM_tb.Text = "vxcv";
             // 
-            // label5
+            // label6
             // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(21, 121);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(130, 16);
-            this.label5.TabIndex = 39;
-            this.label5.Text = "Tổng Freight Charge:";
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(80, 236);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(70, 16);
+            this.label6.TabIndex = 41;
+            this.label6.Text = "Tổng CBM:";
             // 
             // Do_CBM
             // 
@@ -269,5 +293,7 @@ namespace RauViet.ui
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox totalFreightCharge_tb;
         private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.TextBox totalCBM_tb;
+        private System.Windows.Forms.Label label6;
     }
 }

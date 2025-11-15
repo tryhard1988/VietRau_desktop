@@ -105,6 +105,7 @@
       <HintPath>..\packages\Microsoft.Office.Interop.Excel.15.0.4795.1001\lib\net20\Microsoft.Office.Interop.Excel.dll</HintPath>
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
+    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="MySql.Data, Version=9.4.0.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <HintPath>..\packages\MySql.Data.9.4.0\lib\net462\MySql.Data.dll</HintPath>
     </Reference>
@@ -163,7 +164,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="classes\CurrencyHelper.cs" />
+    <Compile Include="classes\DataTableExtensions.cs" />
     <Compile Include="classes\ICanSave.cs" />
+    <Compile Include="classes\printer\PhieuCanHangPrinter.cs" />
     <Compile Include="classes\printer\SalarySlipPrinter.cs" />
     <Compile Include="classes\printer\OrderListPrinter.cs" />
     <Compile Include="classes\printer\OrderSummaryPrinter.cs" />
@@ -243,6 +246,12 @@
     </Compile>
     <Compile Include="ui\OrderManager_sub\CustomerDetailPackingTotal.Designer.cs">
       <DependentUpon>CustomerDetailPackingTotal.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ui\OrderManager_sub\ChotPhyto.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\OrderManager_sub\ChotPhyto.Designer.cs">
+      <DependentUpon>ChotPhyto.cs</DependentUpon>
     </Compile>
     <Compile Include="ui\OrderManager_sub\Do_CBM.cs">
       <SubType>Form</SubType>
@@ -542,6 +551,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ui\OrderManager_sub\CustomerDetailPackingTotal.resx">
       <DependentUpon>CustomerDetailPackingTotal.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\OrderManager_sub\ChotPhyto.resx">
+      <DependentUpon>ChotPhyto.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ui\OrderManager_sub\Do_CBM.resx">
       <DependentUpon>Do_CBM.cs</DependentUpon>

@@ -839,6 +839,26 @@ namespace RauViet.classes
             return dt;
         }
 
+        public async Task<DataTable> getOrdersChotPhytosync()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_kho_conStr))
+            {
+                await con.OpenAsync();
+
+                using (SqlCommand cmd = new SqlCommand("sp_GetOrdersChotPhyto", con))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure; // <--- Gọi SP
+
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
+        }
+
 
         public async Task<DataTable> getOrdersPhytoAsync()
         {

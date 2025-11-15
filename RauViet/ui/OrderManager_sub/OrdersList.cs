@@ -4,6 +4,7 @@ using RauViet.classes;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO.Packaging;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -21,7 +22,7 @@ namespace RauViet.ui
         public OrdersList()
         {
             InitializeComponent();
-
+            this.KeyPreview = true;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Dock = DockStyle.Fill;
 
@@ -43,7 +44,6 @@ namespace RauViet.ui
             exportExcel_TD_btn.Click += exportExcel_TD_btn_Click;
             newCustomerBtn.Click += newCustomerBtn_Click;
             LuuThayDoiBtn.Click += saveBtn_Click;
-            delete_btn.Click += deleteBtn_Click;
             preview_print_TD_btn.Click += preview_print_TD_btn_Click;
             prewiew_print_DSDH_btn.Click += prewiew_print_DSDH_btn_Click;
             print_order_list_btn.Click += printOtherList_btn_Click;
@@ -62,11 +62,44 @@ namespace RauViet.ui
             readOnly_btn.Click += ReadOnly_btn_Click;
             ReadOnly_btn_Click(null, null);
 
-            Refesh_btn.Click += Refesh_btn_Click;
             search_tb.TextChanged += search_txt_TextChanged;
 
             customer_ccb.SelectedIndexChanged += Customer_ccb_SelectedIndexChanged;
             cusProduct_GV.CellFormatting += CusProduct_GV_CellFormatting;
+
+            this.KeyDown += OrdersList_KeyDown;
+        }
+
+        private void OrdersList_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.F1)
+            {
+                search_tb.Focus();
+            }
+            else if (e.KeyCode == Keys.F5)
+            {
+                SQLStore.Instance.removeOrders();
+                SQLStore.Instance.removeCustomers();
+                SQLStore.Instance.removeProductSKU();
+                SQLStore.Instance.removeProductpacking();
+                SQLStore.Instance.removeLatestOrdersAsync();
+                ShowData();
+            }
+            else if(!isNewState && !edit_btn.Visible)
+            {
+                if (e.KeyCode == Keys.Delete)
+                {
+                    Control ctrl = this.ActiveControl;
+
+                    if (ctrl is TextBox || ctrl is RichTextBox ||
+                        (ctrl is DataGridView dgv && dgv.CurrentCell != null && dgv.IsCurrentCellInEditMode))
+                    {
+                        return; // không xử lý Delete
+                    }
+
+                    deleteOrderID(true);
+                }
+            }
         }
 
         private void CusProduct_GV_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
@@ -105,18 +138,6 @@ namespace RauViet.ui
                     row.Cells["NWOther"].ReadOnly = true;
                 }
             }
-        }
-
-        private void Refesh_btn_Click(object sender, EventArgs e)
-        {
-            SQLStore.Instance.removeOrders();
-            SQLStore.Instance.removeCustomers();
-            SQLStore.Instance.removeProductSKU();
-            SQLStore.Instance.removeProductpacking();
-            SQLStore.Instance.removeExportCodes();
-            SQLStore.Instance.removeExportCodes();
-            SQLStore.Instance.removeLatestOrdersAsync();
-            ShowData();
         }
 
         public async void ShowData()
@@ -307,40 +328,16 @@ namespace RauViet.ui
                 .ToList();
             foreach (DataRow row in rows)
             {
-                // Lấy giá trị PCSOther và NWOther
-                int pcsOther = int.TryParse(row["PCSOther"]?.ToString(), out int pcs) ? pcs : 0;
-                decimal nwOther = decimal.TryParse(row["NWOther"]?.ToString(), out decimal nw) ? nw : 0;
-
-                // Chỉ xử lý khi có giá trị > 0
-                if (pcsOther > 0 || nwOther > 0)
-                {
-                    int productPackingID = int.TryParse(row["ProductPackingID"]?.ToString(), out int pp) ? pp : 0;
-                    int customerID = int.TryParse(row["CustomerID"]?.ToString(), out int cust) ? cust : 0;
-
-                    // Tìm dòng tương ứng trong mlatestOrders_dt
-                    DataRow[] foundRows = mlatestOrders_dt.Select(
-                        $"ProductPackingID = {productPackingID} AND CustomerID = {customerID}");
-
-                    if (foundRows.Length > 0)
-                    {
-                        DataRow targetRow = foundRows[0];
-
-                        // Cập nhật các cột tương ứng
-                        targetRow["PCSOther"] = pcsOther;
-                        targetRow["NWOther"] = nwOther;
-                    }
-                    else
-                    {
-                        // Nếu chưa có dòng tương ứng thì thêm mới
-                        DataRow newRow = mlatestOrders_dt.NewRow();
-                        newRow["ProductPackingID"] = productPackingID;
-                        newRow["ProductNameVN"] = row["ProductNameVN"]?.ToString() ?? "";
-                        newRow["CustomerID"] = customerID;
-                        newRow["PCSOther"] = pcsOther;
-                        newRow["NWOther"] = nwOther;
-                        mlatestOrders_dt.Rows.Add(newRow);
-                    }
-                }
+                int cusID = Convert.ToInt32(row["CustomerID"]);
+                int ppID = Convert.ToInt32(row["ProductPackingID"]);
+                string name = Convert.ToString(row["ProductNameVN"]);
+                decimal price = Convert.ToDecimal(row["OrderPackingPriceCNF"]);
+                int PCSOther = Convert.ToInt32(row["PCSOther"]);
+                decimal NWOther = Convert.ToDecimal(row["NWOther"]);
+                string package = Convert.ToString(row["Package"]);
+                string packing = Convert.ToString(row["packing"]);
+                int amount = Convert.ToInt32(row["Amount"]);
+                updateCusProduct(cusID, ppID, name, price, PCSOther, NWOther, package, packing, amount);
             }
 
         }
@@ -467,7 +464,7 @@ namespace RauViet.ui
             updateNetWeight();
         }
         
-        private void dataGV_CellClick(object sender, EventArgs e)
+        private async void dataGV_CellClick(object sender, EventArgs e)
         {
             if (exportCode_search_cbb.SelectedValue == null) return;
             if (dataGV.CurrentRow == null) return;
@@ -475,50 +472,7 @@ namespace RauViet.ui
             var currentRow = dataGV.CurrentRow;
 
             _ = updateRightUI(currentRow.Index);
-
-            int CustomerID = -1;
-            int.TryParse(currentRow.Cells["CustomerID"].Value?.ToString(), out CustomerID);
-
-            if (CustomerID < 0) return;
-            decimal sumNW_cus = 0;
-            int sumPCS_cus = 0;
-            decimal sumNW = 0;
-            int sumPCS = 0;
-
-            
-            if (!int.TryParse(exportCode_search_cbb.SelectedValue.ToString(), out int exportCodeId))
-            {
-                return;
-            }
-
-            var rows = mOrders_dt.AsEnumerable()
-                .Where(r => r.RowState != DataRowState.Deleted)
-                .Where(r => r.Field<int>("ExportCodeID") == exportCodeId) // chỉ lấy ExportCode cần xử lý
-                .ToList();
-            // Duyệt toàn bộ các dòng trong DataGridView
-            foreach (DataRow row in rows)
-            {
-                decimal nw = 0;
-                int pcs = 0;
-                int cus = -1;
-                decimal.TryParse(row["NWOther"]?.ToString(), out nw);
-                int.TryParse(row["PCSOther"]?.ToString(), out pcs);
-                int.TryParse(row["PCSOther"]?.ToString(), out pcs);
-                int.TryParse(row["CustomerID"]?.ToString(), out cus);
-                if (cus == CustomerID)
-                {
-                    sumNW_cus += nw;
-                    sumPCS_cus += pcs;
-                }
-                sumNW += nw;
-                sumPCS += pcs;
-            }
-
-            total_label.Text ="[" + sumPCS + " pcs, " + sumNW + " kg" + "]";
-            cus_name_label.Text = Convert.ToString(currentRow.Cells["CustomerName"].Value) + ": ";
-            cus_lable.Text = "[" + (sumPCS_cus.ToString() + " pcs, ") + (sumNW_cus.ToString() + " kg") + "]";
-
-            
+            _ = UpdateBottomInfo(currentRow);
         }
 
         private void Customer_ccb_SelectedIndexChanged(object sender, EventArgs e)
@@ -541,6 +495,49 @@ namespace RauViet.ui
 
                 cusProduct_GV.DataSource = dv;
             }
+        }
+        private async Task UpdateBottomInfo(DataGridViewRow currentRow)
+        {
+            int CustomerID = -1;
+            int.TryParse(currentRow.Cells["CustomerID"].Value?.ToString(), out CustomerID);
+
+            if (CustomerID < 0) return;
+            decimal sumNW_cus = 0;
+            int sumPCS_cus = 0;
+            decimal sumNW = 0;
+            int sumPCS = 0;
+
+
+            if (!int.TryParse(exportCode_search_cbb.SelectedValue.ToString(), out int exportCodeId))
+            {
+                return;
+            }
+
+            var rows = mOrders_dt.AsEnumerable()
+                .Where(r => r.RowState != DataRowState.Deleted)
+                .Where(r => r.Field<int>("ExportCodeID") == exportCodeId) // chỉ lấy ExportCode cần xử lý
+                .ToList();
+            // Duyệt toàn bộ các dòng trong DataGridView
+            foreach (DataRow row in rows)
+            {
+                decimal nw = 0;
+                int pcs = 0;
+                int cus = -1;
+                decimal.TryParse(row["NWOther"]?.ToString(), out nw);
+                int.TryParse(row["PCSOther"]?.ToString(), out pcs);
+                int.TryParse(row["CustomerID"]?.ToString(), out cus);
+                if (cus == CustomerID)
+                {
+                    sumNW_cus += nw;
+                    sumPCS_cus += pcs;
+                }
+                sumNW += nw;
+                sumPCS += pcs;
+            }
+
+            total_label.Text = "[" + sumPCS + " pcs, " + sumNW + " kg" + "]";
+            cus_name_label.Text = Convert.ToString(currentRow.Cells["CustomerName"].Value) + ": ";
+            cus_lable.Text = "[" + (sumPCS_cus.ToString() + " pcs, ") + (sumNW_cus.ToString() + " kg") + "]";
         }
 
         private async Task updateRightUI(int indexRowSelected)
@@ -610,7 +607,7 @@ namespace RauViet.ui
         }
        
 
-        private async void updateOrder(int orderId, int exportCodeId, int customerId, int packingId, int PCSOther, decimal NWOther, decimal priceCNF, bool isShowDialog = true)
+        private async void updateOrder(int orderId, int exportCodeId, int customerId, int packingId, int PCSOther, decimal NWOther, decimal priceCNF, bool isUpdateCusProduct)
         {
             var rows = mOrders_dt.AsEnumerable()
                 .Where(r => r.Field<int>("ExportCodeID") == exportCodeId) // chỉ lấy ExportCode cần xử lý
@@ -621,7 +618,7 @@ namespace RauViet.ui
                 int id =Convert.ToInt32(row["OrderId"]);
                 if (id.CompareTo(orderId) == 0)
                 {
-                    if (isShowDialog)
+                    if (!isUpdateCusProduct)
                     {
                         DialogResult dialogResult = MessageBox.Show(
                                                 "Chắc chắn chưa?",
@@ -655,13 +652,21 @@ namespace RauViet.ui
                             DataRow[] packingRows = mProductPacking_dt.Select($"ProductPackingID = {packingId}");
                             string cusName = customerRows.Length > 0 ? customerRows[0]["FullName"].ToString() : "Unknown";
                             string proVN = packingRows.Length > 0 ? packingRows[0]["Name_VN"].ToString() : "Unknown";
+                            string package = packingRows.Length > 0 ? packingRows[0]["Package"].ToString() : "";
+                            string packing = packingRows.Length > 0 ? packingRows[0]["packing"].ToString() : "";
+                            int amount = packingRows.Length > 0 ? Convert.ToInt32(packingRows[0]["Amount"]) : 0;
                             row["ExportCode"] = exportCodeRows.Length > 0 ? exportCodeRows[0]["ExportCode"].ToString() : "Unknown";
-                            row["Amount"] = packingRows.Length > 0 ? Convert.ToInt32(packingRows[0]["Amount"]) : 0;
-                            row["Package"] = packingRows.Length > 0 ? packingRows[0]["Package"].ToString() : "";
-                            row["packing"] = packingRows.Length > 0 ? packingRows[0]["packing"].ToString() : "";
+                            row["Amount"] = amount;
+                            row["Package"] = package;
+                            row["packing"] = packing;
                             row["CustomerName"] = cusName;                                
                             row["ProductNameVN"] = proVN;                                
                             row["Search_NoSign"] = Utils.RemoveVietnameseSigns(cusName + " " + proVN).ToLower();
+
+                            if (isUpdateCusProduct)
+                            {
+                                updateCusProduct(customerId, packingId, cusName, priceCNF, PCSOther, NWOther, package, packing, amount);
+                            }
                         }
                         else
                         {
@@ -680,7 +685,7 @@ namespace RauViet.ui
             }
         }
 
-        private async void createOrder(int customerId, int exportCodeId, int packingId, int PCSOther, decimal NWOther, decimal priceCNF, bool isUpdateScroll = true)
+        private async void createOrder(int customerId, int exportCodeId, int packingId, int PCSOther, decimal NWOther, decimal priceCNF, bool isUpdateCusProduct)
         {
             try
             {
@@ -704,9 +709,12 @@ namespace RauViet.ui
                     DataRow[] packingRows = mProductPacking_dt.Select($"ProductPackingID = {packingId}");
                     string cusName = customerRows.Length > 0 ? customerRows[0]["FullName"].ToString() : "Unknown";
                     string proVN = packingRows.Length > 0 ? packingRows[0]["Name_VN"].ToString() : "Unknown";
-                    drToAdd["Amount"] = packingRows.Length > 0 ? Convert.ToInt32(packingRows[0]["Amount"]) : 0;
-                    drToAdd["Package"] = packingRows.Length > 0 ? packingRows[0]["Package"].ToString() : "";
-                    drToAdd["packing"] = packingRows.Length > 0 ? packingRows[0]["packing"].ToString() : "";
+                    string package = packingRows.Length > 0 ? packingRows[0]["Package"].ToString() : "";
+                    string packing = packingRows.Length > 0 ? packingRows[0]["packing"].ToString() : "";
+                    int amount = packingRows.Length > 0 ? Convert.ToInt32(packingRows[0]["Amount"]) : 0;
+                    drToAdd["Amount"] = amount;
+                    drToAdd["Package"] = package;
+                    drToAdd["packing"] = packing;
                     drToAdd["ExportCode"] = exportCodeRows.Length > 0 ? exportCodeRows[0]["ExportCode"].ToString() : "Unknown";
                     drToAdd["CustomerName"] = cusName;
                     drToAdd["ProductNameVN"] = proVN;
@@ -726,11 +734,14 @@ namespace RauViet.ui
                     mOrders_dt.Rows.Add(drToAdd);
                     mOrders_dt.AcceptChanges();
 
+                    
+
                     status_lb.Text = "Thành công";
                     status_lb.ForeColor = System.Drawing.Color.Green;
 
-                    if (isUpdateScroll)
+                    if (isUpdateCusProduct)
                     {
+                        updateCusProduct(customerId, packingId, proVN, priceCNF, PCSOther, NWOther, package, packing, amount);
                         newCustomerBtn_Click(null, null);
                     }
                 }
@@ -799,7 +810,7 @@ namespace RauViet.ui
             if (orderId_tb.Text.Length != 0)
             {
                 int orderId = Convert.ToInt32(orderId_tb.Text);
-                updateOrder(orderId, exportCodeId, customerId, packingId, PCSOther, NWOther, priceCNF);
+                updateOrder(orderId, exportCodeId, customerId, packingId, PCSOther, NWOther, priceCNF, true);
 
             }
             else
@@ -810,7 +821,7 @@ namespace RauViet.ui
 
                 if (CountDuplicateInDataGridView(rows, customerId, packingId, exportCodeId) == 0)
                 {
-                    createOrder(customerId, exportCodeId, packingId, PCSOther, NWOther, priceCNF);
+                    createOrder(customerId, exportCodeId, packingId, PCSOther, NWOther, priceCNF, true);
                 }
                 else
                 {
@@ -824,24 +835,30 @@ namespace RauViet.ui
             
 
         }
-        private void deleteBtn_Click(object sender, EventArgs e)
+        private void deleteOrderID( bool isUpdateCusPro)
         {
-            DialogResult dialogResult = MessageBox.Show(
-                       "XÓA THÔNG ĐÓ NHA\nChắc chắn chưa?",
-                       "Thông Báo",
-                       MessageBoxButtons.YesNo,
-                       MessageBoxIcon.Warning  // Thêm icon cảnh báo
-                   );
+            if (dataGV.CurrentRow == null) return;
+            int id = Convert.ToInt32(dataGV.CurrentRow.Cells["OrderId"].Value);
+            int PCSReal = 0;
+            int NWReal = 0;
 
-
-            if (dialogResult == DialogResult.Yes)
+            int.TryParse(dataGV.CurrentRow.Cells["PCSReal"].Value?.ToString(), out PCSReal);
+            int.TryParse(dataGV.CurrentRow.Cells["NWReal"].Value?.ToString(), out NWReal);
+            string mess = $"XÓA OrderID: {id}\nChắc chắn chưa?";
+            if (PCSReal > 0 || NWReal > 0)
             {
-                int id = Convert.ToInt32(orderId_tb.Text);
-                deleteOrderProduct(id);
+                mess = $"OrderID: {id} đang có PCS, NW đóng thùng \nChắc chắn xóa không?";
             }
+
+            DialogResult dialogResult = MessageBox.Show(mess,"Thông Báo", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+
+            if (dialogResult != DialogResult.Yes) return;
+                
+            deleteOrderProduct(id, isUpdateCusPro);
+            
         }
 
-        private async void deleteOrderProduct(int id)
+        private async void deleteOrderProduct(int id, bool isUpdateCusPro)
         {
             foreach (DataRow row in mOrders_dt.Rows)
             {
@@ -857,9 +874,24 @@ namespace RauViet.ui
                             status_lb.Text = "Thành công.";
                             status_lb.ForeColor = System.Drawing.Color.Green;
 
+                            if (isUpdateCusPro)
+                            {
+                                int cusID = Convert.ToInt32(row["CustomerID"]);
+                                int ppID = Convert.ToInt32(row["ProductPackingID"]);
+                                string name = Convert.ToString(row["ProductNameVN"]);
+                                decimal price = Convert.ToDecimal(row["OrderPackingPriceCNF"]);
+                                int PCSOther = Convert.ToInt32(row["PCSOther"]);
+                                decimal NWOther = Convert.ToDecimal(row["NWOther"]);
+                                string package = Convert.ToString(row["Package"]);
+                                string packing = Convert.ToString(row["packing"]);
+                                int amount = Convert.ToInt32(row["Amount"]);
+                                updateCusProduct(cusID, ppID, name, price, 0, 0, package, packing, amount);
+                            }
+
                             // Xóa row khỏi DataTable
                             mOrders_dt.Rows.Remove(row);
                             mOrders_dt.AcceptChanges();
+                            
                         }
                         else
                         {
@@ -922,7 +954,6 @@ namespace RauViet.ui
             newCustomerBtn.Visible = false;
             readOnly_btn.Visible = true;
             LuuThayDoiBtn.Visible = true;
-            delete_btn.Visible = false;
             isNewState = true;
             cusProduct_GV.Visible = true;
             LuuThayDoiBtn.Text = "Lưu Mới";            
@@ -940,7 +971,6 @@ namespace RauViet.ui
             newCustomerBtn.Visible = true;
             readOnly_btn.Visible = false;
             LuuThayDoiBtn.Visible = false;
-            delete_btn.Visible = false;
             info_gb.BackColor = System.Drawing.Color.DarkGray;
             isNewState = false;
             cusProduct_GV.Visible = false;
@@ -954,7 +984,6 @@ namespace RauViet.ui
             newCustomerBtn.Visible = false;
             readOnly_btn.Visible = true;
             LuuThayDoiBtn.Visible = true;
-            delete_btn.Visible = true;
             info_gb.BackColor = edit_btn.BackColor;
             isNewState = false;
             cusProduct_GV.Visible = true;
@@ -1383,7 +1412,7 @@ namespace RauViet.ui
                     int orderId = Convert.ToInt32(orderRow["OrderId"]);
                     if ( (NWOther ?? 0) <= 0)
                     {
-                        deleteOrderProduct(orderId);
+                        deleteOrderProduct(orderId, false);
                     }
                     else
                     {
@@ -1425,6 +1454,39 @@ namespace RauViet.ui
             catch (Exception ex)
             {
                 MessageBox.Show("Lỗi khi xử lý thay đổi dữ liệu:\n" + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        void updateCusProduct(int cusID, int ppID, string name, decimal price, int PCS, decimal NW, string package, string packing, int amount)
+        {
+            DataRow foundRow = mlatestOrders_dt.AsEnumerable()
+                                             .Where(r => r.RowState != DataRowState.Deleted)
+                                             .FirstOrDefault(r =>
+                                                 r.Field<int>("CustomerID") == cusID &&
+                                                 r.Field<int>("ProductPackingID") == ppID
+                                             );
+
+            if (foundRow != null)
+            {
+                foundRow["PCSOther"] = PCS;
+                foundRow["NWOther"] = NW;
+            }
+            else
+            {
+                var newRow = mlatestOrders_dt.NewRow();
+                newRow["CustomerID"] = cusID;
+                newRow["ProductPackingID"] = ppID;
+                newRow["ProductNameVN"] = name;
+                newRow["OrderPackingPriceCNF"] = price;
+                newRow["PCSOther"] = PCS;
+                newRow["NWOther"] = NW;
+                newRow["Package"] = package;
+                newRow["packing"] = packing;
+                newRow["Amount"] = amount;
+
+                mlatestOrders_dt.Rows.Add(newRow);
+                mlatestOrders_dt.AcceptChanges();
+
             }
         }
     }

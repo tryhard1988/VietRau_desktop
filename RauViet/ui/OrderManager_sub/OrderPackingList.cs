@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
+using Microsoft.VisualBasic;
 
 namespace RauViet.ui
 {
@@ -16,7 +16,7 @@ namespace RauViet.ui
         private LoadingOverlay loadingOverlay;
         DataTable mExportCode_dt, mOrders_dt, mCartonSize_dt;
         private Timer debounceTimer = new Timer { Interval = 300 };
-
+        string oldValue = "";
         public OrderPackingList()
         {
             InitializeComponent();
@@ -80,6 +80,64 @@ namespace RauViet.ui
             this.KeyDown += OrderPackingList_KeyDown;
             carton_GV.CellDoubleClick += Carton_GV_CellDoubleClick; ;
 
+            phieuCanHang_preview_btn.Click += PhieuCanHang_preview_btn_Click;
+            phieuCanHang_btn.Click += PhieuCanHang_btn_Click;
+
+        }
+
+        private void PhieuCanHang_btn_Click(object sender, EventArgs e)
+        {
+            InPhieuCanHang(false);
+        }
+
+        private void PhieuCanHang_preview_btn_Click(object sender, EventArgs e)
+        {
+            InPhieuCanHang(true);
+        }
+
+        private async void InPhieuCanHang(bool preview = false)
+        {
+            if (exportCode_cbb.SelectedValue == null) return;
+            if (!int.TryParse(exportCode_cbb.SelectedValue.ToString(), out int exportCodeId))
+            {
+                return;
+            }
+
+            loadingOverlay = new LoadingOverlay(this);
+            loadingOverlay.Message = "Đang xử lý ...";
+            loadingOverlay.Show();
+            await Task.Delay(100);
+
+            var list = mOrders_dt.AsEnumerable()
+                                .Where(r => r.Field<int>("ExportCodeID") == exportCodeId)
+                                .Where(r => r.Field<int?>("CartonNo").HasValue)
+                                .GroupBy(r => r.Field<int?>("CartonNo"))
+                                .Select(g => g.First())
+                                .Select(r => new
+                                {
+                                    CartonNo = r.Field<int?>("CartonNo"),
+                                    CustomerName = r.Field<string>("CustomerName"),
+                                    CartonSize = r.Field<string>("CartonSize"),
+                                    GEL = 5
+                                })
+                                .OrderBy(x => x.CartonNo)
+                                .ToList();
+
+            DataTable dt = list.ToDataTable();
+
+            DataRowView exportCodeItem = (DataRowView)exportCode_cbb.SelectedItem;
+
+            string exportCode = exportCodeItem["ExportCode"].ToString();
+            DateTime exportDate = Convert.ToDateTime(exportCodeItem["ExportDate"]);
+
+            PhieuCanHangPrinter deliveryPrinter = new PhieuCanHangPrinter(dt, exportCode, exportDate);
+            if (!preview)
+                deliveryPrinter.PrintDirect();
+            else
+                deliveryPrinter.PrintPreview(this);
+
+            await Task.Delay(200);
+            loadingOverlay.Hide();
         }
 
         private void Carton_GV_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
@@ -297,6 +355,20 @@ namespace RauViet.ui
 
         private async void DelOrder_btn_Click(object sender, EventArgs e)
         {
+            if (dataGV.CurrentRow == null) return;
+            var currentRow = dataGV.CurrentRow;
+            var pcsVal = currentRow.Cells["PCSOther"].Value;
+            var nwVal = currentRow.Cells["NWOther"].Value;
+
+            int PCSOther = 0;
+            double NWOther = 0;
+            int.TryParse(pcsVal?.ToString() ?? "0", out PCSOther);
+            double.TryParse(nwVal?.ToString() ?? "0", out NWOther);
+
+            if ((PCSOther > 0 || NWOther > 0)) {
+                MessageBox.Show("Chỉ được xóa những dòng có \nPCS(đặt hàng) <= 0 và NW(đặt hàng) <= 0");
+                return; 
+            }
             DialogResult dialogResult = MessageBox.Show("Xóa Đơn Đang Chọn", "Xóa",
                                            MessageBoxButtons.YesNo,
                                            MessageBoxIcon.Question
@@ -372,13 +444,6 @@ namespace RauViet.ui
             fillter_btn_Click(null, null);
         }
 
-        //private void CartonNo_tang1_btn_Click(object sender, EventArgs e)
-        //{
-        //    if (int.TryParse(cartonNo_tb.Text, out int cartonNo1))
-        //    {
-        //        cartonNo_tb.Text = (cartonNo1 + 1).ToString();
-        //    }
-        //}
 
         private async void dataGV_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
@@ -386,6 +451,13 @@ namespace RauViet.ui
             {
                 if (dataGV.CurrentRow != null && e.ColumnIndex >= 0)
                 {
+                    string newValue = dataGV.Rows[e.RowIndex].Cells[e.ColumnIndex].Value?.ToString() ?? "";
+
+                    if (newValue == oldValue)
+                    {
+                        return;
+                    }
+
                     var row = dataGV.CurrentRow;
                     int orderId = Convert.ToInt32(row.Cells["OrderId"].Value);
                     DataRow[] matchingRows = mOrders_dt.Select($"OrderId = {orderId}");
@@ -413,6 +485,7 @@ namespace RauViet.ui
                         decimal NWReal = 0;
                         int.TryParse(orderRow["PCSReal"].ToString(), out PCSReal);
                         decimal.TryParse(orderRow["NWReal"].ToString(), out NWReal);
+                       
                         if (PCSReal == 0 && NWReal == 0)
                         {
                             orderRow["CartonNo"] = DBNull.Value;
@@ -521,7 +594,7 @@ namespace RauViet.ui
         private void dataGV_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
             if (dataGV.CurrentRow == null) return;
-            var row = dataGV.CurrentRow;
+            var row = dataGV.Rows[e.RowIndex];
             var packageVal = row.Cells["Package"].Value?.ToString();
             if (dataGV.Columns[e.ColumnIndex].Name == "CustomerName")
             {
@@ -555,6 +628,7 @@ namespace RauViet.ui
             }
             else if (dataGV.Columns[e.ColumnIndex].Name == "NWReal")
             {
+                
                 if (string.Equals(packageVal, "weight", StringComparison.OrdinalIgnoreCase))
                 {
                     row.Cells["NWReal"].ReadOnly = false;
@@ -611,13 +685,15 @@ namespace RauViet.ui
             {
                 DataRowView dataR = (DataRowView)exportCode_cbb.SelectedItem; 
                 string staff = dataR["InputByName_NoSign"].ToString();
-                //if (UserManager.Instance.fullName_NoSign.CompareTo(staff) != 0)
-                //{
-                //    e.Cancel = true;
-                //    return;
-                //}
+                if (UserManager.Instance.fullName_NoSign.CompareTo(staff) != 0)
+                {
+                    e.Cancel = true;
+                    return;
+                }
             }
             e.Cancel = edit_btn.Visible;
+
+            oldValue = dataGV.Rows[e.RowIndex].Cells[e.ColumnIndex].Value?.ToString() ?? "";
         }
 
         private void Tb_KeyPress_OnlyNumber(object sender, KeyPressEventArgs e)
@@ -806,11 +882,11 @@ namespace RauViet.ui
                 if (string.IsNullOrEmpty(customer)) continue;
 
                 // Bước 1: gom theo CartonNo
-                var cartonMap = new Dictionary<string, List<DataRow>>();
+                var cartonMap = new Dictionary<int, List<DataRow>>();
                 foreach (var row in grp)
                 {
-                    string cartonKey = (row["CartonNo"]?? "").ToString().Trim();
-                    if (string.IsNullOrEmpty(cartonKey)) continue;
+                    if (row.IsNull("CartonNo")) continue;
+                    int cartonKey = row.Field<int>("CartonNo");
 
                     if (!cartonMap.TryGetValue(cartonKey, out var list))
                     {
@@ -821,7 +897,7 @@ namespace RauViet.ui
                 }
 
                 // Bước 2: tách các carton đã có CustomerCarton và chưa có
-                var existingCartonNos = new Dictionary<string, string>(); // CartonNo -> CustomerCarton
+                var existingCartonNos = new Dictionary<int, string>(); // CartonNo -> CustomerCarton
                 foreach (var kv in cartonMap)
                 {
                     // Lấy CustomerCarton đầu tiên (nếu có)
@@ -835,18 +911,8 @@ namespace RauViet.ui
                 // Bước 3: tạo danh sách CartonNo cần gán mới (chưa có CustomerCarton)
                 var distinctKeysToAssign = cartonMap.Keys
                     .Where(k => !existingCartonNos.ContainsKey(k))
+                    .OrderBy(k => k)
                     .ToList();
-
-                // Sắp xếp theo số học hoặc chữ
-                distinctKeysToAssign.Sort((a, b) =>
-                {
-                    bool aNum = int.TryParse(a, out int ai);
-                    bool bNum = int.TryParse(b, out int bi);
-                    if (aNum && bNum) return ai.CompareTo(bi);
-                    if (aNum) return -1;
-                    if (bNum) return 1;
-                    return string.Compare(a, b, StringComparison.Ordinal);
-                });
 
                 // Bước 4: lấy danh sách CustomerCarton đã tồn tại (để tránh trùng)
                 var usedCustomerCartons = new HashSet<string>(
@@ -894,7 +960,7 @@ namespace RauViet.ui
                 // Bước 6: gán CustomerCarton cho toàn bộ row
                 foreach (var kv in cartonMap)
                 {
-                    string cartonNo = kv.Key;
+                    int cartonNo = kv.Key;
                     string custCarton = existingCartonNos.ContainsKey(cartonNo)
                         ? existingCartonNos[cartonNo]
                         : "";
@@ -949,7 +1015,10 @@ namespace RauViet.ui
                     }
                     if(!string.IsNullOrEmpty(customerCarton))
                         _ = PrintPhieuThung(false, customerCarton);
+                                        
+                    cartonNo_tb.Text = (cartonNo + 1).ToString();
                 }
+                
             }
         }
 
@@ -1410,16 +1479,17 @@ namespace RauViet.ui
                 DataRowView dataR = (DataRowView)exportCode_cbb.SelectedItem;
 
                 string staff = dataR["InputByName_NoSign"].ToString();
-                //if (UserManager.Instance.fullName_NoSign.CompareTo(staff) != 0)
-                //{
-                //    edit_btn.Visible = false;
-                //    readOnly_btn.Visible = false;
-                //    rightInfo_gb.Visible = false;
-                //    InPhieuGiaoHang_btn.Visible = true;
-                //    previewPrint_PGH_btn.Visible = true;
-                //    previewPrint_PT_btn.Visible = true;
-                //    return;
-                //}
+                if (UserManager.Instance.fullName_NoSign.CompareTo(staff) != 0)
+                if (UserManager.Instance.fullName_NoSign.CompareTo(staff) != 0)
+                {
+                    edit_btn.Visible = false;
+                    readOnly_btn.Visible = false;
+                    rightInfo_gb.Visible = false;
+                    InPhieuGiaoHang_btn.Visible = true;
+                    previewPrint_PGH_btn.Visible = true;
+                    previewPrint_PT_btn.Visible = true;
+                    return;
+                }
             }
             rightInfo_gb.Visible = !isReadOnly;
             edit_btn.Visible = isReadOnly;
@@ -1472,7 +1542,7 @@ namespace RauViet.ui
             int sumPCS_cn = 0;
             decimal sumNW_tt_cn = 0;
             int sumPCS_tt_cn = 0;
-
+            int countCartonNo = 0;
             // Duyệt toàn bộ các dòng trong DataGridView
             foreach (DataRow row in rows)
             {
@@ -1481,6 +1551,7 @@ namespace RauViet.ui
                 int pcs = 0;
                 decimal nwtt = 0;
                 int pcstt = 0;
+                
                 decimal.TryParse(row["NWOther"]?.ToString(), out nw);
                 int.TryParse(row["PCSOther"]?.ToString(), out pcs);
                 decimal.TryParse(row["NWReal"]?.ToString(), out nwtt);
@@ -1502,6 +1573,7 @@ namespace RauViet.ui
                     sumPCS_cn += pcs;
                     sumNW_tt_cn += nwtt;
                     sumPCS_tt_cn += pcstt;
+                    countCartonNo ++;
                 }
                 sumNW += nw;
                 sumPCS += pcs;
@@ -1514,7 +1586,7 @@ namespace RauViet.ui
             dongthung_cus_lable.Text = "[" + sumPCS_cus_tt + " pcs, " + sumNW_cus_tt + " kg" + "]";
             if (CartonNo >= 0)
             {
-                dathang_cn_name_lable.Text = "Thùng " + CartonNo + " Đặt:";
+                dathang_cn_name_lable.Text = "Thùng " + CartonNo + "[" + countCartonNo + "]" + " Đặt:";
                 dathang_cn_lable.Text = "[" + sumPCS_cn + " pcs, " + sumNW_cn + " kg" + "]";
                 dongthung_cn_name_lable.Text = "Thùng " + CartonNo + " Nhận:";
                 dongthung_cn_lable.Text = "[" + sumPCS_tt_cn + " pcs, " + sumNW_tt_cn + " kg" + "]";
@@ -1612,6 +1684,11 @@ namespace RauViet.ui
                 await Task.Delay(100);
                 checkCarton_btn_click(null, null);
             }
+            else if(e.KeyCode == Keys.F5)
+            {
+                SQLStore.Instance.removeOrders();
+                ShowData();
+            }
             else if (edit_btn.Visible == false)
             {
                 if (e.KeyCode == Keys.F2)
@@ -1643,6 +1720,13 @@ namespace RauViet.ui
                 }
                 else if (e.KeyCode == Keys.Delete)
                 {
+                    Control ctrl = this.ActiveControl;
+
+                    if (ctrl is TextBox || ctrl is RichTextBox ||
+                        (ctrl is DataGridView dgv && dgv.CurrentCell != null && dgv.IsCurrentCellInEditMode))
+                    {
+                        return; // không xử lý Delete
+                    }
                     DelOrder_btn_Click(null, null);
                 }
             }
@@ -1660,6 +1744,20 @@ namespace RauViet.ui
 
         private async void InPhieuGiaoHang(bool preview = false)
         {
+            
+
+            string packerName = Interaction.InputBox(
+                "Ghi Chú:", // Prompt
+                "Thông tin Ghi chú", // Title
+                " " // Default value
+            );
+
+            if (packerName == "")
+            {
+                return; 
+            }
+
+
             if (exportCode_cbb.SelectedValue == null) return;
             if (!int.TryParse(exportCode_cbb.SelectedValue.ToString(), out int exportCodeId))
             {
@@ -1701,7 +1799,7 @@ namespace RauViet.ui
             string exportCode = exportCodeItem["ExportCode"].ToString();
             DateTime exportDate = Convert.ToDateTime(exportCodeItem["ExportDate"]);
 
-            DeliveryPrinter deliveryPrinter = new DeliveryPrinter(resultTable, exportCode, exportDate);
+            DeliveryPrinter deliveryPrinter = new DeliveryPrinter(resultTable, exportCode, exportDate, packerName);
             if (!preview)
                 deliveryPrinter.PrintDirect();
             else

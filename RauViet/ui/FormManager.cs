@@ -106,6 +106,7 @@ namespace RauViet.ui
                 invoice_menuitem.Click += invoice_btn_Click;
                 packingTotal_menuitem.Click += packingTotal_btn_Click;
                 customerDetailPacking_mi.Click += customerDetailPacking_mi_Click;
+                chotphyto_mi.Click += ChotPhyto_mi_Click;
             }
             else
                 xuatExcelGuiKH_Group_mi.Visible = false;
@@ -216,7 +217,8 @@ namespace RauViet.ui
             Employee,
             Department,
             Position,
-            DoCBM
+            DoCBM,
+            ChotPHYTO
         }
 
         private void openCurrentForm(EForm status)
@@ -350,6 +352,9 @@ namespace RauViet.ui
                 case EForm.DoCBM:
                     SwitchChildForm<Do_CBM>("Do CBM");
                     break;
+                case EForm.ChotPHYTO:
+                    SwitchChildForm<ChotPhyto>("Chốt PHYTO");
+                    break;
 
             }
             
@@ -399,6 +404,7 @@ namespace RauViet.ui
         private void department_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.Department); }
         private void position_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.Position); }
         private void DoCBM_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.DoCBM); }
+        private void ChotPhyto_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.ChotPHYTO); }
         private async void checkLoginTimer_Tick(object sender, EventArgs e)
         {
             var isHave = await SQLManager.Instance.HaveOtherComputerLoginAsync();

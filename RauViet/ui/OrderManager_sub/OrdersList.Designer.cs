@@ -51,7 +51,6 @@ namespace RauViet.ui
             this.preview_print_TD_btn = new System.Windows.Forms.Button();
             this.exportExcel_TD_btn = new System.Windows.Forms.Button();
             this.status_lb = new System.Windows.Forms.Label();
-            this.Refesh_btn = new System.Windows.Forms.Button();
             this.readOnly_btn = new System.Windows.Forms.Button();
             this.newCustomerBtn = new System.Windows.Forms.Button();
             this.edit_btn = new System.Windows.Forms.Button();
@@ -66,11 +65,14 @@ namespace RauViet.ui
             this.netWeight_tb = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
             this.product_ccb = new System.Windows.Forms.ComboBox();
-            this.delete_btn = new System.Windows.Forms.Button();
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
             this.priceCNF_tb = new System.Windows.Forms.TextBox();
             this.orderId_tb = new System.Windows.Forms.TextBox();
             this.cusProduct_GV = new System.Windows.Forms.DataGridView();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
             this.panel4.SuspendLayout();
@@ -80,6 +82,7 @@ namespace RauViet.ui
             this.tongdon_gb.SuspendLayout();
             this.info_gb.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.cusProduct_GV)).BeginInit();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel2
@@ -209,15 +212,14 @@ namespace RauViet.ui
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.groupBox1);
             this.panel1.Controls.Add(this.dddh_gb);
             this.panel1.Controls.Add(this.tongdon_gb);
             this.panel1.Controls.Add(this.status_lb);
-            this.panel1.Controls.Add(this.Refesh_btn);
             this.panel1.Controls.Add(this.readOnly_btn);
             this.panel1.Controls.Add(this.newCustomerBtn);
             this.panel1.Controls.Add(this.edit_btn);
             this.panel1.Controls.Add(this.info_gb);
-            this.panel1.Controls.Add(this.delete_btn);
             this.panel1.Controls.Add(this.LuuThayDoiBtn);
             this.panel1.Controls.Add(this.priceCNF_tb);
             this.panel1.Controls.Add(this.orderId_tb);
@@ -233,7 +235,7 @@ namespace RauViet.ui
             this.dddh_gb.Controls.Add(this.prewiew_print_DSDH_btn);
             this.dddh_gb.Controls.Add(this.print_order_list_btn);
             this.dddh_gb.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.dddh_gb.Location = new System.Drawing.Point(68, 348);
+            this.dddh_gb.Location = new System.Drawing.Point(68, 407);
             this.dddh_gb.Name = "dddh_gb";
             this.dddh_gb.Size = new System.Drawing.Size(145, 110);
             this.dddh_gb.TabIndex = 70;
@@ -280,7 +282,7 @@ namespace RauViet.ui
             this.tongdon_gb.Controls.Add(this.preview_print_TD_btn);
             this.tongdon_gb.Controls.Add(this.exportExcel_TD_btn);
             this.tongdon_gb.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tongdon_gb.Location = new System.Drawing.Point(229, 348);
+            this.tongdon_gb.Location = new System.Drawing.Point(229, 407);
             this.tongdon_gb.Name = "tongdon_gb";
             this.tongdon_gb.Size = new System.Drawing.Size(159, 152);
             this.tongdon_gb.TabIndex = 69;
@@ -336,28 +338,17 @@ namespace RauViet.ui
             this.status_lb.AutoSize = true;
             this.status_lb.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.status_lb.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.status_lb.Location = new System.Drawing.Point(177, 24);
+            this.status_lb.Location = new System.Drawing.Point(166, 125);
             this.status_lb.Name = "status_lb";
             this.status_lb.Size = new System.Drawing.Size(93, 20);
             this.status_lb.TabIndex = 48;
             this.status_lb.Text = "Thành công";
             // 
-            // Refesh_btn
-            // 
-            this.Refesh_btn.BackColor = System.Drawing.Color.Gold;
-            this.Refesh_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Refesh_btn.Location = new System.Drawing.Point(17, 89);
-            this.Refesh_btn.Name = "Refesh_btn";
-            this.Refesh_btn.Size = new System.Drawing.Size(94, 32);
-            this.Refesh_btn.TabIndex = 68;
-            this.Refesh_btn.Text = "Refesh";
-            this.Refesh_btn.UseVisualStyleBackColor = false;
-            // 
             // readOnly_btn
             // 
             this.readOnly_btn.BackColor = System.Drawing.Color.MediumSlateBlue;
             this.readOnly_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.readOnly_btn.Location = new System.Drawing.Point(352, 89);
+            this.readOnly_btn.Location = new System.Drawing.Point(348, 131);
             this.readOnly_btn.Name = "readOnly_btn";
             this.readOnly_btn.Size = new System.Drawing.Size(42, 32);
             this.readOnly_btn.TabIndex = 47;
@@ -369,7 +360,7 @@ namespace RauViet.ui
             this.newCustomerBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
             this.newCustomerBtn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.newCustomerBtn.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.newCustomerBtn.Location = new System.Drawing.Point(319, 89);
+            this.newCustomerBtn.Location = new System.Drawing.Point(315, 148);
             this.newCustomerBtn.Name = "newCustomerBtn";
             this.newCustomerBtn.Size = new System.Drawing.Size(75, 32);
             this.newCustomerBtn.TabIndex = 46;
@@ -380,7 +371,7 @@ namespace RauViet.ui
             // 
             this.edit_btn.BackColor = System.Drawing.SystemColors.MenuHighlight;
             this.edit_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.edit_btn.Location = new System.Drawing.Point(219, 89);
+            this.edit_btn.Location = new System.Drawing.Point(219, 148);
             this.edit_btn.Name = "edit_btn";
             this.edit_btn.Size = new System.Drawing.Size(94, 32);
             this.edit_btn.TabIndex = 44;
@@ -399,7 +390,7 @@ namespace RauViet.ui
             this.info_gb.Controls.Add(this.netWeight_tb);
             this.info_gb.Controls.Add(this.label7);
             this.info_gb.Controls.Add(this.product_ccb);
-            this.info_gb.Location = new System.Drawing.Point(17, 121);
+            this.info_gb.Location = new System.Drawing.Point(17, 180);
             this.info_gb.Name = "info_gb";
             this.info_gb.Size = new System.Drawing.Size(387, 221);
             this.info_gb.TabIndex = 40;
@@ -500,24 +491,12 @@ namespace RauViet.ui
             this.product_ccb.Size = new System.Drawing.Size(259, 24);
             this.product_ccb.TabIndex = 31;
             // 
-            // delete_btn
-            // 
-            this.delete_btn.BackColor = System.Drawing.Color.Red;
-            this.delete_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.delete_btn.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.delete_btn.Location = new System.Drawing.Point(248, 348);
-            this.delete_btn.Name = "delete_btn";
-            this.delete_btn.Size = new System.Drawing.Size(99, 38);
-            this.delete_btn.TabIndex = 27;
-            this.delete_btn.Text = "Xóa";
-            this.delete_btn.UseVisualStyleBackColor = false;
-            // 
             // LuuThayDoiBtn
             // 
             this.LuuThayDoiBtn.BackColor = System.Drawing.SystemColors.Highlight;
             this.LuuThayDoiBtn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.LuuThayDoiBtn.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.LuuThayDoiBtn.Location = new System.Drawing.Point(143, 348);
+            this.LuuThayDoiBtn.Location = new System.Drawing.Point(143, 407);
             this.LuuThayDoiBtn.Name = "LuuThayDoiBtn";
             this.LuuThayDoiBtn.Size = new System.Drawing.Size(99, 38);
             this.LuuThayDoiBtn.TabIndex = 25;
@@ -554,6 +533,54 @@ namespace RauViet.ui
             this.cusProduct_GV.Size = new System.Drawing.Size(486, 681);
             this.cusProduct_GV.TabIndex = 79;
             // 
+            // groupBox1
+            // 
+            this.groupBox1.BackColor = System.Drawing.Color.PapayaWhip;
+            this.groupBox1.Controls.Add(this.label8);
+            this.groupBox1.Controls.Add(this.label9);
+            this.groupBox1.Controls.Add(this.label4);
+            this.groupBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.groupBox1.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.groupBox1.Location = new System.Drawing.Point(17, 5);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(326, 90);
+            this.groupBox1.TabIndex = 71;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Phím Tắt";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label4.ForeColor = System.Drawing.Color.DarkGreen;
+            this.label4.Location = new System.Drawing.Point(7, 44);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(302, 15);
+            this.label4.TabIndex = 75;
+            this.label4.Text = "★   F5:           Update dữ liệu mới trên máy chủ";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label9.ForeColor = System.Drawing.Color.OliveDrab;
+            this.label9.Location = new System.Drawing.Point(7, 66);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(228, 15);
+            this.label9.TabIndex = 76;
+            this.label9.Text = "★   Delete:     Xóa dòng đang chọn";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label8.ForeColor = System.Drawing.Color.OliveDrab;
+            this.label8.Location = new System.Drawing.Point(7, 22);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(189, 15);
+            this.label8.TabIndex = 77;
+            this.label8.Text = "★   F1:           Vào ô tìm kiếm";
+            // 
             // OrdersList
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -579,6 +606,8 @@ namespace RauViet.ui
             this.info_gb.ResumeLayout(false);
             this.info_gb.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.cusProduct_GV)).EndInit();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -586,7 +615,6 @@ namespace RauViet.ui
         #endregion
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Button Refesh_btn;
         private System.Windows.Forms.Button exportExcel_TD_btn;
         private System.Windows.Forms.Label status_lb;
         private System.Windows.Forms.Button readOnly_btn;
@@ -608,7 +636,6 @@ namespace RauViet.ui
         private System.Windows.Forms.Button printPendingOrderSummary_btn;
         private System.Windows.Forms.Button print_order_list_btn;
         private System.Windows.Forms.ComboBox exportCode_search_cbb;
-        private System.Windows.Forms.Button delete_btn;
         private System.Windows.Forms.Button LuuThayDoiBtn;
         private System.Windows.Forms.TextBox priceCNF_tb;
         private System.Windows.Forms.TextBox orderId_tb;
@@ -626,5 +653,9 @@ namespace RauViet.ui
         private System.Windows.Forms.CheckBox tongdon_in2mat_cb;
         private System.Windows.Forms.GroupBox dddh_gb;
         private System.Windows.Forms.CheckBox dsdd_in2mat_cb;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Label label8;
     }
 }

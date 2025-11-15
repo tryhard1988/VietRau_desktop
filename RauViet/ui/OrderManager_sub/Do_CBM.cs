@@ -66,22 +66,32 @@ namespace RauViet.ui
                 cartonSizeGroupGV.Columns["GrossWeight"].HeaderText = "Gross Weight";
                 cartonSizeGroupGV.Columns["FreightCharge"].HeaderText = "Freight Charge";
 
+                cartonSizeGroupGV.Columns["FreightCharge"].DefaultCellStyle.Format = "#,##0.00";
+                cartonSizeGroupGV.Columns["GrossWeight"].DefaultCellStyle.Format = "#,##0.00";
+                cartonSizeGroupGV.Columns["ChargeWeight"].DefaultCellStyle.Format = "#,##0.00";
+                cartonSizeGroupGV.Columns["CBM"].DefaultCellStyle.Format = "#,##0";
+
                 cusGroupGV.Columns["CustomerName"].HeaderText = "Khách Hàng";
                 cusGroupGV.Columns["CountCarton"].HeaderText = "Số Thùng";
                 cusGroupGV.Columns["ChargeWeight"].HeaderText = "Charge Weight";
                 cusGroupGV.Columns["GrossWeight"].HeaderText = "Gross Weight";
                 cusGroupGV.Columns["FreightCharge"].HeaderText = "Freight Charge";
 
+                cusGroupGV.Columns["FreightCharge"].DefaultCellStyle.Format = "#,##0.00";
+                cusGroupGV.Columns["GrossWeight"].DefaultCellStyle.Format = "#,##0.00";
+                cusGroupGV.Columns["ChargeWeight"].DefaultCellStyle.Format = "#,##0.00";
+                cusGroupGV.Columns["CBM"].DefaultCellStyle.Format = "#,##0";
+
                 cartonSizeGroupGV.Columns["CartonSize"].Width = 80;
                 cartonSizeGroupGV.Columns["CountCarton"].Width = 50;
-                cartonSizeGroupGV.Columns["CBM"].Width = 50;
+                cartonSizeGroupGV.Columns["CBM"].Width = 80;
                 cartonSizeGroupGV.Columns["ChargeWeight"].Width = 80;
                 cartonSizeGroupGV.Columns["GrossWeight"].Width = 80;
                 cartonSizeGroupGV.Columns["FreightCharge"].Width = 80;
 
                 cusGroupGV.Columns["CustomerName"].Width = 120;
                 cusGroupGV.Columns["CountCarton"].Width = 50;
-                cusGroupGV.Columns["CBM"].Width = 50;
+                cusGroupGV.Columns["CBM"].Width = 80;
                 cusGroupGV.Columns["ChargeWeight"].Width = 80;
                 cusGroupGV.Columns["GrossWeight"].Width = 80;
                 cusGroupGV.Columns["FreightCharge"].Width = 80;
@@ -139,8 +149,10 @@ namespace RauViet.ui
                     .Select(x => x.First());
 
                 decimal totalCBM = 0;
+                decimal totalNW = 0;
                 foreach (var row in distinctCartons)
                 {
+                    decimal nw = row.Field<decimal>("NWReal");
                     string cartonSize = row.Field<string>("CartonSize");
                     if (!string.IsNullOrEmpty(cartonSize))
                     {
@@ -151,6 +163,7 @@ namespace RauViet.ui
                             && decimal.TryParse(parts[2].Trim(), out decimal height))
                         {
                             totalCBM += length * width * height;
+                            totalNW += nw;
                         }
                     }
                 }
@@ -170,7 +183,7 @@ namespace RauViet.ui
                     distinctCartons.Count(),
                     Math.Round(totalCBM, 3),
                     Math.Round(totalCBM/6000.0m, 3),
-                    0,
+                    totalNW + distinctCartons.Count()*3,
                     Math.Round(totalCBM / 6000.0m * exchangeRate * shippingCost, 3)
                 );
             }
@@ -210,8 +223,10 @@ namespace RauViet.ui
                     .Select(x => x.First());
 
                 decimal totalCBM = 0;
+                decimal totalNW = 0;
                 foreach (var row in distinctCartons)
                 {
+                    decimal nw = row.Field<decimal>("NWReal");
                     string cartonSize = row.Field<string>("CartonSize");
                     if (!string.IsNullOrEmpty(cartonSize))
                     {
@@ -222,6 +237,7 @@ namespace RauViet.ui
                             && decimal.TryParse(parts[2].Trim(), out decimal height))
                         {
                             totalCBM += length * width * height;
+                            totalNW += nw;
                         }
                     }
                 }
@@ -240,7 +256,7 @@ namespace RauViet.ui
                     distinctCartons.Count(),
                     Math.Round(totalCBM, 3),
                     Math.Round(totalCBM / 6000.0m, 3),
-                    0,
+                    totalNW  + distinctCartons.Count()*3,
                     Math.Round(totalCBM / 6000.0m * exchangeRate * shippingCost, 3)
                 );
             }
@@ -264,11 +280,13 @@ namespace RauViet.ui
             dv2.RowFilter = $"ExportCodeID = '{ExportCodeID}'";
             cusGroupGV.DataSource = dv2;
 
+            decimal totalCBM = 0;
             decimal totalChargeWeight = 0;
             int totalCarton = 0;
             decimal totalNWReal = 0;
             totalChargeWeight = 0;
             totalCarton = 0;
+            
 
             decimal totalAmount = mOrders_dt.AsEnumerable()
                                             .Where(r => !r.IsNull("ExportCodeID") && r.Field<int>("ExportCodeID") == ExportCodeID)
@@ -299,10 +317,15 @@ namespace RauViet.ui
             if (result2 != DBNull.Value)
                 totalCarton = Convert.ToInt32(result2);
 
-            totalChargeWeight_tb.Text = totalChargeWeight.ToString("F2");
-            totalFreightCharge_tb.Text = (totalChargeWeight * ShippingCost * ExchangeRate).ToString("F2");
+            object result3 = mGroupCartonSize.Compute("SUM(CBM)", $"ExportCodeID = {ExportCodeID}");
+            if (result3 != DBNull.Value)
+                totalCBM = Convert.ToInt32(result3);
+
+            totalChargeWeight_tb.Text = totalChargeWeight.ToString("#,##0.00");
+            totalFreightCharge_tb.Text = (totalChargeWeight * ShippingCost * ExchangeRate).ToString("#,##0.00");
             totalCarton_tb.Text = totalCarton.ToString();
-            netWeight_tb.Text = totalNWReal.ToString("F2");
+            netWeight_tb.Text = totalNWReal.ToString("#,##0.00");
+            totalCBM_tb.Text = totalCBM.ToString("#,##0");
             totalAmount_tb.Text = totalAmount.ToString("F2");
 
         }

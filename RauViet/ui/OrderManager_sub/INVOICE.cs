@@ -66,8 +66,6 @@ namespace RauViet.ui
                 showCustomerOrderGV();
                 showCartonOrderGV();
 
-
-
                 exportCode_cbb.DataSource = mExportCode_dt;
                 exportCode_cbb.DisplayMember = "ExportCode";  // hiển thị tên
                 exportCode_cbb.ValueMember = "ExportCodeID";
@@ -97,16 +95,23 @@ namespace RauViet.ui
             mOrdersTotal_dt.Columns.Add(new DataColumn("Quantity", typeof(decimal)));
             mOrdersTotal_dt.Columns.Add(new DataColumn("AmountCHF", typeof(float)));
 
-            int count = 1;
+            Dictionary<int, int> countDic = new Dictionary<int, int>();
+
             foreach (DataRow dr in mOrdersTotal_dt.Rows)
             {
+                int exportCodeID = Convert.ToInt32(dr["ExportCodeID"]);
+                if (!countDic.ContainsKey(exportCodeID))
+                {
+                    countDic.Add(exportCodeID, 1);
+                }
+
                 decimal NWReal = dr["NWReal"] == DBNull.Value ? 0 : Convert.ToDecimal(dr["NWReal"]);
                 int PCS = dr["PCSReal"] == DBNull.Value ? 0 : Convert.ToInt32(dr["PCSReal"]);
                 string Package = dr["Package"].ToString();
                 decimal quantity = Utils.calQuanity(PCS, NWReal, Package);
                 decimal price = dr["OrderPackingPriceCNF"] == DBNull.Value ? 0 : Convert.ToDecimal(dr["OrderPackingPriceCNF"]);
 
-                dr["No"] = count++;
+                dr["No"] = countDic[exportCodeID]++;
                 dr["Quantity"] = quantity;
                 dr["AmountCHF"] = quantity * price;
 
@@ -175,7 +180,7 @@ namespace RauViet.ui
             }
 
 
-            count = 0;
+            int count = 0;
             mOrdersTotal_dt.Columns["No"].SetOrdinal(count++);
             mOrdersTotal_dt.Columns["PLU"].SetOrdinal(count++);
             mOrdersTotal_dt.Columns["ProductNameEN"].SetOrdinal(count++);
@@ -225,7 +230,6 @@ namespace RauViet.ui
         {
             mCustomerOrdersTotal_dt.Columns.Add(new DataColumn("No", typeof(int)));
 
-
             int count = 0;
             mCustomerOrdersTotal_dt.Columns["No"].SetOrdinal(count++);
             mCustomerOrdersTotal_dt.Columns["FullName"].SetOrdinal(count++);
@@ -233,10 +237,16 @@ namespace RauViet.ui
             mCustomerOrdersTotal_dt.Columns["NWReal"].SetOrdinal(count++);
             mCustomerOrdersTotal_dt.Columns["CNTS"].SetOrdinal(count++);
 
-            count = 1;
+            Dictionary<int, int> countDic = new Dictionary<int, int>();
+
             foreach (DataRow dr in mCustomerOrdersTotal_dt.Rows)
             {
-                dr["No"] = count++;
+                int exportCodeID = Convert.ToInt32(dr["ExportCodeID"]);
+                if (!countDic.ContainsKey(exportCodeID))
+                {
+                    countDic.Add(exportCodeID, 1);
+                }
+                dr["No"] = countDic[exportCodeID]++;
             }
 
             cusOrderGV.DataSource = mCustomerOrdersTotal_dt;
@@ -273,11 +283,16 @@ namespace RauViet.ui
             cartonSizeGV.Columns["Weight"].Width = 60;
             cartonSizeGV.Columns["CountCarton"].Width = 50;
             cartonSizeGV.Columns["CartonSize"].Width = 120;
-            
-            count = 1;
+
+            Dictionary<int, int> countDic = new Dictionary<int, int>();
             foreach (DataRow dr in mCartonOrdersTotal_dt.Rows)
             {
-                dr["No"] = count++;
+                int exportCodeID = Convert.ToInt32(dr["ExportCodeID"]);
+                if (!countDic.ContainsKey(exportCodeID))
+                {
+                    countDic.Add(exportCodeID, 1);
+                }
+                dr["No"] = countDic[exportCodeID]++;
                 decimal countCarton = Convert.ToDecimal(dr["CountCarton"]);
 
                 string cartonSizeStr = dr["CartonSize"].ToString().Replace(" ", "");
