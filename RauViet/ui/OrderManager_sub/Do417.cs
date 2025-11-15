@@ -32,7 +32,6 @@ namespace RauViet.ui
             dataGV.KeyDown += dataGV_KeyDown;
             //dataGV.CellEndEdit += dataGV_CellEndEdit;
 
-            exportCode_cbb.SelectedIndexChanged += exportCode_search_cbb_SelectedIndexChanged;
             dataGV.CellBeginEdit += dataGV_CellBeginEdit;
         }
 
@@ -45,66 +44,19 @@ namespace RauViet.ui
 
             try
             {
-                var ordersPackingTask = SQLManager.Instance.getOrdersTotalAsync();
                 string[] keepColumns = { "ExportCodeID", "ExportCode", "InputByName_NoSign" };
                 var parameters = new Dictionary<string, object> { { "Complete", false } };
-                var exportCodeTask = SQLStore.Instance.getExportCodesAsync(keepColumns, parameters);
+                mExportCode_dt = await SQLStore.Instance.getExportCodesAsync(keepColumns, parameters);
 
-                await Task.WhenAll(ordersPackingTask, exportCodeTask);
-
-                mExportCode_dt = exportCodeTask.Result;
-                mOrdersTotal_dt = ordersPackingTask.Result;
-
-                mOrdersTotal_dt.Columns.Add(new DataColumn("STT", typeof(string)));
-                mOrdersTotal_dt.Columns.Add(new DataColumn("NWRegistration", typeof(string)));
-                mOrdersTotal_dt.Columns.Add(new DataColumn("NWDifference", typeof(decimal)));
-
-                int count = 1;
-                mOrdersTotal_dt.Columns["NetWeightFinal"].ReadOnly = false;
-                foreach (DataRow dr in mOrdersTotal_dt.Rows)
+                int maxID = -1;
+                if (mExportCode_dt.Rows.Count > 0)
                 {
-                    int SKU = Convert.ToInt32(dr["SKU"]);
-                    string productName = dr["ProductNameVN"].ToString();
-                    string packing = dr["packing"].ToString();
-                    string package = dr["Package"].ToString();
-
-                    decimal amount = dr["Amount"] == DBNull.Value ? 0 : Convert.ToDecimal(dr["Amount"]);
-
-                    if (package.CompareTo("kg") == 0 && packing.CompareTo("") != 0 && amount > 0)
-                    {
-                        string amountStr = amount.ToString("0.##");
-                        dr["ProductNameVN"] = $"{productName} {amountStr} {packing}";
-                    }
-                    else
-                    {
-                        dr["ProductNameVN"] = $"{productName}";
-                    }
-
-                    decimal nwReal, nwFinal, nwOrder;
-
-                    // thử ép kiểu, nếu không thành công thì bỏ qua
-                    bool isNWRealValid = decimal.TryParse(dr["TotalNWReal"]?.ToString(), out nwReal);
-                    bool isNWFinalValid = decimal.TryParse(dr["NetWeightFinal"]?.ToString(), out nwFinal);
-                    bool isNWOrderValid = decimal.TryParse(dr["TotalNWOther"]?.ToString(), out nwOrder);
-
-
-                    if (isNWRealValid && isNWFinalValid) dr["NWDifference"] = nwReal - nwFinal;
-                    else dr["NWDifference"] = DBNull.Value;
-
-                    if (isNWOrderValid) dr["NWRegistration"] = nwOrder * Convert.ToDecimal(1.1);
-                    else dr["NWDifference"] = DBNull.Value;
-
-                    dr["STT"] = count++;
-
+                    maxID = Convert.ToInt32(mExportCode_dt.AsEnumerable()
+                                   .Max(r => r.Field<int>("ExportCodeID")));
                 }
 
-                mOrdersTotal_dt.Columns["STT"].SetOrdinal(0);
-                mOrdersTotal_dt.Columns["ProductNameVN"].SetOrdinal(1);
-                mOrdersTotal_dt.Columns["NWRegistration"].SetOrdinal(2);
-                mOrdersTotal_dt.Columns["TotalNWOther"].SetOrdinal(3);
-                mOrdersTotal_dt.Columns["NetWeightFinal"].SetOrdinal(4);
-                mOrdersTotal_dt.Columns["TotalNWReal"].SetOrdinal(5);
-                mOrdersTotal_dt.Columns["NWDifference"].SetOrdinal(6);
+                mOrdersTotal_dt = await SQLStore.Instance.getOrdersTotalAsync(maxID);
+                
                 dataGV.DataSource = mOrdersTotal_dt;
 
                 dataGV.Columns["ProductPackingID"].Visible = false;
@@ -154,13 +106,9 @@ namespace RauViet.ui
                 exportCode_cbb.DataSource = mExportCode_dt;
                 exportCode_cbb.DisplayMember = "ExportCode";  // hiển thị tên
                 exportCode_cbb.ValueMember = "ExportCodeID";
-
-                if (mExportCode_dt.Rows.Count > 0)
-                {
-                    int maxID = Convert.ToInt32(mExportCode_dt.AsEnumerable()
-                                   .Max(r => r.Field<int>("ExportCodeID")));
-                    exportCode_cbb.SelectedValue = maxID;
-                }
+                exportCode_cbb.SelectedIndexChanged -= exportCode_search_cbb_SelectedIndexChanged;
+                exportCode_cbb.SelectedIndexChanged += exportCode_search_cbb_SelectedIndexChanged;
+                exportCode_cbb.SelectedValue = maxID;
 
                 calvalueRightUI();
             }
@@ -176,27 +124,17 @@ namespace RauViet.ui
             }
         }
 
-        private void exportCode_search_cbb_SelectedIndexChanged(object sender, EventArgs e)
+        private async void exportCode_search_cbb_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (mOrdersTotal_dt == null || mExportCode_dt.Rows.Count == 0)
+            if (!int.TryParse(exportCode_cbb.SelectedValue.ToString(), out int exportCodeId))
                 return;
+            mOrdersTotal_dt = await SQLStore.Instance.getOrdersTotalAsync(exportCodeId);
 
-            string selectedExportCode = ((DataRowView)exportCode_cbb.SelectedItem)["ExportCodeID"].ToString();
+            DataView dv = new DataView(mOrdersTotal_dt);
+            dv.RowFilter = $"ExportCodeID = {exportCodeId}";
 
-            if (!string.IsNullOrEmpty(selectedExportCode))
-            {
-                // Tạo DataView để filter
-                DataView dv = new DataView(mOrdersTotal_dt);
-                dv.RowFilter = $"ExportCodeID = '{selectedExportCode}'";
+            dataGV.DataSource = dv;
 
-                // Gán lại cho DataGridView
-                dataGV.DataSource = dv;
-            }
-            else
-            {
-                // Nếu chưa chọn gì thì hiển thị toàn bộ
-                dataGV.DataSource = mOrdersTotal_dt;
-            }
 
             calvalueRightUI();
 

@@ -41,6 +41,10 @@ namespace RauViet.ui
             this.label15 = new System.Windows.Forms.Label();
             this.exportCode_search_cbb = new System.Windows.Forms.ComboBox();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
             this.dddh_gb = new System.Windows.Forms.GroupBox();
             this.dsdd_in2mat_cb = new System.Windows.Forms.CheckBox();
             this.prewiew_print_DSDH_btn = new System.Windows.Forms.Button();
@@ -69,20 +73,16 @@ namespace RauViet.ui
             this.priceCNF_tb = new System.Windows.Forms.TextBox();
             this.orderId_tb = new System.Windows.Forms.TextBox();
             this.cusProduct_GV = new System.Windows.Forms.DataGridView();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label9 = new System.Windows.Forms.Label();
-            this.label8 = new System.Windows.Forms.Label();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
             this.panel4.SuspendLayout();
             this.panel3.SuspendLayout();
             this.panel1.SuspendLayout();
+            this.groupBox1.SuspendLayout();
             this.dddh_gb.SuspendLayout();
             this.tongdon_gb.SuspendLayout();
             this.info_gb.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.cusProduct_GV)).BeginInit();
-            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel2
@@ -229,6 +229,54 @@ namespace RauViet.ui
             this.panel1.Size = new System.Drawing.Size(416, 681);
             this.panel1.TabIndex = 14;
             // 
+            // groupBox1
+            // 
+            this.groupBox1.BackColor = System.Drawing.Color.PapayaWhip;
+            this.groupBox1.Controls.Add(this.label8);
+            this.groupBox1.Controls.Add(this.label9);
+            this.groupBox1.Controls.Add(this.label4);
+            this.groupBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.groupBox1.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.groupBox1.Location = new System.Drawing.Point(17, 5);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(326, 90);
+            this.groupBox1.TabIndex = 71;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Phím Tắt";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label8.ForeColor = System.Drawing.Color.OliveDrab;
+            this.label8.Location = new System.Drawing.Point(7, 22);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(189, 15);
+            this.label8.TabIndex = 77;
+            this.label8.Text = "★   F1:           Vào ô tìm kiếm";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label9.ForeColor = System.Drawing.Color.OliveDrab;
+            this.label9.Location = new System.Drawing.Point(7, 66);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(228, 15);
+            this.label9.TabIndex = 76;
+            this.label9.Text = "★   Delete:     Xóa dòng đang chọn";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label4.ForeColor = System.Drawing.Color.DarkGreen;
+            this.label4.Location = new System.Drawing.Point(7, 44);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(302, 15);
+            this.label4.TabIndex = 75;
+            this.label4.Text = "★   F5:           Update dữ liệu mới trên máy chủ";
+            // 
             // dddh_gb
             // 
             this.dddh_gb.Controls.Add(this.dsdd_in2mat_cb);
@@ -348,7 +396,7 @@ namespace RauViet.ui
             // 
             this.readOnly_btn.BackColor = System.Drawing.Color.MediumSlateBlue;
             this.readOnly_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.readOnly_btn.Location = new System.Drawing.Point(348, 131);
+            this.readOnly_btn.Location = new System.Drawing.Point(348, 148);
             this.readOnly_btn.Name = "readOnly_btn";
             this.readOnly_btn.Size = new System.Drawing.Size(42, 32);
             this.readOnly_btn.TabIndex = 47;
@@ -533,54 +581,6 @@ namespace RauViet.ui
             this.cusProduct_GV.Size = new System.Drawing.Size(486, 681);
             this.cusProduct_GV.TabIndex = 79;
             // 
-            // groupBox1
-            // 
-            this.groupBox1.BackColor = System.Drawing.Color.PapayaWhip;
-            this.groupBox1.Controls.Add(this.label8);
-            this.groupBox1.Controls.Add(this.label9);
-            this.groupBox1.Controls.Add(this.label4);
-            this.groupBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox1.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.groupBox1.Location = new System.Drawing.Point(17, 5);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(326, 90);
-            this.groupBox1.TabIndex = 71;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Phím Tắt";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.ForeColor = System.Drawing.Color.DarkGreen;
-            this.label4.Location = new System.Drawing.Point(7, 44);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(302, 15);
-            this.label4.TabIndex = 75;
-            this.label4.Text = "★   F5:           Update dữ liệu mới trên máy chủ";
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label9.ForeColor = System.Drawing.Color.OliveDrab;
-            this.label9.Location = new System.Drawing.Point(7, 66);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(228, 15);
-            this.label9.TabIndex = 76;
-            this.label9.Text = "★   Delete:     Xóa dòng đang chọn";
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label8.ForeColor = System.Drawing.Color.OliveDrab;
-            this.label8.Location = new System.Drawing.Point(7, 22);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(189, 15);
-            this.label8.TabIndex = 77;
-            this.label8.Text = "★   F1:           Vào ô tìm kiếm";
-            // 
             // OrdersList
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -599,6 +599,8 @@ namespace RauViet.ui
             this.panel3.PerformLayout();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.dddh_gb.ResumeLayout(false);
             this.dddh_gb.PerformLayout();
             this.tongdon_gb.ResumeLayout(false);
@@ -606,8 +608,6 @@ namespace RauViet.ui
             this.info_gb.ResumeLayout(false);
             this.info_gb.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.cusProduct_GV)).EndInit();
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
 
         }

@@ -31,11 +31,7 @@ namespace RauViet.ui
             dataGV.CellEndEdit += dataGV_CellValueChanged;
             dataGV.KeyDown += dataGV_KeyDown;
             dataGV.CellBeginEdit += dataGV_CellBeginEdit;
-
-            exportCode_cbb.SelectedIndexChanged += exportCode_search_cbb_SelectedIndexChanged;
         }
-
-        
 
         public async void ShowData()
         {
@@ -46,15 +42,18 @@ namespace RauViet.ui
 
             try
             {
-                var LOTCodeTask = SQLManager.Instance.GetLOTCodeByExportCode_inCompleteAsync();
+                
                 string[] keepColumns = { "ExportCodeID", "ExportCode", "InputByName_NoSign" };
                 var parameters = new Dictionary<string, object> { { "Complete", false } };
-                var exportCodeTask = SQLStore.Instance.getExportCodesAsync(keepColumns, parameters);
+                mExportCode_dt = await SQLStore.Instance.getExportCodesAsync(keepColumns, parameters);
 
-                await Task.WhenAll(LOTCodeTask, exportCodeTask);
-
-                mExportCode_dt = exportCodeTask.Result;
-                mLOTCode_dt = LOTCodeTask.Result;
+                int maxID = -1;
+                if (mExportCode_dt.Rows.Count > 0)
+                {
+                    maxID = Convert.ToInt32(mExportCode_dt.AsEnumerable()
+                                   .Max(r => r.Field<int>("ExportCodeID")));
+                }
+                mLOTCode_dt = await SQLManager.Instance.GetLOTCodeByExportCodeAsync(maxID);
 
                 mLOTCode_dt.Columns["ProductNameVN"].SetOrdinal(0);
                 mLOTCode_dt.Columns["LotCode"].SetOrdinal(1);
@@ -93,13 +92,11 @@ namespace RauViet.ui
                 exportCode_cbb.DataSource = mExportCode_dt;
                 exportCode_cbb.DisplayMember = "ExportCode";  // hiển thị tên
                 exportCode_cbb.ValueMember = "ExportCodeID";
+                exportCode_cbb.SelectedIndexChanged -= exportCode_search_cbb_SelectedIndexChanged;
+                exportCode_cbb.SelectedIndexChanged += exportCode_search_cbb_SelectedIndexChanged;
 
-                if (mExportCode_dt.Rows.Count > 0)
-                {
-                    int maxID = Convert.ToInt32(mExportCode_dt.AsEnumerable()
-                                   .Max(r => r.Field<int>("ExportCodeID")));
-                    exportCode_cbb.SelectedValue = maxID;
-                }
+                exportCode_cbb.SelectedValue = maxID;
+
 
             }
             catch (Exception ex)
@@ -114,26 +111,14 @@ namespace RauViet.ui
             }
         }
 
-        private void exportCode_search_cbb_SelectedIndexChanged(object sender, EventArgs e)
+        private async void exportCode_search_cbb_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (mLOTCode_dt == null || mExportCode_dt.Rows.Count == 0)
+            if (!int.TryParse(exportCode_cbb.SelectedValue.ToString(), out int exportCodeId))
                 return;
-            string selectedExportCode = ((DataRowView)exportCode_cbb.SelectedItem)["ExportCodeID"].ToString();
-
-            if (!string.IsNullOrEmpty(selectedExportCode))
-            {
-                // Tạo DataView để filter
-                DataView dv = new DataView(mLOTCode_dt);
-                dv.RowFilter = $"ExportCodeID = '{selectedExportCode}'";
-
-                // Gán lại cho DataGridView
-                dataGV.DataSource = dv;
-            }
-            else
-            {
-                // Nếu chưa chọn gì thì hiển thị toàn bộ
-                dataGV.DataSource = mLOTCode_dt;
-            }
+            mLOTCode_dt = await SQLManager.Instance.GetLOTCodeByExportCodeAsync(exportCodeId);
+            DataView dv = new DataView(mLOTCode_dt);
+            dv.RowFilter = $"ExportCodeID = {exportCodeId}";
+            dataGV.DataSource = dv;
         }
 
         private async void dataGV_CellValueChanged(object sender, DataGridViewCellEventArgs e)
@@ -256,41 +241,6 @@ namespace RauViet.ui
                     dataGV.CurrentCell = dataGV.Rows[row + 1].Cells[col];
                     dataGV.BeginEdit(true); // mở chế độ nhập luôn
                 }
-            }
-        }
-
-        public async void SaveData(bool ask = true)
-        {
-            var list = new List<(int ExportCodeID, int SKU, string LOTCode, string LOTCodeComplete)>();
-
-            foreach (DataRow row in mLOTCode_dt.Rows)
-            {
-                int exportCodeID = Convert.ToInt32(row["ExportCodeID"]);
-                int sku = Convert.ToInt32(row["SKU"]);
-                string lotCode = row["LOTCode"]?.ToString();
-                string lotCodeComplete = row["LOTCodeComplete"]?.ToString();
-
-                list.Add((exportCodeID, sku, lotCode, lotCodeComplete));
-            }
-
-            try
-            {
-                // Gọi async
-                bool result = await SQLManager.Instance.UpsertOrdersLotCodesBySKUAsync(list);
-
-                if (result)
-                {
-                    status_lb.Text = "Thành công.";
-                    status_lb.ForeColor = System.Drawing.Color.Green;
-                }
-                else
-                {
-                    MessageBox.Show("Cập nhật thất bại!");
-                }
-            }
-            catch
-            {
-                MessageBox.Show("Cập nhật thất bại!");
             }
         }
 

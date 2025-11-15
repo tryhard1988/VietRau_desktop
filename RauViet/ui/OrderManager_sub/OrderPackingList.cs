@@ -61,10 +61,9 @@ namespace RauViet.ui
             edit_btn.Click += Edit_btn_Click;
             readOnly_btn.Click += closeEdit_btn_Click;
             chiadon_btn.Click += Chiadon_btn_Click;
-            delOrder_btn.Click += DelOrder_btn_Click;
 
             cartonNo_tb.KeyPress += Tb_KeyPress_OnlyNumber1;
-            exportCode_cbb.SelectedIndexChanged += exportCode_search_cbb_SelectedIndexChanged;
+            
 
             ToolTipHelper.SetToolTip(assignCustomerCarton_btn, "Tự động dựa vào\nCarton.No và Khách Hàng \nĐể tạo mã thùng");
             ToolTipHelper.SetToolTip(chiadon_btn, "Dùng khi 1 đơn hàng cần chia ra 2 thùng \nthì cần tạo ra thêm 1 mã đơn hàng mới\ntừ mã hiện tại");
@@ -85,91 +84,30 @@ namespace RauViet.ui
 
         }
 
-        private void PhieuCanHang_btn_Click(object sender, EventArgs e)
-        {
-            InPhieuCanHang(false);
-        }
-
-        private void PhieuCanHang_preview_btn_Click(object sender, EventArgs e)
-        {
-            InPhieuCanHang(true);
-        }
-
-        private async void InPhieuCanHang(bool preview = false)
-        {
-            if (exportCode_cbb.SelectedValue == null) return;
-            if (!int.TryParse(exportCode_cbb.SelectedValue.ToString(), out int exportCodeId))
-            {
-                return;
-            }
-
-            loadingOverlay = new LoadingOverlay(this);
-            loadingOverlay.Message = "Đang xử lý ...";
-            loadingOverlay.Show();
-            await Task.Delay(100);
-
-            var list = mOrders_dt.AsEnumerable()
-                                .Where(r => r.Field<int>("ExportCodeID") == exportCodeId)
-                                .Where(r => r.Field<int?>("CartonNo").HasValue)
-                                .GroupBy(r => r.Field<int?>("CartonNo"))
-                                .Select(g => g.First())
-                                .Select(r => new
-                                {
-                                    CartonNo = r.Field<int?>("CartonNo"),
-                                    CustomerName = r.Field<string>("CustomerName"),
-                                    CartonSize = r.Field<string>("CartonSize"),
-                                    GEL = 5
-                                })
-                                .OrderBy(x => x.CartonNo)
-                                .ToList();
-
-            DataTable dt = list.ToDataTable();
-
-            DataRowView exportCodeItem = (DataRowView)exportCode_cbb.SelectedItem;
-
-            string exportCode = exportCodeItem["ExportCode"].ToString();
-            DateTime exportDate = Convert.ToDateTime(exportCodeItem["ExportDate"]);
-
-            PhieuCanHangPrinter deliveryPrinter = new PhieuCanHangPrinter(dt, exportCode, exportDate);
-            if (!preview)
-                deliveryPrinter.PrintDirect();
-            else
-                deliveryPrinter.PrintPreview(this);
-
-            await Task.Delay(200);
-            loadingOverlay.Hide();
-        }
-
-        private void Carton_GV_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
-        {
-            if (carton_GV.CurrentRow == null)
-                return; // Ignore header
-
-            // Lấy giá trị cell
-            var value = carton_GV.CurrentRow.Cells["CustomerCarton"].Value;
-
-            _ = PrintPhieuThung(false, value.ToString());
-        }
-
         public async void ShowData()
         {
-            await Task.Delay(50);
             loadingOverlay = new LoadingOverlay(this);
             loadingOverlay.Show();
             await Task.Delay(50);
             try
             {
-                var cartonSizeTask = SQLStore.Instance.GetCartonSize();
-                var ordersPackingTask = SQLStore.Instance.getOrdersAsync();
+                var cartonSizeTask = SQLStore.Instance.GetCartonSize();                
                 string[] keepColumns = { "ExportCodeID", "ExportCode", "ExportDate", "InputByName_NoSign" };
                 var parameters = new Dictionary<string, object> { { "Complete", false } };
                 var exportCodeTask = SQLStore.Instance.getExportCodesAsync(keepColumns, parameters);
 
-                await Task.WhenAll(ordersPackingTask, exportCodeTask, cartonSizeTask);
+                await Task.WhenAll(exportCodeTask, cartonSizeTask);
 
                 mExportCode_dt = exportCodeTask.Result;
-                mOrders_dt = ordersPackingTask.Result;
                 mCartonSize_dt = cartonSizeTask.Result;
+
+                int maxID = -1;
+                if (mExportCode_dt.Rows.Count > 0)
+                {
+                    maxID = Convert.ToInt32(mExportCode_dt.AsEnumerable()
+                                   .Max(r => r.Field<int>("ExportCodeID")));
+                }
+                mOrders_dt = await SQLStore.Instance.getOrdersAsync(maxID);
 
                 // Chạy truy vấn trên thread riêng
                 dataGV.DataSource = mOrders_dt;
@@ -254,13 +192,11 @@ namespace RauViet.ui
                 exportCode_cbb.DataSource = mExportCode_dt;
                 exportCode_cbb.DisplayMember = "ExportCode";  // hiển thị tên
                 exportCode_cbb.ValueMember = "ExportCodeID";
+                exportCode_cbb.SelectedIndexChanged -= exportCode_search_cbb_SelectedIndexChanged;
+                exportCode_cbb.SelectedIndexChanged += exportCode_search_cbb_SelectedIndexChanged;
 
-                if (mExportCode_dt.Rows.Count > 0)
-                {
-                    int maxID = Convert.ToInt32(mExportCode_dt.AsEnumerable()
-                                   .Max(r => r.Field<int>("ExportCodeID")));
-                    exportCode_cbb.SelectedValue = maxID;
-                }
+                exportCode_cbb.SelectedValue = maxID;
+
 
 
                 cartonSize_cbb.DataSource = mCartonSize_dt;
@@ -275,7 +211,7 @@ namespace RauViet.ui
             }
             finally
             {
-                await Task.Delay(200);
+                await Task.Delay(100);
                 loadingOverlay.Hide();
             }
         }
@@ -353,7 +289,7 @@ namespace RauViet.ui
             }
         }
 
-        private async void DelOrder_btn_Click(object sender, EventArgs e)
+        private async void DeleteOrder()
         {
             if (dataGV.CurrentRow == null) return;
             var currentRow = dataGV.CurrentRow;
@@ -418,27 +354,19 @@ namespace RauViet.ui
             }
         }
 
-        private void exportCode_search_cbb_SelectedIndexChanged(object sender, EventArgs e)
+        private async void exportCode_search_cbb_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (mOrders_dt == null || mOrders_dt.Rows.Count == 0)
+            if (!int.TryParse(exportCode_cbb.SelectedValue.ToString(), out int exportCodeId))
                 return;
 
-            string selectedExportCode = exportCode_cbb.Text;
+            mOrders_dt = await SQLStore.Instance.getOrdersAsync(exportCodeId);
+            // Tạo DataView để filter
+            DataView dv = new DataView(mOrders_dt);
+            dv.RowFilter = $"ExportCodeID = {exportCodeId}";
 
-            if (!string.IsNullOrEmpty(selectedExportCode))
-            {
-                // Tạo DataView để filter
-                DataView dv = new DataView(mOrders_dt);
-                dv.RowFilter = $"ExportCode = '{selectedExportCode}'";
+            // Gán lại cho DataGridView
+            dataGV.DataSource = dv;                
 
-                // Gán lại cho DataGridView
-                dataGV.DataSource = dv;                
-            }
-            else
-            {
-                // Nếu chưa chọn gì thì hiển thị toàn bộ
-                dataGV.DataSource = mOrders_dt;
-            }
 
             setUIReadOnly(true);
             fillter_btn_Click(null, null);
@@ -1480,7 +1408,6 @@ namespace RauViet.ui
 
                 string staff = dataR["InputByName_NoSign"].ToString();
                 if (UserManager.Instance.fullName_NoSign.CompareTo(staff) != 0)
-                if (UserManager.Instance.fullName_NoSign.CompareTo(staff) != 0)
                 {
                     edit_btn.Visible = false;
                     readOnly_btn.Visible = false;
@@ -1494,8 +1421,8 @@ namespace RauViet.ui
             rightInfo_gb.Visible = !isReadOnly;
             edit_btn.Visible = isReadOnly;
             readOnly_btn.Visible = !isReadOnly;
-            InPhieuGiaoHang_btn.Visible = isReadOnly;
-            previewPrint_PGH_btn.Visible = isReadOnly;
+            phieuCanHang_gb.Visible = isReadOnly;
+            phieuGiaoHang_gb.Visible = isReadOnly;
         }
       
         private void DataGV_SelectionChanged(object sender, EventArgs e)
@@ -1522,8 +1449,6 @@ namespace RauViet.ui
             double NWOther = 0;            
             int.TryParse(pcsVal?.ToString() ?? "0", out PCSOther);
             double.TryParse(nwVal?.ToString() ?? "0", out NWOther);
-
-            delOrder_btn.Visible = (PCSOther <= 0 && NWOther <= 0);
 
             if (!int.TryParse(val?.ToString(), out int result))
                 return;
@@ -1686,7 +1611,11 @@ namespace RauViet.ui
             }
             else if(e.KeyCode == Keys.F5)
             {
-                SQLStore.Instance.removeOrders();
+                if (!int.TryParse(exportCode_cbb.SelectedValue.ToString(), out int exportCodeId))
+                {
+                    return;
+                }
+                SQLStore.Instance.removeOrders(exportCodeId);
                 ShowData();
             }
             else if (edit_btn.Visible == false)
@@ -1727,7 +1656,7 @@ namespace RauViet.ui
                     {
                         return; // không xử lý Delete
                     }
-                    DelOrder_btn_Click(null, null);
+                    DeleteOrder();
                 }
             }
         }
@@ -1809,5 +1738,71 @@ namespace RauViet.ui
             loadingOverlay.Hide();
         }
 
+
+        private void PhieuCanHang_btn_Click(object sender, EventArgs e)
+        {
+            InPhieuCanHang(false);
+        }
+
+        private void PhieuCanHang_preview_btn_Click(object sender, EventArgs e)
+        {
+            InPhieuCanHang(true);
+        }
+
+        private async void InPhieuCanHang(bool preview = false)
+        {
+            if (exportCode_cbb.SelectedValue == null) return;
+            if (!int.TryParse(exportCode_cbb.SelectedValue.ToString(), out int exportCodeId))
+            {
+                return;
+            }
+
+            loadingOverlay = new LoadingOverlay(this);
+            loadingOverlay.Message = "Đang xử lý ...";
+            loadingOverlay.Show();
+            await Task.Delay(100);
+
+            var list = mOrders_dt.AsEnumerable()
+                                .Where(r => r.Field<int>("ExportCodeID") == exportCodeId)
+                                .Where(r => r.Field<int?>("CartonNo").HasValue)
+                                .GroupBy(r => r.Field<int?>("CartonNo"))
+                                .Select(g => g.First())
+                                .Select(r => new
+                                {
+                                    CartonNo = r.Field<int?>("CartonNo"),
+                                    CustomerName = r.Field<string>("CustomerName"),
+                                    CartonSize = r.Field<string>("CartonSize"),
+                                    GEL = 5
+                                })
+                                .OrderBy(x => x.CartonNo)
+                                .ToList();
+
+            DataTable dt = list.ToDataTable();
+
+            DataRowView exportCodeItem = (DataRowView)exportCode_cbb.SelectedItem;
+
+            string exportCode = exportCodeItem["ExportCode"].ToString();
+            DateTime exportDate = Convert.ToDateTime(exportCodeItem["ExportDate"]);
+
+            PhieuCanHangPrinter deliveryPrinter = new PhieuCanHangPrinter(dt, exportCode, exportDate);
+            if (!preview)
+                deliveryPrinter.PrintDirect();
+            else
+                deliveryPrinter.PrintPreview(this);
+
+            await Task.Delay(200);
+            loadingOverlay.Hide();
+        }
+
+        private void Carton_GV_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (carton_GV.CurrentRow == null)
+                return; // Ignore header
+
+            // Lấy giá trị cell
+            var value = carton_GV.CurrentRow.Cells["CustomerCarton"].Value;
+
+            _ = PrintPhieuThung(false, value.ToString());
+        }
     }
 }

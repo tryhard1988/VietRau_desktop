@@ -50,10 +50,10 @@ namespace RauViet.classes
         DataTable mExportCodes_dt = null;        
         DataTable mEmployeesInDongGoi_dt = null;
         DataTable mCusromer_dt = null;
-        DataTable mOrderList_dt = null;
         DataTable mCartonSize_dt = null;
         DataTable mlatestOrders_dt = null;
 
+        Dictionary<int, DataTable> mOrderLists;
         Dictionary<int, DataTable> mReportExportByYears;
 
         private SQLStore() { }
@@ -76,29 +76,44 @@ namespace RauViet.classes
             try
             {
                 mReportExportByYears = new Dictionary<int, DataTable>();
+                mOrderLists = new Dictionary<int, DataTable>();
 
                 var productSKUTask = SQLManager.Instance.getProductSKUAsync();
                 var productPackingTask = SQLManager.Instance.getProductpackingAsync();
                 var exportCodesTask = SQLManager.Instance.getExportCodesAsync();
                 var employeesInDongGoiTask = SQLManager.Instance.GetActiveEmployeesIn_DongGoiAsync();
                 var customersTask = SQLManager.Instance.getCustomersAsync();
-                var ordersTask = SQLManager.Instance.getOrdersAsync();
+                
                 var cartonSizeTask = SQLManager.Instance.getCartonSizeAsync();
-                await Task.WhenAll(productSKUTask, productPackingTask, exportCodesTask, employeesInDongGoiTask, employeesInDongGoiTask, customersTask, ordersTask, cartonSizeTask);
+                await Task.WhenAll(productSKUTask, productPackingTask, exportCodesTask, employeesInDongGoiTask, employeesInDongGoiTask, customersTask, cartonSizeTask);
 
                 if (employeesInDongGoiTask.Status == TaskStatus.RanToCompletion && employeesInDongGoiTask.Result != null) mEmployeesInDongGoi_dt = employeesInDongGoiTask.Result;
                 if (exportCodesTask.Status == TaskStatus.RanToCompletion && exportCodesTask.Result != null) mExportCodes_dt = exportCodesTask.Result;
                 if (productSKUTask.Status == TaskStatus.RanToCompletion && productSKUTask.Result != null) mProductSKU_dt = productSKUTask.Result;
                 if (productPackingTask.Status == TaskStatus.RanToCompletion && productPackingTask.Result != null) mProductpacking_dt = productPackingTask.Result;
-                if (customersTask.Status == TaskStatus.RanToCompletion && customersTask.Result != null) mCusromer_dt = customersTask.Result;
-                if (ordersTask.Status == TaskStatus.RanToCompletion && ordersTask.Result != null) mOrderList_dt = ordersTask.Result;
+                if (customersTask.Status == TaskStatus.RanToCompletion && customersTask.Result != null) mCusromer_dt = customersTask.Result;                
                 if (cartonSizeTask.Status == TaskStatus.RanToCompletion && cartonSizeTask.Result != null) mCartonSize_dt = cartonSizeTask.Result;
 
                 editProductSKUA();
                 editExportCodes();
                 editProductpacking();
-                editOrders();
-               
+
+                mExportCodes_dt.DefaultView.Sort = "ExportCodeID ASC";
+                mExportCodes_dt = mExportCodes_dt.DefaultView.ToTable();
+                var exportIds = mExportCodes_dt.AsEnumerable().Where(r => r.Field<bool>("Complete") == false).Select(r => r.Field<int>("ExportCodeID")).Take(6).ToList();
+                var tasks = exportIds.Select(async id =>
+                {
+                    DataTable data = await SQLManager.Instance.getOrdersAsync(id);
+                    return (id, data);
+                }).ToList();
+
+                var results = await Task.WhenAll(tasks);
+
+                foreach (var (id, data) in results)
+                {
+                    mOrderLists[id] = data;
+                    editOrders(data);
+                }
             }
             catch
             {
@@ -1650,18 +1665,19 @@ namespace RauViet.classes
             return mCusromer_dt;
         }
 
-        public void removeOrders()
+        public void removeOrders(int exportCodeID)
         {
-            mOrderList_dt = null;
+            mOrderLists.Remove(exportCodeID);
         }
-        public async Task<DataTable> getOrdersAsync(bool isNew = false)
+        public async Task<DataTable> getOrdersAsync(int exportCodeID, bool isNew = false)
         {
-            if (mOrderList_dt == null || isNew)
+            if (!mOrderLists.ContainsKey(exportCodeID) || isNew)
             {
                 try
                 {
-                    mOrderList_dt = await SQLManager.Instance.getOrdersAsync();
-                    editOrders();
+                    DataTable dt = await SQLManager.Instance.getOrdersAsync(exportCodeID);
+                    mOrderLists[exportCodeID] = dt;
+                    editOrders(dt);
                 }
                 catch
                 {
@@ -1670,36 +1686,36 @@ namespace RauViet.classes
                 }
             }
 
-            return mOrderList_dt;
+            return mOrderLists[exportCodeID];
         }
 
-        public async Task<DataTable> getOrdersAsync(string[] colNames)
+        public async Task<DataTable> getOrdersAsync(int exportCodeID, string[] colNames)
         {
-            await getOrdersAsync();
+            await getOrdersAsync(exportCodeID);
 
             // Clone chỉ các cột mong muốn
-            DataTable cloneTable = mOrderList_dt.DefaultView.ToTable(false, colNames.ToArray());
+            DataTable cloneTable = mOrderLists[exportCodeID].DefaultView.ToTable(false, colNames.ToArray());
 
             return cloneTable;
         }
 
 
-        private void editOrders()
+        private void editOrders(DataTable data)
         {
-            mOrderList_dt.Columns.Add(new DataColumn("Search_NoSign", typeof(string)));
-            mOrderList_dt.Columns.Add(new DataColumn("CustomerName", typeof(string)));
-            mOrderList_dt.Columns.Add(new DataColumn("CustomerCode", typeof(string)));
-            mOrderList_dt.Columns.Add(new DataColumn("ProductNameVN", typeof(string)));
-            mOrderList_dt.Columns.Add(new DataColumn("ProductNameEN", typeof(string)));
-            mOrderList_dt.Columns.Add(new DataColumn("ExportCode", typeof(string)));
-            mOrderList_dt.Columns.Add(new DataColumn("Priority", typeof(int)));
-            mOrderList_dt.Columns.Add(new DataColumn("Package", typeof(string)));
-            mOrderList_dt.Columns.Add(new DataColumn("packing", typeof(string)));
-        //    mOrderList_dt.Columns.Add(new DataColumn("PackingType", typeof(string)));
-            mOrderList_dt.Columns.Add(new DataColumn("Amount", typeof(int)));            
-            mOrderList_dt.Columns.Add(new DataColumn("ExportDate", typeof(DateTime)));
+            data.Columns.Add(new DataColumn("Search_NoSign", typeof(string)));
+            data.Columns.Add(new DataColumn("CustomerName", typeof(string)));
+            data.Columns.Add(new DataColumn("CustomerCode", typeof(string)));
+            data.Columns.Add(new DataColumn("ProductNameVN", typeof(string)));
+            data.Columns.Add(new DataColumn("ProductNameEN", typeof(string)));
+            data.Columns.Add(new DataColumn("ExportCode", typeof(string)));
+            data.Columns.Add(new DataColumn("Priority", typeof(int)));
+            data.Columns.Add(new DataColumn("Package", typeof(string)));
+            data.Columns.Add(new DataColumn("packing", typeof(string)));
+            //    mOrderList_dt.Columns.Add(new DataColumn("PackingType", typeof(string)));
+            data.Columns.Add(new DataColumn("Amount", typeof(int)));
+            data.Columns.Add(new DataColumn("ExportDate", typeof(DateTime)));
 
-            foreach (DataRow dr in mOrderList_dt.Rows)
+            foreach (DataRow dr in data.Rows)
             {
                 int customerID = Convert.ToInt32(dr["CustomerID"]);
                 int productPackingID = Convert.ToInt32(dr["ProductPackingID"]);
@@ -1832,6 +1848,67 @@ namespace RauViet.classes
                     dr["PCSOther"] = 0;
                 }
             }
+        }
+
+        public async Task<DataTable> getOrdersTotalAsync(int exportCodeID)
+        {
+            DataTable dt = await SQLManager.Instance.getOrdersTotalAsync(exportCodeID);
+            editOrdersTotal(dt);
+
+            return dt;
+        }
+        private void editOrdersTotal(DataTable dt)
+        {
+            dt.Columns.Add(new DataColumn("STT", typeof(string)));
+            dt.Columns.Add(new DataColumn("NWRegistration", typeof(string)));
+            dt.Columns.Add(new DataColumn("NWDifference", typeof(decimal)));
+
+            int count = 1;
+            dt.Columns["NetWeightFinal"].ReadOnly = false;
+            foreach (DataRow dr in dt.Rows)
+            {
+                int SKU = Convert.ToInt32(dr["SKU"]);
+                string productName = dr["ProductNameVN"].ToString();
+                string packing = dr["packing"].ToString();
+                string package = dr["Package"].ToString();
+
+                decimal amount = dr["Amount"] == DBNull.Value ? 0 : Convert.ToDecimal(dr["Amount"]);
+
+                if (package.CompareTo("kg") == 0 && packing.CompareTo("") != 0 && amount > 0)
+                {
+                    string amountStr = amount.ToString("0.##");
+                    dr["ProductNameVN"] = $"{productName} {amountStr} {packing}";
+                }
+                else
+                {
+                    dr["ProductNameVN"] = $"{productName}";
+                }
+
+                decimal nwReal, nwFinal, nwOrder;
+
+                // thử ép kiểu, nếu không thành công thì bỏ qua
+                bool isNWRealValid = decimal.TryParse(dr["TotalNWReal"]?.ToString(), out nwReal);
+                bool isNWFinalValid = decimal.TryParse(dr["NetWeightFinal"]?.ToString(), out nwFinal);
+                bool isNWOrderValid = decimal.TryParse(dr["TotalNWOther"]?.ToString(), out nwOrder);
+
+
+                if (isNWRealValid && isNWFinalValid) dr["NWDifference"] = nwReal - nwFinal;
+                else dr["NWDifference"] = DBNull.Value;
+
+                if (isNWOrderValid) dr["NWRegistration"] = nwOrder * Convert.ToDecimal(1.1);
+                else dr["NWDifference"] = DBNull.Value;
+
+                dr["STT"] = count++;
+
+            }
+
+            dt.Columns["STT"].SetOrdinal(0);
+            dt.Columns["ProductNameVN"].SetOrdinal(1);
+            dt.Columns["NWRegistration"].SetOrdinal(2);
+            dt.Columns["TotalNWOther"].SetOrdinal(3);
+            dt.Columns["NetWeightFinal"].SetOrdinal(4);
+            dt.Columns["TotalNWReal"].SetOrdinal(5);
+            dt.Columns["NWDifference"].SetOrdinal(6);
         }
     }
 }

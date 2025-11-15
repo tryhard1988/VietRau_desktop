@@ -23,8 +23,7 @@ namespace RauViet.ui
             cartonSizeGroupGV.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             cartonSizeGroupGV.MultiSelect = false;
 
-            status_lb.Text = "";
-            exportCode_cbb.SelectedIndexChanged += exportCode_search_cbb_SelectedIndexChanged;
+            status_lb.Text = "";            
         }
 
         public async void ShowData()
@@ -36,21 +35,22 @@ namespace RauViet.ui
 
             try
             {
-                var ordersPackingTask = SQLStore.Instance.getOrdersAsync(); ;
                 string[] keepColumns = { "ExportCodeID", "ExportCode", "ExchangeRate", "ShippingCost" };
                 var parameters = new Dictionary<string, object> { { "Complete", false } };
-                var exportCodeTask = SQLStore.Instance.getExportCodesAsync(keepColumns, parameters);
+                mExportCode_dt = await SQLStore.Instance.getExportCodesAsync(keepColumns, parameters);
 
-                await Task.WhenAll(ordersPackingTask, exportCodeTask);
+                int maxID = -1;
+                if (mExportCode_dt.Rows.Count > 0)
+                    maxID = Convert.ToInt32(mExportCode_dt.AsEnumerable().Max(r => r.Field<int>("ExportCodeID")));
 
-                mExportCode_dt = exportCodeTask.Result;
-                mOrders_dt = ordersPackingTask.Result;
+
+                mOrders_dt = await SQLStore.Instance.getOrdersAsync(maxID);
 
                 mGroupCustomer = GroupByCustomer(mOrders_dt);
                 mGroupCartonSize = GroupCartonSize(mOrders_dt);
 
                 cartonSizeGroupGV.DataSource = mGroupCartonSize;
-                cusGroupGV.DataSource = mGroupCartonSize;
+                cusGroupGV.DataSource = mGroupCustomer;
 
                 cartonSizeGroupGV.Columns["ExportCodeID"].Visible = false;
                 cusGroupGV.Columns["ExportCodeID"].Visible = false;
@@ -96,12 +96,11 @@ namespace RauViet.ui
                 cusGroupGV.Columns["GrossWeight"].Width = 80;
                 cusGroupGV.Columns["FreightCharge"].Width = 80;
 
-                if (mExportCode_dt.Rows.Count > 0)
-                {
-                    int maxID = Convert.ToInt32(mExportCode_dt.AsEnumerable()
-                                   .Max(r => r.Field<int>("ExportCodeID")));
-                    exportCode_cbb.SelectedValue = maxID;
-                }
+                exportCode_cbb.SelectedIndexChanged -= exportCode_search_cbb_SelectedIndexChanged;
+                exportCode_cbb.SelectedIndexChanged += exportCode_search_cbb_SelectedIndexChanged;
+
+                exportCode_cbb.SelectedValue = maxID;
+                
             }
             catch (Exception ex)
             {
@@ -194,10 +193,11 @@ namespace RauViet.ui
 
         public DataTable GroupByCustomer(DataTable mOrders_dt)
         {
+            
             // Tạo DataTable kết quả
             DataTable dtResult = new DataTable();
             dtResult.Columns.Add("ExportCodeID", typeof(int));
-            dtResult.Columns.Add("Customername", typeof(string));
+            dtResult.Columns.Add("CustomerName", typeof(string));
             dtResult.Columns.Add("CountCarton", typeof(int));
             dtResult.Columns.Add("CBM", typeof(decimal));
             dtResult.Columns.Add("ChargeWeight", typeof(decimal));
@@ -212,9 +212,9 @@ namespace RauViet.ui
                 .GroupBy(r => new
                 {
                     ExportCodeID = r.Field<int>("ExportCodeID"),
-                    Customername = r.Field<string>("Customername")
+                    Customername = r.Field<string>("CustomerName")
                 });
-
+            int count = grouped.Count();
             foreach (var g in grouped)
             {
                 // Lấy các carton duy nhất (theo CartonNo)
@@ -264,20 +264,25 @@ namespace RauViet.ui
             return dtResult;
         }
 
-        private void exportCode_search_cbb_SelectedIndexChanged(object sender, EventArgs e)
+        private async void exportCode_search_cbb_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (mGroupCartonSize == null || mExportCode_dt.Rows.Count == 0 || exportCode_cbb.SelectedItem == null)
+            if (!int.TryParse(exportCode_cbb.SelectedValue.ToString(), out int exportCodeId))
                 return;
-            int ExportCodeID = Convert.ToInt32(((DataRowView)exportCode_cbb.SelectedItem)["ExportCodeID"]);
+            mOrders_dt = await SQLStore.Instance.getOrdersAsync(exportCodeId);
+            mGroupCustomer = GroupByCustomer(mOrders_dt);
+            mGroupCartonSize = GroupCartonSize(mOrders_dt);
+
             decimal ShippingCost = Convert.ToDecimal(((DataRowView)exportCode_cbb.SelectedItem)["ShippingCost"]);
             decimal ExchangeRate = Convert.ToDecimal(((DataRowView)exportCode_cbb.SelectedItem)["ExchangeRate"]);
 
+
+
             DataView dv1 = new DataView(mGroupCartonSize);
-            dv1.RowFilter = $"ExportCodeID = '{ExportCodeID}'";
+            dv1.RowFilter = $"ExportCodeID = '{exportCodeId}'";
             cartonSizeGroupGV.DataSource = dv1;
 
             DataView dv2 = new DataView(mGroupCustomer);
-            dv2.RowFilter = $"ExportCodeID = '{ExportCodeID}'";
+            dv2.RowFilter = $"ExportCodeID = '{exportCodeId}'";
             cusGroupGV.DataSource = dv2;
 
             decimal totalCBM = 0;
@@ -289,7 +294,7 @@ namespace RauViet.ui
             
 
             decimal totalAmount = mOrders_dt.AsEnumerable()
-                                            .Where(r => !r.IsNull("ExportCodeID") && r.Field<int>("ExportCodeID") == ExportCodeID)
+                                            .Where(r => !r.IsNull("ExportCodeID") && r.Field<int>("ExportCodeID") == exportCodeId)
                                             .Sum(r =>
                                             {
                                                 if (r.IsNull("OrderPackingPriceCNF"))
@@ -305,19 +310,19 @@ namespace RauViet.ui
                                                     : price * pcsReal;
                                             });
 
-            object result = mGroupCartonSize.Compute( "SUM(ChargeWeight)", $"ExportCodeID = {ExportCodeID}");
+            object result = mGroupCartonSize.Compute( "SUM(ChargeWeight)", $"ExportCodeID = {exportCodeId}");
             if (result != DBNull.Value)
                 totalChargeWeight = Convert.ToDecimal(result);
 
-            object result1 = mOrders_dt.Compute("SUM(NWReal)", $"ExportCodeID = {ExportCodeID}");
+            object result1 = mOrders_dt.Compute("SUM(NWReal)", $"ExportCodeID = {exportCodeId}");
             if (result1 != DBNull.Value)
                 totalNWReal = Convert.ToDecimal(result1);
 
-            object result2 = mGroupCartonSize.Compute("SUM(CountCarton)", $"ExportCodeID = {ExportCodeID}");
+            object result2 = mGroupCartonSize.Compute("SUM(CountCarton)", $"ExportCodeID = {exportCodeId}");
             if (result2 != DBNull.Value)
                 totalCarton = Convert.ToInt32(result2);
 
-            object result3 = mGroupCartonSize.Compute("SUM(CBM)", $"ExportCodeID = {ExportCodeID}");
+            object result3 = mGroupCartonSize.Compute("SUM(CBM)", $"ExportCodeID = {exportCodeId}");
             if (result3 != DBNull.Value)
                 totalCBM = Convert.ToInt32(result3);
 

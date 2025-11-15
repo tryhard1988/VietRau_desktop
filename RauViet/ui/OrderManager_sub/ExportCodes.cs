@@ -74,7 +74,7 @@ namespace RauViet.ui
                         bool isScussess = await SQLManager.Instance.updateNewPriceInOrderListWithExportCodeAsync(exportCodeID);
                         if(isScussess == true)
                         {
-                            _= SQLStore.Instance.getOrdersAsync(true);
+                            _= SQLStore.Instance.getOrdersAsync(exportCodeID, true);
                             MessageBox.Show("Thành Công", " Thay Đổi Giá", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         }
                         else

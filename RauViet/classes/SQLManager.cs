@@ -520,7 +520,7 @@ namespace RauViet.classes
 
         //==================================================Others================================
 
-        public async Task<DataTable> getOrdersAsync()
+        public async Task<DataTable> getOrdersAsync(int exportCodeID)
         {
             DataTable dt = new DataTable();
             using (SqlConnection con = new SqlConnection(ql_kho_conStr))
@@ -528,11 +528,14 @@ namespace RauViet.classes
                 await con.OpenAsync();
                 string query = @"SELECT o.* FROM Orders o
                                         INNER JOIN ExportCodes ec ON o.ExportCodeID = ec.ExportCodeID
-                                        WHERE ec.Complete = 0";
+                                        WHERE o.ExportCodeID = @ExportCodeID";
                 using (SqlCommand cmd = new SqlCommand(query, con))
-                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                 {
-                    dt.Load(reader);
+                    cmd.Parameters.AddWithValue("@ExportCodeID", exportCodeID);
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
                 }
             }
             return dt;
@@ -734,7 +737,7 @@ namespace RauViet.classes
             }
         }
 
-        public async Task<DataTable> getOrdersTotalAsync()
+        public async Task<DataTable> getOrdersTotalAsync(int exportCodeID)
         {
             DataTable dt = new DataTable();
             using (SqlConnection con = new SqlConnection(ql_kho_conStr))
@@ -744,10 +747,7 @@ namespace RauViet.classes
                 using (SqlCommand cmd = new SqlCommand("SP_OrdersTotal", con))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
-
-                    // 👉 Nếu stored procedure có tham số, ví dụ:
-                    // cmd.Parameters.AddWithValue("@ExportCodeID", exportCodeId);
-
+                    cmd.Parameters.AddWithValue("@ExportCodeID", exportCodeID);
                     using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                     {
                         dt.Load(reader);
@@ -941,7 +941,7 @@ namespace RauViet.classes
             return dt;
         }
 
-        public async Task<DataTable> GetLOTCodeByExportCode_inCompleteAsync()
+        public async Task<DataTable> GetLOTCodeByExportCodeAsync(int exportCodeID)
         {
             DataTable dt = new DataTable();
             using (SqlConnection con = new SqlConnection(ql_kho_conStr))
@@ -960,12 +960,15 @@ namespace RauViet.classes
                                     INNER JOIN ProductPacking p ON o.ProductPackingID = p.ProductPackingID
                                     INNER JOIN ProductSKU s ON p.SKU = s.SKU
                                     INNER JOIN ExportCodes e ON o.ExportCodeID = e.ExportCodeID
-                                    WHERE e.Complete = 0;";
+                                    WHERE e.ExportCodeID = @ExportCodeID;";
 
                 using (SqlCommand cmd = new SqlCommand(query, con))
-                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                 {
-                    dt.Load(reader);
+                    cmd.Parameters.AddWithValue("@ExportCodeID", exportCodeID);
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
                 }
             }
             return dt;
