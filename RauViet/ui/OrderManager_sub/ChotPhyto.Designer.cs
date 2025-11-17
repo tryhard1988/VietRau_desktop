@@ -53,6 +53,7 @@ namespace RauViet.ui
             // 
             // exportCode_cbb
             // 
+            this.exportCode_cbb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.exportCode_cbb.FormattingEnabled = true;
             this.exportCode_cbb.Location = new System.Drawing.Point(0, 0);
             this.exportCode_cbb.Name = "exportCode_cbb";
@@ -98,14 +99,14 @@ namespace RauViet.ui
             this.dataGV_DK.Size = new System.Drawing.Size(973, 681);
             this.dataGV_DK.TabIndex = 10;
             // 
-            // DangKyKiemDinh
+            // ChotPhyto
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1264, 681);
             this.Controls.Add(this.dataGV_DK);
             this.Controls.Add(this.panel1);
-            this.Name = "DangKyKiemDinh";
+            this.Name = "ChotPhyto";
             this.Text = "FormTableData";
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();

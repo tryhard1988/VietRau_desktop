@@ -78,6 +78,7 @@ namespace RauViet.ui
             // 
             // exportCode_cbb
             // 
+            this.exportCode_cbb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.exportCode_cbb.FormattingEnabled = true;
             this.exportCode_cbb.Location = new System.Drawing.Point(0, 3);
             this.exportCode_cbb.Name = "exportCode_cbb";

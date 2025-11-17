@@ -48,8 +48,7 @@ namespace RauViet.ui
             search_tb.TextChanged += search_txt_TextChanged;
 
             edit_btn.Click += Edit_btn_Click;
-            readOnly_btn.Click += ReadOnly_btn_Click;
-            ReadOnly_btn_Click(null, null);
+            readOnly_btn.Click += ReadOnly_btn_Click;            
 
             sku_tb.Visible = false;
         }
@@ -126,8 +125,7 @@ namespace RauViet.ui
 
                 search_txt_TextChanged(null, null);
 
-                if (dataGV.SelectedRows.Count > 0)
-                    UpdateRightUI(0);
+                ReadOnly_btn_Click(null, null);
             }
             catch (Exception ex)
             {
@@ -428,6 +426,9 @@ namespace RauViet.ui
             info_gb.BackColor = Color.DarkGray;
             isNewState = false;
             RightUIReadOnly(true);
+
+            if (dataGV.SelectedRows.Count > 0)
+                UpdateRightUI(0);
         }
 
         private void Edit_btn_Click(object sender, EventArgs e)

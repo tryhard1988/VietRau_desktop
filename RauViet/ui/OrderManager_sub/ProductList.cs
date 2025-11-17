@@ -40,7 +40,7 @@ namespace RauViet.ui
 
             edit_btn.Click += Edit_btn_Click;
             readOnly_btn.Click += ReadOnly_btn_Click;
-            ReadOnly_btn_Click(null, null);
+            
 
         }
 
@@ -131,6 +131,8 @@ namespace RauViet.ui
                 artNr_tb.TabIndex = countTab++; artNr_tb.TabStop = true;
                 GGN_tb.TabIndex = countTab++; GGN_tb.TabStop = true;
                 LuuThayDoiBtn.TabIndex = countTab++; LuuThayDoiBtn.TabStop = true;
+
+                ReadOnly_btn_Click(null, null);
             }
             catch (Exception ex)
             {
@@ -459,6 +461,9 @@ namespace RauViet.ui
             info_gb.BackColor = Color.DarkGray;
             isNewState = false;
             RightUiReadOnly(true);
+
+            if (dataGV.SelectedRows.Count > 0)
+                updateDataTextBoxFlowSKU();
         }
 
         private void Edit_btn_Click(object sender, EventArgs e)

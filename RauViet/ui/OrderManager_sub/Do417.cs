@@ -13,9 +13,11 @@ namespace RauViet.ui
     {
         DataTable mExportCode_dt, mOrdersTotal_dt;
         private LoadingOverlay loadingOverlay;
+        int mCurrentExportID = -1;
         public Do417()
         {
             InitializeComponent();
+            this.KeyPreview = true;
 
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Dock = DockStyle.Fill;
@@ -25,7 +27,6 @@ namespace RauViet.ui
 
             status_lb.Text = "";
 
-            Reset_btn.Click += resetBtn_Click;
             dataGV.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.dataGV_EditingControlShowing);
             dataGV.CellFormatting += dataGV_CellFormatting;
             dataGV .CellEndEdit += DataGV_CellValueChanged;
@@ -33,6 +34,21 @@ namespace RauViet.ui
             //dataGV.CellEndEdit += dataGV_CellEndEdit;
 
             dataGV.CellBeginEdit += dataGV_CellBeginEdit;
+            this.KeyDown += Do417_KeyDown; ;
+        }
+
+        private void Do417_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.F5)
+            {
+                if (mCurrentExportID <= 0)
+                {
+                    return;
+                } 
+
+                SQLStore.Instance.removeOrdersTotal(mCurrentExportID);
+                ShowData();
+            }
         }
 
         public async void ShowData()
@@ -48,16 +64,16 @@ namespace RauViet.ui
                 var parameters = new Dictionary<string, object> { { "Complete", false } };
                 mExportCode_dt = await SQLStore.Instance.getExportCodesAsync(keepColumns, parameters);
 
-                int maxID = -1;
-                if (mExportCode_dt.Rows.Count > 0)
+                if (mCurrentExportID <= 0 && mExportCode_dt.Rows.Count > 0)
                 {
-                    maxID = Convert.ToInt32(mExportCode_dt.AsEnumerable()
+                    mCurrentExportID = Convert.ToInt32(mExportCode_dt.AsEnumerable()
                                    .Max(r => r.Field<int>("ExportCodeID")));
                 }
 
-                mOrdersTotal_dt = await SQLStore.Instance.getOrdersTotalAsync(maxID);
-                
-                dataGV.DataSource = mOrdersTotal_dt;
+                mOrdersTotal_dt = await SQLStore.Instance.getOrdersTotalAsync(mCurrentExportID);
+                DataView dv = new DataView(mOrdersTotal_dt);
+                dv.RowFilter = $"ExportCodeID = {mCurrentExportID}";
+                dataGV.DataSource = dv;
 
                 dataGV.Columns["ProductPackingID"].Visible = false;
                 dataGV.Columns["ExportCodeID"].Visible = false;
@@ -102,13 +118,13 @@ namespace RauViet.ui
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
-
+                exportCode_cbb.SelectedIndexChanged -= exportCode_search_cbb_SelectedIndexChanged;
                 exportCode_cbb.DataSource = mExportCode_dt;
                 exportCode_cbb.DisplayMember = "ExportCode";  // hiển thị tên
-                exportCode_cbb.ValueMember = "ExportCodeID";
-                exportCode_cbb.SelectedIndexChanged -= exportCode_search_cbb_SelectedIndexChanged;
+                exportCode_cbb.ValueMember = "ExportCodeID";                
+                exportCode_cbb.SelectedValue = mCurrentExportID;
                 exportCode_cbb.SelectedIndexChanged += exportCode_search_cbb_SelectedIndexChanged;
-                exportCode_cbb.SelectedValue = maxID;
+                
 
                 calvalueRightUI();
             }
@@ -128,26 +144,20 @@ namespace RauViet.ui
         {
             if (!int.TryParse(exportCode_cbb.SelectedValue.ToString(), out int exportCodeId))
                 return;
+
+            mCurrentExportID = exportCodeId;
             mOrdersTotal_dt = await SQLStore.Instance.getOrdersTotalAsync(exportCodeId);
 
             DataView dv = new DataView(mOrdersTotal_dt);
             dv.RowFilter = $"ExportCodeID = {exportCodeId}";
-
             dataGV.DataSource = dv;
-
 
             calvalueRightUI();
 
             DataRowView dataR = (DataRowView)exportCode_cbb.SelectedItem;
             string staff = dataR["InputByName_NoSign"].ToString();
-            if (UserManager.Instance.fullName_NoSign.CompareTo(staff) != 0)
-            {
-                Reset_btn.Visible = false;
-            }
-            else
-            {
-                Reset_btn.Visible = true;
-            }
+
+            dataGV.ReadOnly = !(UserManager.Instance.fullName_NoSign.CompareTo(staff) == 0);            
         }
 
         private async void DataGV_CellValueChanged(object sender, DataGridViewCellEventArgs e)
@@ -279,41 +289,6 @@ namespace RauViet.ui
             }
         }
 
-        private async void resetBtn_Click(object sender, EventArgs e)
-        {
-            DialogResult dialogResult = MessageBox.Show("Xóa Nha, Chắc Chắn Chưa!", "Thông Báo", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-
-            if (dialogResult == DialogResult.Yes)
-            {
-                try
-                {
-                    bool isScussess = await SQLManager.Instance.deleteOrderTotalAsync(Convert.ToInt32(exportCode_cbb.SelectedValue));
-
-                    if (isScussess == true)
-                    {
-                        status_lb.Text = "Thành công.";
-                        status_lb.ForeColor = System.Drawing.Color.Green;
-
-                        ShowData();
-
-                    }
-                    else
-                    {
-                        status_lb.Text = "Thất bại.";
-                        status_lb.ForeColor = System.Drawing.Color.Red;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    status_lb.Text = "Thất bại.";
-                    status_lb.ForeColor = System.Drawing.Color.Red;
-                }
-
-
-
-
-            }
-        }
 
         private void calvalueRightUI()
         {

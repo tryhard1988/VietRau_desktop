@@ -1,11 +1,12 @@
-﻿using System;
+﻿using Org.BouncyCastle.Pqc.Crypto.Lms;
+using RauViet.classes;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using RauViet.classes;
 
 namespace RauViet.ui
 {
@@ -13,10 +14,11 @@ namespace RauViet.ui
     {
         DataTable mExportCode_dt, mLOTCode_dt;
         private LoadingOverlay loadingOverlay;
+        int mCurrentExportID = -1;
         public LOTCode()
         {
             InitializeComponent();
-
+            this.KeyPreview = true;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Dock = DockStyle.Fill;
 
@@ -31,6 +33,22 @@ namespace RauViet.ui
             dataGV.CellEndEdit += dataGV_CellValueChanged;
             dataGV.KeyDown += dataGV_KeyDown;
             dataGV.CellBeginEdit += dataGV_CellBeginEdit;
+
+            this.KeyDown += LOTCode_KeyDown;
+        }
+
+        private void LOTCode_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.F5)
+            {
+                if (mCurrentExportID <= 0)
+                {
+                    return;
+                }
+
+                SQLStore.Instance.removeOrdersTotal(mCurrentExportID);
+                ShowData();
+            }
         }
 
         public async void ShowData()
@@ -47,19 +65,16 @@ namespace RauViet.ui
                 var parameters = new Dictionary<string, object> { { "Complete", false } };
                 mExportCode_dt = await SQLStore.Instance.getExportCodesAsync(keepColumns, parameters);
 
-                int maxID = -1;
-                if (mExportCode_dt.Rows.Count > 0)
+                if (mCurrentExportID <= 0 && mExportCode_dt.Rows.Count > 0)
                 {
-                    maxID = Convert.ToInt32(mExportCode_dt.AsEnumerable()
+                    mCurrentExportID = Convert.ToInt32(mExportCode_dt.AsEnumerable()
                                    .Max(r => r.Field<int>("ExportCodeID")));
                 }
-                mLOTCode_dt = await SQLManager.Instance.GetLOTCodeByExportCodeAsync(maxID);
+                mLOTCode_dt = await SQLStore.Instance.GetLOTCodeAsync(mCurrentExportID);
 
-                mLOTCode_dt.Columns["ProductNameVN"].SetOrdinal(0);
-                mLOTCode_dt.Columns["LotCode"].SetOrdinal(1);
-                mLOTCode_dt.Columns["LOTCodeComplete"].SetOrdinal(2);
-
-                dataGV.DataSource = mLOTCode_dt;
+                DataView dv = new DataView(mLOTCode_dt);
+                dv.RowFilter = $"ExportCodeID = {mCurrentExportID}";
+                dataGV.DataSource = dv;
 
                 dataGV.Columns["SKU"].Visible = false;
                 dataGV.Columns["ExportCode"].Visible = false;
@@ -89,15 +104,12 @@ namespace RauViet.ui
                 dataGV.Columns["LotCode"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 dataGV.Columns["Priority"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
+                exportCode_cbb.SelectedIndexChanged -= exportCode_search_cbb_SelectedIndexChanged;
                 exportCode_cbb.DataSource = mExportCode_dt;
                 exportCode_cbb.DisplayMember = "ExportCode";  // hiển thị tên
                 exportCode_cbb.ValueMember = "ExportCodeID";
-                exportCode_cbb.SelectedIndexChanged -= exportCode_search_cbb_SelectedIndexChanged;
+                exportCode_cbb.SelectedValue = mCurrentExportID;
                 exportCode_cbb.SelectedIndexChanged += exportCode_search_cbb_SelectedIndexChanged;
-
-                exportCode_cbb.SelectedValue = maxID;
-
-
             }
             catch (Exception ex)
             {
@@ -115,10 +127,16 @@ namespace RauViet.ui
         {
             if (!int.TryParse(exportCode_cbb.SelectedValue.ToString(), out int exportCodeId))
                 return;
-            mLOTCode_dt = await SQLManager.Instance.GetLOTCodeByExportCodeAsync(exportCodeId);
+            mCurrentExportID = exportCodeId;
+            mLOTCode_dt = await SQLStore.Instance.GetLOTCodeAsync(exportCodeId);
             DataView dv = new DataView(mLOTCode_dt);
             dv.RowFilter = $"ExportCodeID = {exportCodeId}";
             dataGV.DataSource = dv;
+
+            DataRowView dataR = (DataRowView)exportCode_cbb.SelectedItem;
+            string staff = dataR["InputByName_NoSign"].ToString();
+
+            dataGV.ReadOnly = !(UserManager.Instance.fullName_NoSign.CompareTo(staff) == 0);
         }
 
         private async void dataGV_CellValueChanged(object sender, DataGridViewCellEventArgs e)

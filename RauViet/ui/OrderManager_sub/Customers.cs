@@ -37,8 +37,7 @@ namespace RauViet.ui
             this.dataGV.RowPrePaint += new System.Windows.Forms.DataGridViewRowPrePaintEventHandler(this.dataGV_RowPrePaint);
 
             edit_btn.Click += Edit_btn_Click;
-            readOnly_btn.Click += ReadOnly_btn_Click;
-            ReadOnly_btn_Click(null, null);
+            readOnly_btn.Click += ReadOnly_btn_Click;            
         }
 
         public async void ShowData()
@@ -58,15 +57,9 @@ namespace RauViet.ui
                 dataGV.Columns["FullName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 dataGV.Columns["CustomerCode"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
 
-                if (dataGV.Rows.Count > 0)
-                {
-                    dataGV.ClearSelection();
-                    dataGV.Rows[0].Selected = true;
-                    dataGV.CurrentCell = dataGV.Rows[0].Cells[0];
-                    UpdateRightUI(0);
-                }
-
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+
+                ReadOnly_btn_Click(null, null);
             }
             catch (Exception ex)
             {
@@ -317,6 +310,11 @@ namespace RauViet.ui
             info_gb.BackColor = Color.DarkGray;
             isNewState = false;
             SetUIReadOnly(true);
+
+            if (dataGV.Rows.Count > 0)
+            {
+                UpdateRightUI(0);
+            }
         }
 
         private void Edit_btn_Click(object sender, EventArgs e)

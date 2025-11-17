@@ -13,17 +13,34 @@ namespace RauViet.ui
     {
         DataTable mExportCode_dt, mGroupCartonSize, mGroupCustomer, mOrders_dt;
         private LoadingOverlay loadingOverlay;
+        private int mCurrentExportID = -1;
         public Do_CBM()
         {
             InitializeComponent();
-
+            this.KeyPreview = true;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Dock = DockStyle.Fill;
 
             cartonSizeGroupGV.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             cartonSizeGroupGV.MultiSelect = false;
 
-            status_lb.Text = "";            
+            status_lb.Text = "";
+
+            this.KeyDown += Do_CBM_KeyDown;
+        }
+
+        private void Do_CBM_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.F5)
+            {
+                if (mCurrentExportID <= 0)
+                {
+                    return;
+                }
+
+                SQLStore.Instance.removeOrders(mCurrentExportID);
+                ShowData();
+            }
         }
 
         public async void ShowData()
@@ -39,22 +56,27 @@ namespace RauViet.ui
                 var parameters = new Dictionary<string, object> { { "Complete", false } };
                 mExportCode_dt = await SQLStore.Instance.getExportCodesAsync(keepColumns, parameters);
 
-                int maxID = -1;
-                if (mExportCode_dt.Rows.Count > 0)
-                    maxID = Convert.ToInt32(mExportCode_dt.AsEnumerable().Max(r => r.Field<int>("ExportCodeID")));
+                if(mCurrentExportID <= 0 && mExportCode_dt.Rows.Count > 0)
+                    mCurrentExportID = Convert.ToInt32(mExportCode_dt.AsEnumerable().Max(r => r.Field<int>("ExportCodeID")));
 
 
-                mOrders_dt = await SQLStore.Instance.getOrdersAsync(maxID);
+                mOrders_dt = await SQLStore.Instance.getOrdersAsync(mCurrentExportID);
 
                 mGroupCustomer = GroupByCustomer(mOrders_dt);
                 mGroupCartonSize = GroupCartonSize(mOrders_dt);
 
-                cartonSizeGroupGV.DataSource = mGroupCartonSize;
-                cusGroupGV.DataSource = mGroupCustomer;
+                DataView dv1 = new DataView(mGroupCartonSize);
+                dv1.RowFilter = $"ExportCodeID = '{mCurrentExportID}'";
+                cartonSizeGroupGV.DataSource = dv1;
+
+                DataView dv2 = new DataView(mGroupCustomer);
+                dv2.RowFilter = $"ExportCodeID = '{mCurrentExportID}'";
+                cusGroupGV.DataSource = dv2;
 
                 cartonSizeGroupGV.Columns["ExportCodeID"].Visible = false;
                 cusGroupGV.Columns["ExportCodeID"].Visible = false;
 
+                exportCode_cbb.SelectedIndexChanged -= exportCode_search_cbb_SelectedIndexChanged;
                 exportCode_cbb.DataSource = mExportCode_dt;
                 exportCode_cbb.DisplayMember = "ExportCode";  // hiển thị tên
                 exportCode_cbb.ValueMember = "ExportCodeID";
@@ -95,11 +117,11 @@ namespace RauViet.ui
                 cusGroupGV.Columns["ChargeWeight"].Width = 80;
                 cusGroupGV.Columns["GrossWeight"].Width = 80;
                 cusGroupGV.Columns["FreightCharge"].Width = 80;
-
-                exportCode_cbb.SelectedIndexChanged -= exportCode_search_cbb_SelectedIndexChanged;
+                
+                exportCode_cbb.SelectedValue = mCurrentExportID;                
                 exportCode_cbb.SelectedIndexChanged += exportCode_search_cbb_SelectedIndexChanged;
 
-                exportCode_cbb.SelectedValue = maxID;
+                
                 
             }
             catch (Exception ex)
@@ -268,6 +290,8 @@ namespace RauViet.ui
         {
             if (!int.TryParse(exportCode_cbb.SelectedValue.ToString(), out int exportCodeId))
                 return;
+            mCurrentExportID = exportCodeId;
+
             mOrders_dt = await SQLStore.Instance.getOrdersAsync(exportCodeId);
             mGroupCustomer = GroupByCustomer(mOrders_dt);
             mGroupCartonSize = GroupCartonSize(mOrders_dt);

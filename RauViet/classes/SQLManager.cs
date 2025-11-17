@@ -757,26 +757,6 @@ namespace RauViet.classes
             return dt;
         }
 
-
-        public async Task<bool> deleteOrderTotalAsync(int exportCodeID)
-        {
-            string query = "DELETE FROM OrdersTotal WHERE ExportCodeID =@ExportCodeID ";
-            try
-            {
-                using (SqlConnection con = new SqlConnection(ql_kho_conStr))
-                {
-                    await con.OpenAsync();
-                    using (SqlCommand cmd = new SqlCommand(query, con))
-                    {
-                        cmd.Parameters.AddWithValue("@ExportCodeID", exportCodeID);
-                        await cmd.ExecuteNonQueryAsync();
-                    }
-                }
-                return true;
-            }
-            catch { return false; }
-        }
-
         public async Task<bool> UpsertOrdersTotalListAsync(List<(int ExportCodeID, int ProductPackingID, decimal? NetWeightFinal)> list)
         {
             try

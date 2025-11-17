@@ -17,6 +17,7 @@ namespace RauViet.ui
         private LoadingOverlay loadingOverlay;
         bool isNewState = false;
         private bool canUseMode2 = true;
+        int mCurrentExportID = -1;
         // private DataView dvProducts;
         public OrdersList()
         {
@@ -58,8 +59,7 @@ namespace RauViet.ui
 
             debounceTimer.Tick += DebounceTimer_Tick;
             edit_btn.Click += Edit_btn_Click;
-            readOnly_btn.Click += ReadOnly_btn_Click;
-            ReadOnly_btn_Click(null, null);
+            readOnly_btn.Click += ReadOnly_btn_Click;            
 
             search_tb.TextChanged += search_txt_TextChanged;
 
@@ -77,12 +77,12 @@ namespace RauViet.ui
             }
             else if (e.KeyCode == Keys.F5)
             {
-                if (!int.TryParse(exportCode_search_cbb.SelectedValue.ToString(), out int exportCodeId))
+                if (mCurrentExportID <= 0)
                 {
                     return;
                 }
 
-                SQLStore.Instance.removeOrders(exportCodeId);
+                SQLStore.Instance.removeOrders(mCurrentExportID);
                 SQLStore.Instance.removeCustomers();
                 SQLStore.Instance.removeProductSKU();
                 SQLStore.Instance.removeProductpacking();
@@ -153,25 +153,27 @@ namespace RauViet.ui
 
             try
             {
+                mProduct_dt = await SQLStore.Instance.getProductSKUAsync();
+
                 string[] keepColumns = { "ExportCodeID", "ExportCode", "ExportDate", "PackingByName", "InputByName_NoSign" };
                 var parameters = new Dictionary<string, object> { { "Complete", false } };
                 var exportCodeTask = SQLStore.Instance.getExportCodesAsync(keepColumns, parameters);
                 var customersTask = SQLStore.Instance.getCustomersAsync();
-                var productTask = SQLStore.Instance.getProductSKUAsync();
+                
                 var packingTask = SQLStore.Instance.getProductpackingAsync();          
-                await Task.WhenAll(customersTask, productTask, packingTask, exportCodeTask);
-                mCustomers_dt = customersTask.Result;
-                mProduct_dt = productTask.Result;
+                await Task.WhenAll(customersTask, packingTask, exportCodeTask);
+                var productTask = 
+                mCustomers_dt = customersTask.Result;                
                 mProductPacking_dt = packingTask.Result;
                 mExportCode_dt = exportCodeTask.Result;
 
-                int maxID = -1;
-                if (mExportCode_dt.Rows.Count > 0)
+                if (mCurrentExportID <= 0 && mExportCode_dt.Rows.Count > 0)
                 {
-                    maxID = Convert.ToInt32(mExportCode_dt.AsEnumerable()
+                    mCurrentExportID = Convert.ToInt32(mExportCode_dt.AsEnumerable()
                                    .Max(r => r.Field<int>("ExportCodeID")));
                 }
-                var othersTask = SQLStore.Instance.getOrdersAsync(maxID);
+
+                var othersTask = SQLStore.Instance.getOrdersAsync(mCurrentExportID);
                 var latestOrdersTask = SQLStore.Instance.get3LatestOrdersAsync();
                 await Task.WhenAll(othersTask, latestOrdersTask);
 
@@ -218,17 +220,6 @@ namespace RauViet.ui
 
                 foreach (DataColumn col in mOrders_dt.Columns)
                     col.ReadOnly = false;
-
-                int count = 0;
-                mOrders_dt.Columns["OrderId"].SetOrdinal(count++);
-                mOrders_dt.Columns["ExportCode"].SetOrdinal(count++);
-                mOrders_dt.Columns["CustomerName"].SetOrdinal(count++);
-                mOrders_dt.Columns["ProductNameVN"].SetOrdinal(count++);
-                mOrders_dt.Columns["OrderPackingPriceCNF"].SetOrdinal(count++);
-                mOrders_dt.Columns["PCSOther"].SetOrdinal(count++);
-                mOrders_dt.Columns["NWOther"].SetOrdinal(count++);
-                mOrders_dt.Columns["PCSReal"].SetOrdinal(count++);
-                mOrders_dt.Columns["NWReal"].SetOrdinal(count++);
 
                 // Gán testData cho DataGridView tạm để test
                 dataGV.DataSource = mOrders_dt;                
@@ -279,21 +270,17 @@ namespace RauViet.ui
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
-                exportCode_search_cbb.DataSource = mExportCode_dt.Copy();
-                exportCode_search_cbb.DisplayMember = "ExportCode";  // hiển thị tên
-                exportCode_search_cbb.ValueMember = "ExportCodeID";
                 exportCode_search_cbb.SelectedIndexChanged -= exportCode_search_cbb_SelectedIndexChanged;
+                exportCode_search_cbb.DataSource = mExportCode_dt;
+                exportCode_search_cbb.DisplayMember = "ExportCode";  // hiển thị tên
+                exportCode_search_cbb.ValueMember = "ExportCodeID";                
                 exportCode_search_cbb.SelectedIndexChanged += exportCode_search_cbb_SelectedIndexChanged;
-                exportCode_search_cbb.SelectedValue = maxID;
-
-                if (dataGV.SelectedRows.Count > 0)
-                    _ = updateRightUI(0);
-
-                await Task.Delay(500);
-                ReadOnly_btn_Click(null, null);
+                exportCode_search_cbb.SelectedValue = mCurrentExportID;
 
                 
 
+                await Task.Delay(500);
+                ReadOnly_btn_Click(null, null);
             }
             catch (Exception ex)
             {
@@ -395,6 +382,7 @@ namespace RauViet.ui
             if (!int.TryParse(exportCode_search_cbb.SelectedValue.ToString(), out int exportCodeId))
                 return;
 
+            mCurrentExportID = exportCodeId;
             mOrders_dt = await SQLStore.Instance.getOrdersAsync(exportCodeId);
             // Tạo DataView để filter
             DataView dv = new DataView(mOrders_dt);
@@ -979,6 +967,9 @@ namespace RauViet.ui
             cusProduct_GV.Visible = false;
             product_ccb.DropDownStyle = ComboBoxStyle.DropDownList;
             setRightUIReadOnly(true);
+
+            if (dataGV.SelectedRows.Count > 0)
+                _ = updateRightUI(0);
         }
 
         private void Edit_btn_Click(object sender, EventArgs e)

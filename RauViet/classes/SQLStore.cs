@@ -55,7 +55,8 @@ namespace RauViet.classes
 
         Dictionary<int, DataTable> mOrderLists;
         Dictionary<int, DataTable> mReportExportByYears;
-
+        Dictionary<int, DataTable> mOrdersTotals;
+        Dictionary<int, DataTable> mLOTCodes;
         private SQLStore() { }
 
         public static SQLStore Instance
@@ -77,6 +78,8 @@ namespace RauViet.classes
             {
                 mReportExportByYears = new Dictionary<int, DataTable>();
                 mOrderLists = new Dictionary<int, DataTable>();
+                mOrdersTotals = new Dictionary<int, DataTable>();
+                mLOTCodes = new Dictionary<int, DataTable>();
 
                 var productSKUTask = SQLManager.Instance.getProductSKUAsync();
                 var productPackingTask = SQLManager.Instance.getProductpackingAsync();
@@ -1746,6 +1749,18 @@ namespace RauViet.classes
                     dr["PCSReal"] = 0;
                 }
             }
+
+            int count = 0;
+            data.Columns["OrderId"].SetOrdinal(count++);
+            data.Columns["Customername"].SetOrdinal(count++);
+            data.Columns["ProductNameVN"].SetOrdinal(count++);
+            data.Columns["CustomerCarton"].SetOrdinal(count++);
+            data.Columns["CartonNo"].SetOrdinal(count++);
+            data.Columns["CartonSize"].SetOrdinal(count++);
+            data.Columns["PCSReal"].SetOrdinal(count++);
+            data.Columns["NWReal"].SetOrdinal(count++);
+            data.Columns["PCSOther"].SetOrdinal(count++);
+            data.Columns["NWOther"].SetOrdinal(count++);
         }
 
         public async Task<DataTable> GetExportHistoryByYear(int year)
@@ -1850,12 +1865,19 @@ namespace RauViet.classes
             }
         }
 
+        public void removeOrdersTotal(int exportCodeID)
+        {
+            mOrdersTotals.Remove(exportCodeID);
+        }
         public async Task<DataTable> getOrdersTotalAsync(int exportCodeID)
         {
-            DataTable dt = await SQLManager.Instance.getOrdersTotalAsync(exportCodeID);
-            editOrdersTotal(dt);
-
-            return dt;
+            if (!mOrdersTotals.ContainsKey(exportCodeID))
+            {
+                DataTable dt = await SQLManager.Instance.getOrdersTotalAsync(exportCodeID);
+                editOrdersTotal(dt);
+                mOrdersTotals[exportCodeID] = dt;
+            }
+            return mOrdersTotals[exportCodeID];
         }
         private void editOrdersTotal(DataTable dt)
         {
@@ -1909,6 +1931,28 @@ namespace RauViet.classes
             dt.Columns["NetWeightFinal"].SetOrdinal(4);
             dt.Columns["TotalNWReal"].SetOrdinal(5);
             dt.Columns["NWDifference"].SetOrdinal(6);
+        }
+
+        public void removeLOTCode(int exportCodeID)
+        {
+            mLOTCodes.Remove(exportCodeID);
+        }
+        public async Task<DataTable> GetLOTCodeAsync(int exportCodeID)
+        {
+            if (!mLOTCodes.ContainsKey(exportCodeID))
+            {
+                DataTable dt = await SQLManager.Instance.GetLOTCodeByExportCodeAsync(exportCodeID);
+                editLOTCode(dt);
+                mLOTCodes[exportCodeID] = dt;
+            }
+            return mLOTCodes[exportCodeID];
+        }
+
+        private void editLOTCode(DataTable dt)
+        {
+            dt.Columns["ProductNameVN"].SetOrdinal(0);
+            dt.Columns["LotCode"].SetOrdinal(1);
+            dt.Columns["LOTCodeComplete"].SetOrdinal(2);
         }
     }
 }

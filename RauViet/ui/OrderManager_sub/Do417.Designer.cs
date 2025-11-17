@@ -42,7 +42,6 @@ namespace RauViet.ui
             this.label1 = new System.Windows.Forms.Label();
             this.nwdkkd_tb = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
-            this.Reset_btn = new System.Windows.Forms.Button();
             this.exportCode_cbb = new System.Windows.Forms.ComboBox();
             this.status_lb = new System.Windows.Forms.Label();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -55,7 +54,6 @@ namespace RauViet.ui
             // panel1
             // 
             this.panel1.Controls.Add(this.info_gb);
-            this.panel1.Controls.Add(this.Reset_btn);
             this.panel1.Controls.Add(this.exportCode_cbb);
             this.panel1.Controls.Add(this.status_lb);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Right;
@@ -183,17 +181,6 @@ namespace RauViet.ui
             this.label2.TabIndex = 30;
             this.label2.Text = "N.W đăng ký kiểm dịch:";
             // 
-            // Reset_btn
-            // 
-            this.Reset_btn.BackColor = System.Drawing.Color.Gray;
-            this.Reset_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Reset_btn.Location = new System.Drawing.Point(118, 420);
-            this.Reset_btn.Name = "Reset_btn";
-            this.Reset_btn.Size = new System.Drawing.Size(162, 52);
-            this.Reset_btn.TabIndex = 53;
-            this.Reset_btn.Text = "Khởi Tạo Lại";
-            this.Reset_btn.UseVisualStyleBackColor = false;
-            // 
             // exportCode_cbb
             // 
             this.exportCode_cbb.FormattingEnabled = true;
@@ -254,7 +241,6 @@ namespace RauViet.ui
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.ComboBox exportCode_cbb;
         private System.Windows.Forms.DataGridView dataGV;
-        private System.Windows.Forms.Button Reset_btn;
         private System.Windows.Forms.GroupBox info_gb;
         private System.Windows.Forms.TextBox nwdkkd_tb;
         private System.Windows.Forms.Label label2;

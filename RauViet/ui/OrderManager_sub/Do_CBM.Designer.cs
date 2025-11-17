@@ -35,6 +35,8 @@ namespace RauViet.ui
             this.cusGroupGV = new System.Windows.Forms.DataGridView();
             this.panel1 = new System.Windows.Forms.Panel();
             this.info_gb = new System.Windows.Forms.GroupBox();
+            this.totalCBM_tb = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
             this.totalFreightCharge_tb = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.totalAmount_tb = new System.Windows.Forms.TextBox();
@@ -47,8 +49,6 @@ namespace RauViet.ui
             this.label2 = new System.Windows.Forms.Label();
             this.exportCode_cbb = new System.Windows.Forms.ComboBox();
             this.status_lb = new System.Windows.Forms.Label();
-            this.totalCBM_tb = new System.Windows.Forms.TextBox();
-            this.label6 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.cartonSizeGroupGV)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.cusGroupGV)).BeginInit();
             this.panel1.SuspendLayout();
@@ -115,6 +115,26 @@ namespace RauViet.ui
             this.info_gb.Size = new System.Drawing.Size(346, 298);
             this.info_gb.TabIndex = 55;
             this.info_gb.TabStop = false;
+            // 
+            // totalCBM_tb
+            // 
+            this.totalCBM_tb.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.totalCBM_tb.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.totalCBM_tb.Location = new System.Drawing.Point(157, 231);
+            this.totalCBM_tb.Name = "totalCBM_tb";
+            this.totalCBM_tb.ReadOnly = true;
+            this.totalCBM_tb.Size = new System.Drawing.Size(157, 27);
+            this.totalCBM_tb.TabIndex = 42;
+            this.totalCBM_tb.Text = "vxcv";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(80, 236);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(70, 16);
+            this.label6.TabIndex = 41;
+            this.label6.Text = "Tổng CBM:";
             // 
             // totalFreightCharge_tb
             // 
@@ -218,6 +238,7 @@ namespace RauViet.ui
             // 
             // exportCode_cbb
             // 
+            this.exportCode_cbb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.exportCode_cbb.FormattingEnabled = true;
             this.exportCode_cbb.Location = new System.Drawing.Point(0, 0);
             this.exportCode_cbb.Name = "exportCode_cbb";
@@ -234,26 +255,6 @@ namespace RauViet.ui
             this.status_lb.Size = new System.Drawing.Size(55, 23);
             this.status_lb.TabIndex = 26;
             this.status_lb.Text = "Email";
-            // 
-            // totalCBM_tb
-            // 
-            this.totalCBM_tb.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.totalCBM_tb.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.totalCBM_tb.Location = new System.Drawing.Point(157, 231);
-            this.totalCBM_tb.Name = "totalCBM_tb";
-            this.totalCBM_tb.ReadOnly = true;
-            this.totalCBM_tb.Size = new System.Drawing.Size(157, 27);
-            this.totalCBM_tb.TabIndex = 42;
-            this.totalCBM_tb.Text = "vxcv";
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(80, 236);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(70, 16);
-            this.label6.TabIndex = 41;
-            this.label6.Text = "Tổng CBM:";
             // 
             // Do_CBM
             // 

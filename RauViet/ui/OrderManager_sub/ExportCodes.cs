@@ -55,8 +55,7 @@ namespace RauViet.ui
             shippingCost_tb.KeyPress += Tb_KeyPress_OnlyNumber;
 
             edit_btn.Click += Edit_btn_Click;
-            readOnly_btn.Click += ReadOnly_btn_Click;
-            ReadOnly_btn_Click(null, null);
+            readOnly_btn.Click += ReadOnly_btn_Click;            
 
             ToolTipHelper.SetToolTip(updatePrice_btn, "nếu mã xuất cảng đã tạo rồi\nmà giá có thay đổi\nthì cần update lại giá SP");
         }
@@ -182,14 +181,7 @@ namespace RauViet.ui
                 packingBy_cbb.DisplayMember = "FullName";  // hiển thị tên
                 packingBy_cbb.ValueMember = "EmployeeID";
 
-
-                if (dataGV.SelectedRows.Count > 0)
-                {
-                    updateRightUI(0);
-                }
-
-
-                
+                ReadOnly_btn_Click(null, null);
             }
             catch (Exception ex)
             {
@@ -498,7 +490,7 @@ namespace RauViet.ui
             exportdate_dtp.Value = DateTime.Now;
             complete_cb.Visible = false;
             autoCreateExportId_btn.Enabled = true;
-
+            exportCode_tb.Enabled = true;
             decimal maxShippingCost = 0;
             int maxId = -1;
 
@@ -550,10 +542,16 @@ namespace RauViet.ui
             delete_btn.Visible = false;
             info_gb.BackColor = Color.DarkGray;
             isNewState = false;
+            exportCode_tb.Enabled = false;
             rightUIReadOnly(true);
             updatePrice_btn.Visible = false;
             exRate_btn.Visible = false;
             autoCreateExportId_btn.Visible = false;
+
+            if (dataGV.SelectedRows.Count > 0)
+            {
+                updateRightUI(0);
+            }
         }
 
         private void Edit_btn_Click(object sender, EventArgs e)
@@ -574,7 +572,6 @@ namespace RauViet.ui
 
         private void completeCB_CheckedChanged(object sender, EventArgs e)
         {
-            exportCode_tb.Enabled = !complete_cb.Checked;
             exportdate_dtp.Enabled = !complete_cb.Checked;
         }
 

@@ -17,6 +17,7 @@ namespace RauViet.ui
         DataTable mExportCode_dt, mOrders_dt, mCartonSize_dt;
         private Timer debounceTimer = new Timer { Interval = 300 };
         string oldValue = "";
+        int mCurrentExportID = -1;
         public OrderPackingList()
         {
             InitializeComponent();
@@ -101,13 +102,12 @@ namespace RauViet.ui
                 mExportCode_dt = exportCodeTask.Result;
                 mCartonSize_dt = cartonSizeTask.Result;
 
-                int maxID = -1;
-                if (mExportCode_dt.Rows.Count > 0)
+                if (mCurrentExportID <= 0 && mExportCode_dt.Rows.Count > 0)
                 {
-                    maxID = Convert.ToInt32(mExportCode_dt.AsEnumerable()
+                    mCurrentExportID = Convert.ToInt32(mExportCode_dt.AsEnumerable()
                                    .Max(r => r.Field<int>("ExportCodeID")));
                 }
-                mOrders_dt = await SQLStore.Instance.getOrdersAsync(maxID);
+                mOrders_dt = await SQLStore.Instance.getOrdersAsync(mCurrentExportID);
 
                 // Chạy truy vấn trên thread riêng
                 dataGV.DataSource = mOrders_dt;
@@ -125,19 +125,6 @@ namespace RauViet.ui
                 dataGV.Columns["OrderPackingPriceCNF"].Visible = false;
                 dataGV.Columns["LOTCode"].Visible = false;
                 dataGV.Columns["LOTCodeComplete"].Visible = false;
-
-                int count = 0;
-                mOrders_dt.Columns["OrderId"].SetOrdinal(count++);
-                mOrders_dt.Columns["Customername"].SetOrdinal(count++);
-                mOrders_dt.Columns["ProductNameVN"].SetOrdinal(count++);
-                mOrders_dt.Columns["CustomerCarton"].SetOrdinal(count++);
-                mOrders_dt.Columns["CartonNo"].SetOrdinal(count++);
-                mOrders_dt.Columns["CartonSize"].SetOrdinal(count++);
-                mOrders_dt.Columns["PCSReal"].SetOrdinal(count++);
-                mOrders_dt.Columns["NWReal"].SetOrdinal(count++);
-                mOrders_dt.Columns["PCSOther"].SetOrdinal(count++);
-                mOrders_dt.Columns["NWOther"].SetOrdinal(count++);
-                
 
                 dataGV.ReadOnly = false;
                 dataGV.Columns["CartonNo"].ReadOnly = false;
@@ -189,13 +176,12 @@ namespace RauViet.ui
                 dataGV.Columns["NWReal"].HeaderCell.Style.BackColor = System.Drawing.Color.Coral;
                 //_dataChanged = false;
 
+                exportCode_cbb.SelectedIndexChanged -= exportCode_search_cbb_SelectedIndexChanged;
                 exportCode_cbb.DataSource = mExportCode_dt;
                 exportCode_cbb.DisplayMember = "ExportCode";  // hiển thị tên
-                exportCode_cbb.ValueMember = "ExportCodeID";
-                exportCode_cbb.SelectedIndexChanged -= exportCode_search_cbb_SelectedIndexChanged;
+                exportCode_cbb.ValueMember = "ExportCodeID";                
                 exportCode_cbb.SelectedIndexChanged += exportCode_search_cbb_SelectedIndexChanged;
-
-                exportCode_cbb.SelectedValue = maxID;
+                exportCode_cbb.SelectedValue = mCurrentExportID;
 
 
 
@@ -358,7 +344,7 @@ namespace RauViet.ui
         {
             if (!int.TryParse(exportCode_cbb.SelectedValue.ToString(), out int exportCodeId))
                 return;
-
+            mCurrentExportID = exportCodeId;
             mOrders_dt = await SQLStore.Instance.getOrdersAsync(exportCodeId);
             // Tạo DataView để filter
             DataView dv = new DataView(mOrders_dt);
@@ -1611,11 +1597,11 @@ namespace RauViet.ui
             }
             else if(e.KeyCode == Keys.F5)
             {
-                if (!int.TryParse(exportCode_cbb.SelectedValue.ToString(), out int exportCodeId))
+                if (mCurrentExportID <= 0)
                 {
                     return;
                 }
-                SQLStore.Instance.removeOrders(exportCodeId);
+                SQLStore.Instance.removeOrders(mCurrentExportID);
                 ShowData();
             }
             else if (edit_btn.Visible == false)
