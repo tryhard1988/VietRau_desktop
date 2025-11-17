@@ -1,5 +1,7 @@
-﻿using RauViet.classes;
+﻿using Microsoft.VisualBasic.Devices;
+using RauViet.classes;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.Linq;
@@ -17,7 +19,7 @@ namespace RauViet.ui
         public ProductList()
         {
             InitializeComponent();
-
+            this.KeyPreview = true;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Dock = DockStyle.Fill;
 
@@ -30,7 +32,6 @@ namespace RauViet.ui
 
             newCustomerBtn.Click += newBtn_Click;
             LuuThayDoiBtn.Click += saveBtn_Click;
-            delete_btn.Click += deleteBtn_Click;
             dataGV.SelectionChanged += this.dataGV_CellClick;
             priceCNF_tb.TextChanged += priceCNF_tb_TextChanged;
             search_tb.TextChanged += search_txt_TextChanged;
@@ -40,8 +41,33 @@ namespace RauViet.ui
 
             edit_btn.Click += Edit_btn_Click;
             readOnly_btn.Click += ReadOnly_btn_Click;
-            
+            this.KeyDown += ProductList_KeyDown;
 
+        }
+
+        private void ProductList_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.F5)
+            {
+                SQLStore.Instance.removeProductpacking();
+                SQLStore.Instance.removeProductSKU();
+                ShowData();
+            }
+            else if (!isNewState && !edit_btn.Visible)
+            {
+                if (e.KeyCode == Keys.Delete)
+                {
+                    Control ctrl = this.ActiveControl;
+
+                    if (ctrl is TextBox || ctrl is RichTextBox ||
+                        (ctrl is DataGridView dgv && dgv.CurrentCell != null && dgv.IsCurrentCellInEditMode))
+                    {
+                        return; // không xử lý Delete
+                    }
+
+                    deletePackingProduct();
+                }
+            }
         }
 
         public async void ShowData()
@@ -52,13 +78,9 @@ namespace RauViet.ui
 
             try
             {
-                var skuTask = SQLStore.Instance.getProductSKUAsync();
-                var packingTask = SQLStore.Instance.getProductpackingAsync();
-
-                await Task.WhenAll(skuTask, packingTask);
-
-                mSKU_dt = skuTask.Result;
-                packing_dt = packingTask.Result;
+                var parameters = new Dictionary<string, object> { { "IsActive", true } };
+                mSKU_dt = await SQLStore.Instance.getProductSKUAsync(parameters);
+                 packing_dt = await SQLStore.Instance.getProductpackingAsync();
 
                 foreach (DataColumn col in packing_dt.Columns)
                     col.ReadOnly = false;
@@ -77,9 +99,13 @@ namespace RauViet.ui
                 
 
                 dataGV.DataSource = packing_dt;
+                DataView dv = packing_dt.DefaultView;
+                dv.RowFilter = $"IsActive_SKU = true";
+
                 dataGV.Columns["ProductPackingID"].Visible = false;
-               // dataGV.Columns["Amount"].Visible = false;
-               // dataGV.Columns["Packing"].Visible = false;
+                dataGV.Columns["IsActive_SKU"].Visible = false;
+                // dataGV.Columns["Amount"].Visible = false;
+                // dataGV.Columns["Packing"].Visible = false;
                 dataGV.Columns["PriceCNF"].Visible = false;
                 dataGV.Columns["SKU"].Visible = false; 
                 dataGV.Columns["ProductNameVN_NoSign"].Visible = false;
@@ -94,6 +120,7 @@ namespace RauViet.ui
                 dataGV.Columns["BarCodeEAN13"].HeaderText = "Bar code EAN13";
                 dataGV.Columns["ArtNr"].HeaderText = "Art.Nr";
                 dataGV.Columns["Priority"].HeaderText = "Ưu Tiên";
+                dataGV.Columns["IsActive"].HeaderText = "";
 
 
                 dataGV.Columns["PLU"].Width = 50;
@@ -104,6 +131,7 @@ namespace RauViet.ui
                 dataGV.Columns["Name_VN"].Width = 200;
                 dataGV.Columns["Name_EN"].Width = 200;
                 dataGV.Columns["Priority"].Width = 50;
+                dataGV.Columns["IsActive"].Width = 30;
 
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
@@ -194,7 +222,7 @@ namespace RauViet.ui
             updateDataTextBoxFlowSKU();            
         }
 
-        private async void updateProductPacking(int ID, int SKU, string BarCode, string PLU, int? Amount, string packing, string barCodeEAN13, string artNr, string GGN)
+        private async void updateProductPacking(int ID, int SKU, string BarCode, string PLU, int? Amount, string packing, string barCodeEAN13, string artNr, string GGN, bool isActive)
         {
             foreach (DataRow row in packing_dt.Rows)
             {
@@ -206,7 +234,7 @@ namespace RauViet.ui
                     {
                         try
                         {      
-                            bool isScussess = await SQLManager.Instance.updateProductpackingAsync(ID, SKU, BarCode, PLU, Amount, packing, barCodeEAN13, artNr, GGN);
+                            bool isScussess = await SQLManager.Instance.updateProductpackingAsync(ID, SKU, BarCode, PLU, Amount, packing, barCodeEAN13, artNr, GGN, isActive);
 
                             if (isScussess == true)
                             {
@@ -243,6 +271,7 @@ namespace RauViet.ui
                                 row["ArtNr"] = artNr;
                                 row["GGN"] = GGN;
                                 row["PackingName"] = $"{resultAmount} {packing}";
+                                row["IsActive"] = isActive;
                                 if (Amount != null)
                                     row["Amount"] = Amount;
                                 else
@@ -304,6 +333,8 @@ namespace RauViet.ui
                         drToAdd["BarCodeEAN13"] = barCodeEAN13;
                         drToAdd["ArtNr"] = artNr;
                         drToAdd["GGN"] = GGN;
+                        drToAdd["IsActive"] = true;
+                        drToAdd["IsActive_SKU"] = true;
 
                         drToAdd["PackingName"] = $"{resultAmount} {packing}";
 
@@ -374,12 +405,12 @@ namespace RauViet.ui
             int? amount = string.IsNullOrWhiteSpace(amount_tb.Text)? (int?)null : int.Parse(amount_tb.Text);
 
             if (id_tb.Text.Length != 0)
-                updateProductPacking(int.Parse(id_tb.Text), sku, barCode_tb.Text, PLU_tb.Text, amount, packingStr, barCodeEAN13_tb.Text, artNr_tb.Text, GGN_tb.Text);
+                updateProductPacking(int.Parse(id_tb.Text), sku, barCode_tb.Text, PLU_tb.Text, amount, packingStr, barCodeEAN13_tb.Text, artNr_tb.Text, GGN_tb.Text, isActive_cb.Checked);
             else
                 createNewProducrpacking(sku, barCode_tb.Text, PLU_tb.Text, amount, packingStr, barCodeEAN13_tb.Text, artNr_tb.Text, GGN_tb.Text);
 
         }
-        private async void deleteBtn_Click(object sender, EventArgs e)
+        private async void deletePackingProduct()
         {
             string id = id_tb.Text;
 
@@ -445,10 +476,11 @@ namespace RauViet.ui
             newCustomerBtn.Visible = false;
             readOnly_btn.Visible = true;
             LuuThayDoiBtn.Visible = true;
-            delete_btn.Visible = false;
             isNewState = true;
             LuuThayDoiBtn.Text = "Lưu Mới";
+            sku_cbb.Enabled = true;
             RightUiReadOnly(false);
+            isActive_cb.Visible = false;
         }
 
         private void ReadOnly_btn_Click(object sender, EventArgs e)
@@ -457,26 +489,26 @@ namespace RauViet.ui
             newCustomerBtn.Visible = true;
             readOnly_btn.Visible = false;
             LuuThayDoiBtn.Visible = false;
-            delete_btn.Visible = false;
             info_gb.BackColor = Color.DarkGray;
             isNewState = false;
+            sku_cbb.Enabled = false;
             RightUiReadOnly(true);
-
+            isActive_cb.Visible = true;
             if (dataGV.SelectedRows.Count > 0)
                 updateDataTextBoxFlowSKU();
         }
 
         private void Edit_btn_Click(object sender, EventArgs e)
         {
+            sku_cbb.Enabled = false;
             edit_btn.Visible = false;
             newCustomerBtn.Visible = false;
             readOnly_btn.Visible = true;
             LuuThayDoiBtn.Visible = true;
-            delete_btn.Visible = true;
             info_gb.BackColor = edit_btn.BackColor;
             isNewState = false;
             LuuThayDoiBtn.Text = "Lưu C.Sửa";
-            RightUiReadOnly(false);
+            isActive_cb.Enabled = true;
         }
 
         private void sku_cbb_SelectedIndexChanged(object sender, EventArgs e)
@@ -552,6 +584,7 @@ namespace RauViet.ui
                     string barCodeEAN13 = cells["BarCodeEAN13"].Value.ToString();
                     string artNr = cells["ArtNr"].Value.ToString();
                     string GGN = cells["GGN"].Value.ToString();
+                    bool isActive = Convert.ToBoolean(cells["IsActive"].Value);
 
                     if (!sku_cbb.Items.Cast<object>().Any(i => ((DataRowView)i)["SKU"].ToString() == SKU))
                     {
@@ -573,6 +606,7 @@ namespace RauViet.ui
                     barCodeEAN13_tb.Text = barCodeEAN13;
                     artNr_tb.Text = artNr;
                     GGN_tb.Text = GGN;
+                    isActive_cb.Checked = isActive;
 
                     packing_panel.Controls.Clear();
 
@@ -639,20 +673,20 @@ namespace RauViet.ui
            // if (dt == null) return;
 
             DataView dv = packing_dt.DefaultView;
-            dv.RowFilter = $"[ProductNameVN_NoSign] LIKE '%{keyword}%'";
+            dv.RowFilter = $"[ProductNameVN_NoSign] LIKE '%{keyword}%' AND IsActive_SKU = true";
 
         }
 
         private void RightUiReadOnly(bool isReadOnly)
         {
             barCodeEAN13_tb.ReadOnly = isReadOnly;
-            PLU_tb.ReadOnly = isReadOnly;
-            sku_cbb.Enabled = !isReadOnly;
+            PLU_tb.ReadOnly = isReadOnly;            
             packing_panel.Enabled = !isReadOnly;
             amount_tb.ReadOnly = isReadOnly;
             barCode_tb.ReadOnly = isReadOnly;
             artNr_tb.ReadOnly = isReadOnly;
             GGN_tb.ReadOnly = isReadOnly;
+            isActive_cb.Enabled = !isReadOnly;
         }
     }
 }

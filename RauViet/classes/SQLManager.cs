@@ -166,7 +166,7 @@ namespace RauViet.classes
         }
 
         public async Task<bool> updateProductSKUAsync(int SKU, string ProductNameVN, string ProductNameEN, string PackingType, string Package,
-            string PackingList, string BotanicalName, decimal PriceCNF, int priority, string plantingareaCode, string LOTCodeHeader)
+            string PackingList, string BotanicalName, decimal PriceCNF, int priority, string plantingareaCode, string LOTCodeHeader, bool isActive)
         {
             string query = @"UPDATE ProductSKU SET 
                                 ProductNameVN=@ProductNameVN, 
@@ -178,6 +178,7 @@ namespace RauViet.classes
                                 PriceCNF=@PriceCNF,
                                 PlantingAreaCode=@PlantingAreaCode,
                                 LOTCodeHeader=@LOTCodeHeader,
+                                IsActive=@IsActive,
                                 Priority=@Priority
                              WHERE SKU=@SKU";
             try
@@ -198,6 +199,7 @@ namespace RauViet.classes
                         cmd.Parameters.AddWithValue("@PlantingAreaCode", plantingareaCode);
                         cmd.Parameters.AddWithValue("@LOTCodeHeader", LOTCodeHeader);
                         cmd.Parameters.AddWithValue("@Priority", priority);
+                        cmd.Parameters.AddWithValue("@IsActive", isActive);
                         await cmd.ExecuteNonQueryAsync();
                     }
                 }
@@ -286,6 +288,7 @@ namespace RauViet.classes
                         pk.ArtNr,
                         pk.GGN,
                         pk.Amount,
+                        pk.IsActive,
                         pk.ProductPackingID
                     FROM ProductSKU p
                     JOIN ProductPacking pk ON p.SKU = pk.SKU;";
@@ -298,7 +301,7 @@ namespace RauViet.classes
             return dt;
         }
 
-        public async Task<bool> updateProductpackingAsync(int ID, int SKU, string BarCode, string PLU, int? Amount, string packing, string barCodeEAN13, string artNr, string GGN)
+        public async Task<bool> updateProductpackingAsync(int ID, int SKU, string BarCode, string PLU, int? Amount, string packing, string barCodeEAN13, string artNr, string GGN, bool isActive)
         {
             string query = @"UPDATE ProductPacking SET
                                 SKU=@SKU, 
@@ -308,6 +311,7 @@ namespace RauViet.classes
                                 packing=@packing, 
                                 BarCodeEAN13=@BarCodeEAN13, 
                                 ArtNr=@ArtNr, 
+                                IsActive=@IsActive, 
                                 GGN=@GGN
                              WHERE ProductPackingID=@ID";
             try
@@ -326,6 +330,7 @@ namespace RauViet.classes
                         cmd.Parameters.AddWithValue("@BarCodeEAN13", barCodeEAN13);
                         cmd.Parameters.AddWithValue("@ArtNr", artNr);
                         cmd.Parameters.AddWithValue("@GGN", GGN);
+                        cmd.Parameters.AddWithValue("@IsActive", isActive);
                         await cmd.ExecuteNonQueryAsync();
                     }
                 }
@@ -799,7 +804,7 @@ namespace RauViet.classes
             }
         }
 
-        public async Task<DataTable> getOrdersDKKDAsync()
+        public async Task<DataTable> getOrdersDKKDAsync(int exportCodeID)
         {
             DataTable dt = new DataTable();
             using (SqlConnection con = new SqlConnection(ql_kho_conStr))
@@ -809,7 +814,7 @@ namespace RauViet.classes
                 using (SqlCommand cmd = new SqlCommand("sp_GetOrdersDKKD", con))
                 {
                     cmd.CommandType = CommandType.StoredProcedure; // <--- Gọi SP
-
+                    cmd.Parameters.AddWithValue("@ExportCodeID", exportCodeID);
                     using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                     {
                         dt.Load(reader);
@@ -819,7 +824,7 @@ namespace RauViet.classes
             return dt;
         }
 
-        public async Task<DataTable> getOrdersChotPhytosync()
+        public async Task<DataTable> getOrdersChotPhytosync(int exportCodeID)
         {
             DataTable dt = new DataTable();
             using (SqlConnection con = new SqlConnection(ql_kho_conStr))
@@ -829,7 +834,7 @@ namespace RauViet.classes
                 using (SqlCommand cmd = new SqlCommand("sp_GetOrdersChotPhyto", con))
                 {
                     cmd.CommandType = CommandType.StoredProcedure; // <--- Gọi SP
-
+                    cmd.Parameters.AddWithValue("@ExportCodeID", exportCodeID);
                     using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                     {
                         dt.Load(reader);
@@ -840,7 +845,7 @@ namespace RauViet.classes
         }
 
 
-        public async Task<DataTable> getOrdersPhytoAsync()
+        public async Task<DataTable> getOrdersPhytoAsync(int exportCodeID)
         {
             DataTable dt = new DataTable();
             using (SqlConnection con = new SqlConnection(ql_kho_conStr))
@@ -849,7 +854,7 @@ namespace RauViet.classes
                 using (SqlCommand cmd = new SqlCommand("SP_GetOrdersPhyto", con))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
-
+                    cmd.Parameters.AddWithValue("@ExportCodeID", exportCodeID);
                     using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                     {
                         dt.Load(reader);
@@ -859,7 +864,7 @@ namespace RauViet.classes
             return dt;
         }
 
-        public async Task<DataTable> getOrdersINVOICEAsync()
+        public async Task<DataTable> getOrdersINVOICEAsync(int exportCodeID)
         {
             DataTable dt = new DataTable();
             using (SqlConnection con = new SqlConnection(ql_kho_conStr))
@@ -869,6 +874,7 @@ namespace RauViet.classes
                 using (SqlCommand cmd = new SqlCommand("SP_OrdersINVOICE", con))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@ExportCodeID", exportCodeID);
                     using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                     {
                         dt.Load(reader);
@@ -878,7 +884,7 @@ namespace RauViet.classes
             return dt;
         }
 
-        public async Task<DataTable> GetCustomersOrdersAsync()
+        public async Task<DataTable> GetCustomersOrdersAsync(int exportCodeID)
         {
             DataTable dt = new DataTable();
 
@@ -889,7 +895,7 @@ namespace RauViet.classes
                 using (SqlCommand cmd = new SqlCommand("SP_CustomersOrders", con))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
-
+                    cmd.Parameters.AddWithValue("@ExportCodeID", exportCodeID);
                     using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                     {
                         dt.Load(reader);
@@ -900,8 +906,7 @@ namespace RauViet.classes
             return dt;
         }
 
-
-        public async Task<DataTable> GetExportCartonCountsAsync()
+        public async Task<DataTable> GetExportCartonCountsAsync(int exportCodeID)
         {
             DataTable dt = new DataTable();
             using (SqlConnection con = new SqlConnection(ql_kho_conStr))
@@ -911,7 +916,7 @@ namespace RauViet.classes
                 using (SqlCommand cmd = new SqlCommand("SP_GetCartonCountByExportCode", con))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
-
+                    cmd.Parameters.AddWithValue("@ExportCodeID", exportCodeID);
                     using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                     {
                         dt.Load(reader);
@@ -995,7 +1000,7 @@ namespace RauViet.classes
             }
         }
 
-        public async Task<DataTable> GetDetailPackingTotalByExportCode_incompleteAsync()
+        public async Task<DataTable> GetDetailPackingTotalAsync(int exportCodeID)
         {
             DataTable dt = new DataTable();
 
@@ -1005,7 +1010,7 @@ namespace RauViet.classes
                 using (SqlCommand cmd = new SqlCommand("SP_DetailPackingTotalByExportCode_incomplete", con))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
-
+                    cmd.Parameters.AddWithValue("@ExportCodeID", exportCodeID);
                     using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                     {
                         dt.Load(reader);
@@ -1017,7 +1022,7 @@ namespace RauViet.classes
         }
 
 
-        public async Task<DataTable> GetCustomerDetailPacking_incompleteAsync()
+        public async Task<DataTable> GetCustomerDetailPackingAsync(int exportCodeID)
         {
             DataTable dt = new DataTable();
 
@@ -1028,7 +1033,7 @@ namespace RauViet.classes
                 using (SqlCommand cmd = new SqlCommand("SP_CustomerDetailPacking_incomplete", con))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
-
+                    cmd.Parameters.AddWithValue("@ExportCodeID", exportCodeID);
                     using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                     {
                         dt.Load(reader);

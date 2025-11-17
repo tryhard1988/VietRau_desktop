@@ -187,6 +187,7 @@ namespace RauViet.ui
                 cusProduct_GV.Columns["OrderPackingPriceCNF"].Visible = false;
                 cusProduct_GV.Columns["packing"].Visible = false;
                 cusProduct_GV.Columns["Amount"].Visible = false;
+                
 
 
                 cusProduct_GV.Columns["ProductNameVN"].HeaderText = "Tên Sản Phẩm";
@@ -234,6 +235,7 @@ namespace RauViet.ui
                 dataGV.Columns["OrderId"].HeaderText = "ID";
 
                 //dataGV.Columns["OrderId"].Visible = false;
+                
                 dataGV.Columns["CustomerID"].Visible = false;
                 dataGV.Columns["Search_NoSign"].Visible = false;
                 dataGV.Columns["ProductPackingID"].Visible = false;
@@ -352,7 +354,8 @@ namespace RauViet.ui
 
                 // Filter bằng LINQ thay vì RowFilter
                 var filtered = mProduct_dt.AsEnumerable()
-                    .Where(r => r["ProductNameVN_NoSign"].ToString().Contains(plain))
+                    .Where(r =>r.Field<bool>("IsActive") == true &&
+                               r["ProductNameVN_NoSign"].ToString().Contains(plain))
                     .OrderBy(r => r.Field<int>("Priority"));
 
                 System.Data.DataTable temp;
@@ -409,7 +412,10 @@ namespace RauViet.ui
 
             // Lọc packing theo SKU
             DataView dv = new DataView(mProductPacking_dt);
-            dv.RowFilter = $"SKU = '{selectedSKU}'";
+            if(!isNewState)
+                dv.RowFilter = $"SKU = '{selectedSKU}'";
+            else
+                dv.RowFilter = $"SKU = '{selectedSKU}' AND IsActive = true";
 
             packing_ccb.DataSource = dv;
             packing_ccb.DisplayMember = "PackingName"; // cột bạn muốn hiển thị
@@ -936,16 +942,15 @@ namespace RauViet.ui
         {
             orderId_tb.Text = "";
             PCSOther_tb.Text = "";
-            netWeight_tb.Text= "";           
-
+            netWeight_tb.Text= "";
+            isNewState = true;
             product_ccb_SelectedIndexChanged(null, null);
 
             info_gb.BackColor = newCustomerBtn.BackColor;
             edit_btn.Visible = false;
             newCustomerBtn.Visible = false;
             readOnly_btn.Visible = true;
-            LuuThayDoiBtn.Visible = true;
-            isNewState = true;
+            LuuThayDoiBtn.Visible = true;            
             cusProduct_GV.Visible = canUseMode2 == false ? false : true;
             LuuThayDoiBtn.Text = "Lưu Mới";            
             setRightUIReadOnly(false);
@@ -974,12 +979,17 @@ namespace RauViet.ui
 
         private void Edit_btn_Click(object sender, EventArgs e)
         {
+            isNewState = false;
+
+            product_ccb_SelectedIndexChanged(null, null);
+
+
             edit_btn.Visible = false;
             newCustomerBtn.Visible = false;
             readOnly_btn.Visible = true;
             LuuThayDoiBtn.Visible = true;
             info_gb.BackColor = edit_btn.BackColor;
-            isNewState = false;
+            
             cusProduct_GV.Visible = canUseMode2 == false ? false : true;
             LuuThayDoiBtn.Text = "Lưu C.Sửa";
             setRightUIReadOnly(false);

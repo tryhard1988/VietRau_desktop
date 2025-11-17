@@ -14,10 +14,11 @@ namespace RauViet.ui
     {
         private LoadingOverlay loadingOverlay;
         DataTable mExportCode_dt, mOrdersTotal_dt;
+        int mCurrentExportID = -1;
         public DetailPackingTotal()
         {
             InitializeComponent();
-
+            this.KeyPreview = true;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Dock = DockStyle.Fill;
 
@@ -28,12 +29,23 @@ namespace RauViet.ui
             status_lb.Text = "";
 
 
-            LuuThayDoiBtn.Click += saveBtn_Click;          
-
-            exportCode_cbb.SelectedIndexChanged += exportCode_search_cbb_SelectedIndexChanged;
+            LuuThayDoiBtn.Click += saveBtn_Click;
+            this.KeyDown += DetailPackingTotal_KeyDown;
         }
 
-        
+        private void DetailPackingTotal_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.F5)
+            {
+                if (mCurrentExportID <= 0)
+                {
+                    return;
+                }
+
+                SQLStore.Instance.removeDetailPackingTotal(mCurrentExportID);
+                ShowData();
+            }
+        }
 
         public async void ShowData()
         {
@@ -44,122 +56,21 @@ namespace RauViet.ui
 
             try
             {
-                var ordersPackingTask = SQLManager.Instance.GetDetailPackingTotalByExportCode_incompleteAsync();
                 string[] keepColumns = { "ExportCodeID", "ExportCode" , "ExportDate" };
                 var parameters = new Dictionary<string, object> { { "Complete", false } };
-                var exportCodeTask = SQLStore.Instance.getExportCodesAsync(keepColumns, parameters);
-
-                await Task.WhenAll(ordersPackingTask, exportCodeTask);
-
-                mExportCode_dt = exportCodeTask.Result;
-                mOrdersTotal_dt = ordersPackingTask.Result;
-
-                mOrdersTotal_dt.Columns.Add(new DataColumn("No", typeof(string)));
-
-                int count = 1;
-                foreach (DataRow dr in mOrdersTotal_dt.Rows)
+                mExportCode_dt = await SQLStore.Instance.getExportCodesAsync(keepColumns, parameters);
+                if (mCurrentExportID <= 0 && mExportCode_dt.Rows.Count > 0)
                 {
-                    dr["No"] = count++;
-
-                    var cellValue = dr["Packing"]?.ToString();
-                    var PCS = dr["PCSReal"]?.ToString();
-
-                    dr.Table.Columns["Packing"].ReadOnly = false; // mở khóa tạm
-                    dr.Table.Columns["PCSReal"].ReadOnly = false;
-                    dr.Table.Columns["CartonNo"].ReadOnly = false;
-
-                    string cartonNo = dr["CartonNo"].ToString();
-
-                    // 1️⃣ Tách chuỗi → List<int> (an toàn, bỏ ký tự lỗi)
-                    List<int> cartonNoList = (cartonNo ?? "")
-                        .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-                        .Select(s =>
-                        {
-                            int n;
-                            return int.TryParse(s.Trim(), out n) ? n : (int?)null;
-                        })
-                        .Where(n => n.HasValue)
-                        .Select(n => n.Value)
-                        .ToList();
-
-                    cartonNoList.Sort();
-                    dr["CartonNo"] = string.Join(", ", cartonNoList);
-
-                    if (string.IsNullOrWhiteSpace(PCS))
-                    {
-                        dr["PCSReal"] = Convert.ToInt32(0);
-                    }
-                    
-                    if (!string.IsNullOrWhiteSpace(cellValue))
-                    {
-                        // Tách số và phần đơn vị
-                        string numberPart = "";
-                        string unitPart = "";
-
-                        int firstLetterIndex = -1;
-                        for (int i = 0; i < cellValue.Length; i++)
-                        {
-                            if (char.IsLetter(cellValue[i]))
-                            {
-                                firstLetterIndex = i;
-                                break;
-                            }
-                        }
-
-                        if (firstLetterIndex >= 0)
-                        {
-                            numberPart = cellValue.Substring(0, firstLetterIndex).Trim();
-                            unitPart = cellValue.Substring(firstLetterIndex).Trim();
-                        }
-                        else
-                        {
-                            numberPart = cellValue.Trim();
-                            unitPart = "";
-                        }
-
-                        // Chuyển số sang decimal
-                        if (decimal.TryParse(numberPart, out decimal value))
-                        {
-                            if (value == 0)
-                            {
-                                dr["Packing"] = unitPart.CompareTo("weight") == 0 ? "weight" : "";
-                            }
-                            else
-                            {
-                                string newNumber = value.ToString("0.##");
-                                dr["Packing"] = string.IsNullOrEmpty(unitPart) ? newNumber : $"{newNumber} {unitPart}";                    // gán giá trị mới
-                                                                                                                                           // trả về trạng thái cũ
-
-                            }
-                        }
-                        else
-                        {
-                            dr["Packing"] = ""; // Nếu không parse được, để trống
-                        }
-                    }
-                    else
-                    {
-                        dr["Packing"] = ""; // Nếu cell null hoặc rỗng
-                    }
-                    dr.Table.Columns["Packing"].ReadOnly = true;
-                    dr.Table.Columns["PCSReal"].ReadOnly = true;
+                    mCurrentExportID = Convert.ToInt32(mExportCode_dt.AsEnumerable()
+                                   .Max(r => r.Field<int>("ExportCodeID")));
                 }
 
-                count = 0;
-                mOrdersTotal_dt.Columns["No"].SetOrdinal(count++);
-                mOrdersTotal_dt.Columns["CartonNo"].SetOrdinal(count++);
-                mOrdersTotal_dt.Columns["ProductNameEN"].SetOrdinal(count++);
-                mOrdersTotal_dt.Columns["ProductNameVN"].SetOrdinal(count++);
-                mOrdersTotal_dt.Columns["LOTCodeComplete"].SetOrdinal(count++);
-                mOrdersTotal_dt.Columns["PLU"].SetOrdinal(count++);
-                mOrdersTotal_dt.Columns["Package"].SetOrdinal(count++);
-                mOrdersTotal_dt.Columns["NWReal"].SetOrdinal(count++);
-                mOrdersTotal_dt.Columns["packing"].SetOrdinal(count++);
-                mOrdersTotal_dt.Columns["PCSReal"].SetOrdinal(count++);
-                mOrdersTotal_dt.Columns["CustomerCarton"].SetOrdinal(count++);
-                dataGV.DataSource = mOrdersTotal_dt;
+                mOrdersTotal_dt = await SQLStore.Instance.GetDetailPackingTotalAsync(mCurrentExportID);
+                DataView dv = new DataView(mOrdersTotal_dt);
+                dataGV.DataSource = dv;
 
                 dataGV.Columns["ExportCodeID"].Visible = false;
+
 
                 dataGV.Columns["CartonNo"].HeaderText = "Carton No";
                 dataGV.Columns["ProductNameEN"].HeaderText = "English name";
@@ -190,16 +101,12 @@ namespace RauViet.ui
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
+                exportCode_cbb.SelectedIndexChanged -= exportCode_search_cbb_SelectedIndexChanged;
                 exportCode_cbb.DataSource = mExportCode_dt;
                 exportCode_cbb.DisplayMember = "ExportCode";  // hiển thị tên
                 exportCode_cbb.ValueMember = "ExportCodeID";
-
-                if (mExportCode_dt.Rows.Count > 0)
-                {
-                    int maxID = Convert.ToInt32(mExportCode_dt.AsEnumerable()
-                                   .Max(r => r.Field<int>("ExportCodeID")));
-                    exportCode_cbb.SelectedValue = maxID;
-                }
+                exportCode_cbb.SelectedValue = mCurrentExportID;
+                exportCode_cbb.SelectedIndexChanged += exportCode_search_cbb_SelectedIndexChanged;
 
                 dataGV.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
                 dataGV.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
@@ -217,27 +124,16 @@ namespace RauViet.ui
             }
         }
 
-        private void exportCode_search_cbb_SelectedIndexChanged(object sender, EventArgs e)
+        private async void exportCode_search_cbb_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (mOrdersTotal_dt == null || mExportCode_dt.Rows.Count == 0)
+            if (!int.TryParse(exportCode_cbb.SelectedValue.ToString(), out int exportCodeId))
                 return;
 
-            string selectedExportCode = ((DataRowView)exportCode_cbb.SelectedItem)["ExportCodeID"].ToString();
+            mCurrentExportID = exportCodeId;
 
-            if (!string.IsNullOrEmpty(selectedExportCode))
-            {
-                // Tạo DataView để filter
-                DataView dv = new DataView(mOrdersTotal_dt);
-                dv.RowFilter = $"ExportCodeID = '{selectedExportCode}'";
-
-                // Gán lại cho DataGridView
-                dataGV.DataSource = dv;
-            }
-            else
-            {
-                // Nếu chưa chọn gì thì hiển thị toàn bộ
-                dataGV.DataSource = mOrdersTotal_dt;
-            }
+            mOrdersTotal_dt = await SQLStore.Instance.GetDetailPackingTotalAsync(mCurrentExportID);
+            DataView dv = new DataView(mOrdersTotal_dt);
+            dataGV.DataSource = dv;
         }
      
         private async void saveBtn_Click(object sender, EventArgs e)
@@ -547,17 +443,17 @@ namespace RauViet.ui
                     }
 
                     ws.Columns().AdjustToContents();
-                    ws.Column(1).Width = 3;
-                    ws.Column(2).Width = 15;
-                    ws.Column(3).Width += 3;
-                    ws.Column(4).Width += 3;
-                    ws.Column(5).Width += 3;
-                    ws.Column(6).Width += 3;
-                    ws.Column(7).Width = 7;
-                    ws.Column(8).Width = 10;
+                    ws.Column(1).Width = 4;
+                    ws.Column(2).Width = 12;
+                    ws.Column(3).Width = 20;
+                    ws.Column(4).Width = 20;
+                    ws.Column(5).Width = 11;
+                    ws.Column(6).Width = 6;
+                    ws.Column(7).Width = 6.5;
+                    ws.Column(8).Width = 8;
                     ws.Column(9).Width = 7;
-                    ws.Column(10).Width = 7;
-                    ws.Column(11).Width = 30;
+                    ws.Column(10).Width = 5.3;
+                    ws.Column(11).Width = 25;
 
                     ws.Row(1).Height += 5;
                     ws.Row(4).Height += 5;

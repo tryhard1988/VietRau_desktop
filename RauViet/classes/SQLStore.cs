@@ -9,6 +9,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.IO.Packaging;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
@@ -57,6 +58,14 @@ namespace RauViet.classes
         Dictionary<int, DataTable> mReportExportByYears;
         Dictionary<int, DataTable> mOrdersTotals;
         Dictionary<int, DataTable> mLOTCodes;
+        Dictionary<int, DataTable> mOrdersDKKDs;
+        Dictionary<int, DataTable> mCustomerDetailPackings;
+        Dictionary<int, DataTable> mPhytos;
+        Dictionary<int, DataTable> mPhytoChots;
+        Dictionary<int, DataTable> mOrderInvoice;
+        Dictionary<int, DataTable> mOrderCusInvoices;
+        Dictionary<int, DataTable> mOrderCartonInvoices;
+        Dictionary<int, DataTable> DetailPackingTotals;
         private SQLStore() { }
 
         public static SQLStore Instance
@@ -80,6 +89,14 @@ namespace RauViet.classes
                 mOrderLists = new Dictionary<int, DataTable>();
                 mOrdersTotals = new Dictionary<int, DataTable>();
                 mLOTCodes = new Dictionary<int, DataTable>();
+                mOrdersDKKDs = new Dictionary<int, DataTable>();
+                mCustomerDetailPackings = new Dictionary<int, DataTable>();
+                mPhytos = new Dictionary<int, DataTable>();
+                mPhytoChots = new Dictionary<int, DataTable>();
+                mOrderInvoice = new Dictionary<int, DataTable>();
+                mOrderCusInvoices = new Dictionary<int, DataTable>();
+                mOrderCartonInvoices = new Dictionary<int, DataTable>();
+                DetailPackingTotals = new Dictionary<int, DataTable>();
 
                 var productSKUTask = SQLManager.Instance.getProductSKUAsync();
                 var productPackingTask = SQLManager.Instance.getProductpackingAsync();
@@ -1426,6 +1443,37 @@ namespace RauViet.classes
             return mProductSKU_dt;
         }
 
+        public async Task<DataTable> getProductSKUAsync(Dictionary<string, object> parameters)
+        {
+            var result = mProductSKU_dt.Clone();
+            IEnumerable<DataRow> filteredRows = mProductSKU_dt.AsEnumerable();
+
+            foreach (var kv in parameters)
+            {
+                string columnName = kv.Key;
+                object value = kv.Value;
+
+                // Kiểm tra tồn tại cột
+                if (mProductSKU_dt.Columns.Contains(columnName))
+                {
+                    filteredRows = filteredRows.Where(row =>
+                    {
+                        var cellValue = row[columnName];
+                        if (cellValue == DBNull.Value) return false;
+                        return cellValue.Equals(value);
+                    });
+                }
+            }
+
+            // Copy dữ liệu đúng
+            foreach (var row in filteredRows)
+            {
+                result.ImportRow(row);   // <--- Quan trọng!
+            }
+
+            return result;
+        }
+
         private void editProductSKUA()
         {
             mProductSKU_dt.Columns.Add("ProductNameVN_NoSign", typeof(string));
@@ -1465,6 +1513,7 @@ namespace RauViet.classes
 
         private void editProductpacking()
         {
+            mProductpacking_dt.Columns.Add(new DataColumn("IsActive_SKU", typeof(bool)));
             mProductpacking_dt.Columns.Add(new DataColumn("PackingName", typeof(string)));
             mProductpacking_dt.Columns.Add("ProductNameVN_NoSign", typeof(string));
 
@@ -1479,6 +1528,7 @@ namespace RauViet.classes
                 int sku = Convert.ToInt32(dr["SKU"]);
                 DataRow proRow = mProductSKU_dt.Select($"SKU = '{sku}'")[0];
 
+                bool isActive_SKU =  Convert.ToBoolean(proRow["IsActive"]);
                 string package = proRow["Package"].ToString();
                 string nameVN = proRow["ProductNameVN"].ToString();
                 string nameEN = proRow["ProductNameEN"].ToString();
@@ -1494,6 +1544,7 @@ namespace RauViet.classes
                 dr["Priority"] = priority;                
                 dr["Amount"] = resultAmount;
                 dr["Package"] = package;
+                dr["IsActive_SKU"] = isActive_SKU;
                 dr["PriceCNF"] = proRow["PriceCNF"].ToString();
 
                 if (package.CompareTo("kg") == 0 && packing.CompareTo("") != 0 && amount > 0)
@@ -1627,6 +1678,10 @@ namespace RauViet.classes
             return result;
         }
 
+        public void removeProductSKUHistory()
+        {
+            mProductSKUHistory_dt = null;
+        }
         public async Task<DataTable> GetProductSKUHistoryAsync()
         {
             if (mProductSKUHistory_dt == null)
@@ -1953,6 +2008,546 @@ namespace RauViet.classes
             dt.Columns["ProductNameVN"].SetOrdinal(0);
             dt.Columns["LotCode"].SetOrdinal(1);
             dt.Columns["LOTCodeComplete"].SetOrdinal(2);
+        }
+
+        public void removeOrdersDKKD(int exportCodeID)
+        {
+            mOrdersDKKDs.Remove(exportCodeID);
+        }
+        public async Task<DataTable> getOrdersDKKDAsync(int exportCodeID)
+        {
+            if (!mOrdersDKKDs.ContainsKey(exportCodeID))
+            {
+                DataTable dt = await SQLManager.Instance.getOrdersDKKDAsync(exportCodeID);
+                editOrdersDKKDA(dt);
+                mOrdersDKKDs[exportCodeID] = dt;
+            }
+            return mOrdersDKKDs[exportCodeID];
+        }
+
+        private void editOrdersDKKDA(DataTable dt)
+        {
+            dt.Columns.Add(new DataColumn("No", typeof(int)));
+
+            int count = 1;
+            foreach (DataRow dr in dt.Rows)
+            {
+                dr["No"] = count++;
+
+                string productNameVN = dr["ProductNameVN"].ToString();
+                // Xóa nội dung trong ngoặc đơn và khoảng trắng dư
+                productNameVN = Regex.Replace(productNameVN, @"\s*\([^)]*\)", "").Trim();
+                dr["ProductNameVN"] = productNameVN;
+
+                string productNameEN = dr["ProductNameEN"].ToString();
+                // Xóa nội dung trong ngoặc đơn và khoảng trắng dư
+                productNameEN = Regex.Replace(productNameEN, @"\s*\([^)]*\)", "").Trim();
+                dr["ProductNameEN"] = productNameEN;
+            }
+
+            dt.Columns.Add(new DataColumn("Packing", typeof(string)));
+            dt.Columns.Add(new DataColumn("PCS", typeof(string)));
+            dt.Columns.Add(new DataColumn("PriceCHF", typeof(string)));
+            dt.Columns.Add(new DataColumn("AmountCHF", typeof(string)));
+
+            count = 0;
+            dt.Columns["No"].SetOrdinal(count++);
+            dt.Columns["ProductNameEN"].SetOrdinal(count++);
+            dt.Columns["ProductNameVN"].SetOrdinal(count++);
+            dt.Columns["BotanicalName"].SetOrdinal(count++);
+            dt.Columns["NWOther"].SetOrdinal(count++);
+            dt.Columns["Packing"].SetOrdinal(count++);
+            dt.Columns["PCS"].SetOrdinal(count++);
+            dt.Columns["PriceCHF"].SetOrdinal(count++);
+            dt.Columns["AmountCHF"].SetOrdinal(count++);
+        }
+
+        public void removeCustomerDetailPacking(int exportCodeID)
+        {
+            mCustomerDetailPackings.Remove(exportCodeID);
+        }
+        public async Task<DataTable> GetCustomerDetailPackingAsync(int exportCodeID)
+        {
+            if (!mCustomerDetailPackings.ContainsKey(exportCodeID))
+            {
+                DataTable dt = await SQLManager.Instance.GetCustomerDetailPackingAsync(exportCodeID);
+                editCustomerDetailPacking(dt);
+                mCustomerDetailPackings[exportCodeID] = dt;
+            }
+            return mCustomerDetailPackings[exportCodeID];
+        }
+
+        private void editCustomerDetailPacking(DataTable data)
+        {
+            data.Columns.Add(new DataColumn("No", typeof(string)));
+            data.Columns.Add(new DataColumn("AmountPacking", typeof(string)));
+            data.Columns["PCSReal"].ReadOnly = false;
+            data.Columns["CartonNo"].ReadOnly = false;
+            int count = 1;
+            foreach (DataRow dr in data.Rows)
+            {
+                dr["No"] = count++;
+
+                decimal amount = dr["Amount"] != DBNull.Value ? Convert.ToDecimal(dr["Amount"]) : 0;
+                string package = dr["Package"].ToString();
+                string packing = dr["packing"].ToString();
+                string productNameVN = dr["ProductNameVN"].ToString();
+                string productNameEN = dr["ProductNameEN"].ToString();
+                string cartonNo = dr["CartonNo"].ToString();
+
+                // 1️⃣ Tách chuỗi → List<int> (an toàn, bỏ ký tự lỗi)
+                List<int> cartonNoList = (cartonNo ?? "")
+                    .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(s =>
+                    {
+                        int n;
+                        return int.TryParse(s.Trim(), out n) ? n : (int?)null;
+                    })
+                    .Where(n => n.HasValue)
+                    .Select(n => n.Value)
+                    .ToList();
+
+                cartonNoList.Sort();
+                dr["CartonNo"] = string.Join(", ", cartonNoList);
+
+                if (package.CompareTo("kg") == 0 && packing.CompareTo("") != 0 && amount > 0)
+                {
+                    string amountStr = amount.ToString("0.##");
+                    dr["ProductNameVN"] = $"{productNameVN} {amountStr} {packing}";
+                    dr["ProductNameEN"] = $"{productNameEN} {amountStr} {packing}";
+                }
+
+                if (package.CompareTo("weight") == 0)
+                {
+                    dr["AmountPacking"] = packing;
+                    dr["PCSReal"] = Convert.ToInt32(0);
+
+                }
+                else if (packing.CompareTo("") != 0 && amount > 0)
+                {
+                    string amountStr = amount.ToString("0.##");
+                    dr["AmountPacking"] = $"{amountStr} {packing}";
+                }
+            }
+
+            count = 0;
+            data.Columns["No"].SetOrdinal(count++);
+            data.Columns["FullName"].SetOrdinal(count++);
+            data.Columns["CartonNo"].SetOrdinal(count++);
+            data.Columns["ProductNameEN"].SetOrdinal(count++);
+            data.Columns["ProductNameVN"].SetOrdinal(count++);
+            data.Columns["PLU"].SetOrdinal(count++);
+            data.Columns["Package"].SetOrdinal(count++);
+            data.Columns["NWReal"].SetOrdinal(count++);
+            data.Columns["AmountPacking"].SetOrdinal(count++);
+            data.Columns["PCSReal"].SetOrdinal(count++);
+            data.Columns["CustomerCarton"].SetOrdinal(count++);
+        }
+
+        public void removeOrdersPhyto(int exportCodeID)
+        {
+            mPhytos.Remove(exportCodeID);
+        }
+        public async Task<DataTable> getOrdersPhytoAsync(int exportCodeID)
+        {
+            if (!mPhytos.ContainsKey(exportCodeID))
+            {
+                DataTable dt = await SQLManager.Instance.getOrdersPhytoAsync(exportCodeID);
+                editOrdersPhyto(dt);
+                mPhytos[exportCodeID] = dt;
+            }
+            return mPhytos[exportCodeID];
+        }
+
+        private void editOrdersPhyto(DataTable data)
+        {
+            data.Columns.Add(new DataColumn("No", typeof(string)));
+
+            data.Columns["ProductNameVN"].ReadOnly = false; ;
+            data.Columns["ProductNameEN"].ReadOnly = false; ;
+            int count = 1;
+            foreach (DataRow dr in data.Rows)
+            {
+                dr["No"] = count++;
+
+                string productNameVN = dr["ProductNameVN"].ToString();
+                // Xóa nội dung trong ngoặc đơn và khoảng trắng dư
+                productNameVN = Regex.Replace(productNameVN, @"\s*\([^)]*\)", "").Trim();
+                dr["ProductNameVN"] = productNameVN;
+
+                string productNameEN = dr["ProductNameEN"].ToString();
+                // Xóa nội dung trong ngoặc đơn và khoảng trắng dư
+                productNameEN = Regex.Replace(productNameEN, @"\s*\([^)]*\)", "").Trim();
+                dr["ProductNameEN"] = productNameEN;
+            }
+
+            count = 0;
+            data.Columns["No"].SetOrdinal(count++);
+            data.Columns["BotanicalName"].SetOrdinal(count++);
+            data.Columns["ProductNameEN"].SetOrdinal(count++);
+            data.Columns["ProductNameVN"].SetOrdinal(count++);
+            data.Columns["NetWeightFinal"].SetOrdinal(count++);
+        }
+
+        public void removeOrdersChotPhyto(int exportCodeID)
+        {
+            mPhytoChots.Remove(exportCodeID);
+        }
+        public async Task<DataTable> getOrdersChotPhytosync(int exportCodeID)
+        {
+            if (!mPhytoChots.ContainsKey(exportCodeID))
+            {
+                DataTable dt = await SQLManager.Instance.getOrdersChotPhytosync(exportCodeID);
+                editOrdersChotPhyto(dt);
+                mPhytoChots[exportCodeID] = dt;
+            }
+            return mPhytoChots[exportCodeID];
+        }
+
+        private void editOrdersChotPhyto(DataTable data)
+        {
+            data.Columns.Add(new DataColumn("No", typeof(string)));
+
+            data.Columns["ProductNameVN"].ReadOnly = false;
+            data.Columns["ProductNameEN"].ReadOnly = false;
+            int count = 1;
+            foreach (DataRow dr in data.Rows)
+            {
+                dr["No"] = count++;
+
+                string productNameVN = dr["ProductNameVN"].ToString();
+                // Xóa nội dung trong ngoặc đơn và khoảng trắng dư
+                productNameVN = Regex.Replace(productNameVN, @"\s*\([^)]*\)", "").Trim();
+                dr["ProductNameVN"] = productNameVN;
+
+                string productNameEN = dr["ProductNameEN"].ToString();
+                // Xóa nội dung trong ngoặc đơn và khoảng trắng dư
+                productNameEN = Regex.Replace(productNameEN, @"\s*\([^)]*\)", "").Trim();
+                dr["ProductNameEN"] = productNameEN;
+            }
+
+            data.Columns.Add(new DataColumn("Packing", typeof(string)));
+            data.Columns.Add(new DataColumn("PCS", typeof(string)));
+            data.Columns.Add(new DataColumn("PriceCHF", typeof(string)));
+            data.Columns.Add(new DataColumn("AmountCHF", typeof(string)));
+
+            count = 0;
+            data.Columns["No"].SetOrdinal(count++);
+            data.Columns["ProductNameEN"].SetOrdinal(count++);
+            data.Columns["ProductNameVN"].SetOrdinal(count++);
+            data.Columns["BotanicalName"].SetOrdinal(count++);
+            data.Columns["TotalNetWeight"].SetOrdinal(count++);
+            data.Columns["Packing"].SetOrdinal(count++);
+            data.Columns["PCS"].SetOrdinal(count++);
+            data.Columns["PriceCHF"].SetOrdinal(count++);
+            data.Columns["AmountCHF"].SetOrdinal(count++);
+        }
+
+        public void removeOrdersInvoice(int exportCodeID)
+        {
+            mOrderInvoice.Remove(exportCodeID);
+        }
+        public async Task<DataTable> getOrdersInvoiceAsync(int exportCodeID)
+        {
+            if (!mOrderInvoice.ContainsKey(exportCodeID))
+            {
+                DataTable dt = await SQLManager.Instance.getOrdersINVOICEAsync(exportCodeID);
+                editOrdersInvoice(dt);
+                mOrderInvoice[exportCodeID] = dt;
+            }
+            return mOrderInvoice[exportCodeID];
+        }
+
+        private void editOrdersInvoice(DataTable data)
+        {
+            data.Columns.Add(new DataColumn("No", typeof(int)));
+            data.Columns.Add(new DataColumn("Quantity", typeof(decimal)));
+            data.Columns.Add(new DataColumn("AmountCHF", typeof(float)));
+
+            Dictionary<int, int> countDic = new Dictionary<int, int>();
+
+            foreach (DataRow dr in data.Rows)
+            {
+                int exportCodeID = Convert.ToInt32(dr["ExportCodeID"]);
+                if (!countDic.ContainsKey(exportCodeID))
+                {
+                    countDic.Add(exportCodeID, 1);
+                }
+
+                decimal NWReal = dr["NWReal"] == DBNull.Value ? 0 : Convert.ToDecimal(dr["NWReal"]);
+                int PCS = dr["PCSReal"] == DBNull.Value ? 0 : Convert.ToInt32(dr["PCSReal"]);
+                string Package = dr["Package"].ToString();
+                decimal quantity = Utils.calQuanity(PCS, NWReal, Package);
+                decimal price = dr["OrderPackingPriceCNF"] == DBNull.Value ? 0 : Convert.ToDecimal(dr["OrderPackingPriceCNF"]);
+
+                dr["No"] = countDic[exportCodeID]++;
+                dr["Quantity"] = quantity;
+                dr["AmountCHF"] = quantity * price;
+
+                dr.Table.Columns["Packing"].ReadOnly = false; // mở khóa tạm
+                dr.Table.Columns["PCSReal"].ReadOnly = false; // mở khóa tạm
+
+                var cellValue = dr["Packing"]?.ToString();
+
+                dr["PCSReal"] = Convert.ToInt32(PCS);
+
+                if (!string.IsNullOrWhiteSpace(cellValue))
+                {
+                    // Tách số và phần đơn vị
+                    string numberPart = "";
+                    string unitPart = "";
+
+                    int firstLetterIndex = -1;
+                    for (int i = 0; i < cellValue.Length; i++)
+                    {
+                        if (char.IsLetter(cellValue[i]))
+                        {
+                            firstLetterIndex = i;
+                            break;
+                        }
+                    }
+
+                    if (firstLetterIndex >= 0)
+                    {
+                        numberPart = cellValue.Substring(0, firstLetterIndex).Trim();
+                        unitPart = cellValue.Substring(firstLetterIndex).Trim();
+                    }
+                    else
+                    {
+                        numberPart = cellValue.Trim();
+                        unitPart = "";
+                    }
+
+                    // Chuyển số sang decimal
+                    if (decimal.TryParse(numberPart, out decimal value))
+                    {
+                        if (value == 0)
+                        {
+                            dr["Packing"] = unitPart.CompareTo("weight") == 0 ? "weight" : "";
+                        }
+                        else
+                        {
+                            // Loại bỏ .00 nếu là số nguyên
+                            string newNumber = value % 1 == 0 ? ((int)value).ToString() : value.ToString();
+
+                            dr["Packing"] = string.IsNullOrEmpty(unitPart) ? newNumber : $"{newNumber} {unitPart}";                    // gán giá trị mới
+                            // trả về trạng thái cũ
+
+                        }
+                    }
+                    else
+                    {
+                        dr["Packing"] = ""; // Nếu không parse được, để trống
+                    }
+                }
+                else
+                {
+                    dr["Packing"] = ""; // Nếu cell null hoặc rỗng
+                }
+                dr.Table.Columns["Packing"].ReadOnly = true;
+                dr.Table.Columns["PCSReal"].ReadOnly = true;
+            }
+
+
+            int count = 0;
+            data.Columns["No"].SetOrdinal(count++);
+            data.Columns["PLU"].SetOrdinal(count++);
+            data.Columns["ProductNameEN"].SetOrdinal(count++);
+            data.Columns["ProductNameVN"].SetOrdinal(count++);
+            data.Columns["Package"].SetOrdinal(count++);
+            data.Columns["Quantity"].SetOrdinal(count++);
+            data.Columns["NWReal"].SetOrdinal(count++);
+            data.Columns["Packing"].SetOrdinal(count++);
+            data.Columns["PCSReal"].SetOrdinal(count++);
+            data.Columns["OrderPackingPriceCNF"].SetOrdinal(count++);
+            data.Columns["AmountCHF"].SetOrdinal(count++);
+        }
+
+        public void removeOrdersCusInvoice(int exportCodeID)
+        {
+            mOrderCusInvoices.Remove(exportCodeID);
+        }
+        public async Task<DataTable> getOrdersCusInvoiceAsync(int exportCodeID)
+        {
+            if (!mOrderCusInvoices.ContainsKey(exportCodeID))
+            {
+                DataTable dt = await SQLManager.Instance.GetCustomersOrdersAsync(exportCodeID);
+                editOrdersCusInvoice(dt);
+                mOrderCusInvoices[exportCodeID] = dt;
+            }
+            return mOrderCusInvoices[exportCodeID];
+        }
+
+        private void editOrdersCusInvoice(DataTable data)
+        {
+            data.Columns.Add(new DataColumn("No", typeof(int)));
+
+            int count = 0;
+            data.Columns["No"].SetOrdinal(count++);
+            data.Columns["FullName"].SetOrdinal(count++);
+            data.Columns["AmountCHF"].SetOrdinal(count++);
+            data.Columns["NWReal"].SetOrdinal(count++);
+            data.Columns["CNTS"].SetOrdinal(count++);
+
+            Dictionary<int, int> countDic = new Dictionary<int, int>();
+
+            foreach (DataRow dr in data.Rows)
+            {
+                int exportCodeID = Convert.ToInt32(dr["ExportCodeID"]);
+                if (!countDic.ContainsKey(exportCodeID))
+                {
+                    countDic.Add(exportCodeID, 1);
+                }
+                dr["No"] = countDic[exportCodeID]++;
+            }
+        }
+
+        public void removeOrdersCartonInvoice(int exportCodeID)
+        {
+            mOrderCartonInvoices.Remove(exportCodeID);
+        }
+        public async Task<DataTable> getOrdersCartonInvoiceAsync(int exportCodeID)
+        {
+            if (!mOrderCartonInvoices.ContainsKey(exportCodeID))
+            {
+                DataTable dt = await SQLManager.Instance.GetExportCartonCountsAsync(exportCodeID);
+                editOrdersCartonInvoice(dt);
+                mOrderCartonInvoices[exportCodeID] = dt;
+            }
+            return mOrderCartonInvoices[exportCodeID];
+        }
+
+        private void editOrdersCartonInvoice(DataTable data)
+        {
+            data.Columns.Add(new DataColumn("No", typeof(int)));
+            data.Columns.Add(new DataColumn("Weight", typeof(decimal)));
+
+            int count = 0;
+            data.Columns["No"].SetOrdinal(count++);
+            data.Columns["CartonSize"].SetOrdinal(count++);
+            data.Columns["CountCarton"].SetOrdinal(count++);
+        }
+
+        public void removeDetailPackingTotal(int exportCodeID)
+        {
+            DetailPackingTotals.Remove(exportCodeID);
+        }
+        public async Task<DataTable> GetDetailPackingTotalAsync(int exportCodeID)
+        {
+            if (!DetailPackingTotals.ContainsKey(exportCodeID))
+            {
+                DataTable dt = await SQLManager.Instance.GetDetailPackingTotalAsync(exportCodeID);
+                editDetailPackingTotal(dt);
+                DetailPackingTotals[exportCodeID] = dt;
+            }
+            return DetailPackingTotals[exportCodeID];
+        }
+
+        private void editDetailPackingTotal(DataTable data)
+        {
+            data.Columns.Add(new DataColumn("No", typeof(string)));
+
+            int count = 1;
+            foreach (DataRow dr in data.Rows)
+            {
+                dr["No"] = count++;
+
+                var cellValue = dr["Packing"]?.ToString();
+                var PCS = dr["PCSReal"]?.ToString();
+
+                dr.Table.Columns["Packing"].ReadOnly = false; // mở khóa tạm
+                dr.Table.Columns["PCSReal"].ReadOnly = false;
+                dr.Table.Columns["CartonNo"].ReadOnly = false;
+
+                string cartonNo = dr["CartonNo"].ToString();
+
+                // 1️⃣ Tách chuỗi → List<int> (an toàn, bỏ ký tự lỗi)
+                List<int> cartonNoList = (cartonNo ?? "")
+                    .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(s =>
+                    {
+                        int n;
+                        return int.TryParse(s.Trim(), out n) ? n : (int?)null;
+                    })
+                    .Where(n => n.HasValue)
+                    .Select(n => n.Value)
+                    .ToList();
+
+                cartonNoList.Sort();
+                dr["CartonNo"] = string.Join(", ", cartonNoList);
+
+                if (string.IsNullOrWhiteSpace(PCS))
+                {
+                    dr["PCSReal"] = Convert.ToInt32(0);
+                }
+
+                if (!string.IsNullOrWhiteSpace(cellValue))
+                {
+                    // Tách số và phần đơn vị
+                    string numberPart = "";
+                    string unitPart = "";
+
+                    int firstLetterIndex = -1;
+                    for (int i = 0; i < cellValue.Length; i++)
+                    {
+                        if (char.IsLetter(cellValue[i]))
+                        {
+                            firstLetterIndex = i;
+                            break;
+                        }
+                    }
+
+                    if (firstLetterIndex >= 0)
+                    {
+                        numberPart = cellValue.Substring(0, firstLetterIndex).Trim();
+                        unitPart = cellValue.Substring(firstLetterIndex).Trim();
+                    }
+                    else
+                    {
+                        numberPart = cellValue.Trim();
+                        unitPart = "";
+                    }
+
+                    // Chuyển số sang decimal
+                    if (decimal.TryParse(numberPart, out decimal value))
+                    {
+                        if (value == 0)
+                        {
+                            dr["Packing"] = unitPart.CompareTo("weight") == 0 ? "weight" : "";
+                        }
+                        else
+                        {
+                            string newNumber = value.ToString("0.##");
+                            dr["Packing"] = string.IsNullOrEmpty(unitPart) ? newNumber : $"{newNumber} {unitPart}";                    // gán giá trị mới
+                                                                                                                                       // trả về trạng thái cũ
+
+                        }
+                    }
+                    else
+                    {
+                        dr["Packing"] = ""; // Nếu không parse được, để trống
+                    }
+                }
+                else
+                {
+                    dr["Packing"] = ""; // Nếu cell null hoặc rỗng
+                }
+                dr.Table.Columns["Packing"].ReadOnly = true;
+                dr.Table.Columns["PCSReal"].ReadOnly = true;
+            }
+
+            count = 0;
+            data.Columns["No"].SetOrdinal(count++);
+            data.Columns["CartonNo"].SetOrdinal(count++);
+            data.Columns["ProductNameEN"].SetOrdinal(count++);
+            data.Columns["ProductNameVN"].SetOrdinal(count++);
+            data.Columns["LOTCodeComplete"].SetOrdinal(count++);
+            data.Columns["PLU"].SetOrdinal(count++);
+            data.Columns["Package"].SetOrdinal(count++);
+            data.Columns["NWReal"].SetOrdinal(count++);
+            data.Columns["packing"].SetOrdinal(count++);
+            data.Columns["PCSReal"].SetOrdinal(count++);
+            data.Columns["CustomerCarton"].SetOrdinal(count++);
         }
     }
 }

@@ -34,6 +34,8 @@ namespace RauViet.ui
             this.newCustomerBtn = new System.Windows.Forms.Button();
             this.edit_btn = new System.Windows.Forms.Button();
             this.info_gb = new System.Windows.Forms.GroupBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.priority_tb = new System.Windows.Forms.TextBox();
             this.name_tb = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
@@ -45,8 +47,6 @@ namespace RauViet.ui
             this.maKH_tb = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.dataGV = new System.Windows.Forms.DataGridView();
-            this.label4 = new System.Windows.Forms.Label();
-            this.priority_tb = new System.Windows.Forms.TextBox();
             this.panel1.SuspendLayout();
             this.info_gb.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
@@ -116,6 +116,24 @@ namespace RauViet.ui
             this.info_gb.Size = new System.Drawing.Size(422, 177);
             this.info_gb.TabIndex = 28;
             this.info_gb.TabStop = false;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label4.Location = new System.Drawing.Point(14, 133);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(72, 16);
+            this.label4.TabIndex = 19;
+            this.label4.Text = "Độ Ưu Tiên";
+            // 
+            // priority_tb
+            // 
+            this.priority_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.priority_tb.Location = new System.Drawing.Point(154, 130);
+            this.priority_tb.Name = "priority_tb";
+            this.priority_tb.Size = new System.Drawing.Size(84, 23);
+            this.priority_tb.TabIndex = 20;
             // 
             // name_tb
             // 
@@ -226,24 +244,6 @@ namespace RauViet.ui
             this.dataGV.ReadOnly = true;
             this.dataGV.Size = new System.Drawing.Size(718, 681);
             this.dataGV.TabIndex = 1;
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(14, 133);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(72, 16);
-            this.label4.TabIndex = 19;
-            this.label4.Text = "Độ Ưu Tiên";
-            // 
-            // priority_tb
-            // 
-            this.priority_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.priority_tb.Location = new System.Drawing.Point(154, 130);
-            this.priority_tb.Name = "priority_tb";
-            this.priority_tb.Size = new System.Drawing.Size(84, 23);
-            this.priority_tb.TabIndex = 20;
             // 
             // Customers
             // 

@@ -15,7 +15,7 @@ namespace RauViet.ui
         public ProductSKU()
         {
             InitializeComponent();
-
+            this.KeyPreview = true;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Dock = DockStyle.Fill;
 
@@ -40,7 +40,6 @@ namespace RauViet.ui
 
             newBtn.Click += newBtn_Click;
             luuBtn.Click += saveBtn_Click;
-            delete_btn.Click += deleteBtn_Click;
             dataGV.SelectionChanged += this.dataGV_CellClick;
             priceCNF_tb.KeyPress += Tb_KeyPress_OnlyNumber;
             priority_tb.KeyPress += Tb_KeyPress_OnlyNumber;
@@ -48,9 +47,34 @@ namespace RauViet.ui
             search_tb.TextChanged += search_txt_TextChanged;
 
             edit_btn.Click += Edit_btn_Click;
-            readOnly_btn.Click += ReadOnly_btn_Click;            
-
+            readOnly_btn.Click += ReadOnly_btn_Click;
+            this.KeyDown += ProductSKU_KeyDown;
             sku_tb.Visible = false;
+        }
+
+        private void ProductSKU_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.F5)
+            {
+                SQLStore.Instance.removeProductSKUHistory();
+                SQLStore.Instance.removeProductSKU();
+                ShowData();
+            }
+            else if (!isNewState && !edit_btn.Visible)
+            {
+                if (e.KeyCode == Keys.Delete)
+                {
+                    Control ctrl = this.ActiveControl;
+
+                    if (ctrl is TextBox || ctrl is RichTextBox ||
+                        (ctrl is DataGridView dgv && dgv.CurrentCell != null && dgv.IsCurrentCellInEditMode))
+                    {
+                        return; // không xử lý Delete
+                    }
+
+                    deleteProduct();
+                }
+            }
         }
 
         public async void ShowData()
@@ -93,6 +117,7 @@ namespace RauViet.ui
                 dataGV.Columns["PackingType"].HeaderText = "Packing\nType";
                 dataGV.Columns["PlantingAreaCode"].HeaderText = "Mã\nVùng Trồng";
                 dataGV.Columns["LOTCodeHeader"].HeaderText = "Mã LOT\n3 số đầu";
+                dataGV.Columns["IsActive"].HeaderText = "";
 
                 dataGV.Columns["ProductNameVN"].Width = 170;
                 dataGV.Columns["ProductNameEN"].Width = 140;
@@ -106,6 +131,7 @@ namespace RauViet.ui
                 dataGV.Columns["PackingType"].Width = 60;
                 dataGV.Columns["PackingList"].Width = 60;
                 dataGV.Columns["SKU"].Width = 60;
+                dataGV.Columns["IsActive"].Width = 30;
 
                 dataGV.Columns["ProductNameVN_NoSign"].Visible = false;
                 dataGV.Columns["PackingType"].Visible = false;
@@ -171,6 +197,7 @@ namespace RauViet.ui
             string priority = cells["Priority"].Value.ToString();
             string plantingAreaCode = cells["PlantingAreaCode"].Value.ToString();
             string lotCodeHeader = cells["LOTCodeHeader"].Value.ToString();
+            bool isActive = Convert.ToBoolean(cells["IsActive"].Value);
 
             sku_tb.Text = SKU;
             product_VN_tb.Text = productNameVN;
@@ -183,6 +210,7 @@ namespace RauViet.ui
             priority_tb.Text = priority;
             plantingareaCode_tb.Text = plantingAreaCode;
             lotCodeHeader_tb.Text = lotCodeHeader;
+            isActive_cb.Checked = isActive;
 
             DataView dv = new DataView(mPoductSKUHistory_dt);
             dv.RowFilter = $"SKU = '{SKU}'";
@@ -196,7 +224,7 @@ namespace RauViet.ui
        
 
         private async void updateProductSKU(int SKU, string productNameVN, string productNameEN, string packingType, string package, 
-            string packingList, string botanicalName, decimal priceCNF, int priority, string plantingareaCode, string LOTCodeHeader)
+            string packingList, string botanicalName, decimal priceCNF, int priority, string plantingareaCode, string LOTCodeHeader, bool isActive)
         {
             foreach (DataRow row in mProductSKU_dt.Rows)
             {
@@ -209,7 +237,7 @@ namespace RauViet.ui
                         try
                         {
                             bool isScussess = await SQLManager.Instance.updateProductSKUAsync(SKU, productNameVN, productNameEN, packingType, package, 
-                                packingList, botanicalName, priceCNF, priority, plantingareaCode, LOTCodeHeader);
+                                packingList, botanicalName, priceCNF, priority, plantingareaCode, LOTCodeHeader, isActive);
 
                             if (isScussess == true)
                             {
@@ -227,6 +255,7 @@ namespace RauViet.ui
                                 row["Priority"] = priority;
                                 row["PlantingAreaCode"] = plantingareaCode;
                                 row["LOTCodeHeader"] = LOTCodeHeader;
+                                row["IsActive"] = isActive;
                                 row["ProductNameVN_NoSign"] = Utils.RemoveVietnameseSigns(productNameVN + " " + SKU).ToLower(); ;
                                 status_lb.Text = "Thành công.";
                                 status_lb.ForeColor = Color.Green;
@@ -280,6 +309,7 @@ namespace RauViet.ui
                         drToAdd["Priority"] = priority;
                         drToAdd["PlantingAreaCode"] = plantingareaCode;
                         drToAdd["LOTCodeHeader"] = LOTCodeHeader;
+                        drToAdd["isActive"] = true;
                         drToAdd["ProductNameVN_NoSign"] = Utils.RemoveVietnameseSigns(productNameVN + " " + newId).ToLower(); ;
                         sku_tb.Text = newId.ToString();
 
@@ -333,10 +363,11 @@ namespace RauViet.ui
             string plantingareaCode = plantingareaCode_tb.Text;
             string lotCode = lotCodeHeader_tb.Text;
             string package = package_tb.Text.Replace(" ", "").ToLower();
+            bool isActive = isActive_cb.Checked;
 
             if (sku_tb.Text.Length != 0)
-                updateProductSKU(Convert.ToInt32(sku_tb.Text), productNameVN, productNameEN, packingType, package, 
-                    packingList, botanicalName_tb.Text,Convert.ToDecimal(priceCNF_tb.Text),Convert.ToInt32(priority_tb.Text), plantingareaCode, lotCode);
+                updateProductSKU(Convert.ToInt32(sku_tb.Text), productNameVN, productNameEN, packingType, package, packingList, botanicalName_tb.Text,
+                    Convert.ToDecimal(priceCNF_tb.Text),Convert.ToInt32(priority_tb.Text), plantingareaCode, lotCode, isActive);
             else
                 createNewProductSKU(productNameVN, productNameEN, packingType, package, 
                     packingList, botanicalName_tb.Text, Convert.ToDecimal(priceCNF_tb.Text), Convert.ToInt32(priority_tb.Text), plantingareaCode, lotCode);
@@ -344,7 +375,7 @@ namespace RauViet.ui
            // await SQLStore.Instance.getProductpackingAsync(true);
 
         }
-        private async void deleteBtn_Click(object sender, EventArgs e)
+        private async void deleteProduct()
         {
             if (dataGV.SelectedRows.Count == 0) return;
 
@@ -410,9 +441,9 @@ namespace RauViet.ui
             newBtn.Visible = false;
             readOnly_btn.Visible = true;
             luuBtn.Visible = true;
-            delete_btn.Visible = false;
             isNewState = true;
             luuBtn.Text = "Lưu Mới";
+            isActive_cb.Visible = false;
             RightUIReadOnly(false);
         }
 
@@ -422,9 +453,9 @@ namespace RauViet.ui
             newBtn.Visible = true;
             readOnly_btn.Visible = false;
             luuBtn.Visible = false;
-            delete_btn.Visible = false;
             info_gb.BackColor = Color.DarkGray;
             isNewState = false;
+            isActive_cb.Visible = true;
             RightUIReadOnly(true);
 
             if (dataGV.SelectedRows.Count > 0)
@@ -437,11 +468,10 @@ namespace RauViet.ui
             newBtn.Visible = false;
             readOnly_btn.Visible = true;
             luuBtn.Visible = true;
-            delete_btn.Visible = true;
             info_gb.BackColor = edit_btn.BackColor;
             isNewState = false;
             luuBtn.Text = "Lưu C.Sửa";
-            RightUIReadOnly(false);
+            isActive_cb.Enabled = true;
         }
 
         private void Tb_KeyPress_OnlyNumber(object sender, KeyPressEventArgs e)
@@ -485,6 +515,7 @@ namespace RauViet.ui
             plantingareaCode_tb.ReadOnly = isReadOnly;
             lotCodeHeader_tb.ReadOnly = isReadOnly;
             priority_tb.ReadOnly = isReadOnly;
+            isActive_cb.Enabled = !isReadOnly;
         }
 
     }

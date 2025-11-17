@@ -18,12 +18,14 @@ namespace RauViet.ui
     {
         DataTable mExportCode_dt, mOrdersTotal_dt;
         private LoadingOverlay loadingOverlay;
+        int mCurrentExportID = -1;
         public Phyto()
         {
             InitializeComponent();
-
+            this.KeyPreview = true;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Dock = DockStyle.Fill;
+
 
             dataGV.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dataGV.MultiSelect = true;
@@ -31,59 +33,49 @@ namespace RauViet.ui
             status_lb.Text = "";
 
 
-            LuuThayDoiBtn.Click += saveBtn_Click;           
-            //dataGV.CellEndEdit += dataGV_CellEndEdit;
+            LuuThayDoiBtn.Click += saveBtn_Click;
+            this.KeyDown += Phyto_KeyDown;
 
-            exportCode_cbb.SelectedIndexChanged += exportCode_search_cbb_SelectedIndexChanged;
         }
 
-        
+        private void Phyto_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.F5)
+            {
+                if (mCurrentExportID <= 0)
+                {
+                    return;
+                }
+
+                SQLStore.Instance.removeOrdersPhyto(mCurrentExportID);
+                ShowData();
+            }
+        }
 
         public async void ShowData()
         {
             await Task.Delay(50);
             loadingOverlay = new LoadingOverlay(this);
-            loadingOverlay.Show();           
-
+            loadingOverlay.Show();
+            await Task.Delay(50);
             try
             {
-                var ordersPackingTask = SQLManager.Instance.getOrdersPhytoAsync();
                 string[] keepColumns = { "ExportCodeID", "ExportCode", "ExportDate", "ExportCodeIndex" };
                 var parameters = new Dictionary<string, object> { { "Complete", false } };
-                var exportCodeTask = SQLStore.Instance.getExportCodesAsync(keepColumns, parameters);
+                mExportCode_dt =await SQLStore.Instance.getExportCodesAsync(keepColumns, parameters);
 
-                await Task.WhenAll(ordersPackingTask, exportCodeTask);
-
-                mExportCode_dt = exportCodeTask.Result;
-                mOrdersTotal_dt = ordersPackingTask.Result;
-
-                mOrdersTotal_dt.Columns.Add(new DataColumn("No", typeof(string)));
-
-                mOrdersTotal_dt.Columns["ProductNameVN"].ReadOnly = false; ;
-                mOrdersTotal_dt.Columns["ProductNameEN"].ReadOnly = false; ;
-                int count = 1;
-                foreach (DataRow dr in mOrdersTotal_dt.Rows)
+                if (mCurrentExportID <= 0 && mExportCode_dt.Rows.Count > 0)
                 {
-                    dr["No"] = count++;
-
-                    string productNameVN = dr["ProductNameVN"].ToString();
-                    // Xóa nội dung trong ngoặc đơn và khoảng trắng dư
-                    productNameVN = Regex.Replace(productNameVN, @"\s*\([^)]*\)", "").Trim();
-                    dr["ProductNameVN"] = productNameVN;
-
-                    string productNameEN = dr["ProductNameEN"].ToString();
-                    // Xóa nội dung trong ngoặc đơn và khoảng trắng dư
-                    productNameEN = Regex.Replace(productNameEN, @"\s*\([^)]*\)", "").Trim();
-                    dr["ProductNameEN"] = productNameEN;
+                    mCurrentExportID = Convert.ToInt32(mExportCode_dt.AsEnumerable()
+                                   .Max(r => r.Field<int>("ExportCodeID")));
                 }
 
-                count = 0;
-                mOrdersTotal_dt.Columns["No"].SetOrdinal(count++);
-                mOrdersTotal_dt.Columns["BotanicalName"].SetOrdinal(count++);
-                mOrdersTotal_dt.Columns["ProductNameEN"].SetOrdinal(count++);
-                mOrdersTotal_dt.Columns["ProductNameVN"].SetOrdinal(count++);                
-                mOrdersTotal_dt.Columns["NetWeightFinal"].SetOrdinal(count++);
+                mOrdersTotal_dt = await SQLStore.Instance.getOrdersPhytoAsync(mCurrentExportID);
+
+                
                 dataGV.DataSource = mOrdersTotal_dt;
+                DataView dv = new DataView(mOrdersTotal_dt);
+                dataGV.DataSource = dv;
 
                 dataGV.Columns["ExportCodeID"].Visible = false;
 
@@ -107,16 +99,12 @@ namespace RauViet.ui
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
+                exportCode_cbb.SelectedIndexChanged -= exportCode_search_cbb_SelectedIndexChanged;
                 exportCode_cbb.DataSource = mExportCode_dt;
                 exportCode_cbb.DisplayMember = "ExportCode";  // hiển thị tên
                 exportCode_cbb.ValueMember = "ExportCodeID";
-
-                if (mExportCode_dt.Rows.Count > 0)
-                {
-                    int maxID = Convert.ToInt32(mExportCode_dt.AsEnumerable()
-                                   .Max(r => r.Field<int>("ExportCodeID")));
-                    exportCode_cbb.SelectedValue = maxID;
-                }
+                exportCode_cbb.SelectedValue = mCurrentExportID;
+                exportCode_cbb.SelectedIndexChanged += exportCode_search_cbb_SelectedIndexChanged;
 
             }
             catch (Exception ex)
@@ -131,27 +119,16 @@ namespace RauViet.ui
             }
         }
 
-        private void exportCode_search_cbb_SelectedIndexChanged(object sender, EventArgs e)
+        private async void exportCode_search_cbb_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (mOrdersTotal_dt == null || mExportCode_dt.Rows.Count == 0)
+            if (!int.TryParse(exportCode_cbb.SelectedValue.ToString(), out int exportCodeId))
                 return;
 
-            string selectedExportCode = ((DataRowView)exportCode_cbb.SelectedItem)["ExportCodeID"].ToString();
+            mCurrentExportID = exportCodeId;
 
-            if (!string.IsNullOrEmpty(selectedExportCode))
-            {
-                // Tạo DataView để filter
-                DataView dv = new DataView(mOrdersTotal_dt);
-                dv.RowFilter = $"ExportCodeID = '{selectedExportCode}'";
-
-                // Gán lại cho DataGridView
-                dataGV.DataSource = dv;
-            }
-            else
-            {
-                // Nếu chưa chọn gì thì hiển thị toàn bộ
-                dataGV.DataSource = mOrdersTotal_dt;
-            }
+            mOrdersTotal_dt = await SQLStore.Instance.getOrdersPhytoAsync(mCurrentExportID);
+            DataView dv = new DataView(mOrdersTotal_dt);
+            dataGV.DataSource = dv;
         }
       
         
@@ -393,14 +370,20 @@ namespace RauViet.ui
                     }
                     ws.Row(1).Height = 125;
                     ws.Column(1).Width = 4.3;
-                    ws.Column(2).Width= 28;
+                    ws.Column(2).Width= 21;
                     ws.Column(3).Width = 9.5;
                     ws.Column(3).Width = 8.5;
                     ws.Column(4).Width = 7.85;
                     ws.Column(5).Width = 7.8;
                     ws.Column(6).Width = 1.2;
-                    ws.Column(7).Width = 28;
+                    ws.Column(7).Width = 21;
                     ws.Column(8).Width = 11.2;
+
+                    foreach (var col in exportColumns)
+                    {
+                        var column = ws.Column(col.Index + 1);
+                        column.Style.Alignment.WrapText = true;
+                    }
                     //ws.Column(8).Width = 27;
                     // ===== Save file =====
                     using (SaveFileDialog sfd = new SaveFileDialog())

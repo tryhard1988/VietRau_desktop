@@ -15,10 +15,11 @@ namespace RauViet.ui
     {
         DataTable mExportCode_dt, mOrdersTotal_dt;
         private LoadingOverlay loadingOverlay;
+        int mCurrentExportID = -1;
         public DangKyKiemDinh()
         {
             InitializeComponent();
-
+            this.KeyPreview = true;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Dock = DockStyle.Fill;
 
@@ -28,14 +29,26 @@ namespace RauViet.ui
             status_lb.Text = "";
 
 
-            LuuThayDoiBtn.Click += saveBtn_Click;           
-         //   dataGV_DK.RowPrePaint += new System.Windows.Forms.DataGridViewRowPrePaintEventHandler(this.dataGV_RowPrePaint);
+            LuuThayDoiBtn.Click += saveBtn_Click;
+            this.KeyDown += DangKyKiemDinh_KeyDown; ;
+            //   dataGV_DK.RowPrePaint += new System.Windows.Forms.DataGridViewRowPrePaintEventHandler(this.dataGV_RowPrePaint);
             //dataGV.CellEndEdit += dataGV_CellEndEdit;
 
-            exportCode_cbb.SelectedIndexChanged += exportCode_search_cbb_SelectedIndexChanged;
         }
 
-        
+        private void DangKyKiemDinh_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.F5)
+            {
+                if (mCurrentExportID <= 0)
+                {
+                    return;
+                }
+
+                SQLStore.Instance.removeOrdersDKKD(mCurrentExportID);
+                ShowData();
+            }
+        }
 
         public async void ShowData()
         {
@@ -46,50 +59,20 @@ namespace RauViet.ui
 
             try
             {
-                var ordersPackingTask = SQLManager.Instance.getOrdersDKKDAsync();
+                
                 string[] keepColumns = { "ExportCodeID", "ExportCodeIndex", "ExportCode", "ExportDate" };
                 var parameters = new Dictionary<string, object>{{ "Complete", false }};
-                var exportCodeTask = SQLStore.Instance.getExportCodesAsync(keepColumns, parameters);
+                mExportCode_dt = await SQLStore.Instance.getExportCodesAsync(keepColumns, parameters);
 
-                await Task.WhenAll(ordersPackingTask, exportCodeTask);
-
-                mExportCode_dt = exportCodeTask.Result;
-                mOrdersTotal_dt = ordersPackingTask.Result;
-
-                mOrdersTotal_dt.Columns.Add(new DataColumn("No", typeof(string)));
-
-                int count = 1;
-                foreach (DataRow dr in mOrdersTotal_dt.Rows)
+                if (mCurrentExportID <= 0 && mExportCode_dt.Rows.Count > 0)
                 {
-                    dr["No"] = count++;
-
-                    string productNameVN = dr["ProductNameVN"].ToString();
-                    // Xóa nội dung trong ngoặc đơn và khoảng trắng dư
-                    productNameVN = Regex.Replace(productNameVN, @"\s*\([^)]*\)", "").Trim();
-                    dr["ProductNameVN"] = productNameVN;
-
-                    string productNameEN = dr["ProductNameEN"].ToString();
-                    // Xóa nội dung trong ngoặc đơn và khoảng trắng dư
-                    productNameEN = Regex.Replace(productNameEN, @"\s*\([^)]*\)", "").Trim();
-                    dr["ProductNameEN"] = productNameEN;
+                    mCurrentExportID = Convert.ToInt32(mExportCode_dt.AsEnumerable()
+                                   .Max(r => r.Field<int>("ExportCodeID")));
                 }
 
-                mOrdersTotal_dt.Columns.Add(new DataColumn("Packing", typeof(string)));
-                mOrdersTotal_dt.Columns.Add(new DataColumn("PCS", typeof(string)));
-                mOrdersTotal_dt.Columns.Add(new DataColumn("PriceCHF", typeof(string)));
-                mOrdersTotal_dt.Columns.Add(new DataColumn("AmountCHF", typeof(string)));
-
-                count = 0;
-                mOrdersTotal_dt.Columns["No"].SetOrdinal(count++);
-                mOrdersTotal_dt.Columns["ProductNameEN"].SetOrdinal(count++);
-                mOrdersTotal_dt.Columns["ProductNameVN"].SetOrdinal(count++);
-                mOrdersTotal_dt.Columns["BotanicalName"].SetOrdinal(count++);
-                mOrdersTotal_dt.Columns["NWOther"].SetOrdinal(count++);
-                mOrdersTotal_dt.Columns["Packing"].SetOrdinal(count++);
-                mOrdersTotal_dt.Columns["PCS"].SetOrdinal(count++);
-                mOrdersTotal_dt.Columns["PriceCHF"].SetOrdinal(count++);
-                mOrdersTotal_dt.Columns["AmountCHF"].SetOrdinal(count++);
-                dataGV_DK.DataSource = mOrdersTotal_dt;
+                mOrdersTotal_dt = await SQLStore.Instance.getOrdersDKKDAsync(mCurrentExportID);
+                DataView dv = new DataView(mOrdersTotal_dt);
+                dataGV_DK.DataSource = dv;
 
                 dataGV_DK.Columns["ExportCodeID"].Visible = false;
                 dataGV_DK.Columns["PlantingAreaCode"].Visible = false;
@@ -121,17 +104,13 @@ namespace RauViet.ui
 
                 dataGV_DK.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
+                exportCode_cbb.SelectedIndexChanged -= exportCode_search_cbb_SelectedIndexChanged;
                 exportCode_cbb.DataSource = mExportCode_dt;
                 exportCode_cbb.DisplayMember = "ExportCode";  // hiển thị tên
                 exportCode_cbb.ValueMember = "ExportCodeID";
-
-                if (mExportCode_dt.Rows.Count > 0)
-                {
-                    int maxID = Convert.ToInt32(mExportCode_dt.AsEnumerable()
-                                   .Max(r => r.Field<int>("ExportCodeID")));
-                    exportCode_cbb.SelectedValue = maxID;
-                }
-
+                exportCode_cbb.SelectedValue = mCurrentExportID;
+                exportCode_cbb.SelectedIndexChanged += exportCode_search_cbb_SelectedIndexChanged;
+                
             }
             catch (Exception ex)
             {
@@ -145,27 +124,16 @@ namespace RauViet.ui
             }
         }
 
-        private void exportCode_search_cbb_SelectedIndexChanged(object sender, EventArgs e)
+        private async void exportCode_search_cbb_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (mOrdersTotal_dt == null || mExportCode_dt.Rows.Count == 0)
+            if (!int.TryParse(exportCode_cbb.SelectedValue.ToString(), out int exportCodeId))
                 return;
 
-            string selectedExportCode = ((DataRowView)exportCode_cbb.SelectedItem)["ExportCodeID"].ToString();
+            mCurrentExportID = exportCodeId;
 
-            if (!string.IsNullOrEmpty(selectedExportCode))
-            {
-                // Tạo DataView để filter
-                DataView dv = new DataView(mOrdersTotal_dt);
-                dv.RowFilter = $"ExportCodeID = '{selectedExportCode}'";
-
-                // Gán lại cho DataGridView
-                dataGV_DK.DataSource = dv;
-            }
-            else
-            {
-                // Nếu chưa chọn gì thì hiển thị toàn bộ
-                dataGV_DK.DataSource = mOrdersTotal_dt;
-            }
+            mOrdersTotal_dt = await SQLStore.Instance.getOrdersDKKDAsync(mCurrentExportID);
+            DataView dv = new DataView(mOrdersTotal_dt);
+            dataGV_DK.DataSource = dv;
         }
       
         
@@ -186,7 +154,7 @@ namespace RauViet.ui
             await Task.Delay(100);
 
             DataView currentView = (DataView)dgv.DataSource;
-            currentView.Sort = "Priority ASC";
+            currentView.Sort = "No ASC";
 
             string exportCode = ((DataRowView)exportCode_cbb.SelectedItem)["ExportCode"].ToString();
             int exportindex= Convert.ToInt32(((DataRowView)exportCode_cbb.SelectedItem)["ExportCodeIndex"]);
@@ -465,10 +433,10 @@ namespace RauViet.ui
                     ws.Columns().AdjustToContents();
                     ws.Column(1).Width = 3;
                     ws.Column(2).Width = 16;
-                    ws.Column(3).Width = 20;
-                    ws.Column(4).Width = 24;
+                    ws.Column(3).Width = 16;
+                    ws.Column(4).Width = 20;
                     ws.Column(6).Width = 7;
-                    ws.Column(7).Width = 7;
+                    ws.Column(7).Width = 5;
                     ws.Row(1).Height += 1;
                     ws.Row(4).Height += 1;
                     ws.Row(5).Height = 20;
