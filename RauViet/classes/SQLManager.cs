@@ -1112,7 +1112,14 @@ namespace RauViet.classes
             using (SqlConnection con = new SqlConnection(ql_User_conStr))
             {
                 await con.OpenAsync();
-                string query = @"SELECT RoleID, RoleName FROM Roles;";
+                string query = @"SELECT 
+                                    r.RoleID, 
+                                    r.RoleName, 
+                                    r.RoleGroupID,
+                                    g.RoleGroupName
+                                FROM Roles r
+                                LEFT JOIN RoleGroup g ON r.RoleGroupID = g.RoleGroupID
+                                ORDER BY r.RoleGroupID, r.RoleID;";
 
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
@@ -4050,5 +4057,6 @@ namespace RauViet.classes
             }
             return dt;
         }
+
     }
 }

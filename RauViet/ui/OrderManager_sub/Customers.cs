@@ -315,6 +315,9 @@ namespace RauViet.ui
             {
                 UpdateRightUI(0);
             }
+
+            customerCode_tb.Enabled = true;
+            name_tb.Enabled = true;
         }
 
         private void Edit_btn_Click(object sender, EventArgs e)
@@ -328,12 +331,16 @@ namespace RauViet.ui
             isNewState = false;
             LuuThayDoiBtn.Text = "Lưu C.Sửa";
             SetUIReadOnly(false);
+
+            customerCode_tb.Enabled = false;
+            name_tb.Enabled = false;
         }
 
         private void SetUIReadOnly(bool isReadOnly)
         {
             name_tb.ReadOnly = isReadOnly;
             customerCode_tb.ReadOnly = isReadOnly;
+            priority_tb.ReadOnly = isReadOnly;
         }
     }
 }

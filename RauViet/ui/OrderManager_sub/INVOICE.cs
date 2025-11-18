@@ -466,6 +466,12 @@ namespace RauViet.ui
                             var cellValue = row.Cells[col.Index].Value?.ToString() ?? "";
                             cell.Value = cellValue;
 
+                            cell.Style.Alignment.WrapText = true;
+
+                            if (col.Name == "Package" && cellValue.CompareTo("weight") == 0)
+                            {
+                                cell.Value = "kg";
+                            }
                             // Căn phải các cột số
                             if (col.ValueType == typeof(int) || col.ValueType == typeof(decimal))
                                 cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
@@ -652,7 +658,7 @@ namespace RauViet.ui
                     ws.Column(8).Width = 7;
                     ws.Column(9).Width = 5;
                     ws.Column(10).Width = 9.3;
-                    ws.Column(10).Width = 11.3;
+                    ws.Column(11).Width = 11.3;
 
 
                     ws.Row(5).Height = 21;
@@ -708,6 +714,8 @@ namespace RauViet.ui
                             var cell = ws.Cell(rowIndex, colIndex);
                             var cellValue = row.Cells[col.Index].Value?.ToString() ?? "";
                             cell.Value = cellValue;
+
+                            cell.Style.Alignment.WrapText = true;
 
                             // Căn phải các cột số
                             if (col.ValueType == typeof(int) || col.ValueType == typeof(decimal))

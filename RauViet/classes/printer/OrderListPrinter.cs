@@ -138,7 +138,7 @@ public class OrderListPrinter
             y += rowHeight + 10;
         }
 
-        int colSTT = 35, colCustomer = 150, colPCS = 40, colNW = 45, colActualPCS = 40, colActualNW = 45, colPackingPCS = 300,
+        int colSTT = 35, colCustomer = 170, colPCS = 40, colNW = 45, colActualPCS = 40, colActualNW = 45, colPackingPCS = 300,
             colPackingNote = pageWidth - colSTT - colCustomer - colPCS - colNW - colActualPCS - colActualNW - colPackingPCS;
 
         // Vẽ header bảng
@@ -149,9 +149,10 @@ public class OrderListPrinter
         {
             var row = printRows[currentRowIndex];
             string product = row.Cells["ProductNameVN"].Value?.ToString() ?? "";
-            string customer = row.Cells["CustomerName"].Value?.ToString() ?? "";
+            string customer = (row.Cells["CustomerName"].Value?.ToString() ?? "") + " -";
             string pcs = row.Cells["PCSOther"].Value?.ToString() ?? "";
             string nw = row.Cells["NWOther"].Value?.ToString() ?? "";
+            string package = row.Cells["Package"].Value?.ToString() ?? "";
 
             nw = double.TryParse(nw, out double nwValue) ? nwValue.ToString("F2") : "0.00";
             if (int.TryParse(pcs, out int pcsValue))
@@ -175,7 +176,32 @@ public class OrderListPrinter
             x += colSTT;
 
             g.DrawRectangle(Pens.Black, x, y, colCustomer, rowHeight);
-            g.DrawString(customer, fontNormal, Brushes.Black, new RectangleF(x, y, colCustomer, rowHeight), leftAlign);
+
+            // Font
+            Font fontCustomer = fontNormal;                     // font hiện tại
+            Font fontProduct = new Font(fontNormal.FontFamily, fontNormal.Size *2/3 + 2); // nhỏ hơn 1pt
+
+            // Tọa độ
+            int padding = 2;
+            float textY = y + padding;
+
+            // Vẽ customer trước
+            g.DrawString(customer, fontCustomer, Brushes.Black, new RectangleF(x, textY, colCustomer, rowHeight), leftAlign);
+
+            // Vẽ currentProduct ngay sau customer trên cùng 1 ô
+            SizeF sizeCustomer = g.MeasureString(customer, fontCustomer);
+            float productX = x + sizeCustomer.Width;
+
+            string shortName = currentProduct;
+            if (package.CompareTo("weight") != 0)
+            {
+                var parts = currentProduct.Split(' ');
+                if (parts.Length >= 3)
+                    shortName = string.Join(" ", parts.Take(parts.Length - 2));
+            }
+            g.DrawString(shortName, fontProduct, Brushes.Black,
+                new RectangleF(productX, textY, colCustomer - sizeCustomer.Width, rowHeight),
+                leftAlign); 
             x += colCustomer;
 
             g.DrawRectangle(Pens.Black, x, y, colPCS, rowHeight);
@@ -227,7 +253,7 @@ public class OrderListPrinter
     // ------------------- Vẽ header bảng -------------------
     private void DrawTableHeader(Graphics g, int left, ref int y, int rowHeight, int pageWidth, Font fontHeader)
     {
-        int colSTT = 35, colCustomer = 150, colPCS = 40, colNW = 45, colActualPCS = 40, colActualNW = 45, colPackingPCS = 300,
+        int colSTT = 35, colCustomer = 170, colPCS = 40, colNW = 45, colActualPCS = 40, colActualNW = 45, colPackingPCS = 300,
             colPackingNote = pageWidth - colSTT - colCustomer - colPCS - colNW - colActualPCS - colActualNW - colPackingPCS;
         int x = left;
 

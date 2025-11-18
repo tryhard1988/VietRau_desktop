@@ -137,7 +137,7 @@ namespace RauViet.ui
 
             mCurrentExportID = exportCodeId;
 
-            mOrdersTotal_dt = await SQLManager.Instance.GetCustomerDetailPackingAsync(mCurrentExportID);
+            mOrdersTotal_dt = await SQLStore.Instance.GetCustomerDetailPackingAsync(mCurrentExportID);
             DataView dv = new DataView(mOrdersTotal_dt);
             dataGV.DataSource = dv;
         }     
@@ -165,7 +165,7 @@ namespace RauViet.ui
                 fbd.Description = "Chọn thư mục để lưu tất cả file Excel";
                 if (fbd.ShowDialog() == DialogResult.OK)
                 {
-                    folderPath = fbd.SelectedPath;
+                    folderPath = fbd.SelectedPath + $"\\PL_Customer-ETD {exportDate.Day}.{exportDate.Month} {exportCodeIndex}";
                 }
                 else
                 {
@@ -205,6 +205,11 @@ namespace RauViet.ui
                     }
                 }
 
+                
+                if (!Directory.Exists(folderPath))
+                {
+                    Directory.CreateDirectory(folderPath);
+                }
                 // Đặt tên file: packingTotal_{exportCode}_{customerName}.xlsx
                 string safeCustomerName = string.Join("_", fullName.Split(Path.GetInvalidFileNameChars()));
                 string filePath = Path.Combine(folderPath, $"PL-{safeCustomerName}-ETD {exportDate.Day}.{exportDate.Month} {exportCodeIndex}.xlsx");
@@ -214,7 +219,7 @@ namespace RauViet.ui
                 if (!iSuccess)
                 {
                     await Task.Delay(200);
-            loadingOverlay.Hide();
+                    loadingOverlay.Hide();
                     return;
                 }
             }
@@ -464,6 +469,11 @@ namespace RauViet.ui
                             cell.Value = cellValue;
                             // Bật wrap text
                             cell.Style.Alignment.WrapText = true;
+
+                            if (col.ColumnName == "Package" && cellValue.CompareTo("weight") == 0)
+                            {
+                                cell.Value = "kg";
+                            }
 
                             // Căn phải các cột số
                             if (col.DataType == typeof(int) || col.DataType == typeof(decimal))

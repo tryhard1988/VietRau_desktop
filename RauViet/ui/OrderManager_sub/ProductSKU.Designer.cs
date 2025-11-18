@@ -33,6 +33,7 @@ namespace RauViet.ui
             this.panel4 = new System.Windows.Forms.Panel();
             this.priceCNFHisGV = new System.Windows.Forms.DataGridView();
             this.panel5 = new System.Windows.Forms.Panel();
+            this.edit_btn = new System.Windows.Forms.Button();
             this.readOnly_btn = new System.Windows.Forms.Button();
             this.info_gb = new System.Windows.Forms.GroupBox();
             this.isActive_cb = new System.Windows.Forms.CheckBox();
@@ -66,7 +67,6 @@ namespace RauViet.ui
             this.panel3 = new System.Windows.Forms.Panel();
             this.label15 = new System.Windows.Forms.Label();
             this.search_tb = new System.Windows.Forms.TextBox();
-            this.edit_btn = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.priceCNFHisGV)).BeginInit();
@@ -124,6 +124,17 @@ namespace RauViet.ui
             this.panel5.Size = new System.Drawing.Size(504, 537);
             this.panel5.TabIndex = 56;
             // 
+            // edit_btn
+            // 
+            this.edit_btn.BackColor = System.Drawing.SystemColors.MenuHighlight;
+            this.edit_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.edit_btn.Location = new System.Drawing.Point(289, 64);
+            this.edit_btn.Name = "edit_btn";
+            this.edit_btn.Size = new System.Drawing.Size(94, 32);
+            this.edit_btn.TabIndex = 61;
+            this.edit_btn.Text = "Chỉnh sửa";
+            this.edit_btn.UseVisualStyleBackColor = false;
+            // 
             // readOnly_btn
             // 
             this.readOnly_btn.BackColor = System.Drawing.Color.MediumSlateBlue;
@@ -170,6 +181,7 @@ namespace RauViet.ui
             // isActive_cb
             // 
             this.isActive_cb.AutoSize = true;
+            this.isActive_cb.BackColor = System.Drawing.Color.SandyBrown;
             this.isActive_cb.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.isActive_cb.ForeColor = System.Drawing.Color.Black;
             this.isActive_cb.Location = new System.Drawing.Point(300, 346);
@@ -177,7 +189,7 @@ namespace RauViet.ui
             this.isActive_cb.Size = new System.Drawing.Size(121, 20);
             this.isActive_cb.TabIndex = 60;
             this.isActive_cb.Text = "Đang hoạt động";
-            this.isActive_cb.UseVisualStyleBackColor = true;
+            this.isActive_cb.UseVisualStyleBackColor = false;
             // 
             // lotCodeHeader_tb
             // 
@@ -465,17 +477,6 @@ namespace RauViet.ui
             this.search_tb.Name = "search_tb";
             this.search_tb.Size = new System.Drawing.Size(252, 23);
             this.search_tb.TabIndex = 12;
-            // 
-            // edit_btn
-            // 
-            this.edit_btn.BackColor = System.Drawing.SystemColors.MenuHighlight;
-            this.edit_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.edit_btn.Location = new System.Drawing.Point(289, 64);
-            this.edit_btn.Name = "edit_btn";
-            this.edit_btn.Size = new System.Drawing.Size(94, 32);
-            this.edit_btn.TabIndex = 61;
-            this.edit_btn.Text = "Chỉnh sửa";
-            this.edit_btn.UseVisualStyleBackColor = false;
             // 
             // ProductSKU
             // 

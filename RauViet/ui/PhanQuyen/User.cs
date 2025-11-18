@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RauViet.classes;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -7,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using RauViet.classes;
+using System.Windows.Forms.VisualStyles;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
 
 namespace RauViet.ui
@@ -108,7 +109,7 @@ namespace RauViet.ui
                 employee_cbb.DisplayMember = "FullName";  // hiển thị tên
                 employee_cbb.ValueMember = "EmployeeCode";
 
-                phanquyen_clb.CheckOnClick = true;
+                phanquyen_clb.CheckOnClick = true;                
                 phanquyen_clb.DataSource = role_dt;
                 phanquyen_clb.DisplayMember = "RoleName";  // Hiển thị tên vai trò
                 phanquyen_clb.ValueMember = "RoleID";
@@ -133,8 +134,6 @@ namespace RauViet.ui
                 loading_lb.Visible = false; // ẩn loading
                 loading_lb.Enabled = true; // enable lại button
             }
-
-            
         }
 
         private void dataGV_CellClick(object sender, EventArgs e)

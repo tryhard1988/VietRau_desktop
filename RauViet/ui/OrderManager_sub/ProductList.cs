@@ -481,6 +481,8 @@ namespace RauViet.ui
             sku_cbb.Enabled = true;
             RightUiReadOnly(false);
             isActive_cb.Visible = false;
+
+            RightUiEnable(true);
         }
 
         private void ReadOnly_btn_Click(object sender, EventArgs e)
@@ -496,6 +498,8 @@ namespace RauViet.ui
             isActive_cb.Visible = true;
             if (dataGV.SelectedRows.Count > 0)
                 updateDataTextBoxFlowSKU();
+
+            RightUiEnable(true);
         }
 
         private void Edit_btn_Click(object sender, EventArgs e)
@@ -509,6 +513,8 @@ namespace RauViet.ui
             isNewState = false;
             LuuThayDoiBtn.Text = "Lưu C.Sửa";
             isActive_cb.Enabled = true;
+
+            RightUiEnable(false);
         }
 
         private void sku_cbb_SelectedIndexChanged(object sender, EventArgs e)
@@ -687,6 +693,17 @@ namespace RauViet.ui
             artNr_tb.ReadOnly = isReadOnly;
             GGN_tb.ReadOnly = isReadOnly;
             isActive_cb.Enabled = !isReadOnly;
+        }
+
+        private void RightUiEnable(bool enable)
+        {
+            barCodeEAN13_tb.Enabled = enable;
+            PLU_tb.Enabled = enable;
+            packing_panel.Enabled = enable;
+            amount_tb.Enabled = enable;
+            barCode_tb.Enabled = enable;
+            artNr_tb.Enabled = enable;
+            GGN_tb.Enabled = enable;
         }
     }
 }

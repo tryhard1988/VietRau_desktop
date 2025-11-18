@@ -30,9 +30,11 @@ namespace RauViet.ui
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
+            this.edit_btn = new System.Windows.Forms.Button();
             this.newCustomerBtn = new System.Windows.Forms.Button();
             this.readOnly_btn = new System.Windows.Forms.Button();
             this.info_gb = new System.Windows.Forms.GroupBox();
+            this.isActive_cb = new System.Windows.Forms.CheckBox();
             this.sku_cbb = new System.Windows.Forms.ComboBox();
             this.packing_panel = new System.Windows.Forms.Panel();
             this.amount_tb = new System.Windows.Forms.TextBox();
@@ -50,21 +52,15 @@ namespace RauViet.ui
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.id_tb = new System.Windows.Forms.TextBox();
-            this.label11 = new System.Windows.Forms.Label();
             this.status_lb = new System.Windows.Forms.Label();
             this.priceCNF_tb = new System.Windows.Forms.TextBox();
-            this.label8 = new System.Windows.Forms.Label();
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
             this.nameEN_tb = new System.Windows.Forms.TextBox();
             this.nameVN_tb = new System.Windows.Forms.TextBox();
-            this.label5 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
             this.label15 = new System.Windows.Forms.Label();
             this.search_tb = new System.Windows.Forms.TextBox();
             this.panel2 = new System.Windows.Forms.Panel();
             this.dataGV = new System.Windows.Forms.DataGridView();
-            this.isActive_cb = new System.Windows.Forms.CheckBox();
-            this.edit_btn = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.info_gb.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -78,20 +74,27 @@ namespace RauViet.ui
             this.panel1.Controls.Add(this.readOnly_btn);
             this.panel1.Controls.Add(this.info_gb);
             this.panel1.Controls.Add(this.id_tb);
-            this.panel1.Controls.Add(this.label11);
             this.panel1.Controls.Add(this.status_lb);
             this.panel1.Controls.Add(this.priceCNF_tb);
-            this.panel1.Controls.Add(this.label8);
             this.panel1.Controls.Add(this.LuuThayDoiBtn);
             this.panel1.Controls.Add(this.nameEN_tb);
             this.panel1.Controls.Add(this.nameVN_tb);
-            this.panel1.Controls.Add(this.label5);
-            this.panel1.Controls.Add(this.label4);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Right;
             this.panel1.Location = new System.Drawing.Point(861, 0);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(403, 681);
             this.panel1.TabIndex = 0;
+            // 
+            // edit_btn
+            // 
+            this.edit_btn.BackColor = System.Drawing.SystemColors.MenuHighlight;
+            this.edit_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.edit_btn.Location = new System.Drawing.Point(199, 77);
+            this.edit_btn.Name = "edit_btn";
+            this.edit_btn.Size = new System.Drawing.Size(94, 32);
+            this.edit_btn.TabIndex = 47;
+            this.edit_btn.Text = "Chỉnh sửa";
+            this.edit_btn.UseVisualStyleBackColor = false;
             // 
             // newCustomerBtn
             // 
@@ -140,6 +143,19 @@ namespace RauViet.ui
             this.info_gb.Size = new System.Drawing.Size(352, 343);
             this.info_gb.TabIndex = 43;
             this.info_gb.TabStop = false;
+            // 
+            // isActive_cb
+            // 
+            this.isActive_cb.AutoSize = true;
+            this.isActive_cb.BackColor = System.Drawing.Color.SandyBrown;
+            this.isActive_cb.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.isActive_cb.ForeColor = System.Drawing.Color.Black;
+            this.isActive_cb.Location = new System.Drawing.Point(225, 316);
+            this.isActive_cb.Name = "isActive_cb";
+            this.isActive_cb.Size = new System.Drawing.Size(121, 20);
+            this.isActive_cb.TabIndex = 63;
+            this.isActive_cb.Text = "Đang hoạt động";
+            this.isActive_cb.UseVisualStyleBackColor = false;
             // 
             // sku_cbb
             // 
@@ -280,16 +296,6 @@ namespace RauViet.ui
             this.id_tb.TabIndex = 42;
             this.id_tb.Visible = false;
             // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(24, 621);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(18, 13);
-            this.label11.TabIndex = 41;
-            this.label11.Text = "ID";
-            this.label11.Visible = false;
-            // 
             // status_lb
             // 
             this.status_lb.AutoSize = true;
@@ -308,16 +314,6 @@ namespace RauViet.ui
             this.priceCNF_tb.Size = new System.Drawing.Size(24, 20);
             this.priceCNF_tb.TabIndex = 35;
             this.priceCNF_tb.Visible = false;
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(130, 628);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(95, 13);
-            this.label8.TabIndex = 30;
-            this.label8.Text = "Giá CNF (CHF/Kg)";
-            this.label8.Visible = false;
             // 
             // LuuThayDoiBtn
             // 
@@ -347,26 +343,6 @@ namespace RauViet.ui
             this.nameVN_tb.Size = new System.Drawing.Size(50, 20);
             this.nameVN_tb.TabIndex = 19;
             this.nameVN_tb.Visible = false;
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(23, 598);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(73, 13);
-            this.label5.TabIndex = 13;
-            this.label5.Text = "Tên tiếng anh";
-            this.label5.Visible = false;
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(202, 602);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(72, 13);
-            this.label4.TabIndex = 12;
-            this.label4.Text = "Tên tiếng việt";
-            this.label4.Visible = false;
             // 
             // label15
             // 
@@ -410,29 +386,6 @@ namespace RauViet.ui
             this.dataGV.Size = new System.Drawing.Size(861, 645);
             this.dataGV.TabIndex = 64;
             // 
-            // isActive_cb
-            // 
-            this.isActive_cb.AutoSize = true;
-            this.isActive_cb.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.isActive_cb.ForeColor = System.Drawing.Color.Black;
-            this.isActive_cb.Location = new System.Drawing.Point(225, 316);
-            this.isActive_cb.Name = "isActive_cb";
-            this.isActive_cb.Size = new System.Drawing.Size(121, 20);
-            this.isActive_cb.TabIndex = 63;
-            this.isActive_cb.Text = "Đang hoạt động";
-            this.isActive_cb.UseVisualStyleBackColor = true;
-            // 
-            // edit_btn
-            // 
-            this.edit_btn.BackColor = System.Drawing.SystemColors.MenuHighlight;
-            this.edit_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.edit_btn.Location = new System.Drawing.Point(199, 77);
-            this.edit_btn.Name = "edit_btn";
-            this.edit_btn.Size = new System.Drawing.Size(94, 32);
-            this.edit_btn.TabIndex = 47;
-            this.edit_btn.Text = "Chỉnh sửa";
-            this.edit_btn.UseVisualStyleBackColor = false;
-            // 
             // ProductList
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -458,14 +411,10 @@ namespace RauViet.ui
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.TextBox nameEN_tb;
         private System.Windows.Forms.TextBox nameVN_tb;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button LuuThayDoiBtn;
         private System.Windows.Forms.TextBox priceCNF_tb;
-        private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label status_lb;
         private System.Windows.Forms.TextBox id_tb;
-        private System.Windows.Forms.Label label11;
         private System.Windows.Forms.GroupBox info_gb;
         private System.Windows.Forms.ComboBox sku_cbb;
         private System.Windows.Forms.Panel packing_panel;

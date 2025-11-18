@@ -377,6 +377,11 @@ namespace RauViet.ui
                             // Bật wrap text
                             cell.Style.Alignment.WrapText = true;
 
+                            if (col.Name == "Package" && cellValue.CompareTo("weight") == 0)
+                            {
+                                cell.Value = "kg";
+                            }
+
                             // Căn phải các cột số
                             if (col.ValueType == typeof(int) || col.ValueType == typeof(decimal))
                                 cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;

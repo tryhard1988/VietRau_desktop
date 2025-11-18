@@ -445,6 +445,7 @@ namespace RauViet.ui
             luuBtn.Text = "Lưu Mới";
             isActive_cb.Visible = false;
             RightUIReadOnly(false);
+            RightUIEnable(true);
         }
 
         private void ReadOnly_btn_Click(object sender, EventArgs e)
@@ -460,6 +461,7 @@ namespace RauViet.ui
 
             if (dataGV.SelectedRows.Count > 0)
                 UpdateRightUI(0);
+            RightUIEnable(true);
         }
 
         private void Edit_btn_Click(object sender, EventArgs e)
@@ -472,6 +474,8 @@ namespace RauViet.ui
             isNewState = false;
             luuBtn.Text = "Lưu C.Sửa";
             isActive_cb.Enabled = true;
+
+            RightUIEnable(false);
         }
 
         private void Tb_KeyPress_OnlyNumber(object sender, KeyPressEventArgs e)
@@ -516,6 +520,19 @@ namespace RauViet.ui
             lotCodeHeader_tb.ReadOnly = isReadOnly;
             priority_tb.ReadOnly = isReadOnly;
             isActive_cb.Enabled = !isReadOnly;
+        }
+
+        private void RightUIEnable(bool enable)
+        {
+            product_VN_tb.Enabled = enable;
+            product_EN_tb.Enabled = enable;
+            package_tb.Enabled = enable;
+            packing_tb.Enabled = enable;
+            botanicalName_tb.Enabled = enable;
+            priceCNF_tb.Enabled = enable;
+            plantingareaCode_tb.Enabled = enable;
+            lotCodeHeader_tb.Enabled = enable;
+            priority_tb.Enabled = enable;
         }
 
     }
