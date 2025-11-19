@@ -79,28 +79,30 @@ namespace RauViet.ui
                 dataGV.Columns["SKU"].Visible = false;
                 dataGV.Columns["ExportCode"].Visible = false;
                 dataGV.Columns["ExportCodeID"].Visible = false;
-                dataGV.Columns["LOTCodeHeader"].Visible = false;
+               // dataGV.Columns["LOTCodeHeader"].Visible = false;
 
                 dataGV.ReadOnly = false;
                 dataGV.Columns["LotCode"].ReadOnly = false;
 
                 dataGV.Columns["ProductNameVN"].ReadOnly = true;
-                dataGV.Columns["LOTCodeComplete"].ReadOnly = true;
+                dataGV.Columns["LOTCodeComplete"].ReadOnly = false;
                 dataGV.Columns["Priority"].ReadOnly = true;
 
                 dataGV.Columns["ProductNameVN"].HeaderText = "Tên Sản Phẩm";
                 dataGV.Columns["LOTCodeComplete"].HeaderText = "LOT Code Hoàn Chỉnh";
                 dataGV.Columns["LotCode"].HeaderText = "Phần Sau LOT Code";
+                dataGV.Columns["LOTCodeHeader"].HeaderText = "Phần Đầu LOT Code";
                 dataGV.Columns["Priority"].HeaderText = "Ưu Tiên";
 
                 dataGV.Columns["Priority"].Width = 50;
                 dataGV.Columns["LOTCodeComplete"].Width = 120;
                 dataGV.Columns["ProductNameVN"].Width = 150; ;
-                dataGV.Columns["LotCode"].Width = 50;
+                dataGV.Columns["LotCode"].Width = 100;
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
 
+                dataGV.Columns["LOTCodeHeader"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 dataGV.Columns["LotCode"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 dataGV.Columns["Priority"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
@@ -194,7 +196,8 @@ namespace RauViet.ui
 
         private void dataGV_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
-            if (dataGV.Columns[e.ColumnIndex].Name == "LOTCode")
+            string columnName = dataGV.Columns[e.ColumnIndex].Name;
+            if (columnName == "LOTCode" || columnName == "LOTCodeComplete")
             {
                 var row = dataGV.Rows[e.RowIndex];
                 var lotCodeHeaderValue = row.Cells["LOTCodeHeader"].Value?.ToString();

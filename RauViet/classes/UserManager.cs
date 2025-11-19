@@ -67,16 +67,25 @@ namespace RauViet.classes
 
         public bool hasRole (string roleCode)
         {
-            return roleCodes.Contains(roleCode, StringComparer.OrdinalIgnoreCase);
+            if (roleCodes.Contains(roleCode, StringComparer.OrdinalIgnoreCase))
+                return true;
+            return false;
         }
 
         public bool hasRole_User(){return hasRole("ql_user");}
         public bool hasRole_NhanSu(){ return hasRole("qlns");}
         public bool hasRole_KhachHang() { return hasRole("qlkh"); }
-        public bool hasRole_SanPham() { return hasRole("qlsp"); }
+        public bool hasRole_SanPhamChinh() { return hasRole("spc"); }
+        public bool hasRole_SanPhamQuyCach() { return hasRole("spqc"); }
+        public bool hasRole_AnGiaSanPham() { return hasRole("agsp"); }
         public bool hasRole_HoanThanhDonHang() { return hasRole("htdh"); }
         public bool hasRole_NhapLieuDonHang() { return hasRole("nldh"); }
-        public bool hasRole_XuatExcelGuiKH() { return hasRole("xegkh"); }
+        public bool hasRole_DangKyKiemDich() { return hasRole("xuat_dkkd"); }
+        public bool hasRole_PHYTO() { return hasRole("xuat_phyto"); }
+        public bool hasRole_Chot_PHYTO() { return hasRole("xuat_c_phyto"); }
+        public bool hasRole_Invoice() { return hasRole("xuat_invoice"); }
+        public bool hasRole_PackingTotal() { return hasRole("xuat_pt"); }
+        public bool hasRole_CustomerDetailPacking() { return hasRole("xuat_cdp"); }
         public bool hasRole_ChamCong() { return hasRole("cc"); }
         public bool hasRole_ThongKe() { return hasRole("tknsvk"); }
 

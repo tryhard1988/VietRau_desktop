@@ -63,7 +63,7 @@ namespace RauViet.ui
             else if (!isNewState && !edit_btn.Visible)
             {
                 if (e.KeyCode == Keys.Delete)
-                {
+                {                    
                     Control ctrl = this.ActiveControl;
 
                     if (ctrl is TextBox || ctrl is RichTextBox ||
@@ -136,8 +136,11 @@ namespace RauViet.ui
                 dataGV.Columns["ProductNameVN_NoSign"].Visible = false;
                 dataGV.Columns["PackingType"].Visible = false;
                 dataGV.Columns["GroupProduct"].Visible = false;
+                dataGV.Columns["PriceCNF"].Visible = !UserManager.Instance.hasRole_AnGiaSanPham();
                 priceCNFHisGV.Columns["id"].Visible = false;
-                priceCNFHisGV.Columns["SKU"].Visible = false;                
+                priceCNFHisGV.Columns["SKU"].Visible = false;
+                priceCNFHisGV.Visible = !UserManager.Instance.hasRole_AnGiaSanPham();
+
                 // dataGV.Columns["SKU"].Visible = false;
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
@@ -216,6 +219,8 @@ namespace RauViet.ui
             dv.RowFilter = $"SKU = '{SKU}'";
 
             priceCNFHisGV.DataSource = dv;
+
+            priceCNF_tb.Visible = !UserManager.Instance.hasRole_AnGiaSanPham();
 
             status_lb.Text = "";
         }
@@ -367,10 +372,12 @@ namespace RauViet.ui
 
             if (sku_tb.Text.Length != 0)
                 updateProductSKU(Convert.ToInt32(sku_tb.Text), productNameVN, productNameEN, packingType, package, packingList, botanicalName_tb.Text,
-                    Convert.ToDecimal(priceCNF_tb.Text),Convert.ToInt32(priority_tb.Text), plantingareaCode, lotCode, isActive);
+                    Convert.ToDecimal(priceCNF_tb.Text), Convert.ToInt32(priority_tb.Text), plantingareaCode, lotCode, isActive);
             else
-                createNewProductSKU(productNameVN, productNameEN, packingType, package, 
+            {
+                createNewProductSKU(productNameVN, productNameEN, packingType, package,
                     packingList, botanicalName_tb.Text, Convert.ToDecimal(priceCNF_tb.Text), Convert.ToInt32(priority_tb.Text), plantingareaCode, lotCode);
+            }
             info_gb.BackColor = Color.Gray;
            // await SQLStore.Instance.getProductpackingAsync(true);
 
@@ -430,7 +437,7 @@ namespace RauViet.ui
             package_tb.Text = "kg";
             packing_tb.Text = "kg-gr";
             botanicalName_tb.Text = "";
-            priceCNF_tb.Text = "";
+            priceCNF_tb.Text = "0";
             status_lb.Text = "";
             plantingareaCode_tb.Text = "";
             lotCodeHeader_tb.Text = "";
@@ -475,6 +482,7 @@ namespace RauViet.ui
             luuBtn.Text = "Lưu C.Sửa";
             isActive_cb.Enabled = true;
 
+            RightUIReadOnly(false);
             RightUIEnable(false);
         }
 
@@ -520,6 +528,7 @@ namespace RauViet.ui
             lotCodeHeader_tb.ReadOnly = isReadOnly;
             priority_tb.ReadOnly = isReadOnly;
             isActive_cb.Enabled = !isReadOnly;
+            
         }
 
         private void RightUIEnable(bool enable)
@@ -529,7 +538,6 @@ namespace RauViet.ui
             package_tb.Enabled = enable;
             packing_tb.Enabled = enable;
             botanicalName_tb.Enabled = enable;
-            priceCNF_tb.Enabled = enable;
             plantingareaCode_tb.Enabled = enable;
             lotCodeHeader_tb.Enabled = enable;
             priority_tb.Enabled = enable;

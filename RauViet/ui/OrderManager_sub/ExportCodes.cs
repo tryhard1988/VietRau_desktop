@@ -163,8 +163,7 @@ namespace RauViet.ui
                 dataGV.Columns["Complete"].Width = 90;
                 dataGV.Columns["InputByName"].Width = 150;
                 dataGV.Columns["PackingByName"].Width = 150;
-
-                dataGV.Columns["ModifiedAt"].AutoSizeMode = DataGridViewAutoSizeColumnMode.ColumnHeader;
+                dataGV.Columns["ModifiedAt"].Width = 150;
 
                 dataGV.Columns["InputByName_NoSign"].Visible = false;
                 dataGV.Columns["ExportCodeID"].Visible = false;

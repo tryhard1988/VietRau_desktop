@@ -2004,10 +2004,11 @@ namespace RauViet.classes
         }
 
         private void editLOTCode(DataTable dt)
-        {
+        {            
             dt.Columns["ProductNameVN"].SetOrdinal(0);
-            dt.Columns["LotCode"].SetOrdinal(1);
-            dt.Columns["LOTCodeComplete"].SetOrdinal(2);
+            dt.Columns["LOTCodeHeader"].SetOrdinal(1);
+            dt.Columns["LotCode"].SetOrdinal(2);
+            dt.Columns["LOTCodeComplete"].SetOrdinal(3);
         }
 
         public void removeOrdersDKKD(int exportCodeID)

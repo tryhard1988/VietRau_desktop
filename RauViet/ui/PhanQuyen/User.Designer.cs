@@ -30,7 +30,6 @@ namespace RauViet.ui
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
-            this.phanquyen_clb = new System.Windows.Forms.CheckedListBox();
             this.label1 = new System.Windows.Forms.Label();
             this.readOnly_btn = new System.Windows.Forms.Button();
             this.edit_btn = new System.Windows.Forms.Button();
@@ -49,6 +48,7 @@ namespace RauViet.ui
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
             this.userID_tb = new System.Windows.Forms.TextBox();
             this.dataGV = new System.Windows.Forms.DataGridView();
+            this.phanquyen_gb = new System.Windows.Forms.GroupBox();
             this.panel1.SuspendLayout();
             this.info_gb.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
@@ -56,7 +56,7 @@ namespace RauViet.ui
             // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.phanquyen_clb);
+            this.panel1.Controls.Add(this.phanquyen_gb);
             this.panel1.Controls.Add(this.label1);
             this.panel1.Controls.Add(this.readOnly_btn);
             this.panel1.Controls.Add(this.edit_btn);
@@ -70,23 +70,15 @@ namespace RauViet.ui
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(608, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(882, 681);
+            this.panel1.Size = new System.Drawing.Size(1029, 681);
             this.panel1.TabIndex = 9;
-            // 
-            // phanquyen_clb
-            // 
-            this.phanquyen_clb.FormattingEnabled = true;
-            this.phanquyen_clb.Location = new System.Drawing.Point(405, 62);
-            this.phanquyen_clb.Name = "phanquyen_clb";
-            this.phanquyen_clb.Size = new System.Drawing.Size(351, 574);
-            this.phanquyen_clb.TabIndex = 34;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
             this.label1.BackColor = System.Drawing.Color.SandyBrown;
             this.label1.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(435, 13);
+            this.label1.Location = new System.Drawing.Point(421, 13);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(80, 16);
             this.label1.TabIndex = 33;
@@ -270,11 +262,21 @@ namespace RauViet.ui
             this.dataGV.Size = new System.Drawing.Size(608, 681);
             this.dataGV.TabIndex = 1;
             // 
+            // phanquyen_gb
+            // 
+            this.phanquyen_gb.BackColor = System.Drawing.Color.White;
+            this.phanquyen_gb.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.phanquyen_gb.Location = new System.Drawing.Point(417, 32);
+            this.phanquyen_gb.Name = "phanquyen_gb";
+            this.phanquyen_gb.Size = new System.Drawing.Size(310, 637);
+            this.phanquyen_gb.TabIndex = 35;
+            this.phanquyen_gb.TabStop = false;
+            // 
             // User
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1490, 681);
+            this.ClientSize = new System.Drawing.Size(1637, 681);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.dataGV);
             this.Name = "User";
@@ -307,7 +309,7 @@ namespace RauViet.ui
         private System.Windows.Forms.TextBox userID_tb;
         private System.Windows.Forms.Button readOnly_btn;
         private System.Windows.Forms.Button edit_btn;
-        private System.Windows.Forms.CheckedListBox phanquyen_clb;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.GroupBox phanquyen_gb;
     }
 }

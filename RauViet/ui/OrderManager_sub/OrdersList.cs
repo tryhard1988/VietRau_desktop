@@ -489,7 +489,7 @@ namespace RauViet.ui
                 {
                     dv.RowFilter = $"CustomerID = {customerId}";
                 }
-
+                dv.Sort = "ProductNameVN ASC";
                 cusProduct_GV.DataSource = dv;
             }
         }

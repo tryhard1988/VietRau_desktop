@@ -1,4 +1,5 @@
-﻿using RauViet.classes;
+﻿using DocumentFormat.OpenXml.Vml.Office;
+using RauViet.classes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -17,10 +18,12 @@ namespace RauViet.ui
     {
         DataTable mEmployees_dt;
         bool isNewState = false;
+        Dictionary<int, CheckBox> mRoles;
         public User()
         {
             InitializeComponent();
-
+            
+            mRoles = new Dictionary<int, CheckBox>();
             Utils.SetTabStopRecursive(this, false);
 
             int countTab = 0;
@@ -28,7 +31,6 @@ namespace RauViet.ui
             password_tb.TabIndex = countTab++; password_tb.TabStop = true;
             employee_cbb.TabIndex = countTab++; employee_cbb.TabStop = true;
             isActive_cb.TabIndex = countTab++; isActive_cb.TabStop = true;
-            phanquyen_clb.TabIndex = countTab++; phanquyen_clb.TabStop = true;
             LuuThayDoiBtn.TabIndex = countTab++; LuuThayDoiBtn.TabStop = true;
 
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
@@ -109,10 +111,7 @@ namespace RauViet.ui
                 employee_cbb.DisplayMember = "FullName";  // hiển thị tên
                 employee_cbb.ValueMember = "EmployeeCode";
 
-                phanquyen_clb.CheckOnClick = true;                
-                phanquyen_clb.DataSource = role_dt;
-                phanquyen_clb.DisplayMember = "RoleName";  // Hiển thị tên vai trò
-                phanquyen_clb.ValueMember = "RoleID";
+                LoadRolesToGroupBox(role_dt);
 
                 if (dataGV.Rows.Count > 0)
                 {
@@ -133,6 +132,54 @@ namespace RauViet.ui
             {
                 loading_lb.Visible = false; // ẩn loading
                 loading_lb.Enabled = true; // enable lại button
+            }
+        }
+
+        private void LoadRolesToGroupBox(DataTable role_dt)
+        {
+            phanquyen_gb.Controls.Clear(); // Xóa nội dung cũ
+
+            // Lấy danh sách nhóm
+            var groups = role_dt.AsEnumerable()
+                .GroupBy(r => r.Field<string>("RoleGroupName"))
+                .OrderBy(g => g.First().Field<int>("RoleGroupID"));
+
+            int yGroup = 50; // vị trí top bắt đầu cho nhóm
+
+            foreach (var g in groups)
+            {
+                // Tạo label làm tiêu đề nhóm
+                Label groupLabel = new Label
+                {
+                    Text = g.Key,
+                    Font = new Font(phanquyen_gb.Font, FontStyle.Bold),
+                    AutoSize = true,
+                    Location = new Point(10, yGroup)
+                };
+                phanquyen_gb.Controls.Add(groupLabel);
+
+                yGroup += groupLabel.Height + 5;
+
+                int xCheck = 50; // vị trí left bắt đầu cho checkbox
+                int yCheck = yGroup;
+
+                foreach (var row in g)
+                {
+                    int rolwID = row.Field<int>("RoleID");
+                    CheckBox cb = new CheckBox
+                    {
+                        Text = row.Field<string>("RoleName"),
+                        Tag = rolwID, 
+                        AutoSize = true,
+                        Location = new Point(xCheck, yCheck)
+                    };
+                    mRoles[rolwID] = cb;
+                    phanquyen_gb.Controls.Add(cb);
+
+                    yCheck += cb.Height + 2; // khoảng cách giữa checkbox
+                }
+
+                yGroup = yCheck + 10; // cách nhóm tiếp theo
             }
         }
 
@@ -169,18 +216,11 @@ namespace RauViet.ui
             employee_cbb.SelectedValue = employeeCode;
             isActive_cb.Checked = isActive;
 
-            for (int i = 0; i < phanquyen_clb.Items.Count; i++)
-                phanquyen_clb.SetItemChecked(i, false);
-
-            for (int i = 0; i < phanquyen_clb.Items.Count; i++)
+            foreach (var kv in mRoles)
             {
-                DataRowView item = (DataRowView)phanquyen_clb.Items[i];
-                int roleID = Convert.ToInt32(item["RoleID"]);
-
-                if (selectedRoleIDs.Contains(roleID))
-                {
-                    phanquyen_clb.SetItemChecked(i, true);
-                }
+                int roleId = kv.Key;
+                CheckBox cb = kv.Value;
+                cb.Checked = selectedRoleIDs.Contains(roleId);
             }
 
             status_lb.Text = "";
@@ -310,10 +350,7 @@ namespace RauViet.ui
         }
         private void saveBtn_Click(object sender, EventArgs e)
         {
-            var checkedIDs = phanquyen_clb.CheckedItems
-                              .Cast<DataRowView>()
-                              .Select(item => Convert.ToInt32(item["RoleID"]))
-                              .ToList();
+            var checkedIDs = mRoles.Where(kv => kv.Value.Checked).Select(kv => kv.Key).ToList();
 
             if (username_tb.Text.CompareTo("") == 0 || password_tb.Text.CompareTo("") == 0 || checkedIDs.Count == 0)
             {
@@ -392,8 +429,8 @@ namespace RauViet.ui
             isActive_cb.Checked = true;
             status_lb.Text = "";
 
-            for (int i = 0; i < phanquyen_clb.Items.Count; i++)
-                phanquyen_clb.SetItemChecked(i, false);
+            foreach (var kv in mRoles)
+                kv.Value.Checked = false;
 
             username_tb.Focus();
             info_gb.BackColor = newCustomerBtn.BackColor;
@@ -438,7 +475,7 @@ namespace RauViet.ui
             password_tb.ReadOnly = isReadOnly;
             employee_cbb.Enabled = !isReadOnly;
             isActive_cb.Enabled = !isReadOnly;
-            phanquyen_clb.Enabled = !isReadOnly;
+            phanquyen_gb.Enabled = !isReadOnly;
         }
     }
 }

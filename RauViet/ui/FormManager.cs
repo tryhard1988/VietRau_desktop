@@ -68,13 +68,20 @@ namespace RauViet.ui
             else
                 KhachHang_menuItem.Visible = false;
 
-            if (UserManager.Instance.hasRole_SanPham())
             {
-                productMain_menuitem.Click += Products_SKU_btn_Click;
-                productPacking_meniitem.Click += productPacking_btn_Click;
+                if (UserManager.Instance.hasRole_SanPhamChinh())
+                    productMain_menuitem.Click += Products_SKU_btn_Click;
+                else
+                    productMain_menuitem.Visible = false;
+
+                if (UserManager.Instance.hasRole_SanPhamQuyCach())
+                    productPacking_meniitem.Click += productPacking_btn_Click;
+                else
+                    productPacking_meniitem.Visible = false;
+
+                if (!UserManager.Instance.hasRole_SanPhamChinh() && !UserManager.Instance.hasRole_SanPhamQuyCach())
+                    sanpham_group_mi.Visible = false;
             }
-            else
-                sanpham_group_mi.Visible = false;
 
             if (UserManager.Instance.hasRole_NhapLieuDonHang())
             {
@@ -98,19 +105,41 @@ namespace RauViet.ui
             {
                 donhang_group_mi.Visible = false;
             }
-
-            if (UserManager.Instance.hasRole_XuatExcelGuiKH())
             {
-                dkkd_menuitem.Click += dkkd_btn_Click;
-                phyto_menuitem.Click += phyto_btn_Click;
-                invoice_menuitem.Click += invoice_btn_Click;
-                packingTotal_menuitem.Click += packingTotal_btn_Click;
-                customerDetailPacking_mi.Click += customerDetailPacking_mi_Click;
-                chotphyto_mi.Click += ChotPhyto_mi_Click;
-            }
-            else
-                xuatExcelGuiKH_Group_mi.Visible = false;
+                if (UserManager.Instance.hasRole_DangKyKiemDich())
+                    dkkd_menuitem.Click += dkkd_btn_Click;
+                else
+                    dkkd_menuitem.Visible = false;
 
+                if (UserManager.Instance.hasRole_PHYTO())
+                    phyto_menuitem.Click += phyto_btn_Click;
+                else
+                    phyto_menuitem.Visible = false;
+
+                if (UserManager.Instance.hasRole_Chot_PHYTO())
+                    chotphyto_mi.Click += ChotPhyto_mi_Click;
+                else
+                    chotphyto_mi.Visible = false;
+
+                if (UserManager.Instance.hasRole_Invoice())
+                    invoice_menuitem.Click += invoice_btn_Click;
+                else
+                    invoice_menuitem.Visible = false;
+
+                if (UserManager.Instance.hasRole_PackingTotal())
+                    packingTotal_menuitem.Click += packingTotal_btn_Click;
+                else
+                    packingTotal_menuitem.Visible = false;
+
+                if (UserManager.Instance.hasRole_CustomerDetailPacking())
+                    customerDetailPacking_mi.Click += customerDetailPacking_mi_Click;
+                else
+                    customerDetailPacking_mi.Visible = false;
+
+                if (!UserManager.Instance.hasRole_CustomerDetailPacking() && !UserManager.Instance.hasRole_PackingTotal() && !UserManager.Instance.hasRole_Invoice() &&
+                    !UserManager.Instance.hasRole_Chot_PHYTO() && !UserManager.Instance.hasRole_PHYTO() && !UserManager.Instance.hasRole_DangKyKiemDich())
+                    xuatExcelGuiKH_Group_mi.Visible = false;
+            }
             if (UserManager.Instance.hasRole_ChamCong())
             {
                 attendanceHC_mi.Click += attendanceHC_mi_Click;
