@@ -4174,7 +4174,7 @@ namespace RauViet.classes
             return dt;
         }
 
-        public async Task InsertOrderPackingLogAsync(int exportCodeID, int orderID, string description, int? PCSReal, decimal? NWOrder, int? CartonNo, string CartonSize)
+        public async Task InsertOrderPackingLogAsync(int exportCodeID, int orderID, string description, int? PCSReal, decimal? NWReal, int? CartonNo, string CartonSize)
         {
             try
             {
@@ -4188,7 +4188,7 @@ namespace RauViet.classes
                         cmd.Parameters.AddWithValue("@OrderID", orderID);
                         cmd.Parameters.AddWithValue("@Description", (object)description ?? DBNull.Value);
                         cmd.Parameters.AddWithValue("@PCSReal", (object)PCSReal ?? DBNull.Value);
-                        cmd.Parameters.AddWithValue("@NWReal", (object)NWOrder ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@NWReal", (object)NWReal ?? DBNull.Value);
                         cmd.Parameters.AddWithValue("@CartonNo", (object)CartonNo ?? DBNull.Value);
                         cmd.Parameters.AddWithValue("@CartonSize", (object)CartonSize ?? DBNull.Value);
                         cmd.Parameters.AddWithValue("@ActionBy", UserManager.Instance.fullName);

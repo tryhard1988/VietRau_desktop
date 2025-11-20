@@ -1,6 +1,4 @@
 ﻿
-using DocumentFormat.OpenXml.Drawing;
-using DocumentFormat.OpenXml.Office2010.Excel;
 using Microsoft.VisualBasic;
 using RauViet.classes;
 using System;
@@ -16,7 +14,7 @@ namespace RauViet.ui
     public partial class OrderPackingList : Form
     {
         private LoadingOverlay loadingOverlay;
-        DataTable mExportCode_dt, mOrders_dt, mCartonSize_dt;
+        DataTable mExportCode_dt, mOrders_dt, mCartonSize_dt, mProductSKU_dt, mProductPacking_dt;
         DataView mOrderPackingLog_dv;
         private Timer debounceTimer = new Timer { Interval = 300 };
         string oldValue = "";
@@ -85,7 +83,8 @@ namespace RauViet.ui
 
             phieuCanHang_preview_btn.Click += PhieuCanHang_preview_btn_Click;
             phieuCanHang_btn.Click += PhieuCanHang_btn_Click;
-
+            tem_preview_btn.Click += Tem_preview_btn_Click;
+            inTem_btn.Click += InTem_btn_Click;
         }
 
         public async void ShowData()
@@ -99,11 +98,15 @@ namespace RauViet.ui
                 string[] keepColumns = { "ExportCodeID", "ExportCode", "ExportDate", "InputByName_NoSign" };
                 var parameters = new Dictionary<string, object> { { "Complete", false } };
                 var exportCodeTask = SQLStore.Instance.getExportCodesAsync(keepColumns, parameters);
+                var productSKUATask = SQLStore.Instance.getProductSKUAsync();
+                var productPackingTask = SQLStore.Instance.getProductpackingAsync();
 
-                await Task.WhenAll(exportCodeTask, cartonSizeTask);
+                await Task.WhenAll(exportCodeTask, cartonSizeTask, productSKUATask, productPackingTask);
 
                 mExportCode_dt = exportCodeTask.Result;
                 mCartonSize_dt = cartonSizeTask.Result;
+                mProductSKU_dt = productSKUATask.Result;
+                mProductPacking_dt = productPackingTask.Result;
 
                 if (mCurrentExportID <= 0 && mExportCode_dt.Rows.Count > 0)
                 {
@@ -398,121 +401,109 @@ namespace RauViet.ui
 
         private async void dataGV_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
-            if (!int.TryParse(exportCode_cbb.SelectedValue.ToString(), out int exportCodeId))
-            {
+            if (exportCode_cbb.SelectedValue == null || !int.TryParse(exportCode_cbb.SelectedValue.ToString(), out int exportCodeId))
                 return;
-            }
+            
             int orderId = -1;
             int? pcsReal = null;
             decimal? nwReal = null;
             int? cartonNo = null;
             string cartonSize = "";
+            var columnName = dataGV.Columns[e.ColumnIndex].Name;
             try
             {
-                if (dataGV.CurrentRow != null && e.ColumnIndex >= 0)
+                if (dataGV.CurrentRow == null || e.ColumnIndex < 0) return;
+
+                string newValue = dataGV.CurrentCell?.Value?.ToString() ?? "";//.Rows[e.RowIndex].Cells[e.ColumnIndex].Value?.ToString() ?? "";
+
+                if (newValue == oldValue) return;
+
+                var row = dataGV.CurrentRow;
+                if (row?.Cells["OrderId"].Value == null || row.Cells["OrderId"].Value == DBNull.Value)
+                    return;
+
+                orderId = Convert.ToInt32(row.Cells["OrderId"].Value);
+                DataRow orderRow = mOrders_dt.Select($"OrderId = {orderId}").FirstOrDefault();
+                if (orderRow == null) return;
+
+                if (columnName == "PCSReal")
+                    UpdateNWReal(orderRow);
+
+                if (columnName == "CartonNo")
+                    orderRow["CustomerCarton"] = DBNull.Value;
+
+                if (columnName == "PCSReal" || columnName == "NWReal")
                 {
-                    string newValue = dataGV.Rows[e.RowIndex].Cells[e.ColumnIndex].Value?.ToString() ?? "";
+                    int PCSReal = int.TryParse(orderRow["PCSReal"]?.ToString(), out var p) ? p : 0;
+                    decimal NWReal = decimal.TryParse(orderRow["NWReal"]?.ToString(), out var w) ? w : 0;
 
-                    if (newValue == oldValue)
+                    if (PCSReal == 0 && NWReal == 0)
                     {
-                        return;
-                    }
-
-                    var row = dataGV.CurrentRow;
-                    orderId = Convert.ToInt32(row.Cells["OrderId"].Value);
-                    DataRow[] matchingRows = mOrders_dt.Select($"OrderId = {orderId}");
-                    var columnName = dataGV.Columns[e.ColumnIndex].Name;
-
-                    DataRow orderRow = null;
-                    if (matchingRows.Length > 0)
-                    {
-                        orderRow = matchingRows[0];
-                    }
-
-                    if (columnName == "PCSReal")
-                    {
-                        UpdateNWReal(orderRow);
-                    }
-
-                    if (columnName == "CartonNo")
-                    {
+                        orderRow["CartonNo"] = DBNull.Value;
+                        orderRow["CartonSize"] = DBNull.Value;
                         orderRow["CustomerCarton"] = DBNull.Value;
-                    }
+                        orderRow["NWReal"] = DBNull.Value;
 
-                    if (columnName == "PCSReal" || columnName == "NWReal")
-                    {
-                        int PCSReal = 0;
-                        decimal NWReal = 0;
-                        int.TryParse(orderRow["PCSReal"].ToString(), out PCSReal);
-                        decimal.TryParse(orderRow["NWReal"].ToString(), out NWReal);
-                       
-                        if (PCSReal == 0 && NWReal == 0)
-                        {
-                            orderRow["CartonNo"] = DBNull.Value;
-                            orderRow["CartonSize"] = DBNull.Value;
-                            orderRow["CustomerCarton"] = DBNull.Value;
-                            orderRow["NWReal"] = DBNull.Value;
-
-                            if (columnName == "PCSReal")
-                                orderRow["PCSReal"] = DBNull.Value;
-                            else
-                                orderRow["PCSReal"] = 0;
-                        }
+                        if (columnName == "PCSReal")
+                            orderRow["PCSReal"] = DBNull.Value;
                         else
-                        {
-                            if (int.TryParse(cartonNo_tb.Text, out int cartonNo1))
-                            {
-                                if (int.TryParse(orderRow["CartonNo"].ToString(), out int cartonNo2))
-                                {
-                                    if (cartonNo2 != cartonNo1)
-                                        orderRow["CustomerCarton"] = DBNull.Value;
-                                }
-                                else
-                                    orderRow["CustomerCarton"] = DBNull.Value;
-
-                                orderRow["CartonNo"] = cartonNo1;
-                                if (!string.IsNullOrEmpty(cartonSize_cbb.Text))
-                                {
-                                    orderRow["CartonSize"] = cartonSize_cbb.Text;
-                                }
-                            }
-                            
-                        }
-                    }
-
-                    pcsReal = int.TryParse(orderRow["PCSReal"]?.ToString(), out int pcs) ? pcs : (int?)null;
-                    nwReal = decimal.TryParse(orderRow["NWReal"]?.ToString(), out decimal nw) ? nw : (decimal?)null;
-                    cartonNo = int.TryParse(orderRow["CartonNo"]?.ToString(), out int carton) ? carton : (int?)null;
-                    cartonSize = orderRow["CartonSize"]?.ToString();
-                    string customerCarton = orderRow["CustomerCarton"]?.ToString();
-                    var orders = new List<(int, int?, decimal?, int?, string, string)>();
-                    {
-                        orders.Add((orderId, pcsReal, nwReal, cartonNo, cartonSize, customerCarton));
-                    }
-                    ;
-                    bool isScussess = await SQLManager.Instance.UpdatePackOrdersBulkAsync(orders);
-                    if (!isScussess)
-                    {
-                        MessageBox.Show($"Cập Nhật Thất Bại", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        _ = SQLManager.Instance.InsertOrderPackingLogAsync(exportCodeId, orderId, "Update Thất Bại", pcsReal, nwReal, cartonNo, cartonSize);
+                            orderRow["PCSReal"] = 0;
                     }
                     else
                     {
-                        _ = SQLManager.Instance.InsertOrderPackingLogAsync(exportCodeId, orderId, "Update Thành Công", pcsReal, nwReal, cartonNo, cartonSize);
-                        status_lb.Text = "Thành công.";
-                        status_lb.ForeColor = System.Drawing.Color.Green;
+                        object cartonObj = orderRow["CartonNo"];
+                        bool isEmptyCarton = cartonObj == null || cartonObj == DBNull.Value ||
+                                     string.IsNullOrWhiteSpace(cartonObj.ToString());
+
+                        if (isEmptyCarton)
+                        {
+                            orderRow["CustomerCarton"] = DBNull.Value;
+                            if (int.TryParse(cartonNo_tb.Text, out int cartonNo1))
+                                orderRow["CartonNo"] = cartonNo1;
+                            else
+                                orderRow["CartonNo"] = DBNull.Value;
+                        }
+
+                        if (orderRow["CartonSize"] == DBNull.Value || string.IsNullOrWhiteSpace(orderRow["CartonSize"].ToString()))
+                        {
+                            orderRow["CartonSize"] = cartonSize_cbb.Text;
+                        }
+
+
                     }
                 }
+
+                pcsReal = int.TryParse(orderRow["PCSReal"]?.ToString(), out int pcs) ? pcs : (int?)null;
+                nwReal = decimal.TryParse(orderRow["NWReal"]?.ToString(), out decimal nw) ? nw : (decimal?)null;
+                cartonNo = int.TryParse(orderRow["CartonNo"]?.ToString(), out int carton) ? carton : (int?)null;
+                cartonSize = orderRow["CartonSize"]?.ToString();
+                string customerCarton = orderRow["CustomerCarton"]?.ToString();
+                var orders = new List<(int, int?, decimal?, int?, string, string)>{(orderId, pcsReal, nwReal, cartonNo, cartonSize, customerCarton)};
+               
+                bool isScussess = await SQLManager.Instance.UpdatePackOrdersBulkAsync(orders);
+                if (!isScussess)
+                {
+                    MessageBox.Show($"Cập Nhật Thất Bại", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    _ = SQLManager.Instance.InsertOrderPackingLogAsync(exportCodeId, orderId, columnName + ": Update Thất Bại", pcsReal, nwReal, cartonNo, cartonSize);
+                }
+                else
+                {
+                    _ = SQLManager.Instance.InsertOrderPackingLogAsync(exportCodeId, orderId, columnName + ": Update Thành Công", pcsReal, nwReal, cartonNo, cartonSize);
+                    status_lb.Text = "Thành công.";
+                    status_lb.ForeColor = System.Drawing.Color.Green;
+                }
             }
+
             catch (Exception ex)
             {
                 MessageBox.Show("Lỗi khi xử lý thay đổi dữ liệu:\n" + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                _ = SQLManager.Instance.InsertOrderPackingLogAsync(exportCodeId, orderId, "Update Thất Bại Do Exception: " + ex.Message, pcsReal, nwReal, cartonNo, cartonSize);
+                _ = SQLManager.Instance.InsertOrderPackingLogAsync(exportCodeId, orderId, columnName + ": Update Thất Bại Do Exception: " + ex.Message, pcsReal, nwReal, cartonNo, cartonSize);
             }
         }
 
         private void UpdateNWReal(DataRow row)
         {
+            if (row == null) return;
             var cellPCS = row["PCSReal"];
             if (cellPCS != null && int.TryParse(cellPCS.ToString(), out int pcs))
             {
@@ -658,7 +649,7 @@ namespace RauViet.ui
             }
             e.Cancel = edit_btn.Visible;
 
-            oldValue = dataGV.Rows[e.RowIndex].Cells[e.ColumnIndex].Value?.ToString() ?? "";
+            oldValue = dataGV.CurrentCell?.Value?.ToString() ?? "";// dataGV.Rows[e.RowIndex].Cells[e.ColumnIndex].Value?.ToString() ?? "";
         }
 
         private void Tb_KeyPress_OnlyNumber(object sender, KeyPressEventArgs e)
@@ -935,14 +926,7 @@ namespace RauViet.ui
                         if ((row["CustomerCarton"] ?? "").ToString() != custCarton)
                         {
                             row["CustomerCarton"] = custCarton;
-
-                            DataRow rowOrder = mOrders_dt.AsEnumerable()
-                                .FirstOrDefault(r => r.Field<int>("OrderId") == Convert.ToInt32(row["OrderId"]));
-                            if (rowOrder != null)
-                            {
-                                rowOrder["CustomerCarton"] = custCarton;
-                                changedRows.Add(row);
-                            }
+                            changedRows.Add(row);
                         }
                     }
                 }
@@ -1398,10 +1382,11 @@ namespace RauViet.ui
                 return;
             }
 
+            var orders = new List<(int, int?, decimal?, int?, string, string)>();
+            var logsSuccess = new List<(int, int, string, int?, decimal?, int?, string, string)>();
+            var logsFail = new List<(int, int, string, int?, decimal?, int?, string, string)>();
             try
-            {
-                var orders = new List<(int, int?, decimal?, int?, string, string)>();
-                var logs = new List<(int, int, string, int?, decimal?, int?, string, string)>();
+            {                
                 foreach (DataRow row in rows)
                 {
                     int orderId = Convert.ToInt32(row["OrderId"]);
@@ -1413,24 +1398,35 @@ namespace RauViet.ui
                     string customerCarton = row["CustomerCarton"]?.ToString();
 
                     orders.Add((orderId, pcsReal, nwReal, cartonNo, cartonSize, customerCarton));
-                    logs.Add((exportCodeId, orderId, "Update customerCarton", pcsReal, nwReal, cartonNo, cartonSize, customerCarton));
+                    logsSuccess.Add((exportCodeId, orderId, "customerCarton: Update Thành Công", pcsReal, nwReal, cartonNo, cartonSize, customerCarton));
+                    logsFail.Add((exportCodeId, orderId, "customerCarton: Update Thất Bại", pcsReal, nwReal, cartonNo, cartonSize, customerCarton));
                 }
 
                 bool isScussess = await SQLManager.Instance.UpdatePackOrdersBulkAsync(orders);
                 if (isScussess)
                 {
-                    _ = SQLManager.Instance.InsertOrderPackingLogBulkAsync(logs);
+                    _ = SQLManager.Instance.InsertOrderPackingLogBulkAsync(logsSuccess);
                     status_lb.Text = "Thành công.";
                     status_lb.ForeColor = System.Drawing.Color.Green;
                 }
                 else
                 {
+                    _ = SQLManager.Instance.InsertOrderPackingLogBulkAsync(logsFail);
                     MessageBox.Show("Cập nhật thất bại!");
                 }
 
             }
             catch (Exception ex)
             {
+                for (int i = 0; i < logsFail.Count; i++)
+                {
+                    var log = logsFail[i];
+                    logsFail[i] = (
+                        log.Item1,log.Item2,log.Item3 + " Exception: " + ex.Message,
+                        log.Item4,log.Item5,log.Item6,log.Item7, log.Item8
+                    );
+                }
+                _ = SQLManager.Instance.InsertOrderPackingLogBulkAsync(logsFail);
                 MessageBox.Show("Cập nhật thất bại!");
             }
         }
@@ -1853,6 +1849,44 @@ namespace RauViet.ui
             var value = carton_GV.CurrentRow.Cells["CustomerCarton"].Value;
 
             _ = PrintPhieuThung(false, value.ToString());
+        }
+
+        private void InTem(bool isPreview)
+        {
+            if (dataGV.CurrentRow == null) return;
+
+            var row = dataGV.CurrentRow;
+            int pPackingID = Convert.ToInt32(row.Cells["ProductPackingID"].Value);
+            int SKU = Convert.ToInt32(row.Cells["SKU"].Value);
+            string LOTCodeComplete = Convert.ToString(row.Cells["LOTCodeComplete"].Value);
+            DataRow[] SKURows = mProductSKU_dt.Select($"SKU = {SKU}");
+            DataRow[] packingRows = mProductPacking_dt.Select($"ProductPackingID = {pPackingID}");
+            if (SKURows.Length <= 0 || packingRows.Length <= 0) return;
+
+            string packing = row.Cells["packing"].Value.ToString();
+            int Amount = Convert.ToInt32(row.Cells["Amount"].Value);
+
+            var printer = new LabelPrinter(
+                SKURows[0]["ProductNameEN"].ToString(),
+                SKURows[0]["BotanicalName"].ToString(),
+                $"{Amount} {packing}",
+                packingRows[0]["BarCodeEAN13"].ToString(),
+                packingRows[0]["ArtNr"].ToString(),
+                LOTCodeComplete);
+            if (isPreview)
+                printer.PrintPreview();
+            else
+                printer.Print();
+        }
+        private void Tem_preview_btn_Click(object sender, EventArgs e)
+        {
+            InTem(true);
+        }
+
+
+        private void InTem_btn_Click(object sender, EventArgs e)
+        {
+            InTem(false);
         }
     }
 }

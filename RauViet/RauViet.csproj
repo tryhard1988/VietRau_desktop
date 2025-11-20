@@ -553,9 +553,11 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ui\OrderManager_sub\CustomerDetailPackingTotal.resx">
       <DependentUpon>CustomerDetailPackingTotal.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="ui\OrderManager_sub\ChotPhyto.resx">
       <DependentUpon>ChotPhyto.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="ui\OrderManager_sub\Do_CBM.resx">
       <DependentUpon>Do_CBM.cs</DependentUpon>
@@ -613,12 +615,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ui\PhanQuyen\DepartmentAllowance.resx">
       <DependentUpon>DepartmentAllowance.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="ui\PhanQuyen\AnnualLeaveBalance.resx">
       <DependentUpon>AnnualLeaveBalance.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="ui\PhanQuyen\AllowanceType.resx">
       <DependentUpon>AllowanceType.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="ui\PhanQuyen\LeaveAttendance.resx">
       <DependentUpon>LeaveAttendance.cs</DependentUpon>
@@ -634,6 +639,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ui\PhanQuyen\Attendance.resx">
       <DependentUpon>Attendance.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="ui\PhanQuyen\Holidays.resx">
       <DependentUpon>Holidays.cs</DependentUpon>
@@ -646,6 +652,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ui\PhanQuyen\Department.resx">
       <DependentUpon>Department.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="ui\PhanQuyen\User.resx">
       <DependentUpon>User.cs</DependentUpon>
@@ -664,6 +671,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ui\OrderManager_sub\DangKyKiemDinh.resx">
       <DependentUpon>DangKyKiemDinh.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="ui\OrderManager_sub\Do417.resx">
       <DependentUpon>Do417.cs</DependentUpon>
@@ -679,6 +687,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ui\OrderManager_sub\Customers.resx">
       <DependentUpon>Customers.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="ui\OrderManager_sub\ProductList.resx">
       <DependentUpon>ProductList.cs</DependentUpon>
@@ -721,6 +730,7 @@
     <Content Include="images\folder_icon.ico" />
     <Content Include="images\notes_icon.ico" />
     <Content Include="Resources\bg1.png" />
+    <Content Include="Resources\vr_label.png" />
     <None Include="Resources\ic_logo.png" />
     <Content Include="Resources\logo_vr.png" />
     <Content Include="Resources\logo_vr_1.png" />

@@ -1758,6 +1758,7 @@ namespace RauViet.classes
         private void editOrders(DataTable data)
         {
             data.Columns.Add(new DataColumn("Search_NoSign", typeof(string)));
+            data.Columns.Add(new DataColumn("SKU", typeof(int)));
             data.Columns.Add(new DataColumn("CustomerName", typeof(string)));
             data.Columns.Add(new DataColumn("CustomerCode", typeof(string)));
             data.Columns.Add(new DataColumn("ProductNameVN", typeof(string)));
@@ -1794,6 +1795,7 @@ namespace RauViet.classes
                 dr["ExportDate"] = exportCodeRows.Length > 0 ? Convert.ToDateTime(exportCodeRows[0]["ExportDate"]) : DateTime.Now;
             //    dr["PackingType"] = packingRows.Length > 0 ? packingRows[0]["PackingType"].ToString() : "";
                 dr["packing"] = packingRows.Length > 0 ? packingRows[0]["packing"].ToString() : "";
+                dr["SKU"] = packingRows.Length > 0 ? Convert.ToInt32(packingRows[0]["SKU"]) : 0;
                 string package = packingRows.Length > 0 ? packingRows[0]["Package"].ToString() : "";
                 dr["Package"] = package;
                 if (package.CompareTo("weight") == 0)
