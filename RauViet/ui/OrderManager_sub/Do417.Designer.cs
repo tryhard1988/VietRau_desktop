@@ -30,7 +30,10 @@ namespace RauViet.ui
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.dataGV = new System.Windows.Forms.DataGridView();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.logGV = new System.Windows.Forms.DataGridView();
             this.info_gb = new System.Windows.Forms.GroupBox();
             this.clpvdt_tb = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
@@ -44,23 +47,52 @@ namespace RauViet.ui
             this.label2 = new System.Windows.Forms.Label();
             this.exportCode_cbb = new System.Windows.Forms.ComboBox();
             this.status_lb = new System.Windows.Forms.Label();
-            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.dataGV = new System.Windows.Forms.DataGridView();
-            this.panel1.SuspendLayout();
-            this.info_gb.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
+            this.panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.logGV)).BeginInit();
+            this.info_gb.SuspendLayout();
             this.SuspendLayout();
+            // 
+            // contextMenuStrip1
+            // 
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(61, 4);
+            // 
+            // dataGV
+            // 
+            this.dataGV.AllowUserToAddRows = false;
+            this.dataGV.AllowUserToDeleteRows = false;
+            this.dataGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGV.Dock = System.Windows.Forms.DockStyle.Left;
+            this.dataGV.Location = new System.Drawing.Point(0, 0);
+            this.dataGV.Name = "dataGV";
+            this.dataGV.ReadOnly = true;
+            this.dataGV.Size = new System.Drawing.Size(837, 681);
+            this.dataGV.TabIndex = 10;
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.logGV);
             this.panel1.Controls.Add(this.info_gb);
             this.panel1.Controls.Add(this.exportCode_cbb);
             this.panel1.Controls.Add(this.status_lb);
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Right;
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(837, 0);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(427, 681);
-            this.panel1.TabIndex = 9;
+            this.panel1.TabIndex = 11;
+            // 
+            // logGV
+            // 
+            this.logGV.AllowUserToAddRows = false;
+            this.logGV.AllowUserToDeleteRows = false;
+            this.logGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.logGV.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.logGV.Location = new System.Drawing.Point(0, 467);
+            this.logGV.Name = "logGV";
+            this.logGV.ReadOnly = true;
+            this.logGV.Size = new System.Drawing.Size(427, 214);
+            this.logGV.TabIndex = 55;
             // 
             // info_gb
             // 
@@ -183,6 +215,7 @@ namespace RauViet.ui
             // 
             // exportCode_cbb
             // 
+            this.exportCode_cbb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.exportCode_cbb.FormattingEnabled = true;
             this.exportCode_cbb.Location = new System.Drawing.Point(0, 0);
             this.exportCode_cbb.Name = "exportCode_cbb";
@@ -200,50 +233,31 @@ namespace RauViet.ui
             this.status_lb.TabIndex = 26;
             this.status_lb.Text = "Email";
             // 
-            // contextMenuStrip1
-            // 
-            this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(61, 4);
-            // 
-            // dataGV
-            // 
-            this.dataGV.AllowUserToAddRows = false;
-            this.dataGV.AllowUserToDeleteRows = false;
-            this.dataGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGV.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dataGV.Location = new System.Drawing.Point(0, 0);
-            this.dataGV.Name = "dataGV";
-            this.dataGV.ReadOnly = true;
-            this.dataGV.Size = new System.Drawing.Size(837, 681);
-            this.dataGV.TabIndex = 10;
-            // 
             // Do417
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1264, 681);
-            this.Controls.Add(this.dataGV);
             this.Controls.Add(this.panel1);
+            this.Controls.Add(this.dataGV);
             this.Name = "Do417";
             this.Text = "FormTableData";
+            ((System.ComponentModel.ISupportInitialize)(this.dataGV)).EndInit();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.logGV)).EndInit();
             this.info_gb.ResumeLayout(false);
             this.info_gb.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGV)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
-        private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Label status_lb;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
-        private System.Windows.Forms.ComboBox exportCode_cbb;
         private System.Windows.Forms.DataGridView dataGV;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.DataGridView logGV;
         private System.Windows.Forms.GroupBox info_gb;
-        private System.Windows.Forms.TextBox nwdkkd_tb;
-        private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox clpvdt_tb;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox nwdt_tb;
@@ -252,5 +266,9 @@ namespace RauViet.ui
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox nwdh_tb;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TextBox nwdkkd_tb;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.ComboBox exportCode_cbb;
+        private System.Windows.Forms.Label status_lb;
     }
 }

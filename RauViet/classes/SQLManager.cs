@@ -2,6 +2,7 @@
 using DocumentFormat.OpenXml.Drawing.Charts;
 using DocumentFormat.OpenXml.Spreadsheet;
 using DocumentFormat.OpenXml.Vml.Office;
+using Mysqlx.Crud;
 using RauViet.ui;
 using System;
 using System.Collections.Generic;
@@ -22,6 +23,7 @@ namespace RauViet.classes
         private static readonly object padlock = new object();
         public readonly string ql_User_conStr = "Server=192.168.1.8,1433;Database=QL_User;User Id=ql_user;Password=A7t#kP2x;";
         public readonly string ql_kho_conStr = "Server=192.168.1.8,1433;Database=QL_Kho;User Id=ql_kho;Password=A7t#kP2x;";
+        public readonly string ql_kho_Log_conStr = "Server=192.168.1.8,1433;Database=QL_Kho_Log;User Id=ql_kho;Password=A7t#kP2x;";
         public readonly string ql_khoHis_conStr = "Server=192.168.1.8,1433;Database=QL_Kho_History;User Id=ql_kho_history;Password=A7t#kP2x;";
         public readonly string salaryLock_conStr = "Server=192.168.1.8,1433;Database=SalaryLock;User Id=salary_lock;Password=A7t#kP2x;";
         public readonly string qlnvHis_conStr = "Server=192.168.1.8,1433;Database=QLNV_VR_History;User Id=qlnv_vr_history;Password=A7t#kP2x;";
@@ -414,7 +416,6 @@ namespace RauViet.classes
                                 ExportDate=@ExportDate, 
                                 ExchangeRate=@ExchangeRate, 
                                 ShippingCost=@ShippingCost, 
-                                ModifiedAt=@ModifiedAt, 
                                 InputBy=@InputBy, 
                                 PackingBy=@PackingBy, 
                                 Complete=@Complete 
@@ -430,7 +431,6 @@ namespace RauViet.classes
                         cmd.Parameters.AddWithValue("@ExportCode", exportCode);
                         cmd.Parameters.AddWithValue("@ExportCodeIndex", exportCodeIndex);
                         cmd.Parameters.AddWithValue("@ExportDate", exportDate);
-                        cmd.Parameters.AddWithValue("@ModifiedAt", DateTime.Now);
                         cmd.Parameters.AddWithValue("@Complete", complete);
                         cmd.Parameters.AddWithValue("@InputBy", inputBy);
                         cmd.Parameters.AddWithValue("@PackingBy", packingBy);
@@ -460,7 +460,7 @@ namespace RauViet.classes
                     {
                         cmd.Parameters.AddWithValue("@ExportCode", exportCode);
                         cmd.Parameters.AddWithValue("@ExportCodeIndex", exportCodeIndex);
-                        cmd.Parameters.AddWithValue("@ExportDate", exportDate);
+                        cmd.Parameters.AddWithValue("@ExportDate", exportDate.Date);
                         cmd.Parameters.AddWithValue("@InputBy", inputBy);
                         cmd.Parameters.AddWithValue("@PackingBy", packingBy);
                         cmd.Parameters.AddWithValue("@ExchangeRate", exRate.HasValue ? (object)exRate.Value : DBNull.Value);
@@ -1809,23 +1809,6 @@ namespace RauViet.classes
                 MessageBox.Show("Đã xảy ra lỗi: " + ex.Message, "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
-        }
-
-        public async Task<DataTable> GetShiftAsync()
-        {
-            DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(conStr))
-            {
-                await con.OpenAsync();
-                string query = @"SELECT ShiftID, ShiftCode, ShiftName FROM Shift";
-
-                using (SqlCommand cmd = new SqlCommand(query, con))
-                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
-                {
-                    dt.Load(reader);
-                }
-            }
-            return dt;
         }
 
         public async Task<bool> UpsertAttendanceBatchAsync(List<(string EmployeeCode, DateTime WorkDate, double WorkingHours, string Note, string AttendanceLog)> attendanceData)
@@ -3994,7 +3977,7 @@ namespace RauViet.classes
 
         public async Task AutoUpdateCompleteExportCodeAsync()
         {
-            string query = "UPDATE ExportCodes SET Complete = 1 WHERE ExportCodeID IN (SELECT TOP 5 ExportCodeID FROM ExportCodes WHERE ExportDate <= DATEADD(DAY, -10, GETDATE()) AND Complete = 0 ORDER BY ExportCodeID DESC);";
+            string query = "UPDATE ExportCodes SET Complete = 1 WHERE ExportCodeID IN (SELECT TOP 5 ExportCodeID FROM ExportCodes WHERE ExportDate <= DATEADD(DAY, -5, GETDATE()) AND Complete = 0 ORDER BY ExportCodeID DESC);";
             try
             {
                 using (SqlConnection con = new SqlConnection(ql_kho_conStr))
@@ -4010,28 +3993,6 @@ namespace RauViet.classes
             {
                 Console.WriteLine($"Error Auto Update ExportCode: {ex.Message}");
             }
-        }
-
-        public async Task<bool> deleteOrderNotUseAsync(int exportCodeID)
-        {
-            string query = @"DELETE FROM Orders
-                                    WHERE (PCSReal IS NULL OR PCSReal <= 0)
-                                        AND (NWReal IS NULL OR NWReal <= 0)
-                                        AND (CartonSize IS NULL OR LTRIM(RTRIM(CartonSize)) = '')
-                                        AND ExportCodeID = @ExportCodeID;";
-            try
-            {
-                using (SqlConnection con = new SqlConnection(ql_kho_conStr))
-                {
-                    await con.OpenAsync();
-                    using (SqlCommand cmd = new SqlCommand(query, con))
-                    {
-                        await cmd.ExecuteNonQueryAsync();
-                    }
-                }
-                return true;
-            }
-            catch { return false; }
         }
 
         public async Task<DataTable> get3LatestOrdersAsync()
@@ -4058,5 +4019,314 @@ namespace RauViet.classes
             return dt;
         }
 
+        public async Task<DataTable> GetExportCodeLogAsync()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT * FROM ExportCode_Log";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
+        }
+
+        public async Task InsertExportCodeLogAsync(string exportCode, string description, DateTime? exportDate, decimal? exRate, decimal? shippingCost, string inputBy, string packingBy, bool complete)
+        {
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand("sp_Insert_ExportCode_Log", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@ExportCode", exportCode);
+                        cmd.Parameters.AddWithValue("@Description", (object)description ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@ExportDate", (object)exportDate ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@ExRate", (object)exRate ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@ShippingCost", (object)shippingCost ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@InputBy", (object)inputBy ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@PackingBy", (object)packingBy ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@Complete", complete);
+                        cmd.Parameters.AddWithValue("@CreatedBy", UserManager.Instance.fullName);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error Auto Update ExportCode: {ex.Message}");
+            }
+        }
+
+        public async Task AutoDeleteExportCodeLogAsync()
+        {
+            string query = "DELETE FROM ExportCode_Log WHERE  CreatedDate < DATEADD(MONTH, -4, GETDATE());";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error deleting ExportCode Log: {ex.Message}");
+            }
+        }
+
+        public async Task<DataTable> GetOrderLogAsync(int exportCodeID)
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT * FROM Order_Log WHERE ExportCodeID = @ExportCodeID";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    cmd.Parameters.AddWithValue("@ExportCodeID", exportCodeID);
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
+        }
+        public async Task InsertOrderLogAsync(int exportCodeID, int orderID, string description, string customer, string productName, int? OrderPCS, decimal? OrderNW)
+        {
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand("sp_Insert_Order_Log", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@ExportCodeID", exportCodeID);
+                        cmd.Parameters.AddWithValue("@OrderID", orderID);
+                        cmd.Parameters.AddWithValue("@Description", (object)description ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@Customer", (object)customer ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@ProductName", (object)productName ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@OrderPCS", (object)OrderPCS ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@OrderNW", (object)OrderNW ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@ActionBy", UserManager.Instance.fullName);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error Insert Order Log: {ex.Message}");
+            }
+        }
+
+        public async Task AutoDeleteOrderLogAsync()
+        {
+            string query = "DELETE FROM Order_Log WHERE  CreateAt < DATEADD(MONTH, -4, GETDATE());";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error deleting Order Log: {ex.Message}");
+            }
+        }
+
+        public async Task<DataTable> GetOrderPackingLogAsync(int exportCodeID)
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT * FROM OrderPacking_Log WHERE ExportCodeID = @ExportCodeID";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    cmd.Parameters.AddWithValue("@ExportCodeID", exportCodeID);
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
+        }
+
+        public async Task InsertOrderPackingLogAsync(int exportCodeID, int orderID, string description, int? PCSReal, decimal? NWOrder, int? CartonNo, string CartonSize)
+        {
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand("sp_Insert_OrderPacking_Log", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@ExportCodeID", exportCodeID);
+                        cmd.Parameters.AddWithValue("@OrderID", orderID);
+                        cmd.Parameters.AddWithValue("@Description", (object)description ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@PCSReal", (object)PCSReal ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@NWReal", (object)NWOrder ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@CartonNo", (object)CartonNo ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@CartonSize", (object)CartonSize ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@ActionBy", UserManager.Instance.fullName);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error Insert Order Log: {ex.Message}");
+            }
+        }
+
+        public async Task InsertOrderPackingLogBulkAsync(List<(int exportCodeID, int orderID, string description, int? PCSReal, decimal? NWReal, int? CartonNo, string CartonSize, string CustomCarton)> logs)
+        {
+            DataTable dt = new DataTable();
+            dt.Columns.Add("ExportCodeID", typeof(int));
+            dt.Columns.Add("OrderID", typeof(int));
+            dt.Columns.Add("Description", typeof(string));
+            dt.Columns.Add("PCSReal", typeof(int));
+            dt.Columns.Add("NWReal", typeof(decimal));
+            dt.Columns.Add("CartonNo", typeof(int));
+            dt.Columns.Add("CartonSize", typeof(string));
+            dt.Columns.Add("ActionBy", typeof(string));
+            dt.Columns.Add("CustomCarton", typeof(string));
+
+            foreach (var log in logs)
+            {
+                dt.Rows.Add(
+                    log.exportCodeID,
+                    log.orderID,
+                    log.description ?? (object)DBNull.Value,
+                    log.PCSReal ?? (object)DBNull.Value,
+                    log.NWReal ?? (object)DBNull.Value,
+                    log.CartonNo ?? (object)DBNull.Value,
+                    string.IsNullOrEmpty(log.CartonSize) ? (object)DBNull.Value : log.CartonSize,
+                    UserManager.Instance.fullName,
+                    log.CustomCarton
+                );
+            }
+
+            using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr))
+            {
+                await con.OpenAsync();
+                using (SqlCommand cmd = new SqlCommand("sp_Insert_OrderPacking_Log_Batch", con))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@LogTable", dt);
+                    await cmd.ExecuteNonQueryAsync();
+                }
+            }
+        }
+
+        public async Task AutoDeleteOrderPackingLogAsync()
+        {
+            string query = "DELETE FROM OrderPacking_Log WHERE  CreateAt < DATEADD(MONTH, -4, GETDATE());";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error deleting Order Packing Log: {ex.Message}");
+            }
+        }
+
+        public async Task<DataTable> GetDo47LogAsync(int exportCodeID)
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT * FROM Do47_Log WHERE ExportCodeID = @ExportCodeID";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    cmd.Parameters.AddWithValue("@ExportCodeID", exportCodeID);
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
+        }
+
+        public async Task InsertDo47LogAsync(int exportCodeID, int productPackingID, string description, decimal? NWOrder, decimal? NWFinal, decimal? NWReal)
+        {
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand("sp_Insert_Do47_Log", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@ExportCodeID", exportCodeID);
+                        cmd.Parameters.AddWithValue("@ProductPackingID", productPackingID);
+                        cmd.Parameters.AddWithValue("@Description", (object)description ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@NWOrder", (object)NWOrder ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@NWReal", (object)NWReal ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@NetWeightFinal", (object)NWFinal ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@ActionBy", UserManager.Instance.fullName);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error Insert Do47 Log: {ex.Message}");
+            }
+        }
+
+        public async Task AutoDeleteDo47LogAsync()
+        {
+            string query = "DELETE FROM Do47_Log WHERE  CreateAt < DATEADD(MONTH, -4, GETDATE());";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error deleting Do 47 Log: {ex.Message}");
+            }
+        }
     }
 }

@@ -21,6 +21,7 @@ namespace RauViet.ui
     public partial class ExportCodes : Form
     {
         System.Data.DataTable _employeesInDongGoi_dt;
+        DataView mExportCodeLog_dv;
         bool isNewState = false;
         public ExportCodes()
         {
@@ -69,16 +70,19 @@ namespace RauViet.ui
                 {
                     try
                     {
+                        string exportCode = dataGV.CurrentRow.Cells["ExportCode"].Value.ToString();
                         int exportCodeID = Convert.ToInt32(dataGV.CurrentRow.Cells["ExportCodeID"].Value);
                         bool isScussess = await SQLManager.Instance.updateNewPriceInOrderListWithExportCodeAsync(exportCodeID);
                         if(isScussess == true)
                         {
                             _= SQLStore.Instance.getOrdersAsync(exportCodeID, true);
                             MessageBox.Show("Thành Công", " Thay Đổi Giá", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            _ = SQLManager.Instance.InsertExportCodeLogAsync(exportCode, "Cập Nhật Giá Thành Công", null, null, null, "", "", false);
                         }
                         else
                         {
                             MessageBox.Show("Thất Bại", " Thay Đổi Giá", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            _ = SQLManager.Instance.InsertExportCodeLogAsync(exportCode, "Cập Nhật Giá Thất Bại", null, null, null, "", "", false);
                         }
                     }
                     catch (Exception ex)
@@ -142,19 +146,21 @@ namespace RauViet.ui
             {
                 // Chạy truy vấn trên thread riêng
                 var exportCodeTask = SQLStore.Instance.getExportCodesAsync();
+                var ExportCodeLogTask = SQLStore.Instance.GetExportCodeLogAsync();
                 var employeesInDongGoiTask = SQLStore.Instance.GetActiveEmployeesIn_DongGoiAsync();
 
-                await Task.WhenAll(exportCodeTask, employeesInDongGoiTask);
+                await Task.WhenAll(exportCodeTask, employeesInDongGoiTask, ExportCodeLogTask);
 
                 System.Data.DataTable exportCode_dt = exportCodeTask.Result;
                 _employeesInDongGoi_dt = employeesInDongGoiTask.Result;
 
+                mExportCodeLog_dv = new DataView(ExportCodeLogTask.Result);
+                log_GV.DataSource = mExportCodeLog_dv;
                 dataGV.DataSource = exportCode_dt;
 
                 dataGV.Columns["ExportCode"].HeaderText = "Mã Xuất Cảng";
                 dataGV.Columns["ExportDate"].HeaderText = "Ngày Xuất Cảng";                
                 dataGV.Columns["Complete"].HeaderText = "Hoàn Thành";
-                dataGV.Columns["ModifiedAt"].HeaderText = "Ngày Thay đổi";
                 dataGV.Columns["InputByName"].HeaderText = "NV Nhập S.Liệu";
                 dataGV.Columns["PackingByName"].HeaderText = "NV Đóng Gói";
 
@@ -163,13 +169,14 @@ namespace RauViet.ui
                 dataGV.Columns["Complete"].Width = 90;
                 dataGV.Columns["InputByName"].Width = 150;
                 dataGV.Columns["PackingByName"].Width = 150;
-                dataGV.Columns["ModifiedAt"].Width = 150;
 
                 dataGV.Columns["InputByName_NoSign"].Visible = false;
                 dataGV.Columns["ExportCodeID"].Visible = false;
                 dataGV.Columns["ExportCodeIndex"].Visible = false;
                 dataGV.Columns["InputBy"].Visible = false;
                 dataGV.Columns["PackingBy"].Visible = false;
+                log_GV.Columns["ExportCode"].Visible = false;
+                log_GV.Columns["LogID"].Visible = false;
 
                 inputBy_cbb.DataSource = _employeesInDongGoi_dt;
                 inputBy_cbb.DisplayMember = "FullName";  // hiển thị tên
@@ -211,7 +218,7 @@ namespace RauViet.ui
             if (rowIndex < 0)
                 return;
 
-            updateRightUI(rowIndex);
+            updateRightUI(rowIndex); 
         }
 
         private void updateRightUI(int index)
@@ -219,6 +226,7 @@ namespace RauViet.ui
             if (isNewState) return;
 
             var cells = dataGV.Rows[index].Cells;
+            string exportCode = cells["ExportCode"].Value.ToString();
             int exportCodeID = Convert.ToInt32(cells["ExportCodeID"].Value);
             int exportCodeIndex = Convert.ToInt32(cells["ExportCodeIndex"].Value);
             decimal exRate = Convert.ToDecimal(cells["ExchangeRate"].Value);
@@ -268,6 +276,7 @@ namespace RauViet.ui
                 complete_cb.BackColor = Color.DarkGray; // background
             }
 
+            mExportCodeLog_dv.RowFilter = $"ExportCode = '{exportCode}'";
             completeCB_CheckedChanged(null, null);
         }
 
@@ -284,26 +293,25 @@ namespace RauViet.ui
                         try
                         {
                             bool isScussess = await SQLManager.Instance.updateExportCodeAsync(exportCodeID, exportCode, exportCodeIndex, exportDate, exRate, shippingCost, inputBy, packingBy, complete);
+                            DataRow[] inputByRow = _employeesInDongGoi_dt.Select($"EmployeeID = {inputBy}");
+                            DataRow[] packingByRow = _employeesInDongGoi_dt.Select($"EmployeeID = {packingBy}");
 
                             if (isScussess == true)
                             {
                                 status_lb.Text = "Thành công.";
                                 status_lb.ForeColor = Color.Green;
 
-                                DataRow[] inputByRow = _employeesInDongGoi_dt.Select($"EmployeeID = {inputBy}");
-                                DataRow[] packingByRow = _employeesInDongGoi_dt.Select($"EmployeeID = {packingBy}");
-
+                                _ = SQLManager.Instance.InsertExportCodeLogAsync(exportCode, "Update Thành Công", exportDate, exRate, shippingCost, inputByRow[0]["FullName"].ToString(), packingByRow[0]["FullName"].ToString(), complete);
 
                                 row.Cells["ExportCodeIndex"].Value = exportCodeIndex;
                                 row.Cells["ExportCode"].Value = exportCode;
                                 row.Cells["ExportDate"].Value = exportDate;
-                                row.Cells["ModifiedAt"].Value = DateTime.Now;
                                 row.Cells["Complete"].Value = complete;
                                 row.Cells["ExchangeRate"].Value = exRate ?? (object)DBNull.Value;
                                 row.Cells["ShippingCost"].Value = shippingCost ?? (object)DBNull.Value;
                                 row.Cells["InputBy"].Value = inputBy;
                                 row.Cells["PackingBy"].Value = packingBy;
-                                row.Cells["InputByName"].Value = inputByRow[0]["FullName"].ToString(); ;
+                                row.Cells["InputByName"].Value = inputByRow[0]["FullName"].ToString();
                                 row.Cells["PackingByName"].Value = packingByRow[0]["FullName"].ToString();
                                 row.Cells["InputByName_NoSign"].Value = Utils.RemoveVietnameseSigns(inputByRow[0]["FullName"].ToString()).Replace(" ", "");
 
@@ -316,19 +324,17 @@ namespace RauViet.ui
                             }
                             else
                             {
+                                _ = SQLManager.Instance.InsertExportCodeLogAsync(exportCode, "Update Thất Bại", exportDate, exRate, shippingCost, inputByRow[0]["FullName"].ToString(), packingByRow[0]["FullName"].ToString(), complete);
                                 status_lb.Text = "Thất bại.";
                                 status_lb.ForeColor = Color.Red;
                             }
                         }
                         catch (Exception ex)
                         {
+                            _ = SQLManager.Instance.InsertExportCodeLogAsync(exportCode, "Update Thất Bại do Exception: " + ex.Message, exportDate, exRate, shippingCost, "", "", complete);
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;
                         }
-
-
-
-
                     }
                     break;
                 }
@@ -343,11 +349,12 @@ namespace RauViet.ui
             {
                 try
                 {
+                    DataRow[] inputByRow = _employeesInDongGoi_dt.Select($"EmployeeID = {inputBy}");
+                    DataRow[] packingByRow = _employeesInDongGoi_dt.Select($"EmployeeID = {packingBy}");
                     int newId = await SQLManager.Instance.insertExportCodeAsync(exportCode, exportCodeIndex, exportDate, exRate, shippingCost, inputBy, packingBy);
                     if (newId > 0)
                     {
-                        DataRow[] inputByRow = _employeesInDongGoi_dt.Select($"EmployeeID = {inputBy}");
-                        DataRow[] packingByRow = _employeesInDongGoi_dt.Select($"EmployeeID = {packingBy}");
+                        _ = SQLManager.Instance.InsertExportCodeLogAsync(exportCode, "Tạo Mới Thành Công", exportDate, exRate, shippingCost, inputByRow[0]["FullName"].ToString(), packingByRow[0]["FullName"].ToString(), false);
 
                         System.Data.DataTable dataTable = (System.Data.DataTable)dataGV.DataSource;
                         DataRow drToAdd = dataTable.NewRow();
@@ -356,7 +363,6 @@ namespace RauViet.ui
                         drToAdd["ExportCode"] = exportCode;
                         drToAdd["ExportCodeIndex"] = exportCodeIndex;
                         drToAdd["ExportDate"] = exportDate;
-                        drToAdd["ModifiedAt"] = DateTime.Now;
                         drToAdd["Complete"] = false;
                         drToAdd["ExchangeRate"] = exRate ?? (object)DBNull.Value;
                         drToAdd["ShippingCost"] = shippingCost ?? (object)DBNull.Value;
@@ -378,12 +384,14 @@ namespace RauViet.ui
                     }
                     else
                     {
+                        _ = SQLManager.Instance.InsertExportCodeLogAsync(exportCode, "Tạo Mới Thất Bại", exportDate, exRate, shippingCost, inputByRow[0]["FullName"].ToString(), packingByRow[0]["FullName"].ToString(), false);
                         status_lb.Text = "Thất bại";
                         status_lb.ForeColor = Color.Red;
                     }
                 }
                 catch (Exception ex)
                 {
+                    _ = SQLManager.Instance.InsertExportCodeLogAsync(exportCode, "Tạo Mới Thất Bại do Exception", exportDate, exRate, shippingCost, "", "", false);
                     status_lb.Text = "Thất bại.";
                     status_lb.ForeColor = Color.Red;
                 }
@@ -408,7 +416,7 @@ namespace RauViet.ui
 
             bool isAdded = await SQLStore.Instance.ExportHistoryIsAddedExportCode(exportCode, exportDate.Year);
             if (complete_cb.Checked && !isAdded)
-            {
+            {                
                 MessageBox.Show("Chưa xuất invoice, Vui lòng xuất Invoice trước khi Khóa!", "Thông Báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
@@ -439,6 +447,7 @@ namespace RauViet.ui
             foreach (DataGridViewRow row in dataGV.Rows)
             {
                 string exportCodeID = row.Cells["ExportCodeID"].Value.ToString();
+                string exportCode = row.Cells["ExportCode"].Value.ToString();
                 if (exportCodeID.CompareTo(id) == 0)
                 {
                     DialogResult dialogResult = MessageBox.Show(
@@ -455,6 +464,7 @@ namespace RauViet.ui
 
                             if (isScussess == true)
                             {
+                                _ = SQLManager.Instance.InsertExportCodeLogAsync(exportCode, "Xóa Thành Công", null, null, null, "", "", false);
                                 status_lb.Text = "Thành công.";
                                 status_lb.ForeColor = Color.Green;
 
@@ -530,6 +540,7 @@ namespace RauViet.ui
             shippingCost_tb.Enabled = true;
             complete_cb.Checked = false;
             complete_cb.AutoCheck = true;
+            exportdate_dtp.Enabled = true;
         }
 
         private void ReadOnly_btn_Click(object sender, EventArgs e)
@@ -546,7 +557,7 @@ namespace RauViet.ui
             updatePrice_btn.Visible = false;
             exRate_btn.Visible = false;
             autoCreateExportId_btn.Visible = false;
-
+            exportdate_dtp.Enabled = false;
             if (dataGV.SelectedRows.Count > 0)
             {
                 updateRightUI(0);
@@ -589,8 +600,7 @@ namespace RauViet.ui
 
         private void rightUIReadOnly(bool isReadOnly)
         {
-            exportCode_tb.ReadOnly = isReadOnly;
-            exportdate_dtp.Enabled = !isReadOnly;
+            exportCode_tb.ReadOnly = isReadOnly;            
             exRate_tb.ReadOnly = isReadOnly;            
             shippingCost_tb.ReadOnly = isReadOnly;
             inputBy_cbb.Enabled = !isReadOnly;

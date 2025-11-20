@@ -1,18 +1,9 @@
-﻿using DocumentFormat.OpenXml.Bibliography;
-using DocumentFormat.OpenXml.Drawing.Charts;
-using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
-using DocumentFormat.OpenXml.Spreadsheet;
-using RauViet.ui;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
-using System.IO.Packaging;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using DataTable = System.Data.DataTable;
 
 namespace RauViet.classes
@@ -53,7 +44,7 @@ namespace RauViet.classes
         DataTable mCusromer_dt = null;
         DataTable mCartonSize_dt = null;
         DataTable mlatestOrders_dt = null;
-
+        DataTable mExportCodeLog_dt = null;
         Dictionary<int, DataTable> mOrderLists;
         Dictionary<int, DataTable> mReportExportByYears;
         Dictionary<int, DataTable> mOrdersTotals;
@@ -65,7 +56,10 @@ namespace RauViet.classes
         Dictionary<int, DataTable> mOrderInvoice;
         Dictionary<int, DataTable> mOrderCusInvoices;
         Dictionary<int, DataTable> mOrderCartonInvoices;
-        Dictionary<int, DataTable> DetailPackingTotals;
+        Dictionary<int, DataTable> mDetailPackingTotals;
+        Dictionary<int, DataTable> mOrderLogs;
+        Dictionary<int, DataTable> mOrderPackingLogs;
+        Dictionary<int, DataTable> mDo47Logs;
         private SQLStore() { }
 
         public static SQLStore Instance
@@ -96,7 +90,10 @@ namespace RauViet.classes
                 mOrderInvoice = new Dictionary<int, DataTable>();
                 mOrderCusInvoices = new Dictionary<int, DataTable>();
                 mOrderCartonInvoices = new Dictionary<int, DataTable>();
-                DetailPackingTotals = new Dictionary<int, DataTable>();
+                mDetailPackingTotals = new Dictionary<int, DataTable>();
+                mOrderLogs = new Dictionary<int, DataTable>();
+                mOrderPackingLogs = new Dictionary<int, DataTable>();
+                mDo47Logs = new Dictionary<int, DataTable>();
 
                 var productSKUTask = SQLManager.Instance.getProductSKUAsync();
                 var productPackingTask = SQLManager.Instance.getProductpackingAsync();
@@ -2431,17 +2428,17 @@ namespace RauViet.classes
 
         public void removeDetailPackingTotal(int exportCodeID)
         {
-            DetailPackingTotals.Remove(exportCodeID);
+            mDetailPackingTotals.Remove(exportCodeID);
         }
         public async Task<DataTable> GetDetailPackingTotalAsync(int exportCodeID)
         {
-            if (!DetailPackingTotals.ContainsKey(exportCodeID))
+            if (!mDetailPackingTotals.ContainsKey(exportCodeID))
             {
                 DataTable dt = await SQLManager.Instance.GetDetailPackingTotalAsync(exportCodeID);
                 editDetailPackingTotal(dt);
-                DetailPackingTotals[exportCodeID] = dt;
+                mDetailPackingTotals[exportCodeID] = dt;
             }
-            return DetailPackingTotals[exportCodeID];
+            return mDetailPackingTotals[exportCodeID];
         }
 
         private void editDetailPackingTotal(DataTable data)
@@ -2549,6 +2546,45 @@ namespace RauViet.classes
             data.Columns["packing"].SetOrdinal(count++);
             data.Columns["PCSReal"].SetOrdinal(count++);
             data.Columns["CustomerCarton"].SetOrdinal(count++);
+        }
+
+        public async Task<DataTable> GetExportCodeLogAsync()
+        {
+            if (mExportCodeLog_dt == null)
+            {
+                mExportCodeLog_dt = await SQLManager.Instance.GetExportCodeLogAsync();
+            }
+            return mExportCodeLog_dt;
+        }
+
+        public async Task<DataTable> GetOrderLogAsync(int exportCodeID)
+        {
+            if (!mOrderLogs.ContainsKey(exportCodeID))
+            {
+                DataTable dt = await SQLManager.Instance.GetOrderLogAsync(exportCodeID);
+                mOrderLogs[exportCodeID] = dt;
+            }
+            return mOrderLogs[exportCodeID];
+        }
+
+        public async Task<DataTable> GetOrderPackingLogAsync(int exportCodeID)
+        {
+            if (!mOrderPackingLogs.ContainsKey(exportCodeID))
+            {
+                DataTable dt = await SQLManager.Instance.GetOrderPackingLogAsync(exportCodeID);
+                mOrderPackingLogs[exportCodeID] = dt;
+            }
+            return mOrderPackingLogs[exportCodeID];
+        }
+
+        public async Task<DataTable> GetDo47LogAsync(int exportCodeID)
+        {
+            if (!mDo47Logs.ContainsKey(exportCodeID))
+            {
+                DataTable dt = await SQLManager.Instance.GetDo47LogAsync(exportCodeID);
+                mDo47Logs[exportCodeID] = dt;
+            }
+            return mDo47Logs[exportCodeID];
         }
     }
 }

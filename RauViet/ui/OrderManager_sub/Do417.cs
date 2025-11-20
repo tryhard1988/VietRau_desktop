@@ -12,6 +12,7 @@ namespace RauViet.ui
     public partial class Do417 : Form
     {
         DataTable mExportCode_dt, mOrdersTotal_dt;
+        DataView mDo47Log_dv;
         private LoadingOverlay loadingOverlay;
         int mCurrentExportID = -1;
         public Do417()
@@ -35,7 +36,9 @@ namespace RauViet.ui
 
             dataGV.CellBeginEdit += dataGV_CellBeginEdit;
             this.KeyDown += Do417_KeyDown; ;
+            dataGV.SelectionChanged += DataGV_SelectionChanged; ;
         }
+
 
         private void Do417_KeyDown(object sender, KeyEventArgs e)
         {
@@ -70,7 +73,14 @@ namespace RauViet.ui
                                    .Max(r => r.Field<int>("ExportCodeID")));
                 }
 
-                mOrdersTotal_dt = await SQLStore.Instance.getOrdersTotalAsync(mCurrentExportID);
+                var ordersTotaltask = SQLStore.Instance.getOrdersTotalAsync(mCurrentExportID);
+                var do47LogTask = SQLStore.Instance.GetDo47LogAsync(mCurrentExportID);
+                await Task.WhenAll(ordersTotaltask, do47LogTask);
+
+                mOrdersTotal_dt = ordersTotaltask.Result;
+                mDo47Log_dv = new DataView(do47LogTask.Result);
+                logGV.DataSource = mDo47Log_dv;
+
                 DataView dv = new DataView(mOrdersTotal_dt);
                 dv.RowFilter = $"ExportCodeID = {mCurrentExportID}";
                 dataGV.DataSource = dv;
@@ -82,6 +92,9 @@ namespace RauViet.ui
                 dataGV.Columns["packing"].Visible = false;
                 dataGV.Columns["ExportCode"].Visible = false;
                 dataGV.Columns["SKU"].Visible = false;
+                logGV.Columns["LogID"].Visible = false;
+                logGV.Columns["ExportCodeID"].Visible = false;
+                logGV.Columns["ProductPackingID"].Visible = false;
 
                 dataGV.ReadOnly = false;
                 dataGV.Columns["NetWeightFinal"].ReadOnly = false;
@@ -90,6 +103,7 @@ namespace RauViet.ui
                 dataGV.Columns["ProductPackingID"].ReadOnly = true;
                 dataGV.Columns["Priority"].ReadOnly = true;
                 dataGV.Columns["NWDifference"].ReadOnly = true;
+                
 
                 dataGV.Columns["ProductNameVN"].HeaderText = "Tên Sản Phẩm";
                 dataGV.Columns["NWRegistration"].HeaderText = "N.W\nđkkd";
@@ -146,8 +160,15 @@ namespace RauViet.ui
                 return;
 
             mCurrentExportID = exportCodeId;
-            mOrdersTotal_dt = await SQLStore.Instance.getOrdersTotalAsync(exportCodeId);
 
+            var ordersTotaltask = SQLStore.Instance.getOrdersTotalAsync(mCurrentExportID);
+            var do47LogTask = SQLStore.Instance.GetDo47LogAsync(mCurrentExportID);
+            await Task.WhenAll(ordersTotaltask, do47LogTask);
+
+            mDo47Log_dv = new DataView(do47LogTask.Result);
+            logGV.DataSource = mDo47Log_dv;
+
+            mOrdersTotal_dt = ordersTotaltask.Result;
             DataView dv = new DataView(mOrdersTotal_dt);
             dv.RowFilter = $"ExportCodeID = {exportCodeId}";
             dataGV.DataSource = dv;
@@ -177,7 +198,9 @@ namespace RauViet.ui
                 var list = new List<(int ExportCodeID, int ProductPackingID, decimal? NetWeightFinal)>();
                 int exportCodeID = Convert.ToInt32(row.Cells["ExportCodeID"].Value);
                 int productPackingID = Convert.ToInt32(row.Cells["ProductPackingID"].Value);
-                
+                decimal nwOrder = Convert.ToDecimal(row.Cells["TotalNWOther"].Value);
+                decimal nwReal = Convert.ToDecimal(row.Cells["TotalNWReal"].Value);
+
                 decimal? netWeightFinal = null;
                 var nwValue = row.Cells["NetWeightFinal"].Value;
                 if (nwValue != null && nwValue != DBNull.Value)
@@ -193,9 +216,11 @@ namespace RauViet.ui
                     {
                         status_lb.Text = "Thành công.";
                         status_lb.ForeColor = System.Drawing.Color.Green;
+                        _ = SQLManager.Instance.InsertDo47LogAsync(exportCodeID, productPackingID, "Update Thành Công", nwOrder, netWeightFinal, nwReal);
                     }
                     else
                     {
+                        _ = SQLManager.Instance.InsertDo47LogAsync(exportCodeID, productPackingID, "Update Thất Bại", nwOrder, netWeightFinal, nwReal);
                         MessageBox.Show("Cập nhật thất bại!");
                     }
                 }
@@ -336,6 +361,23 @@ namespace RauViet.ui
                     return;
                 }
             }
+        }
+
+
+        private void DataGV_SelectionChanged(object sender, EventArgs e)
+        {
+            if (dataGV.CurrentRow == null) return;
+
+            if (exportCode_cbb.SelectedValue == null) return;
+            if (!int.TryParse(exportCode_cbb.SelectedValue.ToString(), out int exportCodeId))
+            {
+                return;
+            }
+
+            var currentRow = dataGV.CurrentRow;
+            int packingID = Convert.ToInt32(currentRow.Cells["ProductPackingID"].Value);
+
+            mDo47Log_dv.RowFilter = $"ProductPackingID = {packingID}";
         }
     }
 }

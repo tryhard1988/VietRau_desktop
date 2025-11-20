@@ -34,8 +34,13 @@ namespace RauViet.ui.PhanQuyen
         private async void Loading_Load(object sender, EventArgs e)
         {
             await Task.Delay(200);
-            _ = SQLManager.Instance.AutoDeleteLoginHistoryAsync();
-            _ = SQLManager.Instance.AutoUpdateCompleteExportCodeAsync();
+            var task1 = SQLManager.Instance.AutoDeleteLoginHistoryAsync();
+            var task2 = SQLManager.Instance.AutoDeleteExportCodeLogAsync();
+            var task3 = SQLManager.Instance.AutoUpdateCompleteExportCodeAsync();
+            var task4 = SQLManager.Instance.AutoDeleteOrderLogAsync();
+            var task5 = SQLManager.Instance.AutoDeleteOrderPackingLogAsync();
+            var task6 = SQLManager.Instance.AutoDeleteDo47LogAsync();
+            await Task.WhenAll(task1, task2, task3, task4, task5, task6);
             await SQLManager.Instance.AutoUpsertAnnualLeaveMonthListAsync();
             await SQLStore.Instance.preload_NhanSu();
             await SQLStore.Instance.preload_Suong();

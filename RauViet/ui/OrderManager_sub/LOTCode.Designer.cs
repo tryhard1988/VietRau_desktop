@@ -35,12 +35,14 @@ namespace RauViet.ui
             this.status_lb = new System.Windows.Forms.Label();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.dataGV = new System.Windows.Forms.DataGridView();
+            this.inTem_btn = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
             this.SuspendLayout();
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.inTem_btn);
             this.panel1.Controls.Add(this.exportCode_cbb);
             this.panel1.Controls.Add(this.status_lb);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Right;
@@ -51,6 +53,7 @@ namespace RauViet.ui
             // 
             // exportCode_cbb
             // 
+            this.exportCode_cbb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.exportCode_cbb.FormattingEnabled = true;
             this.exportCode_cbb.Location = new System.Drawing.Point(0, 3);
             this.exportCode_cbb.Name = "exportCode_cbb";
@@ -62,7 +65,7 @@ namespace RauViet.ui
             this.status_lb.AutoSize = true;
             this.status_lb.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.status_lb.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.status_lb.Location = new System.Drawing.Point(174, 254);
+            this.status_lb.Location = new System.Drawing.Point(229, 70);
             this.status_lb.Name = "status_lb";
             this.status_lb.Size = new System.Drawing.Size(55, 23);
             this.status_lb.TabIndex = 26;
@@ -84,6 +87,17 @@ namespace RauViet.ui
             this.dataGV.ReadOnly = true;
             this.dataGV.Size = new System.Drawing.Size(703, 681);
             this.dataGV.TabIndex = 10;
+            // 
+            // inTem_btn
+            // 
+            this.inTem_btn.BackColor = System.Drawing.SystemColors.MenuHighlight;
+            this.inTem_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.inTem_btn.Location = new System.Drawing.Point(211, 153);
+            this.inTem_btn.Name = "inTem_btn";
+            this.inTem_btn.Size = new System.Drawing.Size(94, 32);
+            this.inTem_btn.TabIndex = 53;
+            this.inTem_btn.Text = "In Tem";
+            this.inTem_btn.UseVisualStyleBackColor = false;
             // 
             // LOTCode
             // 
@@ -107,5 +121,6 @@ namespace RauViet.ui
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.ComboBox exportCode_cbb;
         private System.Windows.Forms.DataGridView dataGV;
+        private System.Windows.Forms.Button inTem_btn;
     }
 }

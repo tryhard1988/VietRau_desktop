@@ -40,6 +40,7 @@ namespace RauViet.ui
             this.search_tb = new System.Windows.Forms.TextBox();
             this.label15 = new System.Windows.Forms.Label();
             this.exportCode_search_cbb = new System.Windows.Forms.ComboBox();
+            this.logGV = new System.Windows.Forms.DataGridView();
             this.panel1 = new System.Windows.Forms.Panel();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.label8 = new System.Windows.Forms.Label();
@@ -77,6 +78,7 @@ namespace RauViet.ui
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
             this.panel4.SuspendLayout();
             this.panel3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.logGV)).BeginInit();
             this.panel1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.dddh_gb.SuspendLayout();
@@ -94,7 +96,7 @@ namespace RauViet.ui
             this.panel2.Dock = System.Windows.Forms.DockStyle.Left;
             this.panel2.Location = new System.Drawing.Point(0, 0);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(690, 681);
+            this.panel2.Size = new System.Drawing.Size(644, 681);
             this.panel2.TabIndex = 13;
             // 
             // dataGV
@@ -106,7 +108,7 @@ namespace RauViet.ui
             this.dataGV.Location = new System.Drawing.Point(0, 24);
             this.dataGV.Name = "dataGV";
             this.dataGV.ReadOnly = true;
-            this.dataGV.Size = new System.Drawing.Size(690, 637);
+            this.dataGV.Size = new System.Drawing.Size(644, 637);
             this.dataGV.TabIndex = 76;
             // 
             // panel4
@@ -118,7 +120,7 @@ namespace RauViet.ui
             this.panel4.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panel4.Location = new System.Drawing.Point(0, 661);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(690, 20);
+            this.panel4.Size = new System.Drawing.Size(644, 20);
             this.panel4.TabIndex = 75;
             // 
             // cus_lable
@@ -177,7 +179,7 @@ namespace RauViet.ui
             this.panel3.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel3.Location = new System.Drawing.Point(0, 0);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(690, 24);
+            this.panel3.Size = new System.Drawing.Size(644, 24);
             this.panel3.TabIndex = 73;
             // 
             // search_tb
@@ -205,10 +207,22 @@ namespace RauViet.ui
             this.exportCode_search_cbb.Dock = System.Windows.Forms.DockStyle.Right;
             this.exportCode_search_cbb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.exportCode_search_cbb.FormattingEnabled = true;
-            this.exportCode_search_cbb.Location = new System.Drawing.Point(522, 0);
+            this.exportCode_search_cbb.Location = new System.Drawing.Point(476, 0);
             this.exportCode_search_cbb.Name = "exportCode_search_cbb";
             this.exportCode_search_cbb.Size = new System.Drawing.Size(168, 21);
             this.exportCode_search_cbb.TabIndex = 37;
+            // 
+            // logGV
+            // 
+            this.logGV.AllowUserToAddRows = false;
+            this.logGV.AllowUserToDeleteRows = false;
+            this.logGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.logGV.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.logGV.Location = new System.Drawing.Point(644, 460);
+            this.logGV.Name = "logGV";
+            this.logGV.ReadOnly = true;
+            this.logGV.Size = new System.Drawing.Size(898, 221);
+            this.logGV.TabIndex = 82;
             // 
             // panel1
             // 
@@ -224,10 +238,10 @@ namespace RauViet.ui
             this.panel1.Controls.Add(this.priceCNF_tb);
             this.panel1.Controls.Add(this.orderId_tb);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Left;
-            this.panel1.Location = new System.Drawing.Point(690, 0);
+            this.panel1.Location = new System.Drawing.Point(644, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(416, 681);
-            this.panel1.TabIndex = 14;
+            this.panel1.Size = new System.Drawing.Size(416, 460);
+            this.panel1.TabIndex = 83;
             // 
             // groupBox1
             // 
@@ -575,11 +589,11 @@ namespace RauViet.ui
             this.cusProduct_GV.AllowUserToDeleteRows = false;
             this.cusProduct_GV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.cusProduct_GV.Dock = System.Windows.Forms.DockStyle.Left;
-            this.cusProduct_GV.Location = new System.Drawing.Point(1106, 0);
+            this.cusProduct_GV.Location = new System.Drawing.Point(1060, 0);
             this.cusProduct_GV.Name = "cusProduct_GV";
             this.cusProduct_GV.ReadOnly = true;
-            this.cusProduct_GV.Size = new System.Drawing.Size(486, 681);
-            this.cusProduct_GV.TabIndex = 79;
+            this.cusProduct_GV.Size = new System.Drawing.Size(393, 460);
+            this.cusProduct_GV.TabIndex = 84;
             // 
             // OrdersList
             // 
@@ -588,6 +602,7 @@ namespace RauViet.ui
             this.ClientSize = new System.Drawing.Size(1542, 681);
             this.Controls.Add(this.cusProduct_GV);
             this.Controls.Add(this.panel1);
+            this.Controls.Add(this.logGV);
             this.Controls.Add(this.panel2);
             this.Name = "OrdersList";
             this.Text = "FormTableData";
@@ -597,6 +612,7 @@ namespace RauViet.ui
             this.panel4.PerformLayout();
             this.panel3.ResumeLayout(false);
             this.panel3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.logGV)).EndInit();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.groupBox1.ResumeLayout(false);
@@ -614,14 +630,35 @@ namespace RauViet.ui
 
         #endregion
         private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.ComboBox exportCode_search_cbb;
+        private System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.TextBox search_tb;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.DataGridView dataGV;
+        private System.Windows.Forms.Panel panel4;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label cus_lable;
+        private System.Windows.Forms.Label cus_name_label;
+        private System.Windows.Forms.Label total_label;
+        private System.Windows.Forms.DataGridView logGV;
         private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.GroupBox dddh_gb;
+        private System.Windows.Forms.CheckBox dsdd_in2mat_cb;
+        private System.Windows.Forms.Button prewiew_print_DSDH_btn;
+        private System.Windows.Forms.Button print_order_list_btn;
+        private System.Windows.Forms.GroupBox tongdon_gb;
+        private System.Windows.Forms.CheckBox tongdon_in2mat_cb;
+        private System.Windows.Forms.Button printPendingOrderSummary_btn;
+        private System.Windows.Forms.Button preview_print_TD_btn;
         private System.Windows.Forms.Button exportExcel_TD_btn;
         private System.Windows.Forms.Label status_lb;
         private System.Windows.Forms.Button readOnly_btn;
         private System.Windows.Forms.Button newCustomerBtn;
         private System.Windows.Forms.Button edit_btn;
-        private System.Windows.Forms.Button preview_print_TD_btn;
-        private System.Windows.Forms.Button prewiew_print_DSDH_btn;
         private System.Windows.Forms.GroupBox info_gb;
         private System.Windows.Forms.ComboBox customer_ccb;
         private System.Windows.Forms.Label label2;
@@ -633,29 +670,9 @@ namespace RauViet.ui
         private System.Windows.Forms.TextBox netWeight_tb;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.ComboBox product_ccb;
-        private System.Windows.Forms.Button printPendingOrderSummary_btn;
-        private System.Windows.Forms.Button print_order_list_btn;
-        private System.Windows.Forms.ComboBox exportCode_search_cbb;
         private System.Windows.Forms.Button LuuThayDoiBtn;
         private System.Windows.Forms.TextBox priceCNF_tb;
         private System.Windows.Forms.TextBox orderId_tb;
-        private System.Windows.Forms.Panel panel3;
-        private System.Windows.Forms.TextBox search_tb;
-        private System.Windows.Forms.Label label15;
-        private System.Windows.Forms.DataGridView dataGV;
-        private System.Windows.Forms.Panel panel4;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label cus_lable;
-        private System.Windows.Forms.Label cus_name_label;
-        private System.Windows.Forms.Label total_label;
         private System.Windows.Forms.DataGridView cusProduct_GV;
-        private System.Windows.Forms.GroupBox tongdon_gb;
-        private System.Windows.Forms.CheckBox tongdon_in2mat_cb;
-        private System.Windows.Forms.GroupBox dddh_gb;
-        private System.Windows.Forms.CheckBox dsdd_in2mat_cb;
-        private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.Label label8;
     }
 }

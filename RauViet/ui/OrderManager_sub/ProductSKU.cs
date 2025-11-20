@@ -538,9 +538,6 @@ namespace RauViet.ui
             package_tb.Enabled = enable;
             packing_tb.Enabled = enable;
             botanicalName_tb.Enabled = enable;
-            plantingareaCode_tb.Enabled = enable;
-            lotCodeHeader_tb.Enabled = enable;
-            priority_tb.Enabled = enable;
         }
 
     }

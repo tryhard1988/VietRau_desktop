@@ -675,9 +675,6 @@ namespace RauViet.ui
             string keyword = Utils.RemoveVietnameseSigns(search_tb.Text.Trim().ToLower())
                      .Replace("'", "''"); // tránh lỗi cú pháp '
 
-           // DataTable dt = dataGV.DataSource as DataTable;
-           // if (dt == null) return;
-
             DataView dv = packing_dt.DefaultView;
             dv.RowFilter = $"[ProductNameVN_NoSign] LIKE '%{keyword}%' AND IsActive_SKU = true";
 
@@ -697,13 +694,9 @@ namespace RauViet.ui
 
         private void RightUiEnable(bool enable)
         {
-            barCodeEAN13_tb.Enabled = enable;
             PLU_tb.Enabled = enable;
             packing_panel.Enabled = enable;
             amount_tb.Enabled = enable;
-            barCode_tb.Enabled = enable;
-            artNr_tb.Enabled = enable;
-            GGN_tb.Enabled = enable;
         }
     }
 }

@@ -7,12 +7,14 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
 
 namespace RauViet.ui
 {
     public partial class OrdersList : Form
     {
         System.Data.DataTable mProductPacking_dt, mCustomers_dt, mProduct_dt, mExportCode_dt, mOrders_dt, mlatestOrders_dt;
+        DataView mOrderLog_dv;
         private Timer debounceTimer = new Timer { Interval = 150 };
         private LoadingOverlay loadingOverlay;
         bool isNewState = false;
@@ -71,6 +73,9 @@ namespace RauViet.ui
 
         private void OrdersList_KeyDown(object sender, KeyEventArgs e)
         {
+            DataRowView dataR = (DataRowView)exportCode_search_cbb.SelectedItem;
+            string staff = dataR["InputByName_NoSign"].ToString();
+
             if (e.KeyCode == Keys.F1)
             {
                 search_tb.Focus();
@@ -89,7 +94,7 @@ namespace RauViet.ui
                 SQLStore.Instance.removeLatestOrdersAsync();
                 ShowData();
             }
-            else if(!isNewState && !edit_btn.Visible)
+            else if(!isNewState && !edit_btn.Visible && UserManager.Instance.fullName_NoSign.CompareTo(staff) == 0)
             {
                 if (e.KeyCode == Keys.Delete)
                 {
@@ -173,10 +178,13 @@ namespace RauViet.ui
                                    .Max(r => r.Field<int>("ExportCodeID")));
                 }
 
+                var orderLogTask = SQLStore.Instance.GetOrderLogAsync(mCurrentExportID);
                 var othersTask = SQLStore.Instance.getOrdersAsync(mCurrentExportID);
                 var latestOrdersTask = SQLStore.Instance.get3LatestOrdersAsync();
-                await Task.WhenAll(othersTask, latestOrdersTask);
+                await Task.WhenAll(othersTask, latestOrdersTask, orderLogTask);
 
+                mOrderLog_dv = new DataView(orderLogTask.Result);
+                logGV.DataSource = mOrderLog_dv;
                 mOrders_dt = othersTask.Result;
                 mlatestOrders_dt = latestOrdersTask.Result;
 
@@ -240,8 +248,7 @@ namespace RauViet.ui
                 dataGV.Columns["Search_NoSign"].Visible = false;
                 dataGV.Columns["ProductPackingID"].Visible = false;
                 dataGV.Columns["ExportCodeID"].Visible = false;
-                dataGV.Columns["NWReal"].Visible = false;
-              //  dataGV.Columns["OrderPackingPriceCNF"].Visible = false;
+                dataGV.Columns["NWReal"].Visible = false;              
                 dataGV.Columns["CartonSize"].Visible = false;
                 dataGV.Columns["CustomerCarton"].Visible = false;
                 dataGV.Columns["LOTCode"].Visible = false;
@@ -255,6 +262,11 @@ namespace RauViet.ui
                 dataGV.Columns["ExportCode"].Visible = false;
                 dataGV.Columns["PCSReal"].Visible = false;
                 dataGV.Columns["CartonNo"].Visible = false;
+                dataGV.Columns["OrderPackingPriceCNF"].Visible = !UserManager.Instance.hasRole_AnGiaSanPham();
+
+                logGV.Columns["LogID"].Visible = false;
+                logGV.Columns["ExportCodeID"].Visible = false;
+                logGV.Columns["OrderID"].Visible = false;
 
 
                 dataGV.Columns["OrderId"].Width = 60;
@@ -386,7 +398,14 @@ namespace RauViet.ui
                 return;
 
             mCurrentExportID = exportCodeId;
-            mOrders_dt = await SQLStore.Instance.getOrdersAsync(exportCodeId);
+
+            var orderLogTask = SQLStore.Instance.GetOrderLogAsync(mCurrentExportID);
+            var othersTask = SQLStore.Instance.getOrdersAsync(mCurrentExportID);
+            await Task.WhenAll(othersTask, orderLogTask);
+
+            mOrderLog_dv = new DataView(orderLogTask.Result);
+            logGV.DataSource = mOrderLog_dv;
+            mOrders_dt = othersTask.Result;
             // Tạo DataView để filter
             DataView dv = new DataView(mOrders_dt);
             dv.RowFilter = $"ExportCodeID = {exportCodeId} AND (PCSOther > 0 OR NWOther > 0)";
@@ -567,7 +586,8 @@ namespace RauViet.ui
             netWeight_tb.Text = NWOther;
             priceCNF_tb.Text = orderPackingPriceCNF;
 
-           // product_ccb_SelectedIndexChanged(null, null);
+            // product_ccb_SelectedIndexChanged(null, null);
+            mOrderLog_dv.RowFilter = $"OrderId = {Convert.ToInt32(orderId)}";
         }
 
         private void updateNetWeight() {
@@ -606,6 +626,17 @@ namespace RauViet.ui
 
         private async void updateOrder(int orderId, int exportCodeId, int customerId, int packingId, int PCSOther, decimal NWOther, decimal priceCNF, bool isUpdateCusProduct)
         {
+            int mode = isUpdateCusProduct ? 1 : 2;
+
+            DataRow[] exportCodeRows = mExportCode_dt.Select($"ExportCodeID = {exportCodeId}");
+            DataRow[] customerRows = mCustomers_dt.Select($"CustomerID = {customerId}");
+            DataRow[] packingRows = mProductPacking_dt.Select($"ProductPackingID = {packingId}");
+            string cusName = customerRows.Length > 0 ? customerRows[0]["FullName"].ToString() : "Unknown";
+            string proVN = packingRows.Length > 0 ? packingRows[0]["Name_VN"].ToString() : "Unknown";
+            string package = packingRows.Length > 0 ? packingRows[0]["Package"].ToString() : "";
+            string packing = packingRows.Length > 0 ? packingRows[0]["packing"].ToString() : "";
+            int amount = packingRows.Length > 0 ? Convert.ToInt32(packingRows[0]["Amount"]) : 0;
+
             var rows = mOrders_dt.AsEnumerable()
                 .Where(r => r.Field<int>("ExportCodeID") == exportCodeId) // chỉ lấy ExportCode cần xử lý
                 .ToList();
@@ -636,7 +667,6 @@ namespace RauViet.ui
                             status_lb.Text = "Thành công.";
                             status_lb.ForeColor = System.Drawing.Color.Green;
 
-                            row["OrderId"] = orderId;
                             row["ExportCodeID"] = exportCodeId;
                             row["CustomerID"] = customerId;
                             row["ProductPackingID"] = packingId;
@@ -644,14 +674,7 @@ namespace RauViet.ui
                             row["NWOther"] = NWOther;
                             row["OrderPackingPriceCNF"] = priceCNF;
 
-                            DataRow[] exportCodeRows = mExportCode_dt.Select($"ExportCodeID = {exportCodeId}");
-                            DataRow[] customerRows = mCustomers_dt.Select($"CustomerID = {customerId}");
-                            DataRow[] packingRows = mProductPacking_dt.Select($"ProductPackingID = {packingId}");
-                            string cusName = customerRows.Length > 0 ? customerRows[0]["FullName"].ToString() : "Unknown";
-                            string proVN = packingRows.Length > 0 ? packingRows[0]["Name_VN"].ToString() : "Unknown";
-                            string package = packingRows.Length > 0 ? packingRows[0]["Package"].ToString() : "";
-                            string packing = packingRows.Length > 0 ? packingRows[0]["packing"].ToString() : "";
-                            int amount = packingRows.Length > 0 ? Convert.ToInt32(packingRows[0]["Amount"]) : 0;
+                            
                             row["ExportCode"] = exportCodeRows.Length > 0 ? exportCodeRows[0]["ExportCode"].ToString() : "Unknown";
                             row["Amount"] = amount;
                             row["Package"] = package;
@@ -664,17 +687,21 @@ namespace RauViet.ui
                             {
                                 updateCusProduct(customerId, packingId, cusName, priceCNF, PCSOther, NWOther, package, packing, amount);
                             }
+
+                            _ = SQLManager.Instance.InsertOrderLogAsync(exportCodeId, orderId, "Update M" + mode + " Thành Công", cusName, proVN, PCSOther, NWOther);
                         }
                         else
                         {
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = System.Drawing.Color.Red;
+                            _ = SQLManager.Instance.InsertOrderLogAsync(exportCodeId, orderId, "Update M" + mode + " Thất Bại", cusName, proVN, PCSOther, NWOther);
                         }
                     }
                     catch (Exception ex)
                     {
                         status_lb.Text = "Thất bại.";
                         status_lb.ForeColor = System.Drawing.Color.Red;
+                        _ = SQLManager.Instance.InsertOrderLogAsync(exportCodeId, orderId, "Update M" + mode + " Thất Bại Do Exception: " + ex.Message, cusName, proVN, PCSOther, NWOther);
                     }
                     
                     break;
@@ -684,6 +711,16 @@ namespace RauViet.ui
 
         private async void createOrder(int customerId, int exportCodeId, int packingId, int PCSOther, decimal NWOther, decimal priceCNF, bool isUpdateCusProduct)
         {
+            int mode = isUpdateCusProduct ? 1 : 2;
+            DataRow[] exportCodeRows = mExportCode_dt.Select($"ExportCodeID = {exportCodeId}");
+            DataRow[] customerRows = mCustomers_dt.Select($"CustomerID = {customerId}");
+            DataRow[] packingRows = mProductPacking_dt.Select($"ProductPackingID = {packingId}");
+            string cusName = customerRows.Length > 0 ? customerRows[0]["FullName"].ToString() : "Unknown";
+            string proVN = packingRows.Length > 0 ? packingRows[0]["Name_VN"].ToString() : "Unknown";
+            string package = packingRows.Length > 0 ? packingRows[0]["Package"].ToString() : "";
+            string packing = packingRows.Length > 0 ? packingRows[0]["packing"].ToString() : "";
+            int amount = packingRows.Length > 0 ? Convert.ToInt32(packingRows[0]["Amount"]) : 0;
+
             try
             {
                 int newId = await SQLManager.Instance.insertOrderAsync(customerId, exportCodeId, packingId, PCSOther, NWOther, priceCNF);
@@ -701,14 +738,7 @@ namespace RauViet.ui
                     drToAdd["OrderPackingPriceCNF"] = priceCNF;
                         
 
-                    DataRow[] exportCodeRows = mExportCode_dt.Select($"ExportCodeID = {exportCodeId}");
-                    DataRow[] customerRows = mCustomers_dt.Select($"CustomerID = {customerId}");
-                    DataRow[] packingRows = mProductPacking_dt.Select($"ProductPackingID = {packingId}");
-                    string cusName = customerRows.Length > 0 ? customerRows[0]["FullName"].ToString() : "Unknown";
-                    string proVN = packingRows.Length > 0 ? packingRows[0]["Name_VN"].ToString() : "Unknown";
-                    string package = packingRows.Length > 0 ? packingRows[0]["Package"].ToString() : "";
-                    string packing = packingRows.Length > 0 ? packingRows[0]["packing"].ToString() : "";
-                    int amount = packingRows.Length > 0 ? Convert.ToInt32(packingRows[0]["Amount"]) : 0;
+                    
                     drToAdd["Amount"] = amount;
                     drToAdd["Package"] = package;
                     drToAdd["packing"] = packing;
@@ -741,17 +771,21 @@ namespace RauViet.ui
                         updateCusProduct(customerId, packingId, proVN, priceCNF, PCSOther, NWOther, package, packing, amount);
                         newCustomerBtn_Click(null, null);
                     }
+
+                    _ = SQLManager.Instance.InsertOrderLogAsync(exportCodeId, newId, "Create M" + mode + " Thành Công", cusName, proVN, PCSOther, NWOther);
                 }
                 else
                 {
                     status_lb.Text = "Thất bại";
                     status_lb.ForeColor = System.Drawing.Color.Red;
+                    _ = SQLManager.Instance.InsertOrderLogAsync(exportCodeId, newId, "Create M" + mode + " Thất Bại", cusName, proVN, PCSOther, NWOther);
                 }
             }
             catch (Exception ex)
             {
                 status_lb.Text = "Thất bại.";
                 status_lb.ForeColor = System.Drawing.Color.Red;
+                _ = SQLManager.Instance.InsertOrderLogAsync(exportCodeId, -1, "Create M" + mode + " Thất Bại Do Exception: " + ex.Message, cusName, proVN, PCSOther, NWOther);
             }
         }
         private void saveBtn_Click(object sender, EventArgs e)
@@ -857,13 +891,16 @@ namespace RauViet.ui
 
         private async void deleteOrderProduct(int id, bool isUpdateCusPro)
         {
+            int mode = isUpdateCusPro ? 1 : 2;
+
             foreach (DataRow row in mOrders_dt.Rows)
             {
                 int orderId = Convert.ToInt32(row["OrderId"]);
                 if (id.CompareTo(orderId) == 0)
                 {
+                    int exportCodeId = Convert.ToInt32(row["ExportCodeID"]);
                     try
-                    {
+                    {   
                         bool isSuccess = await SQLManager.Instance.deleteOrderAsync(id);
 
                         if (isSuccess)
@@ -885,6 +922,7 @@ namespace RauViet.ui
                                 updateCusProduct(cusID, ppID, name, price, 0, 0, package, packing, amount);
                             }
 
+                            _ = SQLManager.Instance.InsertOrderLogAsync(exportCodeId, orderId, "Delete M" + mode + " Thành Công ", "", "", 0, 0);
                             // Xóa row khỏi DataTable
                             mOrders_dt.Rows.Remove(row);
                             mOrders_dt.AcceptChanges();
@@ -894,12 +932,14 @@ namespace RauViet.ui
                         {
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = System.Drawing.Color.Red;
+                            _ = SQLManager.Instance.InsertOrderLogAsync(exportCodeId, orderId, "Delete M" + mode + " Thất Bại ","", "", 0, 0);
                         }
                     }
                     catch (Exception ex)
                     {
                         status_lb.Text = "Thất bại.";
                         status_lb.ForeColor = System.Drawing.Color.Red;
+                        _ = SQLManager.Instance.InsertOrderLogAsync(exportCodeId, orderId, "Delete M" + mode + " Thất Bại Do Exception: " + ex.Message,"", "", 0, 0);
                     }
 
                     break; // Dừng vòng lặp sau khi xóa
@@ -959,6 +999,8 @@ namespace RauViet.ui
                 dataGV.FirstDisplayedScrollingRowIndex = dataGV.Rows.Count - 1;
             }
             customer_ccb.Focus();
+
+            logGV.Visible = false;
         }
 
         private void ReadOnly_btn_Click(object sender, EventArgs e)
@@ -975,6 +1017,8 @@ namespace RauViet.ui
 
             if (dataGV.SelectedRows.Count > 0)
                 _ = updateRightUI(0);
+
+            logGV.Visible = true;
         }
 
         private void Edit_btn_Click(object sender, EventArgs e)
@@ -993,6 +1037,8 @@ namespace RauViet.ui
             cusProduct_GV.Visible = canUseMode2 == false ? false : true;
             LuuThayDoiBtn.Text = "Lưu C.Sửa";
             setRightUIReadOnly(false);
+
+            logGV.Visible = false;
         }
 
         private void PCSOrder_tb_TextChanged(object sender, EventArgs e)

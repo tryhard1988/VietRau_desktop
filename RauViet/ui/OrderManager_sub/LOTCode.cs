@@ -35,7 +35,9 @@ namespace RauViet.ui
             dataGV.CellBeginEdit += dataGV_CellBeginEdit;
 
             this.KeyDown += LOTCode_KeyDown;
+            inTem_btn.Click += InTem_btn_Click;
         }
+
 
         private void LOTCode_KeyDown(object sender, KeyEventArgs e)
         {
@@ -277,6 +279,22 @@ namespace RauViet.ui
                     return;
                 }
             }
+        }
+
+        private void InTem_btn_Click(object sender, EventArgs e)
+        {
+            var label = new LabelInfo
+            {
+                ProductName_EN = "Lemon Grass",
+                BotanicalName = "Cymbopogon citratus",
+                PackingName = "500g x 20 bags",
+                BarCodeEAN13 = "8938505970012",
+                ArtNr = "ART-102",
+                LotCode = "LOT20250120"
+            };
+
+            var printer = new LabelPrinter(label);
+            printer.PrintPreview();
         }
     }
 }

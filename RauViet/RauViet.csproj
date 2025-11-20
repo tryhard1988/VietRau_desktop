@@ -165,7 +165,9 @@
   <ItemGroup>
     <Compile Include="classes\CurrencyHelper.cs" />
     <Compile Include="classes\DataTableExtensions.cs" />
+    <Compile Include="classes\Ean13Generator.cs" />
     <Compile Include="classes\ICanSave.cs" />
+    <Compile Include="classes\printer\LabelPrinter.cs" />
     <Compile Include="classes\printer\PhieuCanHangPrinter.cs" />
     <Compile Include="classes\printer\SalarySlipPrinter.cs" />
     <Compile Include="classes\printer\OrderListPrinter.cs" />
