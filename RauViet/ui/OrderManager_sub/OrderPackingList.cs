@@ -17,7 +17,7 @@ namespace RauViet.ui
         DataTable mExportCode_dt, mOrders_dt, mCartonSize_dt, mProductSKU_dt, mProductPacking_dt;
         DataView mOrderPackingLog_dv;
         private Timer debounceTimer = new Timer { Interval = 300 };
-        object oldValue = "";
+        object oldValue;
         int mCurrentExportID = -1;
         public OrderPackingList()
         {
@@ -141,6 +141,7 @@ namespace RauViet.ui
                 logGV.Columns["LogID"].Visible = false;
                 logGV.Columns["ExportCodeID"].Visible = false;
                 logGV.Columns["OrderID"].Visible = false;
+                dataGV.Columns["SKU"].Visible = false;
 
                 dataGV.ReadOnly = false;
                 dataGV.Columns["CartonNo"].ReadOnly = false;
@@ -1482,6 +1483,11 @@ namespace RauViet.ui
                 .ToList();
 
             var currentRow = dataGV.CurrentRow;
+
+            int orderID = Convert.ToInt32(currentRow.Cells["OrderID"].Value);
+            mOrderPackingLog_dv.RowFilter = $"OrderID = {orderID}";
+            mOrderPackingLog_dv.Sort = "LogID DESC";
+
             object val = currentRow.Cells["CartonNo"].Value;
             var pcsVal = currentRow.Cells["PCSOther"].Value;
             var nwVal = currentRow.Cells["NWOther"].Value;
@@ -1562,9 +1568,6 @@ namespace RauViet.ui
                 dathang_cn_lable.Text = "[null]";
                 dongthung_cn_lable.Text = "[null]";
             }
-
-            int orderID = Convert.ToInt32(currentRow.Cells["OrderID"].Value);
-            mOrderPackingLog_dv.RowFilter = $"OrderID = {orderID}";
         }
 
         private void search_txt_TextChanged(object sender, EventArgs e)
@@ -1906,7 +1909,7 @@ namespace RauViet.ui
                 LOTCodeComplete,
                 packedDate);
             if (isPreview)
-                printer.PrintPreview();
+                printer.PrintPreview(this);
             else
                 printer.Print();
 

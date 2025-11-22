@@ -1,10 +1,12 @@
-﻿using Org.BouncyCastle.Pqc.Crypto.Lms;
+﻿using DocumentFormat.OpenXml.Office2010.ExcelAc;
+using Org.BouncyCastle.Pqc.Crypto.Lms;
 using RauViet.classes;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -13,8 +15,10 @@ namespace RauViet.ui
     public partial class LOTCode : Form
     {
         DataTable mExportCode_dt, mLOTCode_dt;
+        DataView mLotCodeLog_dv;
         private LoadingOverlay loadingOverlay;
         int mCurrentExportID = -1;
+        object oldValue;
         public LOTCode()
         {
             InitializeComponent();
@@ -33,10 +37,11 @@ namespace RauViet.ui
             dataGV.CellEndEdit += dataGV_CellValueChanged;
             dataGV.KeyDown += dataGV_KeyDown;
             dataGV.CellBeginEdit += dataGV_CellBeginEdit;
-
+            dataGV.SelectionChanged += DataGV_SelectionChanged; ;
             this.KeyDown += LOTCode_KeyDown;
         }
 
+        
 
         private void LOTCode_KeyDown(object sender, KeyEventArgs e)
         {
@@ -71,7 +76,16 @@ namespace RauViet.ui
                     mCurrentExportID = Convert.ToInt32(mExportCode_dt.AsEnumerable()
                                    .Max(r => r.Field<int>("ExportCodeID")));
                 }
-                mLOTCode_dt = await SQLStore.Instance.GetLOTCodeAsync(mCurrentExportID);
+
+                var LOTCodeTask = SQLStore.Instance.GetLOTCodeAsync(mCurrentExportID);
+                var LOTCodeLogTask = SQLStore.Instance.GetLotCodeLogAsync(mCurrentExportID);
+
+                await Task.WhenAll(LOTCodeTask, LOTCodeLogTask);
+                mLOTCode_dt = LOTCodeTask.Result;
+
+                await FillMissingLotCodeComplete(mLOTCode_dt);
+                mLotCodeLog_dv = new DataView(LOTCodeLogTask.Result);
+                logGV.DataSource = mLotCodeLog_dv;
 
                 DataView dv = new DataView(mLOTCode_dt);
                 dv.RowFilter = $"ExportCodeID = {mCurrentExportID}";
@@ -80,7 +94,9 @@ namespace RauViet.ui
                 dataGV.Columns["SKU"].Visible = false;
                 dataGV.Columns["ExportCode"].Visible = false;
                 dataGV.Columns["ExportCodeID"].Visible = false;
-               // dataGV.Columns["LOTCodeHeader"].Visible = false;
+                logGV.Columns["LogID"].Visible = false;
+                logGV.Columns["ExportCodeID"].Visible = false;
+                logGV.Columns["SKU"].Visible = false;
 
                 dataGV.ReadOnly = false;
                 dataGV.Columns["LotCode"].ReadOnly = false;
@@ -131,7 +147,16 @@ namespace RauViet.ui
             if (!int.TryParse(exportCode_cbb.SelectedValue.ToString(), out int exportCodeId))
                 return;
             mCurrentExportID = exportCodeId;
-            mLOTCode_dt = await SQLStore.Instance.GetLOTCodeAsync(exportCodeId);
+
+            var LOTCodeTask = SQLStore.Instance.GetLOTCodeAsync(mCurrentExportID);
+            var LOTCodeLogTask = SQLStore.Instance.GetLotCodeLogAsync(mCurrentExportID);
+
+            await Task.WhenAll(LOTCodeTask, LOTCodeLogTask);
+
+            mLOTCode_dt = LOTCodeTask.Result;
+            mLotCodeLog_dv = new DataView(LOTCodeLogTask.Result);
+            logGV.DataSource = mLotCodeLog_dv;
+
             DataView dv = new DataView(mLOTCode_dt);
             dv.RowFilter = $"ExportCodeID = {exportCodeId}";
             dataGV.DataSource = dv;
@@ -146,6 +171,9 @@ namespace RauViet.ui
         {
             if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
             {
+                object newValue = dataGV.CurrentCell?.Value;
+                if (object.Equals(oldValue, newValue)) return;
+
                 var columnName = dataGV.Columns[e.ColumnIndex].Name;
                 var row = dataGV.CurrentRow;
                 if (columnName == "LOTCode")
@@ -156,6 +184,7 @@ namespace RauViet.ui
                 var list = new List<(int ExportCodeID, int SKU, string LOTCode, string LOTCodeComplete)>();
                 int exportCodeID = Convert.ToInt32(row.Cells["ExportCodeID"].Value);
                 int sku = Convert.ToInt32(row.Cells["SKU"].Value);
+                string lotCodeHeader = row.Cells["LOTCodeHeader"].Value.ToString();
                 string lotCode = row.Cells["LOTCode"].Value?.ToString();
                 string lotCodeComplete = row.Cells["LOTCodeComplete"].Value?.ToString();
 
@@ -167,16 +196,19 @@ namespace RauViet.ui
 
                     if (result)
                     {
+                        _ = SQLManager.Instance.InsertLotCodeLogAsync(exportCodeID, sku, $"{oldValue}: {columnName} Update Thành Công", lotCode, lotCodeHeader, lotCodeComplete);
                         status_lb.Text = "Thành công.";
                         status_lb.ForeColor = System.Drawing.Color.Green;
                     }
                     else
                     {
+                        _ = SQLManager.Instance.InsertLotCodeLogAsync(exportCodeID, sku, $"{oldValue}: {columnName} Update Thất Bại", lotCode, lotCodeHeader, lotCodeComplete);
                         MessageBox.Show("Cập nhật thất bại!");
                     }
                 }
-                catch
+                catch (Exception ex)
                 {
+                    _ = SQLManager.Instance.InsertLotCodeLogAsync(exportCodeID, sku, $"{oldValue}: {columnName} Update Thất Bại do Exception:  {ex.Message}", lotCode, lotCodeHeader, lotCodeComplete);
                     MessageBox.Show("Cập nhật thất bại!");
                 }
             }
@@ -268,6 +300,7 @@ namespace RauViet.ui
 
         private void dataGV_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
         {
+            oldValue = dataGV.CurrentCell?.Value;
             if (exportCode_cbb.SelectedItem != null)
             {
                 DataRowView dataR = (DataRowView)exportCode_cbb.SelectedItem;
@@ -278,6 +311,84 @@ namespace RauViet.ui
                     return;
                 }
             }
+        }
+
+        private void DataGV_SelectionChanged(object sender, EventArgs e)
+        {
+            if (dataGV.CurrentRow == null) return;
+
+            if (exportCode_cbb.SelectedValue == null) return;
+            if (!int.TryParse(exportCode_cbb.SelectedValue.ToString(), out int exportCodeId))
+            {
+                return;
+            }
+
+            var currentRow = dataGV.CurrentRow;
+            int SKU = Convert.ToInt32(currentRow.Cells["SKU"].Value);
+
+            mLotCodeLog_dv.RowFilter = $"SKU = {SKU}";
+            mLotCodeLog_dv.Sort = "LogID DESC";
+        }
+
+        public async Task FillMissingLotCodeComplete(DataTable sourceTable)
+        {
+            if (sourceTable == null || sourceTable.Rows.Count == 0)
+                return;
+
+            var list = new List<(int ExportCodeID, int SKU, string LOTCode, string LOTCodeComplete)>();
+            // Duyệt từng group theo SKU + ExportCodeID
+            foreach (var grp in sourceTable.AsEnumerable()
+                .GroupBy(r => new
+                {
+                    SKU = r.Field<int>("SKU"),
+                    ExportCodeID = r.Field<int>("ExportCodeID")
+                }))
+            {
+                // Lấy LotCodeComplete hợp lệ
+                var validLot = grp.Where(r => !string.IsNullOrWhiteSpace(r.Field<string>("LotCodeComplete")))
+                                .Select(r => new
+                                {
+                                    LotCode = r.Field<string>("LotCode"),
+                                    LotCodeComplete = r.Field<string>("LotCodeComplete")
+                                })
+                                .FirstOrDefault();
+
+                // Nếu group không có LotCodeComplete hợp lệ thì bỏ qua
+                if (validLot == null)
+                    continue;
+                                
+                // Fill các row bị rỗng
+                foreach (var row in grp.Where(r =>
+                    string.IsNullOrWhiteSpace(r.Field<string>("LotCodeComplete"))))
+                {
+                    row.SetField("LotCodeComplete", validLot.LotCodeComplete);
+                    row.SetField("LotCode", validLot.LotCode);
+
+                    int exportCodeID = Convert.ToInt32(row["ExportCodeID"]);
+
+                    list.Add((grp.Key.ExportCodeID, grp.Key.SKU, validLot.LotCode, validLot.LotCodeComplete));
+                }
+            }
+
+            if (list.Count > 0)
+            {
+                await SQLManager.Instance.UpsertOrdersLotCodesBySKUAsync(list);
+            }
+
+            var uniqueRows = sourceTable.AsEnumerable()
+        .GroupBy(r => new
+        {
+            SKU = r.Field<int>("SKU"),
+            ExportCodeID = r.Field<int>("ExportCodeID"),
+            LotCodeComplete = r.Field<string>("LotCodeComplete") ?? ""
+        })
+        .Select(g => g.First()) // Lấy row đầu tiên của group
+        .CopyToDataTable();
+
+            // Gán bảng đã lọc trùng ngược lại cho sourceTable
+            sourceTable.Clear();
+            foreach (DataRow r in uniqueRows.Rows)
+                sourceTable.ImportRow(r);
         }
     }
 }

@@ -243,7 +243,8 @@ namespace RauViet.ui
                 dataGV.Columns["OrderId"].HeaderText = "ID";
 
                 //dataGV.Columns["OrderId"].Visible = false;
-                
+
+                dataGV.Columns["SKU"].Visible = false;
                 dataGV.Columns["CustomerID"].Visible = false;
                 dataGV.Columns["Search_NoSign"].Visible = false;
                 dataGV.Columns["ProductPackingID"].Visible = false;
@@ -588,6 +589,7 @@ namespace RauViet.ui
 
             // product_ccb_SelectedIndexChanged(null, null);
             mOrderLog_dv.RowFilter = $"OrderId = {Convert.ToInt32(orderId)}";
+            mOrderLog_dv.Sort = "LogID DESC";
         }
 
         private void updateNetWeight() {

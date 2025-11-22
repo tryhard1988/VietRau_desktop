@@ -277,6 +277,7 @@ namespace RauViet.ui
             }
 
             mExportCodeLog_dv.RowFilter = $"ExportCode = '{exportCode}'";
+            mExportCodeLog_dv.Sort = "LogID DESC";
             completeCB_CheckedChanged(null, null);
         }
 

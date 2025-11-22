@@ -121,8 +121,8 @@ namespace RauViet.ui
                 exportCode_cbb.SelectedValue = mCurrentExportID;                
                 exportCode_cbb.SelectedIndexChanged += exportCode_search_cbb_SelectedIndexChanged;
 
-                
-                
+
+                UpdateRightUI();
             }
             catch (Exception ex)
             {
@@ -299,8 +299,6 @@ namespace RauViet.ui
             decimal ShippingCost = Convert.ToDecimal(((DataRowView)exportCode_cbb.SelectedItem)["ShippingCost"]);
             decimal ExchangeRate = Convert.ToDecimal(((DataRowView)exportCode_cbb.SelectedItem)["ExchangeRate"]);
 
-
-
             DataView dv1 = new DataView(mGroupCartonSize);
             dv1.RowFilter = $"ExportCodeID = '{exportCodeId}'";
             cartonSizeGroupGV.DataSource = dv1;
@@ -309,16 +307,28 @@ namespace RauViet.ui
             dv2.RowFilter = $"ExportCodeID = '{exportCodeId}'";
             cusGroupGV.DataSource = dv2;
 
+            UpdateRightUI();
+        }
+
+        private void UpdateRightUI()
+        {
+            var rows = mExportCode_dt.AsEnumerable().Where(r => r.Field<int>("ExportCodeID") == mCurrentExportID).ToList();
+
+            if (rows.Count <= 0) return;
+
+            decimal ShippingCost = Convert.ToDecimal(rows[0]["ShippingCost"]);
+            decimal ExchangeRate = Convert.ToDecimal(rows[0]["ExchangeRate"]);
+
             decimal totalCBM = 0;
             decimal totalChargeWeight = 0;
             int totalCarton = 0;
             decimal totalNWReal = 0;
             totalChargeWeight = 0;
             totalCarton = 0;
-            
+
 
             decimal totalAmount = mOrders_dt.AsEnumerable()
-                                            .Where(r => !r.IsNull("ExportCodeID") && r.Field<int>("ExportCodeID") == exportCodeId)
+                                            .Where(r => !r.IsNull("ExportCodeID") && r.Field<int>("ExportCodeID") == mCurrentExportID)
                                             .Sum(r =>
                                             {
                                                 if (r.IsNull("OrderPackingPriceCNF"))
@@ -334,19 +344,19 @@ namespace RauViet.ui
                                                     : price * pcsReal;
                                             });
 
-            object result = mGroupCartonSize.Compute( "SUM(ChargeWeight)", $"ExportCodeID = {exportCodeId}");
+            object result = mGroupCartonSize.Compute("SUM(ChargeWeight)", $"ExportCodeID = {mCurrentExportID}");
             if (result != DBNull.Value)
                 totalChargeWeight = Convert.ToDecimal(result);
 
-            object result1 = mOrders_dt.Compute("SUM(NWReal)", $"ExportCodeID = {exportCodeId}");
+            object result1 = mOrders_dt.Compute("SUM(NWReal)", $"ExportCodeID = {mCurrentExportID}");
             if (result1 != DBNull.Value)
                 totalNWReal = Convert.ToDecimal(result1);
 
-            object result2 = mGroupCartonSize.Compute("SUM(CountCarton)", $"ExportCodeID = {exportCodeId}");
+            object result2 = mGroupCartonSize.Compute("SUM(CountCarton)", $"ExportCodeID = {mCurrentExportID}");
             if (result2 != DBNull.Value)
                 totalCarton = Convert.ToInt32(result2);
 
-            object result3 = mGroupCartonSize.Compute("SUM(CBM)", $"ExportCodeID = {exportCodeId}");
+            object result3 = mGroupCartonSize.Compute("SUM(CBM)", $"ExportCodeID = {mCurrentExportID}");
             if (result3 != DBNull.Value)
                 totalCBM = Convert.ToInt32(result3);
 
@@ -356,7 +366,7 @@ namespace RauViet.ui
             netWeight_tb.Text = totalNWReal.ToString("#,##0.00");
             totalCBM_tb.Text = totalCBM.ToString("#,##0");
             totalAmount_tb.Text = totalAmount.ToString("F2");
-
         }
+
     }
 }

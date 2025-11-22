@@ -67,7 +67,7 @@ public class LabelPrinter
         }
     }
 
-    public void PrintPreview()
+    public void PrintPreview(Form owner)
     {
         isPreview = true;
         PrintDocument doc = CreateDocument();
@@ -76,7 +76,29 @@ public class LabelPrinter
         preview.Document = doc;
         preview.Width = pageWidth;
         preview.Height = pageHeight;
-        preview.ShowDialog();
+
+        foreach (Control c in preview.Controls)
+        {
+            if (c is ToolStrip ts)
+            {
+                foreach (ToolStripItem item in ts.Items)
+                {
+                    if (
+                        item.Name.Equals("print", StringComparison.OrdinalIgnoreCase) ||
+                        item.Name.Equals("printButton", StringComparison.OrdinalIgnoreCase) ||
+                        item.Name.Equals("toolStripButton1", StringComparison.OrdinalIgnoreCase) ||
+                        (item.ToolTipText?.Contains("Print") ?? false) ||
+                        (item.Text?.Contains("Print") ?? false)
+                       )
+                    {
+                        item.Visible = false;
+                    }
+                }
+            }
+        }
+
+
+        preview.ShowDialog(owner);
     }
 
     private void Doc_PrintPage(object sender, PrintPageEventArgs e)

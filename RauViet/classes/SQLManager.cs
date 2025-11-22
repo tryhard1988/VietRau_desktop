@@ -4328,5 +4328,72 @@ namespace RauViet.classes
                 Console.WriteLine($"Error deleting Do 47 Log: {ex.Message}");
             }
         }
+
+        public async Task<DataTable> GetLotCodeLogAsync(int exportCodeID)
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT * FROM LotCode_Log WHERE ExportCodeID = @ExportCodeID";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    cmd.Parameters.AddWithValue("@ExportCodeID", exportCodeID);
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
+        }
+
+        public async Task InsertLotCodeLogAsync(int exportCodeID, int SKU, string description, string lotCode, string lotCodeHeader, string lotCodeComplete)
+        {
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand("sp_LotCodeLog_Insert", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@ExportCodeID", exportCodeID);
+                        cmd.Parameters.AddWithValue("@SKU", SKU);
+                        cmd.Parameters.AddWithValue("@Description", (object)description ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@LotCode", (object)lotCode ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@LotCodeHeader", (object)lotCodeHeader ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@LotCodeComplete", (object)lotCodeComplete ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@ActionBy", UserManager.Instance.fullName);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error Insert Do47 Log: {ex.Message}");
+            }
+        }
+
+        public async Task AutoDeletLotCodeLogAsync()
+        {
+            string query = "DELETE FROM LotCode_Log WHERE  CreateAt < DATEADD(MONTH, -4, GETDATE());";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error deleting Do 47 Log: {ex.Message}");
+            }
+        }
     }
 }

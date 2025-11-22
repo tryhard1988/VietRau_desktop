@@ -15,6 +15,7 @@ namespace RauViet.ui
         DataView mDo47Log_dv;
         private LoadingOverlay loadingOverlay;
         int mCurrentExportID = -1;
+        object oldValue;
         public Do417()
         {
             InitializeComponent();
@@ -186,6 +187,10 @@ namespace RauViet.ui
         {
             if (dataGV.CurrentRow != null)
             {
+                object newValue = dataGV.CurrentCell?.Value;//.Rows[e.RowIndex].Cells[e.ColumnIndex].Value?.ToString() ?? "";
+
+                if (object.Equals(oldValue, newValue)) return;
+
                 var columnName = dataGV.Columns[e.ColumnIndex].Name;
 
                 if (columnName == "NetWeightFinal")
@@ -218,11 +223,11 @@ namespace RauViet.ui
                     {
                         status_lb.Text = "Thành công.";
                         status_lb.ForeColor = System.Drawing.Color.Green;
-                        _ = SQLManager.Instance.InsertDo47LogAsync(exportCodeID, productPackingID, "Update Thành Công", nwOrder, netWeightFinal, nwReal);
+                        _ = SQLManager.Instance.InsertDo47LogAsync(exportCodeID, productPackingID, oldValue + " Update Thành Công", nwOrder, netWeightFinal, nwReal);
                     }
                     else
                     {
-                        _ = SQLManager.Instance.InsertDo47LogAsync(exportCodeID, productPackingID, "Update Thất Bại", nwOrder, netWeightFinal, nwReal);
+                        _ = SQLManager.Instance.InsertDo47LogAsync(exportCodeID, productPackingID, oldValue + "Update Thất Bại", nwOrder, netWeightFinal, nwReal);
                         MessageBox.Show("Cập nhật thất bại!");
                     }
                 }
@@ -353,6 +358,7 @@ namespace RauViet.ui
 
         private void dataGV_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
         {
+            oldValue = dataGV.CurrentCell?.Value;
             if (exportCode_cbb.SelectedItem != null)
             {
                 DataRowView dataR = (DataRowView)exportCode_cbb.SelectedItem;
@@ -380,6 +386,7 @@ namespace RauViet.ui
             int packingID = Convert.ToInt32(currentRow.Cells["ProductPackingID"].Value);
 
             mDo47Log_dv.RowFilter = $"ProductPackingID = {packingID}";
+            mDo47Log_dv.Sort = "LogID DESC";
         }
     }
 }

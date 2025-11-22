@@ -60,6 +60,7 @@ namespace RauViet.classes
         Dictionary<int, DataTable> mOrderLogs;
         Dictionary<int, DataTable> mOrderPackingLogs;
         Dictionary<int, DataTable> mDo47Logs;
+        Dictionary<int, DataTable> mLotCodeLogs;
         private SQLStore() { }
 
         public static SQLStore Instance
@@ -94,6 +95,7 @@ namespace RauViet.classes
                 mOrderLogs = new Dictionary<int, DataTable>();
                 mOrderPackingLogs = new Dictionary<int, DataTable>();
                 mDo47Logs = new Dictionary<int, DataTable>();
+                mLotCodeLogs = new Dictionary<int, DataTable>();
 
                 var productSKUTask = SQLManager.Instance.getProductSKUAsync();
                 var productPackingTask = SQLManager.Instance.getProductpackingAsync();
@@ -2587,6 +2589,16 @@ namespace RauViet.classes
                 mDo47Logs[exportCodeID] = dt;
             }
             return mDo47Logs[exportCodeID];
+        }
+
+        public async Task<DataTable> GetLotCodeLogAsync(int exportCodeID)
+        {
+            if (!mLotCodeLogs.ContainsKey(exportCodeID))
+            {
+                DataTable dt = await SQLManager.Instance.GetLotCodeLogAsync(exportCodeID);
+                mLotCodeLogs[exportCodeID] = dt;
+            }
+            return mLotCodeLogs[exportCodeID];
         }
     }
 }

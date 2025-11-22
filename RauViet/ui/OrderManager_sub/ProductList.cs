@@ -695,7 +695,7 @@ namespace RauViet.ui
 
         private void RightUiEnable(bool enable)
         {
-            PLU_tb.Enabled = enable;
+            //PLU_tb.Enabled = enable;
             packing_panel.Enabled = enable;
             amount_tb.Enabled = enable;
         }

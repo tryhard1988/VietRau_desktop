@@ -492,8 +492,8 @@ namespace RauViet.ui
                             {
                                 if (decimal.TryParse(cellValue, out decimal num))
                                 {
-                                    cell.Value = Math.Round(num, 3);
-                                    cell.Style.NumberFormat.Format = "0.000";
+                                    cell.Value = num;
+                                    cell.Style.NumberFormat.Format = "0.00";
                                     totalNWReal += num;
                                 }
                             }
@@ -502,9 +502,9 @@ namespace RauViet.ui
                             {
                                 if (decimal.TryParse(cellValue, out decimal num))
                                 {
-                                    cell.Value = Math.Round(num, 3);
-                                    cell.Style.NumberFormat.Format = "0.000";
-                                    totalAmount += Math.Round(num, 3);
+                                    cell.Value = num;
+                                    cell.Style.NumberFormat.Format = "0.00";
+                                    totalAmount += num;
                                 }
                             }
 
@@ -512,8 +512,8 @@ namespace RauViet.ui
                             {
                                 if (decimal.TryParse(cellValue, out decimal num))
                                 {
-                                    cell.Value = Math.Round(num, 3);
-                                    cell.Style.NumberFormat.Format = "0.000";
+                                    cell.Value = num;
+                                    cell.Style.NumberFormat.Format = "0.00";
                                 }
                             }
 
@@ -737,7 +737,7 @@ namespace RauViet.ui
                             else if (col.Name == "NWReal")
                             {
                                 cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
-                                cell.Style.NumberFormat.Format = "#,##0.000 \"kg\"";
+                                cell.Style.NumberFormat.Format = "#,##0.00 \"kg\"";
 
                                 if (decimal.TryParse(cellValue, out decimal num))
                                 {
@@ -748,10 +748,10 @@ namespace RauViet.ui
                             else if (col.Name == "AmountCHF")
                             {
                                 cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
-                                cell.Style.NumberFormat.Format = "#,##0.000";
+                                cell.Style.NumberFormat.Format = "#,##0.00";
                                 if (decimal.TryParse(cellValue, out decimal num))
                                 {
-                                    cell.Value = Math.Round(num, 3);
+                                    cell.Value = num;
                                     totalAmount1 += num;
                                 }
                             }

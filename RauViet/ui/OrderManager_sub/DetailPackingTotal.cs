@@ -56,7 +56,7 @@ namespace RauViet.ui
 
             try
             {
-                string[] keepColumns = { "ExportCodeID", "ExportCode" , "ExportDate" };
+                string[] keepColumns = { "ExportCodeID", "ExportCode" , "ExportDate", "ExportCodeIndex" };
                 var parameters = new Dictionary<string, object> { { "Complete", false } };
                 mExportCode_dt = await SQLStore.Instance.getExportCodesAsync(keepColumns, parameters);
                 if (mCurrentExportID <= 0 && mExportCode_dt.Rows.Count > 0)
@@ -151,6 +151,7 @@ namespace RauViet.ui
             await Task.Delay(100);
             string exportCode = ((DataRowView)exportCode_cbb.SelectedItem)["ExportCode"].ToString();
             DateTime exportDate = Convert.ToDateTime(((DataRowView)exportCode_cbb.SelectedItem)["ExportDate"]);
+            int exportCodeIndex = Convert.ToInt32(((DataRowView)exportCode_cbb.SelectedItem)["ExportCodeIndex"]);
             try
             {
                 using (var wb = new XLWorkbook())
@@ -394,7 +395,7 @@ namespace RauViet.ui
                             // Tính tổng cột NWOther
                             if (col.Name == "NWReal")
                             {
-                                cell.Style.NumberFormat.Format = "#,##0.000";
+                                cell.Style.NumberFormat.Format = "#,##0.00";
                                 if (decimal.TryParse(cellValue, out decimal num))
                                 {
                                     totalNWOther += num;
@@ -501,7 +502,7 @@ namespace RauViet.ui
                     using (SaveFileDialog sfd = new SaveFileDialog())
                     {
                         sfd.Filter = "Excel Workbook|*.xlsx";
-                        sfd.FileName = "packingTotal_" + exportCode + ".xlsx";
+                        sfd.FileName = $"DETAILED PACKING LIST Total ETD {exportDate.Day}.{exportDate.Month} {exportCodeIndex}.xlsx";
                         if (sfd.ShowDialog() == DialogResult.OK)
                         {
                             wb.SaveAs(sfd.FileName);

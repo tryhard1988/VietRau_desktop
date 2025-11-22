@@ -35,12 +35,15 @@ namespace RauViet.ui
             this.status_lb = new System.Windows.Forms.Label();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.dataGV = new System.Windows.Forms.DataGridView();
+            this.logGV = new System.Windows.Forms.DataGridView();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.logGV)).BeginInit();
             this.SuspendLayout();
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.logGV);
             this.panel1.Controls.Add(this.exportCode_cbb);
             this.panel1.Controls.Add(this.status_lb);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Right;
@@ -86,6 +89,18 @@ namespace RauViet.ui
             this.dataGV.Size = new System.Drawing.Size(703, 681);
             this.dataGV.TabIndex = 10;
             // 
+            // logGV
+            // 
+            this.logGV.AllowUserToAddRows = false;
+            this.logGV.AllowUserToDeleteRows = false;
+            this.logGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.logGV.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.logGV.Location = new System.Drawing.Point(0, 389);
+            this.logGV.Name = "logGV";
+            this.logGV.ReadOnly = true;
+            this.logGV.Size = new System.Drawing.Size(561, 292);
+            this.logGV.TabIndex = 53;
+            // 
             // LOTCode
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -98,6 +113,7 @@ namespace RauViet.ui
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.logGV)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -108,5 +124,6 @@ namespace RauViet.ui
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.ComboBox exportCode_cbb;
         private System.Windows.Forms.DataGridView dataGV;
+        private System.Windows.Forms.DataGridView logGV;
     }
 }
