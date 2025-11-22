@@ -17,7 +17,7 @@ namespace RauViet.ui
         DataTable mExportCode_dt, mOrders_dt, mCartonSize_dt, mProductSKU_dt, mProductPacking_dt;
         DataView mOrderPackingLog_dv;
         private Timer debounceTimer = new Timer { Interval = 300 };
-        string oldValue = "";
+        object oldValue = "";
         int mCurrentExportID = -1;
         public OrderPackingList()
         {
@@ -289,13 +289,13 @@ namespace RauViet.ui
                 else
                     dataGV.CurrentCell = dataGV.Rows[gridIndex].Cells["PCSReal"];
 
-                _ = SQLManager.Instance.InsertOrderPackingLogAsync(exportCodeId, newId, "chia Đơn Từ: " + orderId + "thành công", null, null, null, "");
+                _ = SQLManager.Instance.InsertOrderPackingLogAsync(exportCodeId, newId, "chia Đơn Từ: " + orderId + " thành công", null, null, null, "");
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Lỗi khi chia đơn: {ex.Message}");
                 MessageBox.Show($"Lỗi khi chia đơn: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                _ = SQLManager.Instance.InsertOrderPackingLogAsync(exportCodeId, newId, "chia Đơn Từ: " + orderId + "Thất Bại do Exception: " + ex, null, null, null, "");
+                _ = SQLManager.Instance.InsertOrderPackingLogAsync(exportCodeId, newId, "chia Đơn Từ: " + orderId + " Thất Bại do Exception: " + ex, null, null, null, "");
             }
         }
 
@@ -414,9 +414,9 @@ namespace RauViet.ui
             {
                 if (dataGV.CurrentRow == null || e.ColumnIndex < 0) return;
 
-                string newValue = dataGV.CurrentCell?.Value?.ToString() ?? "";//.Rows[e.RowIndex].Cells[e.ColumnIndex].Value?.ToString() ?? "";
+                object newValue = dataGV.CurrentCell?.Value;//.Rows[e.RowIndex].Cells[e.ColumnIndex].Value?.ToString() ?? "";
 
-                if (newValue == oldValue) return;
+                if (object.Equals(oldValue, newValue)) return;
 
                 var row = dataGV.CurrentRow;
                 if (row?.Cells["OrderId"].Value == null || row.Cells["OrderId"].Value == DBNull.Value)
@@ -484,11 +484,11 @@ namespace RauViet.ui
                 if (!isScussess)
                 {
                     MessageBox.Show($"Cập Nhật Thất Bại", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    _ = SQLManager.Instance.InsertOrderPackingLogAsync(exportCodeId, orderId, columnName + ": Update Thất Bại", pcsReal, nwReal, cartonNo, cartonSize);
+                    _ = SQLManager.Instance.InsertOrderPackingLogAsync(exportCodeId, orderId, $"{columnName} {oldValue}: Update Thất Bại", pcsReal, nwReal, cartonNo, cartonSize);
                 }
                 else
                 {
-                    _ = SQLManager.Instance.InsertOrderPackingLogAsync(exportCodeId, orderId, columnName + ": Update Thành Công", pcsReal, nwReal, cartonNo, cartonSize);
+                    _ = SQLManager.Instance.InsertOrderPackingLogAsync(exportCodeId, orderId, $"{columnName} {oldValue}: Update Thành Công", pcsReal, nwReal, cartonNo, cartonSize);
                     status_lb.Text = "Thành công.";
                     status_lb.ForeColor = System.Drawing.Color.Green;
                 }
@@ -497,7 +497,7 @@ namespace RauViet.ui
             catch (Exception ex)
             {
                 MessageBox.Show("Lỗi khi xử lý thay đổi dữ liệu:\n" + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                _ = SQLManager.Instance.InsertOrderPackingLogAsync(exportCodeId, orderId, columnName + ": Update Thất Bại Do Exception: " + ex.Message, pcsReal, nwReal, cartonNo, cartonSize);
+                _ = SQLManager.Instance.InsertOrderPackingLogAsync(exportCodeId, orderId, $"{columnName} {oldValue}: Update Thất Bại Do Exception: " + ex.Message, pcsReal, nwReal, cartonNo, cartonSize);
             }
         }
 
@@ -637,6 +637,7 @@ namespace RauViet.ui
 
         private void dataGV_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
         {
+            oldValue = dataGV.CurrentCell?.Value;
             if (exportCode_cbb.SelectedItem != null)
             {
                 DataRowView dataR = (DataRowView)exportCode_cbb.SelectedItem; 
@@ -649,7 +650,7 @@ namespace RauViet.ui
             }
             e.Cancel = edit_btn.Visible;
 
-            oldValue = dataGV.CurrentCell?.Value?.ToString() ?? "";// dataGV.Rows[e.RowIndex].Cells[e.ColumnIndex].Value?.ToString() ?? "";
+            // dataGV.Rows[e.RowIndex].Cells[e.ColumnIndex].Value?.ToString() ?? "";
         }
 
         private void Tb_KeyPress_OnlyNumber(object sender, KeyPressEventArgs e)
@@ -1851,32 +1852,66 @@ namespace RauViet.ui
             _ = PrintPhieuThung(false, value.ToString());
         }
 
-        private void InTem(bool isPreview)
+        private async void InTem(bool isPreview)
         {
             if (dataGV.CurrentRow == null) return;
 
-            var row = dataGV.CurrentRow;
-            int pPackingID = Convert.ToInt32(row.Cells["ProductPackingID"].Value);
-            int SKU = Convert.ToInt32(row.Cells["SKU"].Value);
-            string LOTCodeComplete = Convert.ToString(row.Cells["LOTCodeComplete"].Value);
+            loadingOverlay = new LoadingOverlay(this);
+            loadingOverlay.Message = "Đang xử lý ...";
+            loadingOverlay.Show();
+            await Task.Delay(100);
+
+            var currentRow = dataGV.CurrentRow;
+            int pPackingID = Convert.ToInt32(currentRow.Cells["ProductPackingID"].Value);
+
+            var rows = mOrders_dt.AsEnumerable().Where(r => r.Field<int>("ProductPackingID") == pPackingID &&
+                !string.IsNullOrWhiteSpace(r.Field<string>("LOTCodeComplete"))).ToList();
+
+            if (rows.Count <= 0)
+            {
+                MessageBox.Show("Chưa có Mã LOTCodeComplete");
+
+                await Task.Delay(200);
+                loadingOverlay.Hide();
+
+                return;
+            }
+
+            PickDateDialog dlg = new PickDateDialog();
+
+            if (dlg.ShowDialog(this) != DialogResult.OK)
+            {
+                loadingOverlay.Hide();
+                return;   // Người dùng bấm Cancel → không in
+            }
+
+            string packedDate = dlg.SelectedDate.ToString("dd/MM/yyyy");
+
+            var row = rows[0];
+            int SKU = Convert.ToInt32(row["SKU"]);
+            string LOTCodeComplete = Convert.ToString(row["LOTCodeComplete"]);
             DataRow[] SKURows = mProductSKU_dt.Select($"SKU = {SKU}");
             DataRow[] packingRows = mProductPacking_dt.Select($"ProductPackingID = {pPackingID}");
             if (SKURows.Length <= 0 || packingRows.Length <= 0) return;
 
-            string packing = row.Cells["packing"].Value.ToString();
-            int Amount = Convert.ToInt32(row.Cells["Amount"].Value);
+            string packing = row["packing"].ToString();
+            int Amount = Convert.ToInt32(row["Amount"]);
 
             var printer = new LabelPrinter(
                 SKURows[0]["ProductNameEN"].ToString(),
                 SKURows[0]["BotanicalName"].ToString(),
                 $"{Amount} {packing}",
                 packingRows[0]["BarCodeEAN13"].ToString(),
-                packingRows[0]["ArtNr"].ToString(),
-                LOTCodeComplete);
+                SKU.ToString(),
+                LOTCodeComplete,
+                packedDate);
             if (isPreview)
                 printer.PrintPreview();
             else
                 printer.Print();
+
+            await Task.Delay(200);
+            loadingOverlay.Hide();
         }
         private void Tem_preview_btn_Click(object sender, EventArgs e)
         {

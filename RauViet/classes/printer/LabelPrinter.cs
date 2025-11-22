@@ -11,8 +11,15 @@ public class LabelPrinter
     private string mBarCodeEAN13;
     private string mArtNr;
     private string mLotCode;
+    private string mPackingDay;
+
     private bool isPreview = false;
-    public LabelPrinter(string mProductName_EN, string mBotanicalName, string mPackingName, string mBarCodeEAN13, string mArtNr, string mLotCode)
+
+    int pageWidth = 0;
+    int pageHeight = 0;
+
+    public LabelPrinter(string mProductName_EN, string mBotanicalName, string mPackingName,
+                        string mBarCodeEAN13, string mArtNr, string mLotCode, string mPackingDay)
     {
         this.mProductName_EN = mProductName_EN;
         this.mBotanicalName = mBotanicalName;
@@ -20,143 +27,188 @@ public class LabelPrinter
         this.mBarCodeEAN13 = mBarCodeEAN13;
         this.mArtNr = mArtNr;
         this.mLotCode = mLotCode;
+        this.mPackingDay = mPackingDay;
+    }
+
+    // Convert mm to 1/100 inch
+    private int MmToHundredths(float mm)
+    {
+        return (int)(mm / 25.4f * 100f);
+    }
+
+    private PrintDocument CreateDocument()
+    {
+        PrintDocument doc = new PrintDocument();
+        doc.PrintController = new StandardPrintController();
+        // ⚠️ ĐẶT GIẤY 65mm × 100mm CHÍNH XÁC
+        pageWidth = MmToHundredths(65f);
+        pageHeight = MmToHundredths(100f);
+
+        // Bắt buộc đặt PaperSize BEFORE print
+        doc.DefaultPageSettings.PaperSize = new PaperSize("Label65x100", pageWidth, pageHeight);
+        doc.DefaultPageSettings.Landscape = false;
+        doc.OriginAtMargins = false;
+        doc.DefaultPageSettings.Margins = new Margins(0, 0, 0, 0);
+
+        doc.PrintPage += Doc_PrintPage;
+        return doc;
     }
 
     public void Print()
     {
-        PrintDocument doc = new PrintDocument();
-
         isPreview = false;
-        // Set paper size (mm to inch -> inch to hundredths)
-        int width_mm = 65;
-        int height_mm = 100;
+        PrintDocument doc = CreateDocument();
 
-        int width_hundredths = (int)(width_mm / 25.4 * 100);
-        int height_hundredths = (int)(height_mm / 25.4 * 100);
-
-        doc.DefaultPageSettings.PaperSize = new PaperSize("CustomLabel",
-            width_hundredths,
-            height_hundredths);
-
-        doc.DefaultPageSettings.Landscape = true; // phiếu ngày đang quay ngang
-        doc.PrintPage += Doc_PrintPage;
-
-        using (PrintDialog pd = new PrintDialog())
+        using (PrintDialog dlg = new PrintDialog())
         {
-            pd.Document = doc;
-
-            if (pd.ShowDialog() == DialogResult.OK)
-            {
+            dlg.Document = doc;
+            if (dlg.ShowDialog() == DialogResult.OK)
                 doc.Print();
-            }
         }
     }
 
     public void PrintPreview()
     {
-        PrintDocument doc = new PrintDocument();
         isPreview = true;
-        // Set paper size 65mm x 100mm
-        int width_mm = 65;
-        int height_mm = 100;
-
-        int w = (int)(width_mm / 25.4 * 100);
-        int h = (int)(height_mm / 25.4 * 100);
-
-        doc.DefaultPageSettings.PaperSize = new PaperSize("CustomLabel", w, h);
-        doc.DefaultPageSettings.Landscape = true;
-
-        doc.PrintPage += Doc_PrintPage;
-
-        PrintPreviewDialog preview = new PrintPreviewDialog
-        {
-            Document = doc,
-            Width = 1200,
-            Height = 800
-        };
-
+        PrintDocument doc = CreateDocument();
+        doc.DefaultPageSettings.Landscape = false;
+        PrintPreviewDialog preview = new PrintPreviewDialog();
+        preview.Document = doc;
+        preview.Width = pageWidth;
+        preview.Height = pageHeight;
         preview.ShowDialog();
     }
-
 
     private void Doc_PrintPage(object sender, PrintPageEventArgs e)
     {
         Graphics g = e.Graphics;
         g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
 
-        // --- Xoay toàn bộ nội dung 90 độ ---
-        g.TranslateTransform(0, e.PageBounds.Height);
-        g.RotateTransform(-90);
+        // ⚠️ DÙNG PaperSize, KHÔNG DÙNG PageBounds (PageBounds sai trên PDF)
+        int pageW = pageWidth;// e.PageSettings.PaperSize.Width;
+        int pageH = pageHeight;// e.PageSettings.PaperSize.Height;
 
-        // Fonts
-        Font bold = new Font("Arial", 12, FontStyle.Bold);
-        Font normal = new Font("Arial", 10);
+        if (!isPreview)
+        {
+            g.TranslateTransform(0, pageH);
+            g.RotateTransform(-90);
+        }
+        // Vẽ khung kiểm tra
+      //  g.DrawRectangle(Pens.Black, 0, 0, pageW, pageH);
 
+        Console.WriteLine($"pageWidth={pageWidth}, pageHeight={pageHeight}");
+        Console.WriteLine($"Width={pageW}, Height={pageH}");
+        e.Graphics.DrawRectangle(Pens.Black, 0, 0, 0, 0);
+        // ⚠️ PDF HOẶC PRINTER CÓ HARD MARGIN
+        float offsetX = -(pageWidth / 2 + 17);
+        float offsetY = 0;
+        if (isPreview)
+            offsetX = 0;
+
+        // Vẽ hình nền
         if (isPreview)
         {
             Image bg = RauViet.Properties.Resources.vr_label;
-            g.DrawImage(bg, 0, 0, e.PageBounds.Height, e.PageBounds.Width); // chú ý Width & Height do xoay
+            g.DrawImage(bg, -offsetX, -offsetY, pageW, pageH);
         }
+        Font bold = new Font("Arial", 20, FontStyle.Bold);
+        Font normal = new Font("Arial", 8);
+        Font small = new Font("Arial", 7);
 
-        {
-            SizeF size = g.MeasureString(mProductName_EN, bold);
-            float _x = (e.PageBounds.Height - size.Width) / 2f;
-            float _y = (e.PageBounds.Width - size.Height) / 2f - 45;
-            g.DrawString(mProductName_EN, bold, Brushes.Black, _x, _y);
-        }
-        {
-            SizeF size = g.MeasureString(mBotanicalName, normal);
-            float _x = (e.PageBounds.Height - size.Width) / 2f;
-            float _y = (e.PageBounds.Width - size.Height) / 2f - 30;
-            g.DrawString(mBotanicalName, normal, Brushes.Black, _x, _y);
-        }
-        {
-            SizeF size = g.MeasureString($"Lot: {mLotCode}", bold);
-            float _x = (e.PageBounds.Height - size.Width + 10);
-            float _y = (e.PageBounds.Width - size.Height) / 2f;
-            g.DrawString($"Art-Nr: {mArtNr}", normal, Brushes.Black, 20, _y);
-            g.DrawString($"Lot: {mLotCode}", normal, Brushes.Black, _x, _y);
-        }
-        {
-            SizeF size = g.MeasureString(mPackingName, bold);
-            float _x = (e.PageBounds.Height - size.Width) / 2f;
-            float _y = e.PageBounds.Width * 2/3 + 13;
-            g.DrawString(mPackingName, normal, Brushes.Black, _x, _y);
-        }
+        // PRODUCT NAME
+        float maxWidth = pageW - 30; // chừa 5px mỗi bên
+        float newSize = FitFont(g, mProductName_EN, bold, maxWidth);
 
-        // --- TẠO ẢNH BARCODE ---
+        // Font mới đã vừa chiều ngang
+        Font scaled = new Font(bold.FontFamily, newSize, bold.Style);
+
+        // Vẽ text
+        SizeF sz = g.MeasureString(mProductName_EN, scaled);
+        float x = (pageW - sz.Width) / 2 - offsetX;
+        float y = pageH / 2 - 50 - offsetY;
+
+        g.DrawString(mProductName_EN, scaled, Brushes.Black, x, y);
+
+        // BotanicalName
+        sz = g.MeasureString(mBotanicalName, small);
+        x = (pageW - sz.Width) / 2 - offsetX;
+        y = pageH / 2 - 10 - offsetY;
+        g.DrawString(mBotanicalName, small, Brushes.Black, x, y);
+
+        // ArtNr
+        g.DrawString("Art-Nr: " + mArtNr, normal, Brushes.Black,
+                     30 - offsetX, pageH / 2 + 5 - offsetY);
+
+        // Lot
+        string lotText = "Lot: " + mLotCode;
+        SizeF lotSz = g.MeasureString(lotText, normal);
+        g.DrawString(lotText, normal, Brushes.Black,
+                     pageW - lotSz.Width - 20 - offsetX, pageH / 2 + 5 - offsetY);
+
+        // Gewicht
+        string gw = "GEWICHT:    " + mPackingName;
+        SizeF gwSz = g.MeasureString(gw, normal);
+        g.DrawString(gw, normal, Brushes.Black,
+                     (pageW - gwSz.Width) / 2 - 25 - offsetX, pageH * 2 / 3 + 13 - offsetY);
+
+        // PackingDay
+        string PackedText = "Packed: " + mPackingDay;
+        sz = g.MeasureString(PackedText, normal);
+        g.DrawString(PackedText, small, Brushes.Black, 
+            offsetX + 20, 27 - offsetY);
+        // BARCODE
         if (!string.IsNullOrEmpty(mBarCodeEAN13))
         {
-            Bitmap barcodeImg = Ean13Generator.GenerateEAN13(mBarCodeEAN13);
+            Bitmap bmp = Ean13Generator.GenerateEAN13(mBarCodeEAN13);
 
             int bw = 200;
-            int bh = 50;
-            float barImage_X = (e.PageBounds.Height - bw) / 2f;
-            float barImage_Y = (e.PageBounds.Width * 2/3 - bh) - 5;
-            g.DrawImage(barcodeImg, barImage_X, barImage_Y, bw, bh);
+            int bh = 40;
 
-            Font barcodeFont = new Font("Arial", 8, FontStyle.Regular);
+            float bx = (pageW - bw) / 2 - offsetX;
+            float by = (pageH * 2 / 3 - bh) - 5 - offsetY;
+            g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+            g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.Half;
+            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;
+            g.DrawImage(bmp, bx, by, bw, bh);
 
+            // Numbers under barcode
+            Font fNum = new Font("Arial", 8);
             string code = mBarCodeEAN13;
-            int chars = code.Length;
-            float charWidth = bw / (float)chars;
-            
+            float cell = bw / (float)code.Length;
 
-            for (int i = 0; i < chars; i++)
+            for (int i = 0; i < code.Length; i++)
             {
                 string c = code[i].ToString();
-                SizeF sz = g.MeasureString(c, barcodeFont);
-                // Vẽ từng ký tự, căn giữa khoảng charWidth
-                float x = barImage_X + i * charWidth + (charWidth - sz.Width) / 2;
-                float textY = barImage_Y + bh + 2;
-                g.DrawString(c, barcodeFont, Brushes.Black, x, textY);
+                SizeF s = g.MeasureString(c, fNum);
+
+                float cx = bx + i * cell + (cell - s.Width) / 2;
+                float cy = by + bh + 2;
+
+                g.DrawString(c, fNum, Brushes.Black, cx, cy);
             }
 
-            barcodeImg.Dispose();
+            bmp.Dispose();
         }
 
-        g.ResetTransform(); // restore góc vẽ
+        e.HasMorePages = false;
     }
 
+    private float FitFont(Graphics g, string text, Font original, float maxWidth)
+    {
+        float fontSize = original.Size;
+
+        while (fontSize > 4)   // không cho nhỏ dưới 4pt
+        {
+            Font testFont = new Font(original.FontFamily, fontSize, original.Style);
+            SizeF size = g.MeasureString(text, testFont);
+
+            if (size.Width <= maxWidth)
+                return fontSize;
+
+            fontSize -= 0.5f; // giảm từ từ 0.5pt
+        }
+
+        return 4f;
+    }
 
 }

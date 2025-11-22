@@ -167,6 +167,7 @@
     <Compile Include="classes\DataTableExtensions.cs" />
     <Compile Include="classes\Ean13Generator.cs" />
     <Compile Include="classes\ICanSave.cs" />
+    <Compile Include="classes\printer\GodexPrinter.cs" />
     <Compile Include="classes\printer\LabelPrinter.cs" />
     <Compile Include="classes\printer\PhieuCanHangPrinter.cs" />
     <Compile Include="classes\printer\SalarySlipPrinter.cs" />
@@ -512,6 +513,9 @@
     </Compile>
     <Compile Include="ui\OrderManager_sub\ProductSKU.Designer.cs">
       <DependentUpon>ProductSKU.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ui\PickDateDialog .cs">
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="ui\WooCommerceUI.cs">
       <SubType>Form</SubType>

@@ -53,6 +53,9 @@ namespace RauViet.ui
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.logGV = new System.Windows.Forms.DataGridView();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.tem_preview_btn = new System.Windows.Forms.Button();
+            this.inTem_btn = new System.Windows.Forms.Button();
             this.phieuCanHang_gb = new System.Windows.Forms.GroupBox();
             this.phieuCanHang_preview_btn = new System.Windows.Forms.Button();
             this.phieuCanHang_btn = new System.Windows.Forms.Button();
@@ -83,15 +86,13 @@ namespace RauViet.ui
             this.fillter_btn = new System.Windows.Forms.Button();
             this.panel4 = new System.Windows.Forms.Panel();
             this.previewPrint_PT_btn = new System.Windows.Forms.Button();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.tem_preview_btn = new System.Windows.Forms.Button();
-            this.inTem_btn = new System.Windows.Forms.Button();
             this.panel6.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
             this.panel5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.logGV)).BeginInit();
             this.panel1.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.phieuCanHang_gb.SuspendLayout();
             this.phieuGiaoHang_gb.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -99,7 +100,6 @@ namespace RauViet.ui
             this.panel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.carton_GV)).BeginInit();
             this.panel4.SuspendLayout();
-            this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
             // contextMenuStrip1
@@ -341,10 +341,10 @@ namespace RauViet.ui
             this.logGV.AllowUserToDeleteRows = false;
             this.logGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.logGV.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.logGV.Location = new System.Drawing.Point(925, 519);
+            this.logGV.Location = new System.Drawing.Point(925, 486);
             this.logGV.Name = "logGV";
             this.logGV.ReadOnly = true;
-            this.logGV.Size = new System.Drawing.Size(820, 143);
+            this.logGV.Size = new System.Drawing.Size(820, 176);
             this.logGV.TabIndex = 79;
             // 
             // panel1
@@ -360,15 +360,49 @@ namespace RauViet.ui
             this.panel1.Dock = System.Windows.Forms.DockStyle.Left;
             this.panel1.Location = new System.Drawing.Point(925, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(503, 519);
+            this.panel1.Size = new System.Drawing.Size(503, 486);
             this.panel1.TabIndex = 81;
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.BackColor = System.Drawing.Color.Wheat;
+            this.groupBox2.Controls.Add(this.tem_preview_btn);
+            this.groupBox2.Controls.Add(this.inTem_btn);
+            this.groupBox2.Location = new System.Drawing.Point(345, 270);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(130, 125);
+            this.groupBox2.TabIndex = 72;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Phiếu Tem";
+            // 
+            // tem_preview_btn
+            // 
+            this.tem_preview_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.tem_preview_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tem_preview_btn.Location = new System.Drawing.Point(14, 74);
+            this.tem_preview_btn.Name = "tem_preview_btn";
+            this.tem_preview_btn.Size = new System.Drawing.Size(94, 38);
+            this.tem_preview_btn.TabIndex = 69;
+            this.tem_preview_btn.Text = "Xem";
+            this.tem_preview_btn.UseVisualStyleBackColor = false;
+            // 
+            // inTem_btn
+            // 
+            this.inTem_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.inTem_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.inTem_btn.Location = new System.Drawing.Point(14, 19);
+            this.inTem_btn.Name = "inTem_btn";
+            this.inTem_btn.Size = new System.Drawing.Size(94, 38);
+            this.inTem_btn.TabIndex = 68;
+            this.inTem_btn.Text = "In";
+            this.inTem_btn.UseVisualStyleBackColor = false;
             // 
             // phieuCanHang_gb
             // 
             this.phieuCanHang_gb.BackColor = System.Drawing.Color.Wheat;
             this.phieuCanHang_gb.Controls.Add(this.phieuCanHang_preview_btn);
             this.phieuCanHang_gb.Controls.Add(this.phieuCanHang_btn);
-            this.phieuCanHang_gb.Location = new System.Drawing.Point(186, 318);
+            this.phieuCanHang_gb.Location = new System.Drawing.Point(186, 273);
             this.phieuCanHang_gb.Name = "phieuCanHang_gb";
             this.phieuCanHang_gb.Size = new System.Drawing.Size(130, 125);
             this.phieuCanHang_gb.TabIndex = 71;
@@ -402,7 +436,7 @@ namespace RauViet.ui
             this.phieuGiaoHang_gb.BackColor = System.Drawing.Color.Moccasin;
             this.phieuGiaoHang_gb.Controls.Add(this.InPhieuGiaoHang_btn);
             this.phieuGiaoHang_gb.Controls.Add(this.previewPrint_PGH_btn);
-            this.phieuGiaoHang_gb.Location = new System.Drawing.Point(28, 316);
+            this.phieuGiaoHang_gb.Location = new System.Drawing.Point(28, 271);
             this.phieuGiaoHang_gb.Name = "phieuGiaoHang_gb";
             this.phieuGiaoHang_gb.Size = new System.Drawing.Size(133, 127);
             this.phieuGiaoHang_gb.TabIndex = 70;
@@ -544,7 +578,7 @@ namespace RauViet.ui
             // 
             this.readOnly_btn.BackColor = System.Drawing.Color.MediumSlateBlue;
             this.readOnly_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.readOnly_btn.Location = new System.Drawing.Point(343, 271);
+            this.readOnly_btn.Location = new System.Drawing.Point(267, 237);
             this.readOnly_btn.Name = "readOnly_btn";
             this.readOnly_btn.Size = new System.Drawing.Size(42, 32);
             this.readOnly_btn.TabIndex = 66;
@@ -555,7 +589,7 @@ namespace RauViet.ui
             // 
             this.edit_btn.BackColor = System.Drawing.SystemColors.MenuHighlight;
             this.edit_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.edit_btn.Location = new System.Drawing.Point(189, 280);
+            this.edit_btn.Location = new System.Drawing.Point(159, 235);
             this.edit_btn.Name = "edit_btn";
             this.edit_btn.Size = new System.Drawing.Size(95, 34);
             this.edit_btn.TabIndex = 61;
@@ -570,9 +604,9 @@ namespace RauViet.ui
             this.rightInfo_gb.Controls.Add(this.cartonNo_tb);
             this.rightInfo_gb.Controls.Add(this.label6);
             this.rightInfo_gb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rightInfo_gb.Location = new System.Drawing.Point(74, 308);
+            this.rightInfo_gb.Location = new System.Drawing.Point(74, 270);
             this.rightInfo_gb.Name = "rightInfo_gb";
-            this.rightInfo_gb.Size = new System.Drawing.Size(314, 133);
+            this.rightInfo_gb.Size = new System.Drawing.Size(254, 133);
             this.rightInfo_gb.TabIndex = 53;
             this.rightInfo_gb.TabStop = false;
             // 
@@ -650,7 +684,7 @@ namespace RauViet.ui
             this.panel3.Dock = System.Windows.Forms.DockStyle.Left;
             this.panel3.Location = new System.Drawing.Point(1428, 0);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(162, 519);
+            this.panel3.Size = new System.Drawing.Size(162, 486);
             this.panel3.TabIndex = 82;
             // 
             // carton_GV
@@ -659,7 +693,7 @@ namespace RauViet.ui
             this.carton_GV.Dock = System.Windows.Forms.DockStyle.Fill;
             this.carton_GV.Location = new System.Drawing.Point(0, 43);
             this.carton_GV.Name = "carton_GV";
-            this.carton_GV.Size = new System.Drawing.Size(162, 423);
+            this.carton_GV.Size = new System.Drawing.Size(162, 390);
             this.carton_GV.TabIndex = 52;
             // 
             // fillter_btn
@@ -678,7 +712,7 @@ namespace RauViet.ui
             // 
             this.panel4.Controls.Add(this.previewPrint_PT_btn);
             this.panel4.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel4.Location = new System.Drawing.Point(0, 466);
+            this.panel4.Location = new System.Drawing.Point(0, 433);
             this.panel4.Name = "panel4";
             this.panel4.Size = new System.Drawing.Size(162, 53);
             this.panel4.TabIndex = 51;
@@ -693,40 +727,6 @@ namespace RauViet.ui
             this.previewPrint_PT_btn.TabIndex = 46;
             this.previewPrint_PT_btn.Text = "Xem Phiếu Thùng";
             this.previewPrint_PT_btn.UseVisualStyleBackColor = false;
-            // 
-            // groupBox2
-            // 
-            this.groupBox2.BackColor = System.Drawing.Color.Wheat;
-            this.groupBox2.Controls.Add(this.tem_preview_btn);
-            this.groupBox2.Controls.Add(this.inTem_btn);
-            this.groupBox2.Location = new System.Drawing.Point(341, 318);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(130, 125);
-            this.groupBox2.TabIndex = 72;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Phiếu Tem";
-            // 
-            // tem_preview_btn
-            // 
-            this.tem_preview_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
-            this.tem_preview_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tem_preview_btn.Location = new System.Drawing.Point(14, 74);
-            this.tem_preview_btn.Name = "tem_preview_btn";
-            this.tem_preview_btn.Size = new System.Drawing.Size(94, 38);
-            this.tem_preview_btn.TabIndex = 69;
-            this.tem_preview_btn.Text = "Xem";
-            this.tem_preview_btn.UseVisualStyleBackColor = false;
-            // 
-            // inTem_btn
-            // 
-            this.inTem_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
-            this.inTem_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.inTem_btn.Location = new System.Drawing.Point(14, 19);
-            this.inTem_btn.Name = "inTem_btn";
-            this.inTem_btn.Size = new System.Drawing.Size(94, 38);
-            this.inTem_btn.TabIndex = 68;
-            this.inTem_btn.Text = "In";
-            this.inTem_btn.UseVisualStyleBackColor = false;
             // 
             // OrderPackingList
             // 
@@ -751,6 +751,7 @@ namespace RauViet.ui
             ((System.ComponentModel.ISupportInitialize)(this.logGV)).EndInit();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
             this.phieuCanHang_gb.ResumeLayout(false);
             this.phieuGiaoHang_gb.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
@@ -760,7 +761,6 @@ namespace RauViet.ui
             this.panel3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.carton_GV)).EndInit();
             this.panel4.ResumeLayout(false);
-            this.groupBox2.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }

@@ -514,6 +514,7 @@ namespace RauViet.ui
             LuuThayDoiBtn.Text = "Lưu C.Sửa";
             isActive_cb.Enabled = true;
 
+            RightUiReadOnly(false);
             RightUiEnable(false);
         }
 

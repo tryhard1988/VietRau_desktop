@@ -534,7 +534,7 @@ namespace RauViet.ui
         private void RightUIEnable(bool enable)
         {
             product_VN_tb.Enabled = enable;
-            product_EN_tb.Enabled = enable;
+            //product_EN_tb.Enabled = enable;
             package_tb.Enabled = enable;
             packing_tb.Enabled = enable;
             botanicalName_tb.Enabled = enable;
