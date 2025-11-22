@@ -99,6 +99,7 @@ namespace RauViet.ui
                 dataGV.ReadOnly = false;
                 dataGV.Columns["NetWeightFinal"].ReadOnly = false;
 
+                dataGV.Columns["NWRegistration"].ReadOnly = true;
                 dataGV.Columns["ProductNameVN"].ReadOnly = true;
                 dataGV.Columns["ProductPackingID"].ReadOnly = true;
                 dataGV.Columns["Priority"].ReadOnly = true;
@@ -199,7 +200,8 @@ namespace RauViet.ui
                 int exportCodeID = Convert.ToInt32(row.Cells["ExportCodeID"].Value);
                 int productPackingID = Convert.ToInt32(row.Cells["ProductPackingID"].Value);
                 decimal nwOrder = Convert.ToDecimal(row.Cells["TotalNWOther"].Value);
-                decimal nwReal = Convert.ToDecimal(row.Cells["TotalNWReal"].Value);
+                decimal nwReal = decimal.TryParse(row.Cells["TotalNWReal"].Value?.ToString(), out var tmp) ? tmp : 0m;
+
 
                 decimal? netWeightFinal = null;
                 var nwValue = row.Cells["NetWeightFinal"].Value;
