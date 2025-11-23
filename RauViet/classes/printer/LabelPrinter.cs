@@ -177,7 +177,7 @@ public class LabelPrinter
         string PackedText = "Packed: " + mPackingDay;
         sz = g.MeasureString(PackedText, normal);
         g.DrawString(PackedText, small, Brushes.Black, 
-            offsetX + 20, 27 - offsetY);
+            20 - offsetX, 27 - offsetY);
         // BARCODE
         if (!string.IsNullOrEmpty(mBarCodeEAN13))
         {
