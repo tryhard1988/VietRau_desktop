@@ -572,6 +572,8 @@ namespace RauViet.ui
 
                                         row1["LeaveCount"] = leaveCount - 1;
                                         row1["RemainingLeave"] = remaining + 1;
+
+                                        SQLStore.Instance.removeAttendamce(dateOff.Month, dateOff.Year);
                                     }
                                 }
 

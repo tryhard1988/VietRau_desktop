@@ -1,24 +1,13 @@
-﻿using DocumentFormat.OpenXml.Drawing.Charts;
-using DocumentFormat.OpenXml.Spreadsheet;
-using DocumentFormat.OpenXml.VariantTypes;
-using DocumentFormat.OpenXml.Vml;
-using DocumentFormat.OpenXml.Wordprocessing;
-using RauViet.classes;
+﻿using RauViet.classes;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Reflection.Emit;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
 using Color = System.Drawing.Color;
 using DataTable = System.Data.DataTable;
-using Label = System.Windows.Forms.Label;
 
 namespace RauViet.ui
 {    
@@ -26,7 +15,6 @@ namespace RauViet.ui
     {
         private DataTable mEmployee_dt, mAllowance_dt, mOvertimeAttendance_dt, mLeaveAttendance_dt, 
             mDeduction_dt, mLeaveType_dt, mDeductionType, mAttendamce_dt, mOvertimeType_dt;
-        private const string DeductionTypeCode = "ADV";
 
         private LoadingOverlay loadingOverlay;
 
@@ -633,6 +621,29 @@ namespace RauViet.ui
                     dataGV.Columns["EmployeeCode"].Frozen = true;
                     dataGV.Columns["FullName"].Frozen = true;
                     dataGV.Columns["NetSalary"].Frozen = true;
+
+                    dataGV.Columns["NetSalary"].DefaultCellStyle.Format = "N0";
+                    dataGV.Columns["BaseSalary"].DefaultCellStyle.Format = "N0";
+                    dataGV.Columns["HourSalary"].DefaultCellStyle.Format = "N0";
+                    dataGV.Columns["TotalSalaryHourWork"].DefaultCellStyle.Format = "N0";
+                    dataGV.Columns["InsuranceBaseSalary"].DefaultCellStyle.Format = "N0";
+                    dataGV.Columns["TotalInsuranceSalary"].DefaultCellStyle.Format = "N0";
+                    dataGV.Columns["EmployeeInsurancePaid"].DefaultCellStyle.Format = "N0";
+                    dataGV.Columns["TotalIncludedInsurance"].DefaultCellStyle.Format = "N0";
+                    dataGV.Columns["TotalExcludedInsurance"].DefaultCellStyle.Format = "N0";
+                    dataGV.Columns["InsuranceRefund"].DefaultCellStyle.Format = "N0";
+
+                    foreach (DataRow otdr in mOvertimeType_dt.Rows)
+                    {
+                        int overtimeTypeID = Convert.ToInt32(otdr["OvertimeTypeID"]);
+                        dataGV.Columns["OvertimeType" + overtimeTypeID.ToString()].DefaultCellStyle.Format = "N0";
+                    }
+
+                    foreach (DataRow ltdr in mLeaveType_dt.Rows)
+                    {
+                        string leaveTypeCode = Convert.ToString(ltdr["LeaveTypeCode"]);
+                        dataGV.Columns["LeaveType" + leaveTypeCode.ToString()].DefaultCellStyle.Format = "N0";
+                    }
 
                     dataGV.Columns["EmployeeCode"].Width = 50;
                     dataGV.Columns["FullName"].Width = 120;

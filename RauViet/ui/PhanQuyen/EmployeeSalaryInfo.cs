@@ -96,13 +96,7 @@ namespace RauViet.ui
                 salaryInfoGV.Columns["EmployeeCode"].Visible = false;
                 salaryInfoGV.Columns["SalaryInfoID"].Visible = false;
 
-                int count = 0;
-                mEmployeeSalaryInfo_dt.Columns["Date"].SetOrdinal(count++);
-                mEmployeeSalaryInfo_dt.Columns["BaseSalary"].SetOrdinal(count++);
-                mEmployeeSalaryInfo_dt.Columns["InsuranceBaseSalary"].SetOrdinal(count++);
-                mEmployeeSalaryInfo_dt.Columns["Note"].SetOrdinal(count++);
-                mEmployeeSalaryInfo_dt.Columns["CreatedAt"].SetOrdinal(count++);
-
+                
                 salaryInfoGV.Columns["Date"].HeaderText = "Tháng/Năm";
                 salaryInfoGV.Columns["BaseSalary"].HeaderText = "Lương CB";
                 salaryInfoGV.Columns["Note"].HeaderText = "Ghi Chú";
@@ -203,6 +197,7 @@ namespace RauViet.ui
             dv.RowFilter = $"EmployeeCode = '{employeeCode}'";
 
             salaryInfoGV.DataSource = dv;
+            status_lb.Text = "";
         }
         private void UpdateRightUI(int index)
         {
@@ -298,7 +293,7 @@ namespace RauViet.ui
             }
 
             // So sánh
-            bool isValid = (newYear > maxYear) || (newYear == maxYear && newMonth > maxMonth);
+            bool isValid = (newYear > maxYear) || (newYear == maxYear && newMonth >= maxMonth);
 
             if (!isValid)
             {

@@ -1,4 +1,4 @@
-﻿using DocumentFormat.OpenXml.Bibliography;
+﻿using Microsoft.Office.Interop.Excel;
 using RauViet.classes;
 using System;
 using System.Collections.Generic;
@@ -7,6 +7,7 @@ using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using DataTable = System.Data.DataTable;
 
 namespace RauViet.ui
 {
@@ -61,7 +62,6 @@ namespace RauViet.ui
             excelAttendance_btn.Click += ExcelAttendance_btn_Click;                       
 
             loadAttandance_btn.Click += LoadAttandance_btn_Click;
-            calWorkHour_btn.Click += CalWorkHour_btn_Click;
 
             attendanceGV.CellParsing += AttendanceGV_CellParsing;
         }
@@ -174,7 +174,6 @@ namespace RauViet.ui
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
-                calWorkHour_btn.Visible = !isLock;
             }
             catch (Exception ex)
             {
@@ -205,7 +204,6 @@ namespace RauViet.ui
                 UpdateRightUI(selectedIndex);
             }
 
-            calWorkHour_btn.Visible = !isLock;
 
         }
 
@@ -281,7 +279,7 @@ namespace RauViet.ui
 
         private void attendanceGV_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
         {
-            TextBox tb = e.Control as TextBox;
+            System.Windows.Forms.TextBox tb = e.Control as System.Windows.Forms.TextBox;
             if (tb == null) return;
 
             tb.KeyPress -= Tb_KeyPress_OnlyNumber;
@@ -296,7 +294,7 @@ namespace RauViet.ui
 
         private void Tb_KeyPress_OnlyNumber(object sender, KeyPressEventArgs e)
         {
-            TextBox tb = sender as TextBox;
+            System.Windows.Forms.TextBox tb = sender as System.Windows.Forms.TextBox;
 
             // Chỉ cho nhập số, phím điều khiển hoặc dấu chấm
             if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) && e.KeyChar != '.')
@@ -328,7 +326,7 @@ namespace RauViet.ui
                     if (ofd.ShowDialog() == DialogResult.OK)
                     {
                         string filePath = ofd.FileName;
-                        DataTable excelData = Utils.LoadExcel_NoHeader(filePath);
+                        System.Data.DataTable excelData = Utils.LoadExcel_NoHeader(filePath);
 
                         List<(string EmployeeCode, DateTime WorkDate, decimal WorkingHours, string Note, string log)> attendanceData = new List<(string, DateTime, decimal, string, string)>();
 
@@ -413,18 +411,6 @@ namespace RauViet.ui
                             {
                                 if (isWork_Morning) workingHours += 4.5m;
                                 if (isWork_Afternoon) workingHours += 3.5m;
-
-                                var filtered = mLeaveAttendance_dt.AsEnumerable().Where(r => r.Field<DateTime>("DateOff").Date == workDate.Date && r.Field<string>("EmployeeCode") == employeeCode).ToList();
-                                
-                                decimal totalHourOff = 0;
-                                foreach(var row in filtered)
-                                {
-                                    decimal.TryParse(row["LeaveHours"].ToString(), out decimal lh);
-                                    totalHourOff += lh;
-                                }
-
-                                if (workingHours + totalHourOff > 8)
-                                    workingHours = 8 - totalHourOff;
                             }
 
                             attendanceData.Add((employeeCode, workDate, workingHours, note, log));
@@ -470,12 +456,22 @@ namespace RauViet.ui
                             {
                                 try
                                 {
-
-                                    Boolean iSuccess = await SQLManager.Instance.UpsertAttendanceBatchAsync(attendanceData);
-                                    if (iSuccess)
+                                    bool isSuccess = await SQLManager.Instance.DeleteAttendanceByMonthYearAsync(month, year);
+                                    if(!isSuccess)
+                                    {
+                                        await Task.Delay(200);
+                                        loadingOverlay.Hide();
+                                        MessageBox.Show("Xóa dữ liệu cũ Thất Bại ?", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                        return;
+                                    }
+                                    mAttendamce_dt.Clear();
+                                    isSuccess = await SQLManager.Instance.UpsertAttendanceBatchAsync(attendanceData);
+                                    if (isSuccess)
                                     {
                                         month_cbb.SelectedItem = month;
                                         year_tb.Text = year.ToString();
+
+                                        await AddMissingEmployees(month, year);
 
                                         SQLStore.Instance.removeAttendamce(month, year);
                                         var attendamceTask = SQLStore.Instance.GetAttendamceAsync(null, month, year);
@@ -489,10 +485,11 @@ namespace RauViet.ui
                                         MessageBox.Show("Thất Bại ?", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                     }
                                 }
-                                catch
+                                catch (Exception ex)
                                 {
                                     await Task.Delay(200);
                                     loadingOverlay.Hide();
+                                    Console.WriteLine("ERROR: " + ex.ToString());
                                     MessageBox.Show("Thất Bại ?", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                 }
                             }
@@ -597,8 +594,10 @@ namespace RauViet.ui
 
             DataView dv = new DataView(mAttendamce_dt);
             dv.RowFilter = $"EmployeeCode = '{employeeCode}'";
-
+            
             attendanceGV.DataSource = dv;
+
+            status_lb.Text = "";
         }
 
         private async void AttendanceGV_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
@@ -606,6 +605,8 @@ namespace RauViet.ui
             bool isLock = await SQLStore.Instance.IsSalaryLockAsync(mCurrentMonth, mCurrentYear);
             if (isLock)
                 e.Cancel = true;
+
+            status_lb.Text = "";
         }
 
         private async void AttendanceGV_CellEndEdit(object sender, DataGridViewCellEventArgs e)
@@ -635,6 +636,7 @@ namespace RauViet.ui
                     {
                         status_lb.Text = "Thành Công.";
                         status_lb.ForeColor = Color.Blue;
+                        cal_WorkingHour_WorkingDay();
                     }
                 }
                 catch
@@ -659,6 +661,55 @@ namespace RauViet.ui
                     e.ParsingApplied = true; // báo DataGridView giá trị đã parse xong
                 }
             }
+        }
+
+        public async Task AddMissingEmployees(int month, int year)
+        {
+            if (mEmployee_dt == null || mAttendamce_dt == null)
+                throw new ArgumentNullException("DataTable không được null");
+
+            int daysInMonth = DateTime.DaysInMonth(year, month);
+
+            // Lấy danh sách EmployeeCode đã có trong Attendance
+            var existingCodes = mAttendamce_dt.AsEnumerable()
+                                             .Select(r => r.Field<string>("EmployeeCode"))
+                                             .Distinct()
+                                             .ToHashSet();
+
+            // Lấy danh sách nhân viên chưa có trong Attendance
+            var missingEmployees = mEmployee_dt.AsEnumerable()
+                                              .Where(emp => !existingCodes.Contains(emp.Field<string>("EmployeeCode")));
+
+            // Thêm dữ liệu vào Attendance
+            List<(string EmployeeCode, DateTime WorkDate, decimal WorkingHours, string Note, string log)> attendanceData = new List<(string, DateTime, decimal, string, string)>();
+            foreach (var emp in missingEmployees)
+            {
+                string empCode = emp.Field<string>("EmployeeCode");
+                string contractTypeCode = employeeDict[empCode].ContractTypeCode;
+                if (contractTypeCode.CompareTo("t_vu") != 0)
+                    continue;
+
+                string note = "Làm việc từ xa";
+                for (int day = 1; day <= daysInMonth; day++)
+                {
+                    DateTime date = new DateTime(year, month, day);
+                    
+                    DataRow newRow = mAttendamce_dt.NewRow();
+                    int workHour = date.DayOfWeek == DayOfWeek.Sunday ? 0 : 8;
+                    
+                    newRow["EmployeeCode"] = empCode;
+                    newRow["WorkDate"] = date;
+                    newRow["Note"] = note;       
+                    newRow["WorkingHours"] = workHour;
+                    newRow["AttendanceLog"] = "";
+
+                    mAttendamce_dt.Rows.Add(newRow);
+                    attendanceData.Add((empCode, date, workHour, note, ""));
+                }
+            }
+
+            
+            Boolean iSuccess = await SQLManager.Instance.UpsertAttendanceBatchAsync(attendanceData);
         }
     }
 }

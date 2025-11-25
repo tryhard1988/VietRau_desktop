@@ -2538,14 +2538,14 @@ namespace RauViet.classes
 
         public async Task<bool> deleteLeaveAttendanceAsync(int leaveID)
         {
-            string query = "DELETE FROM LeaveAttendance WHERE LeaveID=@LeaveID";
             try
             {
                 using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
-                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    using (SqlCommand cmd = new SqlCommand("sp_DeleteLeaveAttendance", con))
                     {
+                        cmd.CommandType = CommandType.StoredProcedure;
                         cmd.Parameters.AddWithValue("@LeaveID", leaveID);
                         await cmd.ExecuteNonQueryAsync();
                     }
@@ -3932,22 +3932,25 @@ namespace RauViet.classes
 
         public async Task<bool> HaveOtherComputerLoginAsync()
         {
-            using (SqlConnection con = new SqlConnection(ql_User_conStr()))
+            try
             {
-                await con.OpenAsync();
-                string query = "SELECT MachineInfo FROM Users WHERE UserName = @UserName";
-                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlConnection con = new SqlConnection(ql_User_conStr()))
                 {
-                    cmd.Parameters.AddWithValue("@UserName", UserManager.Instance.userName);
-                    var result = await cmd.ExecuteScalarAsync();
-
-                    if (result != null && result.ToString() != UserManager.Instance.machineInfo)
+                    await con.OpenAsync();
+                    string query = "SELECT MachineInfo FROM Users WHERE UserName = @UserName";
+                    using (SqlCommand cmd = new SqlCommand(query, con))
                     {
-                        return true;
+                        cmd.Parameters.AddWithValue("@UserName", UserManager.Instance.userName);
+                        var result = await cmd.ExecuteScalarAsync();
+
+                        if (result != null && result.ToString() != UserManager.Instance.machineInfo)
+                        {
+                            return true;
+                        }
                     }
                 }
             }
-
+            catch { }
             return false;
         }
 
@@ -4390,6 +4393,31 @@ namespace RauViet.classes
             {
                 Console.WriteLine($"Error deleting Do 47 Log: {ex.Message}");
             }
+        }
+
+        public async Task<bool> DeleteAttendanceByMonthYearAsync(int month, int year)
+        {
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand("sp_DeleteAttendanceByMonthYear", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@Month", month);
+                        cmd.Parameters.AddWithValue("@Year", year);
+                        await cmd.ExecuteNonQueryAsync();
+                        return true;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error DeleteAttendanceByMonthYearAsync: {ex.Message}");
+            }
+
+            return false;
         }
     }
 }

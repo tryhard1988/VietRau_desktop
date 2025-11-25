@@ -45,8 +45,7 @@ namespace RauViet.ui
             newCustomerBtn.Click += newCustomerBtn_Click;
             LuuThayDoiBtn.Click += saveBtn_Click;
             delete_btn.Click += deleteBtn_Click;
-            dataGV.SelectionChanged += this.dataGV_CellClick;
-            allowanceGV.SelectionChanged += this.allowanceGV_CellClick;
+            dataGV.SelectionChanged += this.dataGV_CellClick;            
             amount_tb.KeyPress += Tb_KeyPress_OnlyNumber;
 
             edit_btn.Click += Edit_btn_Click;
@@ -82,11 +81,7 @@ namespace RauViet.ui
                         dr["AllowanceName"] = applyScopeRows[0]["AllowanceName"].ToString();
                 }
 
-                foreach (DataRow dr in employee_dt.Rows)
-                {
-                    if (dr["PositionName"] == DBNull.Value) dr["PositionName"] = "";
-                    if (dr["ContractTypeName"] == DBNull.Value) dr["ContractTypeName"] = "";
-                }
+                
 
 
                 DataView dv = new DataView(mAllowanceType_dt);
@@ -109,6 +104,7 @@ namespace RauViet.ui
                 mEmployeeAllowance_dt.Columns["Amount"].SetOrdinal(count++);
                 mEmployeeAllowance_dt.Columns["Note"].SetOrdinal(count++);
 
+                allowanceGV.Columns["Amount"].DefaultCellStyle.Format = "N0";
 
                 allowanceGV.Columns["AllowanceName"].HeaderText = "Loại Phụ Cấp";
                 allowanceGV.Columns["Amount"].HeaderText = "Số Tiền";
@@ -138,6 +134,9 @@ namespace RauViet.ui
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 allowanceGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+
+                allowanceGV.SelectionChanged -= this.allowanceGV_CellClick;
+                allowanceGV.SelectionChanged += this.allowanceGV_CellClick;
             }
             catch (Exception ex)
             {
@@ -176,7 +175,6 @@ namespace RauViet.ui
             int rowIndex = allowanceGV.CurrentRow.Index;
             if (rowIndex < 0)
                 return;
-
 
             UpdateRightUI(rowIndex);
         }

@@ -257,6 +257,12 @@ namespace RauViet.classes
             mEmployee_dt.Columns.Add(new DataColumn("GradeName", typeof(string)));
             mEmployee_dt.Columns.Add(new DataColumn("SalaryGrade", typeof(int)));
 
+            foreach (DataRow dr in mEmployee_dt.Rows)
+            {
+                if (dr["PositionName"] == DBNull.Value) dr["PositionName"] = "";
+                if (dr["ContractTypeName"] == DBNull.Value) dr["ContractTypeName"] = "";
+            }
+
             int count = 0;
             foreach (DataRow dr in mEmployee_dt.Rows)
             {
@@ -536,9 +542,7 @@ namespace RauViet.classes
                     .GroupBy(r => r.Field<string>("EmployeeCode"))
                     .ToDictionary(
                         g => g.Key,
-                        g => g.OrderByDescending(r => r.Field<int>("Year"))
-                              .ThenByDescending(r => r.Field<int>("Month"))
-                              .First()
+                        g => g.OrderByDescending(r => r.Field<int>("SalaryInfoID")).First()
                     );
 
                 // 2️⃣ Clone cấu trúc từ mEmployeeSalaryInfo_dt (để có cùng kiểu dữ liệu)
@@ -660,6 +664,13 @@ namespace RauViet.classes
             {
                 dr["Date"] = dr["Month"] + "/" + dr["Year"];
             }
+
+            int count = 0;
+            mEmployeeSalaryInfo_dt.Columns["Date"].SetOrdinal(count++);
+            mEmployeeSalaryInfo_dt.Columns["BaseSalary"].SetOrdinal(count++);
+            mEmployeeSalaryInfo_dt.Columns["InsuranceBaseSalary"].SetOrdinal(count++);
+            mEmployeeSalaryInfo_dt.Columns["Note"].SetOrdinal(count++);
+            mEmployeeSalaryInfo_dt.Columns["CreatedAt"].SetOrdinal(count++);
         }
 
         public async Task<DataTable> GetEmployeesAsync()

@@ -33,7 +33,6 @@ namespace RauViet.ui
             this.panel1 = new System.Windows.Forms.Panel();
             this.excelAttendance_btn = new System.Windows.Forms.Button();
             this.info_gb = new System.Windows.Forms.GroupBox();
-            this.calWorkHour_btn = new System.Windows.Forms.Button();
             this.loadAttandance_btn = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.month_cbb = new System.Windows.Forms.ComboBox();
@@ -65,7 +64,7 @@ namespace RauViet.ui
             this.panel1.Controls.Add(this.info_gb);
             this.panel1.Controls.Add(this.status_lb);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel1.Location = new System.Drawing.Point(955, 0);
+            this.panel1.Location = new System.Drawing.Point(995, 0);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(309, 681);
             this.panel1.TabIndex = 11;
@@ -83,7 +82,6 @@ namespace RauViet.ui
             // 
             // info_gb
             // 
-            this.info_gb.Controls.Add(this.calWorkHour_btn);
             this.info_gb.Controls.Add(this.loadAttandance_btn);
             this.info_gb.Controls.Add(this.label1);
             this.info_gb.Controls.Add(this.month_cbb);
@@ -94,17 +92,6 @@ namespace RauViet.ui
             this.info_gb.Size = new System.Drawing.Size(290, 184);
             this.info_gb.TabIndex = 28;
             this.info_gb.TabStop = false;
-            // 
-            // calWorkHour_btn
-            // 
-            this.calWorkHour_btn.BackColor = System.Drawing.Color.IndianRed;
-            this.calWorkHour_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.calWorkHour_btn.Location = new System.Drawing.Point(6, 131);
-            this.calWorkHour_btn.Name = "calWorkHour_btn";
-            this.calWorkHour_btn.Size = new System.Drawing.Size(284, 47);
-            this.calWorkHour_btn.TabIndex = 30;
-            this.calWorkHour_btn.Text = "Tính lại giờ làm theo giờ nghỉ";
-            this.calWorkHour_btn.UseVisualStyleBackColor = false;
             // 
             // loadAttandance_btn
             // 
@@ -170,18 +157,18 @@ namespace RauViet.ui
             this.attendanceGV.AllowUserToAddRows = false;
             this.attendanceGV.AllowUserToDeleteRows = false;
             this.attendanceGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.attendanceGV.Dock = System.Windows.Forms.DockStyle.Left;
+            this.attendanceGV.Dock = System.Windows.Forms.DockStyle.Fill;
             this.attendanceGV.Location = new System.Drawing.Point(403, 0);
             this.attendanceGV.Name = "attendanceGV";
             this.attendanceGV.ReadOnly = true;
-            this.attendanceGV.Size = new System.Drawing.Size(456, 681);
+            this.attendanceGV.Size = new System.Drawing.Size(592, 681);
             this.attendanceGV.TabIndex = 76;
             // 
             // Attendance
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1264, 681);
+            this.ClientSize = new System.Drawing.Size(1304, 681);
             this.Controls.Add(this.attendanceGV);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.dataGV);
@@ -208,7 +195,6 @@ namespace RauViet.ui
         private System.Windows.Forms.ComboBox month_cbb;
         private System.Windows.Forms.Button loadAttandance_btn;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Button calWorkHour_btn;
         private System.Windows.Forms.DataGridView attendanceGV;
     }
 }
