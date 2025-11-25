@@ -154,9 +154,12 @@ namespace RauViet.ui
                 System.Data.DataTable exportCode_dt = exportCodeTask.Result;
                 _employeesInDongGoi_dt = employeesInDongGoiTask.Result;
 
-                mExportCodeLog_dv = new DataView(ExportCodeLogTask.Result);
+                mExportCodeLog_dv = new DataView(ExportCodeLogTask.Result);                
                 log_GV.DataSource = mExportCodeLog_dv;
-                dataGV.DataSource = exportCode_dt;
+
+                DataView exportCode_dv = new DataView(exportCode_dt);
+                exportCode_dv.Sort = "ExportCodeID DESC";
+                dataGV.DataSource = exportCode_dv;
 
                 dataGV.Columns["ExportCode"].HeaderText = "Mã Xuất Cảng";
                 dataGV.Columns["ExportDate"].HeaderText = "Ngày Xuất Cảng";                

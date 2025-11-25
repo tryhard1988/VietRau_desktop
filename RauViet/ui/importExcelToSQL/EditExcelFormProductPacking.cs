@@ -28,7 +28,7 @@ namespace RauViet.ui
 
         private void importToSQL_ProductPacking_mi_Click(object sender, EventArgs e)
         {
-            ImportDataGridViewToSql(dataGV, SQLManager.Instance.conStr, "ProductPacking");
+            ImportDataGridViewToSql(dataGV, SQLManager.Instance.ql_NhanSu_conStr(), "ProductPacking");
         }
 
         private void save_mi_Click(object sender, EventArgs e)
@@ -684,7 +684,7 @@ namespace RauViet.ui
         {
             HashSet<int> existingSKUs = new HashSet<int>();
 
-            using (SqlConnection conn = new SqlConnection(SQLManager.Instance.conStr))
+            using (SqlConnection conn = new SqlConnection(SQLManager.Instance.ql_NhanSu_conStr()))
             {
                 conn.Open();
                 using (SqlCommand cmd = new SqlCommand("SELECT SKU FROM ProductSKU", conn))

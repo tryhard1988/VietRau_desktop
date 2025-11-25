@@ -1382,6 +1382,15 @@ namespace RauViet.classes
                 string[] vietDays = { "CN", "T.2", "T.3", "T.4", "T.5", "T.6", "T.7" };
                 row["DayOfWeek"] = vietDays[(int)dt.DayOfWeek];
             }
+
+            int count = 0;
+            data.Columns["DayOfWeek"].SetOrdinal(count++);
+            data.Columns["WorkDate"].SetOrdinal(count++);
+            data.Columns["WorkingHours"].SetOrdinal(count++);
+            data.Columns["AttendanceLog"].SetOrdinal(count++);
+            data.Columns["LeaveTypeName"].SetOrdinal(count++);
+            data.Columns["OvertimeName"].SetOrdinal(count++);
+            data.Columns["Note"].SetOrdinal(count);
         }
 
         public void removeAttendamce(int month, int year)

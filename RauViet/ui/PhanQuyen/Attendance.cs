@@ -2,22 +2,17 @@
 using RauViet.classes;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Data.OleDb;
 using System.Drawing;
 using System.Linq;
-using System.Reflection.Emit;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
 
 namespace RauViet.ui
 {
     public partial class Attendance : Form
     {
-        DataTable mAttendamce_dt, mEmployee_dt, mHoliday_dt;
+        DataTable mAttendamce_dt, mEmployee_dt, mHoliday_dt, mLeaveAttendance_dt;
         Dictionary<string, (string PositionCode, string ContractTypeCode)> employeeDict;
         LoadingOverlay loadingOverlay;
         int mCurrentMonth = -1;
@@ -67,9 +62,9 @@ namespace RauViet.ui
 
             loadAttandance_btn.Click += LoadAttandance_btn_Click;
             calWorkHour_btn.Click += CalWorkHour_btn_Click;
-        }
 
-        
+            attendanceGV.CellParsing += AttendanceGV_CellParsing;
+        }
 
         public async void ShowData()
         {
@@ -91,11 +86,13 @@ namespace RauViet.ui
                 var employeesTask = SQLStore.Instance.GetEmployeesAsync(keepColumns);
                 var attendamceTask = SQLStore.Instance.GetAttendamceAsync(null, month, year);
                 var holidayTask = SQLStore.Instance.GetHolidaysAsync(month, year);
+                var leaveAttendanceTask = SQLStore.Instance.GetLeaveAttendancesAsyn(year);
 
-                await Task.WhenAll(employeesTask, attendamceTask, holidayTask);
+                await Task.WhenAll(employeesTask, attendamceTask, holidayTask, leaveAttendanceTask);
                 mEmployee_dt = employeesTask.Result;
                 mAttendamce_dt = attendamceTask.Result;
                 mHoliday_dt = holidayTask.Result;
+                mLeaveAttendance_dt = leaveAttendanceTask.Result;
 
                 mCurrentMonth = month;
                 mCurrentYear = year;
@@ -196,14 +193,6 @@ namespace RauViet.ui
 
         private async void Attendamce(int month, int year)
         {
-            int count = 0;
-            mAttendamce_dt.Columns["DayOfWeek"].SetOrdinal(count++);
-            mAttendamce_dt.Columns["WorkDate"].SetOrdinal(count++);
-            mAttendamce_dt.Columns["WorkingHours"].SetOrdinal(count++);
-            mAttendamce_dt.Columns["AttendanceLog"].SetOrdinal(count++);
-            mAttendamce_dt.Columns["LeaveTypeName"].SetOrdinal(count++);
-            mAttendamce_dt.Columns["OvertimeName"].SetOrdinal(count++);
-            mAttendamce_dt.Columns["Note"].SetOrdinal(count);
 
             bool isLock = await SQLStore.Instance.IsSalaryLockAsync(month, year);
             attendanceGV.ReadOnly = isLock;
@@ -220,12 +209,41 @@ namespace RauViet.ui
 
         }
 
-        private void CalWorkHour_btn_Click(object sender, EventArgs e)
+        private async void CalWorkHour_btn_Click(object sender, EventArgs e)
         {
+            List<(string EmployeeCode, DateTime WorkDate, decimal WorkingHours, string Note, string log)> attendanceData = new List<(string, DateTime, decimal, string, string)>();
             foreach (DataRow dr in mAttendamce_dt.Rows)
             {
                 if (double.TryParse(dr["LeaveHours"]?.ToString(), out double leaveHour))
-                    dr["WorkingHours"] = Math.Max(0, 8 - leaveHour);
+                {
+                    dr["WorkingHours"] = Math.Max(0, 8 - leaveHour);                    
+
+                    string employeeCode = Convert.ToString(dr["EmployeeCode"]);
+                    DateTime workDate = Convert.ToDateTime(dr["WorkDate"]);
+                    decimal workingHours = Convert.ToDecimal(dr["WorkingHours"]);
+                    string note = Convert.ToString(dr["Note"]);
+                    string attendanceLog = Convert.ToString(dr["AttendanceLog"]);
+
+                    attendanceData.Add((employeeCode, workDate, workingHours, note, attendanceLog));                    
+                }
+            }
+
+            try
+            {
+                Boolean iSuccess = await SQLManager.Instance.UpsertAttendanceBatchAsync(attendanceData);
+                if (!iSuccess)
+                {
+                    MessageBox.Show("Cập nhật thất bại!");
+                }
+                else
+                {
+                    status_lb.Text = "Thành Công.";
+                    status_lb.ForeColor = Color.Blue;
+                }
+            }
+            catch
+            {
+                MessageBox.Show("Thất Bại ?", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -312,7 +330,7 @@ namespace RauViet.ui
                         string filePath = ofd.FileName;
                         DataTable excelData = Utils.LoadExcel_NoHeader(filePath);
 
-                        List<(string EmployeeCode, DateTime WorkDate, double WorkingHours, string Note, string log)> attendanceData = new List<(string, DateTime, double, string, string)>();
+                        List<(string EmployeeCode, DateTime WorkDate, decimal WorkingHours, string Note, string log)> attendanceData = new List<(string, DateTime, decimal, string, string)>();
 
                         TimeSpan startTime_Morning = new TimeSpan(9, 30, 0);
                         TimeSpan startTime_AfterNoon = new TimeSpan(13, 20, 0);
@@ -321,7 +339,9 @@ namespace RauViet.ui
 
                         foreach (DataRow edr in excelData.Rows)
                         {
-                            int employeeID = Convert.ToInt32(edr["Column1"]);
+                            if (!int.TryParse(edr["Column2"].ToString(), out int employeeID))
+                                continue;
+
                             string employeeCode = $"VR{employeeID:D4}";
                             if (!employeeDict.ContainsKey(employeeCode))
                                 continue;
@@ -329,8 +349,10 @@ namespace RauViet.ui
                             string positionCode = employeeDict[employeeCode].PositionCode;
                             string contractTypeCode = employeeDict[employeeCode].ContractTypeCode;
 
-                            DateTime workDate = Convert.ToDateTime(edr["Column3"]).Date;
+                            if (contractTypeCode.CompareTo("t_vu") == 0)
+                                continue;
 
+                            DateTime workDate = Convert.ToDateTime(edr["Column4"]).Date;
 
                             if ((month != -1 && month != workDate.Month) ||
                                 year != -1 && year != workDate.Year)
@@ -353,7 +375,7 @@ namespace RauViet.ui
                             bool isWork_Afternoon = false;
 
                             string log = "";
-                            for (int colIndex = 4; colIndex < excelData.Columns.Count; colIndex++)
+                            for (int colIndex = 6; colIndex < excelData.Columns.Count; colIndex++)
                             {
                                 var cellValue = edr[colIndex];
                                 if (cellValue != null && cellValue != DBNull.Value)
@@ -375,13 +397,13 @@ namespace RauViet.ui
                                 }
                             }
 
-                            float workingHours = 0;
+                            decimal workingHours = 0m;
                             bool isSunDay = workDate.DayOfWeek == DayOfWeek.Sunday;
                             bool isHoliday = mHoliday_dt.AsEnumerable().Any(r => r.Field<DateTime>("HolidayDate").Date == workDate.Date);
                             string note = "";
                             if (positionCode.CompareTo("bao_ve") == 0)
                             {
-                                workingHours = 12f;
+                                workingHours = 12m;
                             }
                             else if (isHoliday)
                             {
@@ -389,21 +411,24 @@ namespace RauViet.ui
                             }
                             else if (!isSunDay)
                             {
-                                if (contractTypeCode.CompareTo("t_vu") == 0)
+                                if (isWork_Morning) workingHours += 4.5m;
+                                if (isWork_Afternoon) workingHours += 3.5m;
+
+                                var filtered = mLeaveAttendance_dt.AsEnumerable().Where(r => r.Field<DateTime>("DateOff").Date == workDate.Date && r.Field<string>("EmployeeCode") == employeeCode).ToList();
+                                
+                                decimal totalHourOff = 0;
+                                foreach(var row in filtered)
                                 {
-                                    workingHours = 8f;
-                                }
-                                else
-                                {
-                                    if (isWork_Morning) workingHours += 4.5f;
-                                    if (isWork_Afternoon) workingHours += 3.5f;
+                                    decimal.TryParse(row["LeaveHours"].ToString(), out decimal lh);
+                                    totalHourOff += lh;
                                 }
 
+                                if (workingHours + totalHourOff > 8)
+                                    workingHours = 8 - totalHourOff;
                             }
+
                             attendanceData.Add((employeeCode, workDate, workingHours, note, log));
                         }
-
-
 
                         if (month == -1 || year == -1)
                         {
@@ -422,8 +447,7 @@ namespace RauViet.ui
                             //tạo dữ liệu cho nhân viên thời vụ
                             var thoiVuList = employeeDict
                                                 .Where(kv => kv.Value.ContractTypeCode.Equals("thoi_vu", StringComparison.OrdinalIgnoreCase))
-                                                .Select(kv => kv.Key) // chỉ lấy EmployeeCode
-                                                .ToList();
+                                                .Select(kv => kv.Key).ToList();
 
                             int daysInMonth = DateTime.DaysInMonth(year, month);
 
@@ -479,8 +503,9 @@ namespace RauViet.ui
                     loadingOverlay.Hide();
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine("ERROR: " + ex.ToString());
                 MessageBox.Show("Thất Bại ?", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 await Task.Delay(200);
                 loadingOverlay.Hide();
@@ -498,14 +523,17 @@ namespace RauViet.ui
 
             var attendamceTask = SQLStore.Instance.GetAttendamceAsync(null, month, year);
             var holidayTask = SQLStore.Instance.GetHolidaysAsync(month, year);
-            
-            await Task.WhenAll(attendamceTask, holidayTask);
+            var leaveAttendanceTask = SQLStore.Instance.GetLeaveAttendancesAsyn(year);
+
+            await Task.WhenAll(attendamceTask, holidayTask, leaveAttendanceTask);
 
             mCurrentYear = year;
             mCurrentMonth = month;
 
             mAttendamce_dt = attendamceTask.Result;
             mHoliday_dt = holidayTask.Result;
+            mLeaveAttendance_dt = leaveAttendanceTask.Result;
+
             Attendamce(month, year);
             await Task.Delay(500);
             loadingOverlay.Hide();
@@ -513,6 +541,7 @@ namespace RauViet.ui
 
         private async void dataGV_CellClick(object sender, EventArgs e)
         {
+            status_lb.Text = "";
             if (dataGV.CurrentRow == null) return;
             int rowIndex = dataGV.CurrentRow.Index;
             if (rowIndex < 0) return;
@@ -539,8 +568,8 @@ namespace RauViet.ui
                 g => g.Key,
                 g => new
                 {
-                    TotalWorkingHours = g.Sum(r => r.Field<double?>("WorkingHours") ?? 0f),
-                    WorkingDays = g.Count(r => (r.Field<double?>("WorkingHours") ?? 0f) > 0)
+                    TotalWorkingHours = g.Sum(r => r.Field<decimal?>("WorkingHours") ?? 0m),
+                    WorkingDays = g.Count(r => (r.Field<decimal?>("WorkingHours") ?? 0m) > 0)
                 });
 
             foreach (DataRow dr in mEmployee_dt.Rows)
@@ -585,11 +614,11 @@ namespace RauViet.ui
             {
                 var row = attendanceGV.Rows[e.RowIndex];
 
-                List<(string EmployeeCode, DateTime WorkDate, double WorkingHours, string Note, string log)> attendanceData = new List<(string, DateTime, double, string, string)>();
+                List<(string EmployeeCode, DateTime WorkDate, decimal WorkingHours, string Note, string log)> attendanceData = new List<(string, DateTime, decimal, string, string)>();
 
                 string employeeCode = Convert.ToString(row.Cells["EmployeeCode"].Value);
                 DateTime workDate = Convert.ToDateTime(row.Cells["WorkDate"].Value);
-                double workingHours = Convert.ToDouble(row.Cells["WorkingHours"].Value);
+                decimal workingHours = Convert.ToDecimal(row.Cells["WorkingHours"].Value);
                 string note = Convert.ToString(row.Cells["Note"].Value);
                 string attendanceLog = Convert.ToString(row.Cells["AttendanceLog"].Value);
 
@@ -602,10 +631,32 @@ namespace RauViet.ui
                     {
                         MessageBox.Show("Cập nhật thất bại!");
                     }
+                    else
+                    {
+                        status_lb.Text = "Thành Công.";
+                        status_lb.ForeColor = Color.Blue;
+                    }
                 }
                 catch
-                {
+                {                    
                     MessageBox.Show("Thất Bại ?", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+
+        private void AttendanceGV_CellParsing(object sender, DataGridViewCellParsingEventArgs e)
+        {
+            if (attendanceGV.Columns[e.ColumnIndex].Name == "WorkingHours" && e.Value != null)
+            {
+                // Cho phép nhập 7,5 hoặc 7.5
+                string val = e.Value.ToString().Replace(',', '.');
+
+                if (decimal.TryParse(val, System.Globalization.NumberStyles.Any,
+                                     System.Globalization.CultureInfo.InvariantCulture, out decimal d))
+                {
+                    e.Value = d;
+                    e.ParsingApplied = true; // báo DataGridView giá trị đã parse xong
                 }
             }
         }

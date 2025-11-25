@@ -185,6 +185,7 @@ namespace RauViet.ui
 
         private async void DataGV_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
+            
             if (dataGV.CurrentRow != null)
             {
                 object newValue = dataGV.CurrentCell?.Value;//.Rows[e.RowIndex].Cells[e.ColumnIndex].Value?.ToString() ?? "";
@@ -374,6 +375,7 @@ namespace RauViet.ui
 
         private void DataGV_SelectionChanged(object sender, EventArgs e)
         {
+            status_lb.Text = "";
             if (dataGV.CurrentRow == null) return;
 
             if (exportCode_cbb.SelectedValue == null) return;

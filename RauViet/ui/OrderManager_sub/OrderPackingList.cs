@@ -1469,6 +1469,7 @@ namespace RauViet.ui
       
         private void DataGV_SelectionChanged(object sender, EventArgs e)
         {
+            status_lb.Text = "";
             if (dataGV.CurrentRow == null) return;
 
             if (exportCode_cbb.SelectedValue == null) return;

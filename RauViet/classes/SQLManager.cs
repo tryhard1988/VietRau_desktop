@@ -21,13 +21,6 @@ namespace RauViet.classes
     {
         private static SQLManager ins = null;
         private static readonly object padlock = new object();
-        public readonly string ql_User_conStr = "Server=192.168.1.8,1433;Database=QL_User;User Id=ql_user;Password=A7t#kP2x;";
-        public readonly string ql_kho_conStr = "Server=192.168.1.8,1433;Database=QL_Kho;User Id=ql_kho;Password=A7t#kP2x;";
-        public readonly string ql_kho_Log_conStr = "Server=192.168.1.8,1433;Database=QL_Kho_Log;User Id=ql_kho;Password=A7t#kP2x;";
-        public readonly string ql_khoHis_conStr = "Server=192.168.1.8,1433;Database=QL_Kho_History;User Id=ql_kho_history;Password=A7t#kP2x;";
-        public readonly string salaryLock_conStr = "Server=192.168.1.8,1433;Database=SalaryLock;User Id=salary_lock;Password=A7t#kP2x;";
-        public readonly string qlnvHis_conStr = "Server=192.168.1.8,1433;Database=QLNV_VR_History;User Id=qlnv_vr_history;Password=A7t#kP2x;";
-        public readonly string conStr = "Server=192.168.1.8,1433;Database=QLNV;User Id=vietrau;Password=A7t#kP2x;";
 
         private SQLManager() { }
 
@@ -44,11 +37,19 @@ namespace RauViet.classes
             }
         }
 
+        public string ql_User_conStr(){ return "Server=192.168.1.8,1433;Database=QL_User;User Id=ql_user;Password=A7t#kP2x;";}
+        public string ql_kho_conStr() { return "Server=192.168.1.8,1433;Database=QL_Kho;User Id=ql_kho;Password=A7t#kP2x;"; }
+        public string ql_kho_Log_conStr() { return "Server=192.168.1.8,1433;Database=QL_Kho_Log;User Id=ql_kho;Password=A7t#kP2x;"; }
+        public string ql_khoHis_conStr() { return "Server=192.168.1.8,1433;Database=QL_Kho_History;User Id=ql_kho_history;Password=A7t#kP2x;"; }
+        public string salaryLock_conStr() { return "Server=192.168.1.8,1433;Database=SalaryLock;User Id=salary_lock;Password=A7t#kP2x;"; }
+        public string qlnvHis_conStr() { return "Server=192.168.1.8,1433;Database=QLNV_VR_History;User Id=qlnv_vr_history;Password=A7t#kP2x;"; }
+        public string ql_NhanSu_conStr() { return "Server=192.168.1.8,1433;Database=QLNV;User Id=vietrau;Password=A7t#kP2x;"; }
+
         public async Task<string> GetPasswordHashFromDatabase(string username)
         {
             string hash = "";
 
-            using (SqlConnection con = new SqlConnection(ql_User_conStr))
+            using (SqlConnection con = new SqlConnection(ql_User_conStr()))
             {
                 await con.OpenAsync();
                 using (var cmd = new SqlCommand("SELECT PasswordHash FROM Users WHERE Username = @Username AND IsActive = 1", con))
@@ -69,7 +70,7 @@ namespace RauViet.classes
         public async Task<DataTable> getCustomersAsync()
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(ql_kho_conStr))
+            using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
             {
                 await con.OpenAsync();
                 string query = "SELECT * FROM Customers ORDER BY Priority ASC;";
@@ -87,7 +88,7 @@ namespace RauViet.classes
             string query = "UPDATE Customers SET FullName=@FullName, CustomerCode=@CustomerCode, Priority=@Priority WHERE CustomerID=@CustomerID";
             try
             {
-                using (SqlConnection con = new SqlConnection(ql_kho_conStr))
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -112,7 +113,7 @@ namespace RauViet.classes
                             VALUES (@FullName, @CustomerCode, @CustomerCode)";
             try
             {
-                using (SqlConnection con = new SqlConnection(ql_kho_conStr))
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -135,7 +136,7 @@ namespace RauViet.classes
             string query = "DELETE FROM Customers WHERE CustomerID=@CustomerID";
             try
             {
-                using (SqlConnection con = new SqlConnection(ql_kho_conStr))
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -153,7 +154,7 @@ namespace RauViet.classes
         public async Task<DataTable> getProductSKUAsync()
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(ql_kho_conStr))
+            using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
             {
                 await con.OpenAsync();
                 string query = @"SELECT * FROM ProductSKU ORDER BY ProductNameVN ASC";
@@ -185,7 +186,7 @@ namespace RauViet.classes
                              WHERE SKU=@SKU";
             try
             {
-                using (SqlConnection con = new SqlConnection(ql_kho_conStr))
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -217,7 +218,7 @@ namespace RauViet.classes
 
             try
             {
-                using (SqlConnection con = new SqlConnection(ql_kho_conStr))
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand("SP_InsertProductSKU", con))
@@ -259,7 +260,7 @@ namespace RauViet.classes
             string query = "DELETE FROM ProductSKU WHERE SKU=@SKU";
             try
             {
-                using (SqlConnection con = new SqlConnection(ql_kho_conStr))
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -277,7 +278,7 @@ namespace RauViet.classes
         public async Task<DataTable> getProductpackingAsync()
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(ql_kho_conStr))
+            using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
             {
                 await con.OpenAsync();
                 string query = @"
@@ -318,7 +319,7 @@ namespace RauViet.classes
                              WHERE ProductPackingID=@ID";
             try
             {
-                using (SqlConnection con = new SqlConnection(ql_kho_conStr))
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -349,7 +350,7 @@ namespace RauViet.classes
                              VALUES (@SKU, @BarCode, @PLU, @Amount, @packing, @BarCodeEAN13, @ArtNr, @GGN)";
             try
             {
-                using (SqlConnection con = new SqlConnection(ql_kho_conStr))
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -377,7 +378,7 @@ namespace RauViet.classes
             string query = "DELETE FROM ProductPacking WHERE ProductPackingID=@ProductPackingID";
             try
             {
-                using (SqlConnection con = new SqlConnection(ql_kho_conStr))
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -395,10 +396,10 @@ namespace RauViet.classes
         public async Task<DataTable> getExportCodesAsync()
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(ql_kho_conStr))
+            using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
             {
                 await con.OpenAsync();
-                string query = "SELECT * FROM ExportCodes";
+                string query = "SELECT * FROM ExportCodes ORDER BY ExportCodeID DESC";
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                 {
@@ -422,7 +423,7 @@ namespace RauViet.classes
                             WHERE ExportCodeID=@ExportCodeID";
             try
             {
-                using (SqlConnection con = new SqlConnection(ql_kho_conStr))
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -453,7 +454,7 @@ namespace RauViet.classes
                                 VALUES (@ExportCode, @ExportCodeIndex, @ExportDate, @ExchangeRate, @ShippingCost, @InputBy, @PackingBy)";
             try
             {
-                using (SqlConnection con = new SqlConnection(ql_kho_conStr))
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -484,7 +485,7 @@ namespace RauViet.classes
 
             try
             {
-                using (SqlConnection con = new SqlConnection(ql_kho_conStr))
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
                 {
                     await con.OpenAsync();
 
@@ -528,7 +529,7 @@ namespace RauViet.classes
         public async Task<DataTable> getOrdersAsync(int exportCodeID)
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(ql_kho_conStr))
+            using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
             {
                 await con.OpenAsync();
                 string query = @"SELECT o.* FROM Orders o
@@ -558,7 +559,7 @@ namespace RauViet.classes
                              WHERE OrderId=@OrderId";
             try
             {
-                using (SqlConnection con = new SqlConnection(ql_kho_conStr))
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -586,7 +587,7 @@ namespace RauViet.classes
                              VALUES (@CustomerID, @ExportCodeID, @ProductPackingID, @OrderPackingPriceCNF, @PCSOther, @NWOther)";
             try
             {
-                using (SqlConnection con = new SqlConnection(ql_kho_conStr))
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -612,7 +613,7 @@ namespace RauViet.classes
             string query = "DELETE FROM Orders WHERE OrderId=@OrderId";
             try
             {
-                using (SqlConnection con = new SqlConnection(ql_kho_conStr))
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -630,7 +631,7 @@ namespace RauViet.classes
         {
             DataTable dt = new DataTable();
 
-            using (SqlConnection con = new SqlConnection(ql_kho_conStr))
+            using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
             {
                 await con.OpenAsync();
 
@@ -655,7 +656,7 @@ namespace RauViet.classes
         public async Task<DataTable> getOrdersPackingAsync()
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(ql_kho_conStr))
+            using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
             {
                 await con.OpenAsync();
                 string query = @"
@@ -701,7 +702,7 @@ namespace RauViet.classes
         {
             try
             {
-                using (SqlConnection con = new SqlConnection(ql_kho_conStr))
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
                 {
                     await con.OpenAsync();
 
@@ -745,7 +746,7 @@ namespace RauViet.classes
         public async Task<DataTable> getOrdersTotalAsync(int exportCodeID)
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(ql_kho_conStr))
+            using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
             {
                 await con.OpenAsync();
 
@@ -766,7 +767,7 @@ namespace RauViet.classes
         {
             try
             {
-                using (var con = new SqlConnection(ql_kho_conStr))
+                using (var con = new SqlConnection(ql_kho_conStr()))
                 {
                     await con.OpenAsync();
 
@@ -807,7 +808,7 @@ namespace RauViet.classes
         public async Task<DataTable> getOrdersDKKDAsync(int exportCodeID)
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(ql_kho_conStr))
+            using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
             {
                 await con.OpenAsync();
 
@@ -827,7 +828,7 @@ namespace RauViet.classes
         public async Task<DataTable> getOrdersChotPhytosync(int exportCodeID)
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(ql_kho_conStr))
+            using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
             {
                 await con.OpenAsync();
 
@@ -848,7 +849,7 @@ namespace RauViet.classes
         public async Task<DataTable> getOrdersPhytoAsync(int exportCodeID)
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(ql_kho_conStr))
+            using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
             {
                 await con.OpenAsync();
                 using (SqlCommand cmd = new SqlCommand("SP_GetOrdersPhyto", con))
@@ -867,7 +868,7 @@ namespace RauViet.classes
         public async Task<DataTable> getOrdersINVOICEAsync(int exportCodeID)
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(ql_kho_conStr))
+            using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
             {
                 await con.OpenAsync();
 
@@ -888,7 +889,7 @@ namespace RauViet.classes
         {
             DataTable dt = new DataTable();
 
-            using (SqlConnection con = new SqlConnection(ql_kho_conStr))
+            using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
             {
                 await con.OpenAsync();
 
@@ -909,7 +910,7 @@ namespace RauViet.classes
         public async Task<DataTable> GetExportCartonCountsAsync(int exportCodeID)
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(ql_kho_conStr))
+            using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
             {
                 await con.OpenAsync();
 
@@ -929,7 +930,7 @@ namespace RauViet.classes
         public async Task<DataTable> GetLOTCodeByExportCodeAsync(int exportCodeID)
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(ql_kho_conStr))
+            using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
             {
                 await con.OpenAsync();
                 string query = @"SELECT DISTINCT
@@ -963,7 +964,7 @@ namespace RauViet.classes
         {
             try
             {
-                using (SqlConnection con = new SqlConnection(ql_kho_conStr))
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
                 {
                     await con.OpenAsync();
 
@@ -1004,7 +1005,7 @@ namespace RauViet.classes
         {
             DataTable dt = new DataTable();
 
-            using (SqlConnection con = new SqlConnection(ql_kho_conStr))
+            using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
             {
                 await con.OpenAsync();
                 using (SqlCommand cmd = new SqlCommand("SP_DetailPackingTotalByExportCode_incomplete", con))
@@ -1026,7 +1027,7 @@ namespace RauViet.classes
         {
             DataTable dt = new DataTable();
 
-            using (SqlConnection con = new SqlConnection(ql_kho_conStr))
+            using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
             {
                 await con.OpenAsync();
 
@@ -1058,7 +1059,7 @@ namespace RauViet.classes
                                 AND o.ExportCodeID = @ExportCodeID;";
             try
             {
-                using (SqlConnection con = new SqlConnection(ql_kho_conStr))
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -1075,7 +1076,7 @@ namespace RauViet.classes
         public async Task<DataTable> GetActiveEmployeesIn_DongGoiAsync()
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(conStr))
+            using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
             {
                 await con.OpenAsync();
                 string query = @"SELECT EmployeeID, FullName FROM Employee WHERE DepartmentID = 29 AND IsActive = 1;";
@@ -1092,7 +1093,7 @@ namespace RauViet.classes
         public async Task<DataTable> GetActiveEmployees_For_CreateUserAsync()
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(conStr))
+            using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
             {
                 await con.OpenAsync();
                 string query = @"SELECT EmployeeID, FullName, EmployeeCode FROM Employee WHERE canCreateUserName = 1 AND IsActive = 1;";
@@ -1109,7 +1110,7 @@ namespace RauViet.classes
         public async Task<DataTable> GetRolesAsync()
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(ql_User_conStr))
+            using (SqlConnection con = new SqlConnection(ql_User_conStr()))
             {
                 await con.OpenAsync();
                 string query = @"SELECT 
@@ -1133,7 +1134,7 @@ namespace RauViet.classes
         public async Task<DataTable> GetEmployeesAsync()
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(conStr))
+            using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
             {
                 await con.OpenAsync();
                 string query = @"SELECT * FROM Employee";
@@ -1172,7 +1173,7 @@ namespace RauViet.classes
                             WHERE EmployeeID=@EmployeeID";
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -1208,7 +1209,7 @@ namespace RauViet.classes
             string query = "DELETE FROM Employee WHERE EmployeeID=@EmployeeID";
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -1231,7 +1232,7 @@ namespace RauViet.classes
 
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
 
@@ -1292,7 +1293,7 @@ namespace RauViet.classes
         public async Task<DataTable> GetActiveEmployee_DeductionATT_Async(int month, int year)
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(conStr))
+            using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
             {
                 await con.OpenAsync();
 
@@ -1315,7 +1316,7 @@ namespace RauViet.classes
         {
             DataTable dt = new DataTable();
 
-            using (SqlConnection con = new SqlConnection(conStr))
+            using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
             {
                 await con.OpenAsync();
 
@@ -1340,7 +1341,7 @@ namespace RauViet.classes
         public async Task<DataTable> GetContractTypeAsync()
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(conStr))
+            using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
             {
                 await con.OpenAsync();
                 string query = @"SELECT * FROM ContractType";
@@ -1357,7 +1358,7 @@ namespace RauViet.classes
         public async Task<DataTable> GetApplyScopeAsync()
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(conStr))
+            using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
             {
                 await con.OpenAsync();
                 string query = @"SELECT * FROM ApplyScope";
@@ -1374,7 +1375,7 @@ namespace RauViet.classes
         public async Task<DataTable> GetUserDataAsync()
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(ql_User_conStr))
+            using (SqlConnection con = new SqlConnection(ql_User_conStr()))
             {
                 await con.OpenAsync();
                 string query = @"SELECT 
@@ -1408,7 +1409,7 @@ namespace RauViet.classes
                             WHERE UserID=@UserID";
             try
             {
-                using (SqlConnection con = new SqlConnection(ql_User_conStr))
+                using (SqlConnection con = new SqlConnection(ql_User_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -1446,7 +1447,7 @@ namespace RauViet.classes
                             WHERE UserID=@UserID";
             try
             {
-                using (SqlConnection con = new SqlConnection(ql_User_conStr))
+                using (SqlConnection con = new SqlConnection(ql_User_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -1484,7 +1485,7 @@ namespace RauViet.classes
                             VALUES (@Username, @PasswordHash, @EmployeeCode, @IsActive)";
             try
             {
-                using (SqlConnection con = new SqlConnection(ql_User_conStr))
+                using (SqlConnection con = new SqlConnection(ql_User_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -1523,7 +1524,7 @@ namespace RauViet.classes
             string query = "DELETE FROM Users WHERE UserID=@UserID";
             try
             {
-                using (SqlConnection con = new SqlConnection(ql_User_conStr))
+                using (SqlConnection con = new SqlConnection(ql_User_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -1540,7 +1541,7 @@ namespace RauViet.classes
         public async Task<DataTable> GetDepartmentAsybc()
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(conStr))
+            using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
             {
                 await con.OpenAsync();
                 string query = @"SELECT * FROM Department";
@@ -1560,7 +1561,7 @@ namespace RauViet.classes
                             WHERE DepartmentID=@DepartmentID";
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -1586,7 +1587,7 @@ namespace RauViet.classes
                                 VALUES (@DepartmentName, @Description, @IsActive)";
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -1609,7 +1610,7 @@ namespace RauViet.classes
             string query = "DELETE FROM Department WHERE DepartmentID=@DepartmentID";
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -1626,7 +1627,7 @@ namespace RauViet.classes
         public async Task<DataTable> GetPositionAsync()
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(conStr))
+            using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
             {
                 await con.OpenAsync();
                 string query = @"SELECT * FROM Position";
@@ -1646,7 +1647,7 @@ namespace RauViet.classes
                             WHERE PositionID=@PositionID";
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -1673,7 +1674,7 @@ namespace RauViet.classes
                                 VALUES (@PositionCode, @PositionName, @Description, @IsActive)";
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -1697,7 +1698,7 @@ namespace RauViet.classes
             string query = "DELETE FROM Position WHERE PositionID=@PositionID";
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -1715,7 +1716,7 @@ namespace RauViet.classes
         {
             DataTable dt = new DataTable();
 
-            using (SqlConnection con = new SqlConnection(ql_User_conStr))
+            using (SqlConnection con = new SqlConnection(ql_User_conStr()))
             {
                 await con.OpenAsync();
 
@@ -1748,7 +1749,7 @@ namespace RauViet.classes
         {
             DataTable dt = new DataTable();
 
-            using (SqlConnection con = new SqlConnection(conStr))
+            using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
             {
                 await con.OpenAsync();
 
@@ -1782,7 +1783,7 @@ namespace RauViet.classes
 
                 string newHash = Utils.HashPassword(newPassword);
 
-                using (SqlConnection con = new SqlConnection(ql_User_conStr))
+                using (SqlConnection con = new SqlConnection(ql_User_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand("sp_ChangeUserPassword", con))
@@ -1811,14 +1812,14 @@ namespace RauViet.classes
             }
         }
 
-        public async Task<bool> UpsertAttendanceBatchAsync(List<(string EmployeeCode, DateTime WorkDate, double WorkingHours, string Note, string AttendanceLog)> attendanceData)
+        public async Task<bool> UpsertAttendanceBatchAsync(List<(string EmployeeCode, DateTime WorkDate, decimal WorkingHours, string Note, string AttendanceLog)> attendanceData)
         {
             try
             {
                 DataTable dt = new DataTable();
                 dt.Columns.Add("EmployeeCode", typeof(string));
                 dt.Columns.Add("WorkDate", typeof(DateTime));
-                dt.Columns.Add("WorkingHours", typeof(double));
+                dt.Columns.Add("WorkingHours", typeof(decimal));
                 dt.Columns.Add("Note", typeof(string));
                 dt.Columns.Add("AttendanceLog", typeof(string));
 
@@ -1827,7 +1828,7 @@ namespace RauViet.classes
                     dt.Rows.Add(item.EmployeeCode, item.WorkDate.Date, item.WorkingHours, item.Note, item.AttendanceLog);
                 }
 
-                using (SqlConnection conn = new SqlConnection(conStr))
+                using (SqlConnection conn = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await conn.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand("dbo.UpsertAttendanceBatch", conn))
@@ -1854,7 +1855,7 @@ namespace RauViet.classes
         {
             DataTable dt = new DataTable();
 
-            using (SqlConnection con = new SqlConnection(conStr))
+            using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
             {
                 await con.OpenAsync();
 
@@ -1879,7 +1880,7 @@ namespace RauViet.classes
 
             try
             {
-                using (var con = new SqlConnection(conStr))
+                using (var con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
 
@@ -1910,7 +1911,7 @@ namespace RauViet.classes
         public async Task<DataTable> GetHolidayAsync()
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(conStr))
+            using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
             {
                 await con.OpenAsync();
                 string query = @"SELECT * FROM Holiday";
@@ -1928,7 +1929,7 @@ namespace RauViet.classes
         {
             DataTable dt = new DataTable();
 
-            using (SqlConnection con = new SqlConnection(conStr))
+            using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
             {
                 await con.OpenAsync();
 
@@ -1958,7 +1959,7 @@ namespace RauViet.classes
 
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -1991,7 +1992,7 @@ namespace RauViet.classes
         {
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 using (SqlCommand cmd = new SqlCommand("sp_DeleteHolidayAndAttendance", con))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
@@ -2021,7 +2022,7 @@ namespace RauViet.classes
         public async Task<DataTable> GetOvertimeTypeAsync()
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(conStr))
+            using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
             {
                 await con.OpenAsync();
                 string query = @"SELECT * FROM OvertimeType";
@@ -2044,7 +2045,7 @@ namespace RauViet.classes
                             WHERE OvertimeTypeID=@OvertimeTypeID";
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -2070,7 +2071,7 @@ namespace RauViet.classes
                                 VALUES (@OvertimeName, @SalaryFactor, @IsActive)";
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -2093,7 +2094,7 @@ namespace RauViet.classes
             string query = "DELETE FROM OvertimeType WHERE OvertimeTypeID=@OvertimeTypeID";
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -2110,7 +2111,7 @@ namespace RauViet.classes
         public async Task<DataTable> GetOvertimeAttendamceForSalaryAsync(int month, int year)
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(conStr))
+            using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
             {
                 await con.OpenAsync();
                 string query = @"SELECT 
@@ -2141,7 +2142,7 @@ namespace RauViet.classes
         public async Task<DataTable> GetAttendamceForSalaryAsync(int month, int year)
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(conStr))
+            using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
             {
                 await con.OpenAsync();
                 string query = @"SELECT EmployeeCode, WorkDate, WorkingHours
@@ -2166,7 +2167,7 @@ namespace RauViet.classes
         public async Task<DataTable> GetOvertimeAttendamceAsync(int month, int year)
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(conStr))
+            using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
             {
                 await con.OpenAsync();
                 string query = @"SELECT OvertimeAttendanceID, EmployeeCode, WorkDate, StartTime, EndTime, OvertimeTypeID, Note, UpdatedHistory,
@@ -2204,7 +2205,7 @@ namespace RauViet.classes
                             WHERE OvertimeAttendanceID=@OvertimeAttendanceID";
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -2240,7 +2241,7 @@ namespace RauViet.classes
 
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
 
@@ -2272,7 +2273,7 @@ namespace RauViet.classes
         {
             DataTable dt = new DataTable();
 
-            using (SqlConnection con = new SqlConnection(conStr))
+            using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
             {
                 await con.OpenAsync();
 
@@ -2306,7 +2307,7 @@ namespace RauViet.classes
                     dt.Rows.Add(item.EmployeeCode, item.Year, item.Month);
                 }
 
-                using (SqlConnection conn = new SqlConnection(conStr))
+                using (SqlConnection conn = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await conn.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand("Upsert_AnnualLeaveBalance_Batch", conn))
@@ -2333,7 +2334,7 @@ namespace RauViet.classes
         {
             try
             {
-                using (SqlConnection conn = new SqlConnection(conStr))
+                using (SqlConnection conn = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await conn.OpenAsync();
 
@@ -2355,7 +2356,7 @@ namespace RauViet.classes
         public async Task<DataTable> GetLeaveAttendanceAsync(int year)
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(conStr))
+            using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
             {
                 await con.OpenAsync();
                 string query = @"SELECT * FROM LeaveAttendance WHERE YEAR(DateOff) = @Year ORDER BY EmployeeCode, DateOff;";
@@ -2376,7 +2377,7 @@ namespace RauViet.classes
         public async Task<DataTable> GetLeaveAttendanceAsync_Withour_NghiLe(int year)
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(conStr))
+            using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
             {
                 await con.OpenAsync();
                 string query = @"SELECT *
@@ -2401,7 +2402,7 @@ namespace RauViet.classes
         public async Task<DataTable> GetLeaveAttendanceAsync_IsPaid(int month, int year)
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(conStr))
+            using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
             {
                 await con.OpenAsync();
 
@@ -2424,7 +2425,7 @@ namespace RauViet.classes
         public async Task<DataTable> GetEmployeeDeductions(int year)
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(conStr))
+            using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
             {
                 await con.OpenAsync();
 
@@ -2447,7 +2448,7 @@ namespace RauViet.classes
         {
             DataTable dt = new DataTable();
 
-            using (SqlConnection con = new SqlConnection(conStr))
+            using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
             {
                 await con.OpenAsync();
 
@@ -2469,31 +2470,25 @@ namespace RauViet.classes
         {
             int newId = -1;
 
-            string insertQuery = @" INSERT INTO LeaveAttendance  (
-                                EmployeeCode, LeaveTypeCode, DateOff, Note, UpdatedHistory, LeaveHours
-                            )
-                            OUTPUT INSERTED.LeaveID
-                            VALUES (
-                                @EmployeeCode, @LeaveTypeCode, @DateOff, @Note, @UpdatedHistory, @LeaveHours
-                            )";
-
-
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
 
-                    // 2️⃣ Insert và lấy ID mới
-                    using (SqlCommand cmd = new SqlCommand(insertQuery, con))
+                    using (SqlCommand cmd = new SqlCommand("sp_InsertLeaveAttendance", con))
                     {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        // Thêm các tham số cho SP
                         cmd.Parameters.AddWithValue("@EmployeeCode", employeeCode);
                         cmd.Parameters.AddWithValue("@LeaveTypeCode", leaveTypeCode);
                         cmd.Parameters.AddWithValue("@DateOff", dateOff.Date);
-                        cmd.Parameters.AddWithValue("@Note", Note);
-                        cmd.Parameters.AddWithValue("@UpdatedHistory", UpdatedHistory);
+                        cmd.Parameters.AddWithValue("@Note", Note ?? "");
+                        cmd.Parameters.AddWithValue("@UpdatedHistory", UpdatedHistory ?? "");
                         cmd.Parameters.AddWithValue("@LeaveHours", hourLeave);
 
+                        // ExecuteScalarAsync sẽ trả về LeaveID (SP đã SELECT LeaveID)
                         object result = await cmd.ExecuteScalarAsync();
                         if (result != null)
                             newId = Convert.ToInt32(result);
@@ -2506,25 +2501,20 @@ namespace RauViet.classes
             {
                 return -1;
             }
+
         }
 
         public async Task<bool> updateLeaveAttendanceAsync(int leaveID, string employeeCode, string leaveTypeCode, DateTime dateOff, string Note, string UpdatedHistory, decimal hourLeave)
         {
-            string query = @"UPDATE LeaveAttendance SET 
-                                EmployeeCode=@EmployeeCode, 
-                                LeaveTypeCode=@LeaveTypeCode,
-                                DateOff=@DateOff, 
-                                Note=@Note,
-                                LeaveHours=@LeaveHours,
-                                UpdatedHistory=@UpdatedHistory                                
-                            WHERE LeaveID=@LeaveID";
+            int updatedId = -1;
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
-                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    using (SqlCommand cmd = new SqlCommand("sp_UpdateLeaveAttendance", con))
                     {
+                        cmd.CommandType = CommandType.StoredProcedure;
                         cmd.Parameters.AddWithValue("@LeaveID", leaveID);
                         cmd.Parameters.AddWithValue("@EmployeeCode", employeeCode);
                         cmd.Parameters.AddWithValue("@LeaveTypeCode", leaveTypeCode);
@@ -2532,12 +2522,18 @@ namespace RauViet.classes
                         cmd.Parameters.AddWithValue("@Note", Note);
                         cmd.Parameters.AddWithValue("@LeaveHours", hourLeave);
                         cmd.Parameters.AddWithValue("@UpdatedHistory", UpdatedHistory);
-                        await cmd.ExecuteNonQueryAsync();
+
+                        object result = await cmd.ExecuteScalarAsync();
+                        if (result != null)
+                            updatedId = Convert.ToInt32(result);
                     }
                 }
-                return true;
+                return updatedId == leaveID;
             }
-            catch { return false; }
+            catch
+            { 
+                return false;
+            }
         }
 
         public async Task<bool> deleteLeaveAttendanceAsync(int leaveID)
@@ -2545,7 +2541,7 @@ namespace RauViet.classes
             string query = "DELETE FROM LeaveAttendance WHERE LeaveID=@LeaveID";
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -2562,7 +2558,7 @@ namespace RauViet.classes
         public async Task<DataTable> GetAllowanceTypeAsync()
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(conStr))
+            using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
             {
                 await con.OpenAsync();
                 string query = @"SELECT * FROM AllowanceType";
@@ -2579,7 +2575,7 @@ namespace RauViet.classes
         public async Task<DataTable> GetAllowanceTypeAsync(string scopeCode)
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(conStr))
+            using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
             {
                 await con.OpenAsync();
                 string query = @"SELECT at.AllowanceTypeID,
@@ -2619,7 +2615,7 @@ namespace RauViet.classes
 
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
 
@@ -2657,7 +2653,7 @@ namespace RauViet.classes
                             WHERE AllowanceTypeID=@AllowanceTypeID";
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -2681,7 +2677,7 @@ namespace RauViet.classes
             string query = "DELETE FROM AllowanceType WHERE AllowanceTypeID=@AllowanceTypeID";
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -2698,7 +2694,7 @@ namespace RauViet.classes
         public async Task<DataTable> GetDepartmentAllowanceAsybc()
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(conStr))
+            using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
             {
                 await con.OpenAsync();
                 string query = @"SELECT * FROM DepartmentAllowance";
@@ -2722,7 +2718,7 @@ namespace RauViet.classes
                             WHERE DepartmentAllowanceID=@DepartmentAllowanceID";
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -2754,7 +2750,7 @@ namespace RauViet.classes
 
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
 
@@ -2785,7 +2781,7 @@ namespace RauViet.classes
             string query = "DELETE FROM DepartmentAllowance WHERE DepartmentAllowanceID=@DepartmentAllowanceID";
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -2802,7 +2798,7 @@ namespace RauViet.classes
         public async Task<DataTable> GetPositionAllowanceAsybc()
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(conStr))
+            using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
             {
                 await con.OpenAsync();
                 string query = @"SELECT * FROM PositionAllowance";
@@ -2826,7 +2822,7 @@ namespace RauViet.classes
                             WHERE PositionAllowanceID=@PositionAllowanceID";
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -2858,7 +2854,7 @@ namespace RauViet.classes
 
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
 
@@ -2889,7 +2885,7 @@ namespace RauViet.classes
             string query = "DELETE FROM PositionAllowance WHERE PositionAllowanceID=@PositionAllowanceID";
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -2906,7 +2902,7 @@ namespace RauViet.classes
         public async Task<DataTable> GetEmployeeAllowanceAsybc()
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(conStr))
+            using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
             {
                 await con.OpenAsync();
                 string query = @"SELECT * FROM EmployeeAllowance";
@@ -2930,7 +2926,7 @@ namespace RauViet.classes
                             WHERE EmployeeAllowanceID=@EmployeeAllowanceID";
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -2962,7 +2958,7 @@ namespace RauViet.classes
 
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
 
@@ -2993,7 +2989,7 @@ namespace RauViet.classes
             string query = "DELETE FROM EmployeeAllowance WHERE EmployeeAllowanceID=@EmployeeAllowanceID";
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -3010,7 +3006,7 @@ namespace RauViet.classes
         public async Task<DataTable> GetMonthlyAllowanceAsybc()
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(conStr))
+            using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
             {
                 await con.OpenAsync();
                 string query = @"SELECT * FROM MonthlyAllowance";
@@ -3036,7 +3032,7 @@ namespace RauViet.classes
                             WHERE MonthlyAllowanceID=@MonthlyAllowanceID";
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -3066,7 +3062,7 @@ namespace RauViet.classes
 
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
 
@@ -3099,7 +3095,7 @@ namespace RauViet.classes
             string query = "DELETE FROM MonthlyAllowance WHERE MonthlyAllowanceID=@MonthlyAllowanceID";
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -3116,7 +3112,7 @@ namespace RauViet.classes
         public async Task<DataTable> GetSalaryGradeAsync()
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(conStr))
+            using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
             {
                 await con.OpenAsync();
                 string query = @"SELECT * FROM SalaryGrade";
@@ -3140,7 +3136,7 @@ namespace RauViet.classes
                             WHERE SalaryGradeID=@SalaryGradeID";
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -3167,7 +3163,7 @@ namespace RauViet.classes
                                 VALUES (@GradeName, @Salary, @Note, @IsActive)";
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -3191,7 +3187,7 @@ namespace RauViet.classes
             string query = "DELETE FROM SalaryGrade WHERE SalaryGradeID=@SalaryGradeID";
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -3208,7 +3204,7 @@ namespace RauViet.classes
         public async Task<DataTable> GetEmployeeSalaryInfoAsybc()
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(conStr))
+            using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
             {
                 await con.OpenAsync();
                 string query = @"SELECT * FROM EmployeeSalaryInfo";
@@ -3225,7 +3221,7 @@ namespace RauViet.classes
         public async Task<DataTable> GetSalaryHistoryAsyc(int month, int year)
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(qlnvHis_conStr))
+            using (SqlConnection con = new SqlConnection(qlnvHis_conStr()))
             {
                 await con.OpenAsync();
                 string query = @"SELECT * FROM EmployeeSalaryHistory WHERE Month=@Month AND Year=@Year";
@@ -3251,7 +3247,7 @@ namespace RauViet.classes
 
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
 
@@ -3284,7 +3280,7 @@ namespace RauViet.classes
             string query = "DELETE FROM EmployeeSalaryInfo WHERE SalaryInfoID=@SalaryInfoID";
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -3305,7 +3301,7 @@ namespace RauViet.classes
                             WHERE EmployeeCode=@EmployeeCode";
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -3328,7 +3324,7 @@ namespace RauViet.classes
                             WHERE EmployeeCode=@EmployeeCode";
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -3353,7 +3349,7 @@ namespace RauViet.classes
                             WHERE EmployeeCode=@EmployeeCode";
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -3373,7 +3369,7 @@ namespace RauViet.classes
         public async Task<DataTable> GetDeductionTypeAsync()
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(conStr))
+            using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
             {
                 await con.OpenAsync();
                 string query = @"SELECT DeductionTypeCode, DeductionTypeName FROM DeductionType";
@@ -3392,7 +3388,7 @@ namespace RauViet.classes
         public async Task<DataTable> GetEmployeeDeductionAsync(int month, int year, string deductionCode)
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(conStr))
+            using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
             {
                 await con.OpenAsync();
                 string query = @"SELECT EmployeeDeductionID, EmployeeCode, DeductionDate, Amount, Note, updateHistory
@@ -3415,7 +3411,7 @@ namespace RauViet.classes
         public async Task<DataTable> GetEmployeeDeductionAsync(int year, string deductionCode)
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(conStr))
+            using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
             {
                 await con.OpenAsync();
                 string query = @"SELECT EmployeeDeductionID, EmployeeCode, DeductionDate, Amount, Note, updateHistory
@@ -3449,7 +3445,7 @@ namespace RauViet.classes
                             WHERE EmployeeDeductionID=@EmployeeDeductionID";
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -3484,7 +3480,7 @@ namespace RauViet.classes
 
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
 
@@ -3518,7 +3514,7 @@ namespace RauViet.classes
         {
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
 
@@ -3555,7 +3551,7 @@ namespace RauViet.classes
             string query = "DELETE FROM EmployeeDeduction WHERE EmployeeDeductionID=@EmployeeDeductionID";
             try
             {
-                using (SqlConnection con = new SqlConnection(conStr))
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -3574,7 +3570,7 @@ namespace RauViet.classes
             DataTable dt = new DataTable();
 
             bool isLock = await SQLStore.Instance.IsSalaryLockAsync(month, year);
-            using (SqlConnection con = new SqlConnection(isLock ? qlnvHis_conStr : conStr))
+            using (SqlConnection con = new SqlConnection(isLock ? qlnvHis_conStr() : ql_NhanSu_conStr()))
             {
                 await con.OpenAsync();
                 string spStr = isLock ? "sp_GetEmployeeAllowanceHistory_ByMonth" : "sp_GetEmployeeAllowance";
@@ -3613,7 +3609,7 @@ namespace RauViet.classes
                     dt.Rows.Add(item.scopeCode, item.allowanceTypeID, item.EmployeeCode, item.AllowanceName, item.IsInsuranceIncluded, item.Amount, item.Month, item.Year);
                 }
 
-                using (SqlConnection conn = new SqlConnection(qlnvHis_conStr))
+                using (SqlConnection conn = new SqlConnection(qlnvHis_conStr()))
                 {
                     await conn.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand("sp_SaveEmployeeAllowanceHistory_Batch", conn))
@@ -3639,7 +3635,7 @@ namespace RauViet.classes
         public async Task<DataTable> GetSalaryLockAsync()
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(salaryLock_conStr))
+            using (SqlConnection con = new SqlConnection(salaryLock_conStr()))
             {
                 await con.OpenAsync();
                 string query = @"SELECT * FROM SalaryLock";
@@ -3659,7 +3655,7 @@ namespace RauViet.classes
         {
             try
             {
-                using (SqlConnection conn = new SqlConnection(salaryLock_conStr))
+                using (SqlConnection conn = new SqlConnection(salaryLock_conStr()))
                 {
                     await conn.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand("sp_SetSalaryLock", conn))
@@ -3710,7 +3706,7 @@ namespace RauViet.classes
                          item.NonInsuranceAllowance, item.OvertimeSalary, item.LeaveSalary, item.DeductionAmount, item.IsInsuranceRefund);
                 }
 
-                using (SqlConnection conn = new SqlConnection(qlnvHis_conStr))
+                using (SqlConnection conn = new SqlConnection(qlnvHis_conStr()))
                 {
                     await conn.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand("sp_UpsertEmployeeSalaryHistory_Batch", conn))
@@ -3737,7 +3733,7 @@ namespace RauViet.classes
         {
             DataTable dt = new DataTable();
 
-            using (SqlConnection con = new SqlConnection(qlnvHis_conStr))
+            using (SqlConnection con = new SqlConnection(qlnvHis_conStr()))
             {
                 await con.OpenAsync();
 
@@ -3760,7 +3756,7 @@ namespace RauViet.classes
         {
             try
             {
-                using (SqlConnection conn = new SqlConnection(ql_khoHis_conStr))
+                using (SqlConnection conn = new SqlConnection(ql_khoHis_conStr()))
                 {
                     await conn.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand("sp_SaveProductSKUHistory", conn))
@@ -3786,7 +3782,7 @@ namespace RauViet.classes
         {
             DataTable dt = new DataTable();
 
-            using (SqlConnection con = new SqlConnection(ql_khoHis_conStr))
+            using (SqlConnection con = new SqlConnection(ql_khoHis_conStr()))
             {
                 await con.OpenAsync().ConfigureAwait(false);
 
@@ -3806,7 +3802,7 @@ namespace RauViet.classes
         {
             try
             {
-                using (SqlConnection conn = new SqlConnection(ql_khoHis_conStr))
+                using (SqlConnection conn = new SqlConnection(ql_khoHis_conStr()))
                 {
                     await conn.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand("SP_Upsert_ExportHistory", conn))
@@ -3836,7 +3832,7 @@ namespace RauViet.classes
         {
             DataTable dt = new DataTable();
 
-            using (SqlConnection con = new SqlConnection(ql_khoHis_conStr))
+            using (SqlConnection con = new SqlConnection(ql_khoHis_conStr()))
             {
                 await con.OpenAsync().ConfigureAwait(false);
 
@@ -3860,7 +3856,7 @@ namespace RauViet.classes
             int newOrderId = -1;
             try
             {
-                using (SqlConnection conn = new SqlConnection(ql_kho_conStr))
+                using (SqlConnection conn = new SqlConnection(ql_kho_conStr()))
                 {
                     await conn.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand("CloneOrder_SplitHalf", conn))
@@ -3890,7 +3886,7 @@ namespace RauViet.classes
         public async Task<DataTable> getCartonSizeAsync()
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(ql_kho_conStr))
+            using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
             {
                 await con.OpenAsync();
                 string query = @"SELECT * FROM CartonSize";
@@ -3917,7 +3913,7 @@ namespace RauViet.classes
 
             try
             {
-                using (SqlConnection con = new SqlConnection(ql_User_conStr))
+                using (SqlConnection con = new SqlConnection(ql_User_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand("sp_UpdateUserMachineInfo", con))
@@ -3936,7 +3932,7 @@ namespace RauViet.classes
 
         public async Task<bool> HaveOtherComputerLoginAsync()
         {
-            using (SqlConnection con = new SqlConnection(ql_User_conStr))
+            using (SqlConnection con = new SqlConnection(ql_User_conStr()))
             {
                 await con.OpenAsync();
                 string query = "SELECT MachineInfo FROM Users WHERE UserName = @UserName";
@@ -3960,7 +3956,7 @@ namespace RauViet.classes
             string query = "DELETE FROM UserLoginHistory WHERE  LoginTime < DATEADD(MONTH, -6, GETDATE());";
             try
             {
-                using (SqlConnection con = new SqlConnection(ql_User_conStr))
+                using (SqlConnection con = new SqlConnection(ql_User_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -3980,7 +3976,7 @@ namespace RauViet.classes
             string query = "UPDATE ExportCodes SET Complete = 1 WHERE ExportCodeID IN (SELECT TOP 5 ExportCodeID FROM ExportCodes WHERE ExportDate <= DATEADD(DAY, -5, GETDATE()) AND Complete = 0 ORDER BY ExportCodeID DESC);";
             try
             {
-                using (SqlConnection con = new SqlConnection(ql_kho_conStr))
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -3998,7 +3994,7 @@ namespace RauViet.classes
         public async Task<DataTable> get3LatestOrdersAsync()
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(ql_kho_conStr))
+            using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
             {
                 await con.OpenAsync();
                 string query = @"SELECT DISTINCT
@@ -4022,7 +4018,7 @@ namespace RauViet.classes
         public async Task<DataTable> GetExportCodeLogAsync()
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr))
+            using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr()))
             {
                 await con.OpenAsync();
                 string query = @"SELECT * FROM ExportCode_Log";
@@ -4042,7 +4038,7 @@ namespace RauViet.classes
         {
             try
             {
-                using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr))
+                using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand("sp_Insert_ExportCode_Log", con))
@@ -4072,7 +4068,7 @@ namespace RauViet.classes
             string query = "DELETE FROM ExportCode_Log WHERE  CreatedDate < DATEADD(MONTH, -4, GETDATE());";
             try
             {
-                using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr))
+                using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -4090,7 +4086,7 @@ namespace RauViet.classes
         public async Task<DataTable> GetOrderLogAsync(int exportCodeID)
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr))
+            using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr()))
             {
                 await con.OpenAsync();
                 string query = @"SELECT * FROM Order_Log WHERE ExportCodeID = @ExportCodeID";
@@ -4110,7 +4106,7 @@ namespace RauViet.classes
         {
             try
             {
-                using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr))
+                using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand("sp_Insert_Order_Log", con))
@@ -4139,7 +4135,7 @@ namespace RauViet.classes
             string query = "DELETE FROM Order_Log WHERE  CreateAt < DATEADD(MONTH, -4, GETDATE());";
             try
             {
-                using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr))
+                using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -4157,7 +4153,7 @@ namespace RauViet.classes
         public async Task<DataTable> GetOrderPackingLogAsync(int exportCodeID)
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr))
+            using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr()))
             {
                 await con.OpenAsync();
                 string query = @"SELECT * FROM OrderPacking_Log WHERE ExportCodeID = @ExportCodeID";
@@ -4178,7 +4174,7 @@ namespace RauViet.classes
         {
             try
             {
-                using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr))
+                using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand("sp_Insert_OrderPacking_Log", con))
@@ -4230,7 +4226,7 @@ namespace RauViet.classes
                 );
             }
 
-            using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr))
+            using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr()))
             {
                 await con.OpenAsync();
                 using (SqlCommand cmd = new SqlCommand("sp_Insert_OrderPacking_Log_Batch", con))
@@ -4247,7 +4243,7 @@ namespace RauViet.classes
             string query = "DELETE FROM OrderPacking_Log WHERE  CreateAt < DATEADD(MONTH, -4, GETDATE());";
             try
             {
-                using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr))
+                using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -4265,7 +4261,7 @@ namespace RauViet.classes
         public async Task<DataTable> GetDo47LogAsync(int exportCodeID)
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr))
+            using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr()))
             {
                 await con.OpenAsync();
                 string query = @"SELECT * FROM Do47_Log WHERE ExportCodeID = @ExportCodeID";
@@ -4286,7 +4282,7 @@ namespace RauViet.classes
         {
             try
             {
-                using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr))
+                using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand("sp_Insert_Do47_Log", con))
@@ -4314,7 +4310,7 @@ namespace RauViet.classes
             string query = "DELETE FROM Do47_Log WHERE  CreateAt < DATEADD(MONTH, -4, GETDATE());";
             try
             {
-                using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr))
+                using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -4332,7 +4328,7 @@ namespace RauViet.classes
         public async Task<DataTable> GetLotCodeLogAsync(int exportCodeID)
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr))
+            using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr()))
             {
                 await con.OpenAsync();
                 string query = @"SELECT * FROM LotCode_Log WHERE ExportCodeID = @ExportCodeID";
@@ -4353,7 +4349,7 @@ namespace RauViet.classes
         {
             try
             {
-                using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr))
+                using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand("sp_LotCodeLog_Insert", con))
@@ -4381,7 +4377,7 @@ namespace RauViet.classes
             string query = "DELETE FROM LotCode_Log WHERE  CreateAt < DATEADD(MONTH, -4, GETDATE());";
             try
             {
-                using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr))
+                using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr()))
                 {
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))

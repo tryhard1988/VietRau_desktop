@@ -173,7 +173,7 @@ namespace RauViet.ui
 
         private void importToSQL_mi_Click(object sender, EventArgs e)
         {
-            ImportDataGridViewToSql(dataGV, SQLManager.Instance.conStr, "Employee");
+            ImportDataGridViewToSql(dataGV, SQLManager.Instance.ql_NhanSu_conStr(), "Employee");
         }
 
         private void ImportDataGridViewToSql(DataGridView dgv, string connectionString, string tableName)

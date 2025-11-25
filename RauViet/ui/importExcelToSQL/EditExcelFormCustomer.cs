@@ -24,7 +24,7 @@ namespace RauViet.ui
 
         private void importToSQL_mi_Click(object sender, EventArgs e)
         {
-            ImportDataGridViewToSql(dataGV, SQLManager.Instance.conStr, "Customers");
+            ImportDataGridViewToSql(dataGV, SQLManager.Instance.ql_NhanSu_conStr(), "Customers");
         }
 
         private void save_mi_Click(object sender, EventArgs e)

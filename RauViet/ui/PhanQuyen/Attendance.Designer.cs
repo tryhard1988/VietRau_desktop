@@ -99,11 +99,11 @@ namespace RauViet.ui
             // 
             this.calWorkHour_btn.BackColor = System.Drawing.Color.IndianRed;
             this.calWorkHour_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.calWorkHour_btn.Location = new System.Drawing.Point(60, 94);
+            this.calWorkHour_btn.Location = new System.Drawing.Point(6, 131);
             this.calWorkHour_btn.Name = "calWorkHour_btn";
-            this.calWorkHour_btn.Size = new System.Drawing.Size(177, 47);
+            this.calWorkHour_btn.Size = new System.Drawing.Size(284, 47);
             this.calWorkHour_btn.TabIndex = 30;
-            this.calWorkHour_btn.Text = "Tính Lại Số Giờ làm";
+            this.calWorkHour_btn.Text = "Tính lại giờ làm theo giờ nghỉ";
             this.calWorkHour_btn.UseVisualStyleBackColor = false;
             // 
             // loadAttandance_btn
@@ -170,12 +170,12 @@ namespace RauViet.ui
             this.attendanceGV.AllowUserToAddRows = false;
             this.attendanceGV.AllowUserToDeleteRows = false;
             this.attendanceGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.attendanceGV.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.attendanceGV.Dock = System.Windows.Forms.DockStyle.Left;
             this.attendanceGV.Location = new System.Drawing.Point(403, 0);
             this.attendanceGV.Name = "attendanceGV";
             this.attendanceGV.ReadOnly = true;
-            this.attendanceGV.Size = new System.Drawing.Size(552, 681);
-            this.attendanceGV.TabIndex = 12;
+            this.attendanceGV.Size = new System.Drawing.Size(456, 681);
+            this.attendanceGV.TabIndex = 76;
             // 
             // Attendance
             // 
@@ -208,7 +208,7 @@ namespace RauViet.ui
         private System.Windows.Forms.ComboBox month_cbb;
         private System.Windows.Forms.Button loadAttandance_btn;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.DataGridView attendanceGV;
         private System.Windows.Forms.Button calWorkHour_btn;
+        private System.Windows.Forms.DataGridView attendanceGV;
     }
 }

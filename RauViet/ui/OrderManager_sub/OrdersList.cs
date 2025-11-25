@@ -332,9 +332,7 @@ namespace RauViet.ui
                 }
             }
 
-            var rows = mOrders_dt.AsEnumerable()
-                .Where(r => r.Field<int>("ExportCodeID") == exportCodeId) // chỉ lấy ExportCode cần xử lý
-                .ToList();
+            var rows = mOrders_dt.AsEnumerable().Where(r => r.Field<int>("ExportCodeID") == exportCodeId).ToList();
             foreach (DataRow row in rows)
             {
                 int cusID = Convert.ToInt32(row["CustomerID"]);
@@ -483,6 +481,7 @@ namespace RauViet.ui
         
         private async void dataGV_CellClick(object sender, EventArgs e)
         {
+            status_lb.Text = "";
             if (exportCode_search_cbb.SelectedValue == null) return;
             if (dataGV.CurrentRow == null) return;
 
