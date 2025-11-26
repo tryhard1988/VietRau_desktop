@@ -30,21 +30,12 @@ namespace RauViet.ui
             LuuThayDoiBtn.Visible = false;
             exportPDF_btn.Visible = false;
 
-            month_cbb.Items.Clear();
-            for (int m = 1; m <= 12; m++)
-            {
-                month_cbb.Items.Add(m);
-            }
             dataGV.EnableHeadersVisualStyles = false;
             allowancePanel.Height = this.ClientSize.Height * 2/5;
             leave_panel.Height = this.ClientSize.Height / 4;
             deductionPanel.Height = this.ClientSize.Height / 3;
 
-            
-
-
-            month_cbb.SelectedItem = DateTime.Now.Month;
-            year_tb.Text = DateTime.Now.Year.ToString();
+            monthYearDtp.Value = DateTime.Now.AddMonths(-1);
 
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Dock = DockStyle.Fill;
@@ -55,9 +46,7 @@ namespace RauViet.ui
             allowanceGV.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             allowanceGV.MultiSelect = false;
 
-
             dataGV.SelectionChanged += this.dataGV_CellClick;
-            year_tb.KeyPress += Tb_KeyPress_OnlyNumber;
 
             load_btn.Click += Load_btn_Click;
             LuuThayDoiBtn.Click += saveBtn_Click;
@@ -68,9 +57,11 @@ namespace RauViet.ui
 
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Dock = DockStyle.Fill;
-        }
 
-        
+            monthYearDtp.Format = DateTimePickerFormat.Custom;
+            monthYearDtp.CustomFormat = "MM/yyyy";
+            monthYearDtp.ShowUpDown = true;
+        }
 
         private void SalaryCaculatorForm_Resize(object sender, EventArgs e)
         {
@@ -106,8 +97,8 @@ namespace RauViet.ui
 
         public async Task LoadSalaryDataAsync()
         {
-            int month = Convert.ToInt32(month_cbb.SelectedItem);
-            int year = Convert.ToInt32(year_tb.Text);
+            int month = monthYearDtp.Value.Month;
+            int year = monthYearDtp.Value.Year;
 
             string[] keepColumns = { "EmployeeCode", "FullName", "HireDate", "IsInsuranceRefund", "DepartmentName", "ContractTypeName" };
             string[] keepColumnsInfo = { "BaseSalary", "InsuranceBaseSalary", "ContractTypeName", "IsInsuranceRefund" };
@@ -212,8 +203,7 @@ namespace RauViet.ui
                                    select new
                                    {
                                        EmployeeCode = g.Key,
-                                       TotalHourWork = g
-                                           .Sum(r => r["WorkingHours"] == DBNull.Value ? 0 : Convert.ToInt32(r["WorkingHours"])),
+                                       TotalHourWork = g.Sum(r => r["WorkingHours"] == DBNull.Value ? 0 : Convert.ToDecimal(r["WorkingHours"]))
                                    };
 
             var employeeLookup = employeInfo.AsEnumerable().ToDictionary(r => r.Field<string>("EmployeeCode"));
@@ -262,7 +252,7 @@ namespace RauViet.ui
                 int employeeInsurancePaid = Convert.ToInt32((totalIncludedInsurance + insuranceBaseSalary) * 0.105m);
 
                 double daySalary = ((baseSalary - employeeInsurancePaid) + totalIncludedInsurance + totalExcludedInsurance) / 26.0;
-                decimal hourSalary = Math.Round((decimal)(daySalary / 8.0), 1);
+                decimal hourSalary = Math.Round((decimal)(daySalary / 8.0), 10);
 
                 resultList.Add((
                     employeeCode,
@@ -328,9 +318,10 @@ namespace RauViet.ui
                 decimal employeeInsurancePaid = Convert.ToDecimal(dr["EmployeeInsurancePaid"]);
 
                 var hwMatch = attendamceResult.FirstOrDefault(r => r.EmployeeCode == employeeCode);
-                int totalHourWork = hwMatch?.TotalHourWork ?? 0;
+                decimal totalHourWork = hwMatch?.TotalHourWork ?? 0;
                 totalSalaryHourWork = totalHourWork * hourSalary;
 
+                Console.WriteLine("employeeCode: " + employeeCode);
                 dr["TotalHourWork"] = totalHourWork;
                 dr["TotalSalaryHourWork"] = totalSalaryHourWork;
 
@@ -922,22 +913,22 @@ namespace RauViet.ui
             //MessageBox.Show("✅ Xong!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
-        private void Tb_KeyPress_OnlyNumber(object sender, KeyPressEventArgs e)
-        {
-            System.Windows.Forms.TextBox tb = sender as System.Windows.Forms.TextBox;
+        //private void Tb_KeyPress_OnlyNumber(object sender, KeyPressEventArgs e)
+        //{
+        //    System.Windows.Forms.TextBox tb = sender as System.Windows.Forms.TextBox;
 
-            // Chỉ cho nhập số, phím điều khiển hoặc dấu chấm
-            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) && e.KeyChar != '.')
-            {
-                e.Handled = true; // chặn ký tự không hợp lệ
-            }
+        //    // Chỉ cho nhập số, phím điều khiển hoặc dấu chấm
+        //    if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) && e.KeyChar != '.')
+        //    {
+        //        e.Handled = true; // chặn ký tự không hợp lệ
+        //    }
 
-            // Không cho nhập nhiều dấu chấm
-            if (e.KeyChar == '.' && tb.Text.Contains("."))
-            {
-                e.Handled = true;
-            }
-        }
+        //    // Không cho nhập nhiều dấu chấm
+        //    if (e.KeyChar == '.' && tb.Text.Contains("."))
+        //    {
+        //        e.Handled = true;
+        //    }
+        //}
 
         private void dataGV_CellClick(object sender, EventArgs e)
         {
@@ -1019,8 +1010,8 @@ namespace RauViet.ui
 
         private async void saveBtn_Click(object sender, EventArgs e)
         {
-            int month = Convert.ToInt32(month_cbb.SelectedItem);
-            int year = Convert.ToInt32(year_tb.Text);
+            int month = Convert.ToInt32(monthYearDtp.Value.Month);
+            int year = Convert.ToInt32(monthYearDtp.Value.Year);
 
             bool isLock = await SQLStore.Instance.IsSalaryLockAsync(month, year);
             if (isLock)
@@ -1127,8 +1118,8 @@ namespace RauViet.ui
 
         private void Print_pl_btn_Click(object sender, EventArgs e)
         {
-            int month = Convert.ToInt32(month_cbb.SelectedItem);
-            int year = Convert.ToInt32(year_tb.Text);
+            int month = Convert.ToInt32(monthYearDtp.Value.Month);
+            int year = Convert.ToInt32(monthYearDtp.Value.Year);
 
             // Lấy EmployeeCode từ cột DataGridView
             string employeeCode = dataGV.CurrentRow.Cells["EmployeeCode"].Value.ToString();
@@ -1144,8 +1135,8 @@ namespace RauViet.ui
 
         private void PrintPreview_pl_btn_Click(object sender, EventArgs e)
         {
-            int month = Convert.ToInt32(month_cbb.SelectedItem);
-            int year = Convert.ToInt32(year_tb.Text);
+            int month = Convert.ToInt32(monthYearDtp.Value.Month);
+            int year = Convert.ToInt32(monthYearDtp.Value.Year);
 
             // Lấy EmployeeCode từ cột DataGridView
             string employeeCode = dataGV.CurrentRow.Cells["EmployeeCode"].Value.ToString();
@@ -1163,8 +1154,8 @@ namespace RauViet.ui
         {
             if (dataGV.CurrentRow == null) return;
 
-            int month = Convert.ToInt32(month_cbb.SelectedItem);
-            int year = Convert.ToInt32(year_tb.Text);
+            int month = Convert.ToInt32(monthYearDtp.Value.Month);
+            int year = Convert.ToInt32(monthYearDtp.Value.Year);
 
             List<string> employeeCodesToPrint = new List<string>();
             if (mEmployee_dt != null && mEmployee_dt.Rows.Count > 0)

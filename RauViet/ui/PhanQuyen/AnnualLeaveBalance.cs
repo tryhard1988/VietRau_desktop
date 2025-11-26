@@ -23,14 +23,10 @@ namespace RauViet.ui
         {
             InitializeComponent();
 
-            month_cbb.Items.Clear();
-            for (int m = 1; m <= 12; m++)
-            {
-                month_cbb.Items.Add(m);
-            }
-
-            month_cbb.SelectedItem = DateTime.Now.Month;
-            year_tb.Text = DateTime.Now.Year.ToString();
+            monthYearDtp.Format = DateTimePickerFormat.Custom;
+            monthYearDtp.CustomFormat = "MM/yyyy";
+            monthYearDtp.ShowUpDown = true;
+            monthYearDtp.Value = DateTime.Now;
 
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Dock = DockStyle.Fill;
@@ -42,8 +38,6 @@ namespace RauViet.ui
 
             dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             dataGV.CellFormatting += DataGV_CellFormatting;
-            dataGV.SelectionChanged += this.dataGV_CellClick;
-            year_tb.KeyPress += Tb_KeyPress_OnlyNumber;
 
             load_btn.Click += Load_btn_Click;
             capphep_btn.Click += Capphep_btn_Click;
@@ -64,7 +58,7 @@ namespace RauViet.ui
 
             try
             {
-                int year = Convert.ToInt32(year_tb.Text);
+                int year = monthYearDtp.Value.Year;
                 var employeeALBTask = SQLStore.Instance.GetAnnualLeaveBalanceAsync(year);
 
                 await Task.WhenAll(employeeALBTask);
@@ -86,7 +80,7 @@ namespace RauViet.ui
 
         private void DefineEmployeeGV()
         {
-            int year = Convert.ToInt32(year_tb.Text);
+            int year = monthYearDtp.Value.Year;
 
             int count = 0;
             mEmployee_dt.Columns["EmployeeCode"].SetOrdinal(count++);
@@ -150,8 +144,8 @@ namespace RauViet.ui
         private void Capphep_btn_Click(object sender, EventArgs e)
         {
 
-            int year = Convert.ToInt32(year_tb.Text);
-            int month = Convert.ToInt32(month_cbb.SelectedItem);
+            int year = monthYearDtp.Value.Year;
+            int month = monthYearDtp.Value.Month;
 
             DialogResult dialogResult = MessageBox.Show($"Cấp phép tháng {month}/{year} cho toàn bộ nhân viên ?", "Cập Nhật Tồn Phép", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
@@ -198,7 +192,7 @@ namespace RauViet.ui
             loadingOverlay.Show();
             await Task.Delay(50);
 
-            int year = Convert.ToInt32(year_tb.Text);
+            int year = monthYearDtp.Value.Year;
             var annualLeaveBalance = SQLStore.Instance.GetAnnualLeaveBalanceAsync(year);            
             await Task.WhenAll(annualLeaveBalance);
             mEmployee_dt = annualLeaveBalance.Result;
@@ -208,24 +202,7 @@ namespace RauViet.ui
             await Task.Delay(500);
             loadingOverlay.Hide();
         }
-
-        private void dataGV_CellClick(object sender, EventArgs e)
-        {
-            if (dataGV.CurrentRow == null) return;
-            int rowIndex = dataGV.CurrentRow.Index;
-            if (rowIndex < 0)
-                return;
-
-
-            UpdateRightUI(rowIndex);
-        }
-
-        
-        private void UpdateRightUI(int index)
-        {
-            var cells = dataGV.Rows[index].Cells;
-            string employeeCode = cells["EmployeeCode"].Value.ToString();
-        }
+                
 
         public async void SaveData(bool ask = true)
         {

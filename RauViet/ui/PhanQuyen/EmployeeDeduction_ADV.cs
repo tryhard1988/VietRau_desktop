@@ -26,13 +26,6 @@ namespace RauViet.ui
         public EmployeeDeduction_ADV()
         {
             InitializeComponent();
-
-            month_cbb.Items.Clear();
-            for (int m = 1; m <= 12; m++)
-            {
-                month_cbb.Items.Add(m);
-            }
-
             Utils.SetTabStopRecursive(this, false);
 
             int countTab = 0;
@@ -41,9 +34,10 @@ namespace RauViet.ui
             note_tb.TabIndex = countTab++; note_tb.TabStop = true;
             LuuThayDoiBtn.TabIndex = countTab++; LuuThayDoiBtn.TabStop = true;
 
-
-            month_cbb.SelectedItem = DateTime.Now.Month;
-            year_tb.Text = DateTime.Now.Year.ToString();
+            monthYearDtp.Format = DateTimePickerFormat.Custom;
+            monthYearDtp.CustomFormat = "MM/yyyy";
+            monthYearDtp.ShowUpDown = true;
+            monthYearDtp.Value = DateTime.Now;
 
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Dock = DockStyle.Fill;
@@ -65,7 +59,6 @@ namespace RauViet.ui
             dataGV.SelectionChanged += this.dataGV_CellClick;
             employeeDeductionGV.SelectionChanged += this.allowanceGV_CellClick;
             amount_tb.KeyPress += Tb_KeyPress_OnlyNumber;
-            year_tb.KeyPress += Tb_KeyPress_OnlyNumber;
 
             load_btn.Click += Load_btn_Click;
 
@@ -82,8 +75,8 @@ namespace RauViet.ui
 
             try
             {
-                int month = Convert.ToInt32(month_cbb.SelectedItem);
-                int year = Convert.ToInt32(year_tb.Text);
+                int month = monthYearDtp.Value.Month;
+                int year = monthYearDtp.Value.Year;
                 string[] keepColumns = { "EmployeeCode", "FullName", "PositionName", "ContractTypeName", };
                 var employeesTask = SQLStore.Instance.GetEmployeesAsync(keepColumns);
                 var employeeDeductionAsync = SQLStore.Instance.GetDeductionAsync(month, year, DeductionTypeCode);
@@ -176,8 +169,8 @@ namespace RauViet.ui
             await Task.Delay(50);
             LoadingOverlay loadingOverlay = new LoadingOverlay(this);
             loadingOverlay.Show();
-            int month = Convert.ToInt32(month_cbb.SelectedItem);
-            int year = Convert.ToInt32(year_tb.Text);
+            int month = monthYearDtp.Value.Month;
+            int year = monthYearDtp.Value.Year;
 
             var employeeDeductionAsync = SQLStore.Instance.GetDeductionAsync(month, year, DeductionTypeCode);
 
@@ -385,8 +378,8 @@ namespace RauViet.ui
             }
 
             DateTime deductionDate = deductionDate_dtp.Value;
-            int year = Convert.ToInt32(year_tb.Text);
-            int month = Convert.ToInt32(month_cbb.SelectedItem);
+            int month = monthYearDtp.Value.Month;
+            int year = monthYearDtp.Value.Year;
 
             if (deductionDate.Year != year || month != deductionDate.Month || month != currMonth || year != currYear)
             {
@@ -469,10 +462,13 @@ namespace RauViet.ui
 
         private void newCustomerBtn_Click(object sender, EventArgs e)
         {
+            int month = monthYearDtp.Value.Month;
+            int year = monthYearDtp.Value.Year;
+
             employeeDeductionID_tb.Text = "";
             amount_tb.Text = "";
             updateHistory_tb.Text = null;
-            deductionDate_dtp.Value = new DateTime(Convert.ToInt32(year_tb.Text), Convert.ToInt32(month_cbb.SelectedItem), deductionDate_dtp.Value.Day);
+            deductionDate_dtp.Value = new DateTime(year, month, deductionDate_dtp.Value.Day);
 
             status_lb.Text = "";
             info_gb.BackColor = Color.Green;

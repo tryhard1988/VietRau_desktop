@@ -33,12 +33,7 @@ namespace RauViet.ui
             this.exportPDF_btn = new System.Windows.Forms.Button();
             this.printPreview_pl_btn = new System.Windows.Forms.Button();
             this.print_pl_btn = new System.Windows.Forms.Button();
-            this.load_btn = new System.Windows.Forms.Button();
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
-            this.label3 = new System.Windows.Forms.Label();
-            this.month_cbb = new System.Windows.Forms.ComboBox();
-            this.year_tb = new System.Windows.Forms.TextBox();
-            this.label6 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
             this.dataGV = new System.Windows.Forms.DataGridView();
             this.panel4 = new System.Windows.Forms.Panel();
@@ -58,6 +53,8 @@ namespace RauViet.ui
             this.allowancePanel = new System.Windows.Forms.Panel();
             this.allowanceGV = new System.Windows.Forms.DataGridView();
             this.label2 = new System.Windows.Forms.Label();
+            this.monthYearDtp = new System.Windows.Forms.DateTimePicker();
+            this.load_btn = new System.Windows.Forms.Button();
             this.load_gb.SuspendLayout();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
@@ -77,15 +74,12 @@ namespace RauViet.ui
             // 
             // load_gb
             // 
+            this.load_gb.Controls.Add(this.monthYearDtp);
             this.load_gb.Controls.Add(this.exportPDF_btn);
             this.load_gb.Controls.Add(this.printPreview_pl_btn);
             this.load_gb.Controls.Add(this.print_pl_btn);
             this.load_gb.Controls.Add(this.load_btn);
             this.load_gb.Controls.Add(this.LuuThayDoiBtn);
-            this.load_gb.Controls.Add(this.label3);
-            this.load_gb.Controls.Add(this.month_cbb);
-            this.load_gb.Controls.Add(this.year_tb);
-            this.load_gb.Controls.Add(this.label6);
             this.load_gb.Dock = System.Windows.Forms.DockStyle.Top;
             this.load_gb.Location = new System.Drawing.Point(0, 0);
             this.load_gb.Name = "load_gb";
@@ -97,9 +91,9 @@ namespace RauViet.ui
             // 
             this.exportPDF_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.exportPDF_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.exportPDF_btn.Location = new System.Drawing.Point(351, 6);
+            this.exportPDF_btn.Location = new System.Drawing.Point(1013, 12);
             this.exportPDF_btn.Name = "exportPDF_btn";
-            this.exportPDF_btn.Size = new System.Drawing.Size(144, 47);
+            this.exportPDF_btn.Size = new System.Drawing.Size(106, 34);
             this.exportPDF_btn.TabIndex = 33;
             this.exportPDF_btn.Text = "Xuất PDF";
             this.exportPDF_btn.UseVisualStyleBackColor = false;
@@ -108,9 +102,9 @@ namespace RauViet.ui
             // 
             this.printPreview_pl_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.printPreview_pl_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.printPreview_pl_btn.Location = new System.Drawing.Point(651, 4);
+            this.printPreview_pl_btn.Location = new System.Drawing.Point(1272, 12);
             this.printPreview_pl_btn.Name = "printPreview_pl_btn";
-            this.printPreview_pl_btn.Size = new System.Drawing.Size(144, 47);
+            this.printPreview_pl_btn.Size = new System.Drawing.Size(114, 34);
             this.printPreview_pl_btn.TabIndex = 32;
             this.printPreview_pl_btn.Text = "Xem trước bảng In";
             this.printPreview_pl_btn.UseVisualStyleBackColor = false;
@@ -119,71 +113,23 @@ namespace RauViet.ui
             // 
             this.print_pl_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.print_pl_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.print_pl_btn.Location = new System.Drawing.Point(501, 5);
+            this.print_pl_btn.Location = new System.Drawing.Point(1124, 11);
             this.print_pl_btn.Name = "print_pl_btn";
-            this.print_pl_btn.Size = new System.Drawing.Size(144, 47);
+            this.print_pl_btn.Size = new System.Drawing.Size(144, 34);
             this.print_pl_btn.TabIndex = 31;
             this.print_pl_btn.Text = "In Phiếu Lương";
             this.print_pl_btn.UseVisualStyleBackColor = false;
-            // 
-            // load_btn
-            // 
-            this.load_btn.BackColor = System.Drawing.SystemColors.Highlight;
-            this.load_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.load_btn.Location = new System.Drawing.Point(229, 4);
-            this.load_btn.Name = "load_btn";
-            this.load_btn.Size = new System.Drawing.Size(101, 46);
-            this.load_btn.TabIndex = 30;
-            this.load_btn.Text = "Load";
-            this.load_btn.UseVisualStyleBackColor = false;
             // 
             // LuuThayDoiBtn
             // 
             this.LuuThayDoiBtn.BackColor = System.Drawing.SystemColors.Highlight;
             this.LuuThayDoiBtn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LuuThayDoiBtn.Location = new System.Drawing.Point(382, 4);
+            this.LuuThayDoiBtn.Location = new System.Drawing.Point(181, 9);
             this.LuuThayDoiBtn.Name = "LuuThayDoiBtn";
-            this.LuuThayDoiBtn.Size = new System.Drawing.Size(128, 47);
+            this.LuuThayDoiBtn.Size = new System.Drawing.Size(99, 40);
             this.LuuThayDoiBtn.TabIndex = 25;
             this.LuuThayDoiBtn.Text = "Khóa Lại";
             this.LuuThayDoiBtn.UseVisualStyleBackColor = false;
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(144, 20);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(12, 16);
-            this.label3.TabIndex = 22;
-            this.label3.Text = "/";
-            // 
-            // month_cbb
-            // 
-            this.month_cbb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.month_cbb.FormattingEnabled = true;
-            this.month_cbb.Location = new System.Drawing.Point(102, 17);
-            this.month_cbb.Name = "month_cbb";
-            this.month_cbb.Size = new System.Drawing.Size(39, 21);
-            this.month_cbb.TabIndex = 21;
-            // 
-            // year_tb
-            // 
-            this.year_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.year_tb.Location = new System.Drawing.Point(162, 17);
-            this.year_tb.Name = "year_tb";
-            this.year_tb.Size = new System.Drawing.Size(48, 23);
-            this.year_tb.TabIndex = 20;
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label6.Location = new System.Drawing.Point(47, 18);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(48, 16);
-            this.label6.TabIndex = 10;
-            this.label6.Text = "Tháng:";
             // 
             // panel1
             // 
@@ -398,6 +344,25 @@ namespace RauViet.ui
             this.label2.Text = "Phụ Cấp";
             this.label2.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
+            // monthYearDtp
+            // 
+            this.monthYearDtp.CalendarFont = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.monthYearDtp.Location = new System.Drawing.Point(6, 17);
+            this.monthYearDtp.Name = "monthYearDtp";
+            this.monthYearDtp.Size = new System.Drawing.Size(99, 20);
+            this.monthYearDtp.TabIndex = 34;
+            // 
+            // load_btn
+            // 
+            this.load_btn.BackColor = System.Drawing.SystemColors.Highlight;
+            this.load_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.load_btn.Location = new System.Drawing.Point(109, 11);
+            this.load_btn.Name = "load_btn";
+            this.load_btn.Size = new System.Drawing.Size(66, 32);
+            this.load_btn.TabIndex = 30;
+            this.load_btn.Text = "Load";
+            this.load_btn.UseVisualStyleBackColor = false;
+            // 
             // SalaryCaculator
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -408,7 +373,6 @@ namespace RauViet.ui
             this.Name = "SalaryCaculator";
             this.Text = "FormTableData";
             this.load_gb.ResumeLayout(false);
-            this.load_gb.PerformLayout();
             this.panel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).EndInit();
             this.panel4.ResumeLayout(false);
@@ -430,11 +394,6 @@ namespace RauViet.ui
         #endregion
         private System.Windows.Forms.Button LuuThayDoiBtn;
         private System.Windows.Forms.GroupBox load_gb;
-        private System.Windows.Forms.Button load_btn;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.ComboBox month_cbb;
-        private System.Windows.Forms.TextBox year_tb;
-        private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Panel allowancePanel;
@@ -457,5 +416,7 @@ namespace RauViet.ui
         private System.Windows.Forms.Button print_pl_btn;
         private System.Windows.Forms.Button printPreview_pl_btn;
         private System.Windows.Forms.Button exportPDF_btn;
+        private System.Windows.Forms.DateTimePicker monthYearDtp;
+        private System.Windows.Forms.Button load_btn;
     }
 }

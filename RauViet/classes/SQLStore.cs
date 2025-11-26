@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RauViet.ui;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -61,6 +62,7 @@ namespace RauViet.classes
         Dictionary<int, DataTable> mOrderPackingLogs;
         Dictionary<int, DataTable> mDo47Logs;
         Dictionary<int, DataTable> mLotCodeLogs;
+        Dictionary<string, DataTable> mEmployeeDeductionLogs;
         private SQLStore() { }
 
         public static SQLStore Instance
@@ -96,6 +98,7 @@ namespace RauViet.classes
                 mOrderPackingLogs = new Dictionary<int, DataTable>();
                 mDo47Logs = new Dictionary<int, DataTable>();
                 mLotCodeLogs = new Dictionary<int, DataTable>();
+                mEmployeeDeductionLogs = new Dictionary<string, DataTable>();
 
                 var productSKUTask = SQLManager.Instance.getProductSKUAsync();
                 var productPackingTask = SQLManager.Instance.getProductpackingAsync();
@@ -2619,6 +2622,16 @@ namespace RauViet.classes
                 mLotCodeLogs[exportCodeID] = dt;
             }
             return mLotCodeLogs[exportCodeID];
+        }
+        public async Task<DataTable> GetEmployeeDeductionLogAsync(int month, int year, string code)
+        {
+            string key = month + "_" + year + "_" + code;
+            if (!mEmployeeDeductionLogs.ContainsKey(key))
+            {
+                DataTable dt = await SQLManager.Instance.GetEmployeeDeductionLogAsync(month, year, code);
+                mEmployeeDeductionLogs[key] = dt;
+            }
+            return mEmployeeDeductionLogs[key];
         }
     }
 }

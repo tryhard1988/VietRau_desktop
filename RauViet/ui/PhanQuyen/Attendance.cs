@@ -22,26 +22,10 @@ namespace RauViet.ui
         {
             InitializeComponent();
 
-            month_cbb.Items.Clear();
-            for (int m = 1; m <= 12; m++)
-            {
-                month_cbb.Items.Add(m);
-            }
-
-            int prevMonth, year;
-            if (DateTime.Now.Month == 1)
-            {
-                prevMonth = 12;                     // Tháng trước của tháng 1 là tháng 12
-                year = DateTime.Now.Year - 1;       // Năm trước
-            }
-            else
-            {
-                prevMonth = DateTime.Now.Month - 1; // Tháng trước
-                year = DateTime.Now.Year;
-            }
-
-            month_cbb.SelectedItem = prevMonth;
-            year_tb.Text = year.ToString();
+            monthYearDtp.Format = DateTimePickerFormat.Custom;
+            monthYearDtp.CustomFormat = "MM/yyyy";
+            monthYearDtp.ShowUpDown = true;
+            monthYearDtp.Value = DateTime.Now.AddMonths(-1);
 
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Dock = DockStyle.Fill;
@@ -54,7 +38,6 @@ namespace RauViet.ui
             dataGV.SelectionChanged += this.dataGV_CellClick;
             attendanceGV.CellFormatting += AttandaceGV_CellFormatting;
             attendanceGV.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.attendanceGV_EditingControlShowing);
-            year_tb.KeyPress += Tb_KeyPress_OnlyNumber;
 
             attendanceGV.CellBeginEdit += AttendanceGV_CellBeginEdit;
             attendanceGV.CellEndEdit += AttendanceGV_CellEndEdit;
@@ -79,8 +62,8 @@ namespace RauViet.ui
 
             try
             {
-                int month = Convert.ToInt32(month_cbb.SelectedItem);
-                int year = Convert.ToInt32(year_tb.Text);
+                int month = monthYearDtp.Value.Month;
+                int year = monthYearDtp.Value.Year;
                 // Chạy truy vấn trên thread riêng
                 string[] keepColumns = { "EmployeeCode", "FullName", "PositionName", "ContractTypeName", "PositionCode", "ContractTypeCode" };
                 var employeesTask = SQLStore.Instance.GetEmployeesAsync(keepColumns);
@@ -468,8 +451,7 @@ namespace RauViet.ui
                                     isSuccess = await SQLManager.Instance.UpsertAttendanceBatchAsync(attendanceData);
                                     if (isSuccess)
                                     {
-                                        month_cbb.SelectedItem = month;
-                                        year_tb.Text = year.ToString();
+                                        monthYearDtp.Value = new DateTime(year, month, 1);
 
                                         await AddMissingEmployees(month, year);
 
@@ -515,8 +497,8 @@ namespace RauViet.ui
             loadingOverlay = new LoadingOverlay(this);
             loadingOverlay.Show();
             await Task.Delay(50);
-            int month = Convert.ToInt32(month_cbb.SelectedItem);
-            int year = Convert.ToInt32(year_tb.Text);
+            int month = monthYearDtp.Value.Month;
+            int year = monthYearDtp.Value.Year;
 
             var attendamceTask = SQLStore.Instance.GetAttendamceAsync(null, month, year);
             var holidayTask = SQLStore.Instance.GetHolidaysAsync(month, year);

@@ -25,15 +25,10 @@ namespace RauViet.ui
         {
             InitializeComponent();
 
-            month_cbb.Items.Clear();
-            for (int m = 1; m <= 12; m++)
-            {
-                month_cbb.Items.Add(m);
-            }
-
-
-            month_cbb.SelectedItem = DateTime.Now.Month;
-            year_tb.Text = DateTime.Now.Year.ToString();
+            monthYearDtp.Format = DateTimePickerFormat.Custom;
+            monthYearDtp.CustomFormat = "MM/yyyy";
+            monthYearDtp.ShowUpDown = true;
+            monthYearDtp.Value = DateTime.Now;
 
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Dock = DockStyle.Fill;
@@ -49,7 +44,6 @@ namespace RauViet.ui
             LuuThayDoiBtn.Click += saveBtn_Click;
             dataGV.SelectionChanged += this.dataGV_CellClick;
             amount_tb.KeyPress += Tb_KeyPress_OnlyNumber;
-            year_tb.KeyPress += Tb_KeyPress_OnlyNumber;
             load_btn.Click += Load_btn_Click;
         }
 
@@ -64,8 +58,8 @@ namespace RauViet.ui
 
             try
             {
-                int month = Convert.ToInt32(month_cbb.SelectedItem);
-                int year = Convert.ToInt32(year_tb.Text);
+                int month = monthYearDtp.Value.Month;
+                int year = monthYearDtp.Value.Year;
                 var employeeTask = SQLManager.Instance.GetActiveEmployee_DeductionATT_Async(month, year);
                 var employeeLeaveAsync = SQLManager.Instance.GetEmployeeLeave_PT_KP_Async(month, year);
 
@@ -261,9 +255,9 @@ namespace RauViet.ui
                 MessageBox.Show("Sai Dữ Liệu, Kiểm Tra Lại!", "Thông Báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-                        
-            int year = Convert.ToInt32(year_tb.Text);
-            int month = Convert.ToInt32(month_cbb.SelectedItem);
+
+            int month = monthYearDtp.Value.Month;
+            int year = monthYearDtp.Value.Year;
             DateTime deductionDate = new DateTime(year, month, 15);
 
             string employeeCode = Convert.ToString(dataGV.CurrentRow.Cells["EmployeeCode"].Value);

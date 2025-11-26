@@ -35,15 +35,10 @@ namespace RauViet.ui
             note_tb.TabIndex = countTab++; note_tb.TabStop = true;
             LuuThayDoiBtn.TabIndex = countTab++; LuuThayDoiBtn.TabStop = true;
 
-            month_cbb.Items.Clear();
-            for (int m = 1; m <= 12; m++)
-            {
-                month_cbb.Items.Add(m);
-            }
-                        
-
-            month_cbb.SelectedItem = DateTime.Now.Month;
-            year_tb.Text = DateTime.Now.Year.ToString();
+            monthYearDtp.Format = DateTimePickerFormat.Custom;
+            monthYearDtp.CustomFormat = "MM/yyyy";
+            monthYearDtp.ShowUpDown = true;
+            monthYearDtp.Value = DateTime.Now;
 
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Dock = DockStyle.Fill;
@@ -70,9 +65,6 @@ namespace RauViet.ui
             LuuThayDoiBtn.Click += saveBtn_Click;
             dataGV.SelectionChanged += this.dataGV_CellClick;
             
-
-            year_tb.KeyPress += Tb_KeyPress_OnlyNumber;
-
             loadAttandance_btn.Click += LoadAttandance_btn_Click;
             newBtn.Click += NewBtn_Click;
             edit_btn.Click += Edit_btn_Click;
@@ -93,8 +85,8 @@ namespace RauViet.ui
 
             try
             {
-                int month = Convert.ToInt32(month_cbb.SelectedItem);
-                int year = Convert.ToInt32(year_tb.Text);
+                int month = monthYearDtp.Value.Month;
+                int year = monthYearDtp.Value.Year;
                 // Chạy truy vấn trên thread riêng
                 string[] keepColumns = { "EmployeeCode", "FullName", "PositionName", "ContractTypeName"};
                 var employeesTask = SQLStore.Instance.GetEmployeesAsync(keepColumns);
@@ -228,8 +220,8 @@ namespace RauViet.ui
             LoadingOverlay loadingOverlay = new LoadingOverlay(this);
             loadingOverlay.Show();
 
-            int month = Convert.ToInt32(month_cbb.SelectedItem);
-            int year = Convert.ToInt32(year_tb.Text);
+            int month = monthYearDtp.Value.Month;
+            int year = monthYearDtp.Value.Year;
 
             var overtimeAttendamceTask = SQLStore.Instance.GetOvertimeAttendamceAsync(month, year);
 
@@ -444,8 +436,8 @@ namespace RauViet.ui
             string employeeCode = dataGV.CurrentRow.Cells["EmployeeCode"].Value?.ToString();
             DateTime workDate = workDate_dtp.Value;
 
-            int year = Convert.ToInt32(year_tb.Text);
-            int month = Convert.ToInt32(month_cbb.SelectedItem);
+            int month = monthYearDtp.Value.Month;
+            int year = monthYearDtp.Value.Year;
 
             if (workDate.Year != year || month != workDate.Month)
             {
@@ -476,9 +468,12 @@ namespace RauViet.ui
 
         private void NewBtn_Click(object sender, EventArgs e)
         {
+            int month = monthYearDtp.Value.Month;
+            int year = monthYearDtp.Value.Year;
+
             overtimeAttendaceID_tb.Text = "";
             note_tb.Text = "";
-            workDate_dtp.Value = new DateTime(Convert.ToInt32(year_tb.Text), Convert.ToInt32(month_cbb.SelectedItem), workDate_dtp.Value.Day);
+            workDate_dtp.Value = new DateTime(year, month, workDate_dtp.Value.Day);
             workDate_dtp.Focus();
             info_gb.BackColor = newBtn.BackColor;
             edit_btn.Visible = false;

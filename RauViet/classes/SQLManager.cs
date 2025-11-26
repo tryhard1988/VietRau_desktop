@@ -44,6 +44,7 @@ namespace RauViet.classes
         public string salaryLock_conStr() { return "Server=192.168.1.8,1433;Database=SalaryLock;User Id=salary_lock;Password=A7t#kP2x;"; }
         public string qlnvHis_conStr() { return "Server=192.168.1.8,1433;Database=QLNV_VR_History;User Id=qlnv_vr_history;Password=A7t#kP2x;"; }
         public string ql_NhanSu_conStr() { return "Server=192.168.1.8,1433;Database=QLNV;User Id=vietrau;Password=A7t#kP2x;"; }
+        public string ql_NhanSu_Log_conStr() { return "Server=192.168.1.8,1433;Database=QLNV_Log;User Id=vietrau;Password=A7t#kP2x;"; }
 
         public async Task<string> GetPasswordHashFromDatabase(string username)
         {
@@ -4418,6 +4419,55 @@ namespace RauViet.classes
             }
 
             return false;
+        }
+
+        public async Task InsertEmployeeDeductionLogAsync(string employeeCode, string deductionTypeCode, string description, DateTime deductionDate, int amount, string note)
+        {
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_Log_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand("sp_InsertEmployeeDeductionLog", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@EmployeeCode", employeeCode);
+                        cmd.Parameters.AddWithValue("@DeductionTypeCode", deductionTypeCode);
+                        cmd.Parameters.AddWithValue("@Description", (object)description ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@DeductionDate", deductionDate.Date);
+                        cmd.Parameters.AddWithValue("@Amount", (object)amount ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@Note", (object)note ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@ActionBy", UserManager.Instance.fullName);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error Insert Do47 Log: {ex.Message}");
+            }
+        }
+
+        public async Task<DataTable> GetEmployeeDeductionLogAsync(int month, int year, string code)
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_NhanSu_Log_conStr()))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT * FROM EmployeeDeduction_log WHERE MONTH(DeductionDate) = @Month AND YEAR(DeductionDate) = @Year AND DeductionTypeCode = @Code;";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    cmd.Parameters.AddWithValue("@Month", month);
+                    cmd.Parameters.AddWithValue("@Year", year);
+                    cmd.Parameters.AddWithValue("@Code", code);
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
         }
     }
 }

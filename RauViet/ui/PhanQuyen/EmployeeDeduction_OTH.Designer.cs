@@ -34,10 +34,6 @@ namespace RauViet.ui
             this.edit_btn = new System.Windows.Forms.Button();
             this.load_gb = new System.Windows.Forms.GroupBox();
             this.load_btn = new System.Windows.Forms.Button();
-            this.label3 = new System.Windows.Forms.Label();
-            this.month_cbb = new System.Windows.Forms.ComboBox();
-            this.year_tb = new System.Windows.Forms.TextBox();
-            this.label6 = new System.Windows.Forms.Label();
             this.info_gb = new System.Windows.Forms.GroupBox();
             this.deductionDate_dtp = new System.Windows.Forms.DateTimePicker();
             this.label4 = new System.Windows.Forms.Label();
@@ -53,6 +49,7 @@ namespace RauViet.ui
             this.employeeDeductionID_tb = new System.Windows.Forms.TextBox();
             this.dataGV = new System.Windows.Forms.DataGridView();
             this.employeeDeductionGV = new System.Windows.Forms.DataGridView();
+            this.monthYearDtp = new System.Windows.Forms.DateTimePicker();
             this.panel1.SuspendLayout();
             this.load_gb.SuspendLayout();
             this.info_gb.SuspendLayout();
@@ -101,14 +98,11 @@ namespace RauViet.ui
             // 
             // load_gb
             // 
+            this.load_gb.Controls.Add(this.monthYearDtp);
             this.load_gb.Controls.Add(this.load_btn);
-            this.load_gb.Controls.Add(this.label3);
-            this.load_gb.Controls.Add(this.month_cbb);
-            this.load_gb.Controls.Add(this.year_tb);
-            this.load_gb.Controls.Add(this.label6);
-            this.load_gb.Location = new System.Drawing.Point(109, 12);
+            this.load_gb.Location = new System.Drawing.Point(125, 12);
             this.load_gb.Name = "load_gb";
-            this.load_gb.Size = new System.Drawing.Size(241, 136);
+            this.load_gb.Size = new System.Drawing.Size(202, 53);
             this.load_gb.TabIndex = 29;
             this.load_gb.TabStop = false;
             // 
@@ -116,49 +110,12 @@ namespace RauViet.ui
             // 
             this.load_btn.BackColor = System.Drawing.SystemColors.Highlight;
             this.load_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.load_btn.Location = new System.Drawing.Point(32, 73);
+            this.load_btn.Location = new System.Drawing.Point(123, 14);
             this.load_btn.Name = "load_btn";
-            this.load_btn.Size = new System.Drawing.Size(145, 46);
+            this.load_btn.Size = new System.Drawing.Size(64, 28);
             this.load_btn.TabIndex = 30;
             this.load_btn.Text = "Load";
             this.load_btn.UseVisualStyleBackColor = false;
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(111, 35);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(12, 16);
-            this.label3.TabIndex = 22;
-            this.label3.Text = "/";
-            // 
-            // month_cbb
-            // 
-            this.month_cbb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.month_cbb.FormattingEnabled = true;
-            this.month_cbb.Location = new System.Drawing.Point(69, 32);
-            this.month_cbb.Name = "month_cbb";
-            this.month_cbb.Size = new System.Drawing.Size(39, 21);
-            this.month_cbb.TabIndex = 21;
-            // 
-            // year_tb
-            // 
-            this.year_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.year_tb.Location = new System.Drawing.Point(129, 32);
-            this.year_tb.Name = "year_tb";
-            this.year_tb.Size = new System.Drawing.Size(48, 23);
-            this.year_tb.TabIndex = 20;
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label6.Location = new System.Drawing.Point(14, 33);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(48, 16);
-            this.label6.TabIndex = 10;
-            this.label6.Text = "Tháng:";
             // 
             // info_gb
             // 
@@ -316,6 +273,14 @@ namespace RauViet.ui
             this.employeeDeductionGV.Size = new System.Drawing.Size(383, 724);
             this.employeeDeductionGV.TabIndex = 11;
             // 
+            // monthYearDtp
+            // 
+            this.monthYearDtp.CalendarFont = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.monthYearDtp.Location = new System.Drawing.Point(18, 19);
+            this.monthYearDtp.Name = "monthYearDtp";
+            this.monthYearDtp.Size = new System.Drawing.Size(99, 20);
+            this.monthYearDtp.TabIndex = 40;
+            // 
             // EmployeeDeduction_OTH
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -329,7 +294,6 @@ namespace RauViet.ui
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.load_gb.ResumeLayout(false);
-            this.load_gb.PerformLayout();
             this.info_gb.ResumeLayout(false);
             this.info_gb.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).EndInit();
@@ -357,11 +321,8 @@ namespace RauViet.ui
         private System.Windows.Forms.DateTimePicker deductionDate_dtp;
         private System.Windows.Forms.GroupBox load_gb;
         private System.Windows.Forms.Button load_btn;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.ComboBox month_cbb;
-        private System.Windows.Forms.TextBox year_tb;
-        private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Button readOnly_btn;
         private System.Windows.Forms.Button edit_btn;
+        private System.Windows.Forms.DateTimePicker monthYearDtp;
     }
 }

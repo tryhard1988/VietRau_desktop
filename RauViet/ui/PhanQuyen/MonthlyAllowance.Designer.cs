@@ -33,11 +33,8 @@ namespace RauViet.ui
             this.readOnly_btn = new System.Windows.Forms.Button();
             this.edit_btn = new System.Windows.Forms.Button();
             this.info_gb = new System.Windows.Forms.GroupBox();
-            this.label3 = new System.Windows.Forms.Label();
             this.note_tb = new System.Windows.Forms.TextBox();
-            this.month_cbb = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.year_tb = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.allowanceType_cbb = new System.Windows.Forms.ComboBox();
             this.label5 = new System.Windows.Forms.Label();
@@ -51,6 +48,7 @@ namespace RauViet.ui
             this.monthlyAllowanceID_tb = new System.Windows.Forms.TextBox();
             this.dataGV = new System.Windows.Forms.DataGridView();
             this.allowanceGV = new System.Windows.Forms.DataGridView();
+            this.monthYearDtp = new System.Windows.Forms.DateTimePicker();
             this.panel1.SuspendLayout();
             this.info_gb.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
@@ -98,11 +96,9 @@ namespace RauViet.ui
             // 
             // info_gb
             // 
-            this.info_gb.Controls.Add(this.label3);
+            this.info_gb.Controls.Add(this.monthYearDtp);
             this.info_gb.Controls.Add(this.note_tb);
-            this.info_gb.Controls.Add(this.month_cbb);
             this.info_gb.Controls.Add(this.label1);
-            this.info_gb.Controls.Add(this.year_tb);
             this.info_gb.Controls.Add(this.label4);
             this.info_gb.Controls.Add(this.allowanceType_cbb);
             this.info_gb.Controls.Add(this.label5);
@@ -114,33 +110,14 @@ namespace RauViet.ui
             this.info_gb.TabIndex = 28;
             this.info_gb.TabStop = false;
             // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(188, 44);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(12, 16);
-            this.label3.TabIndex = 22;
-            this.label3.Text = "/";
-            // 
             // note_tb
             // 
             this.note_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.note_tb.Location = new System.Drawing.Point(146, 149);
+            this.note_tb.Location = new System.Drawing.Point(143, 140);
             this.note_tb.Multiline = true;
             this.note_tb.Name = "note_tb";
             this.note_tb.Size = new System.Drawing.Size(246, 54);
             this.note_tb.TabIndex = 27;
-            // 
-            // month_cbb
-            // 
-            this.month_cbb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.month_cbb.FormattingEnabled = true;
-            this.month_cbb.Location = new System.Drawing.Point(146, 41);
-            this.month_cbb.Name = "month_cbb";
-            this.month_cbb.Size = new System.Drawing.Size(39, 21);
-            this.month_cbb.TabIndex = 21;
             // 
             // label1
             // 
@@ -151,14 +128,6 @@ namespace RauViet.ui
             this.label1.Size = new System.Drawing.Size(56, 16);
             this.label1.TabIndex = 26;
             this.label1.Text = "Ghi Chú:";
-            // 
-            // year_tb
-            // 
-            this.year_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.year_tb.Location = new System.Drawing.Point(206, 41);
-            this.year_tb.Name = "year_tb";
-            this.year_tb.Size = new System.Drawing.Size(48, 23);
-            this.year_tb.TabIndex = 20;
             // 
             // label4
             // 
@@ -294,6 +263,14 @@ namespace RauViet.ui
             this.allowanceGV.Size = new System.Drawing.Size(282, 724);
             this.allowanceGV.TabIndex = 11;
             // 
+            // monthYearDtp
+            // 
+            this.monthYearDtp.CalendarFont = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.monthYearDtp.Location = new System.Drawing.Point(143, 42);
+            this.monthYearDtp.Name = "monthYearDtp";
+            this.monthYearDtp.Size = new System.Drawing.Size(99, 20);
+            this.monthYearDtp.TabIndex = 35;
+            // 
             // MonthlyAllowance
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -331,11 +308,9 @@ namespace RauViet.ui
         private System.Windows.Forms.DataGridView allowanceGV;
         private System.Windows.Forms.TextBox note_tb;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.ComboBox month_cbb;
-        private System.Windows.Forms.TextBox year_tb;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button readOnly_btn;
         private System.Windows.Forms.Button edit_btn;
+        private System.Windows.Forms.DateTimePicker monthYearDtp;
     }
 }

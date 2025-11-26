@@ -50,12 +50,9 @@ namespace RauViet.ui
             this.status_lb = new System.Windows.Forms.Label();
             this.load_gb = new System.Windows.Forms.GroupBox();
             this.loadAttandance_btn = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
-            this.month_cbb = new System.Windows.Forms.ComboBox();
-            this.year_tb = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
             this.attendanceGV = new System.Windows.Forms.DataGridView();
+            this.monthYearDtp = new System.Windows.Forms.DateTimePicker();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
             this.panel1.SuspendLayout();
             this.info_gb.SuspendLayout();
@@ -263,14 +260,11 @@ namespace RauViet.ui
             // 
             // load_gb
             // 
+            this.load_gb.Controls.Add(this.monthYearDtp);
             this.load_gb.Controls.Add(this.loadAttandance_btn);
-            this.load_gb.Controls.Add(this.label1);
-            this.load_gb.Controls.Add(this.month_cbb);
-            this.load_gb.Controls.Add(this.year_tb);
-            this.load_gb.Controls.Add(this.label2);
-            this.load_gb.Location = new System.Drawing.Point(49, 16);
+            this.load_gb.Location = new System.Drawing.Point(113, 94);
             this.load_gb.Name = "load_gb";
-            this.load_gb.Size = new System.Drawing.Size(241, 136);
+            this.load_gb.Size = new System.Drawing.Size(133, 98);
             this.load_gb.TabIndex = 28;
             this.load_gb.TabStop = false;
             // 
@@ -278,49 +272,12 @@ namespace RauViet.ui
             // 
             this.loadAttandance_btn.BackColor = System.Drawing.SystemColors.Highlight;
             this.loadAttandance_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.loadAttandance_btn.Location = new System.Drawing.Point(32, 73);
+            this.loadAttandance_btn.Location = new System.Drawing.Point(31, 45);
             this.loadAttandance_btn.Name = "loadAttandance_btn";
-            this.loadAttandance_btn.Size = new System.Drawing.Size(145, 46);
+            this.loadAttandance_btn.Size = new System.Drawing.Size(69, 33);
             this.loadAttandance_btn.TabIndex = 30;
             this.loadAttandance_btn.Text = "Load";
             this.loadAttandance_btn.UseVisualStyleBackColor = false;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(111, 35);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(12, 16);
-            this.label1.TabIndex = 22;
-            this.label1.Text = "/";
-            // 
-            // month_cbb
-            // 
-            this.month_cbb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.month_cbb.FormattingEnabled = true;
-            this.month_cbb.Location = new System.Drawing.Point(69, 32);
-            this.month_cbb.Name = "month_cbb";
-            this.month_cbb.Size = new System.Drawing.Size(39, 21);
-            this.month_cbb.TabIndex = 21;
-            // 
-            // year_tb
-            // 
-            this.year_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.year_tb.Location = new System.Drawing.Point(129, 32);
-            this.year_tb.Name = "year_tb";
-            this.year_tb.Size = new System.Drawing.Size(48, 23);
-            this.year_tb.TabIndex = 20;
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(14, 33);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(48, 16);
-            this.label2.TabIndex = 10;
-            this.label2.Text = "Tháng:";
             // 
             // LuuThayDoiBtn
             // 
@@ -345,6 +302,14 @@ namespace RauViet.ui
             this.attendanceGV.Size = new System.Drawing.Size(563, 681);
             this.attendanceGV.TabIndex = 12;
             // 
+            // monthYearDtp
+            // 
+            this.monthYearDtp.CalendarFont = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.monthYearDtp.Location = new System.Drawing.Point(18, 19);
+            this.monthYearDtp.Name = "monthYearDtp";
+            this.monthYearDtp.Size = new System.Drawing.Size(99, 20);
+            this.monthYearDtp.TabIndex = 37;
+            // 
             // OvertimeAttendace
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -361,7 +326,6 @@ namespace RauViet.ui
             this.info_gb.ResumeLayout(false);
             this.info_gb.PerformLayout();
             this.load_gb.ResumeLayout(false);
-            this.load_gb.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.attendanceGV)).EndInit();
             this.ResumeLayout(false);
 
@@ -371,13 +335,9 @@ namespace RauViet.ui
         private System.Windows.Forms.DataGridView dataGV;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.GroupBox load_gb;
-        private System.Windows.Forms.TextBox year_tb;
-        private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label status_lb;
         private System.Windows.Forms.Button LuuThayDoiBtn;
-        private System.Windows.Forms.ComboBox month_cbb;
         private System.Windows.Forms.Button loadAttandance_btn;
-        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.DataGridView attendanceGV;
         private System.Windows.Forms.GroupBox info_gb;
         private System.Windows.Forms.Label label6;
@@ -395,5 +355,6 @@ namespace RauViet.ui
         private System.Windows.Forms.TextBox updatedHistory_tb;
         private System.Windows.Forms.Button readOnly_btn;
         private System.Windows.Forms.Button edit_btn;
+        private System.Windows.Forms.DateTimePicker monthYearDtp;
     }
 }

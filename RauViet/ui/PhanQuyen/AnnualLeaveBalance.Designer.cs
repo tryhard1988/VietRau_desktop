@@ -32,13 +32,10 @@ namespace RauViet.ui
             this.panel1 = new System.Windows.Forms.Panel();
             this.info_gb = new System.Windows.Forms.GroupBox();
             this.capphep_btn = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
             this.load_btn = new System.Windows.Forms.Button();
-            this.month_cbb = new System.Windows.Forms.ComboBox();
-            this.year_tb = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
             this.status_lb = new System.Windows.Forms.Label();
             this.dataGV = new System.Windows.Forms.DataGridView();
+            this.monthYearDtp = new System.Windows.Forms.DateTimePicker();
             this.panel1.SuspendLayout();
             this.info_gb.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
@@ -56,15 +53,12 @@ namespace RauViet.ui
             // 
             // info_gb
             // 
+            this.info_gb.Controls.Add(this.monthYearDtp);
             this.info_gb.Controls.Add(this.capphep_btn);
-            this.info_gb.Controls.Add(this.label1);
             this.info_gb.Controls.Add(this.load_btn);
-            this.info_gb.Controls.Add(this.month_cbb);
-            this.info_gb.Controls.Add(this.year_tb);
-            this.info_gb.Controls.Add(this.label2);
             this.info_gb.Location = new System.Drawing.Point(35, 156);
             this.info_gb.Name = "info_gb";
-            this.info_gb.Size = new System.Drawing.Size(241, 184);
+            this.info_gb.Size = new System.Drawing.Size(241, 135);
             this.info_gb.TabIndex = 28;
             this.info_gb.TabStop = false;
             // 
@@ -72,60 +66,23 @@ namespace RauViet.ui
             // 
             this.capphep_btn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
             this.capphep_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.capphep_btn.Location = new System.Drawing.Point(20, 91);
+            this.capphep_btn.Location = new System.Drawing.Point(35, 71);
             this.capphep_btn.Name = "capphep_btn";
-            this.capphep_btn.Size = new System.Drawing.Size(114, 46);
+            this.capphep_btn.Size = new System.Drawing.Size(169, 46);
             this.capphep_btn.TabIndex = 32;
             this.capphep_btn.Text = "Cấp Phép";
             this.capphep_btn.UseVisualStyleBackColor = false;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(125, 51);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(17, 23);
-            this.label1.TabIndex = 31;
-            this.label1.Text = "/";
             // 
             // load_btn
             // 
             this.load_btn.BackColor = System.Drawing.SystemColors.Highlight;
             this.load_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.load_btn.Location = new System.Drawing.Point(140, 91);
+            this.load_btn.Location = new System.Drawing.Point(140, 19);
             this.load_btn.Name = "load_btn";
-            this.load_btn.Size = new System.Drawing.Size(95, 46);
+            this.load_btn.Size = new System.Drawing.Size(64, 29);
             this.load_btn.TabIndex = 30;
             this.load_btn.Text = "Load";
             this.load_btn.UseVisualStyleBackColor = false;
-            // 
-            // month_cbb
-            // 
-            this.month_cbb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.month_cbb.FormattingEnabled = true;
-            this.month_cbb.Location = new System.Drawing.Point(78, 53);
-            this.month_cbb.Name = "month_cbb";
-            this.month_cbb.Size = new System.Drawing.Size(39, 21);
-            this.month_cbb.TabIndex = 21;
-            // 
-            // year_tb
-            // 
-            this.year_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.year_tb.Location = new System.Drawing.Point(146, 51);
-            this.year_tb.Name = "year_tb";
-            this.year_tb.Size = new System.Drawing.Size(48, 23);
-            this.year_tb.TabIndex = 20;
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(23, 54);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(48, 16);
-            this.label2.TabIndex = 10;
-            this.label2.Text = "Tháng:";
             // 
             // status_lb
             // 
@@ -150,6 +107,14 @@ namespace RauViet.ui
             this.dataGV.Size = new System.Drawing.Size(900, 681);
             this.dataGV.TabIndex = 12;
             // 
+            // monthYearDtp
+            // 
+            this.monthYearDtp.CalendarFont = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.monthYearDtp.Location = new System.Drawing.Point(35, 23);
+            this.monthYearDtp.Name = "monthYearDtp";
+            this.monthYearDtp.Size = new System.Drawing.Size(99, 20);
+            this.monthYearDtp.TabIndex = 38;
+            // 
             // AnnualLeaveBalance
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -162,7 +127,6 @@ namespace RauViet.ui
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.info_gb.ResumeLayout(false);
-            this.info_gb.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).EndInit();
             this.ResumeLayout(false);
 
@@ -171,13 +135,10 @@ namespace RauViet.ui
         #endregion
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.GroupBox info_gb;
-        private System.Windows.Forms.TextBox year_tb;
-        private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label status_lb;
-        private System.Windows.Forms.ComboBox month_cbb;
         private System.Windows.Forms.Button load_btn;
         private System.Windows.Forms.Button capphep_btn;
-        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.DataGridView dataGV;
+        private System.Windows.Forms.DateTimePicker monthYearDtp;
     }
 }

@@ -27,21 +27,16 @@ namespace RauViet.ui
             Utils.SetTabStopRecursive(this, false);
 
             int countTab = 0;
-            month_cbb.TabIndex = countTab++; month_cbb.TabStop = true;
-            year_tb.TabIndex = countTab++; year_tb.TabStop = true;
+            monthYearDtp.TabIndex = countTab++; monthYearDtp.TabStop = true;
             allowanceType_cbb.TabIndex = countTab++; allowanceType_cbb.TabStop = true;
             amount_tb.TabIndex = countTab++; amount_tb.TabStop = true;
             note_tb.TabIndex = countTab++; note_tb.TabStop = true;
             LuuThayDoiBtn.TabIndex = countTab++; LuuThayDoiBtn.TabStop = true;
 
-            month_cbb.Items.Clear();
-            for (int m = 1; m <= 12; m++)
-            {
-                month_cbb.Items.Add(m);
-            }
-
-            month_cbb.SelectedItem = DateTime.Now.Month;
-            year_tb.Text = DateTime.Now.Year.ToString();
+            monthYearDtp.Format = DateTimePickerFormat.Custom;
+            monthYearDtp.CustomFormat = "MM/yyyy";
+            monthYearDtp.ShowUpDown = true;
+            monthYearDtp.Value = DateTime.Now.AddMonths(-1);
 
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Dock = DockStyle.Fill;
@@ -61,10 +56,9 @@ namespace RauViet.ui
             delete_btn.Click += deleteBtn_Click;
             dataGV.SelectionChanged += this.dataGV_CellClick;
             allowanceGV.SelectionChanged += this.allowanceGV_CellClick;
-            year_tb.KeyPress += Tb_KeyPress_OnlyNumber;
             amount_tb.KeyPress += Tb_KeyPress_OnlyNumber;
 
-            month_cbb.SelectedIndexChanged += Month_cbb_SelectedIndexChanged;
+            monthYearDtp.ValueChanged += MonthYearDtp_ValueChanged;
 
             edit_btn.Click += Edit_btn_Click;
             readOnly_btn.Click += ReadOnly_btn_Click;
@@ -163,7 +157,7 @@ namespace RauViet.ui
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 allowanceGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
-                Month_cbb_SelectedIndexChanged(null, null);
+                MonthYearDtp_ValueChanged(null, null);
             }
             catch (Exception ex)
             {
@@ -242,8 +236,7 @@ namespace RauViet.ui
 
             this.monthlyAllowanceID_tb.Text = monthlyAllowanceID.ToString();
             amount_tb.Text = amount.ToString();
-            year_tb.Text = year.ToString();
-            month_cbb.SelectedItem = month;
+            monthYearDtp.Value = new DateTime(year, month, 1);
             note_tb.Text = note;
             allowanceType_cbb.SelectedValue = allowanceTypeID;
 
@@ -345,7 +338,7 @@ namespace RauViet.ui
         private async void saveBtn_Click(object sender, EventArgs e)
         {
             if (allowanceType_cbb.SelectedValue == null || string.IsNullOrEmpty(amount_tb.Text) || 
-                dataGV.CurrentRow == null || month_cbb.SelectedItem == null || string.IsNullOrEmpty(year_tb.Text))
+                dataGV.CurrentRow == null)
             {
                 MessageBox.Show("Sai Dữ Liệu, Kiểm Tra Lại!", "Thông Báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -353,8 +346,8 @@ namespace RauViet.ui
 
             string employeeCode = Convert.ToString(dataGV.CurrentRow.Cells["EmployeeCode"].Value);
             int amount = Convert.ToInt32(amount_tb.Text);
-            int month = Convert.ToInt32(month_cbb.SelectedItem);
-            int year = Convert.ToInt32(year_tb.Text);
+            int month = monthYearDtp.Value.Month;
+            int year = monthYearDtp.Value.Year;
             int allowanceTypeID = Convert.ToInt32(allowanceType_cbb.SelectedValue);
             string note= note_tb.Text;
 
@@ -425,7 +418,7 @@ namespace RauViet.ui
 
             status_lb.Text = "";
 
-            month_cbb.Focus();
+            monthYearDtp.Focus();
             info_gb.BackColor = newCustomerBtn.BackColor;
             edit_btn.Visible = false;
             newCustomerBtn.Visible = false;
@@ -462,24 +455,21 @@ namespace RauViet.ui
             SetUIReadOnly(false);
         }
 
-        private async void Month_cbb_SelectedIndexChanged(object sender, EventArgs e)
+        private async void MonthYearDtp_ValueChanged(object sender, EventArgs e)
         {
-            int month = Convert.ToInt32(month_cbb.SelectedItem);
-            int year = Convert.ToInt32(year_tb.Text);
+            int month = monthYearDtp.Value.Month;
+            int year = monthYearDtp.Value.Year;
             bool isLock = await SQLStore.Instance.IsSalaryLockAsync(month, year);
             if (readOnly_btn.Visible)
             {
                 LuuThayDoiBtn.Visible = !isLock;
-
                 delete_btn.Visible = !isLock;
             }
-            edit_btn.Visible = !isLock;            
         }
 
         private void SetUIReadOnly(bool isReadOnly)
         {
-            year_tb.Enabled = !isReadOnly;
-            month_cbb.Enabled = !isReadOnly;
+            monthYearDtp.Enabled = !isReadOnly;
             allowanceType_cbb.Enabled = !isReadOnly;
             amount_tb.ReadOnly = isReadOnly;
             note_tb.ReadOnly = isReadOnly;
