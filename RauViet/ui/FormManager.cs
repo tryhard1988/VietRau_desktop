@@ -265,7 +265,7 @@ namespace RauViet.ui
                     SwitchChildForm<ReportSalary_Year>("Báo Cáo Chi Lương Theo Năm");
                     break;
                 case EForm.ReportExport_Year:
-                    SwitchChildForm<ReportExport_Year>("Báo Cáo Đơn Hàng Theo Năm");
+                    SwitchChildForm<ReportOrder_Year>("Báo Cáo Đơn Hàng Theo Năm");
                     break;
                 case EForm.SalaryCaculator:
                     SwitchChildForm<SalaryCaculator>("Bảng Tính Lương Nhân Viên");

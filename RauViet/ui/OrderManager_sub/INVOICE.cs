@@ -7,6 +7,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Color = System.Drawing.Color;
@@ -170,29 +171,6 @@ namespace RauViet.ui
             cartonSizeGV.Columns["Weight"].Width = 60;
             cartonSizeGV.Columns["CountCarton"].Width = 50;
             cartonSizeGV.Columns["CartonSize"].Width = 120;
-
-            Dictionary<int, int> countDic = new Dictionary<int, int>();
-            foreach (DataRow dr in mCartonOrdersTotal_dt.Rows)
-            {
-                int exportCodeID = Convert.ToInt32(dr["ExportCodeID"]);
-                if (!countDic.ContainsKey(exportCodeID))
-                {
-                    countDic.Add(exportCodeID, 1);
-                }
-                dr["No"] = countDic[exportCodeID]++;
-                decimal countCarton = Convert.ToDecimal(dr["CountCarton"]);
-
-                string cartonSizeStr = dr["CartonSize"].ToString().Replace(" ", "");
-                if (cartonSizeStr.CompareTo("") != 0)
-                {
-                    string[] parts = cartonSizeStr.Split('x');
-                    decimal result = parts.Select(p => int.Parse(p)).Aggregate(1, (a, b) => a * b);
-                    result *= countCarton;
-                    result /= Convert.ToDecimal(6000);
-
-                    dr["Weight"] = result;
-                }
-            }
         }
 
         private async void exportCode_search_cbb_SelectedIndexChanged(object sender, EventArgs e)
@@ -829,6 +807,10 @@ namespace RauViet.ui
                     }
 
                     _ = SQLManager.Instance.UpsertExportHistoryAsync(exportCode, exportDate, totalAmount, totalNWReal, (int)totalCarton1, totalFreightCharge);
+
+                    SaveProductOrderHistory();
+                    //SaveCustomerOrderHistory();
+                    _ = SaveCustomerOrderDetailHistory();
                 }
             }
             catch (Exception ex)
@@ -840,7 +822,149 @@ namespace RauViet.ui
                 await Task.Delay(200);
                 loadingOverlay.Hide();
             }
-
         }
+
+        private async Task SaveCustomerOrderDetailHistory()
+        {
+            string exportCode = ((DataRowView)exportCode_cbb.SelectedItem)["ExportCode"].ToString();
+            DateTime exportDate = Convert.ToDateTime(((DataRowView)exportCode_cbb.SelectedItem)["ExportDate"]);
+
+            var orders_dt = await SQLStore.Instance.getOrdersAsync(mCurrentExportID);
+            var query = orders_dt.AsEnumerable()
+                                .GroupBy(r => new
+                                {
+                                    CustomerName = r.Field<string>("CustomerName"),
+                                    GroupProduct = r.Field<int>("GroupProduct")
+                                })
+                                .Select(g => new
+                                {
+                                    CustomerName = g.Key.CustomerName,
+                                    // GroupProduct = g.Key.GroupProduct,
+
+                                    TotalAmount = g.Sum(r =>
+                                    {
+                                        string package = r["Package"]?.ToString().ToLower() ?? "";
+                                        decimal price = Convert.ToDecimal(r["OrderPackingPriceCNF"]);
+                                        decimal nwReal = Convert.ToDecimal(string.IsNullOrEmpty(r["NWReal"].ToString()) ? 0 : r["NWReal"]);
+                                        int pcsReal = Convert.ToInt32(string.IsNullOrEmpty(r["PCSReal"].ToString()) ? 0 : r["PCSReal"]);
+
+                                        if (package == "kg" || package == "weight")
+                                            return nwReal * price;
+                                        else
+                                            return pcsReal * price;
+                                    }),
+
+                                    TotalPCSReal = g.Sum(r => Convert.ToInt32(string.IsNullOrEmpty(r["PCSReal"].ToString()) ? 0 : r["PCSReal"])),
+                                    TotalNWReal = g.Sum(r => Convert.ToDecimal(string.IsNullOrEmpty(r["NWReal"].ToString()) ? 0 : r["NWReal"])),
+                                    ProductNameVN = GetCommonPrefixCleaned(g.Select(r => r.Field<string>("ProductNameVN")).ToList()),
+                                    ProductNameEN = GetCommonPrefixCleaned(g.Select(r => r.Field<string>("ProductNameEN")).ToList())
+                                }).ToList();            
+
+            List<(string customerName, string exportCode, DateTime exportDate, string product_VN, string product_EN, int PCS, decimal netWeight, decimal amount)> orders =
+                new List<(string customerName, string exportCode, DateTime exportDate, string product_VN, string product_EN, int PCS, decimal netWeight, decimal amount)>();
+
+            foreach (var item in query)
+            {
+                orders.Add((
+                    customerName: item.CustomerName,
+                    exportCode: exportCode,
+                    exportDate: exportDate,
+                    product_VN: item.ProductNameVN,
+                    product_EN: item.ProductNameEN,
+                    PCS: item.TotalPCSReal,
+                    netWeight: item.TotalNWReal,
+                    amount: item.TotalAmount
+                ));
+            }
+
+            _ = SQLManager.Instance.CustomerOrderDetailHistory_SaveListAsync(orders);
+        }
+        
+        private void SaveProductOrderHistory()
+        {
+            string exportCode = ((DataRowView)exportCode_cbb.SelectedItem)["ExportCode"].ToString();
+            DateTime exportDate = Convert.ToDateTime(((DataRowView)exportCode_cbb.SelectedItem)["ExportDate"]);
+
+            var groupedList = mOrdersTotal_dt.AsEnumerable().GroupBy(row => row.Field<int>("GroupProduct"))
+                                                             .Select(g =>
+                                                             {
+                                                                 var namesEN = g.Select(r => r.Field<string>("ProductNameEN")).ToList();
+                                                                 var namesVN = g.Select(r => r.Field<string>("ProductNameVN")).ToList();
+
+                                                                 return new
+                                                                 {
+                                                                     GroupProduct = g.Key,
+                                                                     TotalNWReal = g.Sum(r => r.Field<decimal>("NWReal")),
+                                                                     TotalPCS = g.Sum(r => r.Field<int>("PCSReal")),
+                                                                     TotalAmount = g.Sum(r => r.Field<decimal>("AmountCHF")),
+                                                                     CommonNameEN = GetCommonPrefixCleaned(namesEN),
+                                                                     CommonNameVN = GetCommonPrefixCleaned(namesVN)
+                                                                 };
+                                                             }).ToList();
+
+
+            List<(int group, string exportCode, DateTime exportDate, string productName_VN, string productName_EN, int pcs, decimal netWeight, decimal amount)> orders = 
+                new List<(int group, string exportCode, DateTime exportDate, string productName_VN, string productName_EN, int pcs, decimal netWeight, decimal amount)>();
+
+            foreach (var item in groupedList)
+            {
+                orders.Add((
+                    group: item.GroupProduct,
+                    exportCode: exportCode,
+                    exportDate: exportDate,
+                    productName_VN: item.CommonNameVN,
+                    productName_EN: item.CommonNameEN,
+                    pcs: item.TotalPCS,
+                    netWeight: item.TotalNWReal,
+                    amount: item.TotalAmount
+                ));
+            }
+            
+            _ = SQLManager.Instance.OrderHistory_SaveListAsync(orders);
+        }
+
+
+        public string CleanProductName(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                return "";
+
+            // Xóa phần khối lượng: tìm pattern "số + khoảng trắng + (g|gr|kg)" ở cuối chuỗi
+            // ví dụ: "galadium 200 gr", "baby corn 1 kg"
+            string pattern = @"\s*\d+(\.\d+)?\s*(g|gr|kg)\s*$";
+            string cleaned = Regex.Replace(name, pattern, "", RegexOptions.IgnoreCase);
+
+            return cleaned.Trim();
+        }
+
+        public string GetCommonPrefixCleaned(List<string> names)
+        {
+            if (names == null || names.Count == 0)
+                return "";
+
+            // Làm sạch tên trước khi tìm prefix
+            var cleanedNames = names.Select(n => CleanProductName(n)).ToList();
+
+            string prefix = cleanedNames[0];
+
+            foreach (var name in cleanedNames)
+            {
+                int len = Math.Min(prefix.Length, name.Length);
+                int i = 0;
+
+                while (i < len && prefix[i] == name[i])
+                {
+                    i++;
+                }
+
+                prefix = prefix.Substring(0, i);
+
+                if (string.IsNullOrWhiteSpace(prefix))
+                    return "";
+            }
+
+            return prefix.Trim();
+        }
+
     }
 }

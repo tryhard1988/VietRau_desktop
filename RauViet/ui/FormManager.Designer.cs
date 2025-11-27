@@ -77,15 +77,17 @@
             this.xuatExcelGuiKH_Group_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.dkkd_menuitem = new System.Windows.Forms.ToolStripMenuItem();
             this.phyto_menuitem = new System.Windows.Forms.ToolStripMenuItem();
+            this.chotphyto_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.invoice_menuitem = new System.Windows.Forms.ToolStripMenuItem();
             this.packingTotal_menuitem = new System.Windows.Forms.ToolStripMenuItem();
             this.customerDetailPacking_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.thongke_main_mi = new System.Windows.Forms.ToolStripMenuItem();
-            this.reportExportYear_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.reportSalary_Month_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.content_panel = new System.Windows.Forms.Panel();
-            this.chotphyto_mi = new System.Windows.Forms.ToolStripMenuItem();
+            this.báoCáoĐơnHàngToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.reportExportYear_mi = new System.Windows.Forms.ToolStripMenuItem();
+            this.reportProductOrderYear_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1.SuspendLayout();
             this.LOT_menuitem.SuspendLayout();
             this.SuspendLayout();
@@ -411,37 +413,37 @@
             // exportCode_menuItem
             // 
             this.exportCode_menuItem.Name = "exportCode_menuItem";
-            this.exportCode_menuItem.Size = new System.Drawing.Size(180, 22);
+            this.exportCode_menuItem.Size = new System.Drawing.Size(172, 22);
             this.exportCode_menuItem.Text = "Mã Xuất Cảng";
             // 
             // order_menuitem
             // 
             this.order_menuitem.Name = "order_menuitem";
-            this.order_menuitem.Size = new System.Drawing.Size(180, 22);
+            this.order_menuitem.Size = new System.Drawing.Size(172, 22);
             this.order_menuitem.Text = "Đơn hàng";
             // 
             // dsDongThung_menuitem
             // 
             this.dsDongThung_menuitem.Name = "dsDongThung_menuitem";
-            this.dsDongThung_menuitem.Size = new System.Drawing.Size(180, 22);
+            this.dsDongThung_menuitem.Size = new System.Drawing.Size(172, 22);
             this.dsDongThung_menuitem.Text = "DS Đóng Thùng";
             // 
             // do417_menuitem
             // 
             this.do417_menuitem.Name = "do417_menuitem";
-            this.do417_menuitem.Size = new System.Drawing.Size(180, 22);
+            this.do417_menuitem.Size = new System.Drawing.Size(172, 22);
             this.do417_menuitem.Text = "Dò 417";
             // 
             // lotCode_menuitem
             // 
             this.lotCode_menuitem.Name = "lotCode_menuitem";
-            this.lotCode_menuitem.Size = new System.Drawing.Size(180, 22);
+            this.lotCode_menuitem.Size = new System.Drawing.Size(172, 22);
             this.lotCode_menuitem.Text = "Nhập Mã LOT";
             // 
             // doCBM_mi
             // 
             this.doCBM_mi.Name = "doCBM_mi";
-            this.doCBM_mi.Size = new System.Drawing.Size(180, 22);
+            this.doCBM_mi.Size = new System.Drawing.Size(172, 22);
             this.doCBM_mi.Text = "Dò CBM";
             // 
             // xuatExcelGuiKH_Group_mi
@@ -471,6 +473,12 @@
             this.phyto_menuitem.Size = new System.Drawing.Size(224, 22);
             this.phyto_menuitem.Text = "PHYTO";
             // 
+            // chotphyto_mi
+            // 
+            this.chotphyto_mi.Name = "chotphyto_mi";
+            this.chotphyto_mi.Size = new System.Drawing.Size(224, 22);
+            this.chotphyto_mi.Text = "Chốt PHYTO";
+            // 
             // invoice_menuitem
             // 
             this.invoice_menuitem.Name = "invoice_menuitem";
@@ -499,24 +507,18 @@
             // thongke_main_mi
             // 
             this.thongke_main_mi.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.reportExportYear_mi,
-            this.reportSalary_Month_mi});
+            this.reportSalary_Month_mi,
+            this.báoCáoĐơnHàngToolStripMenuItem});
             this.thongke_main_mi.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.thongke_main_mi.ForeColor = System.Drawing.Color.Crimson;
             this.thongke_main_mi.Name = "thongke_main_mi";
             this.thongke_main_mi.Size = new System.Drawing.Size(78, 21);
             this.thongke_main_mi.Text = "Thống Kê";
             // 
-            // reportExportYear_mi
-            // 
-            this.reportExportYear_mi.Name = "reportExportYear_mi";
-            this.reportExportYear_mi.Size = new System.Drawing.Size(259, 22);
-            this.reportExportYear_mi.Text = "Báo Cáo Đơn Hàng Theo Năm";
-            // 
             // reportSalary_Month_mi
             // 
             this.reportSalary_Month_mi.Name = "reportSalary_Month_mi";
-            this.reportSalary_Month_mi.Size = new System.Drawing.Size(259, 22);
+            this.reportSalary_Month_mi.Size = new System.Drawing.Size(235, 22);
             this.reportSalary_Month_mi.Text = "Báo Cáo Lương Theo Năm";
             // 
             // content_panel
@@ -527,11 +529,26 @@
             this.content_panel.Size = new System.Drawing.Size(1388, 491);
             this.content_panel.TabIndex = 1;
             // 
-            // chotphyto_mi
+            // báoCáoĐơnHàngToolStripMenuItem
             // 
-            this.chotphyto_mi.Name = "chotphyto_mi";
-            this.chotphyto_mi.Size = new System.Drawing.Size(224, 22);
-            this.chotphyto_mi.Text = "Chốt PHYTO";
+            this.báoCáoĐơnHàngToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.reportExportYear_mi,
+            this.reportProductOrderYear_mi});
+            this.báoCáoĐơnHàngToolStripMenuItem.Name = "báoCáoĐơnHàngToolStripMenuItem";
+            this.báoCáoĐơnHàngToolStripMenuItem.Size = new System.Drawing.Size(235, 22);
+            this.báoCáoĐơnHàngToolStripMenuItem.Text = "Báo Cáo Đơn Hàng";
+            // 
+            // reportExportYear_mi
+            // 
+            this.reportExportYear_mi.Name = "reportExportYear_mi";
+            this.reportExportYear_mi.Size = new System.Drawing.Size(212, 22);
+            this.reportExportYear_mi.Text = "Theo Năm";
+            // 
+            // reportProductOrderYear_mi
+            // 
+            this.reportProductOrderYear_mi.Name = "reportProductOrderYear_mi";
+            this.reportProductOrderYear_mi.Size = new System.Drawing.Size(212, 22);
+            this.reportProductOrderYear_mi.Text = "[Theo Năm] Sản Phẩm";
             // 
             // FormManager
             // 
@@ -606,10 +623,12 @@
         private System.Windows.Forms.ToolStripMenuItem thongke_main_mi;
         private System.Windows.Forms.ToolStripMenuItem reportSalary_Month_mi;
         private System.Windows.Forms.ToolStripMenuItem employeeSalaryInfo_mi;
-        private System.Windows.Forms.ToolStripMenuItem reportExportYear_mi;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
         private System.Windows.Forms.ToolStripMenuItem doCBM_mi;
         private System.Windows.Forms.ToolStripMenuItem chotphyto_mi;
+        private System.Windows.Forms.ToolStripMenuItem báoCáoĐơnHàngToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem reportExportYear_mi;
+        private System.Windows.Forms.ToolStripMenuItem reportProductOrderYear_mi;
     }
 }

@@ -165,7 +165,7 @@ namespace RauViet.ui
                 fbd.Description = "Chọn thư mục để lưu tất cả file Excel";
                 if (fbd.ShowDialog() == DialogResult.OK)
                 {
-                    folderPath = fbd.SelectedPath + $"\\PL_Customer-ETD {exportDate.Day}.{exportDate.Month} {exportCodeIndex}";
+                    folderPath = fbd.SelectedPath + $"\\MXC {exportCodeIndex} - {exportDate.Day}{exportDate.Month}{exportDate.Year} ";
                 }
                 else
                 {

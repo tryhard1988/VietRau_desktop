@@ -48,6 +48,8 @@ namespace RauViet.classes
         DataTable mExportCodeLog_dt = null;
         Dictionary<int, DataTable> mOrderLists;
         Dictionary<int, DataTable> mReportExportByYears;
+        Dictionary<int, DataTable> mReportProductOrderByYears;
+        Dictionary<int, DataTable> mReportCustomerOrderDetailByYears;
         Dictionary<int, DataTable> mOrdersTotals;
         Dictionary<int, DataTable> mLOTCodes;
         Dictionary<int, DataTable> mOrdersDKKDs;
@@ -83,6 +85,8 @@ namespace RauViet.classes
             try
             {
                 mReportExportByYears = new Dictionary<int, DataTable>();
+                mReportProductOrderByYears = new Dictionary<int, DataTable>();
+                mReportCustomerOrderDetailByYears = new Dictionary<int, DataTable>();
                 mOrderLists = new Dictionary<int, DataTable>();
                 mOrdersTotals = new Dictionary<int, DataTable>();
                 mLOTCodes = new Dictionary<int, DataTable>();
@@ -1544,6 +1548,7 @@ namespace RauViet.classes
             mProductpacking_dt.Columns.Add(new DataColumn("Name_EN", typeof(string)));
             mProductpacking_dt.Columns.Add(new DataColumn("Priority", typeof(int)));
             mProductpacking_dt.Columns.Add(new DataColumn("Package", typeof(string)));
+            mProductpacking_dt.Columns.Add(new DataColumn("GroupProduct", typeof(int)));
 
             foreach (DataRow dr in mProductpacking_dt.Rows)
             {
@@ -1556,6 +1561,7 @@ namespace RauViet.classes
                 string nameEN = proRow["ProductNameEN"].ToString();
                 string packingType = proRow["PackingType"].ToString();
                 int priority = Convert.ToInt32(proRow["Priority"]);
+                int groupProduct = Convert.ToInt32(proRow["GroupProduct"]);
 
                 decimal amount = dr["Amount"] == DBNull.Value ? 0 : Convert.ToDecimal(dr["Amount"]);
                 string packing = dr["Packing"].ToString();
@@ -1567,6 +1573,7 @@ namespace RauViet.classes
                 dr["Amount"] = resultAmount;
                 dr["Package"] = package;
                 dr["IsActive_SKU"] = isActive_SKU;
+                dr["GroupProduct"] = groupProduct;
                 dr["PriceCNF"] = proRow["PriceCNF"].ToString();
 
                 if (package.CompareTo("kg") == 0 && packing.CompareTo("") != 0 && amount > 0)
@@ -1784,6 +1791,7 @@ namespace RauViet.classes
         {
             data.Columns.Add(new DataColumn("Search_NoSign", typeof(string)));
             data.Columns.Add(new DataColumn("SKU", typeof(int)));
+            data.Columns.Add(new DataColumn("GroupProduct", typeof(int)));
             data.Columns.Add(new DataColumn("CustomerName", typeof(string)));
             data.Columns.Add(new DataColumn("CustomerCode", typeof(string)));
             data.Columns.Add(new DataColumn("ProductNameVN", typeof(string)));
@@ -1821,6 +1829,7 @@ namespace RauViet.classes
             //    dr["PackingType"] = packingRows.Length > 0 ? packingRows[0]["PackingType"].ToString() : "";
                 dr["packing"] = packingRows.Length > 0 ? packingRows[0]["packing"].ToString() : "";
                 dr["SKU"] = packingRows.Length > 0 ? Convert.ToInt32(packingRows[0]["SKU"]) : 0;
+                dr["GroupProduct"] = packingRows.Length > 0 ? Convert.ToInt32(packingRows[0]["GroupProduct"]) : 0;
                 string package = packingRows.Length > 0 ? packingRows[0]["Package"].ToString() : "";
                 dr["Package"] = package;
                 if (package.CompareTo("weight") == 0)
@@ -1858,6 +1867,41 @@ namespace RauViet.classes
             }
 
             return mReportExportByYears[year];
+        }
+
+        public async Task<DataTable> GetProductOrderHistoryByYear(int year)
+        {
+            if (!mReportProductOrderByYears.ContainsKey(year))
+            {
+                try
+                {
+                    mReportProductOrderByYears[year] = await SQLManager.Instance.GetOrderHistory_GetSumByMonthAndProduct_InYearAsync(year);
+                }
+                catch
+                {
+                    Console.WriteLine("error GetReportExportByYear SQLStore");
+                    return null;
+                }
+            }
+
+            return mReportProductOrderByYears[year];
+        }
+        public async Task<DataTable> GetCustomerOrderDetailHistoryByYear(int year)
+        {
+            if (!mReportCustomerOrderDetailByYears.ContainsKey(year))
+            {
+                try
+                {
+                    mReportCustomerOrderDetailByYears[year] = await SQLManager.Instance.GetCustomerOrderDetailHistory_InYearAsync(year);
+                }
+                catch
+                {
+                    Console.WriteLine("error GetCustomerOrderDetailHistoryByYear SQLStore");
+                    return null;
+                }
+            }
+
+            return mReportCustomerOrderDetailByYears[year];
         }
 
         public async Task<bool> ExportHistoryIsAddedExportCode(string  exportCode, int year)
@@ -2287,7 +2331,7 @@ namespace RauViet.classes
         {
             data.Columns.Add(new DataColumn("No", typeof(int)));
             data.Columns.Add(new DataColumn("Quantity", typeof(decimal)));
-            data.Columns.Add(new DataColumn("AmountCHF", typeof(float)));
+            data.Columns.Add(new DataColumn("AmountCHF", typeof(decimal)));
 
             Dictionary<int, int> countDic = new Dictionary<int, int>();
 
@@ -2451,6 +2495,29 @@ namespace RauViet.classes
             data.Columns["No"].SetOrdinal(count++);
             data.Columns["CartonSize"].SetOrdinal(count++);
             data.Columns["CountCarton"].SetOrdinal(count++);
+
+            Dictionary<int, int> countDic = new Dictionary<int, int>();
+            foreach (DataRow dr in data.Rows)
+            {
+                int exportCodeID = Convert.ToInt32(dr["ExportCodeID"]);
+                if (!countDic.ContainsKey(exportCodeID))
+                {
+                    countDic.Add(exportCodeID, 1);
+                }
+                dr["No"] = countDic[exportCodeID]++;
+                decimal countCarton = Convert.ToDecimal(dr["CountCarton"]);
+
+                string cartonSizeStr = dr["CartonSize"].ToString().Replace(" ", "");
+                if (cartonSizeStr.CompareTo("") != 0)
+                {
+                    string[] parts = cartonSizeStr.Split('x');
+                    decimal result = parts.Select(p => int.Parse(p)).Aggregate(1, (a, b) => a * b);
+                    result *= countCarton;
+                    result /= Convert.ToDecimal(6000);
+
+                    dr["Weight"] = result;
+                }
+            }
         }
 
         public void removeDetailPackingTotal(int exportCodeID)
