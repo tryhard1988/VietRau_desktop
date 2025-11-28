@@ -1,12 +1,9 @@
-﻿using DocumentFormat.OpenXml.Office2010.ExcelAc;
-using Org.BouncyCastle.Pqc.Crypto.Lms;
-using RauViet.classes;
+﻿using RauViet.classes;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Reflection.Emit;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 

@@ -84,10 +84,11 @@
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.thongke_main_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.reportSalary_Month_mi = new System.Windows.Forms.ToolStripMenuItem();
-            this.content_panel = new System.Windows.Forms.Panel();
             this.báoCáoĐơnHàngToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.reportExportYear_mi = new System.Windows.Forms.ToolStripMenuItem();
-            this.reportProductOrderYear_mi = new System.Windows.Forms.ToolStripMenuItem();
+            this.reportOrderIn1Year_mi = new System.Windows.Forms.ToolStripMenuItem();
+            this.reportOrderIn1Month_mi = new System.Windows.Forms.ToolStripMenuItem();
+            this.content_panel = new System.Windows.Forms.Panel();
+            this.monthlyReportForYear_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1.SuspendLayout();
             this.LOT_menuitem.SuspendLayout();
             this.SuspendLayout();
@@ -521,6 +522,28 @@
             this.reportSalary_Month_mi.Size = new System.Drawing.Size(235, 22);
             this.reportSalary_Month_mi.Text = "Báo Cáo Lương Theo Năm";
             // 
+            // báoCáoĐơnHàngToolStripMenuItem
+            // 
+            this.báoCáoĐơnHàngToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.reportOrderIn1Year_mi,
+            this.reportOrderIn1Month_mi,
+            this.monthlyReportForYear_mi});
+            this.báoCáoĐơnHàngToolStripMenuItem.Name = "báoCáoĐơnHàngToolStripMenuItem";
+            this.báoCáoĐơnHàngToolStripMenuItem.Size = new System.Drawing.Size(235, 22);
+            this.báoCáoĐơnHàngToolStripMenuItem.Text = "Báo Cáo Đơn Hàng";
+            // 
+            // reportOrderIn1Year_mi
+            // 
+            this.reportOrderIn1Year_mi.Name = "reportOrderIn1Year_mi";
+            this.reportOrderIn1Year_mi.Size = new System.Drawing.Size(230, 22);
+            this.reportOrderIn1Year_mi.Text = "Trong 1 Năm";
+            // 
+            // reportOrderIn1Month_mi
+            // 
+            this.reportOrderIn1Month_mi.Name = "reportOrderIn1Month_mi";
+            this.reportOrderIn1Month_mi.Size = new System.Drawing.Size(230, 22);
+            this.reportOrderIn1Month_mi.Text = "Trong 1 Tháng";
+            // 
             // content_panel
             // 
             this.content_panel.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -529,26 +552,11 @@
             this.content_panel.Size = new System.Drawing.Size(1388, 491);
             this.content_panel.TabIndex = 1;
             // 
-            // báoCáoĐơnHàngToolStripMenuItem
+            // monthlyReportForYear_mi
             // 
-            this.báoCáoĐơnHàngToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.reportExportYear_mi,
-            this.reportProductOrderYear_mi});
-            this.báoCáoĐơnHàngToolStripMenuItem.Name = "báoCáoĐơnHàngToolStripMenuItem";
-            this.báoCáoĐơnHàngToolStripMenuItem.Size = new System.Drawing.Size(235, 22);
-            this.báoCáoĐơnHàngToolStripMenuItem.Text = "Báo Cáo Đơn Hàng";
-            // 
-            // reportExportYear_mi
-            // 
-            this.reportExportYear_mi.Name = "reportExportYear_mi";
-            this.reportExportYear_mi.Size = new System.Drawing.Size(212, 22);
-            this.reportExportYear_mi.Text = "Theo Năm";
-            // 
-            // reportProductOrderYear_mi
-            // 
-            this.reportProductOrderYear_mi.Name = "reportProductOrderYear_mi";
-            this.reportProductOrderYear_mi.Size = new System.Drawing.Size(212, 22);
-            this.reportProductOrderYear_mi.Text = "[Theo Năm] Sản Phẩm";
+            this.monthlyReportForYear_mi.Name = "monthlyReportForYear_mi";
+            this.monthlyReportForYear_mi.Size = new System.Drawing.Size(230, 22);
+            this.monthlyReportForYear_mi.Text = "Từng Tháng Trong 1 Năm";
             // 
             // FormManager
             // 
@@ -628,7 +636,8 @@
         private System.Windows.Forms.ToolStripMenuItem doCBM_mi;
         private System.Windows.Forms.ToolStripMenuItem chotphyto_mi;
         private System.Windows.Forms.ToolStripMenuItem báoCáoĐơnHàngToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem reportExportYear_mi;
-        private System.Windows.Forms.ToolStripMenuItem reportProductOrderYear_mi;
+        private System.Windows.Forms.ToolStripMenuItem reportOrderIn1Year_mi;
+        private System.Windows.Forms.ToolStripMenuItem reportOrderIn1Month_mi;
+        private System.Windows.Forms.ToolStripMenuItem monthlyReportForYear_mi;
     }
 }

@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualBasic.Devices;
-using RauViet.classes;
+﻿using RauViet.classes;
 using System;
 using System.Collections.Generic;
 using System.Data;

@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using RauViet.classes;
 using ClosedXML.Excel;
-using System.Text.RegularExpressions;
 
 namespace RauViet.ui
 {

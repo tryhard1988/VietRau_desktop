@@ -1,28 +1,26 @@
-﻿using DocumentFormat.OpenXml.VariantTypes;
-using DocumentFormat.OpenXml.Wordprocessing;
-using RauViet.classes;
+﻿using RauViet.classes;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
 using Color = System.Drawing.Color;
 
 namespace RauViet.ui
 {
-    public partial class ReportOrder_Year : Form
+    public partial class ReportOrder_In1Month : Form
     {
         private LoadingOverlay loadingOverlay;
         DataView mCustomerDetail_DV;
-        public ReportOrder_Year()
+        public ReportOrder_In1Month()
         {
             InitializeComponent();
-            year_tb.Text = DateTime.Now.Year.ToString();
+            this.KeyPreview = true;
+
+            timeReport_dtp.Format = DateTimePickerFormat.Custom;
+            timeReport_dtp.CustomFormat = "MM/yyyy";
+            timeReport_dtp.ShowUpDown = true;
+            timeReport_dtp.Value = DateTime.Now;
 
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Dock = DockStyle.Fill;
@@ -38,14 +36,22 @@ namespace RauViet.ui
 
             status_lb.Text = "";
 
-            totalMoney_tb.KeyPress += Tb_KeyPress_OnlyNumber;
-            year_tb.KeyPress += Tb_KeyPress_OnlyNumber;
             load_btn.Click += Load_btn_Click;
-
-            
+            this.KeyDown += ReportOrder_Year_KeyDown;
         }
 
-        
+        private void ReportOrder_Year_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.F5)
+            {
+                int year = timeReport_dtp.Value.Year;                
+
+                SQLStore.Instance.RemoveProductOrderHistoryByYear(year);
+                SQLStore.Instance.RemoveExportHistoryByYear(year);
+                SQLStore.Instance.RemoveCustomerOrderDetailHistoryByYear(year);
+                ShowData();
+            }
+        }
 
         public async void ShowData()
         {
@@ -59,20 +65,21 @@ namespace RauViet.ui
 
             try
             {
-                int year = Convert.ToInt32(year_tb.Text);
-                var salarySummaryByYearTask = SQLStore.Instance.GetExportHistoryByYear(year);
-                var productOrderHistoryByYearTask = SQLStore.Instance.GetProductOrderHistoryByYear(year);
+                int year = timeReport_dtp.Value.Year;
+                int month = timeReport_dtp.Value.Month;
+                var exportHistoryByYearTask = SQLStore.Instance.GetExportHistoryByYear(year);
                 var customerOrderHistoryByYearTask = SQLStore.Instance.GetCustomerOrderDetailHistoryByYear(year);
 
-                await Task.WhenAll(salarySummaryByYearTask, productOrderHistoryByYearTask, customerOrderHistoryByYearTask);
-                DataTable salarySummaryByYear_dt = salarySummaryByYearTask.Result;
+                await Task.WhenAll(exportHistoryByYearTask, customerOrderHistoryByYearTask);
+                DataTable exportHistoryByYear_dt = exportHistoryByYearTask.Result;
                 DataTable productOrderHistoryByYear_dt = new DataTable();
                 {
-                    var grouped = productOrderHistoryByYearTask.Result.AsEnumerable()
+                    var grouped = customerOrderHistoryByYearTask.Result.AsEnumerable()
+                                                                .Where((row => row.Field<int>("Month") == month))
                                                                 .GroupBy(row => new
                                                                 {
                                                                     ProductNameVN = row.Field<string>("ProductName_VN"),
-                                                                    ProductNameEN = row.Field<string>("ProductName_EN")
+                                                                    ProductNameEN = row.Field<string>("ProductName_EN"),
                                                                 })
                                                                 .Select(g => new
                                                                 {
@@ -99,6 +106,7 @@ namespace RauViet.ui
                 DataTable customerOrderHistoryByYear_dt = new DataTable();
                 {
                     var grouped = customerOrderHistoryByYearTask.Result.AsEnumerable()
+                                                                .Where((row => row.Field<int>("Month") == month))
                                                                 .GroupBy(row => new
                                                                 {
                                                                     CustomerName = row.Field<string>("CustomerName")
@@ -126,6 +134,7 @@ namespace RauViet.ui
                 DataTable customerOrderDetail_dt = new DataTable();
                 {
                     var grouped = customerOrderHistoryByYearTask.Result.AsEnumerable()
+                                                                .Where((row => row.Field<int>("Month") == month))
                                                                 .GroupBy(row => new
                                                                 {
                                                                     CustomerName = row.Field<string>("CustomerName"),
@@ -147,32 +156,29 @@ namespace RauViet.ui
                     customerOrderDetail_dt.Columns.Add("CustomerName", typeof(string));
                     customerOrderDetail_dt.Columns.Add("ProductName_VN", typeof(string));
                     customerOrderDetail_dt.Columns.Add("ProductName_EN", typeof(string));
+                    customerOrderDetail_dt.Columns.Add("TotalPCS", typeof(int));
                     customerOrderDetail_dt.Columns.Add("TotalNetWeight", typeof(decimal));
                     customerOrderDetail_dt.Columns.Add("TotalAmountCHF", typeof(decimal));
 
                     foreach (var item in grouped)
                     {
-                        customerOrderDetail_dt.Rows.Add(item.CustomerName, item.ProductName_VN, item.ProductName_EN, item.TotalNetWeight, item.TotalAmountCHF);
+                        customerOrderDetail_dt.Rows.Add(item.CustomerName, item.ProductName_VN, item.ProductName_EN, item.TotalPCS, item.TotalNetWeight, item.TotalAmountCHF);
                     }
 
                     mCustomerDetail_DV = new DataView(customerOrderDetail_dt);
                 }
 
-                dataGV.DataSource = salarySummaryByYear_dt;
+                DataView exportDV = new DataView(exportHistoryByYear_dt);
+                DateTime start = new DateTime(year, month, 1);
+                DateTime end = start.AddMonths(1);
+                exportDV.RowFilter = $"ExportDate >= #{start:yyyy-MM-dd}# AND ExportDate < #{end:yyyy-MM-dd}#";
+                dataGV.DataSource = exportDV;
                 product_GV.DataSource = productOrderHistoryByYear_dt;
                 CustomerGV.DataSource = customerOrderHistoryByYear_dt;
                 CustomerDetail_GV.DataSource = mCustomerDetail_DV;
 
                 dataGV.Columns["ExportHistoryID"].Visible = false;
                 CustomerDetail_GV.Columns["CustomerName"].Visible = false;
-
-                int count = 0;
-                salarySummaryByYear_dt.Columns["ExportCode"].SetOrdinal(count++);
-                salarySummaryByYear_dt.Columns["ExportDate"].SetOrdinal(count++);
-                salarySummaryByYear_dt.Columns["TotalMoney"].SetOrdinal(count++);
-                salarySummaryByYear_dt.Columns["TotalNW"].SetOrdinal(count++);
-                salarySummaryByYear_dt.Columns["NumberCarton"].SetOrdinal(count++);
-                salarySummaryByYear_dt.Columns["FreightCharge"].SetOrdinal(count++);
 
                 dataGV.Columns["ExportCode"].HeaderText = "Mã Xuất Cảng";
                 dataGV.Columns["ExportDate"].HeaderText = "Ngày Xuất Cảng";
@@ -206,10 +212,10 @@ namespace RauViet.ui
                 CustomerGV.Columns["TotalNetWeight"].Width = 80;
                 CustomerGV.Columns["TotalAmountCHF"].Width = 80;
 
-                decimal totalmoney = salarySummaryByYear_dt.AsEnumerable().Sum(r => r.Field<decimal>("TotalMoney"));
-                decimal totalNW = salarySummaryByYear_dt.AsEnumerable().Sum(r => r.Field<decimal>("TotalNW"));
-                int totalCarton = salarySummaryByYear_dt.AsEnumerable().Sum(r => r.Field<int>("NumberCarton"));
-                decimal totalFreightCharge = salarySummaryByYear_dt.AsEnumerable().Sum(r => r.Field<decimal>("FreightCharge"));
+                decimal totalmoney = exportHistoryByYear_dt.AsEnumerable().Sum(r => r.Field<decimal>("TotalMoney"));
+                decimal totalNW = exportHistoryByYear_dt.AsEnumerable().Sum(r => r.Field<decimal>("TotalNW"));
+                int totalCarton = exportHistoryByYear_dt.AsEnumerable().Sum(r => r.Field<int>("NumberCarton"));
+                decimal totalFreightCharge = exportHistoryByYear_dt.AsEnumerable().Sum(r => r.Field<decimal>("FreightCharge"));
                 totalMoney_tb.Text = totalmoney.ToString("N2");
                 totalNW_tb.Text = totalNW.ToString("N2");
                 totalCarton_tb.Text = (totalCarton).ToString();
@@ -262,26 +268,5 @@ namespace RauViet.ui
             ShowData();
         }
 
-        private void Tb_KeyPress_OnlyNumber(object sender, KeyPressEventArgs e)
-        {
-            TextBox tb = sender as TextBox;
-
-            // Chỉ cho nhập số, phím điều khiển hoặc dấu chấm
-            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) && e.KeyChar != '.')
-            {
-                e.Handled = true; // chặn ký tự không hợp lệ
-            }
-
-            // Không cho nhập nhiều dấu chấm
-            if (e.KeyChar == '.' && tb.Text.Contains("."))
-            {
-                e.Handled = true;
-            }
-        }
-
-        private void panel2_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
     }
 }

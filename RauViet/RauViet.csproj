@@ -207,6 +207,12 @@
     <Compile Include="ui\importExcelToSQL\EditExcelFormAllowance_NV.Designer.cs">
       <DependentUpon>EditExcelFormAllowance_NV.cs</DependentUpon>
     </Compile>
+    <Compile Include="ui\importExcelToSQL\LoadExcelOrderReport.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\importExcelToSQL\LoadExcelOrderReport.Designer.cs">
+      <DependentUpon>LoadExcelOrderReport.cs</DependentUpon>
+    </Compile>
     <Compile Include="ui\importExcelToSQL\EditExcelFormSalary.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -261,17 +267,29 @@
     <Compile Include="ui\OrderManager_sub\Do_CBM.Designer.cs">
       <DependentUpon>Do_CBM.cs</DependentUpon>
     </Compile>
+    <Compile Include="ui\OrderManager_sub\MonthlyReportForYear.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\OrderManager_sub\MonthlyReportForYear.Designer.cs">
+      <DependentUpon>MonthlyReportForYear.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ui\OrderManager_sub\ReportOrder_In1Month.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\OrderManager_sub\ReportOrder_In1Month.Designer.cs">
+      <DependentUpon>ReportOrder_In1Month.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ui\OrderManager_sub\ReportOrder_In1Year.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\OrderManager_sub\ReportOrder_In1Year.Designer.cs">
+      <DependentUpon>ReportOrder_In1Year.cs</DependentUpon>
+    </Compile>
     <Compile Include="ui\PhanQuyen\EmployeeDeduction_ATT.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="ui\PhanQuyen\EmployeeDeduction_ATT.Designer.cs">
       <DependentUpon>EmployeeDeduction_ATT.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ui\OrderManager_sub\ReportExport_Year.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ui\OrderManager_sub\ReportExport_Year.Designer.cs">
-      <DependentUpon>ReportExport_Year.cs</DependentUpon>
     </Compile>
     <Compile Include="ui\PhanQuyen\Loading.cs">
       <SubType>Form</SubType>
@@ -536,6 +554,9 @@
     <EmbeddedResource Include="ui\importExcelToSQL\EditExcelFormAllowance_NV.resx">
       <DependentUpon>EditExcelFormAllowance_NV.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="ui\importExcelToSQL\LoadExcelOrderReport.resx">
+      <DependentUpon>LoadExcelOrderReport.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ui\importExcelToSQL\EditExcelFormSalary.resx">
       <DependentUpon>EditExcelFormSalary.cs</DependentUpon>
     </EmbeddedResource>
@@ -565,11 +586,17 @@
     <EmbeddedResource Include="ui\OrderManager_sub\Do_CBM.resx">
       <DependentUpon>Do_CBM.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="ui\OrderManager_sub\MonthlyReportForYear.resx">
+      <DependentUpon>MonthlyReportForYear.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\OrderManager_sub\ReportOrder_In1Month.resx">
+      <DependentUpon>ReportOrder_In1Month.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\OrderManager_sub\ReportOrder_In1Year.resx">
+      <DependentUpon>ReportOrder_In1Year.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ui\PhanQuyen\EmployeeDeduction_ATT.resx">
       <DependentUpon>EmployeeDeduction_ATT.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ui\OrderManager_sub\ReportExport_Year.resx">
-      <DependentUpon>ReportExport_Year.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ui\PhanQuyen\Loading.resx">
       <DependentUpon>Loading.cs</DependentUpon>

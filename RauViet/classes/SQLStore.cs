@@ -1851,6 +1851,10 @@ namespace RauViet.classes
             data.Columns["NWOther"].SetOrdinal(count++);
         }
 
+        public void RemoveExportHistoryByYear(int year)
+        {
+            mReportExportByYears.Remove(year);
+        }
         public async Task<DataTable> GetExportHistoryByYear(int year)
         {
             if (!mReportExportByYears.ContainsKey(year))
@@ -1858,6 +1862,7 @@ namespace RauViet.classes
                 try
                 {
                     mReportExportByYears[year] = await SQLManager.Instance.GetExportHistoryAsync(year);
+                    EditExportHistory(mReportExportByYears[year]);
                 }
                 catch
                 {
@@ -1869,6 +1874,21 @@ namespace RauViet.classes
             return mReportExportByYears[year];
         }
 
+        private void EditExportHistory(DataTable data)
+        {
+            int count = 0;
+            data.Columns["ExportCode"].SetOrdinal(count++);
+            data.Columns["ExportDate"].SetOrdinal(count++);
+            data.Columns["TotalMoney"].SetOrdinal(count++);
+            data.Columns["TotalNW"].SetOrdinal(count++);
+            data.Columns["NumberCarton"].SetOrdinal(count++);
+            data.Columns["FreightCharge"].SetOrdinal(count++);
+        }
+
+        public void RemoveProductOrderHistoryByYear(int year)
+        {
+            mReportProductOrderByYears.Remove(year);
+        }
         public async Task<DataTable> GetProductOrderHistoryByYear(int year)
         {
             if (!mReportProductOrderByYears.ContainsKey(year))
@@ -1886,6 +1906,12 @@ namespace RauViet.classes
 
             return mReportProductOrderByYears[year];
         }
+
+        public void RemoveCustomerOrderDetailHistoryByYear(int year)
+        {
+            mReportCustomerOrderDetailByYears.Remove(year);
+        }
+
         public async Task<DataTable> GetCustomerOrderDetailHistoryByYear(int year)
         {
             if (!mReportCustomerOrderDetailByYears.ContainsKey(year))

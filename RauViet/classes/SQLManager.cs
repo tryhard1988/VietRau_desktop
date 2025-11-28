@@ -4470,57 +4470,6 @@ namespace RauViet.classes
             return dt;
         }
 
-        public async Task<bool> OrderHistory_SaveListAsync(List<(int group, string exportCode, DateTime exportDate, string productName_VN, string productName_EN, int pcs, decimal netWeight, decimal amount)> orders)
-        {
-            try
-            {
-                using (SqlConnection con = new SqlConnection(ql_khoHis_conStr()))
-                {
-                    await con.OpenAsync();
-
-                    using (var dt = new DataTable())
-                    {
-                        dt.Columns.Add("GroupProduct", typeof(int));
-                        dt.Columns.Add("ExportCode", typeof(string));
-                        dt.Columns.Add("ExportDate", typeof(DateTime));
-                        dt.Columns.Add("ProductName_VN", typeof(string));
-                        dt.Columns.Add("ProductName_EN", typeof(string));
-                        dt.Columns.Add("NetWeight", typeof(decimal));
-                        dt.Columns.Add("PCS", typeof(decimal));
-                        dt.Columns.Add("AmountCHF", typeof(decimal));
-
-                        foreach (var o in orders)
-                        {
-                            dt.Rows.Add(o.group, o.exportCode, o.exportDate.Date, o.productName_VN, o.productName_EN, o.netWeight, o.pcs, o.amount);
-                        }
-
-                        using (var cmd = new SqlCommand("dbo.sp_OrderHistory_SaveList", con))
-                        {
-                            cmd.CommandType = CommandType.StoredProcedure;
-                            cmd.CommandTimeout = 60;
-
-                            var tableParam = new SqlParameter("@Items", SqlDbType.Structured)
-                            {
-                                TypeName = "dbo.OrderHistoryList",
-                                Value = dt
-                            };
-
-                            cmd.Parameters.Add(tableParam);
-
-                            await cmd.ExecuteNonQueryAsync();
-                        }
-                    }
-                }
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"[OrderHistory_SaveListAsync] Error: {ex.Message}");
-                Console.WriteLine(ex.StackTrace);
-                return false;
-            }
-        }
-
         public async Task<DataTable> GetOrderHistory_GetSumByMonthAndProduct_InYearAsync(int year)
         {
             var dt = new DataTable();
@@ -4556,7 +4505,7 @@ namespace RauViet.classes
             return dt;
         }
 
-        public async Task<bool> CustomerOrderDetailHistory_SaveListAsync(List<(string customerName, string exportCode, DateTime exportDate, string productVN, string productEN, int PCS, decimal netWeight, decimal amount)> orders)
+        public async Task<bool> CustomerOrderDetailHistory_SaveListAsync(List<(string customerName, string exportCode, DateTime exportDate, string productVN, string productEN, string package, int PCS, decimal netWeight, decimal amount)> orders)
         {
             try
             {
@@ -4571,13 +4520,14 @@ namespace RauViet.classes
                         dt.Columns.Add("ExportDate", typeof(DateTime));
                         dt.Columns.Add("ProductName_VN", typeof(string));
                         dt.Columns.Add("ProductName_EN", typeof(string));
+                        dt.Columns.Add("Package", typeof(string));
                         dt.Columns.Add("NetWeight", typeof(decimal));
                         dt.Columns.Add("PCS", typeof(int));
                         dt.Columns.Add("AmountCHF", typeof(decimal));
 
                         foreach (var o in orders)
                         {
-                            dt.Rows.Add(o.customerName, o.exportCode, o.exportDate.Date, o.productVN, o.productEN, o.netWeight, o.PCS, o.amount);
+                            dt.Rows.Add(o.customerName, o.exportCode, o.exportDate.Date, o.productVN, o.productEN, o.package, o.netWeight, o.PCS, o.amount);
                         }
 
                         using (var cmd = new SqlCommand("dbo.sp_CustomerOrderDetailHistory_SaveList", con))

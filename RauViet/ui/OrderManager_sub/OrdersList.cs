@@ -7,7 +7,6 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
 
 namespace RauViet.ui
 {

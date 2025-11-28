@@ -163,7 +163,9 @@ namespace RauViet.ui
             if (UserManager.Instance.hasRole_ThongKe())
             {
                 reportSalary_Month_mi.Click += ReportSalary_Month_mi_Click;
-                reportExportYear_mi.Click += ReportExportYear_mi_Click;
+                reportOrderIn1Year_mi.Click += ReportExportYear_mi_Click;
+                reportOrderIn1Month_mi.Click += ReportOrderIn1Month_mi_Click;
+                monthlyReportForYear_mi.Click += monthlyReportForYear_mi_Click;
             }
             else
             {
@@ -177,7 +179,6 @@ namespace RauViet.ui
             }
         }
 
-        
 
         private async void SwitchChildForm<T>(string title) where T : Form, new()
         {
@@ -208,7 +209,7 @@ namespace RauViet.ui
             ProductSKU,
             ProductList,
             ReportSalary_Year,
-            ReportExport_Year,
+            ReportOrderIn1Year_Year,            
             SalaryCaculator,
             EmployeeDeduction_ATT,
             EmployeeDeduction_ADV,
@@ -247,7 +248,9 @@ namespace RauViet.ui
             Department,
             Position,
             DoCBM,
-            ChotPHYTO
+            ChotPHYTO,
+            ReportOrderIn1Month_Year,
+            MonthlyReportForYear
         }
 
         private void openCurrentForm(EForm status)
@@ -264,9 +267,9 @@ namespace RauViet.ui
                 case EForm.ReportSalary_Year:
                     SwitchChildForm<ReportSalary_Year>("Báo Cáo Chi Lương Theo Năm");
                     break;
-                case EForm.ReportExport_Year:
-                    SwitchChildForm<ReportOrder_Year>("Báo Cáo Đơn Hàng Theo Năm");
-                    break;
+                case EForm.ReportOrderIn1Year_Year:
+                    SwitchChildForm<ReportOrder_In1Year>("Báo Cáo Đơn Hàng Trong 1 Năm");
+                    break;                
                 case EForm.SalaryCaculator:
                     SwitchChildForm<SalaryCaculator>("Bảng Tính Lương Nhân Viên");
                     break;
@@ -384,6 +387,12 @@ namespace RauViet.ui
                 case EForm.ChotPHYTO:
                     SwitchChildForm<ChotPhyto>("Chốt PHYTO");
                     break;
+                case EForm.ReportOrderIn1Month_Year:
+                    SwitchChildForm<ReportOrder_In1Month>("Báo Cáo Đơn Hàng Trong 1 Tháng");
+                    break;
+                case EForm.MonthlyReportForYear:
+                    SwitchChildForm<MonthlyReportForYear>("Chi Tiết Từng Tháng Trong Năm");
+                    break;
 
             }
             
@@ -392,7 +401,9 @@ namespace RauViet.ui
         }
         
         private void ReportSalary_Month_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.ReportSalary_Year); }
-        private void ReportExportYear_mi_Click(object sender, EventArgs e){ openCurrentForm(EForm.ReportExport_Year); }
+        private void ReportExportYear_mi_Click(object sender, EventArgs e){ openCurrentForm(EForm.ReportOrderIn1Year_Year); }
+        private void ReportOrderIn1Month_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.ReportOrderIn1Month_Year); }
+        private void monthlyReportForYear_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.MonthlyReportForYear); }
         private void SalaryCaculator_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.SalaryCaculator); }
         private void Deduction_ATT_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.EmployeeDeduction_ATT); }
         private void Deduction_ADV_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.EmployeeDeduction_ADV); }
