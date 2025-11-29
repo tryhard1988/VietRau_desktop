@@ -46,7 +46,6 @@ namespace RauViet.ui
             {
                 int year = timeReport_dtp.Value.Year;                
 
-                SQLStore.Instance.RemoveProductOrderHistoryByYear(year);
                 SQLStore.Instance.RemoveExportHistoryByYear(year);
                 SQLStore.Instance.RemoveCustomerOrderDetailHistoryByYear(year);
                 ShowData();

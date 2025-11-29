@@ -267,6 +267,12 @@
     <Compile Include="ui\OrderManager_sub\Do_CBM.Designer.cs">
       <DependentUpon>Do_CBM.cs</DependentUpon>
     </Compile>
+    <Compile Include="ui\OrderManager_sub\YearlyReport.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\OrderManager_sub\YearlyReport.Designer.cs">
+      <DependentUpon>YearlyReport.cs</DependentUpon>
+    </Compile>
     <Compile Include="ui\OrderManager_sub\MonthlyReportForYear.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -585,6 +591,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ui\OrderManager_sub\Do_CBM.resx">
       <DependentUpon>Do_CBM.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\OrderManager_sub\YearlyReport.resx">
+      <DependentUpon>YearlyReport.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ui\OrderManager_sub\MonthlyReportForYear.resx">
       <DependentUpon>MonthlyReportForYear.cs</DependentUpon>

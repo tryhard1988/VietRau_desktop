@@ -87,8 +87,11 @@
             this.báoCáoĐơnHàngToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.reportOrderIn1Year_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.reportOrderIn1Month_mi = new System.Windows.Forms.ToolStripMenuItem();
-            this.content_panel = new System.Windows.Forms.Panel();
             this.monthlyReportForYear_mi = new System.Windows.Forms.ToolStripMenuItem();
+            this.yearlyReport_mi = new System.Windows.Forms.ToolStripMenuItem();
+            this.aaaaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadExcelOrderReportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.content_panel = new System.Windows.Forms.Panel();
             this.panel1.SuspendLayout();
             this.LOT_menuitem.SuspendLayout();
             this.SuspendLayout();
@@ -130,7 +133,8 @@
             this.donhang_group_mi,
             this.xuatExcelGuiKH_Group_mi,
             this.toolStripMenuItem2,
-            this.thongke_main_mi});
+            this.thongke_main_mi,
+            this.aaaaToolStripMenuItem});
             this.LOT_menuitem.Location = new System.Drawing.Point(0, 0);
             this.LOT_menuitem.Name = "LOT_menuitem";
             this.LOT_menuitem.Size = new System.Drawing.Size(1388, 25);
@@ -527,7 +531,8 @@
             this.báoCáoĐơnHàngToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.reportOrderIn1Year_mi,
             this.reportOrderIn1Month_mi,
-            this.monthlyReportForYear_mi});
+            this.monthlyReportForYear_mi,
+            this.yearlyReport_mi});
             this.báoCáoĐơnHàngToolStripMenuItem.Name = "báoCáoĐơnHàngToolStripMenuItem";
             this.báoCáoĐơnHàngToolStripMenuItem.Size = new System.Drawing.Size(235, 22);
             this.báoCáoĐơnHàngToolStripMenuItem.Text = "Báo Cáo Đơn Hàng";
@@ -544,6 +549,33 @@
             this.reportOrderIn1Month_mi.Size = new System.Drawing.Size(230, 22);
             this.reportOrderIn1Month_mi.Text = "Trong 1 Tháng";
             // 
+            // monthlyReportForYear_mi
+            // 
+            this.monthlyReportForYear_mi.Name = "monthlyReportForYear_mi";
+            this.monthlyReportForYear_mi.Size = new System.Drawing.Size(230, 22);
+            this.monthlyReportForYear_mi.Text = "Từng Tháng Trong 1 Năm";
+            // 
+            // yearlyReport_mi
+            // 
+            this.yearlyReport_mi.Name = "yearlyReport_mi";
+            this.yearlyReport_mi.Size = new System.Drawing.Size(230, 22);
+            this.yearlyReport_mi.Text = "Qua Các Năm";
+            // 
+            // aaaaToolStripMenuItem
+            // 
+            this.aaaaToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.loadExcelOrderReportToolStripMenuItem});
+            this.aaaaToolStripMenuItem.Name = "aaaaToolStripMenuItem";
+            this.aaaaToolStripMenuItem.Size = new System.Drawing.Size(59, 21);
+            this.aaaaToolStripMenuItem.Text = "Debug";
+            // 
+            // loadExcelOrderReportToolStripMenuItem
+            // 
+            this.loadExcelOrderReportToolStripMenuItem.Name = "loadExcelOrderReportToolStripMenuItem";
+            this.loadExcelOrderReportToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
+            this.loadExcelOrderReportToolStripMenuItem.Text = "LoadExcelOrderReport";
+            this.loadExcelOrderReportToolStripMenuItem.Click += new System.EventHandler(this.loadExcelOrderReportToolStripMenuItem_Click);
+            // 
             // content_panel
             // 
             this.content_panel.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -551,12 +583,6 @@
             this.content_panel.Name = "content_panel";
             this.content_panel.Size = new System.Drawing.Size(1388, 491);
             this.content_panel.TabIndex = 1;
-            // 
-            // monthlyReportForYear_mi
-            // 
-            this.monthlyReportForYear_mi.Name = "monthlyReportForYear_mi";
-            this.monthlyReportForYear_mi.Size = new System.Drawing.Size(230, 22);
-            this.monthlyReportForYear_mi.Text = "Từng Tháng Trong 1 Năm";
             // 
             // FormManager
             // 
@@ -639,5 +665,8 @@
         private System.Windows.Forms.ToolStripMenuItem reportOrderIn1Year_mi;
         private System.Windows.Forms.ToolStripMenuItem reportOrderIn1Month_mi;
         private System.Windows.Forms.ToolStripMenuItem monthlyReportForYear_mi;
+        private System.Windows.Forms.ToolStripMenuItem aaaaToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem loadExcelOrderReportToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem yearlyReport_mi;
     }
 }

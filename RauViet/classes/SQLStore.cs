@@ -46,9 +46,9 @@ namespace RauViet.classes
         DataTable mCartonSize_dt = null;
         DataTable mlatestOrders_dt = null;
         DataTable mExportCodeLog_dt = null;
+        DataTable mReportCustomerOrderDetail_dt = null;
         Dictionary<int, DataTable> mOrderLists;
         Dictionary<int, DataTable> mReportExportByYears;
-        Dictionary<int, DataTable> mReportProductOrderByYears;
         Dictionary<int, DataTable> mReportCustomerOrderDetailByYears;
         Dictionary<int, DataTable> mOrdersTotals;
         Dictionary<int, DataTable> mLOTCodes;
@@ -85,7 +85,6 @@ namespace RauViet.classes
             try
             {
                 mReportExportByYears = new Dictionary<int, DataTable>();
-                mReportProductOrderByYears = new Dictionary<int, DataTable>();
                 mReportCustomerOrderDetailByYears = new Dictionary<int, DataTable>();
                 mOrderLists = new Dictionary<int, DataTable>();
                 mOrdersTotals = new Dictionary<int, DataTable>();
@@ -1885,27 +1884,6 @@ namespace RauViet.classes
             data.Columns["FreightCharge"].SetOrdinal(count++);
         }
 
-        public void RemoveProductOrderHistoryByYear(int year)
-        {
-            mReportProductOrderByYears.Remove(year);
-        }
-        public async Task<DataTable> GetProductOrderHistoryByYear(int year)
-        {
-            if (!mReportProductOrderByYears.ContainsKey(year))
-            {
-                try
-                {
-                    mReportProductOrderByYears[year] = await SQLManager.Instance.GetOrderHistory_GetSumByMonthAndProduct_InYearAsync(year);
-                }
-                catch
-                {
-                    Console.WriteLine("error GetReportExportByYear SQLStore");
-                    return null;
-                }
-            }
-
-            return mReportProductOrderByYears[year];
-        }
 
         public void RemoveCustomerOrderDetailHistoryByYear(int year)
         {
@@ -2725,6 +2703,29 @@ namespace RauViet.classes
                 mEmployeeDeductionLogs[key] = dt;
             }
             return mEmployeeDeductionLogs[key];
+        }
+
+        public void RemoveCustomerOrderDetailHistory()
+        {
+            mReportCustomerOrderDetail_dt = null;
+        }
+
+        public async Task<DataTable> GetCustomerOrderDetailHistory()
+        {
+            if (mReportCustomerOrderDetail_dt == null)
+            {
+                try
+                {
+                    mReportCustomerOrderDetail_dt = await SQLManager.Instance.GetCustomerOrderDetailHistoryAsync();
+                }
+                catch
+                {
+                    Console.WriteLine("error GetCustomerOrderDetailHistory SQLStore");
+                    return null;
+                }
+            }
+
+            return mReportCustomerOrderDetail_dt;
         }
     }
 }

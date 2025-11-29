@@ -6,6 +6,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace RauViet.ui
@@ -153,11 +154,12 @@ namespace RauViet.ui
 
         private void ImportDataGridViewToSql()
         {
-            List<(string customerName, string exportCode, DateTime exportDate, string product_VN, string product_EN, string package, int PCS, decimal netWeight, decimal amount)> orders =
-                new List<(string customerName, string exportCode, DateTime exportDate, string product_VN, string product_EN, string package, int PCS, decimal netWeight, decimal amount)>();
+            List<(string customerName, string exportCode, DateTime exportDate, string product_VN, string product_EN, string package, int PCS, decimal netWeight, decimal amount, int priority)> orders =
+                new List<(string customerName, string exportCode, DateTime exportDate, string product_VN, string product_EN, string package, int PCS, decimal netWeight, decimal amount, int priority)>();
 
             foreach (DataRow item in mData.Rows)
             {
+
                 orders.Add((
                     customerName: "NULL",
                     exportCode: item["ExportCode"].ToString(),
@@ -167,7 +169,8 @@ namespace RauViet.ui
                     package: item["Package"].ToString(),
                     PCS: Convert.ToInt32(item["PCS"]),
                     netWeight: Convert.ToDecimal(item["NetWeight"]),
-                    amount: Convert.ToDecimal(item["AmountCHF"])
+                    amount: Convert.ToDecimal(item["AmountCHF"]),
+                    priority: Convert.ToInt32(item["Priority"])
                 ));
             }
 
@@ -180,24 +183,25 @@ namespace RauViet.ui
             foreach (DataRow row in mData.Rows)
             {
                 DateTime ExportDate = Convert.ToDateTime(row["ExportDate"]);
+                ExportDate = new DateTime(Convert.ToInt32(year_tb.Text), ExportDate.Month, ExportDate.Day);
+                row["ExportDate"] = ExportDate.ToString();
                 row["ExportCode"] = $"MCX_{ExportDate.Day.ToString("D2")}{ExportDate.Month.ToString("D2")}{ExportDate.Year}";
             }
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private async void button1_Click(object sender, EventArgs e)
         {
             var grouped = mData.AsEnumerable()
                                             .GroupBy(r => new
                                             {
-                                                ProductName_EN = r.Field<string>("ProductName_EN"),
+                                                ProductName_VN = Utils.RemoveVietnameseSigns(r.Field<string>("ProductName_VN")).Replace(" ", "").Trim(),
                                                 ExportCode = r.Field<string>("ExportCode")
                                             })
                                             .Select(g => new
                                             {
-                                                ProductName_EN = g.Key.ProductName_EN,
                                                 ExportCode = g.Key.ExportCode,
-
                                                 // ProductName_VN: phần giống nhau
+                                                ProductName_EN = GetCommonPrefixCleaned(g.Select(r => r.Field<string>("ProductName_EN")).ToList(), g.Select(r => r.Field<string>("Package")).FirstOrDefault()),
                                                 ProductName_VN = GetCommonPrefixCleaned(g.Select(r => r.Field<string>("ProductName_VN")).ToList(), g.Select(r => r.Field<string>("Package")).FirstOrDefault()),
 
                                                 // Sum
@@ -227,6 +231,7 @@ namespace RauViet.ui
                                                 }),
 
                                                 // Lấy giá trị đầu tiên
+                                                PLU = g.Select(r => r.Field<string>("PLU")).FirstOrDefault().ToLower().Trim(),
                                                 Package = g.Select(r => r.Field<string>("Package")).FirstOrDefault().ToLower().Trim(),
                                                 ExportDate = g.Select(r =>
                                                 {
@@ -239,6 +244,7 @@ namespace RauViet.ui
             DataTable dt = new DataTable();
 
             // Tạo đúng các cột giống mData
+            dt.Columns.Add("Priority", typeof(int));
             dt.Columns.Add("ProductName_EN", typeof(string));
             dt.Columns.Add("ExportCode", typeof(string));
             dt.Columns.Add("ProductName_VN", typeof(string));
@@ -248,9 +254,26 @@ namespace RauViet.ui
             dt.Columns.Add("Package", typeof(string));
             dt.Columns.Add("ExportDate", typeof(DateTime));
 
+            var productPacking_dt = await SQLStore.Instance.getProductpackingAsync();
+
             foreach (var g in grouped)
             {
                 var row = dt.NewRow();
+
+                
+                DataRow[] rows = productPacking_dt.Select($"PLU = '{g.PLU}'");
+
+                if (rows.Length > 0)
+                {
+                    row["Priority"] = rows[0]["Priority"];
+                }
+                else
+                {
+                    row["Priority"] = 200000;
+                }
+
+                
+               // row["PLU"] = g.ProductName_EN
                 row["ProductName_EN"] = g.ProductName_EN;
                 row["ExportCode"] = g.ExportCode;
                 row["ProductName_VN"] = g.ProductName_VN;
@@ -278,17 +301,20 @@ namespace RauViet.ui
 
                                                 return new
                                                 {
-                                                    ProductName_EN = r.Field<string>("ProductName_EN"),
+                                                    ProductName_VN = Utils.RemoveVietnameseSigns(r.Field<string>("ProductName_VN")).Replace(" ","").Trim(),
                                                     Year = exportDate.Year,
                                                     Month = exportDate.Month
                                                 };
                                             })
                                             .Select(g => new
                                             {
-                                                ProductName_EN = g.Key.ProductName_EN,
                                                 ExportCode = $"MXC_1_{g.Key.Month}_{g.Key.Year}",
                                                 ExportDate = new DateTime(g.Key.Year, g.Key.Month, 1),
                                                 // ProductName_VN: phần giống nhau
+                                                ProductName_EN = GetCommonPrefixCleaned(
+                                                    g.Select(r => r.Field<string>("ProductName_EN")).ToList(),
+                                                    g.Select(r => r.Field<string>("Package")).FirstOrDefault()
+                                                ),
                                                 ProductName_VN = GetCommonPrefixCleaned(
                                                     g.Select(r => r.Field<string>("ProductName_VN")).ToList(),
                                                     g.Select(r => r.Field<string>("Package")).FirstOrDefault()
@@ -312,8 +338,8 @@ namespace RauViet.ui
                                                     return Convert.ToDecimal(v);
                                                 }),
 
-                                                // Lấy giá trị đầu tiên
-                                                Package = g.Select(r => r.Field<string>("Package")).FirstOrDefault().ToLower().Trim(),                                               
+                                                Priority = g.Select(r => r.Field<int>("Priority")).FirstOrDefault(),
+                                                Package = g.Select(r => r.Field<string>("Package")).FirstOrDefault().ToLower().Trim(),                                             
                                             })
                                             .ToList();
 
@@ -328,6 +354,7 @@ namespace RauViet.ui
             dt.Columns.Add("NetWeight", typeof(decimal));
             dt.Columns.Add("Package", typeof(string));
             dt.Columns.Add("ExportDate", typeof(DateTime));
+            dt.Columns.Add("Priority", typeof(int));
 
             foreach (var g in groupedByMonth)
             {
@@ -340,6 +367,7 @@ namespace RauViet.ui
                 row["NetWeight"] = g.NetWeight;
                 row["Package"] = g.Package;
                 row["ExportDate"] = g.ExportDate;
+                row["Priority"] = g.Priority;
                 dt.Rows.Add(row);
             }
 
@@ -405,6 +433,11 @@ namespace RauViet.ui
                 if (string.IsNullOrWhiteSpace(row["Package"].ToString().Trim()))
                     row["Package"] = packing;
             }
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

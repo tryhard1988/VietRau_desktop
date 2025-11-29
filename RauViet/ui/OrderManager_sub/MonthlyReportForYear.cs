@@ -32,6 +32,7 @@ namespace RauViet.ui
 
             load_btn.Click += Load_btn_Click;
             this.KeyDown += ReportOrder_Year_KeyDown;
+            product_GV.CellFormatting += product_GV_CellFormatting;
         }
 
         private void ReportOrder_Year_KeyDown(object sender, KeyEventArgs e)
@@ -40,7 +41,6 @@ namespace RauViet.ui
             {
                 int year = timeReport_dtp.Value.Year;                
 
-                SQLStore.Instance.RemoveProductOrderHistoryByYear(year);
                 SQLStore.Instance.RemoveExportHistoryByYear(year);
                 SQLStore.Instance.RemoveCustomerOrderDetailHistoryByYear(year);
                 ShowData();
@@ -180,7 +180,7 @@ namespace RauViet.ui
                     product_GV.Columns[key].Width = 70;
                 }
 
-               // product_GV.Columns["ProductName_EN"].Visible = false;
+                product_GV.Columns["ProductName_EN"].Visible = false;
                 product_GV.Columns["ProductName_VN"].HeaderText = "Tên Sản Phẩm";
                 product_GV.Columns["ProductName_EN"].HeaderText = "Product Name";
                 product_GV.Columns["TotalQuanitity"].HeaderText = "Quanitity";
@@ -213,6 +213,22 @@ namespace RauViet.ui
         private async void Load_btn_Click(object sender, EventArgs e)
         {
             ShowData();
+        }
+
+        private void product_GV_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            if (e.Value != null)
+            {
+                // Nếu là số
+                if (decimal.TryParse(e.Value.ToString(), out decimal val))
+                {
+                    if (val == 0)
+                    {
+                        e.Value = "-";
+                        e.FormattingApplied = true;
+                    }
+                }
+            }
         }
 
     }

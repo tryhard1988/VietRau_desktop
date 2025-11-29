@@ -857,8 +857,8 @@ namespace RauViet.ui
                                     ProductNameEN = GetCommonPrefixCleaned(g.Select(r => r.Field<string>("ProductNameEN")).ToList(), g.First().Field<string>("Package"))
                                 }).ToList();            
 
-            List<(string customerName, string exportCode, DateTime exportDate, string product_VN, string product_EN, string package, int PCS, decimal netWeight, decimal amount)> orders =
-                new List<(string customerName, string exportCode, DateTime exportDate, string product_VN, string product_EN, string package, int PCS, decimal netWeight, decimal amount)>();
+            List<(string customerName, string exportCode, DateTime exportDate, string product_VN, string product_EN, string package, int PCS, decimal netWeight, decimal amount, int priority)> orders =
+                new List<(string customerName, string exportCode, DateTime exportDate, string product_VN, string product_EN, string package, int PCS, decimal netWeight, decimal amount, int priority)>();
 
             foreach (var item in query)
             {
@@ -871,7 +871,8 @@ namespace RauViet.ui
                     package: item.Package,
                     PCS: item.TotalPCSReal,
                     netWeight: item.TotalNWReal,
-                    amount: item.TotalAmount
+                    amount: item.TotalAmount,
+                    priority: 0
                 ));
             }
 

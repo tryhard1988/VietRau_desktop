@@ -166,6 +166,7 @@ namespace RauViet.ui
                 reportOrderIn1Year_mi.Click += ReportExportYear_mi_Click;
                 reportOrderIn1Month_mi.Click += ReportOrderIn1Month_mi_Click;
                 monthlyReportForYear_mi.Click += monthlyReportForYear_mi_Click;
+                yearlyReport_mi.Click += YearlyReport_mi_Click;
             }
             else
             {
@@ -250,7 +251,8 @@ namespace RauViet.ui
             DoCBM,
             ChotPHYTO,
             ReportOrderIn1Month_Year,
-            MonthlyReportForYear
+            MonthlyReportForYear,
+            YearlyReport
         }
 
         private void openCurrentForm(EForm status)
@@ -393,7 +395,9 @@ namespace RauViet.ui
                 case EForm.MonthlyReportForYear:
                     SwitchChildForm<MonthlyReportForYear>("Chi Tiết Từng Tháng Trong Năm");
                     break;
-
+                case EForm.YearlyReport:
+                    SwitchChildForm<YearlyReport>("Thống Kê Qua Các Năm");
+                    break;
             }
             
             Properties.Settings.Default.current_form = status.ToString();
@@ -445,6 +449,7 @@ namespace RauViet.ui
         private void position_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.Position); }
         private void DoCBM_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.DoCBM); }
         private void ChotPhyto_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.ChotPHYTO); }
+        private void YearlyReport_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.YearlyReport); }
         private async void checkLoginTimer_Tick(object sender, EventArgs e)
         {
             var isHave = await SQLManager.Instance.HaveOtherComputerLoginAsync();
@@ -462,6 +467,17 @@ namespace RauViet.ui
                 this.Close();
             }
 
+        }
+
+        private void loadExcelOrderReportToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var form = new LoadExcelOrderReport();
+            title_lb.Text = "LoadExcelOrderReport";
+            form.TopLevel = false;
+            form.Parent = this.content_panel;
+            form.Dock = DockStyle.Fill;
+
+            form.Show();
         }
 
     }

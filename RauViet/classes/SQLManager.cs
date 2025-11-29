@@ -4470,42 +4470,7 @@ namespace RauViet.classes
             return dt;
         }
 
-        public async Task<DataTable> GetOrderHistory_GetSumByMonthAndProduct_InYearAsync(int year)
-        {
-            var dt = new DataTable();
-
-            try
-            {
-                using (var con = new SqlConnection(ql_khoHis_conStr()))
-                {
-                    await con.OpenAsync();
-
-                    using (var cmd = new SqlCommand("sp_OrderHistory_GetSumByMonthAndProduct_InYear", con))
-                    {
-                        cmd.CommandType = CommandType.StoredProcedure;
-                        cmd.CommandTimeout = 20;
-
-                        // Tạo parameter rõ ràng thay vì AddWithValue
-                        cmd.Parameters.Add(new SqlParameter("@Year", SqlDbType.Int) { Value = year });
-
-                        using (var reader = await cmd.ExecuteReaderAsync())
-                        {
-                            dt.Load(reader);
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"[GetOrderHistory_GetSumByMonthAndProduct_InYearAsync] Error: {ex.Message}");
-                Console.WriteLine(ex.StackTrace);
-                throw; // hoặc xử lý theo logic của bạn
-            }
-
-            return dt;
-        }
-
-        public async Task<bool> CustomerOrderDetailHistory_SaveListAsync(List<(string customerName, string exportCode, DateTime exportDate, string productVN, string productEN, string package, int PCS, decimal netWeight, decimal amount)> orders)
+        public async Task<bool> CustomerOrderDetailHistory_SaveListAsync(List<(string customerName, string exportCode, DateTime exportDate, string productVN, string productEN, string package, int PCS, decimal netWeight, decimal amount, int priority)> orders)
         {
             try
             {
@@ -4524,10 +4489,11 @@ namespace RauViet.classes
                         dt.Columns.Add("NetWeight", typeof(decimal));
                         dt.Columns.Add("PCS", typeof(int));
                         dt.Columns.Add("AmountCHF", typeof(decimal));
+                        dt.Columns.Add("Priority", typeof(int));
 
                         foreach (var o in orders)
                         {
-                            dt.Rows.Add(o.customerName, o.exportCode, o.exportDate.Date, o.productVN, o.productEN, o.package, o.netWeight, o.PCS, o.amount);
+                            dt.Rows.Add(o.customerName, o.exportCode, o.exportDate.Date, o.productVN, o.productEN, o.package, o.netWeight, o.PCS, o.amount, o.priority);
                         }
 
                         using (var cmd = new SqlCommand("dbo.sp_CustomerOrderDetailHistory_SaveList", con))
@@ -4585,6 +4551,38 @@ namespace RauViet.classes
             catch (Exception ex)
             {
                 Console.WriteLine($"[GetCustomerOrderHistory_GetSumByMonthAndProduct_InYearAsync] Error: {ex.Message}");
+                Console.WriteLine(ex.StackTrace);
+                throw; // hoặc xử lý theo logic của bạn
+            }
+
+            return dt;
+        }
+
+        public async Task<DataTable> GetCustomerOrderDetailHistoryAsync()
+        {
+            var dt = new DataTable();
+
+            try
+            {
+                using (var con = new SqlConnection(ql_khoHis_conStr()))
+                {
+                    await con.OpenAsync();
+
+                    using (var cmd = new SqlCommand("sp_CustomerOrderDetailHistory_GetSumByMonthAndProduct", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.CommandTimeout = 20;
+
+                        using (var reader = await cmd.ExecuteReaderAsync())
+                        {
+                            dt.Load(reader);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[GetCustomerOrderDetailHistoryAsync] Error: {ex.Message}");
                 Console.WriteLine(ex.StackTrace);
                 throw; // hoặc xử lý theo logic của bạn
             }
