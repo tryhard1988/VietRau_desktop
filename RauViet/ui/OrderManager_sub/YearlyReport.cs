@@ -1,5 +1,7 @@
-﻿using DocumentFormat.OpenXml.Bibliography;
+﻿using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Bibliography;
 using DocumentFormat.OpenXml.Vml;
+using DocumentFormat.OpenXml.Wordprocessing;
 using MySqlX.XDevAPI.Common;
 using RauViet.classes;
 using System;
@@ -15,6 +17,9 @@ namespace RauViet.ui
     public partial class YearlyReport : Form
     {
         private LoadingOverlay loadingOverlay;
+        DataTable mProductOrderHistory_dt;
+        List<int> mYears;
+
         public YearlyReport()
         {
             InitializeComponent();
@@ -28,6 +33,8 @@ namespace RauViet.ui
 
             this.KeyDown += ReportOrder_Year_KeyDown;
             product_GV.CellFormatting += product_GV_CellFormatting;
+
+            exportToExcel_btn.Click += ExportToExcel_btn_Click;
         }
 
         private void ReportOrder_Year_KeyDown(object sender, KeyEventArgs e)
@@ -52,34 +59,37 @@ namespace RauViet.ui
             try
             {
                 var customerOrderHistoryTask = SQLStore.Instance.GetCustomerOrderDetailHistory();
-
                 await Task.WhenAll(customerOrderHistoryTask);
-                var years = customerOrderHistoryTask.Result.AsEnumerable().Select(r => r.Field<int>("Year")).Distinct().OrderBy(y => y).ToList();
-                DataTable productOrderHistory_dt = new DataTable();
+
+                mYears = customerOrderHistoryTask.Result.AsEnumerable().Select(r => r.Field<int>("Year")).Distinct().OrderBy(y => y).ToList();
+                mProductOrderHistory_dt = new DataTable();
                 {
-                    
+
 
                     var result = customerOrderHistoryTask.Result.AsEnumerable()
                                                         .GroupBy(r => new
                                                         {
-                                                            ProductName_VN = r.Field<string>("ProductName_VN"),
-                                                            ProductName_EN = r.Field<string>("ProductName_EN")
+                                                            ProductName_VN = r.Field<string>("ProductName_VN")
+                                                            // ProductName_EN = r.Field<string>("ProductName_EN")
                                                         })
                                                         .Select(g =>
                                                         {
                                                             var row = new Dictionary<string, object>();
 
                                                             row["ProductName_VN"] = g.Key.ProductName_VN;
-                                                            row["ProductName_EN"] = g.Key.ProductName_EN;
+                                                            row["ProductName_EN"] = g.First().Field<string>("ProductName_EN");
 
-                                                            
+                                                            int priority = g.Min(r => r.Field<int?>("Priority") ?? int.MaxValue);
+                                                            row["Priority"] = priority;
+
                                                             for (int month = 1; month <= 12; month++)
                                                             {
-                                                                foreach (var year in years)
+                                                                foreach (var year in mYears)
                                                                 {
                                                                     var total = g.Where(r => r.Field<int>("Year") == year &&
                                                                                              r.Field<int>("Month") == month)
-                                                                                 .Sum(r => {
+                                                                                 .Sum(r =>
+                                                                                 {
                                                                                      string package = r.Field<string>("Package")?.ToLower() ?? "";
                                                                                      return (package == "kg" || package == "weight") ? r.Field<decimal>("TotalNetWeight") : r.Field<int>("TotalPCS");
                                                                                  });
@@ -87,10 +97,11 @@ namespace RauViet.ui
                                                                     row[$"{month}/{year}"] = total;
                                                                 }
                                                             }
-                                                            foreach (var year in years)
+                                                            foreach (var year in mYears)
                                                             {
                                                                 var total = g.Where(r => r.Field<int>("Year") == year)
-                                                                             .Sum(r => {
+                                                                             .Sum(r =>
+                                                                             {
                                                                                  string package = r.Field<string>("Package")?.ToLower() ?? "";
                                                                                  return (package == "kg" || package == "weight") ? r.Field<decimal>("TotalNetWeight") : r.Field<int>("TotalPCS");
                                                                              });
@@ -99,23 +110,23 @@ namespace RauViet.ui
                                                             }
 
                                                             return row;
-                                                        })
-                                                        .ToList();
+                                                        }).OrderBy(r => (int)r["Priority"]).ThenBy(r => r["ProductName_VN"]?.ToString()).ToList();
 
 
-                    productOrderHistory_dt.Columns.Add("ProductName_VN", typeof(string));
-                    productOrderHistory_dt.Columns.Add("ProductName_EN", typeof(string));
+                    mProductOrderHistory_dt.Columns.Add("ProductName_VN", typeof(string));
+                    mProductOrderHistory_dt.Columns.Add("ProductName_EN", typeof(string));
+                    mProductOrderHistory_dt.Columns.Add("Priority", typeof(int));
 
-                    foreach (var year in years)
+                    foreach (var year in mYears)
                     {
-                        productOrderHistory_dt.Columns.Add($"{year}", typeof(decimal));
+                        mProductOrderHistory_dt.Columns.Add($"{year}", typeof(decimal));
                     }
 
                     for (int month = 1; month <= 12; month++)
                     {
-                        foreach (var year in years)
+                        foreach (var year in mYears)
                         {
-                            productOrderHistory_dt.Columns.Add($"{month}/{year}", typeof(decimal));
+                            mProductOrderHistory_dt.Columns.Add($"{month}/{year}", typeof(decimal));
                         }
                     }
                     // productOrderHistoryByYear_dt.Columns.Add("TotalPCS", typeof(int));
@@ -123,14 +134,14 @@ namespace RauViet.ui
 
                     foreach (var item in result)
                     {
-                        var dr = productOrderHistory_dt.NewRow();
+                        var dr = mProductOrderHistory_dt.NewRow();
                         foreach (var key in item.Keys)
                             dr[key] = item[key];
-                        productOrderHistory_dt.Rows.Add(dr);
+                        mProductOrderHistory_dt.Rows.Add(dr);
                     }
                 }
-   
-                product_GV.DataSource = productOrderHistory_dt;
+
+                product_GV.DataSource = mProductOrderHistory_dt;
 
                 product_GV.EnableHeadersVisualStyles = false;
 
@@ -144,7 +155,7 @@ namespace RauViet.ui
 
                 for (int month = 1; month <= 12; month++)
                 {
-                    foreach (var year in years)
+                    foreach (var year in mYears)
                     {
                         string key = $"{month}/{year}";
                         var col = product_GV.Columns[key];
@@ -156,7 +167,7 @@ namespace RauViet.ui
                     }
                 }//
 
-                foreach (var year in years)
+                foreach (var year in mYears)
                 {
                     string key = $"{year}";
                     var col = product_GV.Columns[key];
@@ -167,36 +178,12 @@ namespace RauViet.ui
                     col.HeaderCell.Style.ForeColor = Color.White;
                 }
 
-                //product_GV.Columns["ProductName_EN"].Visible = false;
+                product_GV.Columns["ProductName_EN"].Visible = false;
+                product_GV.Columns["Priority"].Visible = false;
                 product_GV.Columns["ProductName_VN"].HeaderText = "Tên Sản Phẩm";
                 product_GV.Columns["ProductName_VN"].Width = 180;
                 product_GV.Columns["ProductName_VN"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
                 product_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                // for (int i = 1; i <= 12; i++)
-                // {
-                //     string key = $"Thang{i}";
-                //     product_GV.Columns[key].HeaderText = $"Tháng {i}";
-                //     product_GV.Columns[key].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                //     product_GV.Columns[key].Width = 70;
-                // }
-
-                //// product_GV.Columns["ProductName_EN"].Visible = false;
-                // product_GV.Columns["ProductName_VN"].HeaderText = "Tên Sản Phẩm";
-                // product_GV.Columns["ProductName_EN"].HeaderText = "Product Name";
-                // product_GV.Columns["TotalQuanitity"].HeaderText = "Quanitity";
-                // product_GV.Columns["TotalAmountCHF"].HeaderText = "Thành Tiền";
-                // product_GV.Columns["ProductName_VN"].Width = 150;
-                // product_GV.Columns["ProductName_EN"].Width = 130;
-                // product_GV.Columns["TotalQuanitity"].Width = 70;
-                // product_GV.Columns["TotalAmountCHF"].Width = 70;
-
-                // product_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-
-                // product_GV.Columns["TotalAmountCHF"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                // product_GV.Columns["TotalQuanitity"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-
-                // product_GV.Columns["TotalQuanitity"].DefaultCellStyle.Format = "N2";
-                // product_GV.Columns["TotalAmountCHF"].DefaultCellStyle.Format = "N2";
             }
             catch (Exception ex)
             {
@@ -229,5 +216,170 @@ namespace RauViet.ui
             }
         }
 
+        private void ExportToExcel_btn_Click(object sender, EventArgs e)
+        {
+            using (var wb = new XLWorkbook())
+            {
+                var sheet1_ws = wb.Worksheets.Add("Sheet1");
+                sheet1_ws.Style.Font.FontName = "Arial";
+                sheet1_ws.Style.Font.FontSize = 9;
+                sheet1_ws.RowHeight = 16;
+                sheet1_ws.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+
+                sheet1_ws.Range(1, 1, 1, mProductOrderHistory_dt.Columns.Count - 2).Merge();
+                sheet1_ws.Cell(1, 1).Value = "THỐNG KÊ SỐ LƯỢNG TỪNG MẶT HÀNG THEO THÁNG TỪNG NĂM";
+                sheet1_ws.Cell(1, 1).Style.Font.Bold = true;
+                sheet1_ws.Cell(1, 1).Style.Font.FontSize = 36;
+                sheet1_ws.Cell(1, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+                int colIndex = 1;
+
+                {
+                    var range = sheet1_ws.Range(2, colIndex, 3, colIndex);
+                    range.Merge();
+                    var cell = sheet1_ws.Cell(2, colIndex);
+                    cell.Value = "Tên Hàng";
+                    cell.Style.Font.Bold = true;
+                    cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    range.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+
+                    colIndex++;
+                }
+
+                int yearCount = mYears.Count;
+                int yearIndex = 0;
+                {
+                    var range = sheet1_ws.Range(2, colIndex, 2, colIndex + yearCount - 1);
+                    range.Merge();
+                    var cell = sheet1_ws.Cell(2, colIndex);
+                    cell.Value = "Tổng Số Lượng";
+                    cell.Style.Font.Bold = true;
+                    cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    range.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                    cell.Style.Fill.BackgroundColor = XLColor.LightPink;
+
+                    foreach (var year in mYears)
+                    {
+                        cell = sheet1_ws.Cell(3, colIndex + yearIndex);
+                        cell.Value = $"{year}";
+                        cell.Style.Font.Bold = true;
+                        cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                        cell.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                        cell.Style.Fill.BackgroundColor = XLColor.LightPink;
+                        yearIndex++;
+                    }
+
+                    colIndex += yearCount;
+                }
+
+                XLColor[] monthColors = new XLColor[]
+                                                {
+                                                    XLColor.LightBlue, XLColor.LightGreen, XLColor.LightYellow,
+                                                    XLColor.LightCoral, XLColor.LightPink, XLColor.LightSalmon,
+                                                    XLColor.LightCyan, XLColor.LightGoldenrodYellow, XLColor.LightGray,
+                                                    XLColor.LightSkyBlue, XLColor.LightSeaGreen, XLColor.LightSteelBlue
+                                                };
+
+                for (int i = 0; i < 12; i++)
+                {
+                    {
+                        var range = sheet1_ws.Range(2, colIndex, 2, colIndex + yearCount - 1);
+                        range.Merge();
+                        var cell = sheet1_ws.Cell(2, colIndex);
+                        cell.Value = $"Tháng {(i + 1).ToString("00")}";
+                        cell.Style.Font.Bold = true;
+                        cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                        range.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                        cell.Style.Fill.BackgroundColor = monthColors[i];
+                    }
+                    yearIndex = 0;
+                    foreach (var year in mYears)
+                    {
+                        var cell = sheet1_ws.Cell(3, colIndex + yearIndex);
+                        cell.Value = $"{year}";
+                        cell.Style.Font.Bold = true;
+                        cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                        cell.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                        cell.Style.Fill.BackgroundColor = monthColors[i];
+                        yearIndex++;
+                    }
+
+
+                    colIndex += yearCount;
+                }
+
+
+                int rowIndex = 4;
+
+                foreach (DataRow row in mProductOrderHistory_dt.Rows)
+                {
+                    colIndex = 1;
+
+                    {
+                        var cell = sheet1_ws.Cell(rowIndex, colIndex);
+                        cell.Value = row["ProductName_VN"].ToString();
+                        cell.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                        colIndex++;
+                    }
+
+                    foreach (var year in mYears)
+                    {
+                        var cell = sheet1_ws.Cell(rowIndex, colIndex);
+                        cell.Value = Convert.ToDecimal(row[$"{year}"]);
+                        cell.Style.NumberFormat.Format = "#,##0.00;-#,##0.00;\"-\"";
+                        cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                        cell.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                        colIndex++;
+                    }
+
+                    for (int i = 0; i < 12; i++)
+                    {
+                        foreach (var year in mYears)
+                        {
+                            var cell = sheet1_ws.Cell(rowIndex, colIndex);
+                            cell.Style.NumberFormat.Format = "#,##0.00;-#,##0.00;\"-\"";
+                            cell.Value = Convert.ToDecimal(row[$"{i + 1}/{year}"]);
+                            cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                            cell.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                            colIndex++;
+                        }
+                    }
+                    rowIndex++;
+                }
+
+                sheet1_ws.Column(1).Width = 30;
+                sheet1_ws.Row(1).Height = 56;
+                sheet1_ws.Row(2).Height = 20;
+                sheet1_ws.Row(3).Height = 15;
+                for (int i = 2; i < mProductOrderHistory_dt.Rows.Count; i++)
+                    sheet1_ws.Column(i+1).Width = 10.43;
+
+                using (SaveFileDialog sfd = new SaveFileDialog())
+                {
+                    sfd.Filter = "Excel Workbook|*.xlsx";
+                    sfd.FileName = "excel.xlsx";
+                    if (sfd.ShowDialog() == DialogResult.OK)
+                    {
+                        wb.SaveAs(sfd.FileName);
+                        DialogResult result = MessageBox.Show("Bạn có muốn mở file này không?", "Lưu file thành công", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                        if (result == DialogResult.Yes)
+                        {
+                            try
+                            {
+                                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo()
+                                {
+                                    FileName = sfd.FileName,
+                                    UseShellExecute = true
+                                });
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show("Không thể mở file: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }

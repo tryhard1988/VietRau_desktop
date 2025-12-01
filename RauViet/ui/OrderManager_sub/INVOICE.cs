@@ -854,7 +854,8 @@ namespace RauViet.ui
                                     TotalPCSReal = g.Sum(r => Convert.ToInt32(string.IsNullOrEmpty(r["PCSReal"].ToString()) ? 0 : r["PCSReal"])),
                                     TotalNWReal = g.Sum(r => Convert.ToDecimal(string.IsNullOrEmpty(r["NWReal"].ToString()) ? 0 : r["NWReal"])),
                                     ProductNameVN = GetCommonPrefixCleaned(g.Select(r => r.Field<string>("ProductNameVN")).ToList(), g.First().Field<string>("Package")),
-                                    ProductNameEN = GetCommonPrefixCleaned(g.Select(r => r.Field<string>("ProductNameEN")).ToList(), g.First().Field<string>("Package"))
+                                    ProductNameEN = GetCommonPrefixCleaned(g.Select(r => r.Field<string>("ProductNameEN")).ToList(), g.First().Field<string>("Package")),
+                                    Priority = g.Min(r => r.Field<int?>("Priority") ?? int.MaxValue)
                                 }).ToList();            
 
             List<(string customerName, string exportCode, DateTime exportDate, string product_VN, string product_EN, string package, int PCS, decimal netWeight, decimal amount, int priority)> orders =
@@ -872,7 +873,7 @@ namespace RauViet.ui
                     PCS: item.TotalPCSReal,
                     netWeight: item.TotalNWReal,
                     amount: item.TotalAmount,
-                    priority: 0
+                    priority: item.Priority
                 ));
             }
 

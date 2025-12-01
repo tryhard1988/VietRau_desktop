@@ -1,18 +1,8 @@
-﻿using MySql.Data.MySqlClient;
-using RauViet.classes;
+﻿using RauViet.classes;
 using RauViet.ui.PhanQuyen;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Data.SqlClient;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static RauViet.ui.FormManager;
-
 namespace RauViet.ui
 {
     public partial class FormManager : Form
@@ -167,6 +157,7 @@ namespace RauViet.ui
                 reportOrderIn1Month_mi.Click += ReportOrderIn1Month_mi_Click;
                 monthlyReportForYear_mi.Click += monthlyReportForYear_mi_Click;
                 yearlyReport_mi.Click += YearlyReport_mi_Click;
+                monthlyTotalPerYear_mi.Click += MonthlyTotalPerYear_mi_Click;
             }
             else
             {
@@ -179,7 +170,6 @@ namespace RauViet.ui
                 openCurrentForm(status);
             }
         }
-
 
         private async void SwitchChildForm<T>(string title) where T : Form, new()
         {
@@ -252,7 +242,8 @@ namespace RauViet.ui
             ChotPHYTO,
             ReportOrderIn1Month_Year,
             MonthlyReportForYear,
-            YearlyReport
+            YearlyReport,
+            MonthlyTotalPerYear
         }
 
         private void openCurrentForm(EForm status)
@@ -398,6 +389,9 @@ namespace RauViet.ui
                 case EForm.YearlyReport:
                     SwitchChildForm<YearlyReport>("Thống Kê Qua Các Năm");
                     break;
+                case EForm.MonthlyTotalPerYear:
+                    SwitchChildForm<MonthlyTotalPerYear>("Tổng Quát Theo Tháng Qua Từng Năm");
+                    break;
             }
             
             Properties.Settings.Default.current_form = status.ToString();
@@ -450,6 +444,7 @@ namespace RauViet.ui
         private void DoCBM_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.DoCBM); }
         private void ChotPhyto_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.ChotPHYTO); }
         private void YearlyReport_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.YearlyReport); }
+        private void MonthlyTotalPerYear_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.MonthlyTotalPerYear); }
         private async void checkLoginTimer_Tick(object sender, EventArgs e)
         {
             var isHave = await SQLManager.Instance.HaveOtherComputerLoginAsync();

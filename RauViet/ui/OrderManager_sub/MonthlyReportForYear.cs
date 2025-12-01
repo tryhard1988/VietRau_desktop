@@ -75,6 +75,8 @@ namespace RauViet.ui
                                                                 {
                                                                     ProductName_VN = g.Key.ProductNameVN,
                                                                     ProductName_EN = g.Key.ProductNameEN,
+                                                                    priority = g.Min(r => r.Field<int?>("Priority") ?? int.MaxValue),
+
                                                                     Thang1 = g.Where(r => r.Field<int>("Month") == 1).Sum(r => {
                                                                         string package = r.Field<string>("Package")?.ToLower() ?? "";
                                                                         return (package == "kg" || package == "weight")? r.Field<decimal>("TotalNetWeight"): r.Field<int>("TotalPCS");
@@ -128,7 +130,7 @@ namespace RauViet.ui
                                                                         return (package == "kg" || package == "weight") ? r.Field<decimal>("TotalNetWeight"): r.Field<int>("TotalPCS");
                                                                     }),
                                                                     TotalAmountCHF = g.Sum(r => r.Field<decimal>("TotalAmountCHF"))
-                                                                }).ToList();
+                                                                }).OrderBy(x=>x.priority).ThenBy(x=>x.ProductName_VN).ToList();
 
                     productOrderHistoryByYear_dt.Columns.Add("ProductName_VN", typeof(string));
                     productOrderHistoryByYear_dt.Columns.Add("ProductName_EN", typeof(string));

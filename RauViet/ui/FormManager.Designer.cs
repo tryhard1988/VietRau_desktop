@@ -89,6 +89,7 @@
             this.reportOrderIn1Month_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.monthlyReportForYear_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.yearlyReport_mi = new System.Windows.Forms.ToolStripMenuItem();
+            this.monthlyTotalPerYear_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.aaaaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadExcelOrderReportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.content_panel = new System.Windows.Forms.Panel();
@@ -532,34 +533,41 @@
             this.reportOrderIn1Year_mi,
             this.reportOrderIn1Month_mi,
             this.monthlyReportForYear_mi,
-            this.yearlyReport_mi});
+            this.yearlyReport_mi,
+            this.monthlyTotalPerYear_mi});
             this.báoCáoĐơnHàngToolStripMenuItem.Name = "báoCáoĐơnHàngToolStripMenuItem";
             this.báoCáoĐơnHàngToolStripMenuItem.Size = new System.Drawing.Size(235, 22);
-            this.báoCáoĐơnHàngToolStripMenuItem.Text = "Báo Cáo Đơn Hàng";
+            this.báoCáoĐơnHàngToolStripMenuItem.Text = "Báo Cáo Đơn Hàng ";
             // 
             // reportOrderIn1Year_mi
             // 
             this.reportOrderIn1Year_mi.Name = "reportOrderIn1Year_mi";
-            this.reportOrderIn1Year_mi.Size = new System.Drawing.Size(230, 22);
-            this.reportOrderIn1Year_mi.Text = "Trong 1 Năm";
+            this.reportOrderIn1Year_mi.Size = new System.Drawing.Size(309, 22);
+            this.reportOrderIn1Year_mi.Text = "Thống Kê Trong 1 Năm";
             // 
             // reportOrderIn1Month_mi
             // 
             this.reportOrderIn1Month_mi.Name = "reportOrderIn1Month_mi";
-            this.reportOrderIn1Month_mi.Size = new System.Drawing.Size(230, 22);
-            this.reportOrderIn1Month_mi.Text = "Trong 1 Tháng";
+            this.reportOrderIn1Month_mi.Size = new System.Drawing.Size(309, 22);
+            this.reportOrderIn1Month_mi.Text = "Thống Kê Trong 1 Tháng";
             // 
             // monthlyReportForYear_mi
             // 
             this.monthlyReportForYear_mi.Name = "monthlyReportForYear_mi";
-            this.monthlyReportForYear_mi.Size = new System.Drawing.Size(230, 22);
-            this.monthlyReportForYear_mi.Text = "Từng Tháng Trong 1 Năm";
+            this.monthlyReportForYear_mi.Size = new System.Drawing.Size(309, 22);
+            this.monthlyReportForYear_mi.Text = "Chi Tiết Từng Tháng Trong 1 Năm";
             // 
             // yearlyReport_mi
             // 
             this.yearlyReport_mi.Name = "yearlyReport_mi";
-            this.yearlyReport_mi.Size = new System.Drawing.Size(230, 22);
-            this.yearlyReport_mi.Text = "Qua Các Năm";
+            this.yearlyReport_mi.Size = new System.Drawing.Size(309, 22);
+            this.yearlyReport_mi.Text = "Chi Tiết Từng Tháng Qua Các Năm";
+            // 
+            // monthlyTotalPerYear_mi
+            // 
+            this.monthlyTotalPerYear_mi.Name = "monthlyTotalPerYear_mi";
+            this.monthlyTotalPerYear_mi.Size = new System.Drawing.Size(309, 22);
+            this.monthlyTotalPerYear_mi.Text = "Tổng Quát Từng Tháng Qua Các Năm ";
             // 
             // aaaaToolStripMenuItem
             // 
@@ -568,6 +576,7 @@
             this.aaaaToolStripMenuItem.Name = "aaaaToolStripMenuItem";
             this.aaaaToolStripMenuItem.Size = new System.Drawing.Size(59, 21);
             this.aaaaToolStripMenuItem.Text = "Debug";
+            this.aaaaToolStripMenuItem.Visible = false;
             // 
             // loadExcelOrderReportToolStripMenuItem
             // 
@@ -668,5 +677,6 @@
         private System.Windows.Forms.ToolStripMenuItem aaaaToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem loadExcelOrderReportToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem yearlyReport_mi;
+        private System.Windows.Forms.ToolStripMenuItem monthlyTotalPerYear_mi;
     }
 }

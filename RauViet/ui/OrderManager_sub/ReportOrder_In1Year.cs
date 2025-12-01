@@ -84,9 +84,9 @@ namespace RauViet.ui
                                                                     ProductName_EN = g.Key.ProductNameEN,
                                                                     TotalNetWeight = g.Sum(r => r.Field<decimal>("TotalNetWeight")),
                                                                     TotalPCS = g.Sum(r => r.Field<int>("TotalPCS")),
-                                                                    TotalAmountCHF = g.Sum(r => r.Field<decimal>("TotalAmountCHF"))
-                                                                })
-                                                                .ToList();
+                                                                    TotalAmountCHF = g.Sum(r => r.Field<decimal>("TotalAmountCHF")),
+                                                                    Priority = g.Min(r=>r.Field<int>("Priority"))
+                                                                }).OrderBy(x => x.Priority).ThenBy(x => x.ProductName_VN).ToList();
 
                     
                     productOrderHistoryByYear_dt.Columns.Add("ProductName_VN", typeof(string));
@@ -143,20 +143,22 @@ namespace RauViet.ui
                                                                     ProductName_EN = g.Key.ProductName_EN,
                                                                     TotalPCS = g.Sum(r => r.Field<int>("TotalPCS")),
                                                                     TotalNetWeight = g.Sum(r => r.Field<decimal>("TotalNetWeight")),
-                                                                    TotalAmountCHF = g.Sum(r => r.Field<decimal>("TotalAmountCHF"))
-                                                                })
-                                                                .ToList();
+                                                                    TotalAmountCHF = g.Sum(r => r.Field<decimal>("TotalAmountCHF")),
+                                                                    Priority = g.Min(r=>r.Field<int>("Priority"))
+                                                                }).OrderBy(x=>x.Priority).ThenBy(x=>x.ProductName_VN).ToList();
 
 
                     customerOrderDetail_dt.Columns.Add("CustomerName", typeof(string));
                     customerOrderDetail_dt.Columns.Add("ProductName_VN", typeof(string));
                     customerOrderDetail_dt.Columns.Add("ProductName_EN", typeof(string));
+                    customerOrderDetail_dt.Columns.Add("TotalPCS", typeof(int));
                     customerOrderDetail_dt.Columns.Add("TotalNetWeight", typeof(decimal));
                     customerOrderDetail_dt.Columns.Add("TotalAmountCHF", typeof(decimal));
+                    customerOrderDetail_dt.Columns.Add("Priority", typeof(int));
 
                     foreach (var item in grouped)
                     {
-                        customerOrderDetail_dt.Rows.Add(item.CustomerName, item.ProductName_VN, item.ProductName_EN, item.TotalNetWeight, item.TotalAmountCHF);
+                        customerOrderDetail_dt.Rows.Add(item.CustomerName, item.ProductName_VN, item.ProductName_EN, item.TotalPCS, item.TotalNetWeight, item.TotalAmountCHF, item.Priority);
                     }
 
                     mCustomerDetail_DV = new DataView(customerOrderDetail_dt);
@@ -169,6 +171,13 @@ namespace RauViet.ui
 
                 dataGV.Columns["ExportHistoryID"].Visible = false;
                 CustomerDetail_GV.Columns["CustomerName"].Visible = false;
+                CustomerDetail_GV.Columns["ProductName_EN"].Visible = false;
+                CustomerDetail_GV.Columns["Priority"].Visible = false;
+                CustomerDetail_GV.Columns["ProductName_VN"].HeaderText = "Tên Sản Phẩm";
+                CustomerDetail_GV.Columns["ProductName_EN"].HeaderText = "Product Name";
+                CustomerDetail_GV.Columns["TotalNetWeight"].HeaderText = "Net Weight";
+                CustomerDetail_GV.Columns["TotalAmountCHF"].HeaderText = "Thành Tiền";
+                CustomerDetail_GV.Columns["TotalPCS"].HeaderText = "PCS";
 
                 int count = 0;
                 salarySummaryByYear_dt.Columns["ExportCode"].SetOrdinal(count++);
@@ -193,19 +202,22 @@ namespace RauViet.ui
                 dataGV.Columns["NumberCarton"].Width = sizeWidth;
                 dataGV.Columns["FreightCharge"].Width = sizeWidth;
 
-
+                product_GV.Columns["ProductName_EN"].Visible = false;
                 product_GV.Columns["ProductName_VN"].HeaderText = "Tên Sản Phẩm";
                 product_GV.Columns["ProductName_EN"].HeaderText = "Product Name";
                 product_GV.Columns["TotalNetWeight"].HeaderText = "Net Weight";
                 product_GV.Columns["TotalAmountCHF"].HeaderText = "Thành Tiền";
+                product_GV.Columns["TotalPCS"].HeaderText = "PCS";
                 product_GV.Columns["ProductName_VN"].Width = 150;
                 product_GV.Columns["ProductName_EN"].Width = 130;
                 product_GV.Columns["TotalNetWeight"].Width = 70;
                 product_GV.Columns["TotalAmountCHF"].Width = 70;
 
+                
                 CustomerGV.Columns["CustomerName"].HeaderText = "Tên Sản Phẩm";
                 CustomerGV.Columns["TotalNetWeight"].HeaderText = "Net Weight";
                 CustomerGV.Columns["TotalAmountCHF"].HeaderText = "Thành Tiền";
+                CustomerGV.Columns["TotalPCS"].HeaderText = "PCS";
                 CustomerGV.Columns["CustomerName"].Width = 100;
                 CustomerGV.Columns["TotalNetWeight"].Width = 80;
                 CustomerGV.Columns["TotalAmountCHF"].Width = 80;
@@ -222,9 +234,17 @@ namespace RauViet.ui
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 product_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 CustomerGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                CustomerDetail_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
                 product_GV.Columns["TotalAmountCHF"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 product_GV.Columns["TotalNetWeight"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                product_GV.Columns["TotalPCS"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                CustomerGV.Columns["TotalAmountCHF"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                CustomerGV.Columns["TotalNetWeight"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                CustomerGV.Columns["TotalPCS"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                CustomerDetail_GV.Columns["TotalAmountCHF"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                CustomerDetail_GV.Columns["TotalNetWeight"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                CustomerDetail_GV.Columns["TotalPCS"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 dataGV.Columns["NumberCarton"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
                 dataGV.Columns["TotalMoney"].DefaultCellStyle.Format = "N2";
@@ -259,6 +279,7 @@ namespace RauViet.ui
             string safeName = cusName.Replace("'", "''");
 
             mCustomerDetail_DV.RowFilter = $"CustomerName = '{safeName}'";
+            mCustomerDetail_DV.Sort = "Priority ASC, ProductName_VN ASC";
         }
 
         private async void Load_btn_Click(object sender, EventArgs e)

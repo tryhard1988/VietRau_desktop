@@ -1,7 +1,7 @@
 ﻿
 namespace RauViet.ui
 {
-    partial class YearlyReport
+    partial class MonthlyTotalPerYear
     {
         /// <summary>
         /// Required designer variable.
@@ -111,20 +111,20 @@ namespace RauViet.ui
             // 
             this.exportToExcel_btn.BackColor = System.Drawing.SystemColors.Highlight;
             this.exportToExcel_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.exportToExcel_btn.Location = new System.Drawing.Point(319, 3);
+            this.exportToExcel_btn.Location = new System.Drawing.Point(889, 3);
             this.exportToExcel_btn.Name = "exportToExcel_btn";
             this.exportToExcel_btn.Size = new System.Drawing.Size(108, 41);
-            this.exportToExcel_btn.TabIndex = 26;
+            this.exportToExcel_btn.TabIndex = 27;
             this.exportToExcel_btn.Text = "Xuất File Excel";
             this.exportToExcel_btn.UseVisualStyleBackColor = false;
             // 
-            // YearlyReport
+            // MonthlyTotalPerYear
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1886, 724);
             this.Controls.Add(this.panel1);
-            this.Name = "YearlyReport";
+            this.Name = "MonthlyTotalPerYear";
             this.Text = "FormTableData";
             this.panel1.ResumeLayout(false);
             this.panel4.ResumeLayout(false);
