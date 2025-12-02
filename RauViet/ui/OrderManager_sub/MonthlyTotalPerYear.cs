@@ -181,8 +181,8 @@ namespace RauViet.ui
             using (var wb = new XLWorkbook())
             {
                 var sheet1_ws = wb.Worksheets.Add("Sheet1");
-                sheet1_ws.Style.Font.FontName = "Arial";
-                sheet1_ws.Style.Font.FontSize = 9;
+                sheet1_ws.Style.Font.FontName = "Tahoma";
+                sheet1_ws.Style.Font.FontSize = 11;
                 sheet1_ws.RowHeight = 16;
                 sheet1_ws.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
 
@@ -191,8 +191,9 @@ namespace RauViet.ui
                 sheet1_ws.Cell(1, 1).Style.Font.Bold = true;
                 sheet1_ws.Cell(1, 1).Style.Font.FontSize = 24;
                 sheet1_ws.Cell(1, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                sheet1_ws.Cell(1, 1).Style.Fill.BackgroundColor = XLColor.LightYellow;
 
-                var cell1 = sheet1_ws.Cell(3, 1);
+                var cell1 = sheet1_ws.Cell(2, 1);
                 cell1.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
 
                 int colIndex = 2;
@@ -231,7 +232,7 @@ namespace RauViet.ui
                         var cell = sheet1_ws.Cell(rowIndex, 1);
                         cell.Value = row["MonthStr"].ToString();
                         cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                        cell.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                        cell.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;                        
                     }
                     colIndex = 2;
 
@@ -291,12 +292,14 @@ namespace RauViet.ui
                 sheet1_ws.Row(1).Height = 45;
                 sheet1_ws.Row(2).Height = 30;
                 for (int i = 1; i < mProductOrderHistory_dt.Rows.Count; i++)
-                    sheet1_ws.Column(i + 1).Width = 14;
+                    sheet1_ws.Column(i + 1).Width = 20;
+                for (int i = 3; i < 16; i++)
+                    sheet1_ws.Row(i).Height = 16;
 
                 using (SaveFileDialog sfd = new SaveFileDialog())
                 {
                     sfd.Filter = "Excel Workbook|*.xlsx";
-                    sfd.FileName = "excel.xlsx";
+                    sfd.FileName = "Gấm 2.xlsx";
                     if (sfd.ShowDialog() == DialogResult.OK)
                     {
                         wb.SaveAs(sfd.FileName);

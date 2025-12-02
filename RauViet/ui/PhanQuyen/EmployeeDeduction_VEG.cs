@@ -103,17 +103,19 @@ namespace RauViet.ui
                 employeeDeductionGV.Columns["DeductionTypeCode"].Visible = false;
                 employeeDeductionGV.Columns["DeductionTypeName"].Visible = false;
 
+                log_GV.Columns["LogID"].Visible = false;
+                log_GV.Columns["EmployeeCode"].Visible = false;
+                log_GV.Columns["DeductionTypeCode"].Visible = false;
+
                 int count = 0;
                 mEmployeeDeduction_dt.Columns["DeductionDate"].SetOrdinal(count++);
                 mEmployeeDeduction_dt.Columns["Amount"].SetOrdinal(count++);
                 mEmployeeDeduction_dt.Columns["Note"].SetOrdinal(count++);
-                mEmployeeDeduction_dt.Columns["UpdateHistory"].SetOrdinal(count++);
 
 
                 employeeDeductionGV.Columns["DeductionDate"].HeaderText = "Ngày Chi";
                 employeeDeductionGV.Columns["Amount"].HeaderText = "Số Tiền";
                 employeeDeductionGV.Columns["Note"].HeaderText = "Ghi Chú";
-                employeeDeductionGV.Columns["UpdateHistory"].HeaderText = "Log";
 
                 dataGV.Columns["FullName"].HeaderText = "Tên Nhân Viên";
                 dataGV.Columns["EmployeeCode"].HeaderText = "Mã NV";
@@ -127,7 +129,6 @@ namespace RauViet.ui
                 employeeDeductionGV.Columns["DeductionDate"].Width = 70;
                 employeeDeductionGV.Columns["Amount"].Width = 60;
                 employeeDeductionGV.Columns["Note"].Width = 200;
-                employeeDeductionGV.Columns["UpdateHistory"].Width = 150;
 
                 if (dataGV.Rows.Count > 0)
                 {
@@ -136,9 +137,7 @@ namespace RauViet.ui
                 }
 
                 bool isLock = await SQLStore.Instance.IsSalaryLockAsync(month, year);
-                LuuThayDoiBtn.Visible = !isLock;
                 newCustomerBtn.Visible = !isLock;
-                delete_btn.Visible = !isLock;
                 edit_btn.Visible = !isLock;
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
@@ -169,9 +168,13 @@ namespace RauViet.ui
             int year = monthYearDtp.Value.Year;
 
             var employeeDeductionAsync = SQLStore.Instance.GetDeductionAsync(month, year, DeductionTypeCode);
+            var EmployeeDeductionLogTask = SQLStore.Instance.GetEmployeeDeductionLogAsync(month, year, DeductionTypeCode);
 
-            await Task.WhenAll(employeeDeductionAsync);
+            
+            await Task.WhenAll(employeeDeductionAsync, EmployeeDeductionLogTask);
             mEmployeeDeduction_dt = employeeDeductionAsync.Result;
+            mDeductionLogDV = new DataView(EmployeeDeductionLogTask.Result);
+            log_GV.DataSource = mDeductionLogDV;
 
             if (dataGV.CurrentRow != null)
             {
@@ -180,9 +183,7 @@ namespace RauViet.ui
             }
 
             bool isLock = await SQLStore.Instance.IsSalaryLockAsync(month, year);
-            LuuThayDoiBtn.Visible = !isLock;
             newCustomerBtn.Visible = !isLock;
-            delete_btn.Visible = !isLock;
             edit_btn.Visible = !isLock;
 
             await Task.Delay(100);
@@ -231,7 +232,6 @@ namespace RauViet.ui
         private void UpdateEmployeeDeductionUI(int index)
         {
             amount_tb.Text = "0";
-            updateHistory_tb.Text = "";
 
             employeeDeductionGV.ClearSelection();
 
@@ -242,6 +242,8 @@ namespace RauViet.ui
             dv.RowFilter = $"EmployeeCode = '{employeeCode}'";
 
             employeeDeductionGV.DataSource = dv;
+
+            mDeductionLogDV.RowFilter = $"EmployeeCode = '{employeeCode}'";
         }
         private void UpdateRightUI(int index)
         {
@@ -252,18 +254,16 @@ namespace RauViet.ui
             DateTime deductionDate = Convert.ToDateTime(cells["DeductionDate"].Value);
             int amount = Convert.ToInt32(cells["Amount"].Value);
             string note = cells["Note"].Value.ToString();
-            string updateHistory = cells["UpdateHistory"].Value.ToString();
 
             this.employeeDeductionID_tb.Text = employeeDeductionID.ToString();
             deductionDate_dtp.Value = deductionDate;
             amount_tb.Text = amount.ToString();
             note_tb.Text = note;
-            updateHistory_tb.Text = updateHistory;
 
             status_lb.Text = "";
         }
         
-        private async void updateData(int employeeDeductionID, string employeeCode, DateTime deductionDate, int amount, string note, string updateHistory)
+        private async void updateData(int employeeDeductionID, string employeeCode, DateTime deductionDate, int amount, string note)
         {
             foreach (DataGridViewRow row in employeeDeductionGV.Rows)
             {
@@ -275,20 +275,21 @@ namespace RauViet.ui
                     {
                         try
                         {
-                            bool isScussess = await SQLManager.Instance.updateEmployeeDeductionAsync(employeeDeductionID, employeeCode, deductionDate, amount, note, updateHistory);
+                            bool isScussess = await SQLManager.Instance.updateEmployeeDeductionAsync(employeeDeductionID, employeeCode, deductionDate, amount, note);
 
                             if (isScussess == true)
                             {
                                 status_lb.Text = "Thành công.";
                                 status_lb.ForeColor = Color.Green;
+                                
+                                _ = SQLManager.Instance.InsertEmployeeDeductionLogAsync(employeeCode, DeductionTypeCode, $"Edit: {row.Cells["DeductionDate"].Value} - {row.Cells["Amount"].Value} - {row.Cells["Note"].Value} Success", deductionDate.Date, amount, note);
 
                                 row.Cells["EmployeeCode"].Value = employeeCode;
                                 row.Cells["DeductionDate"].Value = deductionDate.Date;
                                 row.Cells["Amount"].Value = amount;
                                 row.Cells["Note"].Value = note;
-                                row.Cells["UpdateHistory"].Value = updateHistory;
 
-                                _ = SQLManager.Instance.InsertEmployeeDeductionLogAsync(employeeCode, DeductionTypeCode, "Edit: Success", deductionDate.Date, amount, note);
+                                
 
                                 DataRowView drv = row.DataBoundItem as DataRowView;
                                 if (drv != null)
@@ -299,16 +300,16 @@ namespace RauViet.ui
                             }
                             else
                             {
-                                status_lb.Text = "Thất bại.";
+                                _ = SQLManager.Instance.InsertEmployeeDeductionLogAsync(employeeCode, DeductionTypeCode, $"Edit: {row.Cells["DeductionDate"].Value} - {row.Cells["Amount"].Value} - {row.Cells["Note"].Value} Fail", deductionDate.Date, amount, note);
                                 status_lb.ForeColor = Color.Red;
-                                _ = SQLManager.Instance.InsertEmployeeDeductionLogAsync(employeeCode, DeductionTypeCode, "Edit: Fail", deductionDate.Date, amount, note);
+                                status_lb.Text = "Thất bại.";
                             }
                         }
                         catch (Exception ex)
                         {
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;
-                            _ = SQLManager.Instance.InsertEmployeeDeductionLogAsync(employeeCode, DeductionTypeCode, "Edit: Fail Exception: " + ex.Message, deductionDate.Date, amount, note);
+                            _ = SQLManager.Instance.InsertEmployeeDeductionLogAsync(employeeCode, DeductionTypeCode, $"Edit: {row.Cells["DeductionDate"].Value} - {row.Cells["Amount"].Value} - {row.Cells["Note"].Value} Fail", deductionDate.Date, amount, note);
                         }
                     }
                     break;
@@ -316,7 +317,7 @@ namespace RauViet.ui
             }
         }
 
-        private async void createNew(string employeeCode, DateTime deductionDate, int amount, string note, string updateHistory)
+        private async void createNew(string employeeCode, DateTime deductionDate, int amount, string note)
         {
             DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
@@ -324,7 +325,7 @@ namespace RauViet.ui
             {
                 try
                 {
-                    int employeeDeductionID = await SQLManager.Instance.insertEmployeeDeductionAsync(employeeCode, DeductionTypeCode, deductionDate, amount, note, updateHistory);
+                    int employeeDeductionID = await SQLManager.Instance.insertEmployeeDeductionAsync(employeeCode, DeductionTypeCode, deductionDate, amount, note);
                     if (employeeDeductionID > 0)
                     {
                         DataRow drToAdd = mEmployeeDeduction_dt.NewRow();
@@ -336,7 +337,6 @@ namespace RauViet.ui
                         drToAdd["DeductionDate"] = deductionDate.Date;
                         drToAdd["Amount"] = amount;
                         drToAdd["Note"] = note;
-                        drToAdd["UpdateHistory"] = updateHistory;
 
                         mEmployeeDeduction_dt.Rows.Add(drToAdd);
                         mEmployeeDeduction_dt.AcceptChanges();
@@ -394,12 +394,11 @@ namespace RauViet.ui
 
             string employeeCode = Convert.ToString(dataGV.CurrentRow.Cells["EmployeeCode"].Value);
             string note = note_tb.Text;
-            string updateHistory = updateHistory_tb.Text + DateTime.Now.ToString("MM/yyyy") + ":" + UserManager.Instance.employeeCode + ";";
 
             if (employeeDeductionID_tb.Text.Length != 0)
-                updateData(Convert.ToInt32(employeeDeductionID_tb.Text), employeeCode, deductionDate, amount, note, updateHistory);
+                updateData(Convert.ToInt32(employeeDeductionID_tb.Text), employeeCode, deductionDate, amount, note);
             else
-                createNew(employeeCode, deductionDate, amount, note, updateHistory);
+                createNew(employeeCode, deductionDate, amount, note);
 
         }
         private async void deleteBtn_Click(object sender, EventArgs e)
@@ -467,7 +466,6 @@ namespace RauViet.ui
             int year = monthYearDtp.Value.Year;
             employeeDeductionID_tb.Text = "";
             amount_tb.Text = "";
-            updateHistory_tb.Text = null;
             deductionDate_dtp.Value = new DateTime(year, month, deductionDate_dtp.Value.Day);
             status_lb.Text = "";
             info_gb.BackColor = Color.Green;

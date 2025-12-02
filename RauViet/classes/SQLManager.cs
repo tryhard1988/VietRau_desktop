@@ -3004,18 +3004,22 @@ namespace RauViet.classes
             catch { return false; }
         }
 
-        public async Task<DataTable> GetMonthlyAllowanceAsybc()
+        public async Task<DataTable> GetMonthlyAllowanceAsybc(int month, int year)
         {
             DataTable dt = new DataTable();
             using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
             {
                 await con.OpenAsync();
-                string query = @"SELECT * FROM MonthlyAllowance";
+                string query = @"SELECT * FROM MonthlyAllowance WHERE Month = @Month AND Year = @Year";
 
                 using (SqlCommand cmd = new SqlCommand(query, con))
-                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                 {
-                    dt.Load(reader);
+                    cmd.Parameters.AddWithValue("@Month", month);
+                    cmd.Parameters.AddWithValue("@Year", year);
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
                 }
             }
             return dt;
@@ -3101,7 +3105,7 @@ namespace RauViet.classes
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
-                        cmd.Parameters.AddWithValue("@EmployeeAllowaMonthlyAllowanceIDnceID", monthlyAllowanceID);
+                        cmd.Parameters.AddWithValue("@MonthlyAllowanceID", monthlyAllowanceID);
                         await cmd.ExecuteNonQueryAsync();
                     }
                 }
@@ -3433,7 +3437,7 @@ namespace RauViet.classes
         }
 
 
-        public async Task<bool> updateEmployeeDeductionAsync(int EmployeeDeductionID, string EmployeeCode, DateTime DeductionDate, int amount, string note, string updateHistory)
+        public async Task<bool> updateEmployeeDeductionAsync(int EmployeeDeductionID, string EmployeeCode, DateTime DeductionDate, int amount, string note)
         {
             string query = @"UPDATE EmployeeDeduction SET 
                                 EmployeeCode=@EmployeeCode,
@@ -3441,8 +3445,7 @@ namespace RauViet.classes
                                 DeductionYear=@DeductionYear,
                                 DeductionDate=@DeductionDate,
                                 Amount=@Amount,
-                                Note=@Note,
-                                UpdateHistory=@UpdateHistory
+                                Note=@Note
                             WHERE EmployeeDeductionID=@EmployeeDeductionID";
             try
             {
@@ -3458,7 +3461,6 @@ namespace RauViet.classes
                         cmd.Parameters.AddWithValue("@DeductionDate", DeductionDate.Date);
                         cmd.Parameters.AddWithValue("@Amount", amount);
                         cmd.Parameters.AddWithValue("@Note", note);
-                        cmd.Parameters.AddWithValue("@UpdateHistory", updateHistory);
                         await cmd.ExecuteNonQueryAsync();
                     }
                 }
@@ -3467,16 +3469,16 @@ namespace RauViet.classes
             catch { return false; }
         }
 
-        public async Task<int> insertEmployeeDeductionAsync(string EmployeeCode, string DeductionTypeCode, DateTime DeductionDate, int amount, string note, string updateHistory)
+        public async Task<int> insertEmployeeDeductionAsync(string EmployeeCode, string DeductionTypeCode, DateTime DeductionDate, int amount, string note)
         {
             int newId = -1;
 
             string insertQuery = @" INSERT INTO EmployeeDeduction (
-                                        EmployeeCode, DeductionTypeCode, DeductionMonth, DeductionYear, DeductionDate, Amount, Note, UpdateHistory
+                                        EmployeeCode, DeductionTypeCode, DeductionMonth, DeductionYear, DeductionDate, Amount, Note
                                     )
                                     OUTPUT INSERTED.EmployeeDeductionID
                                     VALUES (
-                                        @EmployeeCode, @DeductionTypeCode, @DeductionMonth, @DeductionYear, @DeductionDate, @Amount, @Note, @UpdateHistory
+                                        @EmployeeCode, @DeductionTypeCode, @DeductionMonth, @DeductionYear, @DeductionDate, @Amount, @Note
                                     )";
 
             try
@@ -3495,7 +3497,6 @@ namespace RauViet.classes
                         cmd.Parameters.AddWithValue("@DeductionDate", DeductionDate.Date);
                         cmd.Parameters.AddWithValue("@Amount", amount);
                         cmd.Parameters.AddWithValue("@Note", note);
-                        cmd.Parameters.AddWithValue("@UpdateHistory", updateHistory);
 
                         object result = await cmd.ExecuteScalarAsync();
                         if (result != null)
@@ -3511,7 +3512,7 @@ namespace RauViet.classes
             return newId;
         }
 
-        public async Task<bool> UpsertEmployeeDeductionAsync(string EmployeeCode, string DeductionTypeCode, DateTime DeductionDate, int amount, string note, string updateHistory)
+        public async Task<bool> UpsertEmployeeDeductionAsync(string EmployeeCode, string DeductionTypeCode, DateTime DeductionDate, int amount, string note)
         {
             try
             {
@@ -3530,7 +3531,6 @@ namespace RauViet.classes
                         cmd.Parameters.AddWithValue("@DeductionDate", DeductionDate.Date);
                         cmd.Parameters.AddWithValue("@Amount", amount);
                         cmd.Parameters.AddWithValue("@Note", note ?? (object)DBNull.Value);
-                        cmd.Parameters.AddWithValue("@UpdateHistory", updateHistory ?? (object)DBNull.Value);
 
                         // ExecuteScalarAsync chỉ để trigger SP, không cần lấy giá trị
                         await cmd.ExecuteScalarAsync();
@@ -4590,5 +4590,53 @@ namespace RauViet.classes
             return dt;
         }
 
+        public async Task InsertMonthlyAllowanceLogAsync(string employeeCode, string allowanceName, string description, int month, int year, int amount, string note)
+        {
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_Log_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand("sp_InsertMonthlyAllowanceLog", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@EmployeeCode", employeeCode);
+                        cmd.Parameters.AddWithValue("@AllowanceName", allowanceName);
+                        cmd.Parameters.AddWithValue("@Description", (object)description ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@Month", month);
+                        cmd.Parameters.AddWithValue("@Year", year);
+                        cmd.Parameters.AddWithValue("@Amount", (object)amount ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@Note", (object)note ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@ActionBy", UserManager.Instance.fullName);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error InsertMonthlyAllowanceLogAsync: {ex.Message}");
+            }
+        }
+
+        public async Task<DataTable> GetMonthlyAllowanceLogAsync(int month, int year)
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_NhanSu_Log_conStr()))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT * FROM MonthlyAllowance_Log WHERE Month = @Month AND Year = @Year";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    cmd.Parameters.AddWithValue("@Month", month);
+                    cmd.Parameters.AddWithValue("@Year", year);
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
+        }
     }
 }

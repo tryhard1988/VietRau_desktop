@@ -142,6 +142,8 @@ namespace RauViet.ui
                 logGV.Columns["ExportCodeID"].Visible = false;
                 logGV.Columns["OrderID"].Visible = false;
                 dataGV.Columns["SKU"].Visible = false;
+                dataGV.Columns["GroupProduct"].Visible = false;
+                dataGV.Columns["Priority"].Visible = false;
 
                 dataGV.ReadOnly = false;
                 dataGV.Columns["CartonNo"].ReadOnly = false;

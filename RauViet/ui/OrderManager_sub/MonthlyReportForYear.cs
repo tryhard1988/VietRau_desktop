@@ -1,6 +1,9 @@
-﻿using DocumentFormat.OpenXml.Bibliography;
+﻿using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Bibliography;
+using DocumentFormat.OpenXml.Spreadsheet;
 using RauViet.classes;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,6 +15,7 @@ namespace RauViet.ui
     public partial class MonthlyReportForYear : Form
     {
         private LoadingOverlay loadingOverlay;
+        private DataTable mProductOrderHistory_dt;
         public MonthlyReportForYear()
         {
             InitializeComponent();
@@ -33,6 +37,8 @@ namespace RauViet.ui
             load_btn.Click += Load_btn_Click;
             this.KeyDown += ReportOrder_Year_KeyDown;
             product_GV.CellFormatting += product_GV_CellFormatting;
+
+            exportToExcel_btn.Click += ExportToExcel_btn_Click;
         }
 
         private void ReportOrder_Year_KeyDown(object sender, KeyEventArgs e)
@@ -63,7 +69,7 @@ namespace RauViet.ui
                 var customerOrderHistoryByYearTask = SQLStore.Instance.GetCustomerOrderDetailHistoryByYear(year);
 
                 await Task.WhenAll(customerOrderHistoryByYearTask);
-                DataTable productOrderHistoryByYear_dt = new DataTable();
+                mProductOrderHistory_dt = new DataTable();
                 {
                     var grouped = customerOrderHistoryByYearTask.Result.AsEnumerable()
                                                                 .GroupBy(row => new
@@ -132,21 +138,21 @@ namespace RauViet.ui
                                                                     TotalAmountCHF = g.Sum(r => r.Field<decimal>("TotalAmountCHF"))
                                                                 }).OrderBy(x=>x.priority).ThenBy(x=>x.ProductName_VN).ToList();
 
-                    productOrderHistoryByYear_dt.Columns.Add("ProductName_VN", typeof(string));
-                    productOrderHistoryByYear_dt.Columns.Add("ProductName_EN", typeof(string));
-                    
-                    productOrderHistoryByYear_dt.Columns.Add("TotalQuanitity", typeof(decimal));
-                    productOrderHistoryByYear_dt.Columns.Add("TotalAmountCHF", typeof(decimal));
+                    mProductOrderHistory_dt.Columns.Add("ProductName_VN", typeof(string));
+                    mProductOrderHistory_dt.Columns.Add("ProductName_EN", typeof(string));
+
+                    mProductOrderHistory_dt.Columns.Add("TotalQuanitity", typeof(decimal));
+                    mProductOrderHistory_dt.Columns.Add("TotalAmountCHF", typeof(decimal));
                     for (int i = 1; i<= 12; i++)
                     {
-                        productOrderHistoryByYear_dt.Columns.Add($"Thang{i}", typeof(decimal));
+                        mProductOrderHistory_dt.Columns.Add($"Thang{i}", typeof(decimal));
                     }
                    // productOrderHistoryByYear_dt.Columns.Add("TotalPCS", typeof(int));
                     
 
                     foreach (var item in grouped)
                     {
-                        DataRow row = productOrderHistoryByYear_dt.NewRow();
+                        DataRow row = mProductOrderHistory_dt.NewRow();
 
                         row["ProductName_VN"] = item.ProductName_VN;
                         row["ProductName_EN"] = item.ProductName_EN;
@@ -168,11 +174,11 @@ namespace RauViet.ui
 
                         row["TotalAmountCHF"] = item.TotalAmountCHF;
 
-                        productOrderHistoryByYear_dt.Rows.Add(row);
+                        mProductOrderHistory_dt.Rows.Add(row);
                     }
                 }
    
-                product_GV.DataSource = productOrderHistoryByYear_dt;
+                product_GV.DataSource = mProductOrderHistory_dt;
 
                 for (int i = 1; i <= 12; i++)
                 {
@@ -233,5 +239,146 @@ namespace RauViet.ui
             }
         }
 
+        private void ExportToExcel_btn_Click(object sender, EventArgs e)
+        {
+            using (var wb = new XLWorkbook())
+            {
+                var sheet1_ws = wb.Worksheets.Add("Sheet1");
+                sheet1_ws.Style.Font.FontName = "Tahoma";
+                sheet1_ws.Style.Font.FontSize = 11;
+                sheet1_ws.RowHeight = 16;
+                sheet1_ws.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+
+                sheet1_ws.Range(1, 1, 1, mProductOrderHistory_dt.Columns.Count - 1).Merge();
+                sheet1_ws.Cell(1, 1).Value = "THỐNG KÊ SỐ LƯỢNG TỪNG MẶT HÀNG THEO THÁNG";
+                sheet1_ws.Cell(1, 1).Style.Font.Bold = true;
+                sheet1_ws.Cell(1, 1).Style.Font.FontSize = 24;
+                sheet1_ws.Cell(1, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                sheet1_ws.Cell(1, 1).Style.Fill.BackgroundColor = XLColor.LightYellow;
+
+                var cell1 = sheet1_ws.Cell(2, 1);
+                cell1.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;                
+                int colIndex = 2;
+
+                XLColor[] monthColors = new XLColor[] { XLColor.LightBlue, XLColor.LightGreen };
+
+                {                    
+                    var cell = sheet1_ws.Cell(2, colIndex);
+                    cell.Value = "Tổng SL";
+                    cell.Style.Font.Bold = true;
+                    cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    cell.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                    cell.Style.Fill.BackgroundColor = monthColors[colIndex % monthColors.Length];
+                    colIndex++;
+                }
+                {
+                    var cell = sheet1_ws.Cell(2, colIndex);
+                    cell.Value = "Amount CHF";
+                    cell.Style.Font.Bold = true;
+                    cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    cell.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                    cell.Style.Fill.BackgroundColor = monthColors[colIndex % monthColors.Length];
+                    colIndex++;
+                }
+                for (int i =0; i <12; i++)
+                {
+                    var cell = sheet1_ws.Cell(2, colIndex);
+                    cell.Value = $"Tháng {(i+1).ToString("00")}";
+                    cell.Style.Font.Bold = true;
+                    cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    cell.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                    cell.Style.Fill.BackgroundColor = XLColor.LightSalmon;
+                    colIndex++;
+                }
+
+                int rowIndex = 3;
+
+                Dictionary<string, decimal> totals = new Dictionary<string, decimal>();
+                foreach (DataRow row in mProductOrderHistory_dt.Rows)
+                {
+                    colIndex = 1;
+                    {
+                        var cell = sheet1_ws.Cell(rowIndex, colIndex);
+                        cell.Value = row["ProductName_VN"].ToString();
+                        cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+                        cell.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                        colIndex++;
+                    }
+                    {
+                        string key = $"TotalQuanitity";
+                        decimal value = Convert.ToDecimal(row[key]);
+                        var cell = sheet1_ws.Cell(rowIndex, colIndex);
+                        cell.Value = value;
+                        cell.Style.NumberFormat.Format = "#,##0.00;-#,##0.00;\"-\"";
+                        cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
+                        cell.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                        cell.Style.Fill.BackgroundColor = monthColors[colIndex % monthColors.Length];
+                        colIndex++;
+                    }
+                    {
+                        string key = $"TotalAmountCHF";
+                        decimal value = Convert.ToDecimal(row[key]);
+                        var cell = sheet1_ws.Cell(rowIndex, colIndex);
+                        cell.Value = value;
+                        cell.Style.NumberFormat.Format = "#,##0.00;-#,##0.00;\"-\"";
+                        cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
+                        cell.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                        cell.Style.Fill.BackgroundColor = monthColors[colIndex % monthColors.Length];
+                        colIndex++;
+                    }
+
+                    for (int i = 0; i < 12; i++)
+                    {
+                        {
+                            string key = $"Thang{i + 1}";
+                            decimal value = Convert.ToDecimal(row[key]);
+                            var cell = sheet1_ws.Cell(rowIndex, colIndex);
+                            cell.Value = value;
+                            cell.Style.NumberFormat.Format = "#,##0.00;-#,##0.00;\"-\"";
+                            cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
+                            cell.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;                            
+                            colIndex++;
+                        }
+                    }
+
+                    rowIndex++;
+                }
+
+                sheet1_ws.Row(1).Height = 45;
+                sheet1_ws.Row(2).Height = 30;
+                for (int i = 1; i < mProductOrderHistory_dt.Rows.Count; i++)
+                    sheet1_ws.Column(i + 1).Width = 15;
+                for(int i=3; i < rowIndex; i ++)
+                    sheet1_ws.Row(i).Height = 16;
+
+                sheet1_ws.Column(1).Width = 30;
+
+                using (SaveFileDialog sfd = new SaveFileDialog())
+                {
+                    sfd.Filter = "Excel Workbook|*.xlsx";
+                    sfd.FileName = "Gấm 1.xlsx";
+                    if (sfd.ShowDialog() == DialogResult.OK)
+                    {
+                        wb.SaveAs(sfd.FileName);
+                        DialogResult result = MessageBox.Show("Bạn có muốn mở file này không?", "Lưu file thành công", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                        if (result == DialogResult.Yes)
+                        {
+                            try
+                            {
+                                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo()
+                                {
+                                    FileName = sfd.FileName,
+                                    UseShellExecute = true
+                                });
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show("Không thể mở file: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }

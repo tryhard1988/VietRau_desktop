@@ -65,6 +65,7 @@ namespace RauViet.classes
         Dictionary<int, DataTable> mDo47Logs;
         Dictionary<int, DataTable> mLotCodeLogs;
         Dictionary<string, DataTable> mEmployeeDeductionLogs;
+        Dictionary<string, DataTable> mMonthlyAllowanceLogs;
         private SQLStore() { }
 
         public static SQLStore Instance
@@ -102,6 +103,7 @@ namespace RauViet.classes
                 mDo47Logs = new Dictionary<int, DataTable>();
                 mLotCodeLogs = new Dictionary<int, DataTable>();
                 mEmployeeDeductionLogs = new Dictionary<string, DataTable>();
+                mMonthlyAllowanceLogs = new Dictionary<string, DataTable>();
 
                 var productSKUTask = SQLManager.Instance.getProductSKUAsync();
                 var productPackingTask = SQLManager.Instance.getProductpackingAsync();
@@ -2704,6 +2706,33 @@ namespace RauViet.classes
             }
             return mEmployeeDeductionLogs[key];
         }
+        public async Task<DataTable> GetEmployeeDeductionLogAsync(int year, string code)
+        {
+            DataTable data = null;
+            for (int month = 1; month < 13; month++)
+            {
+                string key = month + "_" + year + "_" + code;
+                if (!mEmployeeDeductionLogs.ContainsKey(key))
+                {
+                    DataTable dt = await SQLManager.Instance.GetEmployeeDeductionLogAsync(month, year, code);
+                    mEmployeeDeductionLogs[key] = dt;
+                }
+                DataTable source = mEmployeeDeductionLogs[key];
+
+                // Clone schema nếu data chưa có cột
+                if (data == null)
+                {
+                    data = source.Clone();
+                }
+
+                // Import rows
+                foreach (DataRow row in source.Rows)
+                {
+                    data.ImportRow(row);
+                }
+            }
+            return data;
+        }
 
         public void RemoveCustomerOrderDetailHistory()
         {
@@ -2726,6 +2755,17 @@ namespace RauViet.classes
             }
 
             return mReportCustomerOrderDetail_dt;
+        }
+
+        public async Task<DataTable> GetMonthlyAllowanceLogAsync(int month, int year)
+        {
+            string key = month + "_" + year;
+            if (!mMonthlyAllowanceLogs.ContainsKey(key))
+            {
+                DataTable dt = await SQLManager.Instance.GetMonthlyAllowanceLogAsync(month, year);
+                mMonthlyAllowanceLogs[key] = dt;
+            }
+            return mMonthlyAllowanceLogs[key];
         }
     }
 }

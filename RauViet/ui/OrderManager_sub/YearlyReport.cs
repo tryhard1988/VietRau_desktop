@@ -221,8 +221,8 @@ namespace RauViet.ui
             using (var wb = new XLWorkbook())
             {
                 var sheet1_ws = wb.Worksheets.Add("Sheet1");
-                sheet1_ws.Style.Font.FontName = "Arial";
-                sheet1_ws.Style.Font.FontSize = 9;
+                sheet1_ws.Style.Font.FontName = "Tahoma";
+                sheet1_ws.Style.Font.FontSize = 11;
                 sheet1_ws.RowHeight = 16;
                 sheet1_ws.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
 
@@ -325,7 +325,8 @@ namespace RauViet.ui
                     foreach (var year in mYears)
                     {
                         var cell = sheet1_ws.Cell(rowIndex, colIndex);
-                        cell.Value = Convert.ToDecimal(row[$"{year}"]);
+                        var value = Convert.ToDecimal(row[$"{year}"]);
+                        cell.Value = value;
                         cell.Style.NumberFormat.Format = "#,##0.00;-#,##0.00;\"-\"";
                         cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
                         cell.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
@@ -337,8 +338,9 @@ namespace RauViet.ui
                         foreach (var year in mYears)
                         {
                             var cell = sheet1_ws.Cell(rowIndex, colIndex);
+                            var value = Convert.ToDecimal(row[$"{i + 1}/{year}"]);
                             cell.Style.NumberFormat.Format = "#,##0.00;-#,##0.00;\"-\"";
-                            cell.Value = Convert.ToDecimal(row[$"{i + 1}/{year}"]);
+                            cell.Value = value;
                             cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
                             cell.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
                             colIndex++;
@@ -352,12 +354,13 @@ namespace RauViet.ui
                 sheet1_ws.Row(2).Height = 20;
                 sheet1_ws.Row(3).Height = 15;
                 for (int i = 2; i < mProductOrderHistory_dt.Rows.Count; i++)
-                    sheet1_ws.Column(i+1).Width = 10.43;
-
+                    sheet1_ws.Column(i+1).Width = 11;
+                for (int i = 4; i < rowIndex; i++)
+                    sheet1_ws.Row(i).Height = 16;
                 using (SaveFileDialog sfd = new SaveFileDialog())
                 {
                     sfd.Filter = "Excel Workbook|*.xlsx";
-                    sfd.FileName = "excel.xlsx";
+                    sfd.FileName = "gấm 3.xlsx";
                     if (sfd.ShowDialog() == DialogResult.OK)
                     {
                         wb.SaveAs(sfd.FileName);

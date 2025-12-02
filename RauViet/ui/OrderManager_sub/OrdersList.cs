@@ -242,7 +242,8 @@ namespace RauViet.ui
                 dataGV.Columns["OrderId"].HeaderText = "ID";
 
                 //dataGV.Columns["OrderId"].Visible = false;
-
+                dataGV.Columns["Priority"].Visible = false;
+                dataGV.Columns["GroupProduct"].Visible = false;
                 dataGV.Columns["SKU"].Visible = false;
                 dataGV.Columns["CustomerID"].Visible = false;
                 dataGV.Columns["Search_NoSign"].Visible = false;

@@ -1,17 +1,10 @@
-﻿using DocumentFormat.OpenXml.Bibliography;
-using DocumentFormat.OpenXml.VariantTypes;
-using DocumentFormat.OpenXml.Wordprocessing;
-using RauViet.classes;
+﻿using RauViet.classes;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
 using Color = System.Drawing.Color;
 
 namespace RauViet.ui
@@ -19,6 +12,7 @@ namespace RauViet.ui
     public partial class EmployeeDeduction_ATT : Form
     {
         private DataTable mEmployeeLeave_dt;
+        private DataView mDeductionLogDV;
         private const string DeductionTypeCode = "ATT";
         private int curMonth, curYear;
         public EmployeeDeduction_ATT()
@@ -62,11 +56,11 @@ namespace RauViet.ui
                 int year = monthYearDtp.Value.Year;
                 var employeeTask = SQLManager.Instance.GetActiveEmployee_DeductionATT_Async(month, year);
                 var employeeLeaveAsync = SQLManager.Instance.GetEmployeeLeave_PT_KP_Async(month, year);
-
-                await Task.WhenAll(employeeTask, employeeLeaveAsync);
+                var EmployeeDeductionLogTask = SQLStore.Instance.GetEmployeeDeductionLogAsync(month, year, DeductionTypeCode);
+                await Task.WhenAll(employeeTask, employeeLeaveAsync, EmployeeDeductionLogTask);
                 DataTable employee_dt = employeeTask.Result;
                 mEmployeeLeave_dt = employeeLeaveAsync.Result;
-
+                mDeductionLogDV = new DataView(EmployeeDeductionLogTask.Result);
                 curMonth = month;
                 curYear = year;
 
@@ -89,6 +83,7 @@ namespace RauViet.ui
                 employee_dt.Columns["DeductionAmount"].ReadOnly = false;
                 dataGV.AutoGenerateColumns = true;
                 dataGV.DataSource = employee_dt;
+                log_GV.DataSource = mDeductionLogDV;
 
                 employeeDeductionGV.Columns["EmployeeCode"].Visible = false;
 
@@ -111,10 +106,6 @@ namespace RauViet.ui
                 dataGV.Columns["AllowanceAmount"].HeaderText = "PC Chuyên Cần";
                 dataGV.Columns["DeductionAmount"].HeaderText = "Trừ Chuyên Cần";
                 dataGV.Columns["TotalOffDay"].HeaderText = "Số Ngày Nghỉ";
-                //dataGV.Columns["IsActive"].HeaderText = "Đang Hoạt Động";
-
-                //dataGV.Columns["AllowanceTypeID"].Visible = false;
-                //dataGV.Columns["ApplyScopeID"].Visible = false;
 
                 dataGV.Columns["EmployeeCode"].Width = 50;
                 dataGV.Columns["FullName"].Width = 150;
@@ -133,7 +124,6 @@ namespace RauViet.ui
                 {
                     dataGV.ClearSelection();
                     dataGV.Rows[0].Selected = true;
-                 //   UpdateAllowancetUI(0);
                 }
 
 
@@ -199,6 +189,8 @@ namespace RauViet.ui
             dv.RowFilter = $"EmployeeCode = '{employeeCode}'";
 
             employeeDeductionGV.DataSource = dv;
+
+            mDeductionLogDV.RowFilter = $"EmployeeCode = '{employeeCode}'";
         }
         private void UpdateRightUI(int index)
         {
@@ -210,7 +202,7 @@ namespace RauViet.ui
             status_lb.Text = "";
         }
 
-        private async void updateData(string employeeCode, DateTime deductionDate, int deductionAmount, string updateHistory)
+        private async void updateData(string employeeCode, DateTime deductionDate, int deductionAmount)
         {
             foreach (DataGridViewRow row in dataGV.Rows)
             {
@@ -222,10 +214,11 @@ namespace RauViet.ui
                     {
                         try
                         {
-                            bool isScussess = await SQLManager.Instance.UpsertEmployeeDeductionAsync(employeeCode, DeductionTypeCode, deductionDate, deductionAmount, "", updateHistory);
+                            bool isScussess = await SQLManager.Instance.UpsertEmployeeDeductionAsync(employeeCode, DeductionTypeCode, deductionDate, deductionAmount, "");
 
                             if (isScussess == true)
                             {
+                                _ = SQLManager.Instance.InsertEmployeeDeductionLogAsync(employeeCode, DeductionTypeCode, $"Edit: Success", deductionDate.Date, deductionAmount, "Trừ chuyên cần");
                                 status_lb.Text = "Thành công.";
                                 status_lb.ForeColor = Color.Green;
 
@@ -233,12 +226,14 @@ namespace RauViet.ui
                             }
                             else
                             {
+                                _ = SQLManager.Instance.InsertEmployeeDeductionLogAsync(employeeCode, DeductionTypeCode, $"Edit: Fail", deductionDate.Date, deductionAmount, "Trừ chuyên cần");
                                 status_lb.Text = "Thất bại.";
                                 status_lb.ForeColor = Color.Red;
                             }
                         }
                         catch (Exception ex)
                         {
+                            _ = SQLManager.Instance.InsertEmployeeDeductionLogAsync(employeeCode, DeductionTypeCode, $"Edit Fail Exception: " + ex.Message, deductionDate.Date, deductionAmount, "Trừ chuyên cần");
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;
                         }
@@ -262,7 +257,6 @@ namespace RauViet.ui
 
             string employeeCode = Convert.ToString(dataGV.CurrentRow.Cells["EmployeeCode"].Value);
             int amount = Convert.ToInt32(amount_tb.Text);
-            string updateHistory = DateTime.Now.ToString("MM/yyyy") + ":" + UserManager.Instance.employeeCode + ";";
 
             if(month != curMonth || year != curYear)
             {
@@ -277,7 +271,7 @@ namespace RauViet.ui
                 return;
             }
 
-            updateData(employeeCode, deductionDate, amount, updateHistory);
+            updateData(employeeCode, deductionDate, amount);
         }
 
     }

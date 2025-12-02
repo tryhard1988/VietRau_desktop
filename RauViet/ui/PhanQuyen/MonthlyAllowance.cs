@@ -1,17 +1,8 @@
-﻿using DocumentFormat.OpenXml.Bibliography;
-using DocumentFormat.OpenXml.VariantTypes;
-using DocumentFormat.OpenXml.Wordprocessing;
-using RauViet.classes;
+﻿using RauViet.classes;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
 using Color = System.Drawing.Color;
 
 namespace RauViet.ui
@@ -19,24 +10,27 @@ namespace RauViet.ui
     public partial class MonthlyAllowance : Form
     {
         private DataTable mMonthlyAllowance_dt, mAllowanceType_dt;
+        private DataView mlog_DV;
         bool isNewState = false;
+        int mCurrentMonth = -1;
+        int mCurrentYear = -1;
+        
         public MonthlyAllowance()
         {
             InitializeComponent();
 
             Utils.SetTabStopRecursive(this, false);
 
+            monthYearDtp.Format = DateTimePickerFormat.Custom;
+            monthYearDtp.CustomFormat = "MM/yyyy";
+            monthYearDtp.ShowUpDown = true;
+            monthYearDtp.Value = DateTime.Now;
+
             int countTab = 0;
-            monthYearDtp.TabIndex = countTab++; monthYearDtp.TabStop = true;
             allowanceType_cbb.TabIndex = countTab++; allowanceType_cbb.TabStop = true;
             amount_tb.TabIndex = countTab++; amount_tb.TabStop = true;
             note_tb.TabIndex = countTab++; note_tb.TabStop = true;
             LuuThayDoiBtn.TabIndex = countTab++; LuuThayDoiBtn.TabStop = true;
-
-            monthYearDtp.Format = DateTimePickerFormat.Custom;
-            monthYearDtp.CustomFormat = "MM/yyyy";
-            monthYearDtp.ShowUpDown = true;
-            monthYearDtp.Value = DateTime.Now.AddMonths(-1);
 
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Dock = DockStyle.Fill;
@@ -48,8 +42,6 @@ namespace RauViet.ui
             allowanceGV.MultiSelect = false;
 
             status_lb.Text = "";
-            loading_lb.Text = "Đang tải dữ liệu, vui lòng chờ...";
-            loading_lb.Visible = false;
 
             newCustomerBtn.Click += newCustomerBtn_Click;
             LuuThayDoiBtn.Click += saveBtn_Click;
@@ -62,25 +54,35 @@ namespace RauViet.ui
 
             edit_btn.Click += Edit_btn_Click;
             readOnly_btn.Click += ReadOnly_btn_Click;
+            load_btn.Click += Load_btn_Click;
             ReadOnly_btn_Click(null, null);
         }
 
         public async void ShowData()
         {
 
-            loading_lb.Visible = true;            
+            await Task.Delay(50);
+            LoadingOverlay loadingOverlay = new LoadingOverlay(this);
+            loadingOverlay.Show();
 
             try
             {
+                int month = monthYearDtp.Value.Month;
+                int year = monthYearDtp.Value.Year;
+
                 string[] keepColumns = { "EmployeeCode", "FullName", "DepartmentName", "PositionName", "ContractTypeName", };
                 var employeesTask = SQLStore.Instance.GetEmployeesAsync(keepColumns);
-                var monthlyAllowanceAsync = SQLManager.Instance.GetMonthlyAllowanceAsybc();
-                var allowanceTypeAsync = SQLManager.Instance.GetAllowanceTypeAsync("ONCE");
+                var monthlyAllowanceAsync = SQLManager.Instance.GetMonthlyAllowanceAsybc(month, year);
+                var allowanceTypeAsync = SQLManager.Instance.GetAllowanceTypeAsync("ONCE");                
+                var monthlyAllowanceLogTask = SQLManager.Instance.GetMonthlyAllowanceLogAsync(month, year);
 
-                await Task.WhenAll(employeesTask, monthlyAllowanceAsync, allowanceTypeAsync);
+                await Task.WhenAll(employeesTask, monthlyAllowanceAsync, allowanceTypeAsync, monthlyAllowanceLogTask);
                 DataTable employee_dt = employeesTask.Result;
                 mMonthlyAllowance_dt = monthlyAllowanceAsync.Result;
                 mAllowanceType_dt = allowanceTypeAsync.Result;
+                mlog_DV = new DataView(monthlyAllowanceLogTask.Result);
+                mCurrentMonth = month;
+                mCurrentYear = year;
 
                 mMonthlyAllowance_dt.Columns.Add(new DataColumn("AllowanceName", typeof(string)));
                 mMonthlyAllowance_dt.Columns.Add(new DataColumn("Date", typeof(string)));
@@ -112,6 +114,7 @@ namespace RauViet.ui
 
                 dataGV.AutoGenerateColumns = true;
                 dataGV.DataSource = employee_dt;
+                log_GV.DataSource = mlog_DV;
 
                 allowanceGV.Columns["Month"].Visible = false;
                 allowanceGV.Columns["Year"].Visible = false;
@@ -136,10 +139,6 @@ namespace RauViet.ui
                 dataGV.Columns["PositionName"].HeaderText = "Chức Vụ";
                 dataGV.Columns["ContractTypeName"].HeaderText = "Loại Hợp Đồng";
                 dataGV.Columns["DepartmentName"].HeaderText = "Phòng Ban";
-                //dataGV.Columns["IsActive"].HeaderText = "Đang Hoạt Động";
-
-                //dataGV.Columns["AllowanceTypeID"].Visible = false;
-                //dataGV.Columns["ApplyScopeID"].Visible = false;
 
                 allowanceGV.Columns["MonthlyAllowanceID"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
                 allowanceGV.Columns["Date"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
@@ -151,7 +150,6 @@ namespace RauViet.ui
                 {
                     dataGV.ClearSelection();
                     dataGV.Rows[0].Selected = true;
-                 //   UpdateAllowancetUI(0);
                 }
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
@@ -166,11 +164,14 @@ namespace RauViet.ui
             }
             finally
             {
-                loading_lb.Visible = false; // ẩn loading
-                loading_lb.Enabled = true; // enable lại button
+                await Task.Delay(100);
+                loadingOverlay.Hide();
             }
+        }
 
-            
+        private async void Load_btn_Click(object sender, EventArgs e)
+        {
+            ShowData();
         }
 
         private void Tb_KeyPress_OnlyNumber(object sender, KeyPressEventArgs e)
@@ -197,7 +198,6 @@ namespace RauViet.ui
             if (rowIndex < 0)
                 return;
 
-
             UpdateRightUI(rowIndex);
         }
 
@@ -207,7 +207,6 @@ namespace RauViet.ui
             int rowIndex = dataGV.CurrentRow.Index;
             if (rowIndex < 0)
                 return;
-
 
             UpdateAllowancetUI(rowIndex);
         }
@@ -221,6 +220,8 @@ namespace RauViet.ui
             dv.RowFilter = $"EmployeeCode = '{employeeCode}'";
 
             allowanceGV.DataSource = dv;
+
+            mlog_DV.RowFilter = $"EmployeeCode = '{employeeCode}'";
         }
         private void UpdateRightUI(int index)
         {
@@ -236,7 +237,6 @@ namespace RauViet.ui
 
             this.monthlyAllowanceID_tb.Text = monthlyAllowanceID.ToString();
             amount_tb.Text = amount.ToString();
-            monthYearDtp.Value = new DateTime(year, month, 1);
             note_tb.Text = note;
             allowanceType_cbb.SelectedValue = allowanceTypeID;
 
@@ -253,15 +253,18 @@ namespace RauViet.ui
                 {
                     DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                     if (dialogResult == DialogResult.Yes)
-                    {
+                    {                        
                         try
                         {
+                            string allowanceName = mAllowanceType_dt.Select($"AllowanceTypeID = {allowanceTypeID}")[0]["AllowanceName"].ToString();
                             bool isScussess = await SQLManager.Instance.updateMonthlyAllowanceAsync(monthlyAllowanceID, employeeCode, month, year, amount, allowanceTypeID, note);
-
                             if (isScussess == true)
                             {
                                 status_lb.Text = "Thành công.";
-                                status_lb.ForeColor = Color.Green;
+                                status_lb.ForeColor = Color.Green;                                
+                                _ = SQLManager.Instance.InsertMonthlyAllowanceLogAsync(employeeCode, allowanceName,
+                                    $"Edit Success {row.Cells["AllowanceName"].Value} - {row.Cells["Month"].Value}/{row.Cells["Year"].Value} - {row.Cells["Note"].Value} - {row.Cells["Amount"].Value}",
+                                    month, year, amount, note);
 
                                 row.Cells["EmployeeCode"].Value = employeeCode;
                                 row.Cells["AllowanceTypeID"].Value = allowanceTypeID;
@@ -270,16 +273,21 @@ namespace RauViet.ui
                                 row.Cells["Year"].Value = year;
                                 row.Cells["Date"].Value = month + "/" + year;
                                 row.Cells["Note"].Value = note;
-                                row.Cells["AllowanceName"].Value = mAllowanceType_dt.Select($"AllowanceTypeID = {allowanceTypeID}")[0]["AllowanceName"].ToString();
+                                row.Cells["AllowanceName"].Value = allowanceName;
                             }
                             else
                             {
+                                _ = SQLManager.Instance.InsertMonthlyAllowanceLogAsync(employeeCode, allowanceName,
+                                    $"Edit Fail {row.Cells["AllowanceName"].Value} - {row.Cells["Month"].Value}/{row.Cells["Year"].Value} - {row.Cells["Note"].Value} - {row.Cells["Amount"].Value}",
+                                    month, year, amount, note);
                                 status_lb.Text = "Thất bại.";
                                 status_lb.ForeColor = Color.Red;
                             }
                         }
                         catch (Exception ex)
                         {
+                            _ = SQLManager.Instance.InsertMonthlyAllowanceLogAsync(employeeCode, allowanceTypeID.ToString(),$"Edit Fail Exception: {ex.Message}",
+                                    month, year, amount, note);
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;
                         }
@@ -298,6 +306,7 @@ namespace RauViet.ui
                 try
                 {
                     int monthlyAllowanceID = await SQLManager.Instance.insertMonthlyAllowanceAsync(employeeCode, month, year, amount, allowanceTypeID, note);
+                    string allowanceName = mAllowanceType_dt.Select($"AllowanceTypeID = {allowanceTypeID}")[0]["AllowanceName"].ToString();
                     if (allowanceTypeID > 0)
                     {
                         DataRow drToAdd = mMonthlyAllowance_dt.NewRow();
@@ -315,6 +324,8 @@ namespace RauViet.ui
                         mMonthlyAllowance_dt.Rows.Add(drToAdd);
                         mMonthlyAllowance_dt.AcceptChanges();
 
+                        _ = SQLManager.Instance.InsertMonthlyAllowanceLogAsync(employeeCode, allowanceName, $"Create Success", month, year, amount, note);
+
                         status_lb.Text = "Thành công";
                         status_lb.ForeColor = Color.Green;
 
@@ -322,12 +333,14 @@ namespace RauViet.ui
                     }
                     else
                     {
+                        _ = SQLManager.Instance.InsertMonthlyAllowanceLogAsync(employeeCode, allowanceName, $"Create Fail", month, year, amount, note);
                         status_lb.Text = "Thất bại";
                         status_lb.ForeColor = Color.Red;
                     }
                 }
                 catch (Exception ex)
                 {
+                    _ = SQLManager.Instance.InsertMonthlyAllowanceLogAsync(employeeCode, allowanceTypeID.ToString(), $"Create Fail Exception: {ex.Message}", month, year, amount, note);
                     status_lb.Text = "Thất bại.";
                     status_lb.ForeColor = Color.Red;
                 }
@@ -351,6 +364,12 @@ namespace RauViet.ui
             int allowanceTypeID = Convert.ToInt32(allowanceType_cbb.SelectedValue);
             string note= note_tb.Text;
 
+            if (mCurrentMonth != month || mCurrentYear != year)
+            {
+                MessageBox.Show("Tháng " + month + "/" + year + " có vẫn đề.", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
             bool isLock = await SQLStore.Instance.IsSalaryLockAsync(month, year);
             if (isLock)
             {
@@ -373,6 +392,12 @@ namespace RauViet.ui
             foreach (DataGridViewRow row in allowanceGV.Rows)
             {
                 string id = row.Cells["MonthlyAllowanceID"].Value.ToString();
+                string employeeCode = row.Cells["EmployeeCode"].Value.ToString();
+                string allowanceName = row.Cells["AllowanceName"].Value.ToString();
+                int month = Convert.ToInt32(row.Cells["Month"].Value);
+                int year = Convert.ToInt32(row.Cells["Year"].Value);
+                int amount = Convert.ToInt32(row.Cells["Amount"].Value);
+
                 if (id.CompareTo(monthlyAllowanceID) == 0)
                 {
                     DialogResult dialogResult = MessageBox.Show("XÓA THÔNG TIN \n Chắc chắn chưa ?", " Xóa Thông Tin", MessageBoxButtons.YesNo);
@@ -384,6 +409,7 @@ namespace RauViet.ui
 
                             if (isScussess == true)
                             {
+                                _ = SQLManager.Instance.InsertMonthlyAllowanceLogAsync(employeeCode, allowanceName, $"Delete Success", month, year, amount, "Delete");
                                 status_lb.Text = "Thành công.";
                                 status_lb.ForeColor = Color.Green;
 
@@ -392,12 +418,14 @@ namespace RauViet.ui
                             }
                             else
                             {
+                                _ = SQLManager.Instance.InsertMonthlyAllowanceLogAsync(employeeCode, allowanceName, $"Delete Fail", month, year, amount, "Delete");
                                 status_lb.Text = "Thất bại.";
                                 status_lb.ForeColor = Color.Red;
                             }
                         }
                         catch (Exception ex)
                         {
+                            _ = SQLManager.Instance.InsertMonthlyAllowanceLogAsync(employeeCode, allowanceName, $"Delete Fail Exception: {ex.Message}", month, year, amount, "Delete");
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;
                         }
@@ -418,7 +446,6 @@ namespace RauViet.ui
 
             status_lb.Text = "";
 
-            monthYearDtp.Focus();
             info_gb.BackColor = newCustomerBtn.BackColor;
             edit_btn.Visible = false;
             newCustomerBtn.Visible = false;
@@ -467,9 +494,13 @@ namespace RauViet.ui
             }
         }
 
+        private void panel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
         private void SetUIReadOnly(bool isReadOnly)
         {
-            monthYearDtp.Enabled = !isReadOnly;
             allowanceType_cbb.Enabled = !isReadOnly;
             amount_tb.ReadOnly = isReadOnly;
             note_tb.ReadOnly = isReadOnly;

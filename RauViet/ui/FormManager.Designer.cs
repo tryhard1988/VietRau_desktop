@@ -542,32 +542,32 @@
             // reportOrderIn1Year_mi
             // 
             this.reportOrderIn1Year_mi.Name = "reportOrderIn1Year_mi";
-            this.reportOrderIn1Year_mi.Size = new System.Drawing.Size(309, 22);
+            this.reportOrderIn1Year_mi.Size = new System.Drawing.Size(279, 22);
             this.reportOrderIn1Year_mi.Text = "Thống Kê Trong 1 Năm";
             // 
             // reportOrderIn1Month_mi
             // 
             this.reportOrderIn1Month_mi.Name = "reportOrderIn1Month_mi";
-            this.reportOrderIn1Month_mi.Size = new System.Drawing.Size(309, 22);
+            this.reportOrderIn1Month_mi.Size = new System.Drawing.Size(279, 22);
             this.reportOrderIn1Month_mi.Text = "Thống Kê Trong 1 Tháng";
             // 
             // monthlyReportForYear_mi
             // 
             this.monthlyReportForYear_mi.Name = "monthlyReportForYear_mi";
-            this.monthlyReportForYear_mi.Size = new System.Drawing.Size(309, 22);
+            this.monthlyReportForYear_mi.Size = new System.Drawing.Size(279, 22);
             this.monthlyReportForYear_mi.Text = "Chi Tiết Từng Tháng Trong 1 Năm";
             // 
             // yearlyReport_mi
             // 
             this.yearlyReport_mi.Name = "yearlyReport_mi";
-            this.yearlyReport_mi.Size = new System.Drawing.Size(309, 22);
-            this.yearlyReport_mi.Text = "Chi Tiết Từng Tháng Qua Các Năm";
+            this.yearlyReport_mi.Size = new System.Drawing.Size(279, 22);
+            this.yearlyReport_mi.Text = "Thống kê SL SP hàng năm";
             // 
             // monthlyTotalPerYear_mi
             // 
             this.monthlyTotalPerYear_mi.Name = "monthlyTotalPerYear_mi";
-            this.monthlyTotalPerYear_mi.Size = new System.Drawing.Size(309, 22);
-            this.monthlyTotalPerYear_mi.Text = "Tổng Quát Từng Tháng Qua Các Năm ";
+            this.monthlyTotalPerYear_mi.Size = new System.Drawing.Size(279, 22);
+            this.monthlyTotalPerYear_mi.Text = "Tổng SL và DT";
             // 
             // aaaaToolStripMenuItem
             // 
