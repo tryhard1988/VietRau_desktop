@@ -45,10 +45,14 @@ namespace RauViet.ui
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
             this.employeeAllowanceID_tb = new System.Windows.Forms.TextBox();
             this.dataGV = new System.Windows.Forms.DataGridView();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.log_GV = new System.Windows.Forms.DataGridView();
             this.allowanceGV = new System.Windows.Forms.DataGridView();
             this.panel1.SuspendLayout();
             this.info_gb.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
+            this.panel2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.log_GV)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.allowanceGV)).BeginInit();
             this.SuspendLayout();
             // 
@@ -225,24 +229,46 @@ namespace RauViet.ui
             this.dataGV.Size = new System.Drawing.Size(574, 724);
             this.dataGV.TabIndex = 10;
             // 
+            // panel2
+            // 
+            this.panel2.Controls.Add(this.allowanceGV);
+            this.panel2.Controls.Add(this.log_GV);
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel2.Location = new System.Drawing.Point(574, 0);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(237, 724);
+            this.panel2.TabIndex = 11;
+            // 
+            // log_GV
+            // 
+            this.log_GV.AllowUserToAddRows = false;
+            this.log_GV.AllowUserToDeleteRows = false;
+            this.log_GV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.log_GV.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.log_GV.Location = new System.Drawing.Point(0, 351);
+            this.log_GV.Name = "log_GV";
+            this.log_GV.ReadOnly = true;
+            this.log_GV.Size = new System.Drawing.Size(237, 373);
+            this.log_GV.TabIndex = 40;
+            // 
             // allowanceGV
             // 
             this.allowanceGV.AllowUserToAddRows = false;
             this.allowanceGV.AllowUserToDeleteRows = false;
             this.allowanceGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.allowanceGV.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.allowanceGV.Location = new System.Drawing.Point(574, 0);
+            this.allowanceGV.Location = new System.Drawing.Point(0, 0);
             this.allowanceGV.Name = "allowanceGV";
             this.allowanceGV.ReadOnly = true;
-            this.allowanceGV.Size = new System.Drawing.Size(237, 724);
-            this.allowanceGV.TabIndex = 11;
+            this.allowanceGV.Size = new System.Drawing.Size(237, 351);
+            this.allowanceGV.TabIndex = 41;
             // 
             // EmployeeAllowance
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1264, 724);
-            this.Controls.Add(this.allowanceGV);
+            this.Controls.Add(this.panel2);
             this.Controls.Add(this.dataGV);
             this.Controls.Add(this.panel1);
             this.Name = "EmployeeAllowance";
@@ -252,6 +278,8 @@ namespace RauViet.ui
             this.info_gb.ResumeLayout(false);
             this.info_gb.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).EndInit();
+            this.panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.log_GV)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.allowanceGV)).EndInit();
             this.ResumeLayout(false);
 
@@ -270,10 +298,12 @@ namespace RauViet.ui
         private System.Windows.Forms.DataGridView dataGV;
         private System.Windows.Forms.ComboBox allowanceType_cbb;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.DataGridView allowanceGV;
         private System.Windows.Forms.TextBox note_tb;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button readOnly_btn;
         private System.Windows.Forms.Button edit_btn;
+        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.DataGridView log_GV;
+        private System.Windows.Forms.DataGridView allowanceGV;
     }
 }

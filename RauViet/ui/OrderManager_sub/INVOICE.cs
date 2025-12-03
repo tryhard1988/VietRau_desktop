@@ -59,7 +59,7 @@ namespace RauViet.ui
             try
             {
                 string[] keepColumns = { "ExportCodeID", "ExportCode", "ExportDate", "ExchangeRate", "ShippingCost", "ExportCodeIndex" };
-                var parameters = new Dictionary<string, object> { /*{ "Complete", false }*/ };
+                var parameters = new Dictionary<string, object> { { "Complete", false } };
                 mExportCode_dt = await SQLStore.Instance.getExportCodesAsync(keepColumns, parameters);                  
 
                 if (mCurrentExportID <= 0 && mExportCode_dt.Rows.Count > 0)

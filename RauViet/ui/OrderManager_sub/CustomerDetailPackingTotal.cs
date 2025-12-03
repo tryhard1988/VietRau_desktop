@@ -163,7 +163,7 @@ namespace RauViet.ui
                 fbd.Description = "Chọn thư mục để lưu tất cả file Excel";
                 if (fbd.ShowDialog() == DialogResult.OK)
                 {
-                    folderPath = fbd.SelectedPath + $"\\MXC {exportCodeIndex} - {exportDate.Day}{exportDate.Month}{exportDate.Year} ";
+                    folderPath = fbd.SelectedPath + $"\\MXC {exportCodeIndex} - {exportDate.Day}{exportDate.Month}{exportDate.Year}";
                 }
                 else
                 {
@@ -307,7 +307,7 @@ namespace RauViet.ui
 
                     // Hàng 5: Invoice No
                     ws.Range(5, 5, 5, exportColumns.Count).Merge();
-                    ws.Cell(5, 5).Value = "Packing List No:     " + exportDate.Day + exportDate.Month + exportDate.Year + "SQ";
+                    ws.Cell(5, 5).Value = "Packing List No:     " + exportDate.Day.ToString("00") + exportDate.Month.ToString("00") + exportDate.Year + "SQ";
                     ws.Cell(5, 5).Style.Font.FontSize = 10;
                     ws.Cell(5, 5).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
                     ws.Range(5, 5, 5, exportColumns.Count).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;

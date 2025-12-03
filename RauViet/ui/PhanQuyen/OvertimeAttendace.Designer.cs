@@ -33,7 +33,6 @@ namespace RauViet.ui
             this.panel1 = new System.Windows.Forms.Panel();
             this.readOnly_btn = new System.Windows.Forms.Button();
             this.edit_btn = new System.Windows.Forms.Button();
-            this.updatedHistory_tb = new System.Windows.Forms.TextBox();
             this.overtimeAttendaceID_tb = new System.Windows.Forms.TextBox();
             this.newBtn = new System.Windows.Forms.Button();
             this.info_gb = new System.Windows.Forms.GroupBox();
@@ -49,14 +48,18 @@ namespace RauViet.ui
             this.note_tb = new System.Windows.Forms.TextBox();
             this.status_lb = new System.Windows.Forms.Label();
             this.load_gb = new System.Windows.Forms.GroupBox();
+            this.monthYearDtp = new System.Windows.Forms.DateTimePicker();
             this.loadAttandance_btn = new System.Windows.Forms.Button();
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.log_GV = new System.Windows.Forms.DataGridView();
             this.attendanceGV = new System.Windows.Forms.DataGridView();
-            this.monthYearDtp = new System.Windows.Forms.DateTimePicker();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
             this.panel1.SuspendLayout();
             this.info_gb.SuspendLayout();
             this.load_gb.SuspendLayout();
+            this.panel2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.log_GV)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.attendanceGV)).BeginInit();
             this.SuspendLayout();
             // 
@@ -76,7 +79,6 @@ namespace RauViet.ui
             // 
             this.panel1.Controls.Add(this.readOnly_btn);
             this.panel1.Controls.Add(this.edit_btn);
-            this.panel1.Controls.Add(this.updatedHistory_tb);
             this.panel1.Controls.Add(this.overtimeAttendaceID_tb);
             this.panel1.Controls.Add(this.newBtn);
             this.panel1.Controls.Add(this.info_gb);
@@ -110,15 +112,6 @@ namespace RauViet.ui
             this.edit_btn.TabIndex = 33;
             this.edit_btn.Text = "Chỉnh sửa";
             this.edit_btn.UseVisualStyleBackColor = false;
-            // 
-            // updatedHistory_tb
-            // 
-            this.updatedHistory_tb.Location = new System.Drawing.Point(95, 649);
-            this.updatedHistory_tb.Name = "updatedHistory_tb";
-            this.updatedHistory_tb.ReadOnly = true;
-            this.updatedHistory_tb.Size = new System.Drawing.Size(55, 20);
-            this.updatedHistory_tb.TabIndex = 32;
-            this.updatedHistory_tb.Visible = false;
             // 
             // overtimeAttendaceID_tb
             // 
@@ -268,6 +261,14 @@ namespace RauViet.ui
             this.load_gb.TabIndex = 28;
             this.load_gb.TabStop = false;
             // 
+            // monthYearDtp
+            // 
+            this.monthYearDtp.CalendarFont = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.monthYearDtp.Location = new System.Drawing.Point(18, 19);
+            this.monthYearDtp.Name = "monthYearDtp";
+            this.monthYearDtp.Size = new System.Drawing.Size(99, 20);
+            this.monthYearDtp.TabIndex = 37;
+            // 
             // loadAttandance_btn
             // 
             this.loadAttandance_btn.BackColor = System.Drawing.SystemColors.Highlight;
@@ -290,32 +291,46 @@ namespace RauViet.ui
             this.LuuThayDoiBtn.Text = "Lưu";
             this.LuuThayDoiBtn.UseVisualStyleBackColor = false;
             // 
+            // panel2
+            // 
+            this.panel2.Controls.Add(this.log_GV);
+            this.panel2.Controls.Add(this.attendanceGV);
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel2.Location = new System.Drawing.Point(403, 0);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(563, 681);
+            this.panel2.TabIndex = 12;
+            // 
+            // log_GV
+            // 
+            this.log_GV.AllowUserToAddRows = false;
+            this.log_GV.AllowUserToDeleteRows = false;
+            this.log_GV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.log_GV.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.log_GV.Location = new System.Drawing.Point(0, 417);
+            this.log_GV.Name = "log_GV";
+            this.log_GV.ReadOnly = true;
+            this.log_GV.Size = new System.Drawing.Size(563, 264);
+            this.log_GV.TabIndex = 41;
+            // 
             // attendanceGV
             // 
             this.attendanceGV.AllowUserToAddRows = false;
             this.attendanceGV.AllowUserToDeleteRows = false;
             this.attendanceGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.attendanceGV.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.attendanceGV.Location = new System.Drawing.Point(403, 0);
+            this.attendanceGV.Location = new System.Drawing.Point(0, 0);
             this.attendanceGV.Name = "attendanceGV";
             this.attendanceGV.ReadOnly = true;
             this.attendanceGV.Size = new System.Drawing.Size(563, 681);
-            this.attendanceGV.TabIndex = 12;
-            // 
-            // monthYearDtp
-            // 
-            this.monthYearDtp.CalendarFont = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.monthYearDtp.Location = new System.Drawing.Point(18, 19);
-            this.monthYearDtp.Name = "monthYearDtp";
-            this.monthYearDtp.Size = new System.Drawing.Size(99, 20);
-            this.monthYearDtp.TabIndex = 37;
+            this.attendanceGV.TabIndex = 13;
             // 
             // OvertimeAttendace
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1309, 681);
-            this.Controls.Add(this.attendanceGV);
+            this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.dataGV);
             this.Name = "OvertimeAttendace";
@@ -326,6 +341,8 @@ namespace RauViet.ui
             this.info_gb.ResumeLayout(false);
             this.info_gb.PerformLayout();
             this.load_gb.ResumeLayout(false);
+            this.panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.log_GV)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.attendanceGV)).EndInit();
             this.ResumeLayout(false);
 
@@ -338,7 +355,6 @@ namespace RauViet.ui
         private System.Windows.Forms.Label status_lb;
         private System.Windows.Forms.Button LuuThayDoiBtn;
         private System.Windows.Forms.Button loadAttandance_btn;
-        private System.Windows.Forms.DataGridView attendanceGV;
         private System.Windows.Forms.GroupBox info_gb;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.DateTimePicker endTime_dtp;
@@ -352,9 +368,11 @@ namespace RauViet.ui
         private System.Windows.Forms.TextBox note_tb;
         private System.Windows.Forms.Button newBtn;
         private System.Windows.Forms.TextBox overtimeAttendaceID_tb;
-        private System.Windows.Forms.TextBox updatedHistory_tb;
         private System.Windows.Forms.Button readOnly_btn;
         private System.Windows.Forms.Button edit_btn;
         private System.Windows.Forms.DateTimePicker monthYearDtp;
+        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.DataGridView attendanceGV;
+        private System.Windows.Forms.DataGridView log_GV;
     }
 }

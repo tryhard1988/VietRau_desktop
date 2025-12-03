@@ -64,7 +64,7 @@ namespace RauViet.ui
             await Task.Delay(50);
             LoadingOverlay loadingOverlay = new LoadingOverlay(this);
             loadingOverlay.Show();
-
+            await Task.Delay(200);
             try
             {
                 int month = monthYearDtp.Value.Month;
@@ -120,6 +120,11 @@ namespace RauViet.ui
                 allowanceGV.Columns["Year"].Visible = false;
                 allowanceGV.Columns["EmployeeCode"].Visible = false;
                 allowanceGV.Columns["AllowanceTypeID"].Visible = false;
+
+                log_GV.Columns["LogID"].Visible = false;
+                log_GV.Columns["EmployeeCode"].Visible = false;
+                log_GV.Columns["Month"].Visible = false;
+                log_GV.Columns["Year"].Visible = false;
 
                 int count = 0;
                 mMonthlyAllowance_dt.Columns["Date"].SetOrdinal(count++);

@@ -47,6 +47,7 @@ namespace RauViet.classes
         DataTable mlatestOrders_dt = null;
         DataTable mExportCodeLog_dt = null;
         DataTable mReportCustomerOrderDetail_dt = null;
+        DataTable mMonthlyAllowanceLog_dt = null;
         Dictionary<int, DataTable> mOrderLists;
         Dictionary<int, DataTable> mReportExportByYears;
         Dictionary<int, DataTable> mReportCustomerOrderDetailByYears;
@@ -66,6 +67,8 @@ namespace RauViet.classes
         Dictionary<int, DataTable> mLotCodeLogs;
         Dictionary<string, DataTable> mEmployeeDeductionLogs;
         Dictionary<string, DataTable> mMonthlyAllowanceLogs;
+        Dictionary<int, DataTable> mLeaveAttendanceLogs;
+        Dictionary<string, DataTable> mOvertimeAttendanceLogs;
         private SQLStore() { }
 
         public static SQLStore Instance
@@ -104,6 +107,8 @@ namespace RauViet.classes
                 mLotCodeLogs = new Dictionary<int, DataTable>();
                 mEmployeeDeductionLogs = new Dictionary<string, DataTable>();
                 mMonthlyAllowanceLogs = new Dictionary<string, DataTable>();
+                mLeaveAttendanceLogs = new Dictionary<int, DataTable>();
+                mOvertimeAttendanceLogs = new Dictionary<string, DataTable>();
 
                 var productSKUTask = SQLManager.Instance.getProductSKUAsync();
                 var productPackingTask = SQLManager.Instance.getProductpackingAsync();
@@ -2766,6 +2771,35 @@ namespace RauViet.classes
                 mMonthlyAllowanceLogs[key] = dt;
             }
             return mMonthlyAllowanceLogs[key];
+        }
+        public async Task<DataTable> GetEmployeeAllowanceLogAsync()
+        {
+            if (mMonthlyAllowanceLog_dt == null)
+            {
+                mMonthlyAllowanceLog_dt = await SQLManager.Instance.GetEmployeeAllowanceLogAsync();
+            }
+            return mMonthlyAllowanceLog_dt;
+        }
+
+        public async Task<DataTable> GetLeaveAttendanceLogAsync(int year)
+        {
+            if (!mLeaveAttendanceLogs.ContainsKey(year))
+            {
+                DataTable dt = await SQLManager.Instance.GetLeaveAttandanceLogAsync(year);
+                mLeaveAttendanceLogs[year] = dt;
+            }
+            return mLeaveAttendanceLogs[year];
+        }
+
+        public async Task<DataTable> GetOvertimeAttendanceLogAsync(int month, int year)
+        {
+            string key = month + "_" + year;
+            if (!mOvertimeAttendanceLogs.ContainsKey(key))
+            {
+                DataTable dt = await SQLManager.Instance.GetOvertimeAttandanceLogAsync(month, year);
+                mOvertimeAttendanceLogs[key] = dt;
+            }
+            return mOvertimeAttendanceLogs[key];
         }
     }
 }

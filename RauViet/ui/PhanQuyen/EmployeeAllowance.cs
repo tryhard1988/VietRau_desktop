@@ -1,16 +1,8 @@
-﻿using DocumentFormat.OpenXml.VariantTypes;
-using DocumentFormat.OpenXml.Wordprocessing;
-using RauViet.classes;
+﻿using RauViet.classes;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
 using Color = System.Drawing.Color;
 
 namespace RauViet.ui
@@ -18,6 +10,7 @@ namespace RauViet.ui
     public partial class EmployeeAllowance : Form
     {
         private DataTable mEmployeeAllowance_dt, mAllowanceType_dt;
+        private DataView mLogDV;
         bool isNewState = false;
         public EmployeeAllowance()
         {
@@ -65,11 +58,13 @@ namespace RauViet.ui
                 var employeesTask = SQLStore.Instance.GetEmployeesAsync(keepColumns);
                 var employeeAllowanceAsync = SQLManager.Instance.GetEmployeeAllowanceAsybc();
                 var allowanceTypeAsync = SQLManager.Instance.GetAllowanceTypeAsync("EMP");
+                var EmployeeAllowanceLogTask = SQLStore.Instance.GetEmployeeAllowanceLogAsync();
 
-                await Task.WhenAll(employeesTask, employeeAllowanceAsync, allowanceTypeAsync);
+                await Task.WhenAll(employeesTask, employeeAllowanceAsync, allowanceTypeAsync, EmployeeAllowanceLogTask);
                 DataTable employee_dt = employeesTask.Result;
                 mEmployeeAllowance_dt = employeeAllowanceAsync.Result;
                 mAllowanceType_dt = allowanceTypeAsync.Result;
+                mLogDV = new DataView(EmployeeAllowanceLogTask.Result);
 
                 mEmployeeAllowance_dt.Columns.Add(new DataColumn("AllowanceName", typeof(string)));
                 foreach (DataRow dr in mEmployeeAllowance_dt.Rows)
@@ -94,6 +89,7 @@ namespace RauViet.ui
 
                 dataGV.AutoGenerateColumns = true;
                 dataGV.DataSource = employee_dt;
+                log_GV.DataSource = mLogDV;
 
                 allowanceGV.Columns["EmployeeAllowanceID"].Visible = false;
                 allowanceGV.Columns["EmployeeCode"].Visible = false;
@@ -115,14 +111,13 @@ namespace RauViet.ui
                 dataGV.Columns["PositionName"].HeaderText = "Chức Vụ";
                 dataGV.Columns["ContractTypeName"].HeaderText = "Loại Hợp Đồng";
                 dataGV.Columns["DepartmentName"].HeaderText = "Phòng Ban";
-                //dataGV.Columns["IsActive"].HeaderText = "Đang Hoạt Động";
-
-                //dataGV.Columns["AllowanceTypeID"].Visible = false;
-                //dataGV.Columns["ApplyScopeID"].Visible = false;
 
                 allowanceGV.Columns["AllowanceName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
                 allowanceGV.Columns["Amount"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
                 allowanceGV.Columns["Note"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+
+                log_GV.Columns["LogID"].Visible = false;
+                log_GV.Columns["EmployeeCode"].Visible = false;
 
                 if (dataGV.Rows.Count > 0)
                 {
@@ -199,6 +194,8 @@ namespace RauViet.ui
             dv.RowFilter = $"EmployeeCode = '{employeeCode}'";
 
             allowanceGV.DataSource = dv;
+
+            mLogDV.RowFilter = $"EmployeeCode = '{employeeCode}'";
         }
         private void UpdateRightUI(int index)
         {
@@ -228,12 +225,14 @@ namespace RauViet.ui
                     DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                     if (dialogResult == DialogResult.Yes)
                     {
+                        string allowanceName = mAllowanceType_dt.Select($"AllowanceTypeID = {allowanceTypeID}")[0]["AllowanceName"].ToString();
                         try
                         {
                             bool isScussess = await SQLManager.Instance.updateEmployeeAllowanceAsync(employeeAllowanceID, employeeCode, amount, allowanceTypeID, note);
 
                             if (isScussess == true)
                             {
+                                _ = SQLManager.Instance.InsertEmployeeAllowanceLogAsync(employeeCode, allowanceName, $"Create Success: {row.Cells["AllowanceName"].Value} - {row.Cells["Amount"].Value} - {row.Cells["Note"].Value}", amount, note);
                                 status_lb.Text = "Thành công.";
                                 status_lb.ForeColor = Color.Green;
 
@@ -241,16 +240,18 @@ namespace RauViet.ui
                                 row.Cells["AllowanceTypeID"].Value = allowanceTypeID;
                                 row.Cells["Amount"].Value = amount;
                                 row.Cells["Note"].Value = note;
-                                row.Cells["AllowanceName"].Value = mAllowanceType_dt.Select($"AllowanceTypeID = {allowanceTypeID}")[0]["AllowanceName"].ToString();
+                                row.Cells["AllowanceName"].Value = allowanceName;
                             }
                             else
                             {
+                                _ = SQLManager.Instance.InsertEmployeeAllowanceLogAsync(employeeCode, allowanceName, $"Create Fail: {row.Cells["AllowanceName"].Value} - {row.Cells["Amount"].Value} - {row.Cells["Note"].Value}", amount, note);
                                 status_lb.Text = "Thất bại.";
                                 status_lb.ForeColor = Color.Red;
                             }
                         }
                         catch (Exception ex)
                         {
+                            _ = SQLManager.Instance.InsertEmployeeAllowanceLogAsync(employeeCode, allowanceName, $"Create Fail Exception {ex.Message}: {row.Cells["AllowanceName"].Value} - {row.Cells["Amount"].Value} - {row.Cells["Note"].Value}", amount, note);
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;
                         }
@@ -266,11 +267,15 @@ namespace RauViet.ui
 
             if (dialogResult == DialogResult.Yes)
             {
+                string allowanceName = mAllowanceType_dt.Select($"AllowanceTypeID = {allowanceTypeID}")[0]["AllowanceName"].ToString();
                 try
                 {
                     int employeeAllowanceID = await SQLManager.Instance.insertEmployeeAllowanceAsync(employeeCode, amount, allowanceTypeID, note);
+
                     if (allowanceTypeID > 0)
                     {
+                        _ = SQLManager.Instance.InsertEmployeeAllowanceLogAsync(employeeCode, allowanceName, $"Create Success", amount, note);
+
                         DataRow drToAdd = mEmployeeAllowance_dt.NewRow();
 
                         drToAdd["EmployeeAllowanceID"] = employeeAllowanceID;
@@ -278,7 +283,7 @@ namespace RauViet.ui
                         drToAdd["AllowanceTypeID"] = allowanceTypeID;
                         drToAdd["Amount"] = amount;
                         drToAdd["Note"] = note;
-                        drToAdd["AllowanceName"] = mAllowanceType_dt.Select($"AllowanceTypeID = {allowanceTypeID}")[0]["AllowanceName"].ToString();
+                        drToAdd["AllowanceName"] = allowanceName;
 
                         mEmployeeAllowance_dt.Rows.Add(drToAdd);
                         mEmployeeAllowance_dt.AcceptChanges();
@@ -290,16 +295,17 @@ namespace RauViet.ui
                     }
                     else
                     {
+                        _ = SQLManager.Instance.InsertEmployeeAllowanceLogAsync(employeeCode, allowanceName, $"Create Fail", amount, note);
                         status_lb.Text = "Thất bại";
                         status_lb.ForeColor = Color.Red;
                     }
                 }
                 catch (Exception ex)
                 {
+                    _ = SQLManager.Instance.InsertEmployeeAllowanceLogAsync(employeeCode, allowanceName, $"Create Fail Exception: {ex.Message}", amount, note);
                     status_lb.Text = "Thất bại.";
                     status_lb.ForeColor = Color.Red;
                 }
-
             }
         }
 
@@ -331,6 +337,8 @@ namespace RauViet.ui
             foreach (DataGridViewRow row in allowanceGV.Rows)
             {
                 string id = row.Cells["EmployeeAllowanceID"].Value.ToString();
+                string employeeCode = row.Cells["EmployeeCode"].Value.ToString();
+                string allowanceName = row.Cells["AllowanceName"].Value.ToString();
                 if (id.CompareTo(employeeAllowanceID) == 0)
                 {
                     DialogResult dialogResult = MessageBox.Show("XÓA THÔNG TIN \n Chắc chắn chưa ?", " Xóa Thông Tin", MessageBoxButtons.YesNo);
@@ -342,6 +350,7 @@ namespace RauViet.ui
 
                             if (isScussess == true)
                             {
+                                _ = SQLManager.Instance.InsertEmployeeAllowanceLogAsync(employeeCode, allowanceName, $"Delete Success", 0, "Delete");
                                 status_lb.Text = "Thành công.";
                                 status_lb.ForeColor = Color.Green;
 
@@ -350,19 +359,17 @@ namespace RauViet.ui
                             }
                             else
                             {
+                                _ = SQLManager.Instance.InsertEmployeeAllowanceLogAsync(employeeCode, allowanceName, $"Delete Fail", 0, "Delete");
                                 status_lb.Text = "Thất bại.";
                                 status_lb.ForeColor = Color.Red;
                             }
                         }
                         catch (Exception ex)
                         {
+                            _ = SQLManager.Instance.InsertEmployeeAllowanceLogAsync(employeeCode, allowanceName, $"Delete Fail Exception: {ex.Message}", 0, "Delete");
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;
                         }
-
-
-
-
                     }
                     break;
                 }

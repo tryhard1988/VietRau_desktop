@@ -34,10 +34,10 @@ namespace RauViet.ui
             this.readOnly_btn = new System.Windows.Forms.Button();
             this.edit_btn = new System.Windows.Forms.Button();
             this.delete_btn = new System.Windows.Forms.Button();
-            this.updatedHistory_tb = new System.Windows.Forms.TextBox();
             this.leaveID_tb = new System.Windows.Forms.TextBox();
             this.newBtn = new System.Windows.Forms.Button();
             this.info_gb = new System.Windows.Forms.GroupBox();
+            this.linkStartEnd_cb = new System.Windows.Forms.CheckBox();
             this.dateOffEnd_dtp = new System.Windows.Forms.DateTimePicker();
             this.label5 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
@@ -55,13 +55,16 @@ namespace RauViet.ui
             this.year_tb = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
+            this.panel2 = new System.Windows.Forms.Panel();
             this.attendanceGV = new System.Windows.Forms.DataGridView();
-            this.linkStartEnd_cb = new System.Windows.Forms.CheckBox();
+            this.log_GV = new System.Windows.Forms.DataGridView();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
             this.panel1.SuspendLayout();
             this.info_gb.SuspendLayout();
             this.load_gb.SuspendLayout();
+            this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.attendanceGV)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.log_GV)).BeginInit();
             this.SuspendLayout();
             // 
             // dataGV
@@ -81,7 +84,6 @@ namespace RauViet.ui
             this.panel1.Controls.Add(this.readOnly_btn);
             this.panel1.Controls.Add(this.edit_btn);
             this.panel1.Controls.Add(this.delete_btn);
-            this.panel1.Controls.Add(this.updatedHistory_tb);
             this.panel1.Controls.Add(this.leaveID_tb);
             this.panel1.Controls.Add(this.newBtn);
             this.panel1.Controls.Add(this.info_gb);
@@ -127,15 +129,6 @@ namespace RauViet.ui
             this.delete_btn.Text = "Xóa";
             this.delete_btn.UseVisualStyleBackColor = false;
             // 
-            // updatedHistory_tb
-            // 
-            this.updatedHistory_tb.Location = new System.Drawing.Point(239, 640);
-            this.updatedHistory_tb.Name = "updatedHistory_tb";
-            this.updatedHistory_tb.ReadOnly = true;
-            this.updatedHistory_tb.Size = new System.Drawing.Size(55, 20);
-            this.updatedHistory_tb.TabIndex = 32;
-            this.updatedHistory_tb.Visible = false;
-            // 
             // leaveID_tb
             // 
             this.leaveID_tb.Location = new System.Drawing.Point(164, 640);
@@ -175,6 +168,17 @@ namespace RauViet.ui
             this.info_gb.Size = new System.Drawing.Size(370, 228);
             this.info_gb.TabIndex = 29;
             this.info_gb.TabStop = false;
+            // 
+            // linkStartEnd_cb
+            // 
+            this.linkStartEnd_cb.AutoSize = true;
+            this.linkStartEnd_cb.Checked = true;
+            this.linkStartEnd_cb.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.linkStartEnd_cb.Location = new System.Drawing.Point(216, 83);
+            this.linkStartEnd_cb.Name = "linkStartEnd_cb";
+            this.linkStartEnd_cb.Size = new System.Drawing.Size(15, 14);
+            this.linkStartEnd_cb.TabIndex = 37;
+            this.linkStartEnd_cb.UseVisualStyleBackColor = true;
             // 
             // dateOffEnd_dtp
             // 
@@ -339,35 +343,46 @@ namespace RauViet.ui
             this.LuuThayDoiBtn.Text = "Lưu";
             this.LuuThayDoiBtn.UseVisualStyleBackColor = false;
             // 
+            // panel2
+            // 
+            this.panel2.Controls.Add(this.attendanceGV);
+            this.panel2.Controls.Add(this.log_GV);
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel2.Location = new System.Drawing.Point(403, 0);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(518, 681);
+            this.panel2.TabIndex = 12;
+            // 
             // attendanceGV
             // 
             this.attendanceGV.AllowUserToAddRows = false;
             this.attendanceGV.AllowUserToDeleteRows = false;
             this.attendanceGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.attendanceGV.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.attendanceGV.Location = new System.Drawing.Point(403, 0);
+            this.attendanceGV.Location = new System.Drawing.Point(0, 0);
             this.attendanceGV.Name = "attendanceGV";
             this.attendanceGV.ReadOnly = true;
-            this.attendanceGV.Size = new System.Drawing.Size(518, 681);
-            this.attendanceGV.TabIndex = 12;
+            this.attendanceGV.Size = new System.Drawing.Size(518, 369);
+            this.attendanceGV.TabIndex = 42;
             // 
-            // linkStartEnd_cb
+            // log_GV
             // 
-            this.linkStartEnd_cb.AutoSize = true;
-            this.linkStartEnd_cb.Checked = true;
-            this.linkStartEnd_cb.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.linkStartEnd_cb.Location = new System.Drawing.Point(216, 83);
-            this.linkStartEnd_cb.Name = "linkStartEnd_cb";
-            this.linkStartEnd_cb.Size = new System.Drawing.Size(15, 14);
-            this.linkStartEnd_cb.TabIndex = 37;
-            this.linkStartEnd_cb.UseVisualStyleBackColor = true;
+            this.log_GV.AllowUserToAddRows = false;
+            this.log_GV.AllowUserToDeleteRows = false;
+            this.log_GV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.log_GV.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.log_GV.Location = new System.Drawing.Point(0, 369);
+            this.log_GV.Name = "log_GV";
+            this.log_GV.ReadOnly = true;
+            this.log_GV.Size = new System.Drawing.Size(518, 312);
+            this.log_GV.TabIndex = 41;
             // 
             // LeaveAttendance
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1309, 681);
-            this.Controls.Add(this.attendanceGV);
+            this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.dataGV);
             this.Name = "LeaveAttendance";
@@ -379,7 +394,9 @@ namespace RauViet.ui
             this.info_gb.PerformLayout();
             this.load_gb.ResumeLayout(false);
             this.load_gb.PerformLayout();
+            this.panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.attendanceGV)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.log_GV)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -393,7 +410,6 @@ namespace RauViet.ui
         private System.Windows.Forms.Label status_lb;
         private System.Windows.Forms.Button LuuThayDoiBtn;
         private System.Windows.Forms.Button loadAttandance_btn;
-        private System.Windows.Forms.DataGridView attendanceGV;
         private System.Windows.Forms.GroupBox info_gb;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.DateTimePicker dateOffStart_dtp;
@@ -403,7 +419,6 @@ namespace RauViet.ui
         private System.Windows.Forms.TextBox note_tb;
         private System.Windows.Forms.Button newBtn;
         private System.Windows.Forms.TextBox leaveID_tb;
-        private System.Windows.Forms.TextBox updatedHistory_tb;
         private System.Windows.Forms.Button delete_btn;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox hourLeave_tb;
@@ -413,5 +428,8 @@ namespace RauViet.ui
         private System.Windows.Forms.DateTimePicker dateOffEnd_dtp;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.CheckBox linkStartEnd_cb;
+        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.DataGridView attendanceGV;
+        private System.Windows.Forms.DataGridView log_GV;
     }
 }

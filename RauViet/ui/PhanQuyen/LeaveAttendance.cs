@@ -1,27 +1,18 @@
-﻿using DocumentFormat.OpenXml.Bibliography;
-using DocumentFormat.OpenXml.Drawing.Charts;
-using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
-using RauViet.classes;
+﻿using RauViet.classes;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Data.OleDb;
 using System.Drawing;
-using System.IO.Packaging;
 using System.Linq;
-using System.Reflection.Emit;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
-using DataTable = System.Data.DataTable;
 
 namespace RauViet.ui
 {
     public partial class LeaveAttendance : Form
     {
         System.Data.DataTable mLeaveAttendance_dt, mEmployee_dt, mLeaveType;
+        DataView mLogDV;
         Dictionary<string, (string PositionCode, string ContractTypeCode)> employeeDict;
         bool isNewState = false;
         int curYear = -1;
@@ -83,25 +74,25 @@ namespace RauViet.ui
             await Task.Delay(50);
             LoadingOverlay loadingOverlay = new LoadingOverlay(this);
             loadingOverlay.Show();
-
+            await Task.Delay(200);
             try
             {
                 int year = Convert.ToInt32(year_tb.Text);
-                List<string> leavecodeParam =new List<string>();
-                leavecodeParam.Add("NL_1");
+                var leavecodeParam = new List<string>{"NL_1"};
                 // Chạy truy vấn trên thread riêng
                 string[] keepColumns = { "EmployeeCode", "FullName", "PositionName", "ContractTypeName", };
                 var employeesTask = SQLStore.Instance.GetEmployeesAsync(keepColumns);
                 var leaveTypeTask = SQLStore.Instance.GetLeaveTypeWithoutAsync(leavecodeParam);
                 var employeeRemainingLeaveTask = SQLStore.Instance.GetAnnualLeaveBalanceAsync(year);
                 var leaveAttendanceTask = SQLStore.Instance.GetLeaveAttendancesAsyn(year);
-                
+                var leaveAttendanceLogTask = SQLStore.Instance.GetLeaveAttendanceLogAsync(year);
 
-                await Task.WhenAll(employeeRemainingLeaveTask, leaveAttendanceTask, leaveTypeTask, employeesTask);
+
+                await Task.WhenAll(employeeRemainingLeaveTask, leaveAttendanceTask, leaveTypeTask, employeesTask, leaveAttendanceLogTask);
                 mEmployee_dt = employeeRemainingLeaveTask.Result;
                 mLeaveAttendance_dt = leaveAttendanceTask.Result;
                 mLeaveType = leaveTypeTask.Result;
-
+                mLogDV = new DataView(leaveAttendanceLogTask.Result);
                 curYear = year;
 
                 leaveType_cbb.DataSource = mLeaveType;
@@ -124,6 +115,7 @@ namespace RauViet.ui
                 dataGV.Columns["Month"].Visible = false;
                 dataGV.Columns["Year"].Visible = false;
                 dataGV.Columns["LeaveCount"].Visible = false;
+                
 
                 dataGV.Columns["EmployeeCode"].Width = 50;
                 dataGV.Columns["FullName"].Width = 160;
@@ -138,7 +130,12 @@ namespace RauViet.ui
                     dataGV.Rows[0].Selected = true;
                 }
 
+
+                log_GV.DataSource = mLogDV;
                 loadLeaveAttendance();
+
+                log_GV.Columns["LogID"].Visible = false;
+                log_GV.Columns["EmployeeCode"].Visible = false;
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
@@ -172,7 +169,6 @@ namespace RauViet.ui
             attendanceGV.Columns["LeaveID"].Visible = false;
             attendanceGV.Columns["LeaveTypeCode"].Visible = false;
             attendanceGV.Columns["EmployeeCode"].Visible = false;
-            attendanceGV.Columns["UpdatedHistory"].Visible = false;
 
             attendanceGV.Columns["DateOff"].DefaultCellStyle.Format = "dd/MM/yyyy";
 
@@ -187,7 +183,6 @@ namespace RauViet.ui
             attendanceGV.Columns["DateOff"].Width = 100;
             attendanceGV.Columns["Note"].Width = 250;
 
-            attendanceGV.Columns["UpdatedHistory"].DefaultCellStyle.WrapMode = DataGridViewTriState.True;
             attendanceGV.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
             attendanceGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
@@ -207,10 +202,12 @@ namespace RauViet.ui
             int year = Convert.ToInt32(year_tb.Text);
 
             var leaveAttendanceTask = SQLStore.Instance.GetLeaveAttendancesAsyn(year);
-
-            await Task.WhenAll(leaveAttendanceTask);
+            var leaveAttendanceLogTask = SQLStore.Instance.GetLeaveAttendanceLogAsync(year);
+            await Task.WhenAll(leaveAttendanceTask, leaveAttendanceLogTask);
 
             mLeaveAttendance_dt = leaveAttendanceTask.Result;
+            mLogDV = new DataView(leaveAttendanceLogTask.Result);
+            log_GV.DataSource = mLogDV;
             loadLeaveAttendance();
 
             curYear = year;
@@ -262,7 +259,6 @@ namespace RauViet.ui
             string leaveTypeCode = cells["LeaveTypeCode"].Value.ToString();
             DateTime dateOff = Convert.ToDateTime(cells["DateOff"].Value);
             string note = cells["Note"].Value.ToString();
-            string updatedHistory = cells["UpdatedHistory"].Value.ToString();
             decimal hourLeave = Convert.ToDecimal(cells["LeaveHours"].Value);
 
             leaveID_tb.Text = leaveID.ToString();
@@ -270,7 +266,6 @@ namespace RauViet.ui
             dateOffEnd_dtp.Value = dateOff.Date;
             leaveType_cbb.SelectedValue = leaveTypeCode;
             note_tb.Text = note;
-            updatedHistory_tb.Text = updatedHistory;
             hourLeave_tb.Text = hourLeave.ToString();
 
             info_gb.BackColor = Color.DarkGray;
@@ -289,9 +284,10 @@ namespace RauViet.ui
             dv.RowFilter = $"EmployeeCode = '{employeeCode}' AND LeaveTypeCode <> 'NL_1'";
 
             attendanceGV.DataSource = dv;
+            mLogDV.RowFilter = $"EmployeeCode = '{employeeCode}'";
         }
 
-        private async void updateData(int leaveID, string employeeCode, string leaveTypeCode, DateTime dateOff, string Note, string UpdatedHistory, decimal hourLeave)
+        private async void updateData(int leaveID, string employeeCode, string leaveTypeCode, DateTime dateOff, string Note, decimal hourLeave)
         {
             foreach (DataGridViewRow row in attendanceGV.Rows)
             {
@@ -301,12 +297,23 @@ namespace RauViet.ui
                     DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                     if (dialogResult == DialogResult.Yes)
                     {
+                        string temp1 = row.Cells["LeaveTypeName"].Value.ToString();
+                        string temp2 = row.Cells["DateOff"].Value.ToString();
+                        string temp3 = row.Cells["LeaveHours"].Value.ToString();
+                        string temp4 = row.Cells["Note"].Value.ToString();
                         try
                         {
-                            bool isScussess = await SQLManager.Instance.updateLeaveAttendanceAsync(leaveID, employeeCode, leaveTypeCode, dateOff, Note, UpdatedHistory, hourLeave);
+                            bool isScussess = await SQLManager.Instance.updateLeaveAttendanceAsync(leaveID, employeeCode, leaveTypeCode, dateOff, Note, hourLeave);
+
+                            DataRow[] foundRows = mLeaveType.Select($"LeaveTypeCode = '{leaveTypeCode}'");
+                            string leaveName = foundRows.Length > 0 ? leaveName = foundRows[0]["LeaveTypeName"].ToString() : "";
 
                             if (isScussess == true)
                             {
+                                _ = SQLManager.Instance.InsertLeaveAttandanceLogAsync(employeeCode, leaveName,
+                                    $"Edit Success {leaveID} - {temp1} - {temp2} - {temp3} - {temp4}",
+                                    dateOff.Date, hourLeave, Note);
+
                                 status_lb.Text = "Thành công.";
                                 status_lb.ForeColor = Color.Green;
 
@@ -314,14 +321,9 @@ namespace RauViet.ui
                                 row.Cells["LeaveTypeCode"].Value = leaveTypeCode;
                                 row.Cells["DateOff"].Value = dateOff.Date;
                                 row.Cells["Note"].Value = Note;
-                                row.Cells["UpdatedHistory"].Value = UpdatedHistory;
                                 row.Cells["LeaveHours"].Value = hourLeave;
-
-                                DataRow[] foundRows = mLeaveType.Select($"LeaveTypeCode = '{leaveTypeCode}'");
-                                if (foundRows.Length > 0)
-                                {
-                                    row.Cells["LeaveTypeName"].Value = foundRows[0]["LeaveTypeName"].ToString();
-                                }
+                                row.Cells["LeaveTypeName"].Value = leaveName;
+                                
 
                                 string[] vietDays = { "CN", "T.2", "T.3", "T.4", "T.5", "T.6", "T.7" };
                                 row.Cells["DayOfWeek"].Value = vietDays[(int)dateOff.DayOfWeek];
@@ -329,26 +331,31 @@ namespace RauViet.ui
                             }
                             else
                             {
+                                _ = SQLManager.Instance.InsertLeaveAttandanceLogAsync(employeeCode, leaveName,
+                                    $"Edit Fail {leaveID} - {temp1} - {temp2} - {temp3} - {temp4}", 
+                                    dateOff.Date, hourLeave, Note);
                                 status_lb.Text = "Thất bại.";
                                 status_lb.ForeColor = Color.Red;
                             }
                         }
                         catch (Exception ex)
                         {
+                            DataRow[] foundRows = mLeaveType.Select($"LeaveTypeCode = '{leaveTypeCode}'");
+                            string leaveName = foundRows.Length > 0 ? leaveName = foundRows[0]["LeaveTypeName"].ToString() : "";
+                            
+                            _ = SQLManager.Instance.InsertLeaveAttandanceLogAsync(employeeCode, leaveName,
+                                    $"Edit Fail Exception: {ex.Message} : {leaveID} - {temp1} - {temp2} - {temp3} - {temp4}",
+                                    dateOff.Date, hourLeave, Note);
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;
                         }
-
-
-
-
                     }
                     break;
                 }
             }
         }
 
-        private async void createNew(string employeeCode, string leaveTypeCode, DateTime dateOffStart, DateTime dateOffEnd, string Note, string UpdatedHistory, decimal hourLeave)
+        private async void createNew(string employeeCode, string leaveTypeCode, DateTime dateOffStart, DateTime dateOffEnd, string Note, decimal hourLeave)
         {
             DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
@@ -364,7 +371,9 @@ namespace RauViet.ui
             {
                 try
                 {
-                    int newEmployee = await SQLManager.Instance.insertLeaveAttendanceAsync(employeeCode, leaveTypeCode, date, Note, UpdatedHistory, hourLeave);
+                    DataRow[] foundRows = mLeaveType.Select($"LeaveTypeCode = '{leaveTypeCode}'");
+                    string leaveName = foundRows.Length > 0 ? foundRows[0]["LeaveTypeName"].ToString() : "";
+                    int newEmployee = await SQLManager.Instance.insertLeaveAttendanceAsync(employeeCode, leaveTypeCode, date, Note, hourLeave);
                     if (newEmployee > 0)
                     {
                         DataRow drToAdd = mLeaveAttendance_dt.NewRow();
@@ -374,18 +383,15 @@ namespace RauViet.ui
                         drToAdd["LeaveTypeCode"] = leaveTypeCode;
                         drToAdd["DateOff"] = date.Date;
                         drToAdd["Note"] = Note;
-                        drToAdd["UpdatedHistory"] = UpdatedHistory;
                         drToAdd["LeaveHours"] = hourLeave;
 
-                        DataRow[] foundRows = mLeaveType.Select($"LeaveTypeCode = '{leaveTypeCode}'");
-                        if (foundRows.Length > 0)
-                        {
-                            drToAdd["LeaveTypeName"] = foundRows[0]["LeaveTypeName"].ToString();
-                        }
-                        
+                       
+                        drToAdd["LeaveTypeName"] = leaveName;                        
                         drToAdd["DayOfWeek"] = vietDays[(int)date.DayOfWeek];
 
-                        mLeaveAttendance_dt.Rows.Add(drToAdd);                       
+                        mLeaveAttendance_dt.Rows.Add(drToAdd);
+
+                        _ = SQLManager.Instance.InsertLeaveAttandanceLogAsync(employeeCode, leaveName, $"Create Success {newEmployee}", date.Date, hourLeave, Note);
 
                         if (SQLStore.Instance.IsDeductAnnualLeave(leaveTypeCode))
                         {
@@ -405,10 +411,14 @@ namespace RauViet.ui
                     {
                         hasError = true;
                         datetimeErrorList.Add(date);
+                        _ = SQLManager.Instance.InsertLeaveAttandanceLogAsync(employeeCode, leaveName, $"Create Fail", date.Date, hourLeave, Note);
                     }
                 }
                 catch (Exception ex)
                 {
+                    DataRow[] foundRows = mLeaveType.Select($"LeaveTypeCode = '{leaveTypeCode}'");
+                    string leaveName = foundRows.Length > 0 ? foundRows[0]["LeaveTypeName"].ToString() : "";
+                    _ = SQLManager.Instance.InsertLeaveAttandanceLogAsync(employeeCode, leaveName, $"Create Fail Exception: {ex.Message}", date.Date, hourLeave, Note);
                     Console.WriteLine("Error:" + ex.Message);
                     errorMessage = "Error:" + ex.Message;
                     hasError = true;
@@ -472,13 +482,11 @@ namespace RauViet.ui
 
             string leaveTypeCode = Convert.ToString(leaveType_cbb.SelectedValue);
             string note = note_tb.Text;
-            string updatedHistory = updatedHistory_tb.Text;
-            updatedHistory += DateTime.Now + ": " + UserManager.Instance.fullName + " | ";
 
             if (leaveID_tb.Text.Length != 0)
-                updateData(Convert.ToInt32(leaveID_tb.Text), employeeCode, leaveTypeCode, dateOffStart, note, updatedHistory, hourLeave);
+                updateData(Convert.ToInt32(leaveID_tb.Text), employeeCode, leaveTypeCode, dateOffStart, note, hourLeave);
             else
-                createNew(employeeCode, leaveTypeCode, dateOffStart, dateOffEnd, note, updatedHistory, hourLeave);
+                createNew(employeeCode, leaveTypeCode, dateOffStart, dateOffEnd, note, hourLeave);
 
             SQLStore.Instance.removeAttendamce(dateOffStart.Month, dateOffStart.Year);
             SQLStore.Instance.removeAttendamce(dateOffEnd.Month, dateOffEnd.Year);
@@ -542,6 +550,8 @@ namespace RauViet.ui
             foreach (DataGridViewRow row in attendanceGV.Rows)
             {
                 int leaveID = Convert.ToInt32(row.Cells["LeaveID"].Value);
+                string employeeCode = row.Cells["EmployeeCode"].Value.ToString();
+                string leaveName = row.Cells["LeaveTypeName"].Value.ToString();
                 if (leaveID.CompareTo(id) == 0)
                 {
                     DateTime dateOff = Convert.ToDateTime(row.Cells["DateOff"].Value);
@@ -561,9 +571,10 @@ namespace RauViet.ui
 
                             if (isScussess == true)
                             {
+                                _ = SQLManager.Instance.InsertLeaveAttandanceLogAsync(employeeCode, leaveName, $"Delete Success", DateTime.Now, 0, "Delete");
+
                                 if (SQLStore.Instance.IsDeductAnnualLeave(row.Cells["LeaveTypeCode"].Value.ToString()))
                                 {
-                                    string employeeCode = dataGV.CurrentRow.Cells["EmployeeCode"].Value?.ToString();
                                     DataRow row1 = mEmployee_dt.Select($"EmployeeCode = '{employeeCode}'").FirstOrDefault();
                                     if (row1 != null)
                                     {
@@ -585,12 +596,14 @@ namespace RauViet.ui
                             }
                             else
                             {
+                                _ = SQLManager.Instance.InsertLeaveAttandanceLogAsync(employeeCode, leaveName, $"Delete Fail", DateTime.Now, 0, "Delete");
                                 status_lb.Text = "Thất bại.";
                                 status_lb.ForeColor = Color.Red;
                             }
                         }
                         catch (Exception ex)
                         {
+                            _ = SQLManager.Instance.InsertLeaveAttandanceLogAsync(employeeCode, leaveName, $"Delete Fail Exception {ex.Message}", DateTime.Now, 0, "Delete");
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;
                         }

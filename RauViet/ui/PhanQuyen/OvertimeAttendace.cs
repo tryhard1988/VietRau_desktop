@@ -19,6 +19,7 @@ namespace RauViet.ui
     public partial class OvertimeAttendace : Form
     {
         System.Data.DataTable mOvertimeAttendamce_dt, mEmployee_dt, mOvertimeType;
+        DataView mLogDV;
         bool isNewState = false;
         // DataTable mShift_dt;
         public OvertimeAttendace()
@@ -63,9 +64,7 @@ namespace RauViet.ui
             endTime_dtp.ShowUpDown = true;
 
             LuuThayDoiBtn.Click += saveBtn_Click;
-            dataGV.SelectionChanged += this.dataGV_CellClick;
             
-            loadAttandance_btn.Click += LoadAttandance_btn_Click;
             newBtn.Click += NewBtn_Click;
             edit_btn.Click += Edit_btn_Click;
             readOnly_btn.Click += ReadOnly_btn_Click;
@@ -82,21 +81,23 @@ namespace RauViet.ui
             await Task.Delay(50);
             LoadingOverlay loadingOverlay = new LoadingOverlay(this);
             loadingOverlay.Show();
-
+            await Task.Delay(200);
             try
             {
                 int month = monthYearDtp.Value.Month;
                 int year = monthYearDtp.Value.Year;
                 // Chạy truy vấn trên thread riêng
                 string[] keepColumns = { "EmployeeCode", "FullName", "PositionName", "ContractTypeName"};
-                var employeesTask = SQLStore.Instance.GetEmployeesAsync(keepColumns);
+                mEmployee_dt = await SQLStore.Instance.GetEmployeesAsync(keepColumns);
                 var overtimeAttendamceTask = SQLStore.Instance.GetOvertimeAttendamceAsync(month, year);
                 var overtimeTypeTask = SQLStore.Instance.GetOvertimeTypeAsync(true);
+                var OvertimeAttendanceLogTask = SQLStore.Instance.GetOvertimeAttendanceLogAsync(month, year);
+                await Task.WhenAll(overtimeAttendamceTask, overtimeTypeTask, OvertimeAttendanceLogTask);
 
-                await Task.WhenAll(employeesTask, overtimeAttendamceTask, overtimeTypeTask);
-                mEmployee_dt = employeesTask.Result;
                 mOvertimeAttendamce_dt = overtimeAttendamceTask.Result;
                 mOvertimeType = overtimeTypeTask.Result;
+                mLogDV = new DataView(OvertimeAttendanceLogTask.Result);
+                log_GV.DataSource = mLogDV;
 
                 overtimeType_cbb.DataSource = mOvertimeType;
                 overtimeType_cbb.DisplayMember = "OvertimeName";
@@ -124,14 +125,22 @@ namespace RauViet.ui
 
                 Attendamce();
 
+                
+
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
                 bool isLock = await SQLStore.Instance.IsSalaryLockAsync(month, year);
                 edit_btn.Visible = !isLock;
                 newBtn.Visible = !isLock;
+
+                loadAttandance_btn.Click -= LoadAttandance_btn_Click;
+                loadAttandance_btn.Click += LoadAttandance_btn_Click;
+                dataGV.SelectionChanged -= this.dataGV_CellClick;
+                dataGV.SelectionChanged += this.dataGV_CellClick;
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"ERROR: {ex.Message}");
                 status_lb.Text = "Thất bại.";
                 status_lb.ForeColor = Color.Red;
             }
@@ -146,8 +155,6 @@ namespace RauViet.ui
         {
             attendanceGV.SelectionChanged -= this.attendanceGV_CellClick;
 
-           
-
             int count = 0;
             mOvertimeAttendamce_dt.Columns["DayOfWeek"].SetOrdinal(count++);
             mOvertimeAttendamce_dt.Columns["WorkDate"].SetOrdinal(count++);
@@ -156,13 +163,11 @@ namespace RauViet.ui
             mOvertimeAttendamce_dt.Columns["EndTime"].SetOrdinal(count++);
             mOvertimeAttendamce_dt.Columns["HourWork"].SetOrdinal(count++);            
             mOvertimeAttendamce_dt.Columns["Note"].SetOrdinal(count++);
-            mOvertimeAttendamce_dt.Columns["UpdatedHistory"].SetOrdinal(count++);
 
             attendanceGV.DataSource = mOvertimeAttendamce_dt;
             attendanceGV.Columns["EmployeeCode"].Visible = false;
             attendanceGV.Columns["OvertimeAttendanceID"].Visible = false;
             attendanceGV.Columns["OvertimeTypeID"].Visible = false;
-            attendanceGV.Columns["UpdatedHistory"].Visible = false;
            // attendanceGV.Columns["SalaryFactor"].Visible = false;
            // attendanceGV.Columns["HourWork"].Visible = false;
 
@@ -185,7 +190,6 @@ namespace RauViet.ui
             attendanceGV.Columns["StartTime"].Width = 65;
             attendanceGV.Columns["EndTime"].Width = 65;
 
-            attendanceGV.Columns["UpdatedHistory"].DefaultCellStyle.WrapMode = DataGridViewTriState.True;
             attendanceGV.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
             attendanceGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
@@ -224,11 +228,13 @@ namespace RauViet.ui
             int year = monthYearDtp.Value.Year;
 
             var overtimeAttendamceTask = SQLStore.Instance.GetOvertimeAttendamceAsync(month, year);
+            var OvertimeAttendanceLogTask = SQLStore.Instance.GetOvertimeAttendanceLogAsync(month, year);
 
-
-            await Task.WhenAll(overtimeAttendamceTask);
+            await Task.WhenAll(overtimeAttendamceTask, OvertimeAttendanceLogTask);
 
             mOvertimeAttendamce_dt = overtimeAttendamceTask.Result;
+            mLogDV = new DataView(OvertimeAttendanceLogTask.Result);
+            log_GV.DataSource = mLogDV;
             Attendamce();
 
             bool isLock = await SQLStore.Instance.IsSalaryLockAsync(month, year);
@@ -271,7 +277,6 @@ namespace RauViet.ui
             TimeSpan endTime = (TimeSpan)cells["EndTime"].Value;
             int overtimeTypeID = Convert.ToInt32(cells["OvertimeTypeID"].Value);            
             string note = cells["Note"].Value.ToString();
-            string updatedHistory = cells["UpdatedHistory"].Value.ToString();
             
             overtimeAttendaceID_tb.Text = overtimeAttendanceID.ToString();
             workDate_dtp.Value = workDate;
@@ -279,7 +284,6 @@ namespace RauViet.ui
             endTime_dtp.Value = workDate.Date + endTime;
             overtimeType_cbb.SelectedValue = overtimeTypeID;
             note_tb.Text = note;
-            updatedHistory_tb.Text = updatedHistory;
 
             info_gb.BackColor = Color.DarkGray;
             status_lb.Text = "";
@@ -296,10 +300,12 @@ namespace RauViet.ui
             dv.RowFilter = $"EmployeeCode = '{employeeCode}'";
 
             attendanceGV.DataSource = dv;
+
+            mLogDV.RowFilter = $"EmployeeCode = '{employeeCode}'";
         }
 
         private async void updateData(int overtimeAttendanceID, string employeeCode, DateTime workDate, TimeSpan startTime, TimeSpan endTime,
-                                    int overtimeTypeID, string note, string updatedHistory)
+                                    int overtimeTypeID, string note)
         {
             foreach (DataGridViewRow row in attendanceGV.Rows)
             {
@@ -312,8 +318,14 @@ namespace RauViet.ui
                         try
                         {
                             bool isScussess = await SQLManager.Instance.updateOvertimeAttendanceAsync(overtimeAttendanceID, employeeCode, workDate, 
-                                                                            startTime, endTime, overtimeTypeID, note, updatedHistory);
+                                                                            startTime, endTime, overtimeTypeID, note);
+                            
+                            DataRow[] rows = mOvertimeType.Select($"OvertimeTypeID = {overtimeTypeID}");
+                            string overtimeName = rows.Length > 0 ? rows[0]["OvertimeName"].ToString() : "";
 
+                            _ = SQLManager.Instance.InsertOvertimeAttandanceLogAsync(employeeCode, overtimeName,
+                                $"edit {(isScussess == true ? "Success" : "Fail")} {overtimeAttendanceID} - {row.Cells["OvertimeName"].Value} - {row.Cells["WorkDate"].Value} - {row.Cells["StartTime"].Value} -> {row.Cells["EndTime"].Value} - {row.Cells["Note"].Value}",
+                                workDate.Date, startTime, endTime, note);
                             if (isScussess == true)
                             {
                                 status_lb.Text = "Thành công.";
@@ -325,13 +337,9 @@ namespace RauViet.ui
                                 row.Cells["EndTime"].Value = endTime;
                                 row.Cells["OvertimeTypeID"].Value = overtimeTypeID;
                                 row.Cells["Note"].Value = note;
-                                row.Cells["UpdatedHistory"].Value = updatedHistory;
                                 row.Cells["HourWork"].Value = (endTime - startTime).TotalHours;
                                 row.Cells["SalaryFactor"].Value = SQLStore.Instance.GetOvertime_SalaryFactor(overtimeTypeID);
-
-                                DataRow[] rows = mOvertimeType.Select($"OvertimeTypeID = {overtimeTypeID}");
-                                if (rows.Length > 0)
-                                    row.Cells["OvertimeName"].Value = rows[0]["OvertimeName"].ToString();
+                                row.Cells["OvertimeName"].Value = overtimeName;
 
 
                                 string[] vietDays = { "CN", "T.2", "T.3", "T.4", "T.5", "T.6", "T.7" };
@@ -349,13 +357,14 @@ namespace RauViet.ui
                         }
                         catch (Exception ex)
                         {
+                            DataRow[] rows = mOvertimeType.Select($"OvertimeTypeID = {overtimeTypeID}");
+                            string overtimeName = rows.Length > 0 ? rows[0]["OvertimeName"].ToString() : "";
+                            _ = SQLManager.Instance.InsertOvertimeAttandanceLogAsync(employeeCode, overtimeName,
+                                $"edit Fail Exception: {ex.Message}: {overtimeAttendanceID} - {row.Cells["OvertimeName"].Value} - {row.Cells["WorkDate"].Value} - {row.Cells["StartTime"].Value} -> {row.Cells["EndTime"].Value} - {row.Cells["Note"].Value}",
+                                workDate.Date, startTime, endTime, note);
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;
                         }
-
-
-
-
                     }
                     break;
                 }
@@ -363,7 +372,7 @@ namespace RauViet.ui
         }
 
         private async void createNew(string employeeCode, DateTime workDate, TimeSpan startTime, TimeSpan endTime,
-                                    int overtimeTypeID, string note, string updatedHistory)
+                                    int overtimeTypeID, string note)
         {
             DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
@@ -371,7 +380,12 @@ namespace RauViet.ui
             {
                 try
                 {
-                    int newEmployee = await SQLManager.Instance.insertOvertimeAttendanceAsync(employeeCode, workDate, startTime, endTime, overtimeTypeID, note, updatedHistory);
+                    int newEmployee = await SQLManager.Instance.insertOvertimeAttendanceAsync(employeeCode, workDate, startTime, endTime, overtimeTypeID, note);
+
+                    DataRow[] rows = mOvertimeType.Select($"OvertimeTypeID = {overtimeTypeID}");
+                    string overtimeName = rows.Length > 0 ? rows[0]["OvertimeName"].ToString() : "";
+
+                    _ = SQLManager.Instance.InsertOvertimeAttandanceLogAsync(employeeCode, overtimeName, $"Create {(newEmployee > 0 ? "Success" : "Fail")}",workDate.Date, startTime, endTime, note);
                     if (newEmployee > 0)
                     {
                         DataRow drToAdd = mOvertimeAttendamce_dt.NewRow();
@@ -385,13 +399,9 @@ namespace RauViet.ui
                         drToAdd["EndTime"] = endTime;
                         drToAdd["OvertimeTypeID"] = overtimeTypeID;
                         drToAdd["Note"] = note;
-                        drToAdd["UpdatedHistory"] = updatedHistory;
                         drToAdd["HourWork"] = (endTime - startTime).TotalHours;
                         drToAdd["SalaryFactor"] = SQLStore.Instance.GetOvertime_SalaryFactor(overtimeTypeID);
-
-                        DataRow[] rows = mOvertimeType.Select($"OvertimeTypeID = {overtimeTypeID}");
-                        if (rows.Length > 0)
-                            drToAdd["OvertimeName"] = rows[0]["OvertimeName"].ToString();
+                        drToAdd["OvertimeName"] = overtimeName;
 
                         string[] vietDays = { "CN", "T.2", "T.3", "T.4", "T.5", "T.6", "T.7" };
                         drToAdd["DayOfWeek"] = vietDays[(int)workDate.DayOfWeek];
@@ -421,6 +431,9 @@ namespace RauViet.ui
                 }
                 catch (Exception ex)
                 {
+                    DataRow[] rows = mOvertimeType.Select($"OvertimeTypeID = {overtimeTypeID}");
+                    string overtimeName = rows.Length > 0 ? rows[0]["OvertimeName"].ToString() : "";
+                    _ = SQLManager.Instance.InsertOvertimeAttandanceLogAsync(employeeCode, overtimeName, $"Create Fail Exception: {ex.Message}", workDate.Date, startTime, endTime, note);
                     status_lb.Text = "Thất bại.";
                     status_lb.ForeColor = Color.Red;
                 }
@@ -449,8 +462,6 @@ namespace RauViet.ui
             TimeSpan endTime = new TimeSpan(endTime_dtp.Value.Hour, endTime_dtp.Value.Minute, 0);
             int overtimeAttendanceID = Convert.ToInt32(overtimeType_cbb.SelectedValue);
             string note = note_tb.Text;
-            string updatedHistory = updatedHistory_tb.Text;
-            updatedHistory += DateTime.Now + ": " + UserManager.Instance.fullName + " | ";
 
             if (endTime < startTime)
             {
@@ -459,9 +470,9 @@ namespace RauViet.ui
             }
 
             if (overtimeAttendaceID_tb.Text.Length != 0)
-                updateData(Convert.ToInt32(overtimeAttendaceID_tb.Text), employeeCode, workDate, startTime, endTime, overtimeAttendanceID, note, updatedHistory);
+                updateData(Convert.ToInt32(overtimeAttendaceID_tb.Text), employeeCode, workDate, startTime, endTime, overtimeAttendanceID, note);
             else
-                createNew(employeeCode, workDate, startTime, endTime, overtimeAttendanceID, note, updatedHistory);
+                createNew(employeeCode, workDate, startTime, endTime, overtimeAttendanceID, note);
 
             SQLStore.Instance.removeAttendamce(workDate.Month, workDate.Year);
         }
