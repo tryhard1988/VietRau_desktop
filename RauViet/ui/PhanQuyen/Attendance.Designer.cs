@@ -33,14 +33,18 @@ namespace RauViet.ui
             this.panel1 = new System.Windows.Forms.Panel();
             this.excelAttendance_btn = new System.Windows.Forms.Button();
             this.info_gb = new System.Windows.Forms.GroupBox();
+            this.monthYearDtp = new System.Windows.Forms.DateTimePicker();
             this.loadAttandance_btn = new System.Windows.Forms.Button();
             this.status_lb = new System.Windows.Forms.Label();
+            this.panel2 = new System.Windows.Forms.Panel();
             this.attendanceGV = new System.Windows.Forms.DataGridView();
-            this.monthYearDtp = new System.Windows.Forms.DateTimePicker();
+            this.log_GV = new System.Windows.Forms.DataGridView();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
             this.panel1.SuspendLayout();
             this.info_gb.SuspendLayout();
+            this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.attendanceGV)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.log_GV)).BeginInit();
             this.SuspendLayout();
             // 
             // dataGV
@@ -87,6 +91,14 @@ namespace RauViet.ui
             this.info_gb.TabIndex = 28;
             this.info_gb.TabStop = false;
             // 
+            // monthYearDtp
+            // 
+            this.monthYearDtp.CalendarFont = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.monthYearDtp.Location = new System.Drawing.Point(5, 19);
+            this.monthYearDtp.Name = "monthYearDtp";
+            this.monthYearDtp.Size = new System.Drawing.Size(99, 20);
+            this.monthYearDtp.TabIndex = 36;
+            // 
             // loadAttandance_btn
             // 
             this.loadAttandance_btn.BackColor = System.Drawing.SystemColors.Highlight;
@@ -109,32 +121,46 @@ namespace RauViet.ui
             this.status_lb.TabIndex = 26;
             this.status_lb.Text = "Email";
             // 
+            // panel2
+            // 
+            this.panel2.Controls.Add(this.log_GV);
+            this.panel2.Controls.Add(this.attendanceGV);
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel2.Location = new System.Drawing.Point(403, 0);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(592, 681);
+            this.panel2.TabIndex = 12;
+            // 
             // attendanceGV
             // 
             this.attendanceGV.AllowUserToAddRows = false;
             this.attendanceGV.AllowUserToDeleteRows = false;
             this.attendanceGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.attendanceGV.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.attendanceGV.Location = new System.Drawing.Point(403, 0);
+            this.attendanceGV.Location = new System.Drawing.Point(0, 0);
             this.attendanceGV.Name = "attendanceGV";
             this.attendanceGV.ReadOnly = true;
             this.attendanceGV.Size = new System.Drawing.Size(592, 681);
-            this.attendanceGV.TabIndex = 76;
+            this.attendanceGV.TabIndex = 77;
             // 
-            // monthYearDtp
+            // log_GV
             // 
-            this.monthYearDtp.CalendarFont = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.monthYearDtp.Location = new System.Drawing.Point(5, 19);
-            this.monthYearDtp.Name = "monthYearDtp";
-            this.monthYearDtp.Size = new System.Drawing.Size(99, 20);
-            this.monthYearDtp.TabIndex = 36;
+            this.log_GV.AllowUserToAddRows = false;
+            this.log_GV.AllowUserToDeleteRows = false;
+            this.log_GV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.log_GV.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.log_GV.Location = new System.Drawing.Point(0, 357);
+            this.log_GV.Name = "log_GV";
+            this.log_GV.ReadOnly = true;
+            this.log_GV.Size = new System.Drawing.Size(592, 324);
+            this.log_GV.TabIndex = 78;
             // 
             // Attendance
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1304, 681);
-            this.Controls.Add(this.attendanceGV);
+            this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.dataGV);
             this.Name = "Attendance";
@@ -143,7 +169,9 @@ namespace RauViet.ui
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.info_gb.ResumeLayout(false);
+            this.panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.attendanceGV)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.log_GV)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -155,7 +183,9 @@ namespace RauViet.ui
         private System.Windows.Forms.GroupBox info_gb;
         private System.Windows.Forms.Label status_lb;
         private System.Windows.Forms.Button loadAttandance_btn;
-        private System.Windows.Forms.DataGridView attendanceGV;
         private System.Windows.Forms.DateTimePicker monthYearDtp;
+        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.DataGridView attendanceGV;
+        private System.Windows.Forms.DataGridView log_GV;
     }
 }

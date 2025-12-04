@@ -610,7 +610,7 @@ namespace RauViet.ui
 
         private void SetUIReadOnly(bool isReadOnly)
         {
-            nvCode_tb.ReadOnly = isReadOnly;
+            nvCode_tb.ReadOnly = true;
             tenNV_tb.ReadOnly = isReadOnly;
             birthdate_dtp.Enabled = !isReadOnly;
             hireDate_dtp.Enabled = !isReadOnly;

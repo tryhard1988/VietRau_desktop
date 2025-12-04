@@ -111,7 +111,7 @@ namespace RauViet.classes
             int newId = -1;
             string query = @"INSERT INTO Customers (FullName, CustomerCode, Priority ) 
                              OUTPUT INSERTED.CustomerID
-                            VALUES (@FullName, @CustomerCode, @CustomerCode)";
+                            VALUES (@FullName, @CustomerCode, @Priority)";
             try
             {
                 using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
@@ -129,7 +129,11 @@ namespace RauViet.classes
                 }
                 return newId;
             }
-            catch { return -1; }
+            catch (Exception ex)
+            {
+                Console.WriteLine("ERROR: " + ex.Message);
+                return -1; 
+            }
         }
 
         public async Task<bool> deleteCustomerAsync(int customerID)
@@ -4761,6 +4765,68 @@ namespace RauViet.classes
             {
                 await con.OpenAsync();
                 string query = @"SELECT * FROM OvertimeAttendance_Log WHERE YEAR(WorkDate) = @Year AND MONTH(WorkDate) = @Month";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    cmd.Parameters.AddWithValue("@Month", month);
+                    cmd.Parameters.AddWithValue("@Year", year);
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
+        }
+
+        public async Task<bool> InsertAttendanceLogListAsync(List<(string EmployeeCode, string Description, DateTime WorkDate, decimal WorkingHours, string Note , string ActionBy)> albData)
+        {
+            try
+            {
+                DataTable dt = new DataTable();
+                dt.Columns.Add("EmployeeCode", typeof(string));
+                dt.Columns.Add("Description", typeof(string));
+                dt.Columns.Add("WorkDate", typeof(DateTime));
+                dt.Columns.Add("WorkingHours", typeof(decimal));
+                dt.Columns.Add("Note", typeof(string));
+                dt.Columns.Add("ActionBy", typeof(string));
+
+
+                foreach (var item in albData)
+                {
+                    dt.Rows.Add(item.EmployeeCode, item.Description, item.WorkDate.Date, item.WorkingHours, item.Note, item.ActionBy);
+                }
+
+                using (SqlConnection conn = new SqlConnection(ql_NhanSu_Log_conStr()))
+                {
+                    await conn.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand("sp_InsertAttendanceLogList", conn))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        var param = cmd.Parameters.AddWithValue("@Logs", dt);
+                        param.SqlDbType = SqlDbType.Structured;
+                        param.TypeName = "AttendanceLogType";
+
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Lỗi khi cập nhật: " + ex.Message);
+                return false;
+            }
+        }
+
+        public async Task<DataTable> GetAttendanceLogAsync(int month, int year)
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_NhanSu_Log_conStr()))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT * FROM Attendance_Log WHERE YEAR(WorkDate) = @Year AND MONTH(WorkDate) = @Month";
 
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 {

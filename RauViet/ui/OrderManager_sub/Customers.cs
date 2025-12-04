@@ -65,8 +65,6 @@ namespace RauViet.ui
                 loading_lb.Visible = false; // ẩn loading
                 loading_lb.Enabled = true; // enable lại button
             }
-
-            
         }
 
         private void dataGV_RowPrePaint(object sender, DataGridViewRowPrePaintEventArgs e)
@@ -280,7 +278,6 @@ namespace RauViet.ui
             status_lb.Text = "";
             delete_btn.Enabled = false;
             info_gb.BackColor = Color.Green;
-            dataGV.ClearSelection();
 
             name_tb.Focus();
             info_gb.BackColor = newCustomerBtn.BackColor;

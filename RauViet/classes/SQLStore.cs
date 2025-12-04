@@ -69,6 +69,7 @@ namespace RauViet.classes
         Dictionary<string, DataTable> mMonthlyAllowanceLogs;
         Dictionary<int, DataTable> mLeaveAttendanceLogs;
         Dictionary<string, DataTable> mOvertimeAttendanceLogs;
+        Dictionary<string, DataTable> mAttendanceLogs;
         private SQLStore() { }
 
         public static SQLStore Instance
@@ -109,6 +110,7 @@ namespace RauViet.classes
                 mMonthlyAllowanceLogs = new Dictionary<string, DataTable>();
                 mLeaveAttendanceLogs = new Dictionary<int, DataTable>();
                 mOvertimeAttendanceLogs = new Dictionary<string, DataTable>();
+                mAttendanceLogs = new Dictionary<string, DataTable>();
 
                 var productSKUTask = SQLManager.Instance.getProductSKUAsync();
                 var productPackingTask = SQLManager.Instance.getProductpackingAsync();
@@ -2800,6 +2802,17 @@ namespace RauViet.classes
                 mOvertimeAttendanceLogs[key] = dt;
             }
             return mOvertimeAttendanceLogs[key];
+        }
+
+        public async Task<DataTable> GetAttendanceLogAsync(int month, int year)
+        {
+            string key = month + "_" + year;
+            if (!mAttendanceLogs.ContainsKey(key))
+            {
+                DataTable dt = await SQLManager.Instance.GetAttendanceLogAsync(month, year);
+                mAttendanceLogs[key] = dt;
+            }
+            return mAttendanceLogs[key];
         }
     }
 }

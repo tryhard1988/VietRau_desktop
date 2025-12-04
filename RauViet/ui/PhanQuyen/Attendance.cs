@@ -1,4 +1,5 @@
-﻿using Microsoft.Office.Interop.Excel;
+﻿using DocumentFormat.OpenXml.Vml.Office;
+using Microsoft.Office.Interop.Excel;
 using RauViet.classes;
 using System;
 using System.Collections.Generic;
@@ -14,10 +15,12 @@ namespace RauViet.ui
     public partial class Attendance : Form
     {
         DataTable mAttendamce_dt, mEmployee_dt, mHoliday_dt, mLeaveAttendance_dt;
+        DataView mlogDV;
         Dictionary<string, (string PositionCode, string ContractTypeCode)> employeeDict;
         LoadingOverlay loadingOverlay;
         int mCurrentMonth = -1;
         int mCurrentYear = -1;
+        object oldValue;
         public Attendance()
         {
             InitializeComponent();
@@ -35,7 +38,9 @@ namespace RauViet.ui
 
             status_lb.Text = "";
 
+
             dataGV.SelectionChanged += this.dataGV_CellClick;
+
             attendanceGV.CellFormatting += AttandaceGV_CellFormatting;
             attendanceGV.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.attendanceGV_EditingControlShowing);
 
@@ -47,6 +52,7 @@ namespace RauViet.ui
             loadAttandance_btn.Click += LoadAttandance_btn_Click;
 
             attendanceGV.CellParsing += AttendanceGV_CellParsing;
+            attendanceGV.SelectionChanged += AttendanceGV_SelectionChanged;
         }
 
         public async void ShowData()
@@ -70,12 +76,13 @@ namespace RauViet.ui
                 var attendamceTask = SQLStore.Instance.GetAttendamceAsync(null, month, year);
                 var holidayTask = SQLStore.Instance.GetHolidaysAsync(month, year);
                 var leaveAttendanceTask = SQLStore.Instance.GetLeaveAttendancesAsyn(year);
-
-                await Task.WhenAll(employeesTask, attendamceTask, holidayTask, leaveAttendanceTask);
+                var attendanceLogTask = SQLStore.Instance.GetAttendanceLogAsync(month, year);
+                await Task.WhenAll(employeesTask, attendamceTask, holidayTask, leaveAttendanceTask, attendanceLogTask);
                 mEmployee_dt = employeesTask.Result;
                 mAttendamce_dt = attendamceTask.Result;
                 mHoliday_dt = holidayTask.Result;
                 mLeaveAttendance_dt = leaveAttendanceTask.Result;
+                mlogDV = new DataView(attendanceLogTask.Result);
 
                 mCurrentMonth = month;
                 mCurrentYear = year;
@@ -119,8 +126,13 @@ namespace RauViet.ui
                     dataGV.Rows[0].Selected = true;
                 }
 
+                log_GV.DataSource = mlogDV;
                 Attendamce(month, year);
                 attendanceGV.DataSource = mAttendamce_dt;
+
+                log_GV.Columns["LogID"].Visible = false;
+                log_GV.Columns["EmployeeCode"].Visible = false;
+
                 attendanceGV.Columns["EmployeeCode"].Visible = false;
                 attendanceGV.Columns["LeaveHours"].Visible = false;
                 attendanceGV.Columns["WorkDate"].DefaultCellStyle.Format = "dd/MM/yyyy";
@@ -190,43 +202,43 @@ namespace RauViet.ui
 
         }
 
-        private async void CalWorkHour_btn_Click(object sender, EventArgs e)
-        {
-            List<(string EmployeeCode, DateTime WorkDate, decimal WorkingHours, string Note, string log)> attendanceData = new List<(string, DateTime, decimal, string, string)>();
-            foreach (DataRow dr in mAttendamce_dt.Rows)
-            {
-                if (double.TryParse(dr["LeaveHours"]?.ToString(), out double leaveHour))
-                {
-                    dr["WorkingHours"] = Math.Max(0, 8 - leaveHour);                    
+        //private async void CalWorkHour_btn_Click(object sender, EventArgs e)
+        //{
+        //    List<(string EmployeeCode, DateTime WorkDate, decimal WorkingHours, string Note, string log)> attendanceData = new List<(string, DateTime, decimal, string, string)>();
+        //    foreach (DataRow dr in mAttendamce_dt.Rows)
+        //    {
+        //        if (double.TryParse(dr["LeaveHours"]?.ToString(), out double leaveHour))
+        //        {
+        //            dr["WorkingHours"] = Math.Max(0, 8 - leaveHour);                    
 
-                    string employeeCode = Convert.ToString(dr["EmployeeCode"]);
-                    DateTime workDate = Convert.ToDateTime(dr["WorkDate"]);
-                    decimal workingHours = Convert.ToDecimal(dr["WorkingHours"]);
-                    string note = Convert.ToString(dr["Note"]);
-                    string attendanceLog = Convert.ToString(dr["AttendanceLog"]);
+        //            string employeeCode = Convert.ToString(dr["EmployeeCode"]);
+        //            DateTime workDate = Convert.ToDateTime(dr["WorkDate"]);
+        //            decimal workingHours = Convert.ToDecimal(dr["WorkingHours"]);
+        //            string note = Convert.ToString(dr["Note"]);
+        //            string attendanceLog = Convert.ToString(dr["AttendanceLog"]);
 
-                    attendanceData.Add((employeeCode, workDate, workingHours, note, attendanceLog));                    
-                }
-            }
+        //            attendanceData.Add((employeeCode, workDate, workingHours, note, attendanceLog));                    
+        //        }
+        //    }
 
-            try
-            {
-                Boolean iSuccess = await SQLManager.Instance.UpsertAttendanceBatchAsync(attendanceData);
-                if (!iSuccess)
-                {
-                    MessageBox.Show("Cập nhật thất bại!");
-                }
-                else
-                {
-                    status_lb.Text = "Thành Công.";
-                    status_lb.ForeColor = Color.Blue;
-                }
-            }
-            catch
-            {
-                MessageBox.Show("Thất Bại ?", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
+        //    try
+        //    {
+        //        Boolean iSuccess = await SQLManager.Instance.UpsertAttendanceBatchAsync(attendanceData);
+        //        if (!iSuccess)
+        //        {
+        //            MessageBox.Show("Cập nhật thất bại!");
+        //        }
+        //        else
+        //        {
+        //            status_lb.Text = "Thành Công.";
+        //            status_lb.ForeColor = Color.Blue;
+        //        }
+        //    }
+        //    catch
+        //    {
+        //        MessageBox.Show("Thất Bại ?", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        //    }
+        //}
 
         private async void AttandaceGV_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
@@ -312,7 +324,7 @@ namespace RauViet.ui
                         System.Data.DataTable excelData = Utils.LoadExcel_NoHeader(filePath);
 
                         List<(string EmployeeCode, DateTime WorkDate, decimal WorkingHours, string Note, string log)> attendanceData = new List<(string, DateTime, decimal, string, string)>();
-
+                        List<(string EmployeeCode, string Description, DateTime WorkDate, decimal WorkingHours, string Note, string ActionBy)> logs = new List<(string, string, DateTime, decimal, string, string)>();
                         TimeSpan startTime_Morning = new TimeSpan(9, 30, 0);
                         TimeSpan startTime_AfterNoon = new TimeSpan(13, 20, 0);
                         int month = -1;
@@ -397,6 +409,7 @@ namespace RauViet.ui
                             }
 
                             attendanceData.Add((employeeCode, workDate, workingHours, note, log));
+                            logs.Add((employeeCode, "File Excel", workDate, workingHours, note, UserManager.Instance.fullName));
                         }
 
                         if (month == -1 || year == -1)
@@ -451,6 +464,20 @@ namespace RauViet.ui
                                     isSuccess = await SQLManager.Instance.UpsertAttendanceBatchAsync(attendanceData);
                                     if (isSuccess)
                                     {
+                                        var updatedLogs = logs
+                                                .Select(item =>
+                                                    (
+                                                        item.EmployeeCode,
+                                                        Description: item.Description + " Success",   // <— sửa ở đây
+                                                        item.WorkDate,
+                                                        item.WorkingHours,
+                                                        item.Note,
+                                                        item.ActionBy
+                                                    )
+                                                ).ToList();
+
+                                        _ = SQLManager.Instance.InsertAttendanceLogListAsync( updatedLogs );
+
                                         monthYearDtp.Value = new DateTime(year, month, 1);
 
                                         await AddMissingEmployees(month, year);
@@ -464,6 +491,20 @@ namespace RauViet.ui
                                     }
                                     else
                                     {
+                                        var updatedLogs = logs
+                                                .Select(item =>
+                                                    (
+                                                        item.EmployeeCode,
+                                                        Description: item.Description + " Fail",   // <— sửa ở đây
+                                                        item.WorkDate,
+                                                        item.WorkingHours,
+                                                        item.Note,
+                                                        item.ActionBy
+                                                    )
+                                                ).ToList();
+
+                                        _ = SQLManager.Instance.InsertAttendanceLogListAsync(updatedLogs);
+
                                         MessageBox.Show("Thất Bại ?", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                     }
                                 }
@@ -472,6 +513,21 @@ namespace RauViet.ui
                                     await Task.Delay(200);
                                     loadingOverlay.Hide();
                                     Console.WriteLine("ERROR: " + ex.ToString());
+
+                                    var updatedLogs = logs
+                                                .Select(item =>
+                                                    (
+                                                        item.EmployeeCode,
+                                                        Description: item.Description + " Fail Exception: " + ex.Message,   // <— sửa ở đây
+                                                        item.WorkDate,
+                                                        item.WorkingHours,
+                                                        item.Note,
+                                                        item.ActionBy
+                                                    )
+                                                ).ToList();
+
+                                    _ = SQLManager.Instance.InsertAttendanceLogListAsync(updatedLogs);
+
                                     MessageBox.Show("Thất Bại ?", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                 }
                             }
@@ -503,8 +559,8 @@ namespace RauViet.ui
             var attendamceTask = SQLStore.Instance.GetAttendamceAsync(null, month, year);
             var holidayTask = SQLStore.Instance.GetHolidaysAsync(month, year);
             var leaveAttendanceTask = SQLStore.Instance.GetLeaveAttendancesAsyn(year);
-
-            await Task.WhenAll(attendamceTask, holidayTask, leaveAttendanceTask);
+            var attendanceLogTask = SQLStore.Instance.GetAttendanceLogAsync(month, year);
+            await Task.WhenAll(attendamceTask, holidayTask, leaveAttendanceTask, attendanceLogTask);
 
             mCurrentYear = year;
             mCurrentMonth = month;
@@ -512,6 +568,8 @@ namespace RauViet.ui
             mAttendamce_dt = attendamceTask.Result;
             mHoliday_dt = holidayTask.Result;
             mLeaveAttendance_dt = leaveAttendanceTask.Result;
+            mlogDV = new DataView(attendanceLogTask.Result);
+            log_GV.DataSource = mlogDV;
 
             Attendamce(month, year);
             await Task.Delay(500);
@@ -534,11 +592,25 @@ namespace RauViet.ui
                 view.RowFilter = $"EmployeeCode = '{employeeCode}'";
                 return view;
             });
+            attendanceGV.DataSource = dv;
 
             // Update UI trên UI thread
-            attendanceGV.DataSource = dv;
+            
         }
 
+        private void AttendanceGV_SelectionChanged(object sender, EventArgs e)
+        {
+            if (attendanceGV.CurrentRow == null) return;
+            int rowIndex = attendanceGV.CurrentRow.Index;
+            if (rowIndex < 0) return;
+
+            var row = attendanceGV.Rows[rowIndex];
+            string employeeCode = row.Cells["EmployeeCode"].Value.ToString();
+            DateTime workDate = Convert.ToDateTime(row.Cells["WorkDate"].Value);
+
+            mlogDV.RowFilter = $"EmployeeCode = '{employeeCode}' AND WorkDate = #{workDate:MM/dd/yyyy}#";
+
+        }
 
         private void cal_WorkingHour_WorkingDay()
         {
@@ -575,8 +647,7 @@ namespace RauViet.ui
             string employeeCode = cells["EmployeeCode"].Value.ToString();
 
             DataView dv = new DataView(mAttendamce_dt);
-            dv.RowFilter = $"EmployeeCode = '{employeeCode}'";
-            
+            dv.RowFilter = $"EmployeeCode = '{employeeCode}'";            
             attendanceGV.DataSource = dv;
 
             status_lb.Text = "";
@@ -584,6 +655,7 @@ namespace RauViet.ui
 
         private async void AttendanceGV_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
         {
+            oldValue = attendanceGV.CurrentCell?.Value;
             bool isLock = await SQLStore.Instance.IsSalaryLockAsync(mCurrentMonth, mCurrentYear);
             if (isLock)
                 e.Cancel = true;
@@ -595,6 +667,11 @@ namespace RauViet.ui
         {
             if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
             {
+                var columnName = attendanceGV.Columns[e.ColumnIndex].Name;
+                object newValue = attendanceGV.CurrentCell?.Value;//.Rows[e.RowIndex].Cells[e.ColumnIndex].Value?.ToString() ?? "";
+
+                if (object.Equals(oldValue, newValue)) return;
+
                 var row = attendanceGV.Rows[e.RowIndex];
 
                 List<(string EmployeeCode, DateTime WorkDate, decimal WorkingHours, string Note, string log)> attendanceData = new List<(string, DateTime, decimal, string, string)>();
@@ -610,19 +687,28 @@ namespace RauViet.ui
                 try
                 {
                     Boolean iSuccess = await SQLManager.Instance.UpsertAttendanceBatchAsync(attendanceData);
+
+                    List<(string EmployeeCode, string Description, DateTime WorkDate, decimal WorkingHours, string Note, string ActionBy)> logs = new List<(string, string, DateTime, decimal, string, string)>();
+                    logs.Add((employeeCode, $"Edit {columnName}: {oldValue} {(iSuccess ? "Success" : "Fail")}", workDate, workingHours, note, UserManager.Instance.fullName));
+
+                    _ = SQLManager.Instance.InsertAttendanceLogListAsync(logs);
                     if (!iSuccess)
-                    {
+                    {                        
                         MessageBox.Show("Cập nhật thất bại!");
                     }
                     else
                     {
                         status_lb.Text = "Thành Công.";
-                        status_lb.ForeColor = Color.Blue;
+                        status_lb.ForeColor = Color.Green;
                         cal_WorkingHour_WorkingDay();
                     }
                 }
-                catch
-                {                    
+                catch (Exception ex)
+                {
+                    List<(string EmployeeCode, string Description, DateTime WorkDate, decimal WorkingHours, string Note, string ActionBy)> logs = new List<(string, string, DateTime, decimal, string, string)>();
+                    logs.Add((employeeCode, $"Edit {columnName}: {oldValue} Fail Exception {ex.Message}", workDate, workingHours, note, UserManager.Instance.fullName));
+                    _ = SQLManager.Instance.InsertAttendanceLogListAsync(logs);
+
                     MessageBox.Show("Thất Bại ?", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
@@ -664,6 +750,7 @@ namespace RauViet.ui
 
             // Thêm dữ liệu vào Attendance
             List<(string EmployeeCode, DateTime WorkDate, decimal WorkingHours, string Note, string log)> attendanceData = new List<(string, DateTime, decimal, string, string)>();
+            List<(string EmployeeCode, string Description, DateTime WorkDate, decimal WorkingHours, string Note, string ActionBy)> logs = new List<(string, string, DateTime, decimal, string, string)>();
             foreach (var emp in missingEmployees)
             {
                 string empCode = emp.Field<string>("EmployeeCode");
@@ -687,11 +774,23 @@ namespace RauViet.ui
 
                     mAttendamce_dt.Rows.Add(newRow);
                     attendanceData.Add((empCode, date, workHour, note, ""));
+                    logs.Add((empCode, "AddMissingEmployees", date, workHour, note, UserManager.Instance.fullName));
                 }
             }
 
             
             Boolean iSuccess = await SQLManager.Instance.UpsertAttendanceBatchAsync(attendanceData);
+
+            var updatedLogs = logs.Select(item =>
+                                (
+                                    item.EmployeeCode,
+                                    Description: item.Description + (iSuccess ? " Success" : "Fail"),   // <— sửa ở đây
+                                    item.WorkDate,
+                                    item.WorkingHours,
+                                    item.Note,
+                                    item.ActionBy
+                                )).ToList();
+            _ = SQLManager.Instance.InsertAttendanceLogListAsync(updatedLogs);
         }
     }
 }
