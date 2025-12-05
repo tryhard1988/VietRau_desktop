@@ -1,20 +1,16 @@
-﻿using DocumentFormat.OpenXml.Bibliography;
-using RauViet.classes;
+﻿using RauViet.classes;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
 
 namespace RauViet.ui
 {
     public partial class EmployeeNganHang : Form
-    { 
+    {
+        private DataView mLogDV;
         public EmployeeNganHang()
         {
             InitializeComponent();
@@ -48,11 +44,15 @@ namespace RauViet.ui
             {
                 string[] keepColumns = { "EmployeeCode", "FullName", "BankName", "BankAccountHolder", "BankAccountNumber", "BankBranch" };
                 var employeesTask = SQLStore.Instance.GetEmployeesAsync(keepColumns);
-
-                await Task.WhenAll(employeesTask);
+                var employeeBankLogTask = SQLStore.Instance.GetEmployeeBankLogAsync();
+                await Task.WhenAll(employeesTask, employeeBankLogTask);
                 DataTable employee_dt = employeesTask.Result;
-
+                mLogDV = new DataView(employeeBankLogTask.Result);
                 dataGV.DataSource = employee_dt;
+                log_GV.DataSource = mLogDV;
+
+                log_GV.Columns["LogID"].Visible = false;
+                log_GV.Columns["EmployeeCode"].Visible = false;
 
                 dataGV.Columns["EmployeeCode"].HeaderText = "Mã NV";
                 dataGV.Columns["FullName"].HeaderText = "Tên NV";
@@ -121,6 +121,7 @@ namespace RauViet.ui
             bankAccountHolder_tb.Text = bankAccountHolder;
 
             status_lb.Text = "";
+            mLogDV.RowFilter = $"EmployeeCode = '{employeeCode}'";
         }
 
         private async void updateData(string employeeCode, string bankName, string bankBranch, string bankAccountNumber, string bankAccountHolder)
@@ -142,6 +143,8 @@ namespace RauViet.ui
                                 status_lb.Text = "Thành công.";
                                 status_lb.ForeColor = Color.Green;
 
+                                _ = SQLManager.Instance.InsertEmployeesBankLogAsync(employeeCode, $"{row.Cells["BankName"].Value} - {row.Cells["BankBranch"].Value} - {row.Cells["BankAccountNumber"].Value} - {row.Cells["BankAccountHolder"].Value}",
+                                    $"Success: {bankName} - {bankBranch} - {bankAccountNumber} - {bankAccountHolder}");
                                 row.Cells["BankName"].Value = bankName;
                                 row.Cells["BankBranch"].Value = bankBranch;
                                 row.Cells["BankAccountNumber"].Value = bankAccountNumber;
@@ -158,12 +161,16 @@ namespace RauViet.ui
                             }
                             else
                             {
+                                _ = SQLManager.Instance.InsertEmployeesBankLogAsync(employeeCode, $"{row.Cells["BankName"].Value} - {row.Cells["BankBranch"].Value} - {row.Cells["BankAccountNumber"].Value} - {row.Cells["BankAccountHolder"].Value}",
+                                    $"Fail: {bankName} - {bankBranch} - {bankAccountNumber} - {bankAccountHolder}");
                                 status_lb.Text = "Thất bại.";
                                 status_lb.ForeColor = Color.Red;
                             }
                         }
                         catch (Exception ex)
                         {
+                            _ = SQLManager.Instance.InsertEmployeesBankLogAsync(employeeCode, $"{row.Cells["BankName"].Value} - {row.Cells["BankBranch"].Value} - {row.Cells["BankAccountNumber"].Value} - {row.Cells["BankAccountHolder"].Value}",
+                                    $"Fail Exception: {ex.Message} - {bankName} - {bankBranch} - {bankAccountNumber} - {bankAccountHolder}");
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;
                         }  

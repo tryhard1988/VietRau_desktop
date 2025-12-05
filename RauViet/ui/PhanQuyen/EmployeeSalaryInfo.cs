@@ -19,6 +19,7 @@ namespace RauViet.ui
     public partial class EmployeeSalaryInfo : Form
     {
         private DataTable mEmployeeSalaryInfo_dt;
+        private DataView mLogDV;
         bool isNewState = false;
         public EmployeeSalaryInfo()
         {
@@ -73,10 +74,11 @@ namespace RauViet.ui
                 string[] keepColumns = { "EmployeeCode", "FullName", "PositionName", "ContractTypeName", "GradeName", "SalaryGrade" };
                 var employeesTask = SQLStore.Instance.GetEmployeesAsync(keepColumns);
                 var employeeSalaryInfoAsync = SQLStore.Instance.GetEmployeeSalaryInfoAsync();
-
-                await Task.WhenAll(employeesTask, employeeSalaryInfoAsync);
+                var employeeSalary_LogTask = SQLStore.Instance.GetEmployeeSalary_LogAsync();
+                await Task.WhenAll(employeesTask, employeeSalaryInfoAsync, employeeSalary_LogTask);
                 DataTable employee_dt = employeesTask.Result;
                 mEmployeeSalaryInfo_dt = employeeSalaryInfoAsync.Result;
+                mLogDV = new DataView(employeeSalary_LogTask.Result);
 
                 foreach (DataRow dr in employee_dt.Rows)
                 {
@@ -89,7 +91,10 @@ namespace RauViet.ui
 
                 dataGV.AutoGenerateColumns = true;
                 dataGV.DataSource = employee_dt;
+                log_GV.DataSource = mLogDV;
 
+                log_GV.Columns["LogID"].Visible = false;
+                log_GV.Columns["EmployeeCode"].Visible = false;
                 dataGV.Columns["SalaryGrade"].Visible = false;
                 salaryInfoGV.Columns["Month"].Visible = false;
                 salaryInfoGV.Columns["Year"].Visible = false;
@@ -198,6 +203,8 @@ namespace RauViet.ui
 
             salaryInfoGV.DataSource = dv;
             status_lb.Text = "";
+
+            mLogDV.RowFilter = $"EmployeeCode = '{employeeCode}'";
         }
         private void UpdateRightUI(int index)
         {
@@ -241,20 +248,26 @@ namespace RauViet.ui
                         drToAdd["InsuranceBaseSalary"] = insuranceBaseSalary;
                         drToAdd["Note"] = note;
                         drToAdd["CreatedAt"] = DateTime.Now;
+                        drToAdd["ActionBy"] = UserManager.Instance.fullName;
+
                         mEmployeeSalaryInfo_dt.Rows.Add(drToAdd);
                         mEmployeeSalaryInfo_dt.AcceptChanges();
 
                         status_lb.Text = "Thành công";
                         status_lb.ForeColor = Color.Green;
+
+                        _ = SQLManager.Instance.InsertEmployeesSalary_LogAsync(employeeCode, $"Create Success {month}/{month} - {baseSalary} - {insuranceBaseSalary} - {note}");
                     }
                     else
                     {
+                        _ = SQLManager.Instance.InsertEmployeesSalary_LogAsync(employeeCode, $"Create Fail {month}/{month} - {baseSalary} - {insuranceBaseSalary} - {note}");
                         status_lb.Text = "Thất bại";
                         status_lb.ForeColor = Color.Red;
                     }
                 }
                 catch (Exception ex)
                 {
+                    _ = SQLManager.Instance.InsertEmployeesSalary_LogAsync(employeeCode, $"Create Fail Exception {ex.Message}: {month}/{month} - {baseSalary} - {insuranceBaseSalary} - {note}");
                     status_lb.Text = "Thất bại.";
                     status_lb.ForeColor = Color.Red;
                 }
@@ -328,7 +341,11 @@ namespace RauViet.ui
             }
 
             int salaryInfoID = Convert.ToInt32(currentRow.Cells["SalaryInfoID"].Value);
-
+            string employeeCode = currentRow.Cells["EmployeeCode"].Value.ToString();
+            string note = currentRow.Cells["Note"].Value.ToString();
+            DateTime date = Convert.ToDateTime(currentRow.Cells["Date"].Value);
+            int baseSalary = Convert.ToInt32(currentRow.Cells["BaseSalary"].Value);
+            int insuranceBaseSalary = Convert.ToInt32(currentRow.Cells["InsuranceBaseSalary"].Value);
             DialogResult dialogResult = MessageBox.Show(
                 "Chắc chắn chưa?",
                 "Xóa Thông Tin",
@@ -344,6 +361,8 @@ namespace RauViet.ui
 
                 if (isSuccess)
                 {
+                    _ = SQLManager.Instance.InsertEmployeesSalary_LogAsync(employeeCode, $"Delete Success {date.Date.ToString()} - {baseSalary} - {insuranceBaseSalary} - {note}");
+
                     salaryInfoGV.Rows.Remove(currentRow);
 
                     status_lb.Text = "Xóa thành công.";
@@ -351,12 +370,14 @@ namespace RauViet.ui
                 }
                 else
                 {
+                    _ = SQLManager.Instance.InsertEmployeesSalary_LogAsync(employeeCode, $"Delete Fail {date.Date.ToString()} - {baseSalary} - {insuranceBaseSalary} - {note}");
                     status_lb.Text = "Xóa thất bại.";
                     status_lb.ForeColor = Color.Red;
                 }
             }
             catch (Exception ex)
             {
+                _ = SQLManager.Instance.InsertEmployeesSalary_LogAsync(employeeCode, $"Delete Fail Exception {ex.Message}: {date.Date.ToString()} - {baseSalary} - {insuranceBaseSalary} - {note}");
                 status_lb.Text = "Lỗi khi xóa: " + ex.Message;
                 status_lb.ForeColor = Color.Red;
             }
@@ -370,7 +391,6 @@ namespace RauViet.ui
 
             if (!isLock)
             {
-                delete_btn.Visible = !isLock;
 
                 int maxYear = 0, maxMonth = 0;
                 foreach (DataGridViewRow row in salaryInfoGV.Rows)
@@ -387,13 +407,13 @@ namespace RauViet.ui
                 }
 
                 isLock = !((newYear > maxYear) || (newYear == maxYear && newMonth > maxMonth));
-                LuuThayDoiBtn.Visible = !isLock;
             }
-            else
+
+            if (readOnly_btn.Visible == false)
             {
                 LuuThayDoiBtn.Visible = !isLock;
                 delete_btn.Visible = !isLock;
-            } 
+            }
         }
 
         private void ReadOnly_btn_Click(object sender, EventArgs e)

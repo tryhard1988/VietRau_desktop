@@ -29,7 +29,11 @@ namespace RauViet.ui
         /// </summary>
         private void InitializeComponent()
         {
+            this.dataGV = new System.Windows.Forms.DataGridView();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.log_GV = new System.Windows.Forms.DataGridView();
+            this.readOnly_btn = new System.Windows.Forms.Button();
+            this.edit_btn = new System.Windows.Forms.Button();
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
             this.info_gb = new System.Windows.Forms.GroupBox();
             this.contractType_cbb = new System.Windows.Forms.ComboBox();
@@ -40,33 +44,78 @@ namespace RauViet.ui
             this.label4 = new System.Windows.Forms.Label();
             this.employeeCode_tb = new System.Windows.Forms.TextBox();
             this.status_lb = new System.Windows.Forms.Label();
-            this.dataGV = new System.Windows.Forms.DataGridView();
-            this.readOnly_btn = new System.Windows.Forms.Button();
-            this.edit_btn = new System.Windows.Forms.Button();
-            this.panel1.SuspendLayout();
-            this.info_gb.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
+            this.panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.log_GV)).BeginInit();
+            this.info_gb.SuspendLayout();
             this.SuspendLayout();
+            // 
+            // dataGV
+            // 
+            this.dataGV.AllowUserToAddRows = false;
+            this.dataGV.AllowUserToDeleteRows = false;
+            this.dataGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGV.Dock = System.Windows.Forms.DockStyle.Left;
+            this.dataGV.Location = new System.Drawing.Point(0, 0);
+            this.dataGV.Name = "dataGV";
+            this.dataGV.ReadOnly = true;
+            this.dataGV.Size = new System.Drawing.Size(811, 724);
+            this.dataGV.TabIndex = 10;
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.log_GV);
             this.panel1.Controls.Add(this.readOnly_btn);
             this.panel1.Controls.Add(this.edit_btn);
             this.panel1.Controls.Add(this.LuuThayDoiBtn);
             this.panel1.Controls.Add(this.info_gb);
             this.panel1.Controls.Add(this.employeeCode_tb);
             this.panel1.Controls.Add(this.status_lb);
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Right;
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(811, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(453, 724);
-            this.panel1.TabIndex = 9;
+            this.panel1.Size = new System.Drawing.Size(641, 724);
+            this.panel1.TabIndex = 11;
+            // 
+            // log_GV
+            // 
+            this.log_GV.AllowUserToAddRows = false;
+            this.log_GV.AllowUserToDeleteRows = false;
+            this.log_GV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.log_GV.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.log_GV.Location = new System.Drawing.Point(0, 524);
+            this.log_GV.Name = "log_GV";
+            this.log_GV.ReadOnly = true;
+            this.log_GV.Size = new System.Drawing.Size(641, 200);
+            this.log_GV.TabIndex = 81;
+            // 
+            // readOnly_btn
+            // 
+            this.readOnly_btn.BackColor = System.Drawing.Color.MediumSlateBlue;
+            this.readOnly_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.readOnly_btn.Location = new System.Drawing.Point(399, 89);
+            this.readOnly_btn.Name = "readOnly_btn";
+            this.readOnly_btn.Size = new System.Drawing.Size(42, 32);
+            this.readOnly_btn.TabIndex = 35;
+            this.readOnly_btn.Text = "X";
+            this.readOnly_btn.UseVisualStyleBackColor = false;
+            // 
+            // edit_btn
+            // 
+            this.edit_btn.BackColor = System.Drawing.SystemColors.MenuHighlight;
+            this.edit_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.edit_btn.Location = new System.Drawing.Point(347, 89);
+            this.edit_btn.Name = "edit_btn";
+            this.edit_btn.Size = new System.Drawing.Size(94, 32);
+            this.edit_btn.TabIndex = 34;
+            this.edit_btn.Text = "Chỉnh sửa";
+            this.edit_btn.UseVisualStyleBackColor = false;
             // 
             // LuuThayDoiBtn
             // 
             this.LuuThayDoiBtn.BackColor = System.Drawing.SystemColors.Highlight;
             this.LuuThayDoiBtn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LuuThayDoiBtn.Location = new System.Drawing.Point(181, 387);
+            this.LuuThayDoiBtn.Location = new System.Drawing.Point(181, 300);
             this.LuuThayDoiBtn.Name = "LuuThayDoiBtn";
             this.LuuThayDoiBtn.Size = new System.Drawing.Size(113, 47);
             this.LuuThayDoiBtn.TabIndex = 25;
@@ -81,7 +130,7 @@ namespace RauViet.ui
             this.info_gb.Controls.Add(this.label1);
             this.info_gb.Controls.Add(this.department_cbb);
             this.info_gb.Controls.Add(this.label4);
-            this.info_gb.Location = new System.Drawing.Point(19, 205);
+            this.info_gb.Location = new System.Drawing.Point(19, 118);
             this.info_gb.Name = "info_gb";
             this.info_gb.Size = new System.Drawing.Size(422, 176);
             this.info_gb.TabIndex = 28;
@@ -146,7 +195,7 @@ namespace RauViet.ui
             // 
             // employeeCode_tb
             // 
-            this.employeeCode_tb.Location = new System.Drawing.Point(358, 3);
+            this.employeeCode_tb.Location = new System.Drawing.Point(358, 22);
             this.employeeCode_tb.Name = "employeeCode_tb";
             this.employeeCode_tb.ReadOnly = true;
             this.employeeCode_tb.Size = new System.Drawing.Size(32, 20);
@@ -158,78 +207,46 @@ namespace RauViet.ui
             this.status_lb.AutoSize = true;
             this.status_lb.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.status_lb.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.status_lb.Location = new System.Drawing.Point(15, 398);
+            this.status_lb.Location = new System.Drawing.Point(15, 311);
             this.status_lb.Name = "status_lb";
             this.status_lb.Size = new System.Drawing.Size(55, 23);
             this.status_lb.TabIndex = 26;
             this.status_lb.Text = "Email";
             // 
-            // dataGV
-            // 
-            this.dataGV.AllowUserToAddRows = false;
-            this.dataGV.AllowUserToDeleteRows = false;
-            this.dataGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGV.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dataGV.Location = new System.Drawing.Point(0, 0);
-            this.dataGV.Name = "dataGV";
-            this.dataGV.ReadOnly = true;
-            this.dataGV.Size = new System.Drawing.Size(811, 724);
-            this.dataGV.TabIndex = 10;
-            // 
-            // readOnly_btn
-            // 
-            this.readOnly_btn.BackColor = System.Drawing.Color.MediumSlateBlue;
-            this.readOnly_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.readOnly_btn.Location = new System.Drawing.Point(399, 176);
-            this.readOnly_btn.Name = "readOnly_btn";
-            this.readOnly_btn.Size = new System.Drawing.Size(42, 32);
-            this.readOnly_btn.TabIndex = 35;
-            this.readOnly_btn.Text = "X";
-            this.readOnly_btn.UseVisualStyleBackColor = false;
-            // 
-            // edit_btn
-            // 
-            this.edit_btn.BackColor = System.Drawing.SystemColors.MenuHighlight;
-            this.edit_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.edit_btn.Location = new System.Drawing.Point(347, 176);
-            this.edit_btn.Name = "edit_btn";
-            this.edit_btn.Size = new System.Drawing.Size(94, 32);
-            this.edit_btn.TabIndex = 34;
-            this.edit_btn.Text = "Chỉnh sửa";
-            this.edit_btn.UseVisualStyleBackColor = false;
-            // 
             // Employee_POS_DEP_CON
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1264, 724);
-            this.Controls.Add(this.dataGV);
+            this.ClientSize = new System.Drawing.Size(1452, 724);
             this.Controls.Add(this.panel1);
+            this.Controls.Add(this.dataGV);
             this.Name = "Employee_POS_DEP_CON";
             this.Text = "FormTableData";
+            ((System.ComponentModel.ISupportInitialize)(this.dataGV)).EndInit();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.log_GV)).EndInit();
             this.info_gb.ResumeLayout(false);
             this.info_gb.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGV)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
+        private System.Windows.Forms.DataGridView dataGV;
         private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.DataGridView log_GV;
+        private System.Windows.Forms.Button readOnly_btn;
+        private System.Windows.Forms.Button edit_btn;
         private System.Windows.Forms.Button LuuThayDoiBtn;
-        private System.Windows.Forms.Label status_lb;
         private System.Windows.Forms.GroupBox info_gb;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.ComboBox department_cbb;
-        private System.Windows.Forms.TextBox employeeCode_tb;
         private System.Windows.Forms.ComboBox contractType_cbb;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.ComboBox position_cbb;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.DataGridView dataGV;
-        private System.Windows.Forms.Button readOnly_btn;
-        private System.Windows.Forms.Button edit_btn;
+        private System.Windows.Forms.ComboBox department_cbb;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.TextBox employeeCode_tb;
+        private System.Windows.Forms.Label status_lb;
     }
 }

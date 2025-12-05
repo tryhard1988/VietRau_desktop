@@ -14,6 +14,7 @@ namespace RauViet.ui
 {
     public partial class SalaryGrade : Form
     {
+        DataView mLogDV;
         bool isNewState = false;
         public SalaryGrade()
         {
@@ -56,10 +57,13 @@ namespace RauViet.ui
             {
                 // Chạy truy vấn trên thread riêng
                 var salaryGradeTask = SQLStore.Instance.GetSalaryGradeAsync();
-                await Task.WhenAll(salaryGradeTask);
+                var salaryGradeLogTask = SQLManager.Instance.GetSalaryGrade_LogAsync();
+                await Task.WhenAll(salaryGradeTask, salaryGradeLogTask);
                 DataTable salaryGrade_dt = salaryGradeTask.Result;
+                mLogDV = new DataView(salaryGradeLogTask.Result);
 
                 dataGV.DataSource = salaryGrade_dt;
+                log_GV.DataSource = mLogDV;
 
                 dataGV.Columns["GradeName"].HeaderText = "Tên bậc lương";
                 dataGV.Columns["Salary"].HeaderText = "Mức lương";
@@ -67,6 +71,8 @@ namespace RauViet.ui
                 dataGV.Columns["IsActive"].HeaderText = "Đang Hoạt Động";
 
                 dataGV.Columns["SalaryGradeID"].Visible = false;
+                log_GV.Columns["LogID"].Visible = false;
+                log_GV.Columns["GradeID"].Visible = false;
 
                 dataGV.Columns["GradeName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
                 dataGV.Columns["Salary"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
@@ -125,6 +131,8 @@ namespace RauViet.ui
             isActive_cb.Checked = isActive;
 
             status_lb.Text = "";
+
+            mLogDV.RowFilter = $"GradeID = {salaryGradeID}";
         }
 
         private async void updateData(int salaryGradeID, string gradeName, int salary, string note, bool isActive)
@@ -137,12 +145,15 @@ namespace RauViet.ui
                     DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                     if (dialogResult == DialogResult.Yes)
                     {
+                        string oldValue = $"{row.Cells["GradeName"].Value} - {row.Cells["Salary"].Value} - {row.Cells["Note"].Value} - {row.Cells["IsActive"].Value}";
+                        string newValue = $"{gradeName} - {salary} - {note} - {isActive}";
                         try
                         {
                             bool isScussess = await SQLManager.Instance.updateSalaryGradeAsync(salaryGradeID, gradeName, salary, note, isActive);
 
                             if (isScussess == true)
                             {
+                                newValue = "edit Success " + newValue;
                                 status_lb.Text = "Thành công.";
                                 status_lb.ForeColor = Color.Green;
 
@@ -153,18 +164,20 @@ namespace RauViet.ui
                             }
                             else
                             {
+                                newValue = "edit Fail " + newValue;
                                 status_lb.Text = "Thất bại.";
                                 status_lb.ForeColor = Color.Red;
                             }
                         }
                         catch (Exception ex)
                         {
+                            newValue = "edit Fail Exception: " + ex.Message + ": " + newValue;
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;
                         }
 
-                        
 
+                        _ = SQLManager.Instance.InsertSalaryGrade_LogAsync(salaryGradeID, oldValue, newValue);
                         
                     }
                     break;
@@ -178,9 +191,11 @@ namespace RauViet.ui
 
             if (dialogResult == DialogResult.Yes)
             {
+                string newValue = $"{gradeName} - {salary} - {note} - {isActive}";
+                int newId = -1;
                 try
                 {
-                    int newId = await SQLManager.Instance.insertSalaryGradeAsync(gradeName, salary, note, isActive);
+                    newId = await SQLManager.Instance.insertSalaryGradeAsync(gradeName, salary, note, isActive);
                     if (newId > 0)
                     {
                         DataTable dataTable = (DataTable)dataGV.DataSource;
@@ -202,23 +217,26 @@ namespace RauViet.ui
                         int rowIndex = dataGV.Rows.Count - 1;
                         dataGV.Rows[rowIndex].Selected = true;
                         UpdateRightUI(dataGV.Rows.Count - 1);
-                        
 
+                        newValue += "Create Success " + newValue;
                         status_lb.Text = "Thành công";
                         status_lb.ForeColor = Color.Green;
                     }
                     else
                     {
+                        newValue += "Create Fail " + newValue;
                         status_lb.Text = "Thất bại";
                         status_lb.ForeColor = Color.Red;
                     }
                 }
                 catch (Exception ex)
                 {
+                    newValue += "Create Fail Exception: " + ex.Message + ": " + newValue;
                     status_lb.Text = "Thất bại.";
                     status_lb.ForeColor = Color.Red;
                 }
-                
+
+                _ = SQLManager.Instance.InsertSalaryGrade_LogAsync(newId, "New", newValue);
             }
         }
         private void saveBtn_Click(object sender, EventArgs e)
@@ -253,18 +271,21 @@ namespace RauViet.ui
 
             foreach (DataGridViewRow row in dataGV.Rows)
             {
-                string positionID = row.Cells["PositionID"].Value.ToString();
-                if (positionID.CompareTo(id) == 0)
+                string salaryGradeID = row.Cells["SalaryGradeID"].Value.ToString();
+                if (salaryGradeID.CompareTo(id) == 0)
                 {
                     DialogResult dialogResult = MessageBox.Show("XÓA ĐÓ NHA \n Chắc chắn chưa ?", " Xóa Thông Tin", MessageBoxButtons.YesNo);
                     if (dialogResult == DialogResult.Yes)
                     {
+                        string oldValue = $"{row.Cells["GradeName"].Value} - {row.Cells["Salary"].Value} - {row.Cells["Note"].Value} - {row.Cells["IsActive"].Value}";
+                        string newValue = "";
                         try
                         {
-                            bool isScussess = await SQLManager.Instance.deletePositionAsync(Convert.ToInt32(positionID));
+                            bool isScussess = await SQLManager.Instance.deletePositionAsync(Convert.ToInt32(salaryGradeID));
 
                             if (isScussess == true)
                             {
+                                newValue = "Delete Success";
                                 status_lb.Text = "Thành công.";
                                 status_lb.ForeColor = Color.Green;
 
@@ -273,18 +294,20 @@ namespace RauViet.ui
                             }
                             else
                             {
+                                newValue = "Delete Fail";
                                 status_lb.Text = "Thất bại.";
                                 status_lb.ForeColor = Color.Red;
                             }
                         }
                         catch (Exception ex)
                         {
+                            newValue = "Delete Fail Exception: " + ex.Message;
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;
                         }
 
-
-
+                        
+                        _ = SQLManager.Instance.InsertSalaryGrade_LogAsync(Convert.ToInt32(salaryGradeID), "Delete " + oldValue, newValue);
 
                     }
                     break;

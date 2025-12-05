@@ -1,19 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using RauViet.classes;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
 
 namespace RauViet.ui
 {
     public partial class EmployeeBaoHiem : Form
     {
+        DataView mLogDV;
         public EmployeeBaoHiem()
         {
             InitializeComponent();
@@ -47,11 +44,12 @@ namespace RauViet.ui
             {
                 string[] keepColumns = { "EmployeeCode", "FullName", "SocialInsuranceNumber", "HealthInsuranceNumber" };
                 var employeesTask = SQLStore.Instance.GetEmployeesAsync(keepColumns);
-
-                await Task.WhenAll(employeesTask);
+                var employeeInsuranceLogTask = SQLStore.Instance.GetEmployeeInsuranceLogAsync();
+                await Task.WhenAll(employeesTask, employeeInsuranceLogTask);
                 DataTable employee_dt = employeesTask.Result;
-
+                mLogDV = new DataView(employeeInsuranceLogTask.Result);
                 dataGV.DataSource = employee_dt;
+                log_GV.DataSource = mLogDV;
 
                 dataGV.Columns["EmployeeCode"].HeaderText = "Mã NV";
                 dataGV.Columns["FullName"].HeaderText = "Tên NV";
@@ -62,6 +60,9 @@ namespace RauViet.ui
                 dataGV.Columns["FullName"].Width = 160;
                 dataGV.Columns["SocialInsuranceNumber"].Width = 160;
                 dataGV.Columns["HealthInsuranceNumber"].Width = 160;
+
+                log_GV.Columns["LogID"].Visible = false;
+                log_GV.Columns["EmployeeCode"].Visible = false;
 
                 if (dataGV.Rows.Count > 0)
                 {
@@ -109,6 +110,7 @@ namespace RauViet.ui
             bhxh_tb.Text = bhxh;
 
             status_lb.Text = "";
+            mLogDV.RowFilter = $"EmployeeCode = '{employeeCode}'";
         }
 
         private async void updateData(string EmployeeCode, string bhxh, string bhyt)
@@ -130,6 +132,9 @@ namespace RauViet.ui
                                 status_lb.Text = "Thành công.";
                                 status_lb.ForeColor = Color.Green;
 
+                                _ = SQLManager.Instance.InsertEmployeesInsuranceLogAsync(EmployeeCode, $"{row.Cells["SocialInsuranceNumber"].Value} - {row.Cells["HealthInsuranceNumber"].Value}",
+                                    $"Success: {bhxh} - {bhyt}");
+
                                 row.Cells["SocialInsuranceNumber"].Value = bhxh;
                                 row.Cells["HealthInsuranceNumber"].Value = bhyt;
 
@@ -142,12 +147,16 @@ namespace RauViet.ui
                             }
                             else
                             {
+                                _ = SQLManager.Instance.InsertEmployeesInsuranceLogAsync(EmployeeCode, $"{row.Cells["SocialInsuranceNumber"].Value} - {row.Cells["HealthInsuranceNumber"].Value}",
+                                    $"Fail: {bhxh} - {bhyt}");
                                 status_lb.Text = "Thất bại.";
                                 status_lb.ForeColor = Color.Red;
                             }
                         }
                         catch (Exception ex)
                         {
+                            _ = SQLManager.Instance.InsertEmployeesInsuranceLogAsync(EmployeeCode, $"{row.Cells["SocialInsuranceNumber"].Value} - {row.Cells["HealthInsuranceNumber"].Value}",
+                                    $" Fail Exception: {ex.Message}: {bhxh} - {bhyt}");
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;
                         }  

@@ -93,6 +93,7 @@
             this.aaaaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadExcelOrderReportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.content_panel = new System.Windows.Forms.Panel();
+            this.historyLogin_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1.SuspendLayout();
             this.LOT_menuitem.SuspendLayout();
             this.SuspendLayout();
@@ -125,6 +126,7 @@
             this.LOT_menuitem.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.LOT_menuitem.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.LOT_menuitem.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.historyLogin_mi,
             this.user_mi,
             this.nhansu_group_mi,
             this.chamcong_pmi,
@@ -593,6 +595,13 @@
             this.content_panel.Size = new System.Drawing.Size(1388, 491);
             this.content_panel.TabIndex = 1;
             // 
+            // historyLogin_mi
+            // 
+            this.historyLogin_mi.BackColor = System.Drawing.Color.IndianRed;
+            this.historyLogin_mi.Name = "historyLogin_mi";
+            this.historyLogin_mi.Size = new System.Drawing.Size(115, 21);
+            this.historyLogin_mi.Text = "Lịch Sử Vào App";
+            // 
             // FormManager
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -678,5 +687,6 @@
         private System.Windows.Forms.ToolStripMenuItem loadExcelOrderReportToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem yearlyReport_mi;
         private System.Windows.Forms.ToolStripMenuItem monthlyTotalPerYear_mi;
+        private System.Windows.Forms.ToolStripMenuItem historyLogin_mi;
     }
 }

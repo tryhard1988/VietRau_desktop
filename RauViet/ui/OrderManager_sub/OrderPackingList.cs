@@ -66,10 +66,6 @@ namespace RauViet.ui
 
             cartonNo_tb.KeyPress += Tb_KeyPress_OnlyNumber1;
             
-
-            ToolTipHelper.SetToolTip(assignCustomerCarton_btn, "Tự động dựa vào\nCarton.No và Khách Hàng \nĐể tạo mã thùng");
-            ToolTipHelper.SetToolTip(chiadon_btn, "Dùng khi 1 đơn hàng cần chia ra 2 thùng \nthì cần tạo ra thêm 1 mã đơn hàng mới\ntừ mã hiện tại");
-
             search_tb.TextChanged += search_txt_TextChanged;
             debounceTimer.Tick += DebounceTimer_Tick;
             cartonSize_cbb.KeyPress += CBB_KeyPress_CartonSize;
@@ -95,8 +91,8 @@ namespace RauViet.ui
             try
             {
                 var cartonSizeTask = SQLStore.Instance.GetCartonSize();                
-                string[] keepColumns = { "ExportCodeID", "ExportCode", "ExportDate", "InputByName_NoSign" };
-                var parameters = new Dictionary<string, object> { { "Complete", false } };
+                string[] keepColumns = { "ExportCodeID", "ExportCode", "ExportDate", "InputByName_NoSign", "Complete" };
+                var parameters = new Dictionary<string, object> { { "Top", 10 } };
                 var exportCodeTask = SQLStore.Instance.getExportCodesAsync(keepColumns, parameters);
                 var productSKUATask = SQLStore.Instance.getProductSKUAsync();
                 var productPackingTask = SQLStore.Instance.getProductpackingAsync();
@@ -208,6 +204,8 @@ namespace RauViet.ui
                 cartonSize_cbb.DisplayMember = "CartonSize";
                 cartonSize_cbb.ValueMember = "CartonID";
 
+                setUIReadOnly(true);
+
             }
             catch (Exception ex)
             {
@@ -284,8 +282,7 @@ namespace RauViet.ui
 
                 dataGV.ClearSelection();
                 var newRowView = mOrders_dt.DefaultView[insertInd];
-                int gridIndex = dataGV.Rows.Cast<DataGridViewRow>()
-                    .First(r => ((DataRowView)r.DataBoundItem).Row == newRowView.Row).Index;
+                int gridIndex = dataGV.Rows.Cast<DataGridViewRow>().First(r => ((DataRowView)r.DataBoundItem).Row == newRowView.Row).Index;
 
                 if (string.Equals(packageVal, "weight", StringComparison.OrdinalIgnoreCase))
                     dataGV.CurrentCell = dataGV.Rows[gridIndex].Cells["NWReal"];
@@ -1451,7 +1448,8 @@ namespace RauViet.ui
                 DataRowView dataR = (DataRowView)exportCode_cbb.SelectedItem;
 
                 string staff = dataR["InputByName_NoSign"].ToString();
-                if (UserManager.Instance.fullName_NoSign.CompareTo(staff) != 0)
+                bool complete = Convert.ToBoolean(dataR["Complete"]);
+                if (UserManager.Instance.fullName_NoSign.CompareTo(staff) != 0 || complete)
                 {
                     edit_btn.Visible = false;
                     readOnly_btn.Visible = false;

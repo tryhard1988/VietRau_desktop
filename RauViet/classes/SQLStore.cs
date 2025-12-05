@@ -1,4 +1,5 @@
-﻿using RauViet.ui;
+﻿using DocumentFormat.OpenXml.Drawing.Charts;
+using RauViet.ui;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -48,6 +49,11 @@ namespace RauViet.classes
         DataTable mExportCodeLog_dt = null;
         DataTable mReportCustomerOrderDetail_dt = null;
         DataTable mMonthlyAllowanceLog_dt = null;
+        DataTable mEmployeeLog_dt = null;
+        DataTable mEmployeeInsuranceLog_dt = null;
+        DataTable mEmployeeBankLog_dt = null;
+        DataTable mEmployee_POS_DEP_CON_Log_dt = null;
+        DataTable mEmployeeSalary_Log_dt = null;
         Dictionary<int, DataTable> mOrderLists;
         Dictionary<int, DataTable> mReportExportByYears;
         Dictionary<int, DataTable> mReportCustomerOrderDetailByYears;
@@ -348,7 +354,7 @@ namespace RauViet.classes
                 dr["GradeName"] = gradeName;
                 dr["SalaryGrade"] = salaryGrade;
             }
-        }
+                    }
 
         public async Task<DataTable> GetLeaveAttendancesAsyn(int year)
         {
@@ -1683,6 +1689,13 @@ namespace RauViet.classes
             // 2️⃣ Lọc dữ liệu theo điều kiện trong parameters
             IEnumerable<DataRow> filteredRows = mExportCodes_dt.AsEnumerable();
 
+            int top = 0;
+            if (parameters.ContainsKey("Top"))
+            {
+                top = Convert.ToInt32(parameters["Top"]);
+                parameters.Remove("Top");   // loại khỏi điều kiện filter
+            }
+
             foreach (var kv in parameters)
             {
                 string columnName = kv.Key;
@@ -1700,7 +1713,15 @@ namespace RauViet.classes
                 }
             }
 
-            // 3️⃣ Thêm các dòng đã lọc vào bảng kết quả (chỉ giữ cột cần)
+            // 3️⃣ Lấy 10 dòng mới nhất theo CreatedAt
+            if (top > 0)
+            {
+                filteredRows = filteredRows
+                    .OrderByDescending(r => r.Field<int>("ExportCodeID"))
+                    .Take(top);
+            }
+
+            // 4️⃣ Thêm các dòng đã lọc vào bảng kết quả (chỉ giữ cột cần)
             foreach (var row in filteredRows)
             {
                 DataRow newRow = result.NewRow();
@@ -2813,6 +2834,48 @@ namespace RauViet.classes
                 mAttendanceLogs[key] = dt;
             }
             return mAttendanceLogs[key];
+        }
+
+        public async Task<DataTable> GetEmployeeLogAsync()
+        {
+            if (mEmployeeLog_dt == null)
+            {
+                mEmployeeLog_dt = await SQLManager.Instance.GetEmployeeLogAsync();
+            }
+            return mEmployeeLog_dt;
+        }
+        public async Task<DataTable> GetEmployeeInsuranceLogAsync()
+        {
+            if (mEmployeeInsuranceLog_dt == null)
+            {
+                mEmployeeInsuranceLog_dt = await SQLManager.Instance.GetEmployeeInsuranceLogAsync();
+            }
+            return mEmployeeInsuranceLog_dt;
+        }
+        public async Task<DataTable> GetEmployeeBankLogAsync()
+        {
+            if (mEmployeeBankLog_dt == null)
+            {
+                mEmployeeBankLog_dt = await SQLManager.Instance.GetEmployeeBankLogAsync();
+            }
+            return mEmployeeBankLog_dt;
+        }
+        public async Task<DataTable> GetEmployee_POS_DEP_CON_LogAsync()
+        {
+            if (mEmployee_POS_DEP_CON_Log_dt == null)
+            {
+                mEmployee_POS_DEP_CON_Log_dt = await SQLManager.Instance.GetEmployee_POS_DEP_CON_LogAsync();
+            }
+            return mEmployee_POS_DEP_CON_Log_dt;
+        }
+
+        public async Task<DataTable> GetEmployeeSalary_LogAsync()
+        {
+            if (mEmployeeSalary_Log_dt == null)
+            {
+                mEmployeeSalary_Log_dt = await SQLManager.Instance.GetEmployeeSalary_LogAsync();
+            }
+            return mEmployeeSalary_Log_dt;
         }
     }
 }

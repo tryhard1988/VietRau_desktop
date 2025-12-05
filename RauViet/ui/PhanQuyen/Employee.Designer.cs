@@ -29,12 +29,15 @@ namespace RauViet.ui
         /// </summary>
         private void InitializeComponent()
         {
+            this.dataGV = new System.Windows.Forms.DataGridView();
             this.panel1 = new System.Windows.Forms.Panel();
             this.readOnly_btn = new System.Windows.Forms.Button();
             this.edit_btn = new System.Windows.Forms.Button();
             this.delete_btn = new System.Windows.Forms.Button();
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
             this.info_gb = new System.Windows.Forms.GroupBox();
+            this.salaryGrade_ccb = new System.Windows.Forms.ComboBox();
+            this.label14 = new System.Windows.Forms.Label();
             this.isInsuranceRefund_CB = new System.Windows.Forms.CheckBox();
             this.label4 = new System.Windows.Forms.Label();
             this.noteResign_tb = new System.Windows.Forms.TextBox();
@@ -67,16 +70,28 @@ namespace RauViet.ui
             this.status_lb = new System.Windows.Forms.Label();
             this.newCustomerBtn = new System.Windows.Forms.Button();
             this.employeeID_tb = new System.Windows.Forms.TextBox();
-            this.dataGV = new System.Windows.Forms.DataGridView();
-            this.salaryGrade_ccb = new System.Windows.Forms.ComboBox();
-            this.label14 = new System.Windows.Forms.Label();
+            this.log_GV = new System.Windows.Forms.DataGridView();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
             this.panel1.SuspendLayout();
             this.info_gb.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.log_GV)).BeginInit();
             this.SuspendLayout();
+            // 
+            // dataGV
+            // 
+            this.dataGV.AllowUserToAddRows = false;
+            this.dataGV.AllowUserToDeleteRows = false;
+            this.dataGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGV.Dock = System.Windows.Forms.DockStyle.Left;
+            this.dataGV.Location = new System.Drawing.Point(0, 0);
+            this.dataGV.Name = "dataGV";
+            this.dataGV.ReadOnly = true;
+            this.dataGV.Size = new System.Drawing.Size(866, 724);
+            this.dataGV.TabIndex = 10;
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.log_GV);
             this.panel1.Controls.Add(this.readOnly_btn);
             this.panel1.Controls.Add(this.edit_btn);
             this.panel1.Controls.Add(this.delete_btn);
@@ -85,17 +100,17 @@ namespace RauViet.ui
             this.panel1.Controls.Add(this.status_lb);
             this.panel1.Controls.Add(this.newCustomerBtn);
             this.panel1.Controls.Add(this.employeeID_tb);
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel1.Location = new System.Drawing.Point(811, 0);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel1.Location = new System.Drawing.Point(866, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(453, 724);
-            this.panel1.TabIndex = 9;
+            this.panel1.Size = new System.Drawing.Size(509, 724);
+            this.panel1.TabIndex = 11;
             // 
             // readOnly_btn
             // 
             this.readOnly_btn.BackColor = System.Drawing.Color.MediumSlateBlue;
             this.readOnly_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.readOnly_btn.Location = new System.Drawing.Point(399, 62);
+            this.readOnly_btn.Location = new System.Drawing.Point(399, 29);
             this.readOnly_btn.Name = "readOnly_btn";
             this.readOnly_btn.Size = new System.Drawing.Size(42, 32);
             this.readOnly_btn.TabIndex = 32;
@@ -106,7 +121,7 @@ namespace RauViet.ui
             // 
             this.edit_btn.BackColor = System.Drawing.SystemColors.MenuHighlight;
             this.edit_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.edit_btn.Location = new System.Drawing.Point(260, 62);
+            this.edit_btn.Location = new System.Drawing.Point(260, 29);
             this.edit_btn.Name = "edit_btn";
             this.edit_btn.Size = new System.Drawing.Size(94, 32);
             this.edit_btn.TabIndex = 31;
@@ -168,11 +183,30 @@ namespace RauViet.ui
             this.info_gb.Controls.Add(this.label2);
             this.info_gb.Controls.Add(this.label3);
             this.info_gb.Controls.Add(this.hometown_tb);
-            this.info_gb.Location = new System.Drawing.Point(19, 94);
+            this.info_gb.Location = new System.Drawing.Point(19, 61);
             this.info_gb.Name = "info_gb";
             this.info_gb.Size = new System.Drawing.Size(422, 505);
             this.info_gb.TabIndex = 28;
             this.info_gb.TabStop = false;
+            // 
+            // salaryGrade_ccb
+            // 
+            this.salaryGrade_ccb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.salaryGrade_ccb.FormattingEnabled = true;
+            this.salaryGrade_ccb.Location = new System.Drawing.Point(128, 395);
+            this.salaryGrade_ccb.Name = "salaryGrade_ccb";
+            this.salaryGrade_ccb.Size = new System.Drawing.Size(200, 21);
+            this.salaryGrade_ccb.TabIndex = 47;
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label14.Location = new System.Drawing.Point(54, 397);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(71, 16);
+            this.label14.TabIndex = 46;
+            this.label14.Text = "Bậc Lương:";
             // 
             // isInsuranceRefund_CB
             // 
@@ -455,7 +489,7 @@ namespace RauViet.ui
             // 
             this.newCustomerBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
             this.newCustomerBtn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.newCustomerBtn.Location = new System.Drawing.Point(353, 62);
+            this.newCustomerBtn.Location = new System.Drawing.Point(353, 29);
             this.newCustomerBtn.Name = "newCustomerBtn";
             this.newCustomerBtn.Size = new System.Drawing.Size(88, 32);
             this.newCustomerBtn.TabIndex = 25;
@@ -471,96 +505,79 @@ namespace RauViet.ui
             this.employeeID_tb.TabIndex = 16;
             this.employeeID_tb.Visible = false;
             // 
-            // dataGV
+            // log_GV
             // 
-            this.dataGV.AllowUserToAddRows = false;
-            this.dataGV.AllowUserToDeleteRows = false;
-            this.dataGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGV.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dataGV.Location = new System.Drawing.Point(0, 0);
-            this.dataGV.Name = "dataGV";
-            this.dataGV.ReadOnly = true;
-            this.dataGV.Size = new System.Drawing.Size(811, 724);
-            this.dataGV.TabIndex = 10;
-            // 
-            // salaryGrade_ccb
-            // 
-            this.salaryGrade_ccb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.salaryGrade_ccb.FormattingEnabled = true;
-            this.salaryGrade_ccb.Location = new System.Drawing.Point(128, 395);
-            this.salaryGrade_ccb.Name = "salaryGrade_ccb";
-            this.salaryGrade_ccb.Size = new System.Drawing.Size(200, 21);
-            this.salaryGrade_ccb.TabIndex = 47;
-            // 
-            // label14
-            // 
-            this.label14.AutoSize = true;
-            this.label14.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label14.Location = new System.Drawing.Point(54, 397);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(71, 16);
-            this.label14.TabIndex = 46;
-            this.label14.Text = "Bậc Lương:";
+            this.log_GV.AllowUserToAddRows = false;
+            this.log_GV.AllowUserToDeleteRows = false;
+            this.log_GV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.log_GV.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.log_GV.Location = new System.Drawing.Point(0, 524);
+            this.log_GV.Name = "log_GV";
+            this.log_GV.ReadOnly = true;
+            this.log_GV.Size = new System.Drawing.Size(509, 200);
+            this.log_GV.TabIndex = 79;
             // 
             // Employee
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1264, 724);
-            this.Controls.Add(this.dataGV);
+            this.ClientSize = new System.Drawing.Size(1375, 724);
             this.Controls.Add(this.panel1);
+            this.Controls.Add(this.dataGV);
             this.Name = "Employee";
             this.Text = "FormTableData";
+            ((System.ComponentModel.ISupportInitialize)(this.dataGV)).EndInit();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.info_gb.ResumeLayout(false);
             this.info_gb.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGV)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.log_GV)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
-        private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.TextBox hometown_tb;
-        private System.Windows.Forms.TextBox tenNV_tb;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Button LuuThayDoiBtn;
-        private System.Windows.Forms.Button newCustomerBtn;
-        private System.Windows.Forms.Label status_lb;
-        private System.Windows.Forms.Button delete_btn;
-        private System.Windows.Forms.GroupBox info_gb;
-        private System.Windows.Forms.CheckBox isActive_cb;
-        private System.Windows.Forms.TextBox employeeID_tb;
         private System.Windows.Forms.DataGridView dataGV;
-        private System.Windows.Forms.TextBox nvCode_tb;
-        private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.DateTimePicker birthdate_dtp;
-        private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.DateTimePicker hireDate_dtp;
-        private System.Windows.Forms.CheckBox gender_cb;
-        private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.TextBox address_tb;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Button readOnly_btn;
+        private System.Windows.Forms.Button edit_btn;
+        private System.Windows.Forms.Button delete_btn;
+        private System.Windows.Forms.Button LuuThayDoiBtn;
+        private System.Windows.Forms.GroupBox info_gb;
+        private System.Windows.Forms.ComboBox salaryGrade_ccb;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.CheckBox isInsuranceRefund_CB;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.TextBox noteResign_tb;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TextBox phone_tb;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.TextBox probationSalaryPercent_tb;
+        private System.Windows.Forms.CheckBox canCreateUserName_cb;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.TextBox issuePlace_tb;
         private System.Windows.Forms.DateTimePicker issueDate_dtp;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.TextBox citizenId_tb;
-        private System.Windows.Forms.Label label13;
-        private System.Windows.Forms.TextBox issuePlace_tb;
-        private System.Windows.Forms.CheckBox canCreateUserName_cb;
-        private System.Windows.Forms.Label label15;
-        private System.Windows.Forms.TextBox probationSalaryPercent_tb;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox phone_tb;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.TextBox noteResign_tb;
-        private System.Windows.Forms.CheckBox isInsuranceRefund_CB;
-        private System.Windows.Forms.Button readOnly_btn;
-        private System.Windows.Forms.Button edit_btn;
-        private System.Windows.Forms.ComboBox salaryGrade_ccb;
-        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.TextBox address_tb;
+        private System.Windows.Forms.CheckBox gender_cb;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.DateTimePicker hireDate_dtp;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.DateTimePicker birthdate_dtp;
+        private System.Windows.Forms.TextBox nvCode_tb;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.CheckBox isActive_cb;
+        private System.Windows.Forms.TextBox tenNV_tb;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.TextBox hometown_tb;
+        private System.Windows.Forms.Label status_lb;
+        private System.Windows.Forms.Button newCustomerBtn;
+        private System.Windows.Forms.TextBox employeeID_tb;
+        private System.Windows.Forms.DataGridView log_GV;
     }
 }

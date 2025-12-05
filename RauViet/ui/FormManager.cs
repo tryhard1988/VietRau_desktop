@@ -164,6 +164,8 @@ namespace RauViet.ui
                 thongke_main_mi.Visible = false;
             }
 
+            historyLogin_mi.Click += HistoryLogin_mi_Click;
+
             string saved = Properties.Settings.Default.current_form;
             if (Enum.TryParse(saved, out EForm status))
             {
@@ -475,5 +477,9 @@ namespace RauViet.ui
             form.Show();
         }
 
+        private void HistoryLogin_mi_Click(object sender, EventArgs e)
+        {
+            SwitchChildForm<HistoryLogIn>("Lịch sử Đăng Nhập");
+        }
     }
 }

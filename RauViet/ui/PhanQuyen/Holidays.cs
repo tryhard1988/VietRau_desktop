@@ -1,4 +1,5 @@
-﻿using DocumentFormat.OpenXml.Wordprocessing;
+﻿using DocumentFormat.OpenXml.Bibliography;
+using DocumentFormat.OpenXml.Wordprocessing;
 using MySqlX.XDevAPI.Common;
 using RauViet.classes;
 using System;
@@ -150,6 +151,8 @@ namespace RauViet.ui
 
             List<DateTime> datetimeErrorList = new List<DateTime>();
             string errorMessage = "";
+ 
+            
             for (DateTime date = holidayDateStart.Date; date <= holidayDateEnd.Date; date = date.AddDays(1))
             {
                 try
@@ -214,6 +217,12 @@ namespace RauViet.ui
             foreach (DataGridViewRow row in dataGV.Rows)
             {
                 DateTime holidayDate = Convert.ToDateTime(row.Cells["HolidayDate"].Value);
+                bool isLock = await SQLStore.Instance.IsSalaryLockAsync(holidayDate.Month, holidayDate.Year);
+                if (isLock)
+                {
+                    MessageBox.Show(holidayDate.Date + " đã bị khóa.", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
                 if (holidayDate.Date.CompareTo(date.Date) == 0)
                 {
                     DialogResult dialogResult = MessageBox.Show("XÓA ĐÓ NHA \n Chắc chắn chưa ?", " Xóa Thông Tin", MessageBoxButtons.YesNo);

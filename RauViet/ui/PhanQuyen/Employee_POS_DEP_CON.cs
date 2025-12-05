@@ -15,6 +15,7 @@ namespace RauViet.ui
     public partial class Employee_POS_DEP_CON : Form
     {
         private DataTable mDepartment_dt, mPosition_dt, mContractType_dt, mEmployees_dt;
+        private DataView mLogDV;
         public Employee_POS_DEP_CON()
         {
             InitializeComponent();
@@ -52,14 +53,15 @@ namespace RauViet.ui
                 var departmentTask = SQLStore.Instance.GetActiveDepartmentAsync();
                 var positionTask = SQLStore.Instance.GetActivePositionAsync();
                 var contractTypeTask = SQLStore.Instance.GetContractTypeAsync();
-
-                await Task.WhenAll(employeesTask, departmentTask, positionTask, contractTypeTask);
+                var employee_POS_DEP_CON_LogTask = SQLStore.Instance.GetEmployee_POS_DEP_CON_LogAsync();
+                await Task.WhenAll(employeesTask, departmentTask, positionTask, contractTypeTask, employee_POS_DEP_CON_LogTask);
                 mEmployees_dt = employeesTask.Result;
                 mDepartment_dt = departmentTask.Result;
                 mPosition_dt = positionTask.Result;
                 mContractType_dt = contractTypeTask.Result;
+                mLogDV = new DataView(employee_POS_DEP_CON_LogTask.Result);
 
-                
+                log_GV.DataSource = mLogDV;
                 department_cbb.DataSource = mDepartment_dt;
                 department_cbb.DisplayMember = "DepartmentName";
                 department_cbb.ValueMember = "DepartmentID";
@@ -71,8 +73,6 @@ namespace RauViet.ui
                 contractType_cbb.DataSource = mContractType_dt;
                 contractType_cbb.DisplayMember = "ContractTypeName";
                 contractType_cbb.ValueMember = "ContractTypeID";
-
-                                            
 
                 int count = 0;
                 mEmployees_dt.Columns["EmployeeCode"].SetOrdinal(count++);
@@ -95,6 +95,9 @@ namespace RauViet.ui
                 dataGV.Columns["PositionID"].Visible = false;
                 dataGV.Columns["DepartmentID"].Visible = false;
                 dataGV.Columns["ContractTypeID"].Visible = false;
+
+                log_GV.Columns["LogID"].Visible = false;
+                log_GV.Columns["EmployeeCode"].Visible = false;
 
                 dataGV.Columns["EmployeeCode"].Width = 50;
                 dataGV.Columns["FullName"].Width = 160;
@@ -154,6 +157,8 @@ namespace RauViet.ui
             Utils.SafeSelectValue(department_cbb, departmentID);
             Utils.SafeSelectValue(contractType_cbb, contractTypeID);
             status_lb.Text = "";
+
+            mLogDV.RowFilter = $"EmployeeCode = '{employeeCode}'";
         }
         
         private async void updateData(string maNV, int department, int position, int contractType)
@@ -166,12 +171,20 @@ namespace RauViet.ui
                     DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                     if (dialogResult == DialogResult.Yes)
                     {
+                        string positionName = mPosition_dt.Select($"PositionID = {position}")[0]["PositionName"].ToString();
+                        string departmentName = mDepartment_dt.Select($"DepartmentID = {department}")[0]["DepartmentName"].ToString();
+                        string contractTypeName = mContractType_dt.Select($"ContractTypeID = {contractType}")[0]["ContractTypeName"].ToString();
+                        string positionCode = mPosition_dt.Select($"PositionID = {position}")[0]["PositionCode"].ToString();
+                        string contractTypeCode = mContractType_dt.Select($"ContractTypeID = {contractType}")[0]["ContractTypeCode"].ToString();
+                        string oldLog = $"{row.Cells["PositionName"].Value} - {row.Cells["DepartmentName"].Value} - {row.Cells["ContractTypeName"].Value}";
+                        string newLog = $"{positionName} - {departmentName} - {contractTypeName}";
                         try
                         {
                             bool isScussess = await SQLManager.Instance.updateEmployeeWorkAsync(maNV, position, department, contractType);
-
+                            
                             if (isScussess == true)
                             {
+                                newLog = "Success: " + newLog;
                                 status_lb.Text = "Thành công.";
                                 status_lb.ForeColor = Color.Green;
 
@@ -179,12 +192,6 @@ namespace RauViet.ui
                                 row.Cells["PositionID"].Value = position;
                                 row.Cells["DepartmentID"].Value = department;
                                 row.Cells["ContractTypeID"].Value = contractType;
-
-                                string positionName = mPosition_dt.Select($"PositionID = {position}")[0]["PositionName"].ToString();
-                                string departmentName = mDepartment_dt.Select($"DepartmentID = {department}")[0]["DepartmentName"].ToString();
-                                string contractTypeName = mContractType_dt.Select($"ContractTypeID = {contractType}")[0]["ContractTypeName"].ToString();
-                                string positionCode = mPosition_dt.Select($"PositionID = {position}")[0]["PositionCode"].ToString();
-                                string contractTypeCode = mContractType_dt.Select($"ContractTypeID = {contractType}")[0]["ContractTypeCode"].ToString();
 
                                 row.Cells["PositionName"].Value = positionName;
                                 row.Cells["DepartmentName"].Value = departmentName;
@@ -209,19 +216,19 @@ namespace RauViet.ui
                             }
                             else
                             {
+                                newLog = "Fail: " + newLog;
                                 status_lb.Text = "Thất bại.";
                                 status_lb.ForeColor = Color.Red;
                             }
                         }
                         catch (Exception ex)
                         {
+                            newLog = "Fail: " + ex.Message + ": " + newLog;
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;
                         }
 
-                        
-
-                        
+                        _ = SQLManager.Instance.InsertEmployees_POS_DEP_CON_LogAsync(maNV, oldLog, newLog);
                     }
                     break;
                 }

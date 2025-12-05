@@ -1,21 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using DocumentFormat.OpenXml.Wordprocessing;
+using RauViet.classes;
+using System;
 using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using RauViet.classes;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
+using Color = System.Drawing.Color;
 
 namespace RauViet.ui
 {    
     public partial class Employee : Form
     {
         private DataTable mEmployees_dt, mSalaryGrade_dt;
+        private DataView mLogDV;
         bool isNewState = false;
         public Employee()
         {
@@ -71,9 +69,11 @@ namespace RauViet.ui
             {
                 var employeesTask = SQLStore.Instance.GetEmployeesAsync();
                 var salaryGradeTask = SQLStore.Instance.GetActiveSalaryGradeAsync();
-                await Task.WhenAll(employeesTask, salaryGradeTask);
+                var employeeLogTask = SQLStore.Instance.GetEmployeeLogAsync();
+                await Task.WhenAll(employeesTask, salaryGradeTask, employeeLogTask);
                 mEmployees_dt = employeesTask.Result;
                 mSalaryGrade_dt = salaryGradeTask.Result;
+                mLogDV = new DataView(employeeLogTask.Result);
 
                 birthdate_dtp.Format = DateTimePickerFormat.Custom;
                 birthdate_dtp.CustomFormat = "dd/MM/yyyy";
@@ -101,6 +101,7 @@ namespace RauViet.ui
                 salaryGrade_ccb.ValueMember = "SalaryGradeID";
 
                 dataGV.DataSource = mEmployees_dt;
+                log_GV.DataSource = mLogDV;
 
                 dataGV.Columns["EmployeeCode"].HeaderText = "Mã NV";
                 dataGV.Columns["FullName"].HeaderText = "Họ Và Tên";
@@ -121,6 +122,8 @@ namespace RauViet.ui
                 dataGV.Columns["HireDate"].DefaultCellStyle.Format = "dd/MM/yyyy";
                 dataGV.Columns["IssueDate"].DefaultCellStyle.Format = "dd/MM/yyyy";
 
+                log_GV.Columns["LogID"].Visible = false;
+                log_GV.Columns["EmployeeCode"].Visible = false;
                 dataGV.Columns["NoteResign"].Visible = false;
                 dataGV.Columns["PositionID"].Visible = false;
                 dataGV.Columns["DepartmentID"].Visible = false;
@@ -188,8 +191,6 @@ namespace RauViet.ui
                 await Task.Delay(100);
                 loadingOverlay.Hide();
             }
-
-            
         }
 
         private void Tb_KeyPress_OnlyNumber(object sender, KeyPressEventArgs e)
@@ -279,6 +280,8 @@ namespace RauViet.ui
             nvCode_tb.Enabled = true;
 
             status_lb.Text = "";
+
+            mLogDV.RowFilter = $"EmployeeCode = '{employeeCode}'";
         }
         
         private async void updateData(int employeeId, string maNV, string tenNV, DateTime birthDate, DateTime hireDate,
@@ -300,18 +303,32 @@ namespace RauViet.ui
                     DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                     if (dialogResult == DialogResult.Yes)
                     {
+                        string gradeName = mSalaryGrade_dt.Select($"SalaryGradeID = {salaryGradeID}")[0]["GradeName"].ToString();
+
+                        string oldValueLog = $"{row.Cells["FullName"].Value} - {row.Cells["BirthDate"].Value} - {row.Cells["HireDate"].Value} - {row.Cells["Gender"].Value} - " +
+                            $"{row.Cells["Hometown"].Value} - {row.Cells["Address"].Value} - {row.Cells["CitizenID"].Value} - {row.Cells["IssueDate"].Value} - {row.Cells["IssuePlace"].Value} - " +
+                            $"{row.Cells["IsActive"].Value} - {row.Cells["PhoneNumber"].Value} - {row.Cells["NoteResign"].Value} - {row.Cells["canCreateUserName"].Value} - " +
+                            $"{row.Cells["ProbationSalaryPercent"].Value} - {row.Cells["IsInsuranceRefund"].Value} - {row.Cells["GradeName"].Value}";
+
+                        string newValueLog = $"{tenNV} - {birthDate} - {hireDate} - {isMale} - " +
+                            $"{homeTown} - {address} - {citizenID} - {issueDate} - {issuePlace} - " +
+                            $"{isActive} - {phone} - {noteResignUpdate} - {canCreateUserName} - " +
+                            $"{probationSalaryPercent} - {isInsuranceRefund} - {gradeName}";
+
+
                         try
                         {
                             bool isScussess = await SQLManager.Instance.updateEmployeesAsync(employeeId, maNV, tenNV, birthDate, hireDate,
                                     isMale, homeTown, address, citizenID, issueDate, issuePlace, isActive, canCreateUserName, 
                                     probationSalaryPercent, phone, noteResignUpdate, isInsuranceRefund, salaryGradeID);
 
+                            
                             if (isScussess == true)
-                            {
+                            {                                
                                 status_lb.Text = "Thành công.";
                                 status_lb.ForeColor = Color.Green;
 
-                                string gradeName = mSalaryGrade_dt.Select($"SalaryGradeID = {salaryGradeID}")[0]["GradeName"].ToString();
+                                _ = SQLManager.Instance.InsertEmployeesLogAsync(maNV, oldValueLog, "Edit Success: " + newValueLog);
 
                                 row.Cells["EmployeeCode"].Value = maNV;
                                 row.Cells["FullName"].Value = tenNV;
@@ -338,12 +355,14 @@ namespace RauViet.ui
                             }
                             else
                             {
+                                _ = SQLManager.Instance.InsertEmployeesLogAsync(maNV, oldValueLog, "Edit Fail: " + newValueLog);
                                 status_lb.Text = "Thất bại.";
                                 status_lb.ForeColor = Color.Red;
                             }
                         }
                         catch (Exception ex)
                         {
+                            _ = SQLManager.Instance.InsertEmployeesLogAsync(maNV, oldValueLog, "Edit Exception: " + ex .Message +" : "+ newValueLog);
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;
                         }
@@ -365,6 +384,13 @@ namespace RauViet.ui
 
             if (dialogResult == DialogResult.Yes)
             {
+                var grade = mSalaryGrade_dt.Select($"SalaryGradeID = {salaryGradeID}")[0];
+                string gradeName = grade["GradeName"].ToString();
+
+                string newValueLog = $"{tenNV} - {birthDate} - {hireDate} - {isMale} - " +
+                            $"{homeTown} - {address} - {citizenID} - {issueDate} - {issuePlace} - " +
+                            $"{isActive} - {phone} - {noteResign} - {canCreateUserName} - " +
+                            $"{probationSalaryPercent} - {isInsuranceRefund} - {gradeName}";
                 try
                 {
                     string nvCode_temp = "VR" + createID().ToString("D4");
@@ -375,9 +401,6 @@ namespace RauViet.ui
                         DataTable dataTable = (DataTable)dataGV.DataSource;
                         DataRow drToAdd = dataTable.NewRow();
 
-                        var grade = mSalaryGrade_dt.Select($"SalaryGradeID = {salaryGradeID}")[0];
-
-                        string gradeName = grade["GradeName"].ToString();
                         int salaryGrade = Convert.ToInt32(grade["Salary"]);
                         string employeeCode = "VR" + newEmployee.ToString("D4");
                         employeeID_tb.Text = newEmployee.ToString();
@@ -416,10 +439,11 @@ namespace RauViet.ui
                         status_lb.Text = "Thành công";
                         status_lb.ForeColor = Color.Green;
 
-
+                        
                        int id = await SQLManager.Instance.insertEmployeeSalaryInfoAsync(employeeCode, DateTime.Now.Month, DateTime.Now.Year, salaryGrade, salaryGrade, "Theo Bậc Lương");
                        await SQLStore.Instance.UpdateEmployeeSalaryInfo(id, employeeCode, DateTime.Now.Month, DateTime.Now.Year, salaryGrade, salaryGrade, "Theo Bậc Lương");
 
+                        _ = SQLManager.Instance.InsertEmployeesLogAsync(employeeCode, newValueLog, "Create Success");
                         newCustomerBtn_Click(null, null);
                     }
                     else
@@ -529,10 +553,6 @@ namespace RauViet.ui
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;
                         }
-
-
-
-
                     }
                     break;
                 }

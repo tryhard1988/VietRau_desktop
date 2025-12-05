@@ -309,6 +309,12 @@
     <Compile Include="ui\PhanQuyen\Loading.Designer.cs">
       <DependentUpon>Loading.cs</DependentUpon>
     </Compile>
+    <Compile Include="ui\PhanQuyen\HistoryLogIn.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\PhanQuyen\HistoryLogIn.Designer.cs">
+      <DependentUpon>HistoryLogIn.cs</DependentUpon>
+    </Compile>
     <Compile Include="ui\PhanQuyen\ReportSalary_Year.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -618,6 +624,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ui\PhanQuyen\Loading.resx">
       <DependentUpon>Loading.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\PhanQuyen\HistoryLogIn.resx">
+      <DependentUpon>HistoryLogIn.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ui\PhanQuyen\ReportSalary_Year.resx">
       <DependentUpon>ReportSalary_Year.cs</DependentUpon>

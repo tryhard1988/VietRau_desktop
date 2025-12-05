@@ -3245,9 +3245,9 @@ namespace RauViet.classes
         {
             int newId = -1;
 
-            string insertQuery = @" INSERT INTO EmployeeSalaryInfo (EmployeeCode, Month, Year, BaseSalary, InsuranceBaseSalary, Note)
+            string insertQuery = @" INSERT INTO EmployeeSalaryInfo (EmployeeCode, Month, Year, BaseSalary, InsuranceBaseSalary, Note, ActionBy)
                                     OUTPUT INSERTED.SalaryInfoID
-                                    VALUES (@EmployeeCode, @Month, @Year, @BaseSalary, @InsuranceBaseSalary, @Note)";
+                                    VALUES (@EmployeeCode, @Month, @Year, @BaseSalary, @InsuranceBaseSalary, @Note, @ActionBy)";
 
             try
             {
@@ -3264,6 +3264,7 @@ namespace RauViet.classes
                         cmd.Parameters.AddWithValue("@BaseSalary", baseSalary);
                         cmd.Parameters.AddWithValue("@InsuranceBaseSalary", insuranceBaseSalary);
                         cmd.Parameters.AddWithValue("@Note", note);
+                        cmd.Parameters.AddWithValue("@ActionBy", UserManager.Instance.fullName);
 
                         object result = await cmd.ExecuteScalarAsync();
                         if (result != null)
@@ -3956,7 +3957,7 @@ namespace RauViet.classes
 
         public async Task AutoDeleteLoginHistoryAsync()
         {
-            string query = "DELETE FROM UserLoginHistory WHERE  LoginTime < DATEADD(MONTH, -6, GETDATE());";
+            string query = "DELETE FROM UserLoginHistory WHERE  LoginTime < DATEADD(MONTH, -3, GETDATE());";
             try
             {
                 using (SqlConnection con = new SqlConnection(ql_User_conStr()))
@@ -4836,6 +4837,284 @@ namespace RauViet.classes
                     {
                         dt.Load(reader);
                     }
+                }
+            }
+            return dt;
+        }
+
+        public async Task InsertEmployeesLogAsync(string employeeCode, string oldvalue, string newValue)
+        {
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_Log_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand("Insert_Employee_Log", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@EmployeeCode", employeeCode);
+                        cmd.Parameters.AddWithValue("@OldValue", (object)oldvalue ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@NewValue", (object)newValue ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@ActionBy", UserManager.Instance.fullName);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error InsertEmployeesLogAsync: {ex.Message}");
+            }
+        }
+
+        public async Task<DataTable> GetEmployeeLogAsync()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_NhanSu_Log_conStr()))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT * FROM Employee_Log";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
+        }
+
+        public async Task InsertEmployeesInsuranceLogAsync(string employeeCode, string oldvalue, string newValue)
+        {
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_Log_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand("sp_InsertEmployeeInsurance_Log", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@EmployeeCode", employeeCode);
+                        cmd.Parameters.AddWithValue("@OldValue", (object)oldvalue ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@NewValue", (object)newValue ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@ActionBy", UserManager.Instance.fullName);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error InsertEmployeesInsuranceLogAsync: {ex.Message}");
+            }
+        }
+
+        public async Task<DataTable> GetEmployeeInsuranceLogAsync()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_NhanSu_Log_conStr()))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT * FROM EmployeeInsurance_Log";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
+        }
+
+        public async Task InsertEmployeesBankLogAsync(string employeeCode, string oldvalue, string newValue)
+        {
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_Log_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand("sp_InsertEmployeeBank_Log", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@EmployeeCode", employeeCode);
+                        cmd.Parameters.AddWithValue("@OldValue", (object)oldvalue ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@NewValue", (object)newValue ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@ActionBy", UserManager.Instance.fullName);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error InsertEmployeesBankLogAsync: {ex.Message}");
+            }
+        }
+
+        public async Task<DataTable> GetEmployeeBankLogAsync()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_NhanSu_Log_conStr()))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT * FROM EmployeeBank_Log";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
+        }
+
+        public async Task InsertEmployees_POS_DEP_CON_LogAsync(string employeeCode, string oldvalue, string newValue)
+        {
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_Log_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand("sp_InsertEmployee_POS_DEP_CON_Log", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@EmployeeCode", employeeCode);
+                        cmd.Parameters.AddWithValue("@OldValue", (object)oldvalue ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@NewValue", (object)newValue ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@ActionBy", UserManager.Instance.fullName);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error InsertEmployees_POS_DEP_CON_LogAsync: {ex.Message}");
+            }
+        }
+
+        public async Task<DataTable> GetEmployee_POS_DEP_CON_LogAsync()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_NhanSu_Log_conStr()))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT * FROM Employee_POS_DEP_CON_Log";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
+        }
+
+        public async Task InsertEmployeesSalary_LogAsync(string employeeCode, string descrition)
+        {
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_Log_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand("sp_InsertEmployeeSalary_Log", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@EmployeeCode", employeeCode);
+                        cmd.Parameters.AddWithValue("@Descrition", (object)descrition ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@ActionBy", UserManager.Instance.fullName);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error InsertEmployeesSalary_LogAsync: {ex.Message}");
+            }
+        }
+
+        public async Task<DataTable> GetEmployeeSalary_LogAsync()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_NhanSu_Log_conStr()))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT * FROM EmployeeSalary_Log";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
+        }
+
+        public async Task InsertSalaryGrade_LogAsync(int gradeID, string oldValue, string newValue)
+        {
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_Log_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand("sp_InsertSalaryGrade_Log", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@GradeID", gradeID);
+                        cmd.Parameters.AddWithValue("@OldValue", (object)oldValue ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@NewValue", (object)newValue ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@ActionBy", UserManager.Instance.fullName);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error InsertEmployeesSalary_LogAsync: {ex.Message}");
+            }
+        }
+
+        public async Task<DataTable> GetSalaryGrade_LogAsync()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_NhanSu_Log_conStr()))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT * FROM SalaryGrade_Log";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
+        }
+
+        public async Task<DataTable> GetHistoryLoginAsync()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_User_conStr()))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT * FROM UserLoginHistory WHERE UserName = @UserName ORDER BY Id DESC";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    cmd.Parameters.AddWithValue("@UserName", UserManager.Instance.userName);
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+
                 }
             }
             return dt;
