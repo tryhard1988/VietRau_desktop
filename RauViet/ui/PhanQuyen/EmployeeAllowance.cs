@@ -76,9 +76,6 @@ namespace RauViet.ui
                         dr["AllowanceName"] = applyScopeRows[0]["AllowanceName"].ToString();
                 }
 
-                
-
-
                 DataView dv = new DataView(mAllowanceType_dt);
                 dv.RowFilter = "IsActive = 1";
                 allowanceType_cbb.DataSource = dv;
@@ -119,19 +116,31 @@ namespace RauViet.ui
                 log_GV.Columns["LogID"].Visible = false;
                 log_GV.Columns["EmployeeCode"].Visible = false;
 
+                allowanceGV.SelectionChanged -= this.allowanceGV_CellClick;
+                allowanceGV.SelectionChanged += this.allowanceGV_CellClick;
+
                 if (dataGV.Rows.Count > 0)
                 {
                     dataGV.ClearSelection();
                     dataGV.Rows[0].Selected = true;
-                 //   UpdateAllowancetUI(0);
                 }
 
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 allowanceGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
-                allowanceGV.SelectionChanged -= this.allowanceGV_CellClick;
-                allowanceGV.SelectionChanged += this.allowanceGV_CellClick;
+                log_GV.Columns["CreatedAt"].Width = 120;
+                log_GV.Columns["ActionBy"].Width = 150;
+                log_GV.Columns["AllowanceName"].Width = 100;
+                log_GV.Columns["Description"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                log_GV.Columns["Amount"].Width = 80;
+                log_GV.Columns["CreatedAt"].HeaderText = "Thời điểm thay đổi";
+                log_GV.Columns["ACtionBy"].HeaderText = "Người thay đổi";
+                log_GV.Columns["AllowanceName"].HeaderText = "Loại Phụ Cấp";
+                log_GV.Columns["Description"].HeaderText = "Hành động";
+                log_GV.Columns["Amount"].HeaderText = "Số Tiền";
+
+                log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
             catch (Exception ex)
             {
@@ -406,6 +415,7 @@ namespace RauViet.ui
             info_gb.BackColor = Color.DarkGray;
             isNewState = false;
             SetUIReadOnly(true);
+            allowanceGV_CellClick(null, null);
         }
 
         private void Edit_btn_Click(object sender, EventArgs e)

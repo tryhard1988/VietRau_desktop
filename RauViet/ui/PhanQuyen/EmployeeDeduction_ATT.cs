@@ -93,6 +93,9 @@ namespace RauViet.ui
                 mEmployeeLeave_dt.Columns["LeaveHours"].SetOrdinal(count++);
                 mEmployeeLeave_dt.Columns["Note"].SetOrdinal(count++);
 
+                log_GV.Columns["LogID"].Visible = false;
+                log_GV.Columns["EmployeeCode"].Visible = false;
+                log_GV.Columns["DeductionTypeCode"].Visible = false;
 
                 employeeDeductionGV.Columns["DateOff"].HeaderText = "Ngày Nghỉ";
                 employeeDeductionGV.Columns["LeaveTypeName"].HeaderText = "Loại Nghỉ Phép";
@@ -129,6 +132,19 @@ namespace RauViet.ui
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 employeeDeductionGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+
+                log_GV.Columns["CreateAt"].Width = 120;
+                log_GV.Columns["ActionBy"].Width = 150;
+                log_GV.Columns["Description"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                log_GV.Columns["DeductionDate"].Width = 80;
+                log_GV.Columns["Amount"].Width = 80;
+                log_GV.Columns["CreateAt"].HeaderText = "Thời điểm thay đổi";
+                log_GV.Columns["ACtionBy"].HeaderText = "Người thay đổi";
+                log_GV.Columns["Description"].HeaderText = "Hành động";
+                log_GV.Columns["DeductionDate"].HeaderText = "Ngày";
+                log_GV.Columns["Amount"].HeaderText = "Số Tiền";
+
+                log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
             }
             catch (Exception ex)

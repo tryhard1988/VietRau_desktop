@@ -1,8 +1,6 @@
-﻿using DocumentFormat.OpenXml.Wordprocessing;
-using RauViet.classes;
+﻿using RauViet.classes;
 using System;
 using System.Data;
-using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -170,6 +168,17 @@ namespace RauViet.ui
                 dataGV.Columns["PhoneNumber"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 dataGV.Columns["Gradename"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 dataGV.Columns["ProbationSalaryPercent"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+
+                log_GV.Columns["CreatedAt"].Width = 120;
+                log_GV.Columns["ACtionBy"].Width = 150;
+                log_GV.Columns["OldValue"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                log_GV.Columns["NewValue"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                log_GV.Columns["CreatedAt"].HeaderText = "Thời điểm thay đổi";
+                log_GV.Columns["ACtionBy"].HeaderText = "Người thay đổi";
+                log_GV.Columns["OldValue"].HeaderText = "Giá trị cũ";
+                log_GV.Columns["NewValue"].HeaderText = "Giá trị mới";
+                log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
                 if (dataGV.Rows.Count > 0)
                 {
@@ -177,9 +186,6 @@ namespace RauViet.ui
                     dataGV.Rows[0].Selected = true;
                     UpdateRightUI(0);
                 }
-
-
-                dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
             catch (Exception ex)
             {
@@ -595,6 +601,7 @@ namespace RauViet.ui
             info_gb.BackColor = Color.DarkGray;
             isNewState = false;
             SetUIReadOnly(true);
+            dataGV_CellClick(null, null);
         }
 
         private void Edit_btn_Click(object sender, EventArgs e)

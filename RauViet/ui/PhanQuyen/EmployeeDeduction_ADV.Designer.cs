@@ -29,6 +29,10 @@ namespace RauViet.ui
         /// </summary>
         private void InitializeComponent()
         {
+            this.dataGV = new System.Windows.Forms.DataGridView();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.label3 = new System.Windows.Forms.Label();
+            this.log_GV = new System.Windows.Forms.DataGridView();
             this.panel1 = new System.Windows.Forms.Panel();
             this.load_gb = new System.Windows.Forms.GroupBox();
             this.monthYearDtp = new System.Windows.Forms.DateTimePicker();
@@ -47,18 +51,64 @@ namespace RauViet.ui
             this.newCustomerBtn = new System.Windows.Forms.Button();
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
             this.employeeDeductionID_tb = new System.Windows.Forms.TextBox();
-            this.dataGV = new System.Windows.Forms.DataGridView();
-            this.panel2 = new System.Windows.Forms.Panel();
-            this.log_GV = new System.Windows.Forms.DataGridView();
             this.employeeDeductionGV = new System.Windows.Forms.DataGridView();
-            this.panel1.SuspendLayout();
-            this.load_gb.SuspendLayout();
-            this.info_gb.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.log_GV)).BeginInit();
+            this.panel1.SuspendLayout();
+            this.load_gb.SuspendLayout();
+            this.info_gb.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.employeeDeductionGV)).BeginInit();
             this.SuspendLayout();
+            // 
+            // dataGV
+            // 
+            this.dataGV.AllowUserToAddRows = false;
+            this.dataGV.AllowUserToDeleteRows = false;
+            this.dataGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGV.Dock = System.Windows.Forms.DockStyle.Left;
+            this.dataGV.Location = new System.Drawing.Point(0, 0);
+            this.dataGV.Name = "dataGV";
+            this.dataGV.ReadOnly = true;
+            this.dataGV.Size = new System.Drawing.Size(428, 724);
+            this.dataGV.TabIndex = 10;
+            // 
+            // panel2
+            // 
+            this.panel2.Controls.Add(this.employeeDeductionGV);
+            this.panel2.Controls.Add(this.panel1);
+            this.panel2.Controls.Add(this.label3);
+            this.panel2.Controls.Add(this.log_GV);
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel2.Location = new System.Drawing.Point(428, 0);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(836, 724);
+            this.panel2.TabIndex = 11;
+            // 
+            // label3
+            // 
+            this.label3.BackColor = System.Drawing.Color.PeachPuff;
+            this.label3.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.label3.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label3.ForeColor = System.Drawing.Color.DarkOliveGreen;
+            this.label3.Location = new System.Drawing.Point(0, 442);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(836, 23);
+            this.label3.TabIndex = 47;
+            this.label3.Text = "Lịch sử thay đổi";
+            this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // log_GV
+            // 
+            this.log_GV.AllowUserToAddRows = false;
+            this.log_GV.AllowUserToDeleteRows = false;
+            this.log_GV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.log_GV.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.log_GV.Location = new System.Drawing.Point(0, 465);
+            this.log_GV.Name = "log_GV";
+            this.log_GV.ReadOnly = true;
+            this.log_GV.Size = new System.Drawing.Size(836, 259);
+            this.log_GV.TabIndex = 46;
             // 
             // panel1
             // 
@@ -72,16 +122,16 @@ namespace RauViet.ui
             this.panel1.Controls.Add(this.LuuThayDoiBtn);
             this.panel1.Controls.Add(this.employeeDeductionID_tb);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel1.Location = new System.Drawing.Point(811, 0);
+            this.panel1.Location = new System.Drawing.Point(383, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(453, 724);
-            this.panel1.TabIndex = 9;
+            this.panel1.Size = new System.Drawing.Size(453, 442);
+            this.panel1.TabIndex = 49;
             // 
             // load_gb
             // 
             this.load_gb.Controls.Add(this.monthYearDtp);
             this.load_gb.Controls.Add(this.load_btn);
-            this.load_gb.Location = new System.Drawing.Point(133, 75);
+            this.load_gb.Location = new System.Drawing.Point(133, 32);
             this.load_gb.Name = "load_gb";
             this.load_gb.Size = new System.Drawing.Size(218, 66);
             this.load_gb.TabIndex = 33;
@@ -110,7 +160,7 @@ namespace RauViet.ui
             // 
             this.readOnly_btn.BackColor = System.Drawing.Color.MediumSlateBlue;
             this.readOnly_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.readOnly_btn.Location = new System.Drawing.Point(399, 204);
+            this.readOnly_btn.Location = new System.Drawing.Point(399, 115);
             this.readOnly_btn.Name = "readOnly_btn";
             this.readOnly_btn.Size = new System.Drawing.Size(42, 32);
             this.readOnly_btn.TabIndex = 32;
@@ -121,7 +171,7 @@ namespace RauViet.ui
             // 
             this.edit_btn.BackColor = System.Drawing.SystemColors.MenuHighlight;
             this.edit_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.edit_btn.Location = new System.Drawing.Point(262, 204);
+            this.edit_btn.Location = new System.Drawing.Point(262, 115);
             this.edit_btn.Name = "edit_btn";
             this.edit_btn.Size = new System.Drawing.Size(94, 32);
             this.edit_btn.TabIndex = 31;
@@ -136,7 +186,7 @@ namespace RauViet.ui
             this.info_gb.Controls.Add(this.label1);
             this.info_gb.Controls.Add(this.amount_tb);
             this.info_gb.Controls.Add(this.label2);
-            this.info_gb.Location = new System.Drawing.Point(19, 235);
+            this.info_gb.Location = new System.Drawing.Point(19, 146);
             this.info_gb.Name = "info_gb";
             this.info_gb.Size = new System.Drawing.Size(422, 225);
             this.info_gb.TabIndex = 28;
@@ -201,7 +251,7 @@ namespace RauViet.ui
             this.status_lb.AutoSize = true;
             this.status_lb.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.status_lb.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.status_lb.Location = new System.Drawing.Point(6, 477);
+            this.status_lb.Location = new System.Drawing.Point(6, 388);
             this.status_lb.Name = "status_lb";
             this.status_lb.Size = new System.Drawing.Size(55, 23);
             this.status_lb.TabIndex = 26;
@@ -211,7 +261,7 @@ namespace RauViet.ui
             // 
             this.delete_btn.BackColor = System.Drawing.Color.Red;
             this.delete_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.delete_btn.Location = new System.Drawing.Point(252, 466);
+            this.delete_btn.Location = new System.Drawing.Point(252, 377);
             this.delete_btn.Name = "delete_btn";
             this.delete_btn.Size = new System.Drawing.Size(113, 47);
             this.delete_btn.TabIndex = 27;
@@ -222,7 +272,7 @@ namespace RauViet.ui
             // 
             this.newCustomerBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
             this.newCustomerBtn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.newCustomerBtn.Location = new System.Drawing.Point(354, 204);
+            this.newCustomerBtn.Location = new System.Drawing.Point(354, 115);
             this.newCustomerBtn.Name = "newCustomerBtn";
             this.newCustomerBtn.Size = new System.Drawing.Size(87, 32);
             this.newCustomerBtn.TabIndex = 25;
@@ -233,7 +283,7 @@ namespace RauViet.ui
             // 
             this.LuuThayDoiBtn.BackColor = System.Drawing.SystemColors.Highlight;
             this.LuuThayDoiBtn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LuuThayDoiBtn.Location = new System.Drawing.Point(133, 466);
+            this.LuuThayDoiBtn.Location = new System.Drawing.Point(133, 377);
             this.LuuThayDoiBtn.Name = "LuuThayDoiBtn";
             this.LuuThayDoiBtn.Size = new System.Drawing.Size(113, 47);
             this.LuuThayDoiBtn.TabIndex = 25;
@@ -242,46 +292,12 @@ namespace RauViet.ui
             // 
             // employeeDeductionID_tb
             // 
-            this.employeeDeductionID_tb.Location = new System.Drawing.Point(144, 635);
+            this.employeeDeductionID_tb.Location = new System.Drawing.Point(48, 120);
             this.employeeDeductionID_tb.Name = "employeeDeductionID_tb";
             this.employeeDeductionID_tb.ReadOnly = true;
             this.employeeDeductionID_tb.Size = new System.Drawing.Size(32, 20);
             this.employeeDeductionID_tb.TabIndex = 16;
             this.employeeDeductionID_tb.Visible = false;
-            // 
-            // dataGV
-            // 
-            this.dataGV.AllowUserToAddRows = false;
-            this.dataGV.AllowUserToDeleteRows = false;
-            this.dataGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGV.Dock = System.Windows.Forms.DockStyle.Left;
-            this.dataGV.Location = new System.Drawing.Point(0, 0);
-            this.dataGV.Name = "dataGV";
-            this.dataGV.ReadOnly = true;
-            this.dataGV.Size = new System.Drawing.Size(428, 724);
-            this.dataGV.TabIndex = 10;
-            // 
-            // panel2
-            // 
-            this.panel2.Controls.Add(this.employeeDeductionGV);
-            this.panel2.Controls.Add(this.log_GV);
-            this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel2.Location = new System.Drawing.Point(428, 0);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(383, 724);
-            this.panel2.TabIndex = 11;
-            // 
-            // log_GV
-            // 
-            this.log_GV.AllowUserToAddRows = false;
-            this.log_GV.AllowUserToDeleteRows = false;
-            this.log_GV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.log_GV.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.log_GV.Location = new System.Drawing.Point(0, 400);
-            this.log_GV.Name = "log_GV";
-            this.log_GV.ReadOnly = true;
-            this.log_GV.Size = new System.Drawing.Size(383, 324);
-            this.log_GV.TabIndex = 39;
             // 
             // employeeDeductionGV
             // 
@@ -292,8 +308,8 @@ namespace RauViet.ui
             this.employeeDeductionGV.Location = new System.Drawing.Point(0, 0);
             this.employeeDeductionGV.Name = "employeeDeductionGV";
             this.employeeDeductionGV.ReadOnly = true;
-            this.employeeDeductionGV.Size = new System.Drawing.Size(383, 400);
-            this.employeeDeductionGV.TabIndex = 40;
+            this.employeeDeductionGV.Size = new System.Drawing.Size(383, 442);
+            this.employeeDeductionGV.TabIndex = 50;
             // 
             // EmployeeDeduction_ADV
             // 
@@ -302,44 +318,44 @@ namespace RauViet.ui
             this.ClientSize = new System.Drawing.Size(1264, 724);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.dataGV);
-            this.Controls.Add(this.panel1);
             this.Name = "EmployeeDeduction_ADV";
             this.Text = "FormTableData";
+            ((System.ComponentModel.ISupportInitialize)(this.dataGV)).EndInit();
+            this.panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.log_GV)).EndInit();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.load_gb.ResumeLayout(false);
             this.info_gb.ResumeLayout(false);
             this.info_gb.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGV)).EndInit();
-            this.panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.log_GV)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.employeeDeductionGV)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
-        private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.TextBox amount_tb;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Button LuuThayDoiBtn;
-        private System.Windows.Forms.Button newCustomerBtn;
-        private System.Windows.Forms.Label status_lb;
-        private System.Windows.Forms.Button delete_btn;
-        private System.Windows.Forms.GroupBox info_gb;
-        private System.Windows.Forms.TextBox employeeDeductionID_tb;
         private System.Windows.Forms.DataGridView dataGV;
-        private System.Windows.Forms.TextBox note_tb;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.DateTimePicker deductionDate_dtp;
-        private System.Windows.Forms.Button readOnly_btn;
-        private System.Windows.Forms.Button edit_btn;
+        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.DataGridView log_GV;
+        private System.Windows.Forms.DataGridView employeeDeductionGV;
+        private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.GroupBox load_gb;
         private System.Windows.Forms.DateTimePicker monthYearDtp;
         private System.Windows.Forms.Button load_btn;
-        private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.DataGridView employeeDeductionGV;
-        private System.Windows.Forms.DataGridView log_GV;
+        private System.Windows.Forms.Button readOnly_btn;
+        private System.Windows.Forms.Button edit_btn;
+        private System.Windows.Forms.GroupBox info_gb;
+        private System.Windows.Forms.DateTimePicker deductionDate_dtp;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.TextBox note_tb;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TextBox amount_tb;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label status_lb;
+        private System.Windows.Forms.Button delete_btn;
+        private System.Windows.Forms.Button newCustomerBtn;
+        private System.Windows.Forms.Button LuuThayDoiBtn;
+        private System.Windows.Forms.TextBox employeeDeductionID_tb;
     }
 }

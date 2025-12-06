@@ -138,6 +138,21 @@ namespace RauViet.ui
                 log_GV.Columns["EmployeeCode"].Visible = false;
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+
+                log_GV.Columns["CreatedAt"].Width = 120;
+                log_GV.Columns["ActionBy"].Width = 150;
+                log_GV.Columns["LeaveName"].Width = 100;
+                log_GV.Columns["Description"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                log_GV.Columns["DateOff"].Width = 80;
+                log_GV.Columns["LeaveHour"].Width = 60;
+                log_GV.Columns["CreatedAt"].HeaderText = "Thời điểm thay đổi";
+                log_GV.Columns["ACtionBy"].HeaderText = "Người thay đổi";
+                log_GV.Columns["LeaveName"].HeaderText = "Loại nghỉ phép";
+                log_GV.Columns["Description"].HeaderText = "Hành động";
+                log_GV.Columns["DateOff"].HeaderText = "Ngày Nghỉ";
+                log_GV.Columns["LeaveHour"].HeaderText = "Số giờ nghỉ";
+
+                log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
             catch (Exception ex)
             {
@@ -524,6 +539,7 @@ namespace RauViet.ui
             dateOffEnd_dtp.Visible = false;
             label5.Visible = false;
             SetUIReadOnly(true);
+            attendanceGV_CellClick(null, null);
         }
 
         private void Edit_btn_Click(object sender, EventArgs e)

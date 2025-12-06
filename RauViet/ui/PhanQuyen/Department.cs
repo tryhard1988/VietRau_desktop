@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using RauViet.classes;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
 
 namespace RauViet.ui
 {
@@ -326,6 +321,8 @@ namespace RauViet.ui
             info_gb.BackColor = Color.DarkGray;
             isNewState = false;
             SetUIReadOnly(true);
+            dataGV_CellClick(null, null);
+
         }
 
         private void Edit_btn_Click(object sender, EventArgs e)

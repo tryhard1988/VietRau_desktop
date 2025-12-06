@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using RauViet.classes;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
 
 namespace RauViet.ui
 {
@@ -85,9 +80,21 @@ namespace RauViet.ui
                 {
                     dataGV.ClearSelection();
                     dataGV.Rows[0].Selected = true;
+                    dataGV.CurrentCell = dataGV.Rows[0].Cells[1];
+                    UpdateRightUI(0);
                 }
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+
+                log_GV.Columns["CreatedAt"].Width = 120;
+                log_GV.Columns["ActionBy"].Width = 150;
+                log_GV.Columns["OldValue"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                log_GV.Columns["NewValue"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                log_GV.Columns["CreatedAt"].HeaderText = "Thời điểm thay đổi";
+                log_GV.Columns["ActionBy"].HeaderText = "Người thay đổi";
+                log_GV.Columns["OldValue"].HeaderText = "Giá trị cũ";
+                log_GV.Columns["NewValue"].HeaderText = "Giá trị mới";
+                log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
             catch (Exception ex)
             {
@@ -99,8 +106,6 @@ namespace RauViet.ui
                 loading_lb.Visible = false; // ẩn loading
                 loading_lb.Enabled = true; // enable lại button
             }
-
-            
         }
               
         private void dataGV_CellClick(object sender, EventArgs e)
@@ -346,6 +351,7 @@ namespace RauViet.ui
             info_gb.BackColor = Color.DarkGray;
             isNewState = false;
             SetUIReadOnly(true);
+            dataGV_CellClick(null, null);
         }
 
         private void Edit_btn_Click(object sender, EventArgs e)

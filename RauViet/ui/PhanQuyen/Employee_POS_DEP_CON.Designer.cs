@@ -44,6 +44,7 @@ namespace RauViet.ui
             this.label4 = new System.Windows.Forms.Label();
             this.employeeCode_tb = new System.Windows.Forms.TextBox();
             this.status_lb = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.log_GV)).BeginInit();
@@ -64,6 +65,7 @@ namespace RauViet.ui
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.label2);
             this.panel1.Controls.Add(this.log_GV);
             this.panel1.Controls.Add(this.readOnly_btn);
             this.panel1.Controls.Add(this.edit_btn);
@@ -213,6 +215,19 @@ namespace RauViet.ui
             this.status_lb.TabIndex = 26;
             this.status_lb.Text = "Email";
             // 
+            // label2
+            // 
+            this.label2.BackColor = System.Drawing.Color.PeachPuff;
+            this.label2.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.label2.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.ForeColor = System.Drawing.Color.DarkOliveGreen;
+            this.label2.Location = new System.Drawing.Point(0, 501);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(641, 23);
+            this.label2.TabIndex = 82;
+            this.label2.Text = "Lịch sử thay đổi";
+            this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
             // Employee_POS_DEP_CON
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -248,5 +263,6 @@ namespace RauViet.ui
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox employeeCode_tb;
         private System.Windows.Forms.Label status_lb;
+        private System.Windows.Forms.Label label2;
     }
 }

@@ -115,13 +115,28 @@ namespace RauViet.ui
                 dataGV.Columns["ContractTypeName"].Width = 70;
                 dataGV.Columns["PositionName"].Width = 70;
 
-                dataGV.Width = 450;
+                log_GV.Columns["EmployeeCode"].Visible = false;
+                log_GV.Columns["LogID"].Visible = false;
 
-                if (dataGV.Rows.Count > 0)
-                {
-                    dataGV.ClearSelection();
-                    dataGV.Rows[0].Selected = true;
-                }
+                log_GV.Columns["CreatedAt"].Width = 120;
+                log_GV.Columns["ActionBy"].Width = 130;
+                log_GV.Columns["OvertimeTypeName"].Width = 100;
+                log_GV.Columns["Description"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                log_GV.Columns["WorkDate"].Width = 100;
+                log_GV.Columns["StartTime"].Width = 100;
+                log_GV.Columns["EndTime"].Width = 100;
+
+
+                log_GV.Columns["CreatedAt"].HeaderText = "Thời điểm thay đổi";
+                log_GV.Columns["ActionBy"].HeaderText = "Người thay đổi";
+                log_GV.Columns["OvertimeTypeName"].HeaderText = "Loại tăng ca";
+                log_GV.Columns["Description"].HeaderText = "Hành động";
+                log_GV.Columns["WorkDate"].HeaderText = "Ngày làm";
+                log_GV.Columns["StartTime"].HeaderText = "Giờ bắt đầu";
+                log_GV.Columns["EndTime"].HeaderText = "Giờ kết thúc";
+                log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+
+                dataGV.Width = 450;
 
                 Attendamce();
 
@@ -137,6 +152,12 @@ namespace RauViet.ui
                 loadAttandance_btn.Click += LoadAttandance_btn_Click;
                 dataGV.SelectionChanged -= this.dataGV_CellClick;
                 dataGV.SelectionChanged += this.dataGV_CellClick;
+
+                if (dataGV.Rows.Count > 0)
+                {
+                    dataGV.ClearSelection();
+                    dataGV.Rows[0].Selected = true;
+                }
             }
             catch (Exception ex)
             {
@@ -270,6 +291,7 @@ namespace RauViet.ui
 
         private void UpdateRightUI(int rowIndex)
         {
+            if (isNewState) return;
             var cells = attendanceGV.Rows[rowIndex].Cells;
             int overtimeAttendanceID = Convert.ToInt32(cells["OvertimeAttendanceID"].Value);
             DateTime workDate = Convert.ToDateTime(cells["WorkDate"].Value);
@@ -505,6 +527,7 @@ namespace RauViet.ui
             info_gb.BackColor = Color.DarkGray;
             isNewState = false;
             SetUIReadOnly(true);
+            attendanceGV_CellClick(null, null);
         }
 
         private void Edit_btn_Click(object sender, EventArgs e)

@@ -46,8 +46,7 @@ namespace RauViet.ui
             newCustomerBtn.Click += newCustomerBtn_Click;
             LuuThayDoiBtn.Click += saveBtn_Click;
             delete_btn.Click += deleteBtn_Click;
-            dataGV.SelectionChanged += this.dataGV_CellClick;
-            allowanceGV.SelectionChanged += this.allowanceGV_CellClick;
+            
             amount_tb.KeyPress += Tb_KeyPress_OnlyNumber;
 
             monthYearDtp.ValueChanged += MonthYearDtp_ValueChanged;
@@ -151,6 +150,10 @@ namespace RauViet.ui
                 allowanceGV.Columns["Amount"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
                 allowanceGV.Columns["Note"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
 
+                dataGV.SelectionChanged -= this.dataGV_CellClick;
+                allowanceGV.SelectionChanged -= this.allowanceGV_CellClick;
+                dataGV.SelectionChanged += this.dataGV_CellClick;
+                allowanceGV.SelectionChanged += this.allowanceGV_CellClick;
                 if (dataGV.Rows.Count > 0)
                 {
                     dataGV.ClearSelection();
@@ -161,6 +164,19 @@ namespace RauViet.ui
                 allowanceGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
                 MonthYearDtp_ValueChanged(null, null);
+
+                log_GV.Columns["CreatedAt"].Width = 120;
+                log_GV.Columns["ActionBy"].Width = 150;
+                log_GV.Columns["AllowanceName"].Width = 100;
+                log_GV.Columns["Description"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                log_GV.Columns["Amount"].Width = 80;
+                log_GV.Columns["CreatedAt"].HeaderText = "Thời điểm thay đổi";
+                log_GV.Columns["ACtionBy"].HeaderText = "Người thay đổi";
+                log_GV.Columns["AllowanceName"].HeaderText = "Loại Phụ Cấp";
+                log_GV.Columns["Description"].HeaderText = "Hành động";
+                log_GV.Columns["Amount"].HeaderText = "Số Tiền";
+
+                log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
             catch (Exception ex)
             {
@@ -233,14 +249,14 @@ namespace RauViet.ui
             if (isNewState) return;
 
             var cells = allowanceGV.Rows[index].Cells;
-            int monthlyAllowanceID = Convert.ToInt32(cells["MonthlyAllowanceID"].Value);
-            int allowanceTypeID = Convert.ToInt32(cells["AllowanceTypeID"].Value);
+            string monthlyAllowanceID = cells["MonthlyAllowanceID"].Value.ToString();
+            string allowanceTypeID = Convert.ToString(cells["AllowanceTypeID"].Value);
             int month = Convert.ToInt32(cells["Month"].Value);
             int year = Convert.ToInt32(cells["Year"].Value);
             int amount = Convert.ToInt32(cells["Amount"].Value);
             string note = cells["Note"].Value.ToString();
 
-            this.monthlyAllowanceID_tb.Text = monthlyAllowanceID.ToString();
+            this.monthlyAllowanceID_tb.Text = monthlyAllowanceID;
             amount_tb.Text = amount.ToString();
             note_tb.Text = note;
             allowanceType_cbb.SelectedValue = allowanceTypeID;
@@ -312,7 +328,7 @@ namespace RauViet.ui
                 {
                     int monthlyAllowanceID = await SQLManager.Instance.insertMonthlyAllowanceAsync(employeeCode, month, year, amount, allowanceTypeID, note);
                     string allowanceName = mAllowanceType_dt.Select($"AllowanceTypeID = {allowanceTypeID}")[0]["AllowanceName"].ToString();
-                    if (allowanceTypeID > 0)
+                    if (monthlyAllowanceID > 0)
                     {
                         DataRow drToAdd = mMonthlyAllowance_dt.NewRow();
 
@@ -472,6 +488,7 @@ namespace RauViet.ui
             info_gb.BackColor = Color.DarkGray;
             isNewState = false;
             SetUIReadOnly(true);
+            allowanceGV_CellClick(null, null);
         }
 
         private void Edit_btn_Click(object sender, EventArgs e)
@@ -497,11 +514,6 @@ namespace RauViet.ui
                 LuuThayDoiBtn.Visible = !isLock;
                 delete_btn.Visible = !isLock;
             }
-        }
-
-        private void panel1_Paint(object sender, PaintEventArgs e)
-        {
-
         }
 
         private void SetUIReadOnly(bool isReadOnly)

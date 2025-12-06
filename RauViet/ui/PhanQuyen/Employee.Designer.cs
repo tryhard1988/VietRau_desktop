@@ -31,6 +31,7 @@ namespace RauViet.ui
         {
             this.dataGV = new System.Windows.Forms.DataGridView();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.log_GV = new System.Windows.Forms.DataGridView();
             this.readOnly_btn = new System.Windows.Forms.Button();
             this.edit_btn = new System.Windows.Forms.Button();
             this.delete_btn = new System.Windows.Forms.Button();
@@ -70,11 +71,11 @@ namespace RauViet.ui
             this.status_lb = new System.Windows.Forms.Label();
             this.newCustomerBtn = new System.Windows.Forms.Button();
             this.employeeID_tb = new System.Windows.Forms.TextBox();
-            this.log_GV = new System.Windows.Forms.DataGridView();
+            this.label5 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
             this.panel1.SuspendLayout();
-            this.info_gb.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.log_GV)).BeginInit();
+            this.info_gb.SuspendLayout();
             this.SuspendLayout();
             // 
             // dataGV
@@ -91,6 +92,7 @@ namespace RauViet.ui
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.label5);
             this.panel1.Controls.Add(this.log_GV);
             this.panel1.Controls.Add(this.readOnly_btn);
             this.panel1.Controls.Add(this.edit_btn);
@@ -105,6 +107,18 @@ namespace RauViet.ui
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(509, 724);
             this.panel1.TabIndex = 11;
+            // 
+            // log_GV
+            // 
+            this.log_GV.AllowUserToAddRows = false;
+            this.log_GV.AllowUserToDeleteRows = false;
+            this.log_GV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.log_GV.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.log_GV.Location = new System.Drawing.Point(0, 551);
+            this.log_GV.Name = "log_GV";
+            this.log_GV.ReadOnly = true;
+            this.log_GV.Size = new System.Drawing.Size(509, 173);
+            this.log_GV.TabIndex = 79;
             // 
             // readOnly_btn
             // 
@@ -505,17 +519,18 @@ namespace RauViet.ui
             this.employeeID_tb.TabIndex = 16;
             this.employeeID_tb.Visible = false;
             // 
-            // log_GV
+            // label5
             // 
-            this.log_GV.AllowUserToAddRows = false;
-            this.log_GV.AllowUserToDeleteRows = false;
-            this.log_GV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.log_GV.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.log_GV.Location = new System.Drawing.Point(0, 524);
-            this.log_GV.Name = "log_GV";
-            this.log_GV.ReadOnly = true;
-            this.log_GV.Size = new System.Drawing.Size(509, 200);
-            this.log_GV.TabIndex = 79;
+            this.label5.BackColor = System.Drawing.Color.PeachPuff;
+            this.label5.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.label5.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label5.ForeColor = System.Drawing.Color.DarkOliveGreen;
+            this.label5.Location = new System.Drawing.Point(0, 528);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(509, 23);
+            this.label5.TabIndex = 80;
+            this.label5.Text = "Lịch sử thay đổi";
+            this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // Employee
             // 
@@ -529,9 +544,9 @@ namespace RauViet.ui
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).EndInit();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.log_GV)).EndInit();
             this.info_gb.ResumeLayout(false);
             this.info_gb.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.log_GV)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -579,5 +594,6 @@ namespace RauViet.ui
         private System.Windows.Forms.Button newCustomerBtn;
         private System.Windows.Forms.TextBox employeeID_tb;
         private System.Windows.Forms.DataGridView log_GV;
+        private System.Windows.Forms.Label label5;
     }
 }

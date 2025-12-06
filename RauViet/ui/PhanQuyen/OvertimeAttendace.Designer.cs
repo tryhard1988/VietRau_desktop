@@ -30,6 +30,9 @@ namespace RauViet.ui
         private void InitializeComponent()
         {
             this.dataGV = new System.Windows.Forms.DataGridView();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.log_GV = new System.Windows.Forms.DataGridView();
+            this.label1 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
             this.readOnly_btn = new System.Windows.Forms.Button();
             this.edit_btn = new System.Windows.Forms.Button();
@@ -51,15 +54,13 @@ namespace RauViet.ui
             this.monthYearDtp = new System.Windows.Forms.DateTimePicker();
             this.loadAttandance_btn = new System.Windows.Forms.Button();
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
-            this.panel2 = new System.Windows.Forms.Panel();
-            this.log_GV = new System.Windows.Forms.DataGridView();
             this.attendanceGV = new System.Windows.Forms.DataGridView();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
+            this.panel2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.log_GV)).BeginInit();
             this.panel1.SuspendLayout();
             this.info_gb.SuspendLayout();
             this.load_gb.SuspendLayout();
-            this.panel2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.log_GV)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.attendanceGV)).BeginInit();
             this.SuspendLayout();
             // 
@@ -72,8 +73,45 @@ namespace RauViet.ui
             this.dataGV.Location = new System.Drawing.Point(0, 0);
             this.dataGV.Name = "dataGV";
             this.dataGV.ReadOnly = true;
-            this.dataGV.Size = new System.Drawing.Size(403, 681);
+            this.dataGV.Size = new System.Drawing.Size(403, 715);
             this.dataGV.TabIndex = 1;
+            // 
+            // panel2
+            // 
+            this.panel2.Controls.Add(this.attendanceGV);
+            this.panel2.Controls.Add(this.panel1);
+            this.panel2.Controls.Add(this.label1);
+            this.panel2.Controls.Add(this.log_GV);
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel2.Location = new System.Drawing.Point(403, 0);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(906, 715);
+            this.panel2.TabIndex = 12;
+            // 
+            // log_GV
+            // 
+            this.log_GV.AllowUserToAddRows = false;
+            this.log_GV.AllowUserToDeleteRows = false;
+            this.log_GV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.log_GV.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.log_GV.Location = new System.Drawing.Point(0, 486);
+            this.log_GV.Name = "log_GV";
+            this.log_GV.ReadOnly = true;
+            this.log_GV.Size = new System.Drawing.Size(906, 229);
+            this.log_GV.TabIndex = 41;
+            // 
+            // label1
+            // 
+            this.label1.BackColor = System.Drawing.Color.PeachPuff;
+            this.label1.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.label1.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.ForeColor = System.Drawing.Color.DarkOliveGreen;
+            this.label1.Location = new System.Drawing.Point(0, 463);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(906, 23);
+            this.label1.TabIndex = 51;
+            this.label1.Text = "Lịch sử thay đổi";
+            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // panel1
             // 
@@ -86,16 +124,16 @@ namespace RauViet.ui
             this.panel1.Controls.Add(this.load_gb);
             this.panel1.Controls.Add(this.LuuThayDoiBtn);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel1.Location = new System.Drawing.Point(966, 0);
+            this.panel1.Location = new System.Drawing.Point(563, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(343, 681);
-            this.panel1.TabIndex = 11;
+            this.panel1.Size = new System.Drawing.Size(343, 463);
+            this.panel1.TabIndex = 53;
             // 
             // readOnly_btn
             // 
             this.readOnly_btn.BackColor = System.Drawing.Color.MediumSlateBlue;
             this.readOnly_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.readOnly_btn.Location = new System.Drawing.Point(288, 226);
+            this.readOnly_btn.Location = new System.Drawing.Point(301, 143);
             this.readOnly_btn.Name = "readOnly_btn";
             this.readOnly_btn.Size = new System.Drawing.Size(42, 32);
             this.readOnly_btn.TabIndex = 34;
@@ -106,7 +144,7 @@ namespace RauViet.ui
             // 
             this.edit_btn.BackColor = System.Drawing.SystemColors.MenuHighlight;
             this.edit_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.edit_btn.Location = new System.Drawing.Point(152, 226);
+            this.edit_btn.Location = new System.Drawing.Point(165, 143);
             this.edit_btn.Name = "edit_btn";
             this.edit_btn.Size = new System.Drawing.Size(94, 32);
             this.edit_btn.TabIndex = 33;
@@ -115,7 +153,7 @@ namespace RauViet.ui
             // 
             // overtimeAttendaceID_tb
             // 
-            this.overtimeAttendaceID_tb.Location = new System.Drawing.Point(167, 658);
+            this.overtimeAttendaceID_tb.Location = new System.Drawing.Point(266, 56);
             this.overtimeAttendaceID_tb.Name = "overtimeAttendaceID_tb";
             this.overtimeAttendaceID_tb.ReadOnly = true;
             this.overtimeAttendaceID_tb.Size = new System.Drawing.Size(55, 20);
@@ -126,7 +164,7 @@ namespace RauViet.ui
             // 
             this.newBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
             this.newBtn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.newBtn.Location = new System.Drawing.Point(247, 226);
+            this.newBtn.Location = new System.Drawing.Point(260, 143);
             this.newBtn.Name = "newBtn";
             this.newBtn.Size = new System.Drawing.Size(83, 32);
             this.newBtn.TabIndex = 30;
@@ -145,7 +183,7 @@ namespace RauViet.ui
             this.info_gb.Controls.Add(this.label4);
             this.info_gb.Controls.Add(this.label15);
             this.info_gb.Controls.Add(this.note_tb);
-            this.info_gb.Location = new System.Drawing.Point(6, 256);
+            this.info_gb.Location = new System.Drawing.Point(19, 173);
             this.info_gb.Name = "info_gb";
             this.info_gb.Size = new System.Drawing.Size(324, 228);
             this.info_gb.TabIndex = 29;
@@ -245,7 +283,7 @@ namespace RauViet.ui
             this.status_lb.AutoSize = true;
             this.status_lb.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.status_lb.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.status_lb.Location = new System.Drawing.Point(6, 501);
+            this.status_lb.Location = new System.Drawing.Point(19, 418);
             this.status_lb.Name = "status_lb";
             this.status_lb.Size = new System.Drawing.Size(55, 23);
             this.status_lb.TabIndex = 26;
@@ -255,7 +293,7 @@ namespace RauViet.ui
             // 
             this.load_gb.Controls.Add(this.monthYearDtp);
             this.load_gb.Controls.Add(this.loadAttandance_btn);
-            this.load_gb.Location = new System.Drawing.Point(113, 94);
+            this.load_gb.Location = new System.Drawing.Point(126, 11);
             this.load_gb.Name = "load_gb";
             this.load_gb.Size = new System.Drawing.Size(133, 98);
             this.load_gb.TabIndex = 28;
@@ -284,34 +322,12 @@ namespace RauViet.ui
             // 
             this.LuuThayDoiBtn.BackColor = System.Drawing.SystemColors.Highlight;
             this.LuuThayDoiBtn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LuuThayDoiBtn.Location = new System.Drawing.Point(136, 490);
+            this.LuuThayDoiBtn.Location = new System.Drawing.Point(149, 407);
             this.LuuThayDoiBtn.Name = "LuuThayDoiBtn";
             this.LuuThayDoiBtn.Size = new System.Drawing.Size(110, 47);
             this.LuuThayDoiBtn.TabIndex = 25;
             this.LuuThayDoiBtn.Text = "Lưu";
             this.LuuThayDoiBtn.UseVisualStyleBackColor = false;
-            // 
-            // panel2
-            // 
-            this.panel2.Controls.Add(this.log_GV);
-            this.panel2.Controls.Add(this.attendanceGV);
-            this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel2.Location = new System.Drawing.Point(403, 0);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(563, 681);
-            this.panel2.TabIndex = 12;
-            // 
-            // log_GV
-            // 
-            this.log_GV.AllowUserToAddRows = false;
-            this.log_GV.AllowUserToDeleteRows = false;
-            this.log_GV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.log_GV.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.log_GV.Location = new System.Drawing.Point(0, 417);
-            this.log_GV.Name = "log_GV";
-            this.log_GV.ReadOnly = true;
-            this.log_GV.Size = new System.Drawing.Size(563, 264);
-            this.log_GV.TabIndex = 41;
             // 
             // attendanceGV
             // 
@@ -322,27 +338,26 @@ namespace RauViet.ui
             this.attendanceGV.Location = new System.Drawing.Point(0, 0);
             this.attendanceGV.Name = "attendanceGV";
             this.attendanceGV.ReadOnly = true;
-            this.attendanceGV.Size = new System.Drawing.Size(563, 681);
-            this.attendanceGV.TabIndex = 13;
+            this.attendanceGV.Size = new System.Drawing.Size(563, 463);
+            this.attendanceGV.TabIndex = 54;
             // 
             // OvertimeAttendace
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1309, 681);
+            this.ClientSize = new System.Drawing.Size(1309, 715);
             this.Controls.Add(this.panel2);
-            this.Controls.Add(this.panel1);
             this.Controls.Add(this.dataGV);
             this.Name = "OvertimeAttendace";
             this.Text = "FormTableData";
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).EndInit();
+            this.panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.log_GV)).EndInit();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.info_gb.ResumeLayout(false);
             this.info_gb.PerformLayout();
             this.load_gb.ResumeLayout(false);
-            this.panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.log_GV)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.attendanceGV)).EndInit();
             this.ResumeLayout(false);
 
@@ -350,11 +365,15 @@ namespace RauViet.ui
 
         #endregion
         private System.Windows.Forms.DataGridView dataGV;
+        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.DataGridView log_GV;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.DataGridView attendanceGV;
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.GroupBox load_gb;
-        private System.Windows.Forms.Label status_lb;
-        private System.Windows.Forms.Button LuuThayDoiBtn;
-        private System.Windows.Forms.Button loadAttandance_btn;
+        private System.Windows.Forms.Button readOnly_btn;
+        private System.Windows.Forms.Button edit_btn;
+        private System.Windows.Forms.TextBox overtimeAttendaceID_tb;
+        private System.Windows.Forms.Button newBtn;
         private System.Windows.Forms.GroupBox info_gb;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.DateTimePicker endTime_dtp;
@@ -366,13 +385,10 @@ namespace RauViet.ui
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.TextBox note_tb;
-        private System.Windows.Forms.Button newBtn;
-        private System.Windows.Forms.TextBox overtimeAttendaceID_tb;
-        private System.Windows.Forms.Button readOnly_btn;
-        private System.Windows.Forms.Button edit_btn;
+        private System.Windows.Forms.Label status_lb;
+        private System.Windows.Forms.GroupBox load_gb;
         private System.Windows.Forms.DateTimePicker monthYearDtp;
-        private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.DataGridView attendanceGV;
-        private System.Windows.Forms.DataGridView log_GV;
+        private System.Windows.Forms.Button loadAttandance_btn;
+        private System.Windows.Forms.Button LuuThayDoiBtn;
     }
 }

@@ -95,6 +95,10 @@ namespace RauViet.ui
                 dataGV.DataSource = employee_dt;
                 log_GV.DataSource = mDeductionLogDV;
 
+                log_GV.Columns["LogID"].Visible = false;
+                log_GV.Columns["EmployeeCode"].Visible = false;
+                log_GV.Columns["DeductionTypeCode"].Visible = false;
+
                 employeeDeductionGV.Columns["EmployeeDeductionID"].Visible = false;
                 employeeDeductionGV.Columns["EmployeeCode"].Visible = false;
                 employeeDeductionGV.Columns["DeductionTypeCode"].Visible = false;
@@ -137,6 +141,19 @@ namespace RauViet.ui
                 readOnly_btn.Visible = !isLock;
                 edit_btn.Visible = !isLock;
                 isNewState = false;
+
+                log_GV.Columns["CreateAt"].Width = 120;
+                log_GV.Columns["ActionBy"].Width = 150;
+                log_GV.Columns["Description"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                log_GV.Columns["DeductionDate"].Width = 80;
+                log_GV.Columns["Amount"].Width = 80;
+                log_GV.Columns["CreateAt"].HeaderText = "Thời điểm thay đổi";
+                log_GV.Columns["ACtionBy"].HeaderText = "Người thay đổi";
+                log_GV.Columns["Description"].HeaderText = "Hành động";
+                log_GV.Columns["DeductionDate"].HeaderText = "Ngày";
+                log_GV.Columns["Amount"].HeaderText = "Số Tiền";
+
+                log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
             catch (Exception ex)
             {
@@ -490,6 +507,7 @@ namespace RauViet.ui
             info_gb.BackColor = Color.DarkGray;
             isNewState = false;
             SetUIReadOnly(true);
+            allowanceGV_CellClick(null, null);
         }
 
         private void Edit_btn_Click(object sender, EventArgs e)

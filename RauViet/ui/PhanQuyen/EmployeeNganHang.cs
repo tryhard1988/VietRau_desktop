@@ -71,6 +71,16 @@ namespace RauViet.ui
                 dataGV.Columns["BankName"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 dataGV.Columns["BankAccountNumber"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
+                log_GV.Columns["CreatedAt"].Width = 120;
+                log_GV.Columns["ACtionBy"].Width = 150;
+                log_GV.Columns["OldValue"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                log_GV.Columns["NewValue"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                log_GV.Columns["CreatedAt"].HeaderText = "Thời điểm thay đổi";
+                log_GV.Columns["ACtionBy"].HeaderText = "Người thay đổi";
+                log_GV.Columns["OldValue"].HeaderText = "Giá trị cũ";
+                log_GV.Columns["NewValue"].HeaderText = "Giá trị mới";
+                log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+
                 if (dataGV.Rows.Count > 0)
                 {
                     dataGV.ClearSelection();
@@ -206,6 +216,7 @@ namespace RauViet.ui
             LuuThayDoiBtn.Visible = false;
             info_gb.BackColor = Color.DarkGray;
             SetUIReadOnly(true);
+            dataGV_CellClick(null, null);
         }
 
         private void Edit_btn_Click(object sender, EventArgs e)

@@ -169,6 +169,18 @@ namespace RauViet.ui
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
+                log_GV.Columns["CreatedAt"].Width = 120;
+                log_GV.Columns["ActionBy"].Width = 150;
+                log_GV.Columns["WorkDate"].Width = 100;
+                log_GV.Columns["WorkingHours"].Width = 100;
+                log_GV.Columns["Description"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                log_GV.Columns["CreatedAt"].HeaderText = "Thời điểm thay đổi";
+                log_GV.Columns["ActionBy"].HeaderText = "Người thay đổi";
+                log_GV.Columns["Description"].HeaderText = "Hành động";
+                log_GV.Columns["WorkDate"].HeaderText = "Ngày Làm";
+                log_GV.Columns["WorkingHours"].HeaderText = "Giờ Làm";
+                log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+
             }
             catch (Exception ex)
             {

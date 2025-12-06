@@ -1,16 +1,8 @@
-﻿using DocumentFormat.OpenXml.VariantTypes;
-using DocumentFormat.OpenXml.Wordprocessing;
-using RauViet.classes;
+﻿using RauViet.classes;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
 using Color = System.Drawing.Color;
 
 namespace RauViet.ui
@@ -116,10 +108,7 @@ namespace RauViet.ui
                 loading_lb.Visible = false; // ẩn loading
                 loading_lb.Enabled = true; // enable lại button
             }
-
-            
         }
-        
 
         private void dataGV_CellClick(object sender, EventArgs e)
         {
@@ -355,6 +344,7 @@ namespace RauViet.ui
             info_gb.BackColor = Color.DarkGray;
             isNewState = false;
             SetUIReadOnly(true);
+            dataGV_CellClick(null, null);
         }
 
         private void Edit_btn_Click(object sender, EventArgs e)

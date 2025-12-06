@@ -1,17 +1,8 @@
-﻿using DocumentFormat.OpenXml.Bibliography;
-using DocumentFormat.OpenXml.VariantTypes;
-using DocumentFormat.OpenXml.Wordprocessing;
-using RauViet.classes;
+﻿using RauViet.classes;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
 using Color = System.Drawing.Color;
 
 namespace RauViet.ui
@@ -125,6 +116,14 @@ namespace RauViet.ui
                 salaryInfoGV.Columns["InsuranceBaseSalary"].Width = 80;
                 salaryInfoGV.Columns["Note"].Width = 80;
                 salaryInfoGV.Columns["CreatedAt"].Width = 80;
+
+                log_GV.Columns["CreatedAt"].Width = 120;
+                log_GV.Columns["ACtionBy"].Width = 150;
+                log_GV.Columns["Descrition"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                log_GV.Columns["CreatedAt"].HeaderText = "Thời điểm thay đổi";
+                log_GV.Columns["ACtionBy"].HeaderText = "Người thay đổi";
+                log_GV.Columns["Descrition"].HeaderText = "Hành Động";
+                log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
                 if (dataGV.Rows.Count > 0)
                 {
@@ -425,6 +424,7 @@ namespace RauViet.ui
             info_gb.BackColor = Color.DarkGray;
             isNewState = false;
             SetUIReadOnly(true);
+            allowanceGV_CellClick(null, null);
         }
 
         private void New_btn_Click(object sender, EventArgs e)
