@@ -1,17 +1,11 @@
-﻿using DocumentFormat.OpenXml.Bibliography;
-using RauViet.classes;
+﻿using RauViet.classes;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Data.OleDb;
 using System.Drawing;
 using System.Linq;
-using System.Reflection.Emit;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
 
 namespace RauViet.ui
 {
@@ -22,7 +16,7 @@ namespace RauViet.ui
         public AnnualLeaveBalance()
         {
             InitializeComponent();
-
+            this.KeyPreview = true;
             monthYearDtp.Format = DateTimePickerFormat.Custom;
             monthYearDtp.CustomFormat = "MM/yyyy";
             monthYearDtp.ShowUpDown = true;
@@ -42,19 +36,26 @@ namespace RauViet.ui
             load_btn.Click += Load_btn_Click;
             capphep_btn.Click += Capphep_btn_Click;
 
-            dataGV.CellEndEdit += DataGV_CellEndEdit; ;
+            dataGV.CellEndEdit += DataGV_CellEndEdit;
+            this.KeyDown += AnnualLeaveBalance_KeyDown;
         }
 
+        private void AnnualLeaveBalance_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.F5)
+            {
+                int year = monthYearDtp.Value.Year;
+                SQLStore.Instance.removeAnnualLeaveBalance(year);
+                ShowData();
+            }
+        }
 
         public async void ShowData()
         {
-            
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Dock = DockStyle.Fill;
-
             await Task.Delay(50);
             LoadingOverlay loadingOverlay = new LoadingOverlay(this);
             loadingOverlay.Show();
+            await Task.Delay(200);
 
             try
             {

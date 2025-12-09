@@ -1,4 +1,5 @@
 ﻿using DocumentFormat.OpenXml.Drawing.Charts;
+using DocumentFormat.OpenXml.Wordprocessing;
 using RauViet.ui;
 using System;
 using System.Collections.Generic;
@@ -294,7 +295,7 @@ namespace RauViet.classes
                     dr["GenderName"] = (gender == true ? "Nam" : "Nữ  ") + " - " + age;
                 }
 
-                
+
 
                 count++;
                 int EmployeeCode = mEmployee_dt.Rows.Count;
@@ -354,7 +355,7 @@ namespace RauViet.classes
                 dr["GradeName"] = gradeName;
                 dr["SalaryGrade"] = salaryGrade;
             }
-                    }
+        }
 
         public async Task<DataTable> GetLeaveAttendancesAsyn(int year)
         {
@@ -452,6 +453,7 @@ namespace RauViet.classes
             }
         }
 
+        public void removeHoliday() { mHoliday_dt = null; }
         public async Task<DataTable> GetHolidaysAsync()
         {
             if (mHoliday_dt == null)
@@ -495,6 +497,7 @@ namespace RauViet.classes
             return result;
         }
 
+        public void EmployeeSalaryInfo() { mEmployeeSalaryInfo_dt = null; }
         public async Task<DataTable> GetEmployeeSalaryInfoAsync()
         {
             if (mEmployeeSalaryInfo_dt == null)
@@ -694,6 +697,7 @@ namespace RauViet.classes
             mEmployeeSalaryInfo_dt.Columns["CreatedAt"].SetOrdinal(count++);
         }
 
+        public void removeEmployees() { mEmployee_dt = null; }
         public async Task<DataTable> GetEmployeesAsync()
         {
             if (mEmployee_dt == null)
@@ -811,6 +815,7 @@ namespace RauViet.classes
             return false;
         }
 
+        public void removeOverTimeType() { mOvertimeType_dt = null; }
         public async Task<DataTable> GetOvertimeTypeAsync()
         {
             if (mOvertimeType_dt == null)
@@ -972,6 +977,7 @@ namespace RauViet.classes
             return deductionTypeName;
         }
 
+        public void removeDepartment() { mDepartment_dt = null; }
         public async Task<DataTable> GetDepartmentAsync()
         {
             if (mDepartment_dt == null)
@@ -1003,6 +1009,7 @@ namespace RauViet.classes
             return activeDept;
         }
 
+        public void removePosition() { mPosition_dt = null; }
         public async Task<DataTable> GetPositionAsync()
         {
             if (mPosition_dt == null)
@@ -1045,6 +1052,7 @@ namespace RauViet.classes
             }
         }
 
+        public void removeAllowanceType() { mAllowance_dt = null; }
         public async Task<DataTable> GetAllowanceTypeAsync()
         {
             if (mAllowance_dt == null)
@@ -1100,6 +1108,7 @@ namespace RauViet.classes
             return mContractType_dt;
         }
 
+        public void removeSalaryGrade() { mSalaryGrade_dt = null; }
         public async Task<DataTable> GetSalaryGradeAsync()
         {
             if (mSalaryGrade_dt == null)
@@ -1129,6 +1138,11 @@ namespace RauViet.classes
             }
 
             return activeSalaryGrade;
+        }
+
+        public void removeAnnualLeaveBalance(int year)
+        {
+            mAnnualLeaveBalances.Remove(year);
         }
 
         public async Task<DataTable> GetAnnualLeaveBalanceAsync(int year)
@@ -1182,6 +1196,7 @@ namespace RauViet.classes
             }
         }
 
+        public void removeDeduction(int year) { mDeductions.Remove(year); }
         public async Task<DataTable> GetDeductionAsync(int year)
         {
             if (!mDeductions.ContainsKey(year))
@@ -1300,6 +1315,11 @@ namespace RauViet.classes
             }
         }
 
+        public void removeOvertimeAttendamce(int month, int year)
+        {
+            string key = month.ToString() + "_" + year.ToString();
+            mOvertimeAttendaces.Remove(key);
+        }
         public async Task<DataTable> GetOvertimeAttendamceAsync(int month, int year)
         {
             string key = month.ToString() + "_" + year.ToString();
@@ -1369,6 +1389,8 @@ namespace RauViet.classes
 
             return mAttendances[key];
         }
+
+       
         public async Task<DataTable> GetAttendamceAsync(string[] colnames, int month, int year)
         {
             await GetAttendamceAsync(month, year);

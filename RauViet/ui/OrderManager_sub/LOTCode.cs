@@ -126,6 +126,22 @@ namespace RauViet.ui
                 exportCode_cbb.ValueMember = "ExportCodeID";
                 exportCode_cbb.SelectedValue = mCurrentExportID;
                 exportCode_cbb.SelectedIndexChanged += exportCode_search_cbb_SelectedIndexChanged;
+
+                logGV.Columns["Description"].HeaderText = "Hành động";
+                logGV.Columns["LotCode"].HeaderText = "Phần sau LOTCode";
+                logGV.Columns["LotCodeHeader"].HeaderText = "Phần đầu LOTCode";
+                logGV.Columns["LotCodeComplete"].HeaderText = "LOTCode hoàn chỉnh";
+                logGV.Columns["ActionBy"].HeaderText = "Người thay đổi";
+                logGV.Columns["CreatedAt"].HeaderText = "Ngày thay đổi";
+
+                logGV.Columns["Description"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                logGV.Columns["LotCode"].Width = 100;
+                logGV.Columns["LotCodeHeader"].Width = 100;
+                logGV.Columns["LotCodeComplete"].Width = 110;
+                logGV.Columns["ActionBy"].Width = 150;
+                logGV.Columns["CreatedAt"].Width = 110;
+                logGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+
             }
             catch (Exception ex)
             {
@@ -157,6 +173,8 @@ namespace RauViet.ui
             DataView dv = new DataView(mLOTCode_dt);
             dv.RowFilter = $"ExportCodeID = {exportCodeId}";
             dataGV.DataSource = dv;
+
+            await FillMissingLotCodeComplete(mLOTCode_dt);
 
             DataRowView dataR = (DataRowView)exportCode_cbb.SelectedItem;
             string staff = dataR["InputByName_NoSign"].ToString();

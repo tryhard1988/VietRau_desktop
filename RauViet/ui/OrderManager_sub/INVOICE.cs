@@ -29,7 +29,7 @@ namespace RauViet.ui
 
             status_lb.Text = "";
 
-
+            customerHomeBtn.Click += CustomerHomeBtn_Click;
             LuuThayDoiBtn.Click += saveBtn_Click;
             this.KeyDown += INVOICE_KeyDown;
         }
@@ -781,7 +781,7 @@ namespace RauViet.ui
                     using (SaveFileDialog sfd = new SaveFileDialog())
                     {
                         sfd.Filter = "Excel Workbook|*.xlsx";
-                        sfd.FileName = " Invoice CNF - Final - N.W 2 ETD " + exportDate.ToString("dd")+"."+ exportDate.ToString("MM") + " " + exportCodeIndex + ".xlsx";
+                        sfd.FileName = "Invoice CNF - Final - N.W 2 ETD " + exportDate.ToString("dd")+"."+ exportDate.ToString("MM") + " " + exportCodeIndex + ".xlsx";
                         if (sfd.ShowDialog() == DialogResult.OK)
                         {
                             wb.SaveAs(sfd.FileName);
@@ -924,6 +924,140 @@ namespace RauViet.ui
                 prefix = prefix.Substring(0, prefix.IndexOf("("));
 
             return prefix.Trim();
+        }
+
+        private void CustomerHomeBtn_Click(object sender, EventArgs e)
+        {
+            DateTime exportDate = Convert.ToDateTime(((DataRowView)exportCode_cbb.SelectedItem)["ExportDate"]);
+
+            var result = mCustomerOrdersTotal_dt
+                .AsEnumerable()
+                .OrderBy(r => r.Field<string>("Home"))
+                .ThenBy(r => r.Field<string>("fullname"))
+                .ToList();
+
+            using (var workbook = new XLWorkbook())
+            {
+                var ws = workbook.Worksheets.Add("Group");
+                ws.Cell("A1").Value = exportDate.Date;
+                ws.Cell("A1").Style.Font.FontColor = XLColor.Red;
+                ws.Range(1, 1, 1, 2).Merge();
+
+                ws.Cell("A2").Value = "No.";
+                ws.Cell("B2").Value = "MARK";
+                ws.Cell("C2").Value = "CNTS";
+                ws.Cell("A2").Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                ws.Cell("B2").Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                ws.Cell("C2").Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                ws.Cell("A2").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                ws.Cell("B2").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                ws.Cell("C2").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                int row = 3;
+
+                string currentHome = null;
+                int homeTotal = 0;
+                int total = 0;
+                int No = 1;
+                foreach (var item in result)
+                {
+                    string home = item.Field<string>("Home");
+                    string fullname = item.Field<string>("fullname");
+                    int cnts = item.Field<int>("CNTS");
+
+                    // Khi Home thay đổi → ghi dòng total
+                    if (currentHome != null && currentHome != home)
+                    {
+                        // Dòng tổng
+                        ws.Cell(row, 1).Value = "TOTAL " + currentHome;
+                        ws.Cell(row, 3).Value = homeTotal;
+                        ws.Range(row, 1, row, 3).Style.Font.Bold = true;
+                        ws.Range(row, 1, row, 2).Merge();
+                        ws.Range(row, 1, row, 2).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                        ws.Cell(row, 3).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                        ws.Range(row, 1, row, 3).Style.Fill.BackgroundColor = XLColor.Orange;
+                        ws.Range(row, 1, row, 2).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                        ws.Cell(row, 3).Style.Font.FontColor = XLColor.Red;
+                        ws.Cell(row, 3).Style.NumberFormat.Format = "#,##0 \"CTNS\"";
+                        row++;
+
+                        // Reset tổng
+                        homeTotal = 0;
+                        No = 1;
+                    }
+
+                    // Ghi dòng chi tiết
+                    ws.Cell(row, 1).Value = No++;
+                    ws.Cell(row, 2).Value = fullname;
+                    ws.Cell(row, 3).Value = cnts;
+                    ws.Cell(row, 1).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                    ws.Cell(row, 2).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                    ws.Cell(row, 3).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                    ws.Cell(row, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    ws.Cell(row, 3).Style.NumberFormat.Format = "#,##0 \"CTNS\"";
+                    row++;
+
+                    // Cộng tổng
+                    homeTotal += cnts;
+                    currentHome = home;
+                    total += cnts;
+                }
+
+                // Ghi total của nhóm cuối
+                if (currentHome != null)
+                {
+                    ws.Cell(row, 1).Value = "TOTAL " + currentHome;
+                    ws.Cell(row, 3).Value = homeTotal;
+                    ws.Range(row, 1, row, 3).Style.Font.Bold = true;
+                    ws.Range(row, 1, row, 2).Merge();
+                    ws.Range(row, 1, row, 2).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                    ws.Cell(row, 3).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                    ws.Range(row, 1, row, 3).Style.Fill.BackgroundColor = XLColor.Orange;
+                    ws.Range(row, 1, row, 2).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    ws.Cell(row, 3).Style.Font.FontColor = XLColor.Red;
+                    ws.Cell(row, 3).Style.NumberFormat.Format = "#,##0 \"CTNS\"";
+                }
+
+                if (currentHome != null)
+                {
+                    row++;
+                    ws.Cell(row, 1).Value = "TOTAL";
+                    ws.Cell(row, 3).Value = total;
+                    ws.Range(row, 1, row, 3).Style.Font.Bold = true;
+                    ws.Range(row, 1, row, 2).Merge();
+                    ws.Range(row, 1, row, 2).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                    ws.Cell(row, 3).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                    ws.Range(row, 1, row, 3).Style.Fill.BackgroundColor = XLColor.PinkOrange;
+                    ws.Range(row, 1, row, 2).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    ws.Cell(row, 3).Style.NumberFormat.Format = "#,##0 \"CTNS\"";
+                }
+
+                ws.Column(1).Width = 7;
+                ws.Column(2).Width = 14;
+                ws.Column(3).Width = 10;
+
+                // Lưu file
+                using (SaveFileDialog sfd = new SaveFileDialog())
+                {
+                    sfd.Filter = "Excel Workbook|*.xlsx";
+                    sfd.FileName = "CustomerTotal.xlsx";
+                    if (sfd.ShowDialog() == DialogResult.OK)
+                    {
+                        workbook.SaveAs(sfd.FileName);
+
+                        if (MessageBox.Show("Bạn có muốn mở file này không?",
+                            "Lưu file thành công",
+                            MessageBoxButtons.YesNo,
+                            MessageBoxIcon.Question) == DialogResult.Yes)
+                        {
+                            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo()
+                            {
+                                FileName = sfd.FileName,
+                                UseShellExecute = true
+                            });
+                        }
+                    }
+                }
+            }
         }
 
     }

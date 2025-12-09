@@ -30,12 +30,12 @@ namespace RauViet.ui
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle13 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle14 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle15 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle16 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle17 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle18 = new System.Windows.Forms.DataGridViewCellStyle();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.panel6 = new System.Windows.Forms.Panel();
             this.dongthung_cn_lable = new System.Windows.Forms.Label();
@@ -58,16 +58,8 @@ namespace RauViet.ui
             this.exportCode_cbb = new System.Windows.Forms.ComboBox();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.logGV = new System.Windows.Forms.DataGridView();
+            this.label11 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.tem_preview_btn = new System.Windows.Forms.Button();
-            this.inTem_btn = new System.Windows.Forms.Button();
-            this.phieuCanHang_gb = new System.Windows.Forms.GroupBox();
-            this.phieuCanHang_preview_btn = new System.Windows.Forms.Button();
-            this.phieuCanHang_btn = new System.Windows.Forms.Button();
-            this.phieuGiaoHang_gb = new System.Windows.Forms.GroupBox();
-            this.InPhieuGiaoHang_btn = new System.Windows.Forms.Button();
-            this.previewPrint_PGH_btn = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.label2 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
@@ -85,27 +77,36 @@ namespace RauViet.ui
             this.cartonNo_tb = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.status_lb = new System.Windows.Forms.Label();
-            this.chiadon_btn = new System.Windows.Forms.Button();
-            this.assignCustomerCarton_btn = new System.Windows.Forms.Button();
             this.panel3 = new System.Windows.Forms.Panel();
             this.carton_GV = new System.Windows.Forms.DataGridView();
             this.fillter_btn = new System.Windows.Forms.Button();
             this.panel4 = new System.Windows.Forms.Panel();
             this.previewPrint_PT_btn = new System.Windows.Forms.Button();
+            this.print_Panel = new System.Windows.Forms.Panel();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.tem_preview_btn = new System.Windows.Forms.Button();
+            this.inTem_btn = new System.Windows.Forms.Button();
+            this.phieuCanHang_gb = new System.Windows.Forms.GroupBox();
+            this.phieuCanHang_preview_btn = new System.Windows.Forms.Button();
+            this.phieuCanHang_btn = new System.Windows.Forms.Button();
+            this.phieuGiaoHang_gb = new System.Windows.Forms.GroupBox();
+            this.InPhieuGiaoHang_btn = new System.Windows.Forms.Button();
+            this.previewPrint_PGH_btn = new System.Windows.Forms.Button();
             this.panel6.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
             this.panel5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.logGV)).BeginInit();
             this.panel1.SuspendLayout();
-            this.groupBox2.SuspendLayout();
-            this.phieuCanHang_gb.SuspendLayout();
-            this.phieuGiaoHang_gb.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.rightInfo_gb.SuspendLayout();
             this.panel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.carton_GV)).BeginInit();
             this.panel4.SuspendLayout();
+            this.print_Panel.SuspendLayout();
+            this.groupBox2.SuspendLayout();
+            this.phieuCanHang_gb.SuspendLayout();
+            this.phieuGiaoHang_gb.SuspendLayout();
             this.SuspendLayout();
             // 
             // contextMenuStrip1
@@ -292,23 +293,23 @@ namespace RauViet.ui
             // 
             this.dataGV.AllowUserToAddRows = false;
             this.dataGV.AllowUserToDeleteRows = false;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dataGV.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle13.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle13.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle13.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle13.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle13.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle13.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle13.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGV.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle13;
             this.dataGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dataGV.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle14.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle14.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle14.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle14.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle14.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle14.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle14.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGV.DefaultCellStyle = dataGridViewCellStyle14;
             this.dataGV.Dock = System.Windows.Forms.DockStyle.Left;
             this.dataGV.Location = new System.Drawing.Point(0, 26);
             this.dataGV.Name = "dataGV";
@@ -361,23 +362,23 @@ namespace RauViet.ui
             // 
             this.logGV.AllowUserToAddRows = false;
             this.logGV.AllowUserToDeleteRows = false;
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.logGV.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle15.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle15.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle15.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle15.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle15.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle15.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle15.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.logGV.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle15;
             this.logGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.logGV.DefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle16.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle16.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle16.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle16.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle16.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle16.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle16.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.logGV.DefaultCellStyle = dataGridViewCellStyle16;
             this.logGV.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.logGV.Location = new System.Drawing.Point(925, 486);
             this.logGV.Name = "logGV";
@@ -385,11 +386,22 @@ namespace RauViet.ui
             this.logGV.Size = new System.Drawing.Size(820, 176);
             this.logGV.TabIndex = 79;
             // 
+            // label11
+            // 
+            this.label11.BackColor = System.Drawing.Color.PeachPuff;
+            this.label11.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.label11.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label11.ForeColor = System.Drawing.Color.DarkOliveGreen;
+            this.label11.Location = new System.Drawing.Point(925, 463);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(820, 23);
+            this.label11.TabIndex = 88;
+            this.label11.Text = "Lịch sử thay đổi";
+            this.label11.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.groupBox2);
-            this.panel1.Controls.Add(this.phieuCanHang_gb);
-            this.panel1.Controls.Add(this.phieuGiaoHang_gb);
+            this.panel1.Controls.Add(this.print_Panel);
             this.panel1.Controls.Add(this.groupBox1);
             this.panel1.Controls.Add(this.readOnly_btn);
             this.panel1.Controls.Add(this.edit_btn);
@@ -398,110 +410,8 @@ namespace RauViet.ui
             this.panel1.Dock = System.Windows.Forms.DockStyle.Left;
             this.panel1.Location = new System.Drawing.Point(925, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(503, 486);
-            this.panel1.TabIndex = 81;
-            // 
-            // groupBox2
-            // 
-            this.groupBox2.BackColor = System.Drawing.Color.Wheat;
-            this.groupBox2.Controls.Add(this.tem_preview_btn);
-            this.groupBox2.Controls.Add(this.inTem_btn);
-            this.groupBox2.Location = new System.Drawing.Point(345, 270);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(130, 125);
-            this.groupBox2.TabIndex = 72;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Phiếu Tem";
-            // 
-            // tem_preview_btn
-            // 
-            this.tem_preview_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
-            this.tem_preview_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tem_preview_btn.Location = new System.Drawing.Point(14, 74);
-            this.tem_preview_btn.Name = "tem_preview_btn";
-            this.tem_preview_btn.Size = new System.Drawing.Size(94, 38);
-            this.tem_preview_btn.TabIndex = 69;
-            this.tem_preview_btn.Text = "Xem";
-            this.tem_preview_btn.UseVisualStyleBackColor = false;
-            // 
-            // inTem_btn
-            // 
-            this.inTem_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
-            this.inTem_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.inTem_btn.Location = new System.Drawing.Point(14, 19);
-            this.inTem_btn.Name = "inTem_btn";
-            this.inTem_btn.Size = new System.Drawing.Size(94, 38);
-            this.inTem_btn.TabIndex = 68;
-            this.inTem_btn.Text = "In";
-            this.inTem_btn.UseVisualStyleBackColor = false;
-            // 
-            // phieuCanHang_gb
-            // 
-            this.phieuCanHang_gb.BackColor = System.Drawing.Color.Wheat;
-            this.phieuCanHang_gb.Controls.Add(this.phieuCanHang_preview_btn);
-            this.phieuCanHang_gb.Controls.Add(this.phieuCanHang_btn);
-            this.phieuCanHang_gb.Location = new System.Drawing.Point(186, 273);
-            this.phieuCanHang_gb.Name = "phieuCanHang_gb";
-            this.phieuCanHang_gb.Size = new System.Drawing.Size(130, 125);
-            this.phieuCanHang_gb.TabIndex = 71;
-            this.phieuCanHang_gb.TabStop = false;
-            this.phieuCanHang_gb.Text = "Phiếu Cần Hàng";
-            // 
-            // phieuCanHang_preview_btn
-            // 
-            this.phieuCanHang_preview_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
-            this.phieuCanHang_preview_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.phieuCanHang_preview_btn.Location = new System.Drawing.Point(14, 74);
-            this.phieuCanHang_preview_btn.Name = "phieuCanHang_preview_btn";
-            this.phieuCanHang_preview_btn.Size = new System.Drawing.Size(94, 38);
-            this.phieuCanHang_preview_btn.TabIndex = 69;
-            this.phieuCanHang_preview_btn.Text = "Xem";
-            this.phieuCanHang_preview_btn.UseVisualStyleBackColor = false;
-            // 
-            // phieuCanHang_btn
-            // 
-            this.phieuCanHang_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
-            this.phieuCanHang_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.phieuCanHang_btn.Location = new System.Drawing.Point(14, 19);
-            this.phieuCanHang_btn.Name = "phieuCanHang_btn";
-            this.phieuCanHang_btn.Size = new System.Drawing.Size(94, 38);
-            this.phieuCanHang_btn.TabIndex = 68;
-            this.phieuCanHang_btn.Text = "In";
-            this.phieuCanHang_btn.UseVisualStyleBackColor = false;
-            // 
-            // phieuGiaoHang_gb
-            // 
-            this.phieuGiaoHang_gb.BackColor = System.Drawing.Color.Moccasin;
-            this.phieuGiaoHang_gb.Controls.Add(this.InPhieuGiaoHang_btn);
-            this.phieuGiaoHang_gb.Controls.Add(this.previewPrint_PGH_btn);
-            this.phieuGiaoHang_gb.Location = new System.Drawing.Point(28, 271);
-            this.phieuGiaoHang_gb.Name = "phieuGiaoHang_gb";
-            this.phieuGiaoHang_gb.Size = new System.Drawing.Size(133, 127);
-            this.phieuGiaoHang_gb.TabIndex = 70;
-            this.phieuGiaoHang_gb.TabStop = false;
-            this.phieuGiaoHang_gb.Text = "Phiếu Giao Hàng";
-            // 
-            // InPhieuGiaoHang_btn
-            // 
-            this.InPhieuGiaoHang_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
-            this.InPhieuGiaoHang_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.InPhieuGiaoHang_btn.Location = new System.Drawing.Point(21, 27);
-            this.InPhieuGiaoHang_btn.Name = "InPhieuGiaoHang_btn";
-            this.InPhieuGiaoHang_btn.Size = new System.Drawing.Size(94, 38);
-            this.InPhieuGiaoHang_btn.TabIndex = 59;
-            this.InPhieuGiaoHang_btn.Text = "In";
-            this.InPhieuGiaoHang_btn.UseVisualStyleBackColor = false;
-            // 
-            // previewPrint_PGH_btn
-            // 
-            this.previewPrint_PGH_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
-            this.previewPrint_PGH_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.previewPrint_PGH_btn.Location = new System.Drawing.Point(21, 70);
-            this.previewPrint_PGH_btn.Name = "previewPrint_PGH_btn";
-            this.previewPrint_PGH_btn.Size = new System.Drawing.Size(94, 38);
-            this.previewPrint_PGH_btn.TabIndex = 60;
-            this.previewPrint_PGH_btn.Text = "Xem";
-            this.previewPrint_PGH_btn.UseVisualStyleBackColor = false;
+            this.panel1.Size = new System.Drawing.Size(503, 463);
+            this.panel1.TabIndex = 90;
             // 
             // groupBox1
             // 
@@ -627,7 +537,7 @@ namespace RauViet.ui
             // 
             this.edit_btn.BackColor = System.Drawing.SystemColors.MenuHighlight;
             this.edit_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.edit_btn.Location = new System.Drawing.Point(159, 235);
+            this.edit_btn.Location = new System.Drawing.Point(211, 235);
             this.edit_btn.Name = "edit_btn";
             this.edit_btn.Size = new System.Drawing.Size(95, 34);
             this.edit_btn.TabIndex = 61;
@@ -692,28 +602,6 @@ namespace RauViet.ui
             this.status_lb.TabIndex = 26;
             this.status_lb.Text = "Email";
             // 
-            // chiadon_btn
-            // 
-            this.chiadon_btn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
-            this.chiadon_btn.Location = new System.Drawing.Point(1585, 209);
-            this.chiadon_btn.Name = "chiadon_btn";
-            this.chiadon_btn.Size = new System.Drawing.Size(148, 35);
-            this.chiadon_btn.TabIndex = 61;
-            this.chiadon_btn.Text = "Copy Dòng Đang Chọn";
-            this.chiadon_btn.UseVisualStyleBackColor = false;
-            this.chiadon_btn.Visible = false;
-            // 
-            // assignCustomerCarton_btn
-            // 
-            this.assignCustomerCarton_btn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
-            this.assignCustomerCarton_btn.Location = new System.Drawing.Point(1585, 250);
-            this.assignCustomerCarton_btn.Name = "assignCustomerCarton_btn";
-            this.assignCustomerCarton_btn.Size = new System.Drawing.Size(148, 35);
-            this.assignCustomerCarton_btn.TabIndex = 57;
-            this.assignCustomerCarton_btn.Text = "Tạo Mã Thùng";
-            this.assignCustomerCarton_btn.UseVisualStyleBackColor = false;
-            this.assignCustomerCarton_btn.Visible = false;
-            // 
             // panel3
             // 
             this.panel3.Controls.Add(this.carton_GV);
@@ -722,32 +610,32 @@ namespace RauViet.ui
             this.panel3.Dock = System.Windows.Forms.DockStyle.Left;
             this.panel3.Location = new System.Drawing.Point(1428, 0);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(162, 486);
-            this.panel3.TabIndex = 82;
+            this.panel3.Size = new System.Drawing.Size(162, 463);
+            this.panel3.TabIndex = 91;
             // 
             // carton_GV
             // 
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle5.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle5.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.carton_GV.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle17.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle17.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle17.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle17.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle17.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle17.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle17.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.carton_GV.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle17;
             this.carton_GV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle6.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle6.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle6.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.carton_GV.DefaultCellStyle = dataGridViewCellStyle6;
+            dataGridViewCellStyle18.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle18.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle18.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle18.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle18.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle18.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle18.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.carton_GV.DefaultCellStyle = dataGridViewCellStyle18;
             this.carton_GV.Dock = System.Windows.Forms.DockStyle.Fill;
             this.carton_GV.Location = new System.Drawing.Point(0, 43);
             this.carton_GV.Name = "carton_GV";
-            this.carton_GV.Size = new System.Drawing.Size(162, 390);
+            this.carton_GV.Size = new System.Drawing.Size(162, 367);
             this.carton_GV.TabIndex = 52;
             // 
             // fillter_btn
@@ -766,7 +654,7 @@ namespace RauViet.ui
             // 
             this.panel4.Controls.Add(this.previewPrint_PT_btn);
             this.panel4.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel4.Location = new System.Drawing.Point(0, 433);
+            this.panel4.Location = new System.Drawing.Point(0, 410);
             this.panel4.Name = "panel4";
             this.panel4.Size = new System.Drawing.Size(162, 53);
             this.panel4.TabIndex = 51;
@@ -782,15 +670,127 @@ namespace RauViet.ui
             this.previewPrint_PT_btn.Text = "Xem Phiếu Thùng";
             this.previewPrint_PT_btn.UseVisualStyleBackColor = false;
             // 
+            // print_Panel
+            // 
+            this.print_Panel.Controls.Add(this.groupBox2);
+            this.print_Panel.Controls.Add(this.phieuCanHang_gb);
+            this.print_Panel.Controls.Add(this.phieuGiaoHang_gb);
+            this.print_Panel.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.print_Panel.Location = new System.Drawing.Point(0, 311);
+            this.print_Panel.Name = "print_Panel";
+            this.print_Panel.Size = new System.Drawing.Size(503, 152);
+            this.print_Panel.TabIndex = 73;
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.BackColor = System.Drawing.Color.Wheat;
+            this.groupBox2.Controls.Add(this.tem_preview_btn);
+            this.groupBox2.Controls.Add(this.inTem_btn);
+            this.groupBox2.Location = new System.Drawing.Point(339, 13);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(130, 125);
+            this.groupBox2.TabIndex = 75;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Phiếu Tem";
+            // 
+            // tem_preview_btn
+            // 
+            this.tem_preview_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.tem_preview_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tem_preview_btn.Location = new System.Drawing.Point(18, 70);
+            this.tem_preview_btn.Name = "tem_preview_btn";
+            this.tem_preview_btn.Size = new System.Drawing.Size(94, 38);
+            this.tem_preview_btn.TabIndex = 69;
+            this.tem_preview_btn.Text = "Xem";
+            this.tem_preview_btn.UseVisualStyleBackColor = false;
+            // 
+            // inTem_btn
+            // 
+            this.inTem_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.inTem_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.inTem_btn.Location = new System.Drawing.Point(18, 27);
+            this.inTem_btn.Name = "inTem_btn";
+            this.inTem_btn.Size = new System.Drawing.Size(94, 38);
+            this.inTem_btn.TabIndex = 68;
+            this.inTem_btn.Text = "In";
+            this.inTem_btn.UseVisualStyleBackColor = false;
+            // 
+            // phieuCanHang_gb
+            // 
+            this.phieuCanHang_gb.BackColor = System.Drawing.Color.Wheat;
+            this.phieuCanHang_gb.Controls.Add(this.phieuCanHang_preview_btn);
+            this.phieuCanHang_gb.Controls.Add(this.phieuCanHang_btn);
+            this.phieuCanHang_gb.Location = new System.Drawing.Point(180, 13);
+            this.phieuCanHang_gb.Name = "phieuCanHang_gb";
+            this.phieuCanHang_gb.Size = new System.Drawing.Size(130, 125);
+            this.phieuCanHang_gb.TabIndex = 74;
+            this.phieuCanHang_gb.TabStop = false;
+            this.phieuCanHang_gb.Text = "Phiếu Cần Hàng";
+            // 
+            // phieuCanHang_preview_btn
+            // 
+            this.phieuCanHang_preview_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.phieuCanHang_preview_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.phieuCanHang_preview_btn.Location = new System.Drawing.Point(19, 70);
+            this.phieuCanHang_preview_btn.Name = "phieuCanHang_preview_btn";
+            this.phieuCanHang_preview_btn.Size = new System.Drawing.Size(94, 38);
+            this.phieuCanHang_preview_btn.TabIndex = 69;
+            this.phieuCanHang_preview_btn.Text = "Xem";
+            this.phieuCanHang_preview_btn.UseVisualStyleBackColor = false;
+            // 
+            // phieuCanHang_btn
+            // 
+            this.phieuCanHang_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.phieuCanHang_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.phieuCanHang_btn.Location = new System.Drawing.Point(19, 27);
+            this.phieuCanHang_btn.Name = "phieuCanHang_btn";
+            this.phieuCanHang_btn.Size = new System.Drawing.Size(94, 38);
+            this.phieuCanHang_btn.TabIndex = 68;
+            this.phieuCanHang_btn.Text = "In";
+            this.phieuCanHang_btn.UseVisualStyleBackColor = false;
+            // 
+            // phieuGiaoHang_gb
+            // 
+            this.phieuGiaoHang_gb.BackColor = System.Drawing.Color.Moccasin;
+            this.phieuGiaoHang_gb.Controls.Add(this.InPhieuGiaoHang_btn);
+            this.phieuGiaoHang_gb.Controls.Add(this.previewPrint_PGH_btn);
+            this.phieuGiaoHang_gb.Location = new System.Drawing.Point(34, 13);
+            this.phieuGiaoHang_gb.Name = "phieuGiaoHang_gb";
+            this.phieuGiaoHang_gb.Size = new System.Drawing.Size(130, 125);
+            this.phieuGiaoHang_gb.TabIndex = 73;
+            this.phieuGiaoHang_gb.TabStop = false;
+            this.phieuGiaoHang_gb.Text = "Phiếu Giao Hàng";
+            // 
+            // InPhieuGiaoHang_btn
+            // 
+            this.InPhieuGiaoHang_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.InPhieuGiaoHang_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.InPhieuGiaoHang_btn.Location = new System.Drawing.Point(21, 27);
+            this.InPhieuGiaoHang_btn.Name = "InPhieuGiaoHang_btn";
+            this.InPhieuGiaoHang_btn.Size = new System.Drawing.Size(94, 38);
+            this.InPhieuGiaoHang_btn.TabIndex = 59;
+            this.InPhieuGiaoHang_btn.Text = "In";
+            this.InPhieuGiaoHang_btn.UseVisualStyleBackColor = false;
+            // 
+            // previewPrint_PGH_btn
+            // 
+            this.previewPrint_PGH_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.previewPrint_PGH_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.previewPrint_PGH_btn.Location = new System.Drawing.Point(21, 70);
+            this.previewPrint_PGH_btn.Name = "previewPrint_PGH_btn";
+            this.previewPrint_PGH_btn.Size = new System.Drawing.Size(94, 38);
+            this.previewPrint_PGH_btn.TabIndex = 60;
+            this.previewPrint_PGH_btn.Text = "Xem";
+            this.previewPrint_PGH_btn.UseVisualStyleBackColor = false;
+            // 
             // OrderPackingList
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1745, 681);
-            this.Controls.Add(this.chiadon_btn);
-            this.Controls.Add(this.assignCustomerCarton_btn);
             this.Controls.Add(this.panel3);
             this.Controls.Add(this.panel1);
+            this.Controls.Add(this.label11);
             this.Controls.Add(this.logGV);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel6);
@@ -805,9 +805,6 @@ namespace RauViet.ui
             ((System.ComponentModel.ISupportInitialize)(this.logGV)).EndInit();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
-            this.groupBox2.ResumeLayout(false);
-            this.phieuCanHang_gb.ResumeLayout(false);
-            this.phieuGiaoHang_gb.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.rightInfo_gb.ResumeLayout(false);
@@ -815,6 +812,10 @@ namespace RauViet.ui
             this.panel3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.carton_GV)).EndInit();
             this.panel4.ResumeLayout(false);
+            this.print_Panel.ResumeLayout(false);
+            this.groupBox2.ResumeLayout(false);
+            this.phieuCanHang_gb.ResumeLayout(false);
+            this.phieuGiaoHang_gb.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -842,13 +843,8 @@ namespace RauViet.ui
         private System.Windows.Forms.ComboBox exportCode_cbb;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private System.Windows.Forms.DataGridView logGV;
+        private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.GroupBox phieuCanHang_gb;
-        private System.Windows.Forms.Button phieuCanHang_preview_btn;
-        private System.Windows.Forms.Button phieuCanHang_btn;
-        private System.Windows.Forms.GroupBox phieuGiaoHang_gb;
-        private System.Windows.Forms.Button InPhieuGiaoHang_btn;
-        private System.Windows.Forms.Button previewPrint_PGH_btn;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label10;
@@ -862,8 +858,6 @@ namespace RauViet.ui
         private System.Windows.Forms.Button edit_btn;
         private System.Windows.Forms.GroupBox rightInfo_gb;
         private System.Windows.Forms.ComboBox cartonSize_cbb;
-        private System.Windows.Forms.Button chiadon_btn;
-        private System.Windows.Forms.Button assignCustomerCarton_btn;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.TextBox cartonNo_tb;
         private System.Windows.Forms.Label label6;
@@ -873,8 +867,15 @@ namespace RauViet.ui
         private System.Windows.Forms.Button fillter_btn;
         private System.Windows.Forms.Panel panel4;
         private System.Windows.Forms.Button previewPrint_PT_btn;
+        private System.Windows.Forms.Panel print_Panel;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Button tem_preview_btn;
         private System.Windows.Forms.Button inTem_btn;
+        private System.Windows.Forms.GroupBox phieuCanHang_gb;
+        private System.Windows.Forms.Button phieuCanHang_preview_btn;
+        private System.Windows.Forms.Button phieuCanHang_btn;
+        private System.Windows.Forms.GroupBox phieuGiaoHang_gb;
+        private System.Windows.Forms.Button InPhieuGiaoHang_btn;
+        private System.Windows.Forms.Button previewPrint_PGH_btn;
     }
 }

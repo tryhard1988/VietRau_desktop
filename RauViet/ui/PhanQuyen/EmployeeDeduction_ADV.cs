@@ -19,6 +19,7 @@ namespace RauViet.ui
         public EmployeeDeduction_ADV()
         {
             InitializeComponent();
+            this.KeyPreview = true;
             Utils.SetTabStopRecursive(this, false);
 
             int countTab = 0;
@@ -58,6 +59,18 @@ namespace RauViet.ui
             edit_btn.Click += Edit_btn_Click;
             readOnly_btn.Click += ReadOnly_btn_Click;
             ReadOnly_btn_Click(null, null);
+            this.KeyDown += EmployeeDeduction_ADV_KeyDown;
+        }
+
+        private void EmployeeDeduction_ADV_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.F5)
+            {
+                int year = monthYearDtp.Value.Year;
+
+                SQLStore.Instance.removeDeduction(year);
+                ShowData();
+            }
         }
 
         public async void ShowData()

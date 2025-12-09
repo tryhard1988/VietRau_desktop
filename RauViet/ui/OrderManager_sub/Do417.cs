@@ -140,7 +140,21 @@ namespace RauViet.ui
                 exportCode_cbb.ValueMember = "ExportCodeID";                
                 exportCode_cbb.SelectedValue = mCurrentExportID;
                 exportCode_cbb.SelectedIndexChanged += exportCode_search_cbb_SelectedIndexChanged;
-                
+
+                logGV.Columns["Description"].HeaderText = "Hành động";
+                logGV.Columns["NWOder"].HeaderText = "N.W\nđặt hàng";
+                logGV.Columns["NWReal"].HeaderText = "N.W\nthực tế";
+                logGV.Columns["NetWeightFinal"].HeaderText = "N.W\nchốt";
+                logGV.Columns["ActionBy"].HeaderText = "Người thay đổi";
+                logGV.Columns["CreateAt"].HeaderText = "Ngày thay đổi";
+
+                logGV.Columns["Description"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                logGV.Columns["NWOder"].Width = 100;
+                logGV.Columns["NWReal"].Width = 100;
+                logGV.Columns["NetWeightFinal"].Width = 100;
+                logGV.Columns["ActionBy"].Width = 140;
+                logGV.Columns["CreateAt"].Width = 110;
+                logGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
                 calvalueRightUI();
             }

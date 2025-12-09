@@ -18,7 +18,7 @@ namespace RauViet.ui
         public EmployeeDeduction_ATT()
         {
             InitializeComponent();
-
+            this.KeyPreview = true;
             monthYearDtp.Format = DateTimePickerFormat.Custom;
             monthYearDtp.CustomFormat = "MM/yyyy";
             monthYearDtp.ShowUpDown = true;
@@ -39,6 +39,18 @@ namespace RauViet.ui
             dataGV.SelectionChanged += this.dataGV_CellClick;
             amount_tb.KeyPress += Tb_KeyPress_OnlyNumber;
             load_btn.Click += Load_btn_Click;
+            this.KeyDown += EmployeeDeduction_ATT_KeyDown;
+        }
+
+        private void EmployeeDeduction_ATT_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.F5)
+            {
+                int year = monthYearDtp.Value.Year;
+
+                SQLStore.Instance.removeDeduction(year);
+                ShowData();
+            }
         }
 
         public async void ShowData()
@@ -49,7 +61,7 @@ namespace RauViet.ui
             await Task.Delay(50);
             LoadingOverlay loadingOverlay = new LoadingOverlay(this);
             loadingOverlay.Show();
-
+            await Task.Delay(200);
             try
             {
                 int month = monthYearDtp.Value.Month;

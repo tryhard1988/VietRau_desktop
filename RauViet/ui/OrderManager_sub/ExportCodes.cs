@@ -180,6 +180,27 @@ namespace RauViet.ui
                 packingBy_cbb.ValueMember = "EmployeeID";
 
                 ReadOnly_btn_Click(null, null);
+
+                log_GV.Columns["Description"].HeaderText = "Hành động";
+                log_GV.Columns["ExportDate"].HeaderText = "Ngày xuất cảng";
+                log_GV.Columns["ExRate"].HeaderText = "Tỉ giá";
+                log_GV.Columns["ShippingCost"].HeaderText = "Phí Vận Chuyển";
+                log_GV.Columns["InputBy"].HeaderText = "Nhập liệu";
+                log_GV.Columns["PackingBy"].HeaderText = "Đóng gói";
+                log_GV.Columns["Complete"].HeaderText = "Hoàn thành";
+                log_GV.Columns["CreatedBy"].HeaderText = "Người thay đổi";
+                log_GV.Columns["CreatedDate"].HeaderText = "Ngày thay đổi";
+
+                log_GV.Columns["Description"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                log_GV.Columns["ExportDate"].Width = 70;
+                log_GV.Columns["ExRate"].Width = 50;
+                log_GV.Columns["ShippingCost"].Width = 60;
+                log_GV.Columns["InputBy"].Width = 140;
+                log_GV.Columns["PackingBy"].Width = 140;
+                log_GV.Columns["Complete"].Width = 50;
+                log_GV.Columns["CreatedBy"].Width = 140;
+                log_GV.Columns["CreatedDate"].Width = 110;
+                log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
             catch (Exception ex)
             {
@@ -384,7 +405,7 @@ namespace RauViet.ui
                 }
                 catch (Exception ex)
                 {
-                    _ = SQLManager.Instance.InsertExportCodeLogAsync(exportCode, "Tạo Mới Thất Bại do Exception", exportDate, exRate, shippingCost, "", "", false);
+                    _ = SQLManager.Instance.InsertExportCodeLogAsync(exportCode, "Tạo Mới Thất Bại do Exception: " + ex.Message, exportDate, exRate, shippingCost, "", "", false);
                     status_lb.Text = "Thất bại.";
                     status_lb.ForeColor = Color.Red;
                 }

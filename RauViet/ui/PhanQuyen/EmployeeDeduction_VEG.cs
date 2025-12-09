@@ -19,7 +19,7 @@ namespace RauViet.ui
         public EmployeeDeduction_VEG()
         {
             InitializeComponent();
-
+            this.KeyPreview = true;
             Utils.SetTabStopRecursive(this, false);
 
             int countTab = 0;
@@ -57,6 +57,18 @@ namespace RauViet.ui
             edit_btn.Click += Edit_btn_Click;
             readOnly_btn.Click += ReadOnly_btn_Click;
             ReadOnly_btn_Click(null, null);
+            this.KeyDown += EmployeeDeduction_VEG_KeyDown;
+        }
+
+        private void EmployeeDeduction_VEG_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.F5)
+            {
+                int year = monthYearDtp.Value.Year;
+
+                SQLStore.Instance.removeDeduction(year);
+                ShowData();
+            }
         }
 
         public async void ShowData()
@@ -64,7 +76,7 @@ namespace RauViet.ui
             await Task.Delay(50);
             LoadingOverlay loadingOverlay = new LoadingOverlay(this);
             loadingOverlay.Show();
-
+            await Task.Delay(200);
             try
             {
                 employeeDeductionGV.SelectionChanged -= this.allowanceGV_CellClick;

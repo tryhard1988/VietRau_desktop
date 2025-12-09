@@ -269,6 +269,21 @@ namespace RauViet.ui
                 logGV.Columns["ExportCodeID"].Visible = false;
                 logGV.Columns["OrderID"].Visible = false;
 
+                logGV.Columns["Description"].HeaderText = "Hành động";
+                logGV.Columns["Customer"].HeaderText = "Khách hàng";
+                logGV.Columns["ProductName"].HeaderText = "Sản phẩm";
+                logGV.Columns["OrderPCS"].HeaderText = "PCS";
+                logGV.Columns["OrderNW"].HeaderText = "N.W";
+                logGV.Columns["ActionBy"].HeaderText = "Người thay đổi";
+                logGV.Columns["CreateAt"].HeaderText = "Ngày thay đổi";
+
+                logGV.Columns["Description"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                logGV.Columns["Customer"].Width = 100;
+                logGV.Columns["ProductName"].Width = 200;
+                logGV.Columns["OrderPCS"].Width = 60;
+                logGV.Columns["OrderNW"].Width = 60;
+                logGV.Columns["ActionBy"].Width = 140;
+                logGV.Columns["CreateAt"].Width = 110;
 
                 dataGV.Columns["OrderId"].Width = 60;
                 dataGV.Columns["CustomerName"].Width = 120;
@@ -277,6 +292,7 @@ namespace RauViet.ui
                 dataGV.Columns["NWOther"].Width = 80;
                 dataGV.Columns["OrderPackingPriceCNF"].Width = 80;
                 dataGV.Columns["Priority"].Width = 50;
+                logGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
                 dataGV.Columns["PCSOther"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 dataGV.Columns["NWOther"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;

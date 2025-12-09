@@ -50,7 +50,6 @@ namespace RauViet.ui
             previewPrint_PT_btn.Click += previewPrint_PT_btn_Click;
             InPhieuGiaoHang_btn.Click += InPhieuGiaoHang_btn_Click;
             previewPrint_PGH_btn.Click += previewPrint_PGH_btn_Click;
-            assignCustomerCarton_btn.Click += assignCustomerCarton_btn_Click;
             dataGV.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.dataGV_EditingControlShowing);
 
 
@@ -62,7 +61,6 @@ namespace RauViet.ui
             dataGV.SelectionChanged += DataGV_SelectionChanged;
             edit_btn.Click += Edit_btn_Click;
             readOnly_btn.Click += closeEdit_btn_Click;
-            chiadon_btn.Click += Chiadon_btn_Click;
 
             cartonNo_tb.KeyPress += Tb_KeyPress_OnlyNumber1;
             
@@ -198,7 +196,24 @@ namespace RauViet.ui
                 exportCode_cbb.SelectedIndexChanged += exportCode_search_cbb_SelectedIndexChanged;
                 exportCode_cbb.SelectedValue = mCurrentExportID;
 
+                logGV.Columns["Description"].HeaderText = "Hành động";
+                logGV.Columns["PCSReal"].HeaderText = "PCS T.T";
+                logGV.Columns["NWReal"].HeaderText = "N.W T.T";
+                logGV.Columns["CartonNo"].HeaderText = "Carton No";
+                logGV.Columns["CartonSize"].HeaderText = "Kích thước thùng";
+                logGV.Columns["ActionBy"].HeaderText = "Người thay đổi";
+                logGV.Columns["CreateAt"].HeaderText = "Ngày thay đổi";
+                logGV.Columns["CustomCarton"].HeaderText = "Mã Thùng";
 
+                logGV.Columns["Description"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                logGV.Columns["PCSReal"].Width = 50;
+                logGV.Columns["NWReal"].Width = 50;
+                logGV.Columns["CartonNo"].Width = 60;
+                logGV.Columns["CartonSize"].Width = 120;
+                logGV.Columns["ActionBy"].Width = 140;
+                logGV.Columns["CreateAt"].Width = 110;
+                logGV.Columns["CustomCarton"].Width = 80;
+                logGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
                 cartonSize_cbb.DataSource = mCartonSize_dt;
                 cartonSize_cbb.DisplayMember = "CartonSize";
@@ -803,12 +818,6 @@ namespace RauViet.ui
                 e.SuppressKeyPress = true;
             }
 
-        }
-
-        private void assignCustomerCarton_btn_Click(object sender, EventArgs e)
-        {
-
-            _ =autoCreateCustomverCarton();
         }
 
         private async Task autoCreateCustomverCarton( bool isAutoPrint = false)
@@ -1463,8 +1472,6 @@ namespace RauViet.ui
             rightInfo_gb.Visible = !isReadOnly;
             edit_btn.Visible = isReadOnly;
             readOnly_btn.Visible = !isReadOnly;
-            phieuCanHang_gb.Visible = isReadOnly;
-            phieuGiaoHang_gb.Visible = isReadOnly;
         }
       
         private void DataGV_SelectionChanged(object sender, EventArgs e)

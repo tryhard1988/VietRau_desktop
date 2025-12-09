@@ -14,7 +14,7 @@ namespace RauViet.ui
         public Holidays()
         {
             InitializeComponent();
-
+            this.KeyPreview = true;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Dock = DockStyle.Fill;
 
@@ -22,8 +22,6 @@ namespace RauViet.ui
             dataGV.MultiSelect = false;
 
             status_lb.Text = "";
-            loading_lb.Text = "Đang tải dữ liệu, vui lòng chờ...";
-            loading_lb.Visible = false;
             delete_btn.Enabled = false;
 
             holidayDateStart_dtp.Format = DateTimePickerFormat.Custom;
@@ -43,14 +41,25 @@ namespace RauViet.ui
             readOnly_btn.Click += ReadOnly_btn_Click;
             ReadOnly_btn_Click(null, null);
             linkStartEnd_cb.CheckedChanged += LinkStartEnd_cb_CheckedChanged;
+
+            this.KeyDown += Holidays_KeyDown;
+        }
+
+        private void Holidays_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.F5)
+            {
+                SQLStore.Instance.removeHoliday();
+                ShowData();
+            }
         }
 
         public async void ShowData()
         {
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Dock = DockStyle.Fill;
-
-            loading_lb.Visible = true;            
+            await Task.Delay(50);
+            LoadingOverlay loadingOverlay = new LoadingOverlay(this);
+            loadingOverlay.Show();
+            await Task.Delay(200);
 
             try
             {
@@ -86,8 +95,8 @@ namespace RauViet.ui
             }
             finally
             {
-                loading_lb.Visible = false; // ẩn loading
-                loading_lb.Enabled = true; // enable lại button
+                await Task.Delay(100);
+                loadingOverlay.Hide();
             }
 
             
@@ -339,5 +348,6 @@ namespace RauViet.ui
                 holidayDateEnd_dtp.Value = dayStart;
             }
         }
+
     }
 }

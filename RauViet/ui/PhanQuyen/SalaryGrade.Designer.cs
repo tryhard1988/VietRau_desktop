@@ -30,6 +30,7 @@ namespace RauViet.ui
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
+            this.label7 = new System.Windows.Forms.Label();
             this.log_GV = new System.Windows.Forms.DataGridView();
             this.readOnly_btn = new System.Windows.Forms.Button();
             this.edit_btn = new System.Windows.Forms.Button();
@@ -43,12 +44,10 @@ namespace RauViet.ui
             this.description_tb = new System.Windows.Forms.TextBox();
             this.status_lb = new System.Windows.Forms.Label();
             this.delete_btn = new System.Windows.Forms.Button();
-            this.loading_lb = new System.Windows.Forms.Label();
             this.newCustomerBtn = new System.Windows.Forms.Button();
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
             this.salaryGradeID_tb = new System.Windows.Forms.TextBox();
             this.dataGV = new System.Windows.Forms.DataGridView();
-            this.label7 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.log_GV)).BeginInit();
             this.info_gb.SuspendLayout();
@@ -64,7 +63,6 @@ namespace RauViet.ui
             this.panel1.Controls.Add(this.info_gb);
             this.panel1.Controls.Add(this.status_lb);
             this.panel1.Controls.Add(this.delete_btn);
-            this.panel1.Controls.Add(this.loading_lb);
             this.panel1.Controls.Add(this.newCustomerBtn);
             this.panel1.Controls.Add(this.LuuThayDoiBtn);
             this.panel1.Controls.Add(this.salaryGradeID_tb);
@@ -73,6 +71,19 @@ namespace RauViet.ui
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(546, 681);
             this.panel1.TabIndex = 9;
+            // 
+            // label7
+            // 
+            this.label7.BackColor = System.Drawing.Color.PeachPuff;
+            this.label7.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.label7.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label7.ForeColor = System.Drawing.Color.DarkOliveGreen;
+            this.label7.Location = new System.Drawing.Point(0, 434);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(546, 23);
+            this.label7.TabIndex = 86;
+            this.label7.Text = "Lịch sử thay đổi";
+            this.label7.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // log_GV
             // 
@@ -210,16 +221,6 @@ namespace RauViet.ui
             this.delete_btn.Text = "Xóa";
             this.delete_btn.UseVisualStyleBackColor = false;
             // 
-            // loading_lb
-            // 
-            this.loading_lb.AutoSize = true;
-            this.loading_lb.Dock = System.Windows.Forms.DockStyle.Top;
-            this.loading_lb.Location = new System.Drawing.Point(0, 0);
-            this.loading_lb.Name = "loading_lb";
-            this.loading_lb.Size = new System.Drawing.Size(55, 13);
-            this.loading_lb.TabIndex = 10;
-            this.loading_lb.Text = "loading_lb";
-            // 
             // newCustomerBtn
             // 
             this.newCustomerBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
@@ -263,19 +264,6 @@ namespace RauViet.ui
             this.dataGV.Size = new System.Drawing.Size(718, 681);
             this.dataGV.TabIndex = 1;
             // 
-            // label7
-            // 
-            this.label7.BackColor = System.Drawing.Color.PeachPuff;
-            this.label7.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.label7.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label7.ForeColor = System.Drawing.Color.DarkOliveGreen;
-            this.label7.Location = new System.Drawing.Point(0, 434);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(546, 23);
-            this.label7.TabIndex = 86;
-            this.label7.Text = "Lịch sử thay đổi";
-            this.label7.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
             // SalaryGrade
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -305,7 +293,6 @@ namespace RauViet.ui
         private System.Windows.Forms.Button newCustomerBtn;
         private System.Windows.Forms.DataGridView dataGV;
         private System.Windows.Forms.Label status_lb;
-        private System.Windows.Forms.Label loading_lb;
         private System.Windows.Forms.Button delete_btn;
         private System.Windows.Forms.GroupBox info_gb;
         private System.Windows.Forms.CheckBox isActive_cb;

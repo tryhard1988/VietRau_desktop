@@ -15,7 +15,7 @@ namespace RauViet.ui
         public EmployeeAllowance()
         {
             InitializeComponent();
-
+            this.KeyPreview = true;
             Utils.SetTabStopRecursive(this, false);
 
             int countTab = 0;
@@ -44,14 +44,25 @@ namespace RauViet.ui
             edit_btn.Click += Edit_btn_Click;
             readOnly_btn.Click += ReadOnly_btn_Click;
             ReadOnly_btn_Click(null, null);
+            this.KeyDown += EmployeeAllowance_KeyDown;
+        }
+
+        private void EmployeeAllowance_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.F5)
+            {
+                ShowData();
+            }
         }
 
         public async void ShowData()
         {
+            allowanceGV.SelectionChanged -= this.allowanceGV_CellClick;
+
             await Task.Delay(50);
             LoadingOverlay loadingOverlay = new LoadingOverlay(this);
             loadingOverlay.Show();
-
+            await Task.Delay(200);
             try
             {
                 string[] keepColumns = { "EmployeeCode", "FullName", "DepartmentName", "PositionName", "ContractTypeName", };
@@ -116,7 +127,7 @@ namespace RauViet.ui
                 log_GV.Columns["LogID"].Visible = false;
                 log_GV.Columns["EmployeeCode"].Visible = false;
 
-                allowanceGV.SelectionChanged -= this.allowanceGV_CellClick;
+                
                 allowanceGV.SelectionChanged += this.allowanceGV_CellClick;
 
                 if (dataGV.Rows.Count > 0)

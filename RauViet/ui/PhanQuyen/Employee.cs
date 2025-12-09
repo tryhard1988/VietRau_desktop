@@ -16,7 +16,7 @@ namespace RauViet.ui
         public Employee()
         {
             InitializeComponent();
-
+            this.KeyPreview = true;
             Utils.SetTabStopRecursive(this, false);
 
             int countTab = 0;
@@ -55,6 +55,17 @@ namespace RauViet.ui
             edit_btn.Click += Edit_btn_Click;
             readOnly_btn.Click += ReadOnly_btn_Click;
             ReadOnly_btn_Click(null, null);
+
+            this.KeyDown += Employee_KeyDown;
+        }
+
+        private void Employee_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.F5)
+            {
+                SQLStore.Instance.removeEmployees();
+                ShowData();
+            }
         }
 
         public async void ShowData()

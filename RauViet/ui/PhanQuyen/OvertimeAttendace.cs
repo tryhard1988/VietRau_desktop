@@ -1,18 +1,10 @@
-﻿using DocumentFormat.OpenXml.Bibliography;
-using DocumentFormat.OpenXml.Drawing.Charts;
+﻿
 using RauViet.classes;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Data.OleDb;
 using System.Drawing;
-using System.Linq;
-using System.Reflection.Emit;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
 
 namespace RauViet.ui
 {
@@ -25,7 +17,7 @@ namespace RauViet.ui
         public OvertimeAttendace()
         {
             InitializeComponent();
-
+            this.KeyPreview = true;
             Utils.SetTabStopRecursive(this, false);
 
             int countTab = 0;
@@ -69,6 +61,18 @@ namespace RauViet.ui
             edit_btn.Click += Edit_btn_Click;
             readOnly_btn.Click += ReadOnly_btn_Click;
             ReadOnly_btn_Click(null, null);
+            this.KeyDown += OvertimeAttendace_KeyDown;
+        }
+
+        private void OvertimeAttendace_KeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.KeyCode == Keys.F5)
+            {
+                int month = monthYearDtp.Value.Month;
+                int year = monthYearDtp.Value.Year;
+                SQLStore.Instance.removeOvertimeAttendamce(month, year);
+                LoadAttandance_btn_Click(null, null);
+            }
         }
 
         public async void ShowData()
@@ -244,6 +248,7 @@ namespace RauViet.ui
             await Task.Delay(50);
             LoadingOverlay loadingOverlay = new LoadingOverlay(this);
             loadingOverlay.Show();
+            await Task.Delay(200);
 
             int month = monthYearDtp.Value.Month;
             int year = monthYearDtp.Value.Year;

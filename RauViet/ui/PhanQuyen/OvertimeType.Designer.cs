@@ -41,7 +41,6 @@ namespace RauViet.ui
             this.label2 = new System.Windows.Forms.Label();
             this.status_lb = new System.Windows.Forms.Label();
             this.delete_btn = new System.Windows.Forms.Button();
-            this.loading_lb = new System.Windows.Forms.Label();
             this.newCustomerBtn = new System.Windows.Forms.Button();
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
             this.overtimeTypeID_tb = new System.Windows.Forms.TextBox();
@@ -69,7 +68,6 @@ namespace RauViet.ui
             this.panel1.Controls.Add(this.info_gb);
             this.panel1.Controls.Add(this.status_lb);
             this.panel1.Controls.Add(this.delete_btn);
-            this.panel1.Controls.Add(this.loading_lb);
             this.panel1.Controls.Add(this.newCustomerBtn);
             this.panel1.Controls.Add(this.LuuThayDoiBtn);
             this.panel1.Controls.Add(this.overtimeTypeID_tb);
@@ -182,16 +180,6 @@ namespace RauViet.ui
             this.delete_btn.Text = "Xóa";
             this.delete_btn.UseVisualStyleBackColor = false;
             // 
-            // loading_lb
-            // 
-            this.loading_lb.AutoSize = true;
-            this.loading_lb.Dock = System.Windows.Forms.DockStyle.Top;
-            this.loading_lb.Location = new System.Drawing.Point(0, 0);
-            this.loading_lb.Name = "loading_lb";
-            this.loading_lb.Size = new System.Drawing.Size(55, 13);
-            this.loading_lb.TabIndex = 10;
-            this.loading_lb.Text = "loading_lb";
-            // 
             // newCustomerBtn
             // 
             this.newCustomerBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
@@ -254,7 +242,6 @@ namespace RauViet.ui
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label status_lb;
         private System.Windows.Forms.Button delete_btn;
-        private System.Windows.Forms.Label loading_lb;
         private System.Windows.Forms.Button newCustomerBtn;
         private System.Windows.Forms.Button LuuThayDoiBtn;
         private System.Windows.Forms.TextBox overtimeTypeID_tb;

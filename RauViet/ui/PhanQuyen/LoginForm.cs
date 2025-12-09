@@ -1,4 +1,6 @@
-﻿using RauViet.classes;
+﻿using AutoUpdaterDotNET;
+using DocumentFormat.OpenXml.Drawing.Charts;
+using RauViet.classes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -207,12 +209,13 @@ namespace RauViet.ui.PhanQuyen
 
         private async void LoginForm_Load(object sender, EventArgs e)
         {
+            chekoutVersion();
             if (!string.IsNullOrEmpty(Properties.Settings.Default.login_acc))
             {
                 userName_tb.Text = Properties.Settings.Default.login_acc;
                 password_tb.Text = "";
                 await Task.Delay(100);
-                password_tb.Focus();
+                password_tb.Focus(); 
             }
             else
             {
@@ -220,6 +223,70 @@ namespace RauViet.ui.PhanQuyen
                 password_tb.Text = "";
                 userName_tb.Focus();
             }
+        }
+
+        private void chekoutVersion()
+        {
+            try
+            {
+                // URL đến file xml trên server (LAN)
+                string updateXmlUrl = "http://192.168.1.8:8089/VR_QLNS_KHO/vietrau.xml";
+
+                // Các tuỳ chọn (không bắt buộc)
+                AutoUpdater.ShowSkipButton = false;      // ẩn nút Skip
+                AutoUpdater.ShowRemindLaterButton = true;
+                AutoUpdater.RunUpdateAsAdmin = true;    // nếu cần quyền admin để ghi file
+
+                // Bắt event nếu muốn custom hành vi
+                AutoUpdater.CheckForUpdateEvent += AutoUpdaterOnCheckForUpdateEvent;
+
+                // Bắt đầu kiểm tra (hiển thị UI do auto-updater cung cấp)
+                AutoUpdater.Start(updateXmlUrl);
+            }
+            catch (Exception ex)
+            {
+                // Log hoặc xử lý lỗi không ảnh hưởng ứng dụng chính
+                Console.WriteLine("AutoUpdater error: " + ex.Message);
+            }
+        }
+
+        private void AutoUpdaterOnCheckForUpdateEvent(UpdateInfoEventArgs args)
+        {
+            if (args == null)
+            {
+                MessageBox.Show("Không kiểm tra được version hiện tại.");
+                return;
+            }
+
+            if (!args.IsUpdateAvailable)
+            {
+                return;
+            }
+
+            var dialogResult = MessageBox.Show(
+                $"Có phiên bản mới: {args.CurrentVersion}\n" +
+                $"Phiên bản hiện tại: {args.InstalledVersion}\n\n" +
+                $"Bạn có muốn cập nhật không?",
+                "Cập nhật ứng dụng",
+                MessageBoxButtons.YesNo
+            );
+
+            if (dialogResult == DialogResult.No)
+            {
+                Application.Exit();
+                return;
+            }
+            
+            try
+            {
+                AutoUpdater.DownloadUpdate(args);   // <<< BẮT BUỘC PHẢI CÓ
+                Application.Exit();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi update: " + ex.Message);
+            }
+            
         }
     }
 }

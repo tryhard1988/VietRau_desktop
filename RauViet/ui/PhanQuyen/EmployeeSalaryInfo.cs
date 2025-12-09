@@ -15,7 +15,7 @@ namespace RauViet.ui
         public EmployeeSalaryInfo()
         {
             InitializeComponent();
-
+            this.KeyPreview = true;
             month_cbb.Items.Clear();
             for (int m = 1; m <= 12; m++)
             {
@@ -49,7 +49,18 @@ namespace RauViet.ui
             new_btn.Click += New_btn_Click;
             readOnly_btn.Click += ReadOnly_btn_Click;
             ReadOnly_btn_Click(null, null);
-        }        
+
+            this.KeyDown += EmployeeSalaryInfo_KeyDown;
+        }
+
+        private void EmployeeSalaryInfo_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.F5)
+            {
+                SQLStore.Instance.EmployeeSalaryInfo();
+                ShowData();
+            }
+        }
 
         public async void ShowData()
         {
@@ -59,7 +70,7 @@ namespace RauViet.ui
             await Task.Delay(50);
             LoadingOverlay loadingOverlay = new LoadingOverlay(this);
             loadingOverlay.Show();
-
+            await Task.Delay(200);
             try
             {
                 string[] keepColumns = { "EmployeeCode", "FullName", "PositionName", "ContractTypeName", "GradeName", "SalaryGrade" };

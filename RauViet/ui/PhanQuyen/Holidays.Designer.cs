@@ -30,7 +30,10 @@ namespace RauViet.ui
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
+            this.readOnly_btn = new System.Windows.Forms.Button();
+            this.newBtn = new System.Windows.Forms.Button();
             this.info_gb = new System.Windows.Forms.GroupBox();
+            this.linkStartEnd_cb = new System.Windows.Forms.CheckBox();
             this.label3 = new System.Windows.Forms.Label();
             this.holidayDateEnd_dtp = new System.Windows.Forms.DateTimePicker();
             this.holidayDateStart_dtp = new System.Windows.Forms.DateTimePicker();
@@ -38,14 +41,10 @@ namespace RauViet.ui
             this.holidayName_tb = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.delete_btn = new System.Windows.Forms.Button();
-            this.loading_lb = new System.Windows.Forms.Label();
             this.status_lb = new System.Windows.Forms.Label();
             this.saveBtn = new System.Windows.Forms.Button();
             this.dataGV = new System.Windows.Forms.DataGridView();
             this.mySqlCommand1 = new MySql.Data.MySqlClient.MySqlCommand();
-            this.readOnly_btn = new System.Windows.Forms.Button();
-            this.newBtn = new System.Windows.Forms.Button();
-            this.linkStartEnd_cb = new System.Windows.Forms.CheckBox();
             this.panel1.SuspendLayout();
             this.info_gb.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
@@ -57,7 +56,6 @@ namespace RauViet.ui
             this.panel1.Controls.Add(this.newBtn);
             this.panel1.Controls.Add(this.info_gb);
             this.panel1.Controls.Add(this.delete_btn);
-            this.panel1.Controls.Add(this.loading_lb);
             this.panel1.Controls.Add(this.status_lb);
             this.panel1.Controls.Add(this.saveBtn);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -65,6 +63,28 @@ namespace RauViet.ui
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(546, 681);
             this.panel1.TabIndex = 9;
+            // 
+            // readOnly_btn
+            // 
+            this.readOnly_btn.BackColor = System.Drawing.Color.MediumSlateBlue;
+            this.readOnly_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.readOnly_btn.Location = new System.Drawing.Point(440, 148);
+            this.readOnly_btn.Name = "readOnly_btn";
+            this.readOnly_btn.Size = new System.Drawing.Size(42, 32);
+            this.readOnly_btn.TabIndex = 38;
+            this.readOnly_btn.Text = "X";
+            this.readOnly_btn.UseVisualStyleBackColor = false;
+            // 
+            // newBtn
+            // 
+            this.newBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
+            this.newBtn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.newBtn.Location = new System.Drawing.Point(399, 148);
+            this.newBtn.Name = "newBtn";
+            this.newBtn.Size = new System.Drawing.Size(84, 32);
+            this.newBtn.TabIndex = 36;
+            this.newBtn.Text = "Tạo mới";
+            this.newBtn.UseVisualStyleBackColor = false;
             // 
             // info_gb
             // 
@@ -80,6 +100,17 @@ namespace RauViet.ui
             this.info_gb.Size = new System.Drawing.Size(422, 232);
             this.info_gb.TabIndex = 28;
             this.info_gb.TabStop = false;
+            // 
+            // linkStartEnd_cb
+            // 
+            this.linkStartEnd_cb.AutoSize = true;
+            this.linkStartEnd_cb.Checked = true;
+            this.linkStartEnd_cb.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.linkStartEnd_cb.Location = new System.Drawing.Point(200, 47);
+            this.linkStartEnd_cb.Name = "linkStartEnd_cb";
+            this.linkStartEnd_cb.Size = new System.Drawing.Size(15, 14);
+            this.linkStartEnd_cb.TabIndex = 27;
+            this.linkStartEnd_cb.UseVisualStyleBackColor = true;
             // 
             // label3
             // 
@@ -145,16 +176,6 @@ namespace RauViet.ui
             this.delete_btn.Text = "Xóa";
             this.delete_btn.UseVisualStyleBackColor = false;
             // 
-            // loading_lb
-            // 
-            this.loading_lb.AutoSize = true;
-            this.loading_lb.Dock = System.Windows.Forms.DockStyle.Top;
-            this.loading_lb.Location = new System.Drawing.Point(0, 0);
-            this.loading_lb.Name = "loading_lb";
-            this.loading_lb.Size = new System.Drawing.Size(55, 13);
-            this.loading_lb.TabIndex = 10;
-            this.loading_lb.Text = "loading_lb";
-            // 
             // status_lb
             // 
             this.status_lb.AutoSize = true;
@@ -196,39 +217,6 @@ namespace RauViet.ui
             this.mySqlCommand1.EnableCaching = false;
             this.mySqlCommand1.Transaction = null;
             // 
-            // readOnly_btn
-            // 
-            this.readOnly_btn.BackColor = System.Drawing.Color.MediumSlateBlue;
-            this.readOnly_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.readOnly_btn.Location = new System.Drawing.Point(440, 148);
-            this.readOnly_btn.Name = "readOnly_btn";
-            this.readOnly_btn.Size = new System.Drawing.Size(42, 32);
-            this.readOnly_btn.TabIndex = 38;
-            this.readOnly_btn.Text = "X";
-            this.readOnly_btn.UseVisualStyleBackColor = false;
-            // 
-            // newBtn
-            // 
-            this.newBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
-            this.newBtn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.newBtn.Location = new System.Drawing.Point(399, 148);
-            this.newBtn.Name = "newBtn";
-            this.newBtn.Size = new System.Drawing.Size(84, 32);
-            this.newBtn.TabIndex = 36;
-            this.newBtn.Text = "Tạo mới";
-            this.newBtn.UseVisualStyleBackColor = false;
-            // 
-            // linkStartEnd_cb
-            // 
-            this.linkStartEnd_cb.AutoSize = true;
-            this.linkStartEnd_cb.Checked = true;
-            this.linkStartEnd_cb.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.linkStartEnd_cb.Location = new System.Drawing.Point(200, 47);
-            this.linkStartEnd_cb.Name = "linkStartEnd_cb";
-            this.linkStartEnd_cb.Size = new System.Drawing.Size(15, 14);
-            this.linkStartEnd_cb.TabIndex = 27;
-            this.linkStartEnd_cb.UseVisualStyleBackColor = true;
-            // 
             // Holidays
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -254,7 +242,6 @@ namespace RauViet.ui
         private System.Windows.Forms.Button saveBtn;
         private System.Windows.Forms.DataGridView dataGV;
         private System.Windows.Forms.Label status_lb;
-        private System.Windows.Forms.Label loading_lb;
         private System.Windows.Forms.Button delete_btn;
         private System.Windows.Forms.GroupBox info_gb;
         private System.Windows.Forms.Label label1;

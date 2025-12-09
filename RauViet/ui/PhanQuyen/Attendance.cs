@@ -1,6 +1,4 @@
-﻿using DocumentFormat.OpenXml.Vml.Office;
-using Microsoft.Office.Interop.Excel;
-using RauViet.classes;
+﻿using RauViet.classes;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -24,7 +22,7 @@ namespace RauViet.ui
         public Attendance()
         {
             InitializeComponent();
-
+            this.KeyPreview = true;
             monthYearDtp.Format = DateTimePickerFormat.Custom;
             monthYearDtp.CustomFormat = "MM/yyyy";
             monthYearDtp.ShowUpDown = true;
@@ -53,6 +51,19 @@ namespace RauViet.ui
 
             attendanceGV.CellParsing += AttendanceGV_CellParsing;
             attendanceGV.SelectionChanged += AttendanceGV_SelectionChanged;
+
+            this.KeyDown += Attendance_KeyDown;
+        }
+
+        private void Attendance_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.F5)
+            {
+                int month = monthYearDtp.Value.Month;
+                int year = monthYearDtp.Value.Year;
+                SQLStore.Instance.removeAttendamce(month, year);
+                LoadAttandance_btn_Click(null, null);
+            }
         }
 
         public async void ShowData()
@@ -318,10 +329,11 @@ namespace RauViet.ui
 
         private async void ExcelAttendance_btn_Click(object sender, EventArgs e)
         {
+            await Task.Delay(50);
             loadingOverlay = new LoadingOverlay(this);
             loadingOverlay.Message = "Đang xử lý ...";
             loadingOverlay.Show();
-            await Task.Delay(100);
+            await Task.Delay(200);
             try
             {
                 using (OpenFileDialog ofd = new OpenFileDialog())
@@ -564,7 +576,7 @@ namespace RauViet.ui
             await Task.Delay(50);
             loadingOverlay = new LoadingOverlay(this);
             loadingOverlay.Show();
-            await Task.Delay(50);
+            await Task.Delay(200);
             int month = monthYearDtp.Value.Month;
             int year = monthYearDtp.Value.Year;
 

@@ -44,6 +44,7 @@ namespace RauViet.ui
             this.cusOrderGV = new System.Windows.Forms.DataGridView();
             this.label1 = new System.Windows.Forms.Label();
             this.dataGV = new System.Windows.Forms.DataGridView();
+            this.customerHomeBtn = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel4.SuspendLayout();
@@ -55,6 +56,7 @@ namespace RauViet.ui
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.customerHomeBtn);
             this.panel1.Controls.Add(this.label3);
             this.panel1.Controls.Add(this.exportCode_cbb);
             this.panel1.Controls.Add(this.status_lb);
@@ -101,11 +103,11 @@ namespace RauViet.ui
             // 
             this.LuuThayDoiBtn.BackColor = System.Drawing.SystemColors.Highlight;
             this.LuuThayDoiBtn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LuuThayDoiBtn.Location = new System.Drawing.Point(6, 328);
+            this.LuuThayDoiBtn.Location = new System.Drawing.Point(6, 336);
             this.LuuThayDoiBtn.Name = "LuuThayDoiBtn";
             this.LuuThayDoiBtn.Size = new System.Drawing.Size(162, 52);
             this.LuuThayDoiBtn.TabIndex = 25;
-            this.LuuThayDoiBtn.Text = "Xuất File Excel";
+            this.LuuThayDoiBtn.Text = "Xuất Invoice";
             this.LuuThayDoiBtn.UseVisualStyleBackColor = false;
             // 
             // contextMenuStrip1
@@ -203,6 +205,17 @@ namespace RauViet.ui
             this.dataGV.Size = new System.Drawing.Size(677, 681);
             this.dataGV.TabIndex = 15;
             // 
+            // customerHomeBtn
+            // 
+            this.customerHomeBtn.BackColor = System.Drawing.SystemColors.Highlight;
+            this.customerHomeBtn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.customerHomeBtn.Location = new System.Drawing.Point(6, 402);
+            this.customerHomeBtn.Name = "customerHomeBtn";
+            this.customerHomeBtn.Size = new System.Drawing.Size(162, 52);
+            this.customerHomeBtn.TabIndex = 54;
+            this.customerHomeBtn.Text = "Xuất File Tổng Hợp Theo Nhà";
+            this.customerHomeBtn.UseVisualStyleBackColor = false;
+            // 
             // INVOICE
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -242,5 +255,6 @@ namespace RauViet.ui
         private System.Windows.Forms.DataGridView cusOrderGV;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Button customerHomeBtn;
     }
 }

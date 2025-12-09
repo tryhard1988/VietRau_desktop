@@ -18,7 +18,7 @@ namespace RauViet.ui
         public MonthlyAllowance()
         {
             InitializeComponent();
-
+            this.KeyPreview = true;
             Utils.SetTabStopRecursive(this, false);
 
             monthYearDtp.Format = DateTimePickerFormat.Custom;
@@ -55,6 +55,15 @@ namespace RauViet.ui
             readOnly_btn.Click += ReadOnly_btn_Click;
             load_btn.Click += Load_btn_Click;
             ReadOnly_btn_Click(null, null);
+            this.KeyDown += MonthlyAllowance_KeyDown;
+        }
+
+        private void MonthlyAllowance_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.F5)
+            {
+                ShowData();
+            }
         }
 
         public async void ShowData()

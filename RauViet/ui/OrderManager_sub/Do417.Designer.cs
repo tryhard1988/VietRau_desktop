@@ -47,6 +47,7 @@ namespace RauViet.ui
             this.label2 = new System.Windows.Forms.Label();
             this.exportCode_cbb = new System.Windows.Forms.ComboBox();
             this.status_lb = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.logGV)).BeginInit();
@@ -72,6 +73,7 @@ namespace RauViet.ui
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.label11);
             this.panel1.Controls.Add(this.logGV);
             this.panel1.Controls.Add(this.info_gb);
             this.panel1.Controls.Add(this.exportCode_cbb);
@@ -233,6 +235,19 @@ namespace RauViet.ui
             this.status_lb.TabIndex = 26;
             this.status_lb.Text = "Email";
             // 
+            // label11
+            // 
+            this.label11.BackColor = System.Drawing.Color.PeachPuff;
+            this.label11.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.label11.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label11.ForeColor = System.Drawing.Color.DarkOliveGreen;
+            this.label11.Location = new System.Drawing.Point(0, 444);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(427, 23);
+            this.label11.TabIndex = 89;
+            this.label11.Text = "Lịch sử thay đổi";
+            this.label11.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
             // Do417
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -270,5 +285,6 @@ namespace RauViet.ui
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.ComboBox exportCode_cbb;
         private System.Windows.Forms.Label status_lb;
+        private System.Windows.Forms.Label label11;
     }
 }

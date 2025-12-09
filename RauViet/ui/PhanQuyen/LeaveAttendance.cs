@@ -20,7 +20,7 @@ namespace RauViet.ui
         public LeaveAttendance()
         {
             InitializeComponent();
-
+            this.KeyPreview = true;
             Utils.SetTabStopRecursive(this, false);
 
             int countTab = 0;
@@ -65,8 +65,19 @@ namespace RauViet.ui
             ReadOnly_btn_Click(null, null);
 
             linkStartEnd_cb.CheckedChanged += LinkStartEnd_cb_CheckedChanged;
+            this.KeyDown += LeaveAttendance_KeyDown;
         }
 
+        private void LeaveAttendance_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.F5)
+            {
+                int year = Convert.ToInt32(year_tb.Text);
+
+                SQLStore.Instance.removeLeaveAttendances(year);
+                LoadLeaveAttendance_btn_Click(null, null);
+            }
+        }
 
         public async void ShowData()
         {
@@ -171,6 +182,7 @@ namespace RauViet.ui
             await Task.Delay(50);
             LoadingOverlay loadingOverlay = new LoadingOverlay(this);
             loadingOverlay.Show();
+            await Task.Delay(200);
 
             attendanceGV.SelectionChanged -= this.attendanceGV_CellClick;
 
@@ -214,6 +226,7 @@ namespace RauViet.ui
 
         private async void LoadLeaveAttendance_btn_Click(object sender, EventArgs e)
         {
+
             int year = Convert.ToInt32(year_tb.Text);
 
             var leaveAttendanceTask = SQLStore.Instance.GetLeaveAttendancesAsyn(year);
@@ -226,6 +239,7 @@ namespace RauViet.ui
             loadLeaveAttendance();
 
             curYear = year;
+
         }
 
         private void Tb_KeyPress_OnlyNumber(object sender, KeyPressEventArgs e)

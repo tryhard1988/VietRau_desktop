@@ -84,9 +84,9 @@ namespace RauViet.classes
             return dt;
         }
 
-        public async Task<bool> updateCustomerAsync(int customerID, string name, string code, int Priority)
+        public async Task<bool> updateCustomerAsync(int customerID, string name, string code, int Priority, string home)
         {
-            string query = "UPDATE Customers SET FullName=@FullName, CustomerCode=@CustomerCode, Priority=@Priority WHERE CustomerID=@CustomerID";
+            string query = "UPDATE Customers SET FullName=@FullName, CustomerCode=@CustomerCode, Priority=@Priority, Home=@Home WHERE CustomerID=@CustomerID";
             try
             {
                 using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
@@ -98,6 +98,7 @@ namespace RauViet.classes
                         cmd.Parameters.AddWithValue("@FullName", name);
                         cmd.Parameters.AddWithValue("@CustomerCode", code);
                         cmd.Parameters.AddWithValue("@Priority", Priority);
+                        cmd.Parameters.AddWithValue("@Home", home);
                         await cmd.ExecuteNonQueryAsync();
                     }
                 }
@@ -106,12 +107,12 @@ namespace RauViet.classes
             catch { return false; }
         }
 
-        public async Task<int> insertCustomerAsync(string name, string code, int priority)
+        public async Task<int> insertCustomerAsync(string name, string code, int priority, string home)
         {
             int newId = -1;
-            string query = @"INSERT INTO Customers (FullName, CustomerCode, Priority ) 
+            string query = @"INSERT INTO Customers (FullName, CustomerCode, Priority, Home ) 
                              OUTPUT INSERTED.CustomerID
-                            VALUES (@FullName, @CustomerCode, @Priority)";
+                            VALUES (@FullName, @CustomerCode, @Priority, @Home)";
             try
             {
                 using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
@@ -122,6 +123,7 @@ namespace RauViet.classes
                         cmd.Parameters.AddWithValue("@FullName", name);
                         cmd.Parameters.AddWithValue("@CustomerCode", code);
                         cmd.Parameters.AddWithValue("@Priority", priority);
+                        cmd.Parameters.AddWithValue("@Home", home);
                         object result = await cmd.ExecuteScalarAsync();
                         if (result != null)
                             newId = Convert.ToInt32(result);

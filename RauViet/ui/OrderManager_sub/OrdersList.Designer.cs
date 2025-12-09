@@ -41,6 +41,7 @@ namespace RauViet.ui
             this.label15 = new System.Windows.Forms.Label();
             this.exportCode_search_cbb = new System.Windows.Forms.ComboBox();
             this.logGV = new System.Windows.Forms.DataGridView();
+            this.label10 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.label8 = new System.Windows.Forms.Label();
@@ -218,11 +219,24 @@ namespace RauViet.ui
             this.logGV.AllowUserToDeleteRows = false;
             this.logGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.logGV.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.logGV.Location = new System.Drawing.Point(644, 460);
+            this.logGV.Location = new System.Drawing.Point(644, 523);
             this.logGV.Name = "logGV";
             this.logGV.ReadOnly = true;
-            this.logGV.Size = new System.Drawing.Size(898, 221);
+            this.logGV.Size = new System.Drawing.Size(898, 158);
             this.logGV.TabIndex = 82;
+            // 
+            // label10
+            // 
+            this.label10.BackColor = System.Drawing.Color.PeachPuff;
+            this.label10.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.label10.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label10.ForeColor = System.Drawing.Color.DarkOliveGreen;
+            this.label10.Location = new System.Drawing.Point(644, 500);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(898, 23);
+            this.label10.TabIndex = 87;
+            this.label10.Text = "Lịch sử thay đổi";
+            this.label10.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // panel1
             // 
@@ -240,8 +254,8 @@ namespace RauViet.ui
             this.panel1.Dock = System.Windows.Forms.DockStyle.Left;
             this.panel1.Location = new System.Drawing.Point(644, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(416, 460);
-            this.panel1.TabIndex = 83;
+            this.panel1.Size = new System.Drawing.Size(416, 500);
+            this.panel1.TabIndex = 89;
             // 
             // groupBox1
             // 
@@ -592,8 +606,8 @@ namespace RauViet.ui
             this.cusProduct_GV.Location = new System.Drawing.Point(1060, 0);
             this.cusProduct_GV.Name = "cusProduct_GV";
             this.cusProduct_GV.ReadOnly = true;
-            this.cusProduct_GV.Size = new System.Drawing.Size(393, 460);
-            this.cusProduct_GV.TabIndex = 84;
+            this.cusProduct_GV.Size = new System.Drawing.Size(393, 500);
+            this.cusProduct_GV.TabIndex = 90;
             // 
             // OrdersList
             // 
@@ -602,6 +616,7 @@ namespace RauViet.ui
             this.ClientSize = new System.Drawing.Size(1542, 681);
             this.Controls.Add(this.cusProduct_GV);
             this.Controls.Add(this.panel1);
+            this.Controls.Add(this.label10);
             this.Controls.Add(this.logGV);
             this.Controls.Add(this.panel2);
             this.Name = "OrdersList";
@@ -641,6 +656,7 @@ namespace RauViet.ui
         private System.Windows.Forms.Label cus_name_label;
         private System.Windows.Forms.Label total_label;
         private System.Windows.Forms.DataGridView logGV;
+        private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Label label8;

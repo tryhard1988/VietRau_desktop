@@ -14,7 +14,7 @@ namespace RauViet.ui
         public Department()
         {
             InitializeComponent();
-
+            this.KeyPreview = true;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Dock = DockStyle.Fill;
 
@@ -30,8 +30,6 @@ namespace RauViet.ui
             dataGV.MultiSelect = false;
 
             status_lb.Text = "";
-            loading_lb.Text = "Đang tải dữ liệu, vui lòng chờ...";
-            loading_lb.Visible = false;
 
             newCustomerBtn.Click += newCustomerBtn_Click;
             LuuThayDoiBtn.Click += saveBtn_Click;
@@ -42,12 +40,25 @@ namespace RauViet.ui
             edit_btn.Click += Edit_btn_Click;
             readOnly_btn.Click += ReadOnly_btn_Click;
             ReadOnly_btn_Click(null, null);
+
+            this.KeyDown += Department_KeyDown; ;
+        }
+
+        private void Department_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.F5)
+            {
+                SQLStore.Instance.removeDepartment();
+                ShowData();
+            }
         }
 
         public async void ShowData()
         {
-            loading_lb.Visible = true;            
-
+            await Task.Delay(50);
+            LoadingOverlay loadingOverlay = new LoadingOverlay(this);
+            loadingOverlay.Show();
+            await Task.Delay(200);
             try
             {
                 // Chạy truy vấn trên thread riêng
@@ -90,11 +101,9 @@ namespace RauViet.ui
             }
             finally
             {
-                loading_lb.Visible = false; // ẩn loading
-                loading_lb.Enabled = true; // enable lại button
+                await Task.Delay(100);
+                loadingOverlay.Hide();
             }
-
-            
         }
 
         private void dataGV_RowPrePaint(object sender, DataGridViewRowPrePaintEventArgs e)

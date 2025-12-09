@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Drawing;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using RauViet.classes;
 
@@ -20,8 +21,6 @@ namespace RauViet.ui
             dataGV.MultiSelect = false;
 
             status_lb.Text = "";
-            loading_lb.Text = "Đang tải dữ liệu, vui lòng chờ...";
-            loading_lb.Visible = false;
             delete_btn.Enabled = false;
 
             newCustomerBtn.Click += newCustomerBtn_Click;
@@ -36,7 +35,10 @@ namespace RauViet.ui
 
         public async void ShowData()
         {
-            loading_lb.Visible = true;            
+            await Task.Delay(50);
+            LoadingOverlay loadingOverlay = new LoadingOverlay(this);
+            loadingOverlay.Show();
+            await Task.Delay(200);
 
             try
             {
@@ -62,8 +64,8 @@ namespace RauViet.ui
             }
             finally
             {
-                loading_lb.Visible = false; // ẩn loading
-                loading_lb.Enabled = true; // enable lại button
+                await Task.Delay(100);
+                loadingOverlay.Hide();
             }
         }
 
@@ -95,17 +97,19 @@ namespace RauViet.ui
             string fullName = cells["FullName"].Value.ToString();
             string customerCode = cells["CustomerCode"].Value.ToString();
             int priority = Convert.ToInt32(cells["Priority"].Value);
+            string home = Convert.ToString(cells["Home"].Value);
 
             name_tb.Text = fullName;
             customerCode_tb.Text = customerCode;
             priority_tb.Text = priority.ToString();
             maKH_tb.Text = maKH;
+            home_tb.Text = home;
             delete_btn.Enabled = true;
 
             status_lb.Text = "";
         }
 
-        private async void updateData(int customerId, string fullName, string code, int priority)
+        private async void updateData(int customerId, string fullName, string code, int priority, string home)
         {
             foreach (DataGridViewRow row in dataGV.Rows)
             {
@@ -117,7 +121,7 @@ namespace RauViet.ui
                     {
                         try
                         {
-                            bool isScussess = await SQLManager.Instance.updateCustomerAsync(customerId, fullName, code, priority);
+                            bool isScussess = await SQLManager.Instance.updateCustomerAsync(customerId, fullName, code, priority, home);
 
                             if (isScussess == true)
                             {
@@ -127,6 +131,7 @@ namespace RauViet.ui
                                 row.Cells["FullName"].Value = fullName;
                                 row.Cells["CustomerCode"].Value = code;
                                 row.Cells["Priority"].Value = priority;
+                                row.Cells["Home"].Value = home;
                             }
                             else
                             {
@@ -149,7 +154,7 @@ namespace RauViet.ui
             }
         }
 
-        private async void createNew(string fullName, string code, int priority)
+        private async void createNew(string fullName, string code, int priority, string home)
         {
             DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
@@ -157,7 +162,7 @@ namespace RauViet.ui
             {
                 try
                 {
-                    int newId = await SQLManager.Instance.insertCustomerAsync(fullName, code, priority);
+                    int newId = await SQLManager.Instance.insertCustomerAsync(fullName, code, priority, home);
                     if (newId > 0 )
                     {
 
@@ -168,6 +173,7 @@ namespace RauViet.ui
                         drToAdd["FullName"] = fullName;
                         drToAdd["CustomerCode"] = code;
                         drToAdd["Priority"] = priority;
+                        drToAdd["Home"] = home;
                         maKH_tb.Text = newId.ToString();
 
 
@@ -212,15 +218,16 @@ namespace RauViet.ui
 
             string name = name_tb.Text;
             string code = customerCode_tb.Text;
+            string home = home_tb.Text;
             int priority = Convert.ToInt32(priority_tb.Text);
 
             if (code.CompareTo("") == 0)
                 code = name;
 
             if (maKH_tb.Text.Length != 0)
-                updateData(Convert.ToInt32(maKH_tb.Text), name, code, priority);
+                updateData(Convert.ToInt32(maKH_tb.Text), name, code, priority, home);
             else
-                createNew(name, code, priority);
+                createNew(name, code, priority, home);
 
         }
         private async void deleteBtn_Click(object sender, EventArgs e)

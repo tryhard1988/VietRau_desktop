@@ -14,7 +14,7 @@ namespace RauViet.ui
         public EmployeeNganHang()
         {
             InitializeComponent();
-
+            this.KeyPreview = true;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Dock = DockStyle.Fill;
 
@@ -29,6 +29,16 @@ namespace RauViet.ui
             edit_btn.Click += Edit_btn_Click;
             readOnly_btn.Click += ReadOnly_btn_Click;
             ReadOnly_btn_Click(null, null);
+            this.KeyDown += EmployeeNganHang_KeyDown;
+        }
+
+        private void EmployeeNganHang_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.F5)
+            {
+                SQLStore.Instance.removeEmployees();
+                ShowData();
+            }
         }
 
         public async void ShowData()
@@ -39,7 +49,7 @@ namespace RauViet.ui
             await Task.Delay(50);
             LoadingOverlay loadingOverlay = new LoadingOverlay(this);
             loadingOverlay.Show();
-
+            await Task.Delay(200);
             try
             {
                 string[] keepColumns = { "EmployeeCode", "FullName", "BankName", "BankAccountHolder", "BankAccountNumber", "BankBranch" };
