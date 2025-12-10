@@ -380,6 +380,60 @@ namespace RauViet.classes
             catch { return -1; }
         }
 
+        public async Task<bool> updateProductDomesticPriceAsync(int SKU, int rawPrice, int refinePrice, int packedPrice, bool isActive)
+        {
+            string query = @"UPDATE ProductDomesticPrices SET
+                                RawPrice=@RawPrice, 
+                                RefinedPrice=@RefinedPrice, 
+                                PackedPrice=@PackedPrice, 
+                                IsActive=@IsActive
+                             WHERE SKU=@SKU";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@SKU", SKU);
+                        cmd.Parameters.AddWithValue("@RawPrice", rawPrice);
+                        cmd.Parameters.AddWithValue("@RefinedPrice", refinePrice);
+                        cmd.Parameters.AddWithValue("@PackedPrice", packedPrice);
+                        cmd.Parameters.AddWithValue("@IsActive", isActive);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+                return true;
+            }
+            catch { return false; }
+        }
+        public async Task<int> insertProductDomesticPriceAsync(int SKU, int rawPrice, int refinePrice, int packedPrice)
+        {
+            int newId = -1;
+            string query = @"INSERT INTO ProductDomesticPrices (SKU, RawPrice, RefinedPrice, PackedPrice)
+                            OUTPUT INSERTED.PriceID
+                             VALUES (@SKU, @RawPrice, @RefinedPrice, @PackedPrice)";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@SKU", SKU);
+                        cmd.Parameters.AddWithValue("@RawPrice", rawPrice);
+                        cmd.Parameters.AddWithValue("@RefinedPrice", refinePrice);
+                        cmd.Parameters.AddWithValue("@PackedPrice", packedPrice);
+                        object result = await cmd.ExecuteScalarAsync();
+                        if (result != null)
+                            newId = Convert.ToInt32(result);
+                    }
+                }
+                return newId;
+            }
+            catch { return -1; }
+        }
+
         public async Task<bool> deleteProductpackingAsync(int productPackingID)
         {
             string query = "DELETE FROM ProductPacking WHERE ProductPackingID=@ProductPackingID";
@@ -5117,6 +5171,22 @@ namespace RauViet.classes
                         dt.Load(reader);
                     }
 
+                }
+            }
+            return dt;
+        }
+
+        public async Task<DataTable> getProductDomesticPricesAsync()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
+            {
+                await con.OpenAsync();
+                string query = "SELECT * FROM ProductDomesticPrices";
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                {
+                    dt.Load(reader);
                 }
             }
             return dt;

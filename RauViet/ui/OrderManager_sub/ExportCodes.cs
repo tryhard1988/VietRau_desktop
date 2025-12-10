@@ -9,7 +9,7 @@ namespace RauViet.ui
 {
     public partial class ExportCodes : Form
     {
-        System.Data.DataTable _employeesInDongGoi_dt;
+        System.Data.DataTable _employeesInDongGoi_dt, mExportCode_dt;
         DataView mExportCodeLog_dv;
         bool isNewState = false;
         public ExportCodes()
@@ -140,13 +140,13 @@ namespace RauViet.ui
 
                 await Task.WhenAll(exportCodeTask, employeesInDongGoiTask, ExportCodeLogTask);
 
-                System.Data.DataTable exportCode_dt = exportCodeTask.Result;
+                mExportCode_dt = exportCodeTask.Result;
                 _employeesInDongGoi_dt = employeesInDongGoiTask.Result;
 
                 mExportCodeLog_dv = new DataView(ExportCodeLogTask.Result);                
                 log_GV.DataSource = mExportCodeLog_dv;
 
-                DataView exportCode_dv = new DataView(exportCode_dt);
+                DataView exportCode_dv = new DataView(mExportCode_dt);
                 exportCode_dv.Sort = "ExportCodeID DESC";
                 dataGV.DataSource = exportCode_dv;
 
@@ -214,14 +214,6 @@ namespace RauViet.ui
             }
 
             
-        }
-
-        private void dataGV_RowPrePaint(object sender, DataGridViewRowPrePaintEventArgs e)
-        {
-            if (e.RowIndex % 2 == 0)
-            {
-                dataGV.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.Beige;
-            }
         }
         
         private void dataGV_CellClick(object sender, EventArgs e)
@@ -296,9 +288,9 @@ namespace RauViet.ui
 
         private async void updateExportCode(int exportCodeID, string exportCode, int exportCodeIndex, DateTime exportDate, decimal? exRate, decimal? shippingCost, int inputBy, int packingBy, bool complete)
         {
-            foreach (DataGridViewRow row in dataGV.Rows)
+            foreach (DataRow row in mExportCode_dt.Rows)
             {
-                int id = Convert.ToInt32(row.Cells["ExportCodeID"].Value);
+                int id = Convert.ToInt32(row["ExportCodeID"]);
                 if (id.CompareTo(exportCodeID) == 0)
                 {
                     DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", " Thay Đổi Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
@@ -317,17 +309,17 @@ namespace RauViet.ui
 
                                 _ = SQLManager.Instance.InsertExportCodeLogAsync(exportCode, "Update Thành Công", exportDate, exRate, shippingCost, inputByRow[0]["FullName"].ToString(), packingByRow[0]["FullName"].ToString(), complete);
 
-                                row.Cells["ExportCodeIndex"].Value = exportCodeIndex;
-                                row.Cells["ExportCode"].Value = exportCode;
-                                row.Cells["ExportDate"].Value = exportDate;
-                                row.Cells["Complete"].Value = complete;
-                                row.Cells["ExchangeRate"].Value = exRate ?? (object)DBNull.Value;
-                                row.Cells["ShippingCost"].Value = shippingCost ?? (object)DBNull.Value;
-                                row.Cells["InputBy"].Value = inputBy;
-                                row.Cells["PackingBy"].Value = packingBy;
-                                row.Cells["InputByName"].Value = inputByRow[0]["FullName"].ToString();
-                                row.Cells["PackingByName"].Value = packingByRow[0]["FullName"].ToString();
-                                row.Cells["InputByName_NoSign"].Value = Utils.RemoveVietnameseSigns(inputByRow[0]["FullName"].ToString()).Replace(" ", "");
+                                row["ExportCodeIndex"] = exportCodeIndex;
+                                row["ExportCode"] = exportCode;
+                                row["ExportDate"] = exportDate;
+                                row["Complete"] = complete;
+                                row["ExchangeRate"] = exRate ?? (object)DBNull.Value;
+                                row["ShippingCost"] = shippingCost ?? (object)DBNull.Value;
+                                row["InputBy"] = inputBy;
+                                row["PackingBy"] = packingBy;
+                                row["InputByName"] = inputByRow[0]["FullName"].ToString();
+                                row["PackingByName"] = packingByRow[0]["FullName"].ToString();
+                                row["InputByName_NoSign"] = Utils.RemoveVietnameseSigns(inputByRow[0]["FullName"].ToString()).Replace(" ", "");
 
                                 if (complete)
                                 {
@@ -370,8 +362,7 @@ namespace RauViet.ui
                     {
                         _ = SQLManager.Instance.InsertExportCodeLogAsync(exportCode, "Tạo Mới Thành Công", exportDate, exRate, shippingCost, inputByRow[0]["FullName"].ToString(), packingByRow[0]["FullName"].ToString(), false);
 
-                        System.Data.DataTable dataTable = (System.Data.DataTable)dataGV.DataSource;
-                        DataRow drToAdd = dataTable.NewRow();
+                        DataRow drToAdd = mExportCode_dt.NewRow();
 
                         drToAdd["ExportCodeID"] = newId;
                         drToAdd["ExportCode"] = exportCode;
@@ -390,8 +381,8 @@ namespace RauViet.ui
                         exportCodeId_tb.Text = newId.ToString();
 
 
-                        dataTable.Rows.Add(drToAdd);
-                        dataTable.AcceptChanges();
+                        mExportCode_dt.Rows.Add(drToAdd);
+                        mExportCode_dt.AcceptChanges();
 
                         status_lb.Text = "Thành công";
                         status_lb.ForeColor = Color.Green;
@@ -458,10 +449,10 @@ namespace RauViet.ui
         {
             string id = exportCodeId_tb.Text;
 
-            foreach (DataGridViewRow row in dataGV.Rows)
+            foreach (DataRow row in mExportCode_dt.Rows)
             {
-                string exportCodeID = row.Cells["ExportCodeID"].Value.ToString();
-                string exportCode = row.Cells["ExportCode"].Value.ToString();
+                string exportCodeID = row["ExportCodeID"].ToString();
+                string exportCode = row["ExportCode"].ToString();
                 if (exportCodeID.CompareTo(id) == 0)
                 {
                     DialogResult dialogResult = MessageBox.Show(
@@ -482,10 +473,8 @@ namespace RauViet.ui
                                 status_lb.Text = "Thành công.";
                                 status_lb.ForeColor = Color.Green;
 
-                                System.Data.DataTable dataTable = (System.Data.DataTable)dataGV.DataSource;
-                                dataGV.Rows.Remove(row);
-                                dataTable.AcceptChanges();
-
+                                mExportCode_dt.Rows.Remove(row);
+                                mExportCode_dt.AcceptChanges();
                             }
                             else
                             {
@@ -495,6 +484,7 @@ namespace RauViet.ui
                         }
                         catch (Exception ex)
                         {
+                            Console.WriteLine("ERROR Exception "+ ex.Message);
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;
                         }
@@ -517,12 +507,10 @@ namespace RauViet.ui
             decimal maxShippingCost = 0;
             int maxId = -1;
 
-            foreach (DataGridViewRow row in dataGV.Rows)
+            foreach (DataRow row in mExportCode_dt.Rows)
             {
-                if (row.IsNewRow) continue;
-
-                object exportCodeID = row.Cells["ExportCodeID"].Value;
-                object shippingCostStr = row.Cells["ShippingCost"].Value;
+                object exportCodeID = row["ExportCodeID"];
+                object shippingCostStr = row["ShippingCost"];
                 if (exportCodeID != null && int.TryParse(exportCodeID.ToString(), out int id) &&
                     shippingCostStr != null && decimal.TryParse(shippingCostStr.ToString(), out decimal shippingCost))
                 {

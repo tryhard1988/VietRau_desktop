@@ -69,6 +69,11 @@ namespace RauViet.ui
                 else
                     productPacking_meniitem.Visible = false;
 
+                if(UserManager.Instance.hasRole_AnGiaSanPham())
+                    productDomesticPrices_mi.Visible = false;
+                else
+                    productDomesticPrices_mi.Click += ProductDomesticPrices_mi_Click;
+
                 if (!UserManager.Instance.hasRole_SanPhamChinh() && !UserManager.Instance.hasRole_SanPhamQuyCach())
                     sanpham_group_mi.Visible = false;
             }
@@ -245,7 +250,8 @@ namespace RauViet.ui
             ReportOrderIn1Month_Year,
             MonthlyReportForYear,
             YearlyReport,
-            MonthlyTotalPerYear
+            MonthlyTotalPerYear,
+            ProductDomesticPrices
         }
 
         private void openCurrentForm(EForm status)
@@ -394,6 +400,9 @@ namespace RauViet.ui
                 case EForm.MonthlyTotalPerYear:
                     SwitchChildForm<MonthlyTotalPerYear>("Tổng Quát Theo Tháng Qua Từng Năm");
                     break;
+                case EForm.ProductDomesticPrices:
+                    SwitchChildForm<ProductDomesticPrices>("Bảng Giá Bán Trong Nước");
+                    break;
             }
             
             Properties.Settings.Default.current_form = status.ToString();
@@ -437,6 +446,7 @@ namespace RauViet.ui
         private void exportCode_btn_Click(object sender, EventArgs e) { openCurrentForm(EForm.ExportCodes); }
         private void Products_SKU_btn_Click(object sender, EventArgs e)  { openCurrentForm(EForm.ProductSKU);  }
         private void productPacking_btn_Click(object sender, EventArgs e) { openCurrentForm(EForm.ProductList); }
+        private void ProductDomesticPrices_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.ProductDomesticPrices); }
         private void khachhang_btn_Click(object sender, EventArgs e) { openCurrentForm(EForm.Customers); }
         private void others_btn_Click(object sender, EventArgs e) { openCurrentForm(EForm.OrdersList); }
         private void user_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.User); }

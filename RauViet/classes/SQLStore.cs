@@ -37,11 +37,17 @@ namespace RauViet.classes
         Dictionary<string, DataTable> mAttendances;
         Dictionary<string, DataTable> mSalaryInfoHistories;
         Dictionary<int, DataTable> mSalarySummaryByYears;
+        Dictionary<string, DataTable> mEmployeeDeductionLogs;
+        Dictionary<string, DataTable> mMonthlyAllowanceLogs;
+        Dictionary<int, DataTable> mLeaveAttendanceLogs;
+        Dictionary<string, DataTable> mOvertimeAttendanceLogs;
+        Dictionary<string, DataTable> mAttendanceLogs;
 
         //suong
         DataTable mProductSKUHistory_dt = null;
         DataTable mProductSKU_dt = null;
         DataTable mProductpacking_dt = null;
+        DataTable mProductDomesticPrices_dt = null;
         DataTable mExportCodes_dt = null;        
         DataTable mEmployeesInDongGoi_dt = null;
         DataTable mCusromer_dt = null;
@@ -55,6 +61,7 @@ namespace RauViet.classes
         DataTable mEmployeeBankLog_dt = null;
         DataTable mEmployee_POS_DEP_CON_Log_dt = null;
         DataTable mEmployeeSalary_Log_dt = null;
+        
         Dictionary<int, DataTable> mOrderLists;
         Dictionary<int, DataTable> mReportExportByYears;
         Dictionary<int, DataTable> mReportCustomerOrderDetailByYears;
@@ -72,11 +79,7 @@ namespace RauViet.classes
         Dictionary<int, DataTable> mOrderPackingLogs;
         Dictionary<int, DataTable> mDo47Logs;
         Dictionary<int, DataTable> mLotCodeLogs;
-        Dictionary<string, DataTable> mEmployeeDeductionLogs;
-        Dictionary<string, DataTable> mMonthlyAllowanceLogs;
-        Dictionary<int, DataTable> mLeaveAttendanceLogs;
-        Dictionary<string, DataTable> mOvertimeAttendanceLogs;
-        Dictionary<string, DataTable> mAttendanceLogs;
+        
         private SQLStore() { }
 
         public static SQLStore Instance
@@ -112,21 +115,17 @@ namespace RauViet.classes
                 mOrderLogs = new Dictionary<int, DataTable>();
                 mOrderPackingLogs = new Dictionary<int, DataTable>();
                 mDo47Logs = new Dictionary<int, DataTable>();
-                mLotCodeLogs = new Dictionary<int, DataTable>();
-                mEmployeeDeductionLogs = new Dictionary<string, DataTable>();
-                mMonthlyAllowanceLogs = new Dictionary<string, DataTable>();
-                mLeaveAttendanceLogs = new Dictionary<int, DataTable>();
-                mOvertimeAttendanceLogs = new Dictionary<string, DataTable>();
-                mAttendanceLogs = new Dictionary<string, DataTable>();
+                mLotCodeLogs = new Dictionary<int, DataTable>();                
 
                 var productSKUTask = SQLManager.Instance.getProductSKUAsync();
                 var productPackingTask = SQLManager.Instance.getProductpackingAsync();
                 var exportCodesTask = SQLManager.Instance.getExportCodesAsync();
                 var employeesInDongGoiTask = SQLManager.Instance.GetActiveEmployeesIn_DongGoiAsync();
                 var customersTask = SQLManager.Instance.getCustomersAsync();
-                
+                var pdpTask = SQLManager.Instance.getProductDomesticPricesAsync();
+
                 var cartonSizeTask = SQLManager.Instance.getCartonSizeAsync();
-                await Task.WhenAll(productSKUTask, productPackingTask, exportCodesTask, employeesInDongGoiTask, employeesInDongGoiTask, customersTask, cartonSizeTask);
+                await Task.WhenAll(productSKUTask, productPackingTask, exportCodesTask, employeesInDongGoiTask, employeesInDongGoiTask, customersTask, cartonSizeTask, pdpTask);
 
                 if (employeesInDongGoiTask.Status == TaskStatus.RanToCompletion && employeesInDongGoiTask.Result != null) mEmployeesInDongGoi_dt = employeesInDongGoiTask.Result;
                 if (exportCodesTask.Status == TaskStatus.RanToCompletion && exportCodesTask.Result != null) mExportCodes_dt = exportCodesTask.Result;
@@ -134,10 +133,12 @@ namespace RauViet.classes
                 if (productPackingTask.Status == TaskStatus.RanToCompletion && productPackingTask.Result != null) mProductpacking_dt = productPackingTask.Result;
                 if (customersTask.Status == TaskStatus.RanToCompletion && customersTask.Result != null) mCusromer_dt = customersTask.Result;                
                 if (cartonSizeTask.Status == TaskStatus.RanToCompletion && cartonSizeTask.Result != null) mCartonSize_dt = cartonSizeTask.Result;
+                if (pdpTask.Status == TaskStatus.RanToCompletion && pdpTask.Result != null) mProductDomesticPrices_dt = pdpTask.Result;
 
                 editProductSKUA();
                 editExportCodes();
                 editProductpacking();
+                editProductDomesticPrices();
 
                 mExportCodes_dt.DefaultView.Sort = "ExportCodeID ASC";
                 mExportCodes_dt = mExportCodes_dt.DefaultView.ToTable();
@@ -175,6 +176,11 @@ namespace RauViet.classes
                 mAttendances = new Dictionary<string, DataTable>();
                 mSalaryInfoHistories = new Dictionary<string, DataTable>();
                 mSalarySummaryByYears = new Dictionary<int, DataTable>();
+                mEmployeeDeductionLogs = new Dictionary<string, DataTable>();
+                mMonthlyAllowanceLogs = new Dictionary<string, DataTable>();
+                mLeaveAttendanceLogs = new Dictionary<int, DataTable>();
+                mOvertimeAttendanceLogs = new Dictionary<string, DataTable>();
+                mAttendanceLogs = new Dictionary<string, DataTable>();
 
                 var salaryLockTask = SQLManager.Instance.GetSalaryLockAsync();
                 var overtimeTypeAsync = SQLManager.Instance.GetOvertimeTypeAsync();
@@ -1572,6 +1578,24 @@ namespace RauViet.classes
             return mProductpacking_dt;
         }
 
+        public async Task<DataTable> getProductDomesticPricesAsync()
+        {
+            if (mProductDomesticPrices_dt == null)
+            {
+                try
+                {
+                    mProductDomesticPrices_dt = await SQLManager.Instance.getProductDomesticPricesAsync();
+                    editProductDomesticPrices();
+                }
+                catch
+                {
+                    Console.WriteLine("error getProductDomesticPricesAsync SQLStore");
+                    return null;
+                }
+            }
+
+            return mProductDomesticPrices_dt;
+        }
 
         private void editProductpacking()
         {
@@ -1625,6 +1649,31 @@ namespace RauViet.classes
                 }
                 
             }
+        }
+
+        private void editProductDomesticPrices()
+        {
+            mProductDomesticPrices_dt.Columns.Add(new DataColumn("ProductName_VN", typeof(string)));
+            foreach (DataRow dr in mProductDomesticPrices_dt.Rows)
+            {
+                int sku = Convert.ToInt32(dr["SKU"]);
+                DataRow proRow = mProductSKU_dt.Select($"SKU = '{sku}'")[0];
+
+                bool isActive_SKU = Convert.ToBoolean(proRow["IsActive"]);
+                string nameVN = proRow["ProductNameVN"].ToString();
+
+                dr["ProductName_VN"] = nameVN;
+                if(!isActive_SKU)
+                    dr["IsActive"] = isActive_SKU;
+            }
+
+            int count = 0;
+            mProductDomesticPrices_dt.Columns["SKU"].SetOrdinal(count++);
+            mProductDomesticPrices_dt.Columns["ProductName_VN"].SetOrdinal(count++);
+            mProductDomesticPrices_dt.Columns["RawPrice"].SetOrdinal(count++);
+            mProductDomesticPrices_dt.Columns["RefinedPrice"].SetOrdinal(count++);
+            mProductDomesticPrices_dt.Columns["PackedPrice"].SetOrdinal(count++);
+            mProductDomesticPrices_dt.Columns["IsActive"].SetOrdinal(count++);
         }
 
         public async Task<DataTable> GetActiveEmployeesIn_DongGoiAsync()

@@ -32,6 +32,7 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.title_lb = new System.Windows.Forms.Label();
             this.LOT_menuitem = new System.Windows.Forms.MenuStrip();
+            this.historyLogin_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.user_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.nhansu_group_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.sfsdf = new System.Windows.Forms.ToolStripMenuItem();
@@ -93,7 +94,7 @@
             this.aaaaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadExcelOrderReportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.content_panel = new System.Windows.Forms.Panel();
-            this.historyLogin_mi = new System.Windows.Forms.ToolStripMenuItem();
+            this.productDomesticPrices_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1.SuspendLayout();
             this.LOT_menuitem.SuspendLayout();
             this.SuspendLayout();
@@ -143,6 +144,13 @@
             this.LOT_menuitem.Size = new System.Drawing.Size(1388, 25);
             this.LOT_menuitem.TabIndex = 18;
             this.LOT_menuitem.Text = "topMenu_ms";
+            // 
+            // historyLogin_mi
+            // 
+            this.historyLogin_mi.BackColor = System.Drawing.Color.IndianRed;
+            this.historyLogin_mi.Name = "historyLogin_mi";
+            this.historyLogin_mi.Size = new System.Drawing.Size(115, 21);
+            this.historyLogin_mi.Text = "Lịch Sử Vào App";
             // 
             // user_mi
             // 
@@ -384,7 +392,8 @@
             // 
             this.sanpham_group_mi.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.productMain_menuitem,
-            this.productPacking_meniitem});
+            this.productPacking_meniitem,
+            this.productDomesticPrices_mi});
             this.sanpham_group_mi.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.sanpham_group_mi.ForeColor = System.Drawing.Color.OrangeRed;
             this.sanpham_group_mi.Name = "sanpham_group_mi";
@@ -394,13 +403,13 @@
             // productMain_menuitem
             // 
             this.productMain_menuitem.Name = "productMain_menuitem";
-            this.productMain_menuitem.Size = new System.Drawing.Size(199, 22);
+            this.productMain_menuitem.Size = new System.Drawing.Size(216, 22);
             this.productMain_menuitem.Text = "Sản Phẩm Chính";
             // 
             // productPacking_meniitem
             // 
             this.productPacking_meniitem.Name = "productPacking_meniitem";
-            this.productPacking_meniitem.Size = new System.Drawing.Size(199, 22);
+            this.productPacking_meniitem.Size = new System.Drawing.Size(216, 22);
             this.productPacking_meniitem.Text = "Sản Phẩm Quy Cách";
             // 
             // donhang_group_mi
@@ -595,12 +604,11 @@
             this.content_panel.Size = new System.Drawing.Size(1388, 491);
             this.content_panel.TabIndex = 1;
             // 
-            // historyLogin_mi
+            // productDomesticPrices_mi
             // 
-            this.historyLogin_mi.BackColor = System.Drawing.Color.IndianRed;
-            this.historyLogin_mi.Name = "historyLogin_mi";
-            this.historyLogin_mi.Size = new System.Drawing.Size(115, 21);
-            this.historyLogin_mi.Text = "Lịch Sử Vào App";
+            this.productDomesticPrices_mi.Name = "productDomesticPrices_mi";
+            this.productDomesticPrices_mi.Size = new System.Drawing.Size(216, 22);
+            this.productDomesticPrices_mi.Text = "Giá Bán SP Trong Nước";
             // 
             // FormManager
             // 
@@ -688,5 +696,6 @@
         private System.Windows.Forms.ToolStripMenuItem yearlyReport_mi;
         private System.Windows.Forms.ToolStripMenuItem monthlyTotalPerYear_mi;
         private System.Windows.Forms.ToolStripMenuItem historyLogin_mi;
+        private System.Windows.Forms.ToolStripMenuItem productDomesticPrices_mi;
     }
 }

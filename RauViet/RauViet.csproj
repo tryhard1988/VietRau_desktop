@@ -290,6 +290,12 @@
     <Compile Include="ui\OrderManager_sub\MonthlyTotalPerYear.Designer.cs">
       <DependentUpon>MonthlyTotalPerYear.cs</DependentUpon>
     </Compile>
+    <Compile Include="ui\OrderManager_sub\ProductDomesticPrices.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\OrderManager_sub\ProductDomesticPrices.Designer.cs">
+      <DependentUpon>ProductDomesticPrices.cs</DependentUpon>
+    </Compile>
     <Compile Include="ui\OrderManager_sub\YearlyReport.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -623,6 +629,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ui\OrderManager_sub\MonthlyTotalPerYear.resx">
       <DependentUpon>MonthlyTotalPerYear.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\OrderManager_sub\ProductDomesticPrices.resx">
+      <DependentUpon>ProductDomesticPrices.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ui\OrderManager_sub\YearlyReport.resx">
       <DependentUpon>YearlyReport.cs</DependentUpon>

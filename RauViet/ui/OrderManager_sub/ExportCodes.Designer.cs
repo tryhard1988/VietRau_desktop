@@ -31,6 +31,7 @@ namespace RauViet.ui
         {
             this.dataGV = new System.Windows.Forms.DataGridView();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.label1 = new System.Windows.Forms.Label();
             this.log_GV = new System.Windows.Forms.DataGridView();
             this.readOnly_btn = new System.Windows.Forms.Button();
             this.newCustomerBtn = new System.Windows.Forms.Button();
@@ -57,7 +58,6 @@ namespace RauViet.ui
             this.status_lb = new System.Windows.Forms.Label();
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
             this.exportCodeId_tb = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.log_GV)).BeginInit();
@@ -95,6 +95,19 @@ namespace RauViet.ui
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(530, 681);
             this.panel1.TabIndex = 11;
+            // 
+            // label1
+            // 
+            this.label1.BackColor = System.Drawing.Color.PeachPuff;
+            this.label1.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.label1.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.ForeColor = System.Drawing.Color.DarkOliveGreen;
+            this.label1.Location = new System.Drawing.Point(0, 433);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(530, 23);
+            this.label1.TabIndex = 42;
+            this.label1.Text = "Lịch sử thay đổi";
+            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // log_GV
             // 
@@ -360,19 +373,6 @@ namespace RauViet.ui
             this.exportCodeId_tb.Size = new System.Drawing.Size(24, 20);
             this.exportCodeId_tb.TabIndex = 16;
             this.exportCodeId_tb.Visible = false;
-            // 
-            // label1
-            // 
-            this.label1.BackColor = System.Drawing.Color.PeachPuff;
-            this.label1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.label1.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.ForeColor = System.Drawing.Color.DarkOliveGreen;
-            this.label1.Location = new System.Drawing.Point(0, 433);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(530, 23);
-            this.label1.TabIndex = 42;
-            this.label1.Text = "Lịch sử thay đổi";
-            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // ExportCodes
             // 
