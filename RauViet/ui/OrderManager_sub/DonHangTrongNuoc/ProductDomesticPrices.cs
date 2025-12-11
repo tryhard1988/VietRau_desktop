@@ -1,5 +1,4 @@
-﻿using DocumentFormat.OpenXml.Drawing.Charts;
-using RauViet.classes;
+﻿using RauViet.classes;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -32,7 +31,7 @@ namespace RauViet.ui
 
             newCustomerBtn.Click += newBtn_Click;
             LuuThayDoiBtn.Click += saveBtn_Click;
-            dataGV.SelectionChanged += this.dataGV_CellClick;
+            
 
             debounceTimer.Tick += DebounceTimer_Tick;
 
@@ -46,8 +45,7 @@ namespace RauViet.ui
         {
             if (e.KeyCode == Keys.F5)
             {
-                SQLStore.Instance.removeProductpacking();
-                SQLStore.Instance.removeProductSKU();
+                SQLStore.Instance.removeProductDomesticPrices();
                 ShowData();
             }
             else if (!isNewState && !edit_btn.Visible)
@@ -62,13 +60,14 @@ namespace RauViet.ui
                         return; // không xử lý Delete
                     }
 
-                    deletePackingProduct();
+                    deleteProduct();
                 }
             }
         }
 
         public async void ShowData()
         {
+            dataGV.SelectionChanged -= this.dataGV_CellClick;
             await Task.Delay(50);
             loadingOverlay = new LoadingOverlay(this);
             loadingOverlay.Show();
@@ -78,9 +77,6 @@ namespace RauViet.ui
                 var parameters = new Dictionary<string, object> { { "IsActive", true } };
                 mSKU_dt = await SQLStore.Instance.getProductSKUAsync(parameters);
                 mProductDomesticPrices_dt = await SQLStore.Instance.getProductDomesticPricesAsync();
-
-                //foreach (DataColumn col in mProductDomesticPrices_dt.Columns)
-                //    col.ReadOnly = false;
 
                 sku_cbb.DataSource = mSKU_dt;
                 sku_cbb.DisplayMember = "ProductNameVN";  // hiển thị tên
@@ -92,16 +88,6 @@ namespace RauViet.ui
                 DataView dv = mProductDomesticPrices_dt.DefaultView;
                 dv.RowFilter = $"IsActive = true";
 
-                //dataGV.Columns["ProductPackingID"].Visible = false;
-                //dataGV.Columns["IsActive_SKU"].Visible = false;
-                //// dataGV.Columns["Amount"].Visible = false;
-                //// dataGV.Columns["Packing"].Visible = false;
-                //dataGV.Columns["PriceCNF"].Visible = false;
-                //dataGV.Columns["SKU"].Visible = false; 
-                //dataGV.Columns["ProductNameVN_NoSign"].Visible = false;
-                //dataGV.Columns["PackingName"].Visible = false;
-                //dataGV.Columns["Package"].Visible = false;
-                //dataGV.Columns["Amount"].Visible = false;
                 dataGV.Columns["PriceID"].Visible = false;
 
                 dataGV.Columns["ProductName_VN"].HeaderText = "Tên Sản Phẩm";
@@ -110,21 +96,7 @@ namespace RauViet.ui
                 dataGV.Columns["PackedPrice"].HeaderText = "Giá Hàng Đóng Gói";
                 dataGV.Columns["IsActive"].HeaderText = "Active";
 
-
-                //dataGV.Columns["PLU"].Width = 50;
-                //dataGV.Columns["BarCode"].Width = 90;
-                //dataGV.Columns["BarCodeEAN13"].Width = 90;
-                //dataGV.Columns["ArtNr"].Width = 50;
-                //dataGV.Columns["GGN"].Width = 90;
-                //dataGV.Columns["Name_VN"].Width = 200;
-                //dataGV.Columns["Name_EN"].Width = 200;
-                //dataGV.Columns["Priority"].Width = 50;
-                //dataGV.Columns["IsActive"].Width = 30;
-
-
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-
-               // dataGV.Columns["Packing"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
                 updateDataTextBoxFlowSKU();
 
@@ -138,6 +110,14 @@ namespace RauViet.ui
                 LuuThayDoiBtn.TabIndex = countTab++; LuuThayDoiBtn.TabStop = true;
 
                 ReadOnly_btn_Click(null, null);
+                dataGV.SelectionChanged += this.dataGV_CellClick;
+
+                await Task.Delay(100);
+                loadingOverlay.Hide();
+
+                dataGV.Columns["RawPrice"].DefaultCellStyle.Format = "N0";
+                dataGV.Columns["RefinedPrice"].DefaultCellStyle.Format = "N0";
+                dataGV.Columns["PackedPrice"].DefaultCellStyle.Format = "N0";
             }
             catch (Exception ex)
             {
@@ -310,52 +290,51 @@ namespace RauViet.ui
                 createNew(sku, productName, rawPrice, refinePrice, packedPrice);
 
         }
-        private async void deletePackingProduct()
+        private async void deleteProduct()
         {
-            //string id = id_tb.Text;
+            string id = id_tb.Text;
 
-            //foreach (DataRow row in packing_dt.Rows)
-            //{
-            //    string productPackingID = row["ProductPackingID"].ToString();
-            //    if (productPackingID.CompareTo(id) == 0)
-            //    {
-            //        DialogResult dialogResult = MessageBox.Show("Xóa Nha, Chắc Chắn Chưa!", "Thông Báo", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            foreach (DataRow row in mProductDomesticPrices_dt.Rows)
+            {
+                string priceID = row["PriceID"].ToString();
+                if (priceID.CompareTo(id) == 0)
+                {
+                    DialogResult dialogResult = MessageBox.Show("Xóa Nha, Chắc Chắn Chưa!", "Thông Báo", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
-            //        if (dialogResult == DialogResult.Yes)
-            //        {
-            //            try
-            //            {
-            //                bool isScussess = await SQLManager.Instance.deleteProductpackingAsync(Convert.ToInt32(id));
+                    if (dialogResult == DialogResult.Yes)
+                    {
+                        try
+                        {
+                            bool isScussess = await SQLManager.Instance.deleteProductDomesticPriceAsync(Convert.ToInt32(id));
 
-            //                if (isScussess == true)
-            //                {
-            //                    status_lb.Text = "Thành công.";
-            //                    status_lb.ForeColor = Color.Green;
+                            if (isScussess == true)
+                            {
+                                status_lb.Text = "Thành công.";
+                                status_lb.ForeColor = Color.Green;
 
-            //                    packing_dt.Rows.Remove(row);
-            //                    packing_dt.AcceptChanges();
-            //                }
-            //                else
-            //                {
-            //                    status_lb.Text = "Thất bại.";
-            //                    status_lb.ForeColor = Color.Red;
-            //                }
-            //            }
-            //            catch (Exception ex)
-            //            {
-            //                status_lb.Text = "Thất bại.";
-            //                status_lb.ForeColor = Color.Red;
-            //            }
-            //        }
-            //        break;
-            //    }
-            //}
+                                mProductDomesticPrices_dt.Rows.Remove(row);
+                                mProductDomesticPrices_dt.AcceptChanges();
+                            }
+                            else
+                            {
+                                status_lb.Text = "Thất bại.";
+                                status_lb.ForeColor = Color.Red;
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            status_lb.Text = "Thất bại.";
+                            status_lb.ForeColor = Color.Red;
+                        }
+                    }
+                    break;
+                }
+            }
 
         }
 
         private void newBtn_Click(object sender, EventArgs e)
         {
-            sku_cbb.SelectedIndex = -1;
             id_tb.Text = "";
             status_lb.Text = "";
             rawPrice_tb.Text = "";
@@ -372,6 +351,8 @@ namespace RauViet.ui
             sku_cbb.Enabled = true;
             RightUiReadOnly(false);
             isActive_cb.Visible = false;
+
+            sku_cbb.Focus();
 
             RightUiEnable(true);
         }
@@ -409,52 +390,6 @@ namespace RauViet.ui
             RightUiEnable(false);
         }
 
-        //private void sku_cbb_SelectedIndexChanged(object sender, EventArgs e)
-        //{
-        //    if (sku_cbb.SelectedItem != null)
-        //    {
-        //        DataRowView productSKUData = (DataRowView)sku_cbb.SelectedItem;
-
-        //        if (productSKUData["PackingList"].ToString().CompareTo("") != 0)
-        //        {
-        //            string[] arr = productSKUData["PackingList"].ToString().Split('-');
-        //            int top = 00;
-
-        //            foreach (var item in arr)
-        //            {
-        //                RadioButton rb = new RadioButton();
-        //                rb.Text = item;
-        //                rb.Name = item;
-        //                rb.Location = new Point(top, 5);
-        //                rb.AutoSize = true;
-        //                top += 70;
-        //                rb.Checked = true;
-        //             //   rb.TabIndex = sku_cbb.TabIndex + 1;
-        //            }
-
-        //            if (dataGV.SelectedRows.Count > 0)
-        //            {
-        //                foreach (var item in arr)
-        //                {
-        //                    foreach (Control ctrl in packing_panel.Controls)
-        //                    {
-        //                        if (ctrl is RadioButton rb)
-        //                        {
-        //                            var rb1 = (RadioButton)ctrl; //; ;.Checked = true;
-        //                            if (item.Equals(rb1.Name, StringComparison.OrdinalIgnoreCase))
-        //                            {
-        //                                rb.Checked = true;
-        //                                break;
-        //                            }
-        //                        }
-        //                    }
-
-        //                }
-        //            }
-        //        }
-        //    }
-        //}
-
         private void updateDataTextBoxFlowSKU()
         {
             try
@@ -465,17 +400,11 @@ namespace RauViet.ui
                 {
                     var cells = dataGV.SelectedRows[0].Cells;
 
-                    string ID = cells["ProductPackingID"].Value.ToString();
+                    string ID = cells["PriceID"].Value.ToString();
                     string SKU = cells["SKU"].Value.ToString();
-                    string barcode = cells["BarCode"].Value.ToString();
-                    string PLU = cells["PLU"].Value.ToString();
-                    string nameVN = cells["Name_VN"].Value.ToString();
-                    string nameEN = cells["Name_EN"].Value.ToString();
-                    string amount = cells["Amount"].Value.ToString();
-                    string priceCNF = cells["PriceCNF"].Value.ToString();
-                    string barCodeEAN13 = cells["BarCodeEAN13"].Value.ToString();
-                    string artNr = cells["ArtNr"].Value.ToString();
-                    string GGN = cells["GGN"].Value.ToString();
+                    string rawPrice = cells["RawPrice"].Value.ToString();
+                    string refinePrice = cells["RefinedPrice"].Value.ToString();
+                    string packedPrice = cells["PackedPrice"].Value.ToString();
                     bool isActive = Convert.ToBoolean(cells["IsActive"].Value);
 
                     if (!sku_cbb.Items.Cast<object>().Any(i => ((DataRowView)i)["SKU"].ToString() == SKU))
@@ -483,40 +412,20 @@ namespace RauViet.ui
                         sku_cbb.DataSource = mSKU_dt;
                     }
                     sku_cbb.SelectedValue = SKU;
-                    DataRowView productSKUData = (DataRowView)sku_cbb.SelectedItem;
-                    if (productSKUData == null) return;
 
                     id_tb.Text = ID;
-                    rawPrice_tb.Text = barCodeEAN13;
-                    refinedPrice_tb.Text = artNr;
-                    packedPrice_tb.Text = GGN;
+                    rawPrice_tb.Text = rawPrice;
+                    refinedPrice_tb.Text = refinePrice;
+                    packedPrice_tb.Text = packedPrice;
                     isActive_cb.Checked = isActive;
-
-                    if (productSKUData["PackingList"].ToString().CompareTo("") != 0)
-                    {
-                        string[] arr = productSKUData["PackingList"].ToString().Split('-');
-                        int top = 00;
-
-                        foreach (var item in arr)
-                        {
-                            RadioButton rb = new RadioButton();
-                            rb.Text = item;
-                            rb.Location = new Point(top, 5);
-                            rb.AutoSize = true;
-
-                            if (item.Equals(cells["Packing"].Value.ToString(), StringComparison.OrdinalIgnoreCase))
-                            {
-                                rb.Checked = true;
-                            }
-
-                            top += 70;
-                        }
-                    }
 
                     status_lb.Text = "";
                 }
             }
-            catch { };
+            catch (Exception ex)
+            {
+                Console.WriteLine("ERROR: " + ex.Message);
+            };
         }
 
 

@@ -169,7 +169,18 @@ namespace RauViet.ui
                 thongke_main_mi.Visible = false;
             }
 
+            if (UserManager.Instance.hasRole_CreateQR())
+            {
+                QR_mi.Click += CreateQR_mi_Click;
+            }
+            else
+            {
+                extension_mi.Visible = false;
+            }
+                
             historyLogin_mi.Click += HistoryLogin_mi_Click;
+            orderDomesticCode_mi.Click += OrderDomesticCode_mi_Click;
+            orderDomesticDetail_mi.Click += OrderDomesticDetail_mi_Click;
 
             string saved = Properties.Settings.Default.current_form;
             if (Enum.TryParse(saved, out EForm status))
@@ -251,7 +262,10 @@ namespace RauViet.ui
             MonthlyReportForYear,
             YearlyReport,
             MonthlyTotalPerYear,
-            ProductDomesticPrices
+            ProductDomesticPrices,
+            CreateQR,
+            OrderDomesticCode,
+            OrderDomesticDetail
         }
 
         private void openCurrentForm(EForm status)
@@ -402,6 +416,15 @@ namespace RauViet.ui
                     break;
                 case EForm.ProductDomesticPrices:
                     SwitchChildForm<ProductDomesticPrices>("Bảng Giá Bán Trong Nước");
+                    break; 
+                case EForm.CreateQR:
+                    SwitchChildForm<QRForm>("Tạo Mã QR");
+                    break;
+                case EForm.OrderDomesticCode:
+                    SwitchChildForm<OrderDomesticCode>("Tạo Mã Đơn Hàng Trong Nước");
+                    break;
+                case EForm.OrderDomesticDetail:
+                    SwitchChildForm<OrderDomesticDetail>("Chi Tiết Đơn Hàng");
                     break;
             }
             
@@ -457,6 +480,9 @@ namespace RauViet.ui
         private void ChotPhyto_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.ChotPHYTO); }
         private void YearlyReport_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.YearlyReport); }
         private void MonthlyTotalPerYear_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.MonthlyTotalPerYear); }
+        private void CreateQR_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.CreateQR); }
+        private void OrderDomesticCode_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.OrderDomesticCode); }
+        private void OrderDomesticDetail_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.OrderDomesticDetail); }
         private async void checkLoginTimer_Tick(object sender, EventArgs e)
         {
             var isHave = await SQLManager.Instance.HaveOtherComputerLoginAsync();

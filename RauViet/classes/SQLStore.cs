@@ -48,7 +48,8 @@ namespace RauViet.classes
         DataTable mProductSKU_dt = null;
         DataTable mProductpacking_dt = null;
         DataTable mProductDomesticPrices_dt = null;
-        DataTable mExportCodes_dt = null;        
+        DataTable mExportCodes_dt = null;
+        DataTable mOrderDomesticCode_dt = null;
         DataTable mEmployeesInDongGoi_dt = null;
         DataTable mCusromer_dt = null;
         DataTable mCartonSize_dt = null;
@@ -61,8 +62,9 @@ namespace RauViet.classes
         DataTable mEmployeeBankLog_dt = null;
         DataTable mEmployee_POS_DEP_CON_Log_dt = null;
         DataTable mEmployeeSalary_Log_dt = null;
-        
+
         Dictionary<int, DataTable> mOrderLists;
+        Dictionary<int, DataTable> mOrderDomesticDetails;
         Dictionary<int, DataTable> mReportExportByYears;
         Dictionary<int, DataTable> mReportCustomerOrderDetailByYears;
         Dictionary<int, DataTable> mOrdersTotals;
@@ -102,6 +104,7 @@ namespace RauViet.classes
                 mReportExportByYears = new Dictionary<int, DataTable>();
                 mReportCustomerOrderDetailByYears = new Dictionary<int, DataTable>();
                 mOrderLists = new Dictionary<int, DataTable>();
+                mOrderDomesticDetails = new Dictionary<int, DataTable>();
                 mOrdersTotals = new Dictionary<int, DataTable>();
                 mLOTCodes = new Dictionary<int, DataTable>();
                 mOrdersDKKDs = new Dictionary<int, DataTable>();
@@ -120,12 +123,13 @@ namespace RauViet.classes
                 var productSKUTask = SQLManager.Instance.getProductSKUAsync();
                 var productPackingTask = SQLManager.Instance.getProductpackingAsync();
                 var exportCodesTask = SQLManager.Instance.getExportCodesAsync();
+                var orderDomesticCodeTask = SQLManager.Instance.getOrderDomesticCodeAsync();
                 var employeesInDongGoiTask = SQLManager.Instance.GetActiveEmployeesIn_DongGoiAsync();
                 var customersTask = SQLManager.Instance.getCustomersAsync();
                 var pdpTask = SQLManager.Instance.getProductDomesticPricesAsync();
 
                 var cartonSizeTask = SQLManager.Instance.getCartonSizeAsync();
-                await Task.WhenAll(productSKUTask, productPackingTask, exportCodesTask, employeesInDongGoiTask, employeesInDongGoiTask, customersTask, cartonSizeTask, pdpTask);
+                await Task.WhenAll(productSKUTask, productPackingTask, exportCodesTask, employeesInDongGoiTask, employeesInDongGoiTask, customersTask, cartonSizeTask, pdpTask, orderDomesticCodeTask);
 
                 if (employeesInDongGoiTask.Status == TaskStatus.RanToCompletion && employeesInDongGoiTask.Result != null) mEmployeesInDongGoi_dt = employeesInDongGoiTask.Result;
                 if (exportCodesTask.Status == TaskStatus.RanToCompletion && exportCodesTask.Result != null) mExportCodes_dt = exportCodesTask.Result;
@@ -134,11 +138,13 @@ namespace RauViet.classes
                 if (customersTask.Status == TaskStatus.RanToCompletion && customersTask.Result != null) mCusromer_dt = customersTask.Result;                
                 if (cartonSizeTask.Status == TaskStatus.RanToCompletion && cartonSizeTask.Result != null) mCartonSize_dt = cartonSizeTask.Result;
                 if (pdpTask.Status == TaskStatus.RanToCompletion && pdpTask.Result != null) mProductDomesticPrices_dt = pdpTask.Result;
+                if (orderDomesticCodeTask.Status == TaskStatus.RanToCompletion && orderDomesticCodeTask.Result != null) mOrderDomesticCode_dt = orderDomesticCodeTask.Result;
 
                 editProductSKUA();
                 editExportCodes();
                 editProductpacking();
                 editProductDomesticPrices();
+                editOrderDomesticCode();
 
                 mExportCodes_dt.DefaultView.Sort = "ExportCodeID ASC";
                 mExportCodes_dt = mExportCodes_dt.DefaultView.ToTable();
@@ -155,6 +161,23 @@ namespace RauViet.classes
                 {
                     mOrderLists[id] = data;
                     editOrders(data);
+                }
+
+                mOrderDomesticCode_dt.DefaultView.Sort = "OrderDomesticCodeID ASC";
+                mOrderDomesticCode_dt = mOrderDomesticCode_dt.DefaultView.ToTable();
+                var OrderDomesticCodeIds = mOrderDomesticCode_dt.AsEnumerable().Where(r => r.Field<bool>("Complete") == false).Select(r => r.Field<int>("OrderDomesticCodeID")).Take(6).ToList();
+                var tasks1 = OrderDomesticCodeIds.Select(async id =>
+                {
+                    DataTable data = await SQLManager.Instance.getOrderDomesticDetailAsync(id);
+                    return (id, data);
+                }).ToList();
+
+                var results1 = await Task.WhenAll(tasks1);
+
+                foreach (var (id, data) in results1)
+                {
+                    mOrderDomesticDetails[id] = data;
+                    editOrderDomesticDetail(data);
                 }
             }
             catch
@@ -1578,6 +1601,7 @@ namespace RauViet.classes
             return mProductpacking_dt;
         }
 
+        public void removeProductDomesticPrices() { mProductDomesticPrices_dt = null; }
         public async Task<DataTable> getProductDomesticPricesAsync()
         {
             if (mProductDomesticPrices_dt == null)
@@ -2947,6 +2971,162 @@ namespace RauViet.classes
                 mEmployeeSalary_Log_dt = await SQLManager.Instance.GetEmployeeSalary_LogAsync();
             }
             return mEmployeeSalary_Log_dt;
+        }
+
+        public async Task<DataTable> getOrderDomesticCodeAsync()
+        {
+            if (mOrderDomesticCode_dt == null)
+            {
+                try
+                {
+                    mOrderDomesticCode_dt = await SQLManager.Instance.getExportCodesAsync();
+                    editOrderDomesticCode();
+                }
+                catch
+                {
+                    Console.WriteLine("error getExportCodesAsync SQLStore");
+                    return null;
+                }
+            }
+
+            return mOrderDomesticCode_dt;
+        }
+
+        public async Task<DataTable> getOrderDomesticCodeAsync(Dictionary<string, object> parameters)
+        {
+            await getOrderDomesticCodeAsync();
+
+            // 1️⃣ Clone cấu trúc bảng và chỉ giữ lại các cột cần thiết
+            DataTable result = mOrderDomesticCode_dt.Clone();
+
+            // 2️⃣ Lọc dữ liệu theo điều kiện trong parameters
+            IEnumerable<DataRow> filteredRows = mOrderDomesticCode_dt.AsEnumerable();
+
+            int top = 0;
+            if (parameters.ContainsKey("Top"))
+            {
+                top = Convert.ToInt32(parameters["Top"]);
+                parameters.Remove("Top");   // loại khỏi điều kiện filter
+            }
+
+            foreach (var kv in parameters)
+            {
+                string columnName = kv.Key;
+                object value = kv.Value;
+
+                // Kiểm tra tồn tại cột
+                if (mOrderDomesticCode_dt.Columns.Contains(columnName))
+                {
+                    filteredRows = filteredRows.Where(row =>
+                    {
+                        var cellValue = row[columnName];
+                        if (cellValue == DBNull.Value) return false;
+                        return cellValue.Equals(value);
+                    });
+                }
+            }
+
+            // 3️⃣ Lấy 10 dòng mới nhất theo CreatedAt
+            if (top > 0)
+            {
+                filteredRows = filteredRows
+                    .OrderByDescending(r => r.Field<int>("OrderDomesticCodeID"))
+                    .Take(top);
+            }
+
+            // 4️⃣ Thêm các dòng đã lọc vào bảng kết quả (chỉ giữ cột cần)
+            foreach (var row in filteredRows)
+            {
+                result.ImportRow(row);  // copy toàn bộ các cột
+            }
+
+            return result;
+        }
+
+        private void editOrderDomesticCode()
+        {
+            mOrderDomesticCode_dt.Columns.Add(new DataColumn("InputByName", typeof(string)));
+            mOrderDomesticCode_dt.Columns.Add(new DataColumn("InputByName_NoSign", typeof(string)));
+            mOrderDomesticCode_dt.Columns.Add(new DataColumn("PackingByName", typeof(string)));
+
+            foreach (DataRow dr in mOrderDomesticCode_dt.Rows)
+            {
+                int inputBy = Convert.ToInt32(dr["InputBy"]);
+                int packingBy = Convert.ToInt32(dr["PackingBy"]);
+
+                DataRow[] inputByRow = mEmployeesInDongGoi_dt.Select($"EmployeeID = {inputBy}");
+                DataRow[] packingByRow = mEmployeesInDongGoi_dt.Select($"EmployeeID = {packingBy}");
+
+                if (inputByRow.Length > 0)
+                {
+                    string employeeName = inputByRow[0]["FullName"].ToString();
+                    dr["InputByName"] = employeeName;
+                    dr["InputByName_NoSign"] = Utils.RemoveVietnameseSigns(employeeName).Replace(" ", "");
+
+                }
+
+                if (packingByRow.Length > 0)
+                    dr["PackingByName"] = packingByRow[0]["FullName"].ToString();
+            }
+        }
+
+        public async Task<DataTable> getOrderDomesticDetailAsync(int OrderDomesticCodeID)
+        {
+            if (!mOrderDomesticDetails.ContainsKey(OrderDomesticCodeID))
+            {
+                try
+                {
+                    DataTable dt = await SQLManager.Instance.getOrderDomesticDetailAsync(OrderDomesticCodeID);
+                    mOrderDomesticDetails[OrderDomesticCodeID] = dt;
+                    editOrderDomesticDetail(dt);
+                }
+                catch
+                {
+                    Console.WriteLine("error getCustomersAsync SQLStore");
+                    return null;
+                }
+            }
+
+            return mOrderDomesticDetails[OrderDomesticCodeID];
+        }
+
+        private void editOrderDomesticDetail(DataTable data)
+        {
+            data.Columns.Add(new DataColumn("SKU", typeof(int)));
+            data.Columns.Add(new DataColumn("ProductNameVN", typeof(string)));
+            data.Columns.Add(new DataColumn("Package", typeof(string)));
+            data.Columns.Add(new DataColumn("packing", typeof(string)));
+            data.Columns.Add(new DataColumn("Amount", typeof(int)));
+
+            foreach (DataRow dr in data.Rows)
+            {
+                int productPackingID = Convert.ToInt32(dr["ProductPackingID"]);
+                int orderDomesticCodeID = Convert.ToInt32(dr["OrderDomesticCodeID"]);
+                DataRow[] packingRows = mProductpacking_dt.Select($"ProductPackingID = {productPackingID}");
+
+                string proVN = packingRows.Length > 0 ? packingRows[0]["Name_VN"].ToString() : "Unknown"; ;
+
+                dr["ProductNameVN"] = proVN;
+                dr["Amount"] = packingRows.Length > 0 ? Convert.ToInt32(packingRows[0]["Amount"]) : 0;
+                //    dr["PackingType"] = packingRows.Length > 0 ? packingRows[0]["PackingType"].ToString() : "";
+                dr["packing"] = packingRows.Length > 0 ? packingRows[0]["packing"].ToString() : "";
+                dr["SKU"] = packingRows.Length > 0 ? Convert.ToInt32(packingRows[0]["SKU"]) : 0;
+                string package = packingRows.Length > 0 ? packingRows[0]["Package"].ToString() : "";
+                dr["Package"] = package;
+                if (package.CompareTo("weight") == 0)
+                {
+                    dr["PCSReal"] = 0;
+                }
+            }
+
+            int count = 0;
+            data.Columns["OrderDomesticDetailID"].SetOrdinal(count++);
+            data.Columns["ProductNameVN"].SetOrdinal(count++);
+            data.Columns["PCSOrder"].SetOrdinal(count++);
+            data.Columns["NWOrder"].SetOrdinal(count++);
+            data.Columns["PCSReal"].SetOrdinal(count++);
+            data.Columns["NWReal"].SetOrdinal(count++);
+            
         }
     }
 }

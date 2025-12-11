@@ -11,6 +11,7 @@ namespace RauViet.ui
     {
         System.Data.DataTable _employeesInDongGoi_dt, mExportCode_dt;
         DataView mExportCodeLog_dv;
+        private LoadingOverlay loadingOverlay;
         bool isNewState = false;
         public ExportCodes()
         {
@@ -23,8 +24,6 @@ namespace RauViet.ui
             dataGV.MultiSelect = false;
 
             status_lb.Text = "";
-            loading_lb.Text = "Đang tải dữ liệu, vui lòng chờ...";
-            loading_lb.Visible = false;
 
             complete_cb.Visible = UserManager.Instance.hasRole_HoanThanhDonHang();
 
@@ -57,6 +56,10 @@ namespace RauViet.ui
                 DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", " Thay Đổi Giá", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                 if (dialogResult == DialogResult.Yes)
                 {
+                    await Task.Delay(50);
+                    loadingOverlay = new LoadingOverlay(this);
+                    loadingOverlay.Show();
+                    await Task.Delay(200);
                     try
                     {
                         string exportCode = dataGV.CurrentRow.Cells["ExportCode"].Value.ToString();
@@ -81,8 +84,8 @@ namespace RauViet.ui
                     }
                     finally
                     {
-                        loading_lb.Visible = false; // ẩn loading
-                        loading_lb.Enabled = true; // enable lại button
+                        await Task.Delay(100);
+                        loadingOverlay.Hide();
                     }
                 }
             }            
@@ -126,10 +129,10 @@ namespace RauViet.ui
 
         public async void ShowData()
         {
-            this.FormBorderStyle = FormBorderStyle.None;
-            this.Dock = DockStyle.Fill;
-            
-            loading_lb.Visible = true;            
+            await Task.Delay(50);
+            loadingOverlay = new LoadingOverlay(this);
+            loadingOverlay.Show();
+            await Task.Delay(200);
 
             try
             {
@@ -209,8 +212,8 @@ namespace RauViet.ui
             }
             finally
             {
-                loading_lb.Visible = false; // ẩn loading
-                loading_lb.Enabled = true; // enable lại button
+                await Task.Delay(100);
+                loadingOverlay.Hide();
             }
 
             

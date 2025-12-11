@@ -49,6 +49,9 @@ namespace RauViet.ui
                 dataGV.Columns["CustomerID"].HeaderText = "Mã KH";
                 dataGV.Columns["FullName"].HeaderText = "Tên Khách Hàng";
                 dataGV.Columns["CustomerCode"].HeaderText = "Tên In Trên Thùng";
+                dataGV.Columns["Home"].HeaderText = "Nhóm";
+                dataGV.Columns["Company"].HeaderText = "Công Ty";
+                dataGV.Columns["Address"].HeaderText = "Địa Chỉ";
 
                 dataGV.Columns["FullName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 dataGV.Columns["CustomerCode"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
@@ -98,18 +101,21 @@ namespace RauViet.ui
             string customerCode = cells["CustomerCode"].Value.ToString();
             int priority = Convert.ToInt32(cells["Priority"].Value);
             string home = Convert.ToString(cells["Home"].Value);
-
+            string company = Convert.ToString(cells["Company"].Value);
+            string address = Convert.ToString(cells["Address"].Value);
             name_tb.Text = fullName;
             customerCode_tb.Text = customerCode;
             priority_tb.Text = priority.ToString();
             maKH_tb.Text = maKH;
             home_tb.Text = home;
+            company_tb.Text = company;
+            address_tb.Text = address;
             delete_btn.Enabled = true;
 
             status_lb.Text = "";
         }
 
-        private async void updateData(int customerId, string fullName, string code, int priority, string home)
+        private async void updateData(int customerId, string fullName, string code, int priority, string home, string company, string address)
         {
             foreach (DataGridViewRow row in dataGV.Rows)
             {
@@ -121,7 +127,7 @@ namespace RauViet.ui
                     {
                         try
                         {
-                            bool isScussess = await SQLManager.Instance.updateCustomerAsync(customerId, fullName, code, priority, home);
+                            bool isScussess = await SQLManager.Instance.updateCustomerAsync(customerId, fullName, code, priority, home, company, address);
 
                             if (isScussess == true)
                             {
@@ -132,6 +138,8 @@ namespace RauViet.ui
                                 row.Cells["CustomerCode"].Value = code;
                                 row.Cells["Priority"].Value = priority;
                                 row.Cells["Home"].Value = home;
+                                row.Cells["Company"].Value = company;
+                                row.Cells["Address"].Value = address;
                             }
                             else
                             {
@@ -154,7 +162,7 @@ namespace RauViet.ui
             }
         }
 
-        private async void createNew(string fullName, string code, int priority, string home)
+        private async void createNew(string fullName, string code, int priority, string home, string company, string address)
         {
             DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
@@ -162,7 +170,7 @@ namespace RauViet.ui
             {
                 try
                 {
-                    int newId = await SQLManager.Instance.insertCustomerAsync(fullName, code, priority, home);
+                    int newId = await SQLManager.Instance.insertCustomerAsync(fullName, code, priority, home, company, address);
                     if (newId > 0 )
                     {
 
@@ -174,6 +182,8 @@ namespace RauViet.ui
                         drToAdd["CustomerCode"] = code;
                         drToAdd["Priority"] = priority;
                         drToAdd["Home"] = home;
+                        drToAdd["Company"] = company;
+                        drToAdd["Address"] = address;
                         maKH_tb.Text = newId.ToString();
 
 
@@ -219,15 +229,17 @@ namespace RauViet.ui
             string name = name_tb.Text;
             string code = customerCode_tb.Text;
             string home = home_tb.Text;
+            string company = company_tb.Text;
+            string address = address_tb.Text;
             int priority = Convert.ToInt32(priority_tb.Text);
 
             if (code.CompareTo("") == 0)
                 code = name;
 
             if (maKH_tb.Text.Length != 0)
-                updateData(Convert.ToInt32(maKH_tb.Text), name, code, priority, home);
+                updateData(Convert.ToInt32(maKH_tb.Text), name, code, priority, home, company, address);
             else
-                createNew(name, code, priority, home);
+                createNew(name, code, priority, home, company, address);
 
         }
         private async void deleteBtn_Click(object sender, EventArgs e)

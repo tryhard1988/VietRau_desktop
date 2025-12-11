@@ -83,9 +83,10 @@ namespace RauViet.ui
 
         public async void ShowData()
         {
+            await Task.Delay(50);
             loadingOverlay = new LoadingOverlay(this);
             loadingOverlay.Show();
-            await Task.Delay(50);
+            await Task.Delay(200);
             try
             {
                 var cartonSizeTask = SQLStore.Instance.GetCartonSize();                

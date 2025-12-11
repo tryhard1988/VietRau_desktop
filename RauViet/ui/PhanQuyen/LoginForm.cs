@@ -264,9 +264,7 @@ namespace RauViet.ui.PhanQuyen
             }
 
             var dialogResult = MessageBox.Show(
-                $"Có phiên bản mới: {args.CurrentVersion}\n" +
-                $"Phiên bản hiện tại: {args.InstalledVersion}\n\n" +
-                $"Bạn có muốn cập nhật không?",
+                $"Có phiên bản mới, Bạn có muốn cập nhật không?",
                 "Cập nhật ứng dụng",
                 MessageBoxButtons.YesNo
             );

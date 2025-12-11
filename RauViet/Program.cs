@@ -1,4 +1,5 @@
-﻿using RauViet.ui.PhanQuyen;
+﻿using RauViet.ui;
+using RauViet.ui.PhanQuyen;
 using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;

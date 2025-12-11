@@ -88,7 +88,7 @@ namespace RauViet.classes
         public bool hasRole_CustomerDetailPacking() { return hasRole("xuat_cdp"); }
         public bool hasRole_ChamCong() { return hasRole("cc"); }
         public bool hasRole_ThongKe() { return hasRole("tknsvk"); }
-
+        public bool hasRole_CreateQR() { return hasRole("tqr"); }
         public void reset()
         {
             this.userName = "";
