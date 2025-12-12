@@ -1,6 +1,7 @@
 ﻿using RauViet.classes;
 using RauViet.ui.PhanQuyen;
 using System;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 namespace RauViet.ui
@@ -11,11 +12,10 @@ namespace RauViet.ui
         public FormManager()
         {
             InitializeComponent();
-
+            string version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
             this.WindowState = FormWindowState.Maximized;
-            this.Text = "Quản Lý Việt Rau - NV: " + UserManager.Instance.fullName + " [" + UserManager.Instance.employeeCode + "]";            
+            this.Text = $"[{version}] - " + "Quản Lý Việt Rau - NV: " + UserManager.Instance.fullName + " [" + UserManager.Instance.employeeCode + "]";            
             this.Load += FormManager_LoadAsync;
-            
         }
 
         private async void FormManager_LoadAsync(object sender, EventArgs e)

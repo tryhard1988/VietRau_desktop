@@ -1,6 +1,7 @@
 ﻿using RauViet.classes;
 using System;
 using System.Data;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Color = System.Drawing.Color;
@@ -9,7 +10,7 @@ namespace RauViet.ui
 {
     public partial class OrderDomesticCode : Form
     {
-        System.Data.DataTable _employeesInDongGoi_dt, mOrderDomesticCode_dt;
+        System.Data.DataTable _employeesInDongGoi_dt, mOrderDomesticCode_dt, mCustomer_dt;
         private LoadingOverlay loadingOverlay;
         bool isNewState = false;
         public OrderDomesticCode()
@@ -136,12 +137,13 @@ namespace RauViet.ui
             try
             {
                 // Chạy truy vấn trên thread riêng
-                var OrderDomesticCodeTask = SQLStore.Instance.getOrderDomesticCodeAsync();
+                var orderDomesticCodeTask = SQLStore.Instance.getOrderDomesticCodeAsync();
+                var customerTask = SQLStore.Instance.getCustomersAsync();
                 var employeesInDongGoiTask = SQLStore.Instance.GetActiveEmployeesIn_DongGoiAsync();
 
-                await Task.WhenAll(OrderDomesticCodeTask, employeesInDongGoiTask);
+                await Task.WhenAll(orderDomesticCodeTask, employeesInDongGoiTask, customerTask);
 
-                mOrderDomesticCode_dt = OrderDomesticCodeTask.Result;
+                mOrderDomesticCode_dt = orderDomesticCodeTask.Result;
                 _employeesInDongGoi_dt = employeesInDongGoiTask.Result;
                
                 dataGV.DataSource = mOrderDomesticCode_dt;
@@ -151,6 +153,7 @@ namespace RauViet.ui
                 dataGV.Columns["Complete"].HeaderText = "Hoàn Thành";
                 dataGV.Columns["InputByName"].HeaderText = "NV Nhập S.Liệu";
                 dataGV.Columns["PackingByName"].HeaderText = "NV Đóng Gói";
+                dataGV.Columns["CustomerName"].HeaderText = "Khách Hàng";
 
                 dataGV.Columns["OrderDomesticIndex"].Width = 120;
                 dataGV.Columns["DeliveryDate"].Width = 100;
@@ -171,6 +174,16 @@ namespace RauViet.ui
                 packingBy_cbb.DataSource = _employeesInDongGoi_dt;
                 packingBy_cbb.DisplayMember = "FullName";  // hiển thị tên
                 packingBy_cbb.ValueMember = "EmployeeID";
+
+                var rows = customerTask.Result.AsEnumerable().Where(r => !string.IsNullOrWhiteSpace(r.Field<string>("Company")));
+                if (rows.Any())
+                    mCustomer_dt = rows.CopyToDataTable();
+                else
+                    mCustomer_dt = customerTask.Result.Clone(); // bảng rỗng
+
+                customer_cb.DataSource = mCustomer_dt;
+                customer_cb.DisplayMember = "Company";  // hiển thị tên
+                customer_cb.ValueMember = "CustomerID";
 
                 ReadOnly_btn_Click(null, null);
 
@@ -208,6 +221,7 @@ namespace RauViet.ui
             bool complete = Convert.ToBoolean(cells["Complete"].Value);
             int? inputBy = cells["InputBy"].Value == DBNull.Value? (int?) null : Convert.ToInt32(cells["InputBy"].Value);
             int? packingBy = cells["PackingBy"].Value == DBNull.Value? (int?) null : Convert.ToInt32(cells["PackingBy"].Value);
+            int? customerID = cells["CustomerID"].Value == DBNull.Value ? (int?)null : Convert.ToInt32(cells["CustomerID"].Value);
 
             orderDomesticCodeID_tb.Text = orderDomesticCodeID.ToString();
             orderDomesticIndex_tb.Text = orderDomesticIndex.ToString();
@@ -219,13 +233,20 @@ namespace RauViet.ui
             if (packingBy != null)
                 packingBy_cbb.SelectedValue = packingBy;
 
+            if (customerID != null)
+                customer_cb.SelectedValue = customerID;
+
             complete_cb.Checked = complete;
-            complete_cb.AutoCheck = !complete;
-            updatePrice_btn.Enabled = !complete;
-            LuuThayDoiBtn.Enabled = !complete;
-            inputBy_cbb.Enabled = !complete;
-            packingBy_cbb.Enabled = !complete;
-            delete_btn.Enabled = !complete;
+
+            if (readOnly_btn.Visible == true)
+            {
+                complete_cb.AutoCheck = !complete;
+                updatePrice_btn.Enabled = !complete;
+                LuuThayDoiBtn.Enabled = !complete;
+                inputBy_cbb.Enabled = !complete;
+                packingBy_cbb.Enabled = !complete;
+                delete_btn.Enabled = !complete;
+            }
             if (UserManager.Instance.hasRole_HoanThanhDonHang())
                 complete_cb.Visible = true;
             else
@@ -247,7 +268,7 @@ namespace RauViet.ui
             completeCB_CheckedChanged(null, null);
         }
 
-        private async void updateOrderDomesticCode(int orderDomesticCodeID, int orderDomesticIndex, DateTime deliveryDate, int inputBy, int packingBy, bool completed)
+        private async void updateOrderDomesticCode(int orderDomesticCodeID, int orderDomesticIndex, int customerID, DateTime deliveryDate, int inputBy, int packingBy, bool completed)
         {
             foreach (DataRow row in mOrderDomesticCode_dt.Rows)
             {
@@ -259,9 +280,10 @@ namespace RauViet.ui
                     {
                         try
                         {
-                            bool isScussess = await SQLManager.Instance.updateOrderDomesticCodeAsync(orderDomesticCodeID, orderDomesticIndex, deliveryDate, inputBy, packingBy, completed);
+                            bool isScussess = await SQLManager.Instance.updateOrderDomesticCodeAsync(orderDomesticCodeID, orderDomesticIndex, customerID, deliveryDate, inputBy, packingBy, completed);
                             DataRow[] inputByRow = _employeesInDongGoi_dt.Select($"EmployeeID = {inputBy}");
                             DataRow[] packingByRow = _employeesInDongGoi_dt.Select($"EmployeeID = {packingBy}");
+                            DataRow[] customerRow = mCustomer_dt.Select($"CustomerID = {customerID}");
 
                             if (isScussess == true)
                             {
@@ -274,9 +296,11 @@ namespace RauViet.ui
                                 row["DeliveryDate"] = deliveryDate;
                                 row["InputBy"] = inputBy;
                                 row["PackingBy"] = packingBy;
+                                row["CustomerID"] = customerID;
                                 row["Complete"] = completed;
                                 row["InputByName"] = inputByRow[0]["FullName"].ToString();
                                 row["PackingByName"] = packingByRow[0]["FullName"].ToString();
+                                row["CustomerName"] = customerRow[0]["Company"].ToString();
                                 row["InputByName_NoSign"] = Utils.RemoveVietnameseSigns(inputByRow[0]["FullName"].ToString()).Replace(" ", "");
 
                                 if (completed)
@@ -305,7 +329,7 @@ namespace RauViet.ui
             }
         }
 
-        private async void createExportCode(int orderDomesticIndex, DateTime deliveryDate, int inputBy, int packingBy)
+        private async void createExportCode(int orderDomesticIndex, int customerID, DateTime deliveryDate, int inputBy, int packingBy)
         {
             DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", " Tạo Mới Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
@@ -315,7 +339,8 @@ namespace RauViet.ui
                 {
                     DataRow[] inputByRow = _employeesInDongGoi_dt.Select($"EmployeeID = {inputBy}");
                     DataRow[] packingByRow = _employeesInDongGoi_dt.Select($"EmployeeID = {packingBy}");
-                    int newId = await SQLManager.Instance.insertOrderDomesticCodeAsync(orderDomesticIndex, deliveryDate, inputBy, packingBy);
+                    DataRow[] customerRow = mCustomer_dt.Select($"CustomerID = {customerID}");
+                    int newId = await SQLManager.Instance.insertOrderDomesticCodeAsync(orderDomesticIndex, customerID, deliveryDate, inputBy, packingBy);
                     if (newId > 0)
                     {
                        // _ = SQLManager.Instance.InsertExportCodeLogAsync(exportCode, "Tạo Mới Thành Công", exportDate, exRate, shippingCost, inputByRow[0]["FullName"].ToString(), packingByRow[0]["FullName"].ToString(), false);
@@ -328,8 +353,10 @@ namespace RauViet.ui
                         drToAdd["Complete"] = false;
                         drToAdd["InputBy"] = inputBy;
                         drToAdd["PackingBy"] = packingBy;
+                        drToAdd["CustomerID"] = customerID;
                         drToAdd["InputByName"] = inputByRow[0]["FullName"].ToString(); ;
                         drToAdd["PackingByName"] = packingByRow[0]["FullName"].ToString();
+                        drToAdd["CustomerName"] = customerRow[0]["Company"].ToString();
                         drToAdd["InputByName_NoSign"] = Utils.RemoveVietnameseSigns(inputByRow[0]["FullName"].ToString()).Replace(" ", "");
                         
 
@@ -360,7 +387,7 @@ namespace RauViet.ui
         }
         private async void saveBtn_Click(object sender, EventArgs e)
         {
-            if(orderDomesticIndex_tb.Text.CompareTo("") == 0 || inputBy_cbb.SelectedValue == null || packingBy_cbb.SelectedValue == null)
+            if(orderDomesticIndex_tb.Text.CompareTo("") == 0 || inputBy_cbb.SelectedValue == null || packingBy_cbb.SelectedValue == null || customer_cb.SelectedValue == null)
             {
                 MessageBox.Show("Dữ Liệu Không hợp Lệ, Kiểm Tra Lại!", "Thông Báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -372,12 +399,12 @@ namespace RauViet.ui
             int orderDomesticIndex = Convert.ToInt32(orderDomesticIndex_tb.Text);
             int inputBy = Convert.ToInt32(inputBy_cbb.SelectedValue);
             int packingBy = Convert.ToInt32(packingBy_cbb.SelectedValue);
-
+            int customerID = Convert.ToInt32(customer_cb.SelectedValue);
 
             if (orderDomesticCodeID_tb.Text.Length != 0)
-                updateOrderDomesticCode(Convert.ToInt32(orderDomesticCodeID_tb.Text), orderDomesticIndex, deliveryDate, inputBy, packingBy, complete_cb.Checked);
+                updateOrderDomesticCode(Convert.ToInt32(orderDomesticCodeID_tb.Text), orderDomesticIndex, customerID, deliveryDate, inputBy, packingBy, complete_cb.Checked);
             else
-                createExportCode(orderDomesticIndex, deliveryDate, inputBy, packingBy);
+                createExportCode(orderDomesticIndex, customerID, deliveryDate, inputBy, packingBy);
 
         }
         private async void deleteBtn_Click(object sender, EventArgs e)
@@ -452,7 +479,6 @@ namespace RauViet.ui
             LuuThayDoiBtn.Enabled = true;
             complete_cb.Checked = false;
             complete_cb.AutoCheck = true;
-            deliveryDate_dtp.Enabled = true;
         }
 
         private void ReadOnly_btn_Click(object sender, EventArgs e)
@@ -468,11 +494,8 @@ namespace RauViet.ui
             rightUIReadOnly(true);
             updatePrice_btn.Visible = false;
             autoCreateExportId_btn.Visible = false;
-            deliveryDate_dtp.Enabled = false;
-            if (dataGV.SelectedRows.Count > 0)
-            {
-                updateRightUI(0);
-            }
+
+            dataGV_CellClick(null, null);
         }
 
         private void Edit_btn_Click(object sender, EventArgs e)
@@ -492,7 +515,8 @@ namespace RauViet.ui
 
         private void completeCB_CheckedChanged(object sender, EventArgs e)
         {
-            deliveryDate_dtp.Enabled = !complete_cb.Checked;
+            if(readOnly_btn.Visible == true)
+                deliveryDate_dtp.Enabled = !complete_cb.Checked;
         }
 
         private async void exRate_btn_Click(object sender, EventArgs e)
@@ -512,6 +536,9 @@ namespace RauViet.ui
             orderDomesticIndex_tb.ReadOnly = isReadOnly;       
             inputBy_cbb.Enabled = !isReadOnly;
             packingBy_cbb.Enabled = !isReadOnly;
+            deliveryDate_dtp.Enabled = !isReadOnly;
+            complete_cb.Enabled = !isReadOnly;
+            customer_cb.Enabled = !isReadOnly;
         }
     }
 }

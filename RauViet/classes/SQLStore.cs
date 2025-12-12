@@ -62,6 +62,7 @@ namespace RauViet.classes
         DataTable mEmployeeBankLog_dt = null;
         DataTable mEmployee_POS_DEP_CON_Log_dt = null;
         DataTable mEmployeeSalary_Log_dt = null;
+        DataTable mProductType_dt = null;
 
         Dictionary<int, DataTable> mOrderLists;
         Dictionary<int, DataTable> mOrderDomesticDetails;
@@ -127,9 +128,9 @@ namespace RauViet.classes
                 var employeesInDongGoiTask = SQLManager.Instance.GetActiveEmployeesIn_DongGoiAsync();
                 var customersTask = SQLManager.Instance.getCustomersAsync();
                 var pdpTask = SQLManager.Instance.getProductDomesticPricesAsync();
-
+                var productTypeTask = SQLManager.Instance.getProductTypeAsync();
                 var cartonSizeTask = SQLManager.Instance.getCartonSizeAsync();
-                await Task.WhenAll(productSKUTask, productPackingTask, exportCodesTask, employeesInDongGoiTask, employeesInDongGoiTask, customersTask, cartonSizeTask, pdpTask, orderDomesticCodeTask);
+                await Task.WhenAll(productSKUTask, productPackingTask, exportCodesTask, employeesInDongGoiTask, employeesInDongGoiTask, customersTask, cartonSizeTask, pdpTask, orderDomesticCodeTask, productTypeTask);
 
                 if (employeesInDongGoiTask.Status == TaskStatus.RanToCompletion && employeesInDongGoiTask.Result != null) mEmployeesInDongGoi_dt = employeesInDongGoiTask.Result;
                 if (exportCodesTask.Status == TaskStatus.RanToCompletion && exportCodesTask.Result != null) mExportCodes_dt = exportCodesTask.Result;
@@ -139,6 +140,7 @@ namespace RauViet.classes
                 if (cartonSizeTask.Status == TaskStatus.RanToCompletion && cartonSizeTask.Result != null) mCartonSize_dt = cartonSizeTask.Result;
                 if (pdpTask.Status == TaskStatus.RanToCompletion && pdpTask.Result != null) mProductDomesticPrices_dt = pdpTask.Result;
                 if (orderDomesticCodeTask.Status == TaskStatus.RanToCompletion && orderDomesticCodeTask.Result != null) mOrderDomesticCode_dt = orderDomesticCodeTask.Result;
+                if (productTypeTask.Status == TaskStatus.RanToCompletion && productTypeTask.Result != null) mProductType_dt = productTypeTask.Result;
 
                 editProductSKUA();
                 editExportCodes();
@@ -1678,6 +1680,9 @@ namespace RauViet.classes
         private void editProductDomesticPrices()
         {
             mProductDomesticPrices_dt.Columns.Add(new DataColumn("ProductName_VN", typeof(string)));
+            mProductDomesticPrices_dt.Columns.Add(new DataColumn("ProductNameVN_NoSign", typeof(string))); 
+            mProductDomesticPrices_dt.Columns.Add(new DataColumn("Package", typeof(string)));
+            mProductDomesticPrices_dt.Columns.Add(new DataColumn("Priority", typeof(int)));
             foreach (DataRow dr in mProductDomesticPrices_dt.Rows)
             {
                 int sku = Convert.ToInt32(dr["SKU"]);
@@ -1685,9 +1690,13 @@ namespace RauViet.classes
 
                 bool isActive_SKU = Convert.ToBoolean(proRow["IsActive"]);
                 string nameVN = proRow["ProductNameVN"].ToString();
+                string package = proRow["Package"].ToString();
 
                 dr["ProductName_VN"] = nameVN;
-                if(!isActive_SKU)
+                dr["Priority"] = Convert.ToInt32(proRow["Priority"]);
+                dr["ProductNameVN_NoSign"] = Utils.RemoveVietnameseSigns(nameVN + " " + sku).ToLower();
+                dr["Package"] = package;
+                if (!isActive_SKU)
                     dr["IsActive"] = isActive_SKU;
             }
 
@@ -3048,14 +3057,17 @@ namespace RauViet.classes
             mOrderDomesticCode_dt.Columns.Add(new DataColumn("InputByName", typeof(string)));
             mOrderDomesticCode_dt.Columns.Add(new DataColumn("InputByName_NoSign", typeof(string)));
             mOrderDomesticCode_dt.Columns.Add(new DataColumn("PackingByName", typeof(string)));
+            mOrderDomesticCode_dt.Columns.Add(new DataColumn("CustomerName", typeof(string)));
 
             foreach (DataRow dr in mOrderDomesticCode_dt.Rows)
             {
                 int inputBy = Convert.ToInt32(dr["InputBy"]);
                 int packingBy = Convert.ToInt32(dr["PackingBy"]);
+                int customerID = Convert.ToInt32(dr["CustomerID"]);
 
                 DataRow[] inputByRow = mEmployeesInDongGoi_dt.Select($"EmployeeID = {inputBy}");
                 DataRow[] packingByRow = mEmployeesInDongGoi_dt.Select($"EmployeeID = {packingBy}");
+                DataRow[] customerRow = mCusromer_dt.Select($"CustomerID = {customerID}");
 
                 if (inputByRow.Length > 0)
                 {
@@ -3067,6 +3079,8 @@ namespace RauViet.classes
 
                 if (packingByRow.Length > 0)
                     dr["PackingByName"] = packingByRow[0]["FullName"].ToString();
+                if (customerRow.Length > 0)
+                    dr["CustomerName"] = customerRow[0]["Company"].ToString();
             }
         }
 
@@ -3094,6 +3108,7 @@ namespace RauViet.classes
         {
             data.Columns.Add(new DataColumn("SKU", typeof(int)));
             data.Columns.Add(new DataColumn("ProductNameVN", typeof(string)));
+            data.Columns.Add(new DataColumn("ProductTypeName", typeof(string)));
             data.Columns.Add(new DataColumn("Package", typeof(string)));
             data.Columns.Add(new DataColumn("packing", typeof(string)));
             data.Columns.Add(new DataColumn("Amount", typeof(int)));
@@ -3101,14 +3116,16 @@ namespace RauViet.classes
             foreach (DataRow dr in data.Rows)
             {
                 int productPackingID = Convert.ToInt32(dr["ProductPackingID"]);
-                int orderDomesticCodeID = Convert.ToInt32(dr["OrderDomesticCodeID"]);
+                string customerProductTypesCode = Convert.ToString(dr["CustomerProductTypesCode"]);
+
                 DataRow[] packingRows = mProductpacking_dt.Select($"ProductPackingID = {productPackingID}");
+                DataRow[] productTypeRows = mProductType_dt.Select($"CustomerProductTypesCode = '{customerProductTypesCode}'");
 
                 string proVN = packingRows.Length > 0 ? packingRows[0]["Name_VN"].ToString() : "Unknown"; ;
 
                 dr["ProductNameVN"] = proVN;
+                dr["ProductTypeName"] = productTypeRows.Length > 0 ? Convert.ToString(productTypeRows[0]["TypeName"]) : "";
                 dr["Amount"] = packingRows.Length > 0 ? Convert.ToInt32(packingRows[0]["Amount"]) : 0;
-                //    dr["PackingType"] = packingRows.Length > 0 ? packingRows[0]["PackingType"].ToString() : "";
                 dr["packing"] = packingRows.Length > 0 ? packingRows[0]["packing"].ToString() : "";
                 dr["SKU"] = packingRows.Length > 0 ? Convert.ToInt32(packingRows[0]["SKU"]) : 0;
                 string package = packingRows.Length > 0 ? packingRows[0]["Package"].ToString() : "";
@@ -3127,6 +3144,24 @@ namespace RauViet.classes
             data.Columns["PCSReal"].SetOrdinal(count++);
             data.Columns["NWReal"].SetOrdinal(count++);
             
+        }
+
+        public async Task<DataTable> getProductTypeAsync()
+        {
+            if (mProductType_dt == null)
+            {
+                try
+                {
+                    mProductType_dt = await SQLManager.Instance.getProductTypeAsync();
+                }
+                catch
+                {
+                    Console.WriteLine("error getCustomersAsync SQLStore");
+                    return null;
+                }
+            }
+
+            return mProductType_dt;
         }
     }
 }

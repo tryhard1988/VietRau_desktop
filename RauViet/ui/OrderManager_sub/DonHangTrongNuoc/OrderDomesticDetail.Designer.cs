@@ -37,7 +37,7 @@ namespace RauViet.ui
             this.total_label = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.panel3 = new System.Windows.Forms.Panel();
-            this.exportCode_search_cbb = new System.Windows.Forms.ComboBox();
+            this.orderDomesticCode_cbb = new System.Windows.Forms.ComboBox();
             this.panel1 = new System.Windows.Forms.Panel();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.label9 = new System.Windows.Forms.Label();
@@ -52,17 +52,18 @@ namespace RauViet.ui
             this.newCustomerBtn = new System.Windows.Forms.Button();
             this.edit_btn = new System.Windows.Forms.Button();
             this.info_gb = new System.Windows.Forms.GroupBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.productType_CBB = new System.Windows.Forms.ComboBox();
             this.label3 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
-            this.PCSOther_tb = new System.Windows.Forms.TextBox();
+            this.PCSOrder_tb = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.packing_ccb = new System.Windows.Forms.ComboBox();
-            this.netWeight_tb = new System.Windows.Forms.TextBox();
+            this.nwOder_tb = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
             this.product_ccb = new System.Windows.Forms.ComboBox();
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
-            this.priceCNF_tb = new System.Windows.Forms.TextBox();
-            this.orderId_tb = new System.Windows.Forms.TextBox();
+            this.orderDomesticDetailID_tb = new System.Windows.Forms.TextBox();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
             this.panel4.SuspendLayout();
@@ -159,23 +160,23 @@ namespace RauViet.ui
             // 
             // panel3
             // 
-            this.panel3.Controls.Add(this.exportCode_search_cbb);
+            this.panel3.Controls.Add(this.orderDomesticCode_cbb);
             this.panel3.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel3.Location = new System.Drawing.Point(0, 0);
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(771, 24);
             this.panel3.TabIndex = 73;
             // 
-            // exportCode_search_cbb
+            // orderDomesticCode_cbb
             // 
-            this.exportCode_search_cbb.BackColor = System.Drawing.Color.White;
-            this.exportCode_search_cbb.Dock = System.Windows.Forms.DockStyle.Right;
-            this.exportCode_search_cbb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.exportCode_search_cbb.FormattingEnabled = true;
-            this.exportCode_search_cbb.Location = new System.Drawing.Point(603, 0);
-            this.exportCode_search_cbb.Name = "exportCode_search_cbb";
-            this.exportCode_search_cbb.Size = new System.Drawing.Size(168, 21);
-            this.exportCode_search_cbb.TabIndex = 37;
+            this.orderDomesticCode_cbb.BackColor = System.Drawing.Color.White;
+            this.orderDomesticCode_cbb.Dock = System.Windows.Forms.DockStyle.Right;
+            this.orderDomesticCode_cbb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.orderDomesticCode_cbb.FormattingEnabled = true;
+            this.orderDomesticCode_cbb.Location = new System.Drawing.Point(603, 0);
+            this.orderDomesticCode_cbb.Name = "orderDomesticCode_cbb";
+            this.orderDomesticCode_cbb.Size = new System.Drawing.Size(168, 21);
+            this.orderDomesticCode_cbb.TabIndex = 37;
             // 
             // panel1
             // 
@@ -187,8 +188,7 @@ namespace RauViet.ui
             this.panel1.Controls.Add(this.edit_btn);
             this.panel1.Controls.Add(this.info_gb);
             this.panel1.Controls.Add(this.LuuThayDoiBtn);
-            this.panel1.Controls.Add(this.priceCNF_tb);
-            this.panel1.Controls.Add(this.orderId_tb);
+            this.panel1.Controls.Add(this.orderDomesticDetailID_tb);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Left;
             this.panel1.Location = new System.Drawing.Point(771, 0);
             this.panel1.Name = "panel1";
@@ -336,12 +336,14 @@ namespace RauViet.ui
             // 
             // info_gb
             // 
+            this.info_gb.Controls.Add(this.label2);
+            this.info_gb.Controls.Add(this.productType_CBB);
             this.info_gb.Controls.Add(this.label3);
             this.info_gb.Controls.Add(this.label5);
-            this.info_gb.Controls.Add(this.PCSOther_tb);
+            this.info_gb.Controls.Add(this.PCSOrder_tb);
             this.info_gb.Controls.Add(this.label6);
             this.info_gb.Controls.Add(this.packing_ccb);
-            this.info_gb.Controls.Add(this.netWeight_tb);
+            this.info_gb.Controls.Add(this.nwOder_tb);
             this.info_gb.Controls.Add(this.label7);
             this.info_gb.Controls.Add(this.product_ccb);
             this.info_gb.Location = new System.Drawing.Point(17, 180);
@@ -350,11 +352,32 @@ namespace RauViet.ui
             this.info_gb.TabIndex = 40;
             this.info_gb.TabStop = false;
             // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.Location = new System.Drawing.Point(10, 56);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(68, 16);
+            this.label2.TabIndex = 34;
+            this.label2.Text = "Loại Hàng:";
+            // 
+            // productType_CBB
+            // 
+            this.productType_CBB.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.productType_CBB.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.productType_CBB.FormattingEnabled = true;
+            this.productType_CBB.IntegralHeight = false;
+            this.productType_CBB.Location = new System.Drawing.Point(114, 55);
+            this.productType_CBB.Name = "productType_CBB";
+            this.productType_CBB.Size = new System.Drawing.Size(166, 24);
+            this.productType_CBB.TabIndex = 35;
+            // 
             // label3
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(7, 60);
+            this.label3.Location = new System.Drawing.Point(10, 20);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(96, 16);
             this.label3.TabIndex = 11;
@@ -364,25 +387,25 @@ namespace RauViet.ui
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(7, 132);
+            this.label5.Location = new System.Drawing.Point(10, 131);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(71, 16);
             this.label5.TabIndex = 13;
             this.label5.Text = "PCS Other:";
             // 
-            // PCSOther_tb
+            // PCSOrder_tb
             // 
-            this.PCSOther_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.PCSOther_tb.Location = new System.Drawing.Point(112, 133);
-            this.PCSOther_tb.Name = "PCSOther_tb";
-            this.PCSOther_tb.Size = new System.Drawing.Size(93, 23);
-            this.PCSOther_tb.TabIndex = 20;
+            this.PCSOrder_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.PCSOrder_tb.Location = new System.Drawing.Point(114, 130);
+            this.PCSOrder_tb.Name = "PCSOrder_tb";
+            this.PCSOrder_tb.Size = new System.Drawing.Size(93, 23);
+            this.PCSOrder_tb.TabIndex = 20;
             // 
             // label6
             // 
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label6.Location = new System.Drawing.Point(7, 168);
+            this.label6.Location = new System.Drawing.Point(10, 168);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(103, 16);
             this.label6.TabIndex = 28;
@@ -393,24 +416,24 @@ namespace RauViet.ui
             this.packing_ccb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.packing_ccb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.packing_ccb.FormattingEnabled = true;
-            this.packing_ccb.Location = new System.Drawing.Point(112, 95);
+            this.packing_ccb.Location = new System.Drawing.Point(115, 92);
             this.packing_ccb.Name = "packing_ccb";
             this.packing_ccb.Size = new System.Drawing.Size(93, 24);
             this.packing_ccb.TabIndex = 33;
             // 
-            // netWeight_tb
+            // nwOder_tb
             // 
-            this.netWeight_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.netWeight_tb.Location = new System.Drawing.Point(112, 169);
-            this.netWeight_tb.Name = "netWeight_tb";
-            this.netWeight_tb.Size = new System.Drawing.Size(93, 23);
-            this.netWeight_tb.TabIndex = 29;
+            this.nwOder_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.nwOder_tb.Location = new System.Drawing.Point(114, 166);
+            this.nwOder_tb.Name = "nwOder_tb";
+            this.nwOder_tb.Size = new System.Drawing.Size(93, 23);
+            this.nwOder_tb.TabIndex = 29;
             // 
             // label7
             // 
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label7.Location = new System.Drawing.Point(7, 95);
+            this.label7.Location = new System.Drawing.Point(11, 93);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(66, 16);
             this.label7.TabIndex = 32;
@@ -421,7 +444,7 @@ namespace RauViet.ui
             this.product_ccb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.product_ccb.FormattingEnabled = true;
             this.product_ccb.IntegralHeight = false;
-            this.product_ccb.Location = new System.Drawing.Point(112, 59);
+            this.product_ccb.Location = new System.Drawing.Point(114, 19);
             this.product_ccb.Name = "product_ccb";
             this.product_ccb.Size = new System.Drawing.Size(259, 24);
             this.product_ccb.TabIndex = 31;
@@ -438,23 +461,14 @@ namespace RauViet.ui
             this.LuuThayDoiBtn.Text = "Lưu";
             this.LuuThayDoiBtn.UseVisualStyleBackColor = false;
             // 
-            // priceCNF_tb
+            // orderDomesticDetailID_tb
             // 
-            this.priceCNF_tb.Location = new System.Drawing.Point(17, 649);
-            this.priceCNF_tb.Name = "priceCNF_tb";
-            this.priceCNF_tb.ReadOnly = true;
-            this.priceCNF_tb.Size = new System.Drawing.Size(56, 20);
-            this.priceCNF_tb.TabIndex = 19;
-            this.priceCNF_tb.Visible = false;
-            // 
-            // orderId_tb
-            // 
-            this.orderId_tb.Location = new System.Drawing.Point(88, 649);
-            this.orderId_tb.Name = "orderId_tb";
-            this.orderId_tb.ReadOnly = true;
-            this.orderId_tb.Size = new System.Drawing.Size(32, 20);
-            this.orderId_tb.TabIndex = 16;
-            this.orderId_tb.Visible = false;
+            this.orderDomesticDetailID_tb.Location = new System.Drawing.Point(88, 649);
+            this.orderDomesticDetailID_tb.Name = "orderDomesticDetailID_tb";
+            this.orderDomesticDetailID_tb.ReadOnly = true;
+            this.orderDomesticDetailID_tb.Size = new System.Drawing.Size(32, 20);
+            this.orderDomesticDetailID_tb.TabIndex = 16;
+            this.orderDomesticDetailID_tb.Visible = false;
             // 
             // OrderDomesticDetail
             // 
@@ -484,7 +498,7 @@ namespace RauViet.ui
 
         #endregion
         private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.ComboBox exportCode_search_cbb;
+        private System.Windows.Forms.ComboBox orderDomesticCode_cbb;
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.DataGridView dataGV;
         private System.Windows.Forms.Panel panel4;
@@ -508,14 +522,15 @@ namespace RauViet.ui
         private System.Windows.Forms.GroupBox info_gb;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.TextBox PCSOther_tb;
+        private System.Windows.Forms.TextBox PCSOrder_tb;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.ComboBox packing_ccb;
-        private System.Windows.Forms.TextBox netWeight_tb;
+        private System.Windows.Forms.TextBox nwOder_tb;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.ComboBox product_ccb;
         private System.Windows.Forms.Button LuuThayDoiBtn;
-        private System.Windows.Forms.TextBox priceCNF_tb;
-        private System.Windows.Forms.TextBox orderId_tb;
+        private System.Windows.Forms.TextBox orderDomesticDetailID_tb;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.ComboBox productType_CBB;
     }
 }

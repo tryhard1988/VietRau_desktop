@@ -485,7 +485,7 @@ namespace RauViet.classes
             using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
             {
                 await con.OpenAsync();
-                string query = "SELECT * FROM ExportCodes ORDER BY ExportCodeID DESC";
+                string query = "SELECT TOP 30 * FROM ExportCodes ORDER BY ExportCodeID DESC";
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                 {
@@ -5233,12 +5233,12 @@ namespace RauViet.classes
             return dt;
         }
 
-        public async Task<int> insertOrderDomesticCodeAsync(int orderDomesticIndex, DateTime deliveryDate, int inputBy, int packingBy)
+        public async Task<int> insertOrderDomesticCodeAsync(int orderDomesticIndex, int customerID, DateTime deliveryDate, int inputBy, int packingBy)
         {
             int newId = -1;
-            string query = @"INSERT INTO OrderDomesticCode (OrderDomesticIndex, DeliveryDate, InputBy, PackingBy) 
+            string query = @"INSERT INTO OrderDomesticCode (OrderDomesticIndex, CustomerID, DeliveryDate, InputBy, PackingBy) 
                                 OUTPUT INSERTED.OrderDomesticCodeID
-                                VALUES (@OrderDomesticIndex, @DeliveryDate, @InputBy, @PackingBy)";
+                                VALUES (@OrderDomesticIndex, @CustomerID, @DeliveryDate, @InputBy, @PackingBy)";
             try
             {
                 using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
@@ -5247,6 +5247,7 @@ namespace RauViet.classes
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
                         cmd.Parameters.AddWithValue("@OrderDomesticIndex", orderDomesticIndex);
+                        cmd.Parameters.AddWithValue("@CustomerID", customerID);
                         cmd.Parameters.AddWithValue("@DeliveryDate", deliveryDate);
                         cmd.Parameters.AddWithValue("@InputBy", inputBy);
                         cmd.Parameters.AddWithValue("@PackingBy", packingBy);
@@ -5261,10 +5262,11 @@ namespace RauViet.classes
             catch { return -1; }
         }
 
-        public async Task<bool> updateOrderDomesticCodeAsync(int orderDomesticCodeID, int orderDomesticIndex, DateTime deliveryDate, int inputBy, int packingBy, bool completed)
+        public async Task<bool> updateOrderDomesticCodeAsync(int orderDomesticCodeID, int orderDomesticIndex, int customerID, DateTime deliveryDate, int inputBy, int packingBy, bool completed)
         {
             string query = @"UPDATE OrderDomesticCode SET 
                                 OrderDomesticIndex=@OrderDomesticIndex, 
+                                CustomerID=@CustomerID,
                                 DeliveryDate=@DeliveryDate, 
                                 InputBy=@InputBy, 
                                 PackingBy=@PackingBy, 
@@ -5279,6 +5281,7 @@ namespace RauViet.classes
                     {
                         cmd.Parameters.AddWithValue("@OrderDomesticCodeID", orderDomesticCodeID);
                         cmd.Parameters.AddWithValue("@OrderDomesticIndex", orderDomesticIndex);
+                        cmd.Parameters.AddWithValue("@CustomerID", customerID);
                         cmd.Parameters.AddWithValue("@DeliveryDate", deliveryDate);
                         cmd.Parameters.AddWithValue("@InputBy", inputBy);
                         cmd.Parameters.AddWithValue("@PackingBy", packingBy);
@@ -5306,6 +5309,81 @@ namespace RauViet.classes
                     {
                         dt.Load(reader);
                     }
+                }
+            }
+            return dt;
+        }
+
+        public async Task<bool> updateOrderDomesticDetailAsync(int orderDomesticDetailID, int packingId, string productType, int PCSOrder, decimal NWOrder, decimal price)
+        {
+            string query = @"UPDATE OrderDomesticDetail SET  
+                                ProductPackingID=@ProductPackingID, 
+                                CustomerProductTypesCode=@CustomerProductTypesCode,
+                                Price=@Price, 
+                                PCSOrder=@PCSOrder, 
+                                NWOrder=@NWOrder
+                             WHERE OrderDomesticDetailID=@OrderDomesticDetailID";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@OrderDomesticDetailID", orderDomesticDetailID);
+                        cmd.Parameters.AddWithValue("@ProductPackingID", packingId);
+                        cmd.Parameters.AddWithValue("@CustomerProductTypesCode", productType);
+                        cmd.Parameters.AddWithValue("@Price", price);
+                        cmd.Parameters.AddWithValue("@PCSOrder", PCSOrder);
+                        cmd.Parameters.AddWithValue("@NWOrder", NWOrder);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+                return true;
+            }
+            catch { return false; }
+        }
+
+        public async Task<int> insertOrderDomesticDetailAsync(int orderDomesticCodeID, int packingId, string productType, int PCSOrder, decimal NWOrder, decimal price)
+        {
+            int newId = -1;
+            string query = @"INSERT INTO OrderDomesticDetail (OrderDomesticCodeID, ProductPackingID, CustomerProductTypesCode, Price, PCSOrder, NWOrder)
+                            OUTPUT INSERTED.OrderDomesticDetailID
+                             VALUES (@OrderDomesticCodeID, @ProductPackingID, @CustomerProductTypesCode, @Price, @PCSOrder, @NWOrder)";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@OrderDomesticCodeID", orderDomesticCodeID);
+                        cmd.Parameters.AddWithValue("@ProductPackingID", packingId);
+                        cmd.Parameters.AddWithValue("@CustomerProductTypesCode", productType);
+                        cmd.Parameters.AddWithValue("@Price", price);
+                        cmd.Parameters.AddWithValue("@PCSOrder", PCSOrder);
+                        cmd.Parameters.AddWithValue("@NWOrder", NWOrder);
+                        object result = await cmd.ExecuteScalarAsync();
+                        if (result != null)
+                            newId = Convert.ToInt32(result);
+                    }
+                }
+                return newId;
+            }
+            catch { return -1; }
+        }
+
+        public async Task<DataTable> getProductTypeAsync()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
+            {
+                await con.OpenAsync();
+                string query = @" SELECT * FROM CustomerProductTypes ";
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                {
+                    dt.Load(reader);
                 }
             }
             return dt;

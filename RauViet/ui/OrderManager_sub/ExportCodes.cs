@@ -249,23 +249,26 @@ namespace RauViet.ui
             exRate_tb.Text = exRate.ToString();
             shippingCost_tb.Text = shippingCost.ToString();
             exportdate_dtp.Value = exportDate;
-
+            complete_cb.Checked = complete;
             if (inputBy != null)
                 inputBy_cbb.SelectedValue = inputBy;
 
             if (packingBy != null)
                 packingBy_cbb.SelectedValue = packingBy;
 
-            complete_cb.Checked = complete;
-            complete_cb.AutoCheck = !complete;
-            updatePrice_btn.Enabled = !complete;
-            LuuThayDoiBtn.Enabled = !complete;
-            exRate_btn.Enabled = !complete;
-            exRate_tb.Enabled = !complete;
-            shippingCost_tb.Enabled = !complete;
-            inputBy_cbb.Enabled = !complete;
-            packingBy_cbb.Enabled = !complete;
-            delete_btn.Enabled = !complete;
+            if (readOnly_btn.Visible == true || complete == true)
+            {
+                
+                complete_cb.AutoCheck = !complete;
+                updatePrice_btn.Enabled = !complete;
+                LuuThayDoiBtn.Enabled = !complete;
+                exRate_btn.Enabled = !complete;
+                exRate_tb.Enabled = !complete;
+                shippingCost_tb.Enabled = !complete;
+                inputBy_cbb.Enabled = !complete;
+                packingBy_cbb.Enabled = !complete;
+                delete_btn.Enabled = !complete;
+            }
             if (UserManager.Instance.hasRole_HoanThanhDonHang())
                 complete_cb.Visible = true;
             else
@@ -534,8 +537,7 @@ namespace RauViet.ui
             LuuThayDoiBtn.Visible = true;
             delete_btn.Visible = false;
             isNewState = true;
-            LuuThayDoiBtn.Text = "Lưu Mới";
-            rightUIReadOnly(false);
+            LuuThayDoiBtn.Text = "Lưu Mới";            
             updatePrice_btn.Visible = false;
             exRate_btn.Visible = true;
             autoCreateExportId_btn.Visible = true;
@@ -545,7 +547,8 @@ namespace RauViet.ui
             shippingCost_tb.Enabled = true;
             complete_cb.Checked = false;
             complete_cb.AutoCheck = true;
-            exportdate_dtp.Enabled = true;
+
+            rightUIReadOnly(false);
         }
 
         private void ReadOnly_btn_Click(object sender, EventArgs e)
@@ -557,16 +560,14 @@ namespace RauViet.ui
             delete_btn.Visible = false;
             info_gb.BackColor = Color.DarkGray;
             isNewState = false;
-            exportCode_tb.Enabled = false;
-            rightUIReadOnly(true);
+            exportCode_tb.Enabled = false;            
             updatePrice_btn.Visible = false;
             exRate_btn.Visible = false;
             autoCreateExportId_btn.Visible = false;
-            exportdate_dtp.Enabled = false;
-            if (dataGV.SelectedRows.Count > 0)
-            {
-                updateRightUI(0);
-            }
+
+            dataGV_CellClick(null, null);
+
+            rightUIReadOnly(true);
         }
 
         private void Edit_btn_Click(object sender, EventArgs e)
@@ -578,16 +579,25 @@ namespace RauViet.ui
             delete_btn.Visible = true;
             info_gb.BackColor = edit_btn.BackColor;
             isNewState = false;
-            LuuThayDoiBtn.Text = "Lưu C.Sửa";
-            rightUIReadOnly(false);
+            LuuThayDoiBtn.Text = "Lưu C.Sửa";            
             updatePrice_btn.Visible = true;
             exRate_btn.Visible = true;
             autoCreateExportId_btn.Visible = false;
+
+            rightUIReadOnly(complete_cb.Checked);
+            complete_cb.Enabled = true;
         }
 
         private void completeCB_CheckedChanged(object sender, EventArgs e)
         {
-            exportdate_dtp.Enabled = !complete_cb.Checked;
+            if (readOnly_btn.Visible == true)
+            {
+                exportdate_dtp.Enabled = !complete_cb.Checked;
+                exRate_tb.ReadOnly = complete_cb.Checked;
+                shippingCost_tb.ReadOnly = complete_cb.Checked;
+                inputBy_cbb.Enabled = !complete_cb.Checked;
+                packingBy_cbb.Enabled = !complete_cb.Checked;
+            }
         }
 
         private async void exRate_btn_Click(object sender, EventArgs e)
@@ -610,6 +620,9 @@ namespace RauViet.ui
             shippingCost_tb.ReadOnly = isReadOnly;
             inputBy_cbb.Enabled = !isReadOnly;
             packingBy_cbb.Enabled = !isReadOnly;
+            exportdate_dtp.Enabled = !isReadOnly;
+            complete_cb.Enabled = !isReadOnly;
+            complete_cb.AutoCheck = !isReadOnly;
         }
     }
 }

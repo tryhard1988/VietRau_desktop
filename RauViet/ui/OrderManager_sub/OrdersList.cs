@@ -653,7 +653,7 @@ namespace RauViet.ui
             string package = packingRows.Length > 0 ? packingRows[0]["Package"].ToString() : "";
             string packing = packingRows.Length > 0 ? packingRows[0]["packing"].ToString() : "";
             int amount = packingRows.Length > 0 ? Convert.ToInt32(packingRows[0]["Amount"]) : 0;
-
+            int sku = Convert.ToInt32(packingRows[0]["SKU"]);
             var rows = mOrders_dt.AsEnumerable()
                 .Where(r => r.Field<int>("ExportCodeID") == exportCodeId) // chỉ lấy ExportCode cần xử lý
                 .ToList();
@@ -690,8 +690,7 @@ namespace RauViet.ui
                             row["PCSOther"] = PCSOther;
                             row["NWOther"] = NWOther;
                             row["OrderPackingPriceCNF"] = priceCNF;
-
-                            
+                            row["SKU"] = sku;
                             row["ExportCode"] = exportCodeRows.Length > 0 ? exportCodeRows[0]["ExportCode"].ToString() : "Unknown";
                             row["Amount"] = amount;
                             row["Package"] = package;
@@ -737,7 +736,7 @@ namespace RauViet.ui
             string package = packingRows.Length > 0 ? packingRows[0]["Package"].ToString() : "";
             string packing = packingRows.Length > 0 ? packingRows[0]["packing"].ToString() : "";
             int amount = packingRows.Length > 0 ? Convert.ToInt32(packingRows[0]["Amount"]) : 0;
-
+            int sku = Convert.ToInt32(packingRows[0]["SKU"]);
             try
             {
                 int newId = await SQLManager.Instance.insertOrderAsync(customerId, exportCodeId, packingId, PCSOther, NWOther, priceCNF);
@@ -762,9 +761,10 @@ namespace RauViet.ui
                     drToAdd["ExportCode"] = exportCodeRows.Length > 0 ? exportCodeRows[0]["ExportCode"].ToString() : "Unknown";
                     drToAdd["CustomerName"] = cusName;
                     drToAdd["ProductNameVN"] = proVN;
+                    drToAdd["SKU"] = sku;
                     drToAdd["Search_NoSign"] = Utils.RemoveVietnameseSigns(cusName + " " + proVN).ToLower();
 
-                    int sku = Convert.ToInt32(packingRows[0]["SKU"]);
+                    
                     DataRow[] prodRows = mProduct_dt.Select($"SKU = {sku}");
                     if (prodRows.Length > 0)
                     {
