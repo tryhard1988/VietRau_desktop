@@ -409,50 +409,50 @@ namespace RauViet.ui
         }
         private async void deleteBtn_Click(object sender, EventArgs e)
         {
-            //string id = orderDomesticCodeID_tb.Text;
+            string id = orderDomesticCodeID_tb.Text;
 
-            //foreach (DataRow row in mOrderDomesticCode_dt.Rows)
-            //{
-            //    string orderDomesticCodeID = row["OrderDomesticCodeID"].ToString();
-            //    if (orderDomesticCodeID.CompareTo(id) == 0)
-            //    {
-            //        DialogResult dialogResult = MessageBox.Show(
-            //            "XÓA THÔNG ĐÓ NHA\nChắc chắn chưa?",
-            //            "Thông Báo",
-            //            MessageBoxButtons.YesNo,
-            //            MessageBoxIcon.Warning  // Thêm icon cảnh báo
-            //        ); 
-            //        if (dialogResult == DialogResult.Yes)
-            //        {
-            //            try
-            //            {
-            //                bool isScussess = await SQLManager.Instance.DeleteExportCodeWithOrdersAsync(Convert.ToInt32(orderDomesticCodeID));
+            foreach (DataRow row in mOrderDomesticCode_dt.Rows)
+            {
+                string orderDomesticCodeID = row["OrderDomesticCodeID"].ToString();
+                if (orderDomesticCodeID.CompareTo(id) == 0)
+                {
+                    DialogResult dialogResult = MessageBox.Show(
+                        "XÓA THÔNG ĐÓ NHA\nChắc chắn chưa?",
+                        "Thông Báo",
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Warning  // Thêm icon cảnh báo
+                    );
+                    if (dialogResult == DialogResult.Yes)
+                    {
+                        try
+                        {
+                            bool isScussess = await SQLManager.Instance.DeleteOrderDomesticCodeAsync(Convert.ToInt32(orderDomesticCodeID));
 
-            //                if (isScussess == true)
-            //                {
-            //                   // _ = SQLManager.Instance.InsertExportCodeLogAsync(exportCode, "Xóa Thành Công", null, null, null, "", "", false);
-            //                    status_lb.Text = "Thành công.";
-            //                    status_lb.ForeColor = Color.Green;
+                            if (isScussess == true)
+                            {
+                                // _ = SQLManager.Instance.InsertExportCodeLogAsync(exportCode, "Xóa Thành Công", null, null, null, "", "", false);
+                                status_lb.Text = "Thành công.";
+                                status_lb.ForeColor = Color.Green;
 
-            //                    mOrderDomesticCode_dt.Rows.Remove(row);
-            //                    mOrderDomesticCode_dt.AcceptChanges();
-            //                }
-            //                else
-            //                {
-            //                    status_lb.Text = "Thất bại.";
-            //                    status_lb.ForeColor = Color.Red;
-            //                }
-            //            }
-            //            catch (Exception ex)
-            //            {
-            //                Console.WriteLine("ERROR Exception "+ ex.Message);
-            //                status_lb.Text = "Thất bại.";
-            //                status_lb.ForeColor = Color.Red;
-            //            }
-            //        }
-            //        break;
-            //    }
-            //}
+                                mOrderDomesticCode_dt.Rows.Remove(row);
+                                mOrderDomesticCode_dt.AcceptChanges();
+                            }
+                            else
+                            {
+                                status_lb.Text = "Thất bại.";
+                                status_lb.ForeColor = Color.Red;
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine("ERROR Exception " + ex.Message);
+                            status_lb.Text = "Thất bại.";
+                            status_lb.ForeColor = Color.Red;
+                        }
+                    }
+                    break;
+                }
+            }
 
         }
 
@@ -517,18 +517,6 @@ namespace RauViet.ui
         {
             if(readOnly_btn.Visible == true)
                 deliveryDate_dtp.Enabled = !complete_cb.Checked;
-        }
-
-        private async void exRate_btn_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                decimal rate = await CurrencyHelper.GetUSDtoCHF_FreeAsync();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Lỗi khi lấy tỷ giá: " + ex.Message);
-            }
         }
 
         private void rightUIReadOnly(bool isReadOnly)

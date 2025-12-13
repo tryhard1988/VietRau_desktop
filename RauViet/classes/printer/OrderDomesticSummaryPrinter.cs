@@ -12,6 +12,8 @@ public class OrderDomesticSummaryPrinter
     private DataTable data;
     private int orderDomesticIndex;
     private DateTime deliveryDate;
+    private string customerCode;
+    private string company;
     int totalPCS = 0;
     decimal totalNetWeight = 0;
     // ------------------- Hàm Print Preview -------------------
@@ -20,7 +22,7 @@ public class OrderDomesticSummaryPrinter
         if (dataTable == null || dataTable.Rows.Count == 0)
             return;
 
-        SetupPrint(dataTable, orderDomesticIndex, deliveryDate);
+        SetupPrint(dataTable, orderDomesticIndex, deliveryDate, customerCode, company);
 
         PrintDocument printDoc = new PrintDocument();
         printDoc.PrintPage += PrintDoc_PrintPage;
@@ -61,7 +63,7 @@ public class OrderDomesticSummaryPrinter
         if (dataTable == null || dataTable.Rows.Count == 0)
             return;
 
-        SetupPrint(dataTable, orderDomesticIndex, deliveryDate);
+        SetupPrint(dataTable, orderDomesticIndex, deliveryDate, customerCode, company);
 
         PrintDocument printDoc = new PrintDocument();
         printDoc.PrintPage += PrintDoc_PrintPage;
@@ -85,7 +87,7 @@ public class OrderDomesticSummaryPrinter
         if (dataTable == null || dataTable.Rows.Count == 0)
             return;
 
-        SetupPrint(dataTable, orderDomesticIndex, deliveryDate);
+        SetupPrint(dataTable, orderDomesticIndex, deliveryDate, customerCode, company);
 
         using (SaveFileDialog saveDlg = new SaveFileDialog())
         {
@@ -141,11 +143,13 @@ public class OrderDomesticSummaryPrinter
 
 
     // ------------------- Setup dữ liệu chung -------------------
-    private void SetupPrint(DataTable dataTable, int orderDomesticIndex, DateTime deliveryDate)
+    private void SetupPrint(DataTable dataTable, int orderDomesticIndex, DateTime deliveryDate, string customerCode, string company)
     {
         this.data = dataTable;
         this.orderDomesticIndex = orderDomesticIndex;
         this.deliveryDate = deliveryDate;
+        this.customerCode = customerCode;
+        this.company = company;
         currentRowIndex = 0;
         firstPage = true;
         yPosition = 0;
@@ -162,15 +166,16 @@ public class OrderDomesticSummaryPrinter
         int rowHeight = 30;
 
         int colWidth_STT = 50;
-        int colWidth_Product = 230;
+        int colWidth_Product = 170;
         int colWidth_pcs = 60;
-        int colWidth_nw = 170;
+        int colWidth_nw = 130;
+        int colWidth_productType = 130;
         int colWidth_gc = 220;
 
         int y = startY;
 
         Font fontTitle = new Font("Times New Roman", 20, FontStyle.Bold);
-        Font fontHeader = new Font("Times New Roman", 15, FontStyle.Bold);
+        Font fontHeader = new Font("Times New Roman", 14, FontStyle.Bold);
         Font fontContent = new Font("Times New Roman", 13);
         Brush brush = Brushes.Black;
 
@@ -187,13 +192,16 @@ public class OrderDomesticSummaryPrinter
             e.Graphics.DrawString(title, fontTitle, brush, titleX, y);
             y += (int)titleSize.Height + 10 + rowHeight;
 
-            e.Graphics.DrawString($"Mã đơn: {orderDomesticIndex}", fontHeader, brush, startX, y);
+            e.Graphics.DrawString($"Mã đơn: {orderDomesticIndex}/{deliveryDate.Year}/{customerCode}", fontHeader, brush, startX, y);
+            e.Graphics.DrawString($"Đơn Vị Đặt : {company}", fontHeader, brush, startX + e.PageBounds.Width / 3, y);
             y += rowHeight;
 
-            e.Graphics.DrawString($"Ngày Giao: {deliveryDate:dd/MM/yyyy}         -        Ngày Nhận Hàng (ETA): {deliveryDate:dd/MM/yyyy}", fontContent, brush, startX, y);
+            e.Graphics.DrawString($"Ngày Giao: {deliveryDate:dd/MM/yyyy}", fontContent, brush, startX, y);
+            e.Graphics.DrawString($"Ngày Nhận Hàng (ETA): {deliveryDate:dd/MM/yyyy}", fontContent, brush, startX + e.PageBounds.Width/2, y);
             y += rowHeight - 5;
 
-            e.Graphics.DrawString($"Ngày Bắt Đầu SC: {deliveryDate.AddDays(-1):dd/MM/yyyy}        -       Ngày Hoàn Thành SC: {deliveryDate.AddDays(-1):dd/MM/yyyy}", fontContent, brush, startX, y);
+            e.Graphics.DrawString($"Ngày Bắt Đầu SC: {deliveryDate.AddDays(-1):dd/MM/yyyy}", fontContent, brush, startX, y);
+            e.Graphics.DrawString($"Ngày Hoàn Thành SC: {deliveryDate.AddDays(-1):dd/MM/yyyy}", fontContent, brush, startX + e.PageBounds.Width / 2, y);
             y += rowHeight * 2;
         }
 
@@ -212,8 +220,12 @@ public class OrderDomesticSummaryPrinter
         x += colWidth_pcs;
 
         e.Graphics.DrawRectangle(Pens.Black, x, y, colWidth_nw, rowHeight);
-        e.Graphics.DrawString("Khối Lượng(Kg)", fontHeader, brush, new RectangleF(x, y, colWidth_nw, rowHeight), sfHeader);
+        e.Graphics.DrawString("K.Lượng(Kg)", fontHeader, brush, new RectangleF(x, y, colWidth_nw, rowHeight), sfHeader);
         x += colWidth_nw;
+
+        e.Graphics.DrawRectangle(Pens.Black, x, y, colWidth_nw, rowHeight);
+        e.Graphics.DrawString("Loại Hàng", fontHeader, brush, new RectangleF(x, y, colWidth_productType, rowHeight), sfHeader);
+        x += colWidth_productType;
 
         e.Graphics.DrawRectangle(Pens.Black, x, y, colWidth_gc, rowHeight);
         e.Graphics.DrawString("Ghi chú", fontHeader, brush, new RectangleF(x, y, colWidth_gc, rowHeight), sfHeader);
@@ -227,8 +239,6 @@ public class OrderDomesticSummaryPrinter
             var row = data.Rows[currentRowIndex];
 
             x = startX;
-
-            
 
             // ProductPackingName
             string name = row["ProductNameVN"]?.ToString() ?? "";
@@ -260,6 +270,11 @@ public class OrderDomesticSummaryPrinter
             totalNetWeight += net;
             x += colWidth_nw;
 
+            string productTypeName = row["ProductTypeName"].ToString();
+            e.Graphics.DrawRectangle(Pens.Black, x, y, colWidth_nw, dynamicHeight);
+            e.Graphics.DrawString(productTypeName, fontContent, brush, new RectangleF(x, y, colWidth_productType, rowHeight), sfDataCenter);
+            x += colWidth_productType;
+
             e.Graphics.DrawRectangle(Pens.Black, x, y, colWidth_gc, dynamicHeight);
 
             y += dynamicHeight;
@@ -277,12 +292,10 @@ public class OrderDomesticSummaryPrinter
         }
 
         // Tổng cuối bảng
-        x = startX;
-        e.Graphics.DrawRectangle(Pens.Black, x, y, colWidth_STT, rowHeight); // STT trống
-        x += colWidth_STT;
+        x = startX + colWidth_STT;
 
         e.Graphics.DrawRectangle(Pens.Black, x, y, colWidth_Product, rowHeight);
-        e.Graphics.DrawString("Tổng", fontHeader, brush, new RectangleF(x, y, colWidth_Product, rowHeight), sfDataLeft);
+        e.Graphics.DrawString("Tổng", fontHeader, brush, new RectangleF(x, y, colWidth_Product, rowHeight), sfDataCenter);
         x += colWidth_Product;
 
         e.Graphics.DrawRectangle(Pens.Black, x, y, colWidth_pcs, rowHeight);

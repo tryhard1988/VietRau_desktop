@@ -46,7 +46,6 @@ namespace RauViet.ui
             this.tongdon_in2mat_cb = new System.Windows.Forms.CheckBox();
             this.printPendingOrderSummary_btn = new System.Windows.Forms.Button();
             this.preview_print_TD_btn = new System.Windows.Forms.Button();
-            this.exportExcel_TD_btn = new System.Windows.Forms.Button();
             this.status_lb = new System.Windows.Forms.Label();
             this.readOnly_btn = new System.Windows.Forms.Button();
             this.newCustomerBtn = new System.Windows.Forms.Button();
@@ -64,6 +63,11 @@ namespace RauViet.ui
             this.product_ccb = new System.Windows.Forms.ComboBox();
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
             this.orderDomesticDetailID_tb = new System.Windows.Forms.TextBox();
+            this.packing_btn = new System.Windows.Forms.Button();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.PGH_btn = new System.Windows.Forms.Button();
+            this.PGH_preview_btn = new System.Windows.Forms.Button();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
             this.panel4.SuspendLayout();
@@ -72,6 +76,7 @@ namespace RauViet.ui
             this.groupBox1.SuspendLayout();
             this.tongdon_gb.SuspendLayout();
             this.info_gb.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel2
@@ -83,7 +88,7 @@ namespace RauViet.ui
             this.panel2.Dock = System.Windows.Forms.DockStyle.Left;
             this.panel2.Location = new System.Drawing.Point(0, 0);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(771, 681);
+            this.panel2.Size = new System.Drawing.Size(811, 681);
             this.panel2.TabIndex = 13;
             // 
             // dataGV
@@ -95,7 +100,7 @@ namespace RauViet.ui
             this.dataGV.Location = new System.Drawing.Point(0, 24);
             this.dataGV.Name = "dataGV";
             this.dataGV.ReadOnly = true;
-            this.dataGV.Size = new System.Drawing.Size(771, 637);
+            this.dataGV.Size = new System.Drawing.Size(811, 637);
             this.dataGV.TabIndex = 76;
             // 
             // panel4
@@ -107,7 +112,7 @@ namespace RauViet.ui
             this.panel4.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panel4.Location = new System.Drawing.Point(0, 661);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(771, 20);
+            this.panel4.Size = new System.Drawing.Size(811, 20);
             this.panel4.TabIndex = 75;
             // 
             // cus_lable
@@ -164,7 +169,7 @@ namespace RauViet.ui
             this.panel3.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel3.Location = new System.Drawing.Point(0, 0);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(771, 24);
+            this.panel3.Size = new System.Drawing.Size(811, 24);
             this.panel3.TabIndex = 73;
             // 
             // orderDomesticCode_cbb
@@ -173,13 +178,15 @@ namespace RauViet.ui
             this.orderDomesticCode_cbb.Dock = System.Windows.Forms.DockStyle.Right;
             this.orderDomesticCode_cbb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.orderDomesticCode_cbb.FormattingEnabled = true;
-            this.orderDomesticCode_cbb.Location = new System.Drawing.Point(603, 0);
+            this.orderDomesticCode_cbb.Location = new System.Drawing.Point(643, 0);
             this.orderDomesticCode_cbb.Name = "orderDomesticCode_cbb";
             this.orderDomesticCode_cbb.Size = new System.Drawing.Size(168, 21);
             this.orderDomesticCode_cbb.TabIndex = 37;
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.groupBox2);
+            this.panel1.Controls.Add(this.packing_btn);
             this.panel1.Controls.Add(this.groupBox1);
             this.panel1.Controls.Add(this.tongdon_gb);
             this.panel1.Controls.Add(this.status_lb);
@@ -190,7 +197,7 @@ namespace RauViet.ui
             this.panel1.Controls.Add(this.LuuThayDoiBtn);
             this.panel1.Controls.Add(this.orderDomesticDetailID_tb);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Left;
-            this.panel1.Location = new System.Drawing.Point(771, 0);
+            this.panel1.Location = new System.Drawing.Point(811, 0);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(416, 681);
             this.panel1.TabIndex = 89;
@@ -236,11 +243,10 @@ namespace RauViet.ui
             this.tongdon_gb.Controls.Add(this.tongdon_in2mat_cb);
             this.tongdon_gb.Controls.Add(this.printPendingOrderSummary_btn);
             this.tongdon_gb.Controls.Add(this.preview_print_TD_btn);
-            this.tongdon_gb.Controls.Add(this.exportExcel_TD_btn);
             this.tongdon_gb.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tongdon_gb.Location = new System.Drawing.Point(17, 434);
+            this.tongdon_gb.Location = new System.Drawing.Point(14, 477);
             this.tongdon_gb.Name = "tongdon_gb";
-            this.tongdon_gb.Size = new System.Drawing.Size(159, 152);
+            this.tongdon_gb.Size = new System.Drawing.Size(189, 131);
             this.tongdon_gb.TabIndex = 69;
             this.tongdon_gb.TabStop = false;
             this.tongdon_gb.Text = "Tổng Đơn";
@@ -249,7 +255,7 @@ namespace RauViet.ui
             // 
             this.tongdon_in2mat_cb.AutoSize = true;
             this.tongdon_in2mat_cb.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tongdon_in2mat_cb.Location = new System.Drawing.Point(79, 31);
+            this.tongdon_in2mat_cb.Location = new System.Drawing.Point(102, 37);
             this.tongdon_in2mat_cb.Name = "tongdon_in2mat_cb";
             this.tongdon_in2mat_cb.Size = new System.Drawing.Size(65, 17);
             this.tongdon_in2mat_cb.TabIndex = 69;
@@ -260,9 +266,9 @@ namespace RauViet.ui
             // 
             this.printPendingOrderSummary_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.printPendingOrderSummary_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.printPendingOrderSummary_btn.Location = new System.Drawing.Point(9, 19);
+            this.printPendingOrderSummary_btn.Location = new System.Drawing.Point(20, 25);
             this.printPendingOrderSummary_btn.Name = "printPendingOrderSummary_btn";
-            this.printPendingOrderSummary_btn.Size = new System.Drawing.Size(64, 39);
+            this.printPendingOrderSummary_btn.Size = new System.Drawing.Size(76, 39);
             this.printPendingOrderSummary_btn.TabIndex = 39;
             this.printPendingOrderSummary_btn.Text = "In";
             this.printPendingOrderSummary_btn.UseVisualStyleBackColor = false;
@@ -271,23 +277,12 @@ namespace RauViet.ui
             // 
             this.preview_print_TD_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.preview_print_TD_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.preview_print_TD_btn.Location = new System.Drawing.Point(9, 61);
+            this.preview_print_TD_btn.Location = new System.Drawing.Point(20, 72);
             this.preview_print_TD_btn.Name = "preview_print_TD_btn";
             this.preview_print_TD_btn.Size = new System.Drawing.Size(136, 39);
             this.preview_print_TD_btn.TabIndex = 42;
             this.preview_print_TD_btn.Text = "Xem";
             this.preview_print_TD_btn.UseVisualStyleBackColor = false;
-            // 
-            // exportExcel_TD_btn
-            // 
-            this.exportExcel_TD_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
-            this.exportExcel_TD_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.exportExcel_TD_btn.Location = new System.Drawing.Point(10, 103);
-            this.exportExcel_TD_btn.Name = "exportExcel_TD_btn";
-            this.exportExcel_TD_btn.Size = new System.Drawing.Size(136, 39);
-            this.exportExcel_TD_btn.TabIndex = 67;
-            this.exportExcel_TD_btn.Text = "Xuất Excel";
-            this.exportExcel_TD_btn.UseVisualStyleBackColor = false;
             // 
             // status_lb
             // 
@@ -454,7 +449,7 @@ namespace RauViet.ui
             this.LuuThayDoiBtn.BackColor = System.Drawing.SystemColors.Highlight;
             this.LuuThayDoiBtn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.LuuThayDoiBtn.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.LuuThayDoiBtn.Location = new System.Drawing.Point(289, 407);
+            this.LuuThayDoiBtn.Location = new System.Drawing.Point(160, 407);
             this.LuuThayDoiBtn.Name = "LuuThayDoiBtn";
             this.LuuThayDoiBtn.Size = new System.Drawing.Size(99, 38);
             this.LuuThayDoiBtn.TabIndex = 25;
@@ -469,6 +464,63 @@ namespace RauViet.ui
             this.orderDomesticDetailID_tb.Size = new System.Drawing.Size(32, 20);
             this.orderDomesticDetailID_tb.TabIndex = 16;
             this.orderDomesticDetailID_tb.Visible = false;
+            // 
+            // packing_btn
+            // 
+            this.packing_btn.BackColor = System.Drawing.Color.YellowGreen;
+            this.packing_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.packing_btn.Location = new System.Drawing.Point(108, 148);
+            this.packing_btn.Name = "packing_btn";
+            this.packing_btn.Size = new System.Drawing.Size(105, 32);
+            this.packing_btn.TabIndex = 72;
+            this.packing_btn.Text = "Đóng thùng";
+            this.packing_btn.UseVisualStyleBackColor = false;
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.checkBox1);
+            this.groupBox2.Controls.Add(this.PGH_btn);
+            this.groupBox2.Controls.Add(this.PGH_preview_btn);
+            this.groupBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.groupBox2.Location = new System.Drawing.Point(211, 477);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(189, 131);
+            this.groupBox2.TabIndex = 70;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Phiếu Giao Hàng";
+            // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.checkBox1.Location = new System.Drawing.Point(102, 37);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(65, 17);
+            this.checkBox1.TabIndex = 69;
+            this.checkBox1.Text = "In 2 Mặt";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            // 
+            // PGH_btn
+            // 
+            this.PGH_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.PGH_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.PGH_btn.Location = new System.Drawing.Point(20, 25);
+            this.PGH_btn.Name = "PGH_btn";
+            this.PGH_btn.Size = new System.Drawing.Size(76, 39);
+            this.PGH_btn.TabIndex = 39;
+            this.PGH_btn.Text = "In";
+            this.PGH_btn.UseVisualStyleBackColor = false;
+            // 
+            // PGH_preview_btn
+            // 
+            this.PGH_preview_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.PGH_preview_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.PGH_preview_btn.Location = new System.Drawing.Point(20, 72);
+            this.PGH_preview_btn.Name = "PGH_preview_btn";
+            this.PGH_preview_btn.Size = new System.Drawing.Size(136, 39);
+            this.PGH_preview_btn.TabIndex = 42;
+            this.PGH_preview_btn.Text = "Xem";
+            this.PGH_preview_btn.UseVisualStyleBackColor = false;
             // 
             // OrderDomesticDetail
             // 
@@ -492,6 +544,8 @@ namespace RauViet.ui
             this.tongdon_gb.PerformLayout();
             this.info_gb.ResumeLayout(false);
             this.info_gb.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -514,7 +568,6 @@ namespace RauViet.ui
         private System.Windows.Forms.CheckBox tongdon_in2mat_cb;
         private System.Windows.Forms.Button printPendingOrderSummary_btn;
         private System.Windows.Forms.Button preview_print_TD_btn;
-        private System.Windows.Forms.Button exportExcel_TD_btn;
         private System.Windows.Forms.Label status_lb;
         private System.Windows.Forms.Button readOnly_btn;
         private System.Windows.Forms.Button newCustomerBtn;
@@ -532,5 +585,10 @@ namespace RauViet.ui
         private System.Windows.Forms.TextBox orderDomesticDetailID_tb;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.ComboBox productType_CBB;
+        private System.Windows.Forms.Button packing_btn;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.Button PGH_btn;
+        private System.Windows.Forms.Button PGH_preview_btn;
     }
 }

@@ -1310,12 +1310,12 @@ namespace RauViet.classes
         }
 
 
-        public async Task<int> insertEmployeeAsync(string maNV_temp, string tenNV, DateTime birthDate, DateTime hireDate, bool isMale, string homeTown,
+        public async Task<(int EmployeeID, string EmployeeCode)> insertEmployeeAsync(string maNV_temp, string tenNV, DateTime birthDate, DateTime hireDate, bool isMale, string homeTown,
                                                     string address, string citizenID, DateTime? issueDate, string issuePlace, bool isActive, bool canCreateUserName, 
                                                     decimal probationSalaryPercent, string phone, string noteResign, bool isInsuranceRefund, int salaryGradeID)
         {
             int newId = -1;
-
+            string newCode = null;
             try
             {
                 using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
@@ -1360,19 +1360,19 @@ namespace RauViet.classes
                         await cmd.ExecuteNonQueryAsync();
 
                         newId = Convert.ToInt32(idParam.Value);
-                        string newCode = codeParam.Value?.ToString();
+                        newCode = codeParam.Value?.ToString();
 
                         // 👉 bạn có thể return code nếu muốn
                         Console.WriteLine($"Employee created: {newCode}");
                     }
                 }
 
-                return newId;
+                return (newId, newCode);
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error inserting employee: {ex.Message}");
-                return -1;
+                return (newId, newCode);
             }
         }
 
@@ -5295,6 +5295,38 @@ namespace RauViet.classes
             catch { return false; }
         }
 
+        public async Task<bool> DeleteOrderDomesticCodeAsync(int orderDomesticCodeID)
+        {
+            string queryStr = "DELETE FROM OrderDomesticCode WHERE OrderDomesticCodeID = @OrderDomesticCodeID";
+
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
+                {
+                    await con.OpenAsync();
+
+                    using (SqlTransaction tran = con.BeginTransaction())
+                    {
+
+                        // Xóa Orders
+                        using (SqlCommand cmd = new SqlCommand(queryStr, con, tran))
+                        {
+                            cmd.Parameters.AddWithValue("@OrderDomesticCodeID", orderDomesticCodeID);
+                            await cmd.ExecuteNonQueryAsync();
+                        }
+
+                        tran.Commit();
+                    }
+                }
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         public async Task<DataTable> getOrderDomesticDetailAsync(int OrderDomesticCodeID)
         {
             DataTable dt = new DataTable();
@@ -5344,6 +5376,30 @@ namespace RauViet.classes
             catch { return false; }
         }
 
+        public async Task<bool> updateOrderDomesticDetail_PackingAsync(int orderDomesticDetailID, int PCSReal, decimal NWReal)
+        {
+            string query = @"UPDATE OrderDomesticDetail SET  
+                                PCSReal=@PCSReal,
+                                NWReal=@NWReal
+                             WHERE OrderDomesticDetailID=@OrderDomesticDetailID";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@OrderDomesticDetailID", orderDomesticDetailID);
+                        cmd.Parameters.AddWithValue("@PCSReal", PCSReal);
+                        cmd.Parameters.AddWithValue("@NWReal", NWReal);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+                return true;
+            }
+            catch { return false; }
+        }
+
         public async Task<int> insertOrderDomesticDetailAsync(int orderDomesticCodeID, int packingId, string productType, int PCSOrder, decimal NWOrder, decimal price)
         {
             int newId = -1;
@@ -5371,6 +5427,25 @@ namespace RauViet.classes
                 return newId;
             }
             catch { return -1; }
+        }
+
+        public async Task<bool> deleteOrderDomesticDetailAsync(int id)
+        {
+            string query = "DELETE FROM OrderDomesticDetail WHERE OrderDomesticDetailID=@OrderDomesticDetailID";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@OrderDomesticDetailID", id);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+                return true;
+            }
+            catch { return false; }
         }
 
         public async Task<DataTable> getProductTypeAsync()

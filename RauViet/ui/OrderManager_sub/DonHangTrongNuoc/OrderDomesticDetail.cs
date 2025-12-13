@@ -1,9 +1,10 @@
-﻿using ClosedXML.Excel;
-
+﻿using DocumentFormat.OpenXml.Vml.Office;
 using RauViet.classes;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -17,7 +18,8 @@ namespace RauViet.ui
         private Timer debounceTimer = new Timer { Interval = 150 };
         private LoadingOverlay loadingOverlay;
         bool isNewState = false;
-
+        bool ispackingState = false;
+        object oldValue;
         int mCurrentOrderDomesticCodeID = -1;
         // private DataView dvProducts;
         public OrderDomesticDetail()
@@ -31,21 +33,25 @@ namespace RauViet.ui
 
             int countTab = 0;
             product_ccb.TabIndex = countTab++; product_ccb.TabStop = true;
+            productType_CBB.TabIndex = countTab++; productType_CBB.TabStop = true;
             packing_ccb.TabIndex = countTab++; packing_ccb.TabStop = true;
             PCSOrder_tb.TabIndex = countTab++; PCSOrder_tb.TabStop = true;
             nwOder_tb.TabIndex = countTab++; nwOder_tb.TabStop = true;
             LuuThayDoiBtn.TabIndex = countTab++; LuuThayDoiBtn.TabStop = true;
 
-            dataGV.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dataGV.SelectionMode = DataGridViewSelectionMode.CellSelect;
             dataGV.MultiSelect = false;
 
             status_lb.Text = "";
 
-            exportExcel_TD_btn.Click += exportExcel_TD_btn_Click;
             newCustomerBtn.Click += newCustomerBtn_Click;
             LuuThayDoiBtn.Click += saveBtn_Click;
+            
             preview_print_TD_btn.Click += preview_print_TD_btn_Click;            
             printPendingOrderSummary_btn.Click += printPendingOrderSummary_btn_Click;
+            PGH_btn.Click += PGH_btn_Click;
+            PGH_preview_btn.Click += PGH_preview_btn_Click;
+
             dataGV.SelectionChanged += this.dataGV_CellClick;
             PCSOrder_tb.TextChanged += PCSOrder_tb_TextChanged;
             packing_ccb.SelectedIndexChanged += packing_ccb_SelectedIndexChanged;
@@ -56,9 +62,19 @@ namespace RauViet.ui
 
             debounceTimer.Tick += DebounceTimer_Tick;
             edit_btn.Click += Edit_btn_Click;
-            readOnly_btn.Click += ReadOnly_btn_Click;            
+            readOnly_btn.Click += ReadOnly_btn_Click;
+            packing_btn.Click += Packing_btn_Click;
 
             this.KeyDown += OrdersList_KeyDown;
+
+            packing_ccb.SelectedIndexChanged += packing_cbb_SelectedIndexChanged;
+
+            dataGV.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.dataGV_EditingControlShowing);
+            dataGV.CellBeginEdit += dataGV_CellBeginEdit;
+            dataGV.CellEndEdit += dataGV_CellEndEdit;
+            dataGV.CellFormatting += dataGV_CellFormatting;
+            dataGV.CellParsing += dataGV_CellParsing;
+
         }
 
         private void OrdersList_KeyDown(object sender, KeyEventArgs e)
@@ -72,15 +88,11 @@ namespace RauViet.ui
                 {
                     return;
                 }
-
-                SQLStore.Instance.removeOrders(mCurrentOrderDomesticCodeID);
-                SQLStore.Instance.removeCustomers();
-                SQLStore.Instance.removeProductSKU();
-                SQLStore.Instance.removeProductpacking();
-                SQLStore.Instance.removeLatestOrdersAsync();
+                
+                SQLStore.Instance.removeOrderDomesticDetail(mCurrentOrderDomesticCodeID);
                 ShowData();
             }
-            else if(!isNewState /* && !edit_btn.Visible && UserManager.Instance.fullName_NoSign.CompareTo(staff) == 0*/)
+            else if(!isNewState && !edit_btn.Visible /* && UserManager.Instance.fullName_NoSign.CompareTo(staff) == 0*/)
             {
                 if (e.KeyCode == Keys.Delete)
                 {
@@ -105,8 +117,6 @@ namespace RauViet.ui
             await Task.Delay(50);
 
             orderDomesticCode_cbb.SelectedIndexChanged -= exportCode_search_cbb_SelectedIndexChanged;
-            packing_ccb.SelectedIndexChanged -= packing_cbb_SelectedIndexChanged;
-            productType_CBB.SelectedIndexChanged -= productType_CBB_SelectedIndexChanged;
             try
             {
                 mProduct_dt = await SQLStore.Instance.getProductDomesticPricesAsync();
@@ -169,6 +179,15 @@ namespace RauViet.ui
 
                 dataGV.Columns["Price"].Visible = !UserManager.Instance.hasRole_AnGiaSanPham();
 
+                dataGV.ReadOnly = false;
+                dataGV.Columns["PCSReal"].ReadOnly = false;
+                dataGV.Columns["NWReal"].ReadOnly = false;
+                dataGV.Columns["PCSOrder"].ReadOnly = true;
+                dataGV.Columns["NWOrder"].ReadOnly = true;
+                dataGV.Columns["Price"].ReadOnly = true;
+                dataGV.Columns["ProductTypeName"].ReadOnly = true;
+                dataGV.Columns["ProductNameVN"].ReadOnly = true;
+                dataGV.Columns["OrderDomesticDetailID"].ReadOnly = true;
 
                 dataGV.Columns["OrderDomesticDetailID"].Width = 60;
                 dataGV.Columns["ProductNameVN"].Width = 150;
@@ -178,6 +197,9 @@ namespace RauViet.ui
 
                 dataGV.Columns["PCSOrder"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 dataGV.Columns["NWOrder"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                dataGV.Columns["PCSReal"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                dataGV.Columns["NWReal"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                dataGV.Columns["Price"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 dataGV.Columns["OrderDomesticDetailID"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
@@ -189,8 +211,6 @@ namespace RauViet.ui
                 orderDomesticCode_cbb.SelectedIndexChanged += exportCode_search_cbb_SelectedIndexChanged;
                 orderDomesticCode_cbb.SelectedValue = mCurrentOrderDomesticCodeID;
 
-                packing_ccb.SelectedIndexChanged += packing_cbb_SelectedIndexChanged;
-                productType_CBB.SelectedIndexChanged += productType_CBB_SelectedIndexChanged;
 
                 await Task.Delay(500);
                 ReadOnly_btn_Click(null, null);
@@ -252,30 +272,48 @@ namespace RauViet.ui
         }
         private async void productType_CBB_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (productType_CBB.SelectedValue == null)
+            if (productType_CBB.SelectedValue == null || product_ccb.SelectedValue == null)
                 return;
 
-            string productTypeCode = orderDomesticCode_cbb.SelectedValue.ToString();
-            if(productTypeCode.CompareTo("HX") == 0 || productTypeCode.CompareTo("HT") == 0)
+            int selectedSKU = Convert.ToInt32(product_ccb.SelectedValue);
+            string productTypeCode = productType_CBB.SelectedValue.ToString();
+            DataView dv = new DataView(mProductPacking_dt);
+            if (productTypeCode.CompareTo("HX") == 0 || productTypeCode.CompareTo("HT") == 0)
             {
 
-            }
-
-            DataRowView pdpData = (DataRowView)packing_ccb.SelectedItem;
-            string packing = pdpData["packing"].ToString();
-
-            if (packing.CompareTo("weight") == 0)
-            {
-                nwOder_tb.Enabled = true;
-                PCSOrder_tb.Enabled = false;
-                PCSOrder_tb.Text = "0";
+                if (!isNewState)
+                    dv.RowFilter = $"SKU = {selectedSKU} AND (packing = 'weight' OR [Package] = 'weight')";
+                else
+                    dv.RowFilter = $"SKU = {selectedSKU} AND IsActive = True AND (packing = 'weight' OR [Package] = 'weight')";
             }
             else
             {
-                nwOder_tb.Enabled = false;
-                PCSOrder_tb.Enabled = true;
-                updateNetWeight();
+                if (!isNewState)
+                    dv.RowFilter = $"SKU = {selectedSKU} AND packing <> 'weight'";
+                else
+                    dv.RowFilter = $"SKU = {selectedSKU} AND IsActive = True AND packing <> 'weight'";
             }
+
+            packing_ccb.DataSource = dv;
+            packing_ccb.DisplayMember = "PackingName"; // cột bạn muốn hiển thị
+            packing_ccb.ValueMember = "ProductPackingID";
+
+            if (dataGV.CurrentRow != null && !isNewState)
+            {
+                int productPackingID = Convert.ToInt32(dataGV.CurrentRow.Cells["ProductPackingID"].Value);
+                packing_ccb.SelectedValue = productPackingID;
+            }
+
+            //var currentDV = packing_ccb.DataSource as DataView;
+            //if (currentDV != null && currentDV.Count > 0)
+            //{
+            //    bool exists = currentDV.Cast<DataRowView>().Any(r => Convert.ToInt32(r["ProductPackingID"]) == productPackingID);
+
+            //    if (exists)
+            //        packing_ccb.SelectedValue = productPackingID;
+            //    else
+            //        packing_ccb.SelectedIndex = 0;
+            //}
         }
         
         private async void packing_cbb_SelectedIndexChanged(object sender, EventArgs e)
@@ -322,50 +360,40 @@ namespace RauViet.ui
         {
             if (product_ccb.SelectedValue == null) return;
 
-            int selectedSKU = Convert.ToInt32(product_ccb.SelectedValue);            
+            int selectedSKU = Convert.ToInt32(product_ccb.SelectedValue);
             // Lọc packing theo SKU
-            DataView dv = new DataView(mProductPacking_dt);
-            if(!isNewState)
-                dv.RowFilter = $"SKU = '{selectedSKU}'";
-            else
-                dv.RowFilter = $"SKU = '{selectedSKU}' AND IsActive = true";
 
-            packing_ccb.DataSource = dv;
-            packing_ccb.DisplayMember = "PackingName"; // cột bạn muốn hiển thị
-            packing_ccb.ValueMember = "ProductPackingID";
+            var productItem = (DataRowView)product_ccb.SelectedItem;
+
+            int rawPrice = Convert.ToInt32(productItem["RawPrice"]);
+            int refinedPrice = Convert.ToInt32(productItem["RefinedPrice"]);
+            int packedPrice = Convert.ToInt32(productItem["PackedPrice"]);
+
+            productType_CBB.SelectedIndexChanged -= productType_CBB_SelectedIndexChanged;
+            DataTable clonedTable = mProductType_dt.Copy();
+
+            if (rawPrice <= 0)
+                clonedTable.Rows.Remove(clonedTable.Select("CustomerProductTypesCode = 'HX'").FirstOrDefault());
+            if (refinedPrice <= 0)
+                clonedTable.Rows.Remove(clonedTable.Select("CustomerProductTypesCode = 'HT'").FirstOrDefault());
+            if (packedPrice <= 0)
+                clonedTable.Rows.Remove(clonedTable.Select("CustomerProductTypesCode = 'HDG'").FirstOrDefault());
 
             if (dataGV.CurrentRow != null)
             {
-                int productPackingID = Convert.ToInt32(dataGV.CurrentRow.Cells["ProductPackingID"].Value);
+               // int productPackingID = Convert.ToInt32(dataGV.CurrentRow.Cells["ProductPackingID"].Value);
                 string productTypeCode = dataGV.CurrentRow.Cells["CustomerProductTypesCode"].Value.ToString();
-                var productItem = (DataRowView)product_ccb.SelectedItem;
-
-                int rawPrice = Convert.ToInt32(productItem["RawPrice"]);
-                int refinedPrice = Convert.ToInt32(productItem["RefinedPrice"]);
-                int packedPrice = Convert.ToInt32(productItem["PackedPrice"]);
-                
-                DataTable clonedTable = mProductType_dt.Copy();
-
-                if (rawPrice <= 0) clonedTable.Rows.Remove(clonedTable.Select("CustomerProductTypesCode = 'HX'").FirstOrDefault());
-                if (refinedPrice <= 0) clonedTable.Rows.Remove(clonedTable.Select("CustomerProductTypesCode = 'HT'").FirstOrDefault());
-                if (packedPrice <= 0) clonedTable.Rows.Remove(clonedTable.Select("CustomerProductTypesCode = 'HDG'").FirstOrDefault());
+                if (isNewState && productType_CBB.SelectedValue != null)
+                    productTypeCode = productType_CBB.SelectedValue.ToString();
 
                 productType_CBB.DataSource = clonedTable;
-                if(!isNewState)
-                    productType_CBB.SelectedValue = productTypeCode;
+                productType_CBB.SelectedValue = productTypeCode;
 
-                var currentDV = packing_ccb.DataSource as DataView;
-                if (currentDV != null && currentDV.Count > 0)
-                {
-                    bool exists = currentDV.Cast<DataRowView>().Any(r => Convert.ToInt32(r["ProductPackingID"]) == productPackingID);
-
-                    if (exists)
-                        packing_ccb.SelectedValue = productPackingID;
-                    else
-                        packing_ccb.SelectedIndex = 0;
-                }
             }
+            productType_CBB_SelectedIndexChanged(null, null);
+            productType_CBB.SelectedIndexChanged += productType_CBB_SelectedIndexChanged;
 
+            /*
             DataRowView pdpData = (DataRowView)packing_ccb.SelectedItem;
             DataRowView pdData = (DataRowView)product_ccb.SelectedItem;
             string package = pdData["Package"].ToString();
@@ -382,7 +410,7 @@ namespace RauViet.ui
                 nwOder_tb.Enabled = false;
                 PCSOrder_tb.Enabled = true;
                 updateNetWeight();
-            }
+            }*/
         }
 
         private void packing_ccb_SelectedIndexChanged(object sender, EventArgs e)
@@ -467,7 +495,6 @@ namespace RauViet.ui
                 product_ccb.DataSource = mProduct_dt;
             }
 
-            productType_CBB.SelectedValue = customerProductTypesCode;
             product_ccb.SelectedValue = sku;
             packing_ccb.SelectedValue = packingID;
 
@@ -479,25 +506,23 @@ namespace RauViet.ui
         private void updateNetWeight() {
             
             DataRowView pdData = (DataRowView)product_ccb.SelectedItem;
+            DataRowView pdpData = (DataRowView)packing_ccb.SelectedItem;
             if (pdData == null) return;
             string package = pdData["Package"].ToString();
+            string packing = pdpData["packing"].ToString();
 
-            if (package.CompareTo("weight") == 0)
+            if (package.CompareTo("weight") == 0 || packing.CompareTo("weight") == 0)
                 return;
             else if (packing_ccb.SelectedItem == null || PCSOrder_tb.Text.CompareTo("") == 0)
             {
                 nwOder_tb.Text = "0";
                 return;
             }
-
-            DataRowView pakingData = (DataRowView)packing_ccb.SelectedItem;
-
-            
+                        
             int PCSOther = Convert.ToInt32(PCSOrder_tb.Text);
-            string packing = pakingData["Packing"].ToString();
-            int? amount = pakingData["Amount"] == DBNull.Value
+            int? amount = pdpData["Amount"] == DBNull.Value
                         ? (int?)null
-                        : Convert.ToInt32(pakingData["Amount"]);
+                        : Convert.ToInt32(pdpData["Amount"]);
 
             if (amount == null)
             {
@@ -749,7 +774,7 @@ namespace RauViet.ui
         private void deleteOrderID()
         {
             if (dataGV.CurrentRow == null) return;
-            int id = Convert.ToInt32(dataGV.CurrentRow.Cells["OrderId"].Value);
+            int id = Convert.ToInt32(dataGV.CurrentRow.Cells["OrderDomesticDetailID"].Value);
             int PCSReal = 0;
             int NWReal = 0;
 
@@ -774,13 +799,13 @@ namespace RauViet.ui
 
             foreach (DataRow row in mOrderDomesticDetail_dt.Rows)
             {
-                int orderId = Convert.ToInt32(row["OrderId"]);
+                int orderId = Convert.ToInt32(row["OrderDomesticDetailID"]);
                 if (id.CompareTo(orderId) == 0)
                 {
-                    int exportCodeId = Convert.ToInt32(row["ExportCodeID"]);
+                  //  int exportCodeId = Convert.ToInt32(row["ExportCodeID"]);
                     try
                     {   
-                        bool isSuccess = await SQLManager.Instance.deleteOrderAsync(id);
+                        bool isSuccess = await SQLManager.Instance.deleteOrderDomesticDetailAsync(id);
 
                         if (isSuccess)
                         {
@@ -850,8 +875,7 @@ namespace RauViet.ui
             PCSOrder_tb.Text = "";
             nwOder_tb.Text= "";
             isNewState = true;
-            product_ccb_SelectedIndexChanged(null, null);
-
+            packing_btn.Visible = false;
             info_gb.BackColor = newCustomerBtn.BackColor;
             edit_btn.Visible = false;
             newCustomerBtn.Visible = false;
@@ -863,23 +887,38 @@ namespace RauViet.ui
             {
                 dataGV.FirstDisplayedScrollingRowIndex = dataGV.Rows.Count - 1;
             }
-            //customer_ccb.Focus();
+            product_ccb.Focus();
 
+        }
+
+        private void Packing_btn_Click(object sender, EventArgs e)
+        {
+            info_gb.Enabled = false;
+            edit_btn.Visible = false;
+            newCustomerBtn.Visible = false;
+            readOnly_btn.Visible = true;
+            LuuThayDoiBtn.Visible = false;
+            packing_btn.Visible = false;
+            LuuThayDoiBtn.Text = "Lưu Mới";
+            setRightUIReadOnly(false);
+            ispackingState = true;
         }
 
         private void ReadOnly_btn_Click(object sender, EventArgs e)
         {
+            info_gb.Enabled = true;
             edit_btn.Visible = true;
             newCustomerBtn.Visible = true;
             readOnly_btn.Visible = false;
             LuuThayDoiBtn.Visible = false;
+            packing_btn.Visible = true;
             info_gb.BackColor = System.Drawing.Color.DarkGray;
             isNewState = false;
             product_ccb.DropDownStyle = ComboBoxStyle.DropDownList;
             setRightUIReadOnly(true);
 
             dataGV_CellClick(null, null);
-
+            ispackingState = false;
         }
 
         private void Edit_btn_Click(object sender, EventArgs e)
@@ -888,7 +927,7 @@ namespace RauViet.ui
 
             product_ccb_SelectedIndexChanged(null, null);
 
-
+            packing_btn.Visible = false;
             edit_btn.Visible = false;
             newCustomerBtn.Visible = false;
             readOnly_btn.Visible = true;
@@ -910,8 +949,6 @@ namespace RauViet.ui
         {
             _ = PrintPendingOrderSummary(1);
         }
-
-       
 
         private async void printPendingOrderSummary_btn_Click(object sender, EventArgs e)
         {
@@ -945,7 +982,17 @@ namespace RauViet.ui
         }
 
 
-        private async void exportExcel_TD_btn_Click(object sender, EventArgs e)
+        private async void PGH_preview_btn_Click(object sender, EventArgs e)
+        {
+            await PhieuGiaoHangPrinter(1);
+        }
+
+        private async void PGH_btn_Click(object sender, EventArgs e)
+        {
+            await PhieuGiaoHangPrinter(2);
+        }
+
+        private async Task PhieuGiaoHangPrinter(int state)
         {
             if (orderDomesticCode_cbb.SelectedItem == null) return;
 
@@ -954,175 +1001,22 @@ namespace RauViet.ui
             loadingOverlay.Show();
             await Task.Delay(100);
 
-            DataRowView pakingData = (DataRowView)orderDomesticCode_cbb.SelectedItem;
-            string exportCode = pakingData["ExportCode"].ToString();
+            DataRowView orderDomesticCodeDRV = (DataRowView)orderDomesticCode_cbb.SelectedItem;
+            int orderDomesticIndex = Convert.ToInt32(orderDomesticCodeDRV["OrderDomesticIndex"]);
+            DateTime deliveryDate = Convert.ToDateTime(orderDomesticCodeDRV["DeliveryDate"]);
+            string customerCode = Convert.ToString(orderDomesticCodeDRV["CustomerCode"]);
+            string company = Convert.ToString(orderDomesticCodeDRV["Company"]);
+            string customerName = Convert.ToString(orderDomesticCodeDRV["CustomerName"]);
+            string customerAddress = Convert.ToString(orderDomesticCodeDRV["Address"]);
+            PhieuGiaoHangTrongNuoc_Printer printer = new PhieuGiaoHangTrongNuoc_Printer();
 
-            System.Data.DataTable pendingOrderSummary = await SQLManager.Instance.getPendingOrderSummary(Convert.ToInt32(pakingData["ExportCodeID"]));
-
-            DateTime exportDate = Convert.ToDateTime(((DataRowView)orderDomesticCode_cbb.SelectedItem)["ExportDate"]);
-            try
-            {
-                using (var wb = new XLWorkbook())
-                {
-                    var ws = wb.Worksheets.Add("Data");
-                    ws.Style.Font.FontName = "Arial";
-                    ws.Style.Font.FontSize = 11;
-                    ws.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
-                    // Danh sách cột muốn xuất theo Name
-                    string[] columnsToExport = new string[] { "ProductPackingName", "TotalPCSOther", "TotalNWOther" };
-                    string[] columnslabel = new string[] {"STT", "Tên Sản Phẩm", "PCS", "N.W", "Ghi Chú", "In Tem", "", "", "","", "Còn", "Tổng" };
-                    // Lọc cột hiển thị và có trong danh sách
-                    var exportColumns = pendingOrderSummary.Columns.Cast<DataColumn>()
-                        .Where(c => columnsToExport.Contains(c.ColumnName))
-                        .OrderBy(c => Array.IndexOf(columnsToExport, c.ColumnName))
-                        .ToList();
-
-
-
-                    // Hàng 1: Tên công ty
-                    ws.Range(1, 1, 1, columnslabel.Length).Merge();
-                    ws.Cell(1, 1).Value = "TỔNG HỢP ĐƠN HÀNG THEO ĐÓNG GÓI";
-                    ws.Cell(1, 1).Style.Font.Bold = true;
-                    ws.Cell(1, 1).Style.Font.FontSize = 20;
-                    ws.Cell(1, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-
-                    ws.Range(2, 1, 2, columnslabel.Length).Merge();
-                    ws.Cell(2, 1).Value = orderDomesticCode_cbb.Text;
-                    ws.Cell(2, 1).Style.Font.Bold = true;
-                    ws.Cell(2, 1).Style.Font.FontSize = 14;
-                    ws.Cell(2, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-
-
-                    int headerStartRow = 3; // Header cấp 2 và 3 bắt đầu từ hàng 5
-
-                    // ===== Title công ty =====
-                    // Xác định vùng khung: từ hàng 1 đến 4, từ cột 1 đến exportColumns.Count
-                    var headerRange = ws.Range(1, 1, 4, exportColumns.Count);
-
-                    // Chỉ tạo viền ngoài, không có viền trong
-                    headerRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
-                    headerRange.Style.Border.OutsideBorderColor = XLColor.Black;
-
-                    int colIndex = 1;
-                    foreach (var label in columnslabel)
-                    {
-                        if (label.CompareTo("In Tem") == 0)
-                        {
-                            var range = ws.Range(headerStartRow, colIndex, headerStartRow, colIndex + 4);
-                            range.Merge();
-                            ws.Cell(headerStartRow, colIndex).Value = label;
-                            ws.Cell(headerStartRow, colIndex).Style.Font.Bold = true;
-                            ws.Cell(headerStartRow, colIndex).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                            range.Style.Border.OutsideBorder = XLBorderStyleValues.Thin; // Đóng khung
-                            colIndex += 5;
-                        }
-                        else if(label.CompareTo("") != 0)
-                        {
-                            var range = ws.Range(headerStartRow, colIndex, headerStartRow + 1, colIndex);
-                            ws.Cell(headerStartRow, colIndex).Value = label;
-                            ws.Cell(headerStartRow, colIndex).Style.Font.Bold = true;
-                            ws.Cell(headerStartRow, colIndex).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                            range.Style.Border.OutsideBorder = XLBorderStyleValues.Thin; // Đóng khung
-
-                            colIndex++;
-                        }
-                    }
-
-                    int rowIndex = headerStartRow + 1;
-                    int sttcount = 1;
-                    foreach (DataRow row in pendingOrderSummary.Rows)
-                    {
-                        var cellSTT = ws.Cell(rowIndex, 1);
-                        cellSTT.Value = sttcount++;
-                        cellSTT.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                        cellSTT.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
-
-                        colIndex = 2;
-                        for (int i = 1; i < columnslabel.Length; i++)
-                        {
-                            var cell = ws.Cell(rowIndex, colIndex);
-                            if (i <= exportColumns.Count)
-                            {
-                                string name = exportColumns[i - 1].ColumnName;
-                                var cellValue = row[exportColumns[i - 1].ColumnName]?.ToString() ?? "";
-                                cell.Value = cellValue;
-
-                                
-                                cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
-
-                                if (name.CompareTo("TotalPCSOther") == 0)
-                                {
-                                    if (int.TryParse(cellValue, out int num))
-                                    {
-                                        cell.Value = num;
-                                    }
-                                }
-                                else if (name.CompareTo("TotalNWOther") == 0)
-                                {
-                                    cell.Style.NumberFormat.Format = "0.00";
-                                    if (decimal.TryParse(cellValue, out decimal num))
-                                    {
-                                        cell.Value = num;
-                                    }
-                                }
-                            }
-                            
-
-                            cell.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
-
-                            colIndex++;
-                        }
-
-                        rowIndex++;
-                    }
-
-                    ws.Columns().AdjustToContents();
-
-                    for (int i = 1; i < columnslabel.Length; i++)
-                    {
-                        ws.Column(i).Width += 2;
-                    }
-
-                    // ===== Save file =====
-                    using (SaveFileDialog sfd = new SaveFileDialog())
-                    {
-                        sfd.Filter = "Excel Workbook|*.xlsx";
-                        sfd.FileName = "TongDon_" + exportCode + ".xlsx";
-                        if (sfd.ShowDialog() == DialogResult.OK)
-                        {
-                            wb.SaveAs(sfd.FileName);
-                            DialogResult result = MessageBox.Show("Bạn có muốn mở file này không?", "Lưu file thành công", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                            if (result == DialogResult.Yes)
-                            {
-                                try
-                                {
-                                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo()
-                                    {
-                                        FileName = sfd.FileName,
-                                        UseShellExecute = true
-                                    });
-                                }
-                                catch (Exception ex)
-                                {
-                                    MessageBox.Show("Không thể mở file: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Lỗi khi xuất Excel: " + ex.Message);
-            }
-            finally
-            {
-                await Task.Delay(200);
-                loadingOverlay.Hide();
-            }
+            if (state == 1)
+                printer.PrintPreview(mOrderDomesticDetail_dt, orderDomesticIndex, deliveryDate, customerCode, company, customerName, customerAddress, this);
+            else if (state == 2)
+                printer.PrintDirect(mOrderDomesticDetail_dt, orderDomesticIndex, deliveryDate, customerCode, company, customerName, customerAddress, tongdon_in2mat_cb.Checked);
+            await Task.Delay(200);
+            loadingOverlay.Hide();
         }
-
-        
 
         private void setRightUIReadOnly(bool isReadOnly)
         {
@@ -1151,5 +1045,150 @@ namespace RauViet.ui
 
             tongdon_gb.Visible = isReadOnly;
         }
+
+        private void dataGV_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
+        {
+            oldValue = dataGV.CurrentCell?.Value;
+            //if (orderDomesticCode_cbb.SelectedItem != null)
+            //{
+            //    DataRowView dataR = (DataRowView)orderDomesticCode_cbb.SelectedItem;
+            //    string staff = dataR["InputByName_NoSign"].ToString();
+            //    if (UserManager.Instance.fullName_NoSign.CompareTo(staff) != 0)
+            //    {
+            //        e.Cancel = true;
+            //        return;
+            //    }
+            //}
+
+            //if (isNewState)
+            //{
+            //    e.Cancel = true;
+            //    return;
+            //}
+            e.Cancel = !ispackingState;
+        }
+
+        private async void dataGV_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
+            {
+                object newValue = dataGV.CurrentCell?.Value;
+                if (object.Equals(oldValue, newValue)) return;
+
+                var row = dataGV.CurrentRow;
+                if (row?.Cells["OrderDomesticDetailID"].Value == null || row.Cells["OrderDomesticDetailID"].Value == DBNull.Value)
+                    return;
+
+                var orderDomesticDetailID = Convert.ToInt32(row.Cells["OrderDomesticDetailID"].Value);
+
+                var columnName = dataGV.Columns[e.ColumnIndex].Name;
+                DataRow orderRow = mOrderDomesticDetail_dt.Select($"OrderDomesticDetailID = {orderDomesticDetailID}").FirstOrDefault();
+                if (orderRow == null) return;
+                if (columnName == "PCSReal")
+                {
+                    UpdateNWReal(orderRow);
+                }
+                else if (columnName == "NWReal")
+                {
+                    orderRow["PCSReal"] = 0;
+                }
+                try
+                {
+                    bool isSuccess = await SQLManager.Instance.updateOrderDomesticDetail_PackingAsync(orderDomesticDetailID, Convert.ToInt32(orderRow["PCSReal"]), Convert.ToDecimal(orderRow["NWReal"]));
+                    if (!isSuccess)
+                    {
+                        MessageBox.Show($"Cập Nhật Thất Bại", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("ERROR: " + ex.Message);
+                }
+            }
+        }
+
+        private void dataGV_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            string columnName = dataGV.Columns[e.ColumnIndex].Name;
+            if (columnName != "PCSReal" && columnName != "NWReal") return;
+
+            var row = dataGV.Rows[e.RowIndex];
+            var packing = row.Cells["packing"].Value.ToString();
+            var package = row.Cells["Package"].Value.ToString();
+
+            if (columnName == "NWReal")
+            {
+               
+                if (packing.CompareTo("weight") == 0 || package.CompareTo("weight") == 0)
+                {
+                    row.Cells["PCSReal"].ReadOnly = true;
+                    e.CellStyle.BackColor = Color.LightGray;
+                }
+            }
+            else
+            {
+                if (packing.CompareTo("weight") != 0 && package.CompareTo("weight") != 0)
+                {
+                    row.Cells["NWReal"].ReadOnly = true;
+                    e.CellStyle.BackColor = Color.LightGray;
+                }
+            }
+        }
+
+        private void UpdateNWReal(DataRow row)
+        {
+            if (row == null) return;
+            var cellPCS = row["PCSReal"];
+            if (cellPCS != null && int.TryParse(cellPCS.ToString(), out int pcs))
+            {
+                var amount = Convert.ToInt32(row["Amount"]);
+                var packing = Convert.ToString(row["packing"]);
+
+                row["NWReal"] = Utils.calNetWeight(pcs, amount, packing);
+            }
+            else
+            {
+                row["NWReal"] = DBNull.Value;
+            }
+        }
+
+        private void dataGV_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
+        {
+            TextBox tb = e.Control as TextBox;
+            if (tb == null) return;
+
+            // Gỡ toàn bộ trước để tránh add trùng
+            tb.KeyPress -= Tb_KeyPress_OnlyNumber;
+            tb.KeyPress -= Tb_KeyPress_OnlyNumber1;
+
+            var colName = dataGV.CurrentCell.OwningColumn.Name;
+
+            if (colName == "NWReal")
+            {
+                tb.KeyPress += Tb_KeyPress_OnlyNumber;
+            }
+            else if (colName == "PCSReal")
+            {
+                tb.KeyPress += Tb_KeyPress_OnlyNumber1;
+            }
+        }
+
+        private void dataGV_CellParsing(object sender, DataGridViewCellParsingEventArgs e)
+        {
+            if (dataGV.Columns[e.ColumnIndex].Name == "NWReal" || dataGV.Columns[e.ColumnIndex].Name == "PCSReal")
+            {
+                if (e.Value != null)
+                {
+                    string input = e.Value.ToString().Replace(',', '.'); // cho phép nhập cả ',' hoặc '.'
+
+                    if (decimal.TryParse(input, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal value))
+                    {
+                        e.Value = value;
+                        e.ParsingApplied = true;
+                    }
+                }
+            }
+        }
+
     }
 }

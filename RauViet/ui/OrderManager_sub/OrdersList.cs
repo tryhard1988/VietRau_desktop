@@ -87,9 +87,6 @@ namespace RauViet.ui
                 }
 
                 SQLStore.Instance.removeOrders(mCurrentExportID);
-                SQLStore.Instance.removeCustomers();
-                SQLStore.Instance.removeProductSKU();
-                SQLStore.Instance.removeProductpacking();
                 SQLStore.Instance.removeLatestOrdersAsync();
                 ShowData();
             }

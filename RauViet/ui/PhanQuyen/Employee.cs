@@ -410,18 +410,18 @@ namespace RauViet.ui
                             $"{probationSalaryPercent} - {isInsuranceRefund} - {gradeName}";
                 try
                 {
-                    string nvCode_temp = "VR" + createID().ToString("D4");
-                    int newEmployee = await SQLManager.Instance.insertEmployeeAsync(nvCode_temp,tenNV, birthDate, hireDate,isMale, homeTown, address, 
+                    string nvCode_temp = "VR" + 0.ToString("D4");
+                    var result = await SQLManager.Instance.insertEmployeeAsync(nvCode_temp,tenNV, birthDate, hireDate,isMale, homeTown, address, 
                         citizenID, issueDate, issuePlace, isActive, canCreateUserName, probationSalaryPercent, phone, noteResign, isInsuranceRefund, salaryGradeID);
-                    if (newEmployee > 0)
+                    if (result.EmployeeID > 0)
                     {
                         DataTable dataTable = (DataTable)dataGV.DataSource;
                         DataRow drToAdd = dataTable.NewRow();
 
                         int salaryGrade = Convert.ToInt32(grade["Salary"]);
-                        string employeeCode = "VR" + newEmployee.ToString("D4");
-                        employeeID_tb.Text = newEmployee.ToString();
-                        drToAdd["EmployeeID"] = newEmployee;
+                        string employeeCode = result.EmployeeCode;
+                        employeeID_tb.Text = result.EmployeeID.ToString();
+                        drToAdd["EmployeeID"] = result.EmployeeID;
                         drToAdd["EmployeeCode"] = employeeCode;
                         drToAdd["FullName"] = tenNV;
                         drToAdd["BirthDate"] = birthDate;

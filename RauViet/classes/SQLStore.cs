@@ -3058,7 +3058,9 @@ namespace RauViet.classes
             mOrderDomesticCode_dt.Columns.Add(new DataColumn("InputByName_NoSign", typeof(string)));
             mOrderDomesticCode_dt.Columns.Add(new DataColumn("PackingByName", typeof(string)));
             mOrderDomesticCode_dt.Columns.Add(new DataColumn("CustomerName", typeof(string)));
-
+            mOrderDomesticCode_dt.Columns.Add(new DataColumn("CustomerCode", typeof(string)));
+            mOrderDomesticCode_dt.Columns.Add(new DataColumn("Company", typeof(string)));
+            mOrderDomesticCode_dt.Columns.Add(new DataColumn("Address", typeof(string)));
             foreach (DataRow dr in mOrderDomesticCode_dt.Rows)
             {
                 int inputBy = Convert.ToInt32(dr["InputBy"]);
@@ -3080,8 +3082,18 @@ namespace RauViet.classes
                 if (packingByRow.Length > 0)
                     dr["PackingByName"] = packingByRow[0]["FullName"].ToString();
                 if (customerRow.Length > 0)
+                {
                     dr["CustomerName"] = customerRow[0]["Company"].ToString();
+                    dr["CustomerCode"] = customerRow[0]["CustomerCode"].ToString();
+                    dr["Company"] = customerRow[0]["Company"].ToString();
+                    dr["Address"] = customerRow[0]["Address"].ToString();
+                }
             }
+        }
+
+        public async void removeOrderDomesticDetail(int OrderDomesticCodeID)
+        {
+            mOrderDomesticDetails.Remove(OrderDomesticCodeID);
         }
 
         public async Task<DataTable> getOrderDomesticDetailAsync(int OrderDomesticCodeID)
@@ -3107,6 +3119,7 @@ namespace RauViet.classes
         private void editOrderDomesticDetail(DataTable data)
         {
             data.Columns.Add(new DataColumn("SKU", typeof(int)));
+            data.Columns.Add(new DataColumn("BarCodeEAN13", typeof(string)));
             data.Columns.Add(new DataColumn("ProductNameVN", typeof(string)));
             data.Columns.Add(new DataColumn("ProductTypeName", typeof(string)));
             data.Columns.Add(new DataColumn("Package", typeof(string)));
@@ -3126,6 +3139,7 @@ namespace RauViet.classes
                 dr["ProductNameVN"] = proVN;
                 dr["ProductTypeName"] = productTypeRows.Length > 0 ? Convert.ToString(productTypeRows[0]["TypeName"]) : "";
                 dr["Amount"] = packingRows.Length > 0 ? Convert.ToInt32(packingRows[0]["Amount"]) : 0;
+                dr["BarCodeEAN13"] = packingRows.Length > 0 ? Convert.ToString(packingRows[0]["BarCodeEAN13"]) : "";
                 dr["packing"] = packingRows.Length > 0 ? packingRows[0]["packing"].ToString() : "";
                 dr["SKU"] = packingRows.Length > 0 ? Convert.ToInt32(packingRows[0]["SKU"]) : 0;
                 string package = packingRows.Length > 0 ? packingRows[0]["Package"].ToString() : "";
