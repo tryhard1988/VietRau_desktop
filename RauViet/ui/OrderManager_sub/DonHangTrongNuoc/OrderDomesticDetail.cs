@@ -1,4 +1,4 @@
-﻿using DocumentFormat.OpenXml.Vml.Office;
+﻿using DocumentFormat.OpenXml.Wordprocessing;
 using RauViet.classes;
 using System;
 using System.Collections.Generic;
@@ -14,7 +14,7 @@ namespace RauViet.ui
     public partial class OrderDomesticDetail : Form
     {
         System.Data.DataTable mProductPacking_dt, mProduct_dt, mOrderDomesticCode_dt, mOrderDomesticDetail_dt, mProductType_dt;
-
+        DataView mLogDV;
         private Timer debounceTimer = new Timer { Interval = 150 };
         private LoadingOverlay loadingOverlay;
         bool isNewState = false;
@@ -59,7 +59,6 @@ namespace RauViet.ui
             PCSOrder_tb.KeyPress += Tb_KeyPress_OnlyNumber1;
             nwOder_tb.KeyPress += Tb_KeyPress_OnlyNumber;
 
-
             debounceTimer.Tick += DebounceTimer_Tick;
             edit_btn.Click += Edit_btn_Click;
             readOnly_btn.Click += ReadOnly_btn_Click;
@@ -96,7 +95,7 @@ namespace RauViet.ui
             {
                 if (e.KeyCode == Keys.Delete)
                 {
-                    Control ctrl = this.ActiveControl;
+                    System.Windows.Forms.Control ctrl = this.ActiveControl;
 
                     if (ctrl is TextBox || ctrl is RichTextBox ||
                         (ctrl is DataGridView dgv && dgv.CurrentCell != null && dgv.IsCurrentCellInEditMode))
@@ -135,10 +134,10 @@ namespace RauViet.ui
                     mCurrentOrderDomesticCodeID = Convert.ToInt32(mOrderDomesticCode_dt.AsEnumerable().Max(r => r.Field<int>("OrderDomesticCodeID")));
                 }
 
-               // var orderLogTask = SQLStore.Instance.GetOrderLogAsync(mCurrentExportID);
+                var orderLogTask = SQLStore.Instance.GetOrderDomesticDetailLogAsync(mCurrentOrderDomesticCodeID);
                 var othersTask = SQLStore.Instance.getOrderDomesticDetailAsync(mCurrentOrderDomesticCodeID);
               //  var latestOrdersTask = SQLStore.Instance.get3LatestOrdersAsync();
-                await Task.WhenAll(othersTask);
+                await Task.WhenAll(othersTask, orderLogTask);
 
                 mOrderDomesticDetail_dt = othersTask.Result;
 
@@ -158,7 +157,9 @@ namespace RauViet.ui
                     col.ReadOnly = false;
 
                 // Gán testData cho DataGridView tạm để test
-                dataGV.DataSource = mOrderDomesticDetail_dt;                
+                dataGV.DataSource = mOrderDomesticDetail_dt;
+                mLogDV = new DataView(orderLogTask.Result);
+                log_GV.DataSource = mLogDV;
 
                 dataGV.Columns["Price"].HeaderText = "Giá";
                 dataGV.Columns["ProductNameVN"].HeaderText = "Tên Sản Phẩm";
@@ -176,7 +177,7 @@ namespace RauViet.ui
                 dataGV.Columns["OrderDomesticCodeID"].Visible = false;
                 dataGV.Columns["Amount"].Visible = false;
                 dataGV.Columns["CustomerProductTypesCode"].Visible = false;
-
+                dataGV.Columns["BarCodeEAN13"].Visible = false;
                 dataGV.Columns["Price"].Visible = !UserManager.Instance.hasRole_AnGiaSanPham();
 
                 dataGV.ReadOnly = false;
@@ -188,12 +189,17 @@ namespace RauViet.ui
                 dataGV.Columns["ProductTypeName"].ReadOnly = true;
                 dataGV.Columns["ProductNameVN"].ReadOnly = true;
                 dataGV.Columns["OrderDomesticDetailID"].ReadOnly = true;
+               
 
-                dataGV.Columns["OrderDomesticDetailID"].Width = 60;
-                dataGV.Columns["ProductNameVN"].Width = 150;
-                dataGV.Columns["PCSOrder"].Width = 80;
-                dataGV.Columns["NWOrder"].Width = 80;
-                dataGV.Columns["Price"].Width = 80;
+                dataGV.Columns["OrderDomesticDetailID"].Width = 50;
+                dataGV.Columns["ProductNameVN"].Width = 130;
+                dataGV.Columns["PCSOrder"].Width = 70;
+                dataGV.Columns["NWOrder"].Width = 70;
+                dataGV.Columns["PCSReal"].Width = 70;
+                dataGV.Columns["NWReal"].Width = 70;
+                dataGV.Columns["Price"].Width = 70;
+
+                dataGV.Columns["Price"].DefaultCellStyle.Format = "N0";
 
                 dataGV.Columns["PCSOrder"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 dataGV.Columns["NWOrder"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
@@ -214,6 +220,20 @@ namespace RauViet.ui
 
                 await Task.Delay(500);
                 ReadOnly_btn_Click(null, null);
+
+                log_GV.Columns["LogID"].Visible = false;
+                log_GV.Columns["OrderDomesticDetailID"].Visible = false;
+                log_GV.Columns["OrderDomesticCodeID"].Visible = false;
+
+                log_GV.Columns["OldValue"].HeaderText = "Giá Trị Cũ";
+                log_GV.Columns["NewValue"].HeaderText = "Giá Trị Mới";
+                log_GV.Columns["ActionBy"].HeaderText = "Người Thực Hiện";
+                log_GV.Columns["CreatedAt"].HeaderText = "Ngày Thực Hiện";
+
+                log_GV.Columns["OldValue"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                log_GV.Columns["NewValue"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                log_GV.Columns["ActionBy"].Width = 140;
+                log_GV.Columns["CreatedAt"].Width = 110;
             }
             catch (Exception ex)
             {
@@ -345,14 +365,16 @@ namespace RauViet.ui
 
             mCurrentOrderDomesticCodeID = exportCodeId;
 
-             var othersTask = SQLStore.Instance.getOrderDomesticDetailAsync(mCurrentOrderDomesticCodeID);
-            await Task.WhenAll(othersTask);
+            var orderLogTask = SQLStore.Instance.GetOrderDomesticDetailLogAsync(mCurrentOrderDomesticCodeID);
+            var othersTask = SQLStore.Instance.getOrderDomesticDetailAsync(mCurrentOrderDomesticCodeID);
+            await Task.WhenAll(othersTask, orderLogTask);
 
             mOrderDomesticDetail_dt = othersTask.Result;
+            mLogDV = new DataView(orderLogTask.Result);
 
             // Gán lại cho DataGridView
             dataGV.DataSource = mOrderDomesticDetail_dt;
-
+            log_GV.DataSource = mLogDV;
             ReadOnly_btn_Click(null, null);
         }
 
@@ -501,13 +523,15 @@ namespace RauViet.ui
             PCSOrder_tb.Text = PCSOrder;
             nwOder_tb.Text = NWOrder;
 
+            mLogDV.RowFilter = $"OrderDomesticDetailID = {Convert.ToInt32(orderDomesticDetailID)}";
+            mLogDV.Sort = "LogID DESC";
         }
 
         private void updateNetWeight() {
             
             DataRowView pdData = (DataRowView)product_ccb.SelectedItem;
             DataRowView pdpData = (DataRowView)packing_ccb.SelectedItem;
-            if (pdData == null) return;
+            if (pdData == null || pdpData == null) return;
             string package = pdData["Package"].ToString();
             string packing = pdpData["packing"].ToString();
 
@@ -535,7 +559,7 @@ namespace RauViet.ui
         }
        
 
-        private async void updateOrder(int orderDomesticDetailID, int packingId, string productType, int PCSOrder, decimal NWOrder, decimal price)
+        private async void updateOrder(int orderDomesticDetailID, int orderDomesticCodeID, int packingId, string productType, int PCSOrder, decimal NWOrder, decimal price)
         {
            // DataRow[] orderDomesticCodeRows = mOrderDomesticCode_dt.Select($"ExportCodeID = {orderDomesticCodeID}");
             DataRow[] productTypeRows = mProductType_dt.Select($"CustomerProductTypesCode = '{productType}'");
@@ -557,6 +581,9 @@ namespace RauViet.ui
                     if (dialogResult != DialogResult.Yes)
                         return;
 
+                    string oldValue = $"{row["ProductNameVN"]} - {row["ProductTypeName"]} - {row["PCSOrder"]} - {row["NWOrder"]} - {row["Amount"]} {row["packing"]}";
+                    string newValue = $"{proVN} - {productTypeName} - {PCSOrder} - {NWOrder} - {amount} {packing}";
+
                     try
                     {
                         bool isScussess = await SQLManager.Instance.updateOrderDomesticDetailAsync(orderDomesticDetailID, packingId, productType, PCSOrder, NWOrder, price);
@@ -577,20 +604,20 @@ namespace RauViet.ui
                             row["packing"] = packing;                               
                             row["ProductNameVN"] = proVN;
                             row["SKU"] = sku;
-                            //  _ = SQLManager.Instance.InsertOrderLogAsync(exportCodeId, orderId, "Update M" + mode + " Thành Công", cusName, proVN, PCSOther, NWOther);
+                            _ = SQLManager.Instance.InsertOrderDomesticDetailLogAsync(orderDomesticDetailID, orderDomesticCodeID, "Update Success: " + oldValue, newValue);
                         }
                         else
                         {
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = System.Drawing.Color.Red;
-                          //  _ = SQLManager.Instance.InsertOrderLogAsync(exportCodeId, orderId, "Update M" + mode + " Thất Bại", cusName, proVN, PCSOther, NWOther);
+                            _ = SQLManager.Instance.InsertOrderDomesticDetailLogAsync(orderDomesticDetailID, orderDomesticCodeID, "Update Fail: " + oldValue, newValue);
                         }
                     }
                     catch (Exception ex)
                     {
                         status_lb.Text = "Thất bại.";
                         status_lb.ForeColor = System.Drawing.Color.Red;
-                      //  _ = SQLManager.Instance.InsertOrderLogAsync(exportCodeId, orderId, "Update M" + mode + " Thất Bại Do Exception: " + ex.Message, cusName, proVN, PCSOther, NWOther);
+                        _ = SQLManager.Instance.InsertOrderDomesticDetailLogAsync(orderDomesticDetailID, orderDomesticCodeID, "Update Exception : " + ex.Message + oldValue, newValue);
                     }
                     
                     break;
@@ -609,7 +636,7 @@ namespace RauViet.ui
             string packing = packingRows.Length > 0 ? packingRows[0]["packing"].ToString() : "";
             int amount = packingRows.Length > 0 ? Convert.ToInt32(packingRows[0]["Amount"]) : 0;
             int sku = Convert.ToInt32(packingRows[0]["SKU"]);
-
+            string newValue = $"{proVN} - {productTypeName} - {PCSOrder} - {NWOrder} - {amount} {packing}";
             try
             {
                 int newId = await SQLManager.Instance.insertOrderDomesticDetailAsync(OrderDomesticCodeID, packingId, productType, PCSOrder, NWOrder, price);
@@ -639,25 +666,26 @@ namespace RauViet.ui
 
                     newCustomerBtn_Click(null, null);
 
-                  //  _ = SQLManager.Instance.InsertOrderLogAsync(exportCodeId, newId, "Create M" + mode + " Thành Công", cusName, proVN, PCSOther, NWOther);
+                    _ = SQLManager.Instance.InsertOrderDomesticDetailLogAsync(newId, OrderDomesticCodeID, "Create Success", newValue);
                 }
                 else
                 {
                     status_lb.Text = "Thất bại";
                     status_lb.ForeColor = System.Drawing.Color.Red;
-                  //  _ = SQLManager.Instance.InsertOrderLogAsync(exportCodeId, newId, "Create M" + mode + " Thất Bại", cusName, proVN, PCSOther, NWOther);
+                    _ = SQLManager.Instance.InsertOrderDomesticDetailLogAsync(newId, OrderDomesticCodeID, "Create Fail", newValue);
                 }
             }
             catch (Exception ex)
             {
                 status_lb.Text = "Thất bại.";
                 status_lb.ForeColor = System.Drawing.Color.Red;
-               // _ = SQLManager.Instance.InsertOrderLogAsync(exportCodeId, -1, "Create M" + mode + " Thất Bại Do Exception: " + ex.Message, cusName, proVN, PCSOther, NWOther);
+                _ = SQLManager.Instance.InsertOrderDomesticDetailLogAsync(-1, OrderDomesticCodeID, "Create Exception: " + ex.Message, newValue);
             }
         }
         private void saveBtn_Click(object sender, EventArgs e)
         {
-            if (orderDomesticCode_cbb.SelectedValue == null) return;
+            if (orderDomesticCode_cbb.SelectedValue == null || orderDomesticCode_cbb.SelectedValue == null || productType_CBB.SelectedValue == null)
+                return;
 
             DataRowView pdData = (DataRowView)product_ccb.SelectedItem;
             if (pdData == null) return;
@@ -719,7 +747,7 @@ namespace RauViet.ui
             {
                 int orderId = Convert.ToInt32(orderDomesticDetailID_tb.Text);
                 if (CountDuplicateInDataGridView(orderId, packingId) == 0)
-                    updateOrder(orderId, packingId, productType, PCSOrder, NWOrder, price);
+                    updateOrder(orderId, orderDomesticCodeID, packingId, productType, PCSOrder, NWOrder, price);
                 else
                 {
                     MessageBox.Show(
@@ -1044,6 +1072,7 @@ namespace RauViet.ui
             product_ccb.DropDownStyle = ComboBoxStyle.DropDown;
 
             tongdon_gb.Visible = isReadOnly;
+            phieugiaohang_gb.Visible = isReadOnly;
         }
 
         private void dataGV_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
@@ -1080,6 +1109,7 @@ namespace RauViet.ui
                     return;
 
                 var orderDomesticDetailID = Convert.ToInt32(row.Cells["OrderDomesticDetailID"].Value);
+                var orderDomesticCodeID = Convert.ToInt32(row.Cells["OrderDomesticCodeID"].Value);
 
                 var columnName = dataGV.Columns[e.ColumnIndex].Name;
                 DataRow orderRow = mOrderDomesticDetail_dt.Select($"OrderDomesticDetailID = {orderDomesticDetailID}").FirstOrDefault();
@@ -1092,17 +1122,26 @@ namespace RauViet.ui
                 {
                     orderRow["PCSReal"] = 0;
                 }
+                
+                string newValueStr = $"{orderRow["PCSReal"]} - {orderRow["NWReal"]} - {orderRow["Note"].ToString()}";
+
                 try
                 {
-                    bool isSuccess = await SQLManager.Instance.updateOrderDomesticDetail_PackingAsync(orderDomesticDetailID, Convert.ToInt32(orderRow["PCSReal"]), Convert.ToDecimal(orderRow["NWReal"]));
+                    bool isSuccess = await SQLManager.Instance.updateOrderDomesticDetail_PackingAsync(orderDomesticDetailID, Convert.ToInt32(orderRow["PCSReal"]), Convert.ToDecimal(orderRow["NWReal"]), orderRow["Note"].ToString());
                     if (!isSuccess)
                     {
                         MessageBox.Show($"Cập Nhật Thất Bại", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        _ = SQLManager.Instance.InsertOrderDomesticDetailLogAsync(orderDomesticDetailID, orderDomesticCodeID, columnName + " - Update đóng thùng Fail", newValueStr);
+                    }
+                    else
+                    {
+                        _ = SQLManager.Instance.InsertOrderDomesticDetailLogAsync(orderDomesticDetailID, orderDomesticCodeID, columnName + " - Update đóng thùng Success", newValueStr);
                     }
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine("ERROR: " + ex.Message);
+                    _ = SQLManager.Instance.InsertOrderDomesticDetailLogAsync(orderDomesticDetailID, orderDomesticCodeID, columnName + " - Update đóng thùng Exception " + ex.Message, newValueStr);
                 }
             }
         }
@@ -1110,7 +1149,7 @@ namespace RauViet.ui
         private void dataGV_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
             string columnName = dataGV.Columns[e.ColumnIndex].Name;
-            if (columnName != "PCSReal" && columnName != "NWReal") return;
+            if (columnName != "PCSReal" && columnName != "NWReal" && columnName != "Note") return;
 
             var row = dataGV.Rows[e.RowIndex];
             var packing = row.Cells["packing"].Value.ToString();
@@ -1122,15 +1161,19 @@ namespace RauViet.ui
                 if (packing.CompareTo("weight") == 0 || package.CompareTo("weight") == 0)
                 {
                     row.Cells["PCSReal"].ReadOnly = true;
-                    e.CellStyle.BackColor = Color.LightGray;
+                    e.CellStyle.BackColor = System.Drawing.Color.LightGray;
                 }
+            }
+            else if (columnName == "Note")
+            {
+                e.CellStyle.BackColor = System.Drawing.Color.LightGray;
             }
             else
             {
                 if (packing.CompareTo("weight") != 0 && package.CompareTo("weight") != 0)
                 {
                     row.Cells["NWReal"].ReadOnly = true;
-                    e.CellStyle.BackColor = Color.LightGray;
+                    e.CellStyle.BackColor = System.Drawing.Color.LightGray;
                 }
             }
         }

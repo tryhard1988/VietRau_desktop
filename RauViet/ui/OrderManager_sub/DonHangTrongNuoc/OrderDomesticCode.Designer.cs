@@ -36,6 +36,8 @@ namespace RauViet.ui
             this.edit_btn = new System.Windows.Forms.Button();
             this.updatePrice_btn = new System.Windows.Forms.Button();
             this.info_gb = new System.Windows.Forms.GroupBox();
+            this.customer_cb = new System.Windows.Forms.ComboBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.packingBy_cbb = new System.Windows.Forms.ComboBox();
             this.inputBy_cbb = new System.Windows.Forms.ComboBox();
             this.label7 = new System.Windows.Forms.Label();
@@ -50,11 +52,12 @@ namespace RauViet.ui
             this.status_lb = new System.Windows.Forms.Label();
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
             this.orderDomesticCodeID_tb = new System.Windows.Forms.TextBox();
-            this.customer_cb = new System.Windows.Forms.ComboBox();
-            this.label1 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.log_GV = new System.Windows.Forms.DataGridView();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
             this.panel1.SuspendLayout();
             this.info_gb.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.log_GV)).BeginInit();
             this.SuspendLayout();
             // 
             // dataGV
@@ -71,6 +74,8 @@ namespace RauViet.ui
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.label4);
+            this.panel1.Controls.Add(this.log_GV);
             this.panel1.Controls.Add(this.readOnly_btn);
             this.panel1.Controls.Add(this.newCustomerBtn);
             this.panel1.Controls.Add(this.edit_btn);
@@ -150,6 +155,24 @@ namespace RauViet.ui
             this.info_gb.Size = new System.Drawing.Size(399, 273);
             this.info_gb.TabIndex = 28;
             this.info_gb.TabStop = false;
+            // 
+            // customer_cb
+            // 
+            this.customer_cb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.customer_cb.FormattingEnabled = true;
+            this.customer_cb.Location = new System.Drawing.Point(178, 71);
+            this.customer_cb.Name = "customer_cb";
+            this.customer_cb.Size = new System.Drawing.Size(212, 24);
+            this.customer_cb.TabIndex = 47;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(22, 74);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(79, 16);
+            this.label1.TabIndex = 46;
+            this.label1.Text = "Khách Hàng:";
             // 
             // packingBy_cbb
             // 
@@ -283,23 +306,30 @@ namespace RauViet.ui
             this.orderDomesticCodeID_tb.TabIndex = 16;
             this.orderDomesticCodeID_tb.Visible = false;
             // 
-            // customer_cb
+            // label4
             // 
-            this.customer_cb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.customer_cb.FormattingEnabled = true;
-            this.customer_cb.Location = new System.Drawing.Point(178, 71);
-            this.customer_cb.Name = "customer_cb";
-            this.customer_cb.Size = new System.Drawing.Size(212, 24);
-            this.customer_cb.TabIndex = 47;
+            this.label4.BackColor = System.Drawing.Color.PeachPuff;
+            this.label4.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.label4.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label4.ForeColor = System.Drawing.Color.DarkOliveGreen;
+            this.label4.Location = new System.Drawing.Point(0, 433);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(530, 23);
+            this.label4.TabIndex = 44;
+            this.label4.Text = "Lịch sử thay đổi";
+            this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // label1
+            // log_GV
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(22, 74);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(79, 16);
-            this.label1.TabIndex = 46;
-            this.label1.Text = "Khách Hàng:";
+            this.log_GV.AllowUserToAddRows = false;
+            this.log_GV.AllowUserToDeleteRows = false;
+            this.log_GV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.log_GV.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.log_GV.Location = new System.Drawing.Point(0, 456);
+            this.log_GV.Name = "log_GV";
+            this.log_GV.ReadOnly = true;
+            this.log_GV.Size = new System.Drawing.Size(530, 225);
+            this.log_GV.TabIndex = 43;
             // 
             // OrderDomesticCode
             // 
@@ -315,6 +345,7 @@ namespace RauViet.ui
             this.panel1.PerformLayout();
             this.info_gb.ResumeLayout(false);
             this.info_gb.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.log_GV)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -343,5 +374,7 @@ namespace RauViet.ui
         private System.Windows.Forms.TextBox orderDomesticCodeID_tb;
         private System.Windows.Forms.ComboBox customer_cb;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.DataGridView log_GV;
     }
 }

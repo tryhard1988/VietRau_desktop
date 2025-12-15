@@ -30,6 +30,7 @@ namespace RauViet.ui
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
+            this.phanquyen_gb = new System.Windows.Forms.GroupBox();
             this.label1 = new System.Windows.Forms.Label();
             this.readOnly_btn = new System.Windows.Forms.Button();
             this.edit_btn = new System.Windows.Forms.Button();
@@ -48,7 +49,6 @@ namespace RauViet.ui
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
             this.userID_tb = new System.Windows.Forms.TextBox();
             this.dataGV = new System.Windows.Forms.DataGridView();
-            this.phanquyen_gb = new System.Windows.Forms.GroupBox();
             this.panel1.SuspendLayout();
             this.info_gb.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
@@ -70,8 +70,18 @@ namespace RauViet.ui
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(608, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1029, 681);
+            this.panel1.Size = new System.Drawing.Size(1029, 742);
             this.panel1.TabIndex = 9;
+            // 
+            // phanquyen_gb
+            // 
+            this.phanquyen_gb.BackColor = System.Drawing.Color.White;
+            this.phanquyen_gb.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.phanquyen_gb.Location = new System.Drawing.Point(417, 32);
+            this.phanquyen_gb.Name = "phanquyen_gb";
+            this.phanquyen_gb.Size = new System.Drawing.Size(310, 710);
+            this.phanquyen_gb.TabIndex = 35;
+            this.phanquyen_gb.TabStop = false;
             // 
             // label1
             // 
@@ -259,24 +269,14 @@ namespace RauViet.ui
             this.dataGV.Location = new System.Drawing.Point(0, 0);
             this.dataGV.Name = "dataGV";
             this.dataGV.ReadOnly = true;
-            this.dataGV.Size = new System.Drawing.Size(608, 681);
+            this.dataGV.Size = new System.Drawing.Size(608, 742);
             this.dataGV.TabIndex = 1;
-            // 
-            // phanquyen_gb
-            // 
-            this.phanquyen_gb.BackColor = System.Drawing.Color.White;
-            this.phanquyen_gb.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.phanquyen_gb.Location = new System.Drawing.Point(417, 32);
-            this.phanquyen_gb.Name = "phanquyen_gb";
-            this.phanquyen_gb.Size = new System.Drawing.Size(310, 637);
-            this.phanquyen_gb.TabIndex = 35;
-            this.phanquyen_gb.TabStop = false;
             // 
             // User
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1637, 681);
+            this.ClientSize = new System.Drawing.Size(1637, 742);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.dataGV);
             this.Name = "User";

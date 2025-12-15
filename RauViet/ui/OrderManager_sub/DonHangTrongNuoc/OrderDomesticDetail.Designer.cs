@@ -38,7 +38,14 @@ namespace RauViet.ui
             this.label1 = new System.Windows.Forms.Label();
             this.panel3 = new System.Windows.Forms.Panel();
             this.orderDomesticCode_cbb = new System.Windows.Forms.ComboBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.log_GV = new System.Windows.Forms.DataGridView();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.phieugiaohang_gb = new System.Windows.Forms.GroupBox();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.PGH_btn = new System.Windows.Forms.Button();
+            this.PGH_preview_btn = new System.Windows.Forms.Button();
+            this.packing_btn = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.label9 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
@@ -63,20 +70,16 @@ namespace RauViet.ui
             this.product_ccb = new System.Windows.Forms.ComboBox();
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
             this.orderDomesticDetailID_tb = new System.Windows.Forms.TextBox();
-            this.packing_btn = new System.Windows.Forms.Button();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
-            this.PGH_btn = new System.Windows.Forms.Button();
-            this.PGH_preview_btn = new System.Windows.Forms.Button();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
             this.panel4.SuspendLayout();
             this.panel3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.log_GV)).BeginInit();
             this.panel1.SuspendLayout();
+            this.phieugiaohang_gb.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.tongdon_gb.SuspendLayout();
             this.info_gb.SuspendLayout();
-            this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel2
@@ -183,9 +186,34 @@ namespace RauViet.ui
             this.orderDomesticCode_cbb.Size = new System.Drawing.Size(168, 21);
             this.orderDomesticCode_cbb.TabIndex = 37;
             // 
+            // label8
+            // 
+            this.label8.BackColor = System.Drawing.Color.PeachPuff;
+            this.label8.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.label8.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label8.ForeColor = System.Drawing.Color.DarkOliveGreen;
+            this.label8.Location = new System.Drawing.Point(811, 433);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(731, 23);
+            this.label8.TabIndex = 91;
+            this.label8.Text = "Lịch sử thay đổi";
+            this.label8.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // log_GV
+            // 
+            this.log_GV.AllowUserToAddRows = false;
+            this.log_GV.AllowUserToDeleteRows = false;
+            this.log_GV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.log_GV.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.log_GV.Location = new System.Drawing.Point(811, 456);
+            this.log_GV.Name = "log_GV";
+            this.log_GV.ReadOnly = true;
+            this.log_GV.Size = new System.Drawing.Size(731, 225);
+            this.log_GV.TabIndex = 90;
+            // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.groupBox2);
+            this.panel1.Controls.Add(this.phieugiaohang_gb);
             this.panel1.Controls.Add(this.packing_btn);
             this.panel1.Controls.Add(this.groupBox1);
             this.panel1.Controls.Add(this.tongdon_gb);
@@ -199,8 +227,65 @@ namespace RauViet.ui
             this.panel1.Dock = System.Windows.Forms.DockStyle.Left;
             this.panel1.Location = new System.Drawing.Point(811, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(416, 681);
-            this.panel1.TabIndex = 89;
+            this.panel1.Size = new System.Drawing.Size(416, 433);
+            this.panel1.TabIndex = 92;
+            // 
+            // phieugiaohang_gb
+            // 
+            this.phieugiaohang_gb.Controls.Add(this.checkBox1);
+            this.phieugiaohang_gb.Controls.Add(this.PGH_btn);
+            this.phieugiaohang_gb.Controls.Add(this.PGH_preview_btn);
+            this.phieugiaohang_gb.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.phieugiaohang_gb.Location = new System.Drawing.Point(211, 477);
+            this.phieugiaohang_gb.Name = "phieugiaohang_gb";
+            this.phieugiaohang_gb.Size = new System.Drawing.Size(189, 131);
+            this.phieugiaohang_gb.TabIndex = 70;
+            this.phieugiaohang_gb.TabStop = false;
+            this.phieugiaohang_gb.Text = "Phiếu Giao Hàng";
+            // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.checkBox1.Location = new System.Drawing.Point(102, 37);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(65, 17);
+            this.checkBox1.TabIndex = 69;
+            this.checkBox1.Text = "In 2 Mặt";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            // 
+            // PGH_btn
+            // 
+            this.PGH_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.PGH_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.PGH_btn.Location = new System.Drawing.Point(20, 25);
+            this.PGH_btn.Name = "PGH_btn";
+            this.PGH_btn.Size = new System.Drawing.Size(76, 39);
+            this.PGH_btn.TabIndex = 39;
+            this.PGH_btn.Text = "In";
+            this.PGH_btn.UseVisualStyleBackColor = false;
+            // 
+            // PGH_preview_btn
+            // 
+            this.PGH_preview_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.PGH_preview_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.PGH_preview_btn.Location = new System.Drawing.Point(20, 72);
+            this.PGH_preview_btn.Name = "PGH_preview_btn";
+            this.PGH_preview_btn.Size = new System.Drawing.Size(136, 39);
+            this.PGH_preview_btn.TabIndex = 42;
+            this.PGH_preview_btn.Text = "Xem";
+            this.PGH_preview_btn.UseVisualStyleBackColor = false;
+            // 
+            // packing_btn
+            // 
+            this.packing_btn.BackColor = System.Drawing.Color.YellowGreen;
+            this.packing_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.packing_btn.Location = new System.Drawing.Point(108, 148);
+            this.packing_btn.Name = "packing_btn";
+            this.packing_btn.Size = new System.Drawing.Size(105, 32);
+            this.packing_btn.TabIndex = 72;
+            this.packing_btn.Text = "Đóng thùng";
+            this.packing_btn.UseVisualStyleBackColor = false;
             // 
             // groupBox1
             // 
@@ -465,69 +550,14 @@ namespace RauViet.ui
             this.orderDomesticDetailID_tb.TabIndex = 16;
             this.orderDomesticDetailID_tb.Visible = false;
             // 
-            // packing_btn
-            // 
-            this.packing_btn.BackColor = System.Drawing.Color.YellowGreen;
-            this.packing_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.packing_btn.Location = new System.Drawing.Point(108, 148);
-            this.packing_btn.Name = "packing_btn";
-            this.packing_btn.Size = new System.Drawing.Size(105, 32);
-            this.packing_btn.TabIndex = 72;
-            this.packing_btn.Text = "Đóng thùng";
-            this.packing_btn.UseVisualStyleBackColor = false;
-            // 
-            // groupBox2
-            // 
-            this.groupBox2.Controls.Add(this.checkBox1);
-            this.groupBox2.Controls.Add(this.PGH_btn);
-            this.groupBox2.Controls.Add(this.PGH_preview_btn);
-            this.groupBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox2.Location = new System.Drawing.Point(211, 477);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(189, 131);
-            this.groupBox2.TabIndex = 70;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Phiếu Giao Hàng";
-            // 
-            // checkBox1
-            // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBox1.Location = new System.Drawing.Point(102, 37);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(65, 17);
-            this.checkBox1.TabIndex = 69;
-            this.checkBox1.Text = "In 2 Mặt";
-            this.checkBox1.UseVisualStyleBackColor = true;
-            // 
-            // PGH_btn
-            // 
-            this.PGH_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
-            this.PGH_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.PGH_btn.Location = new System.Drawing.Point(20, 25);
-            this.PGH_btn.Name = "PGH_btn";
-            this.PGH_btn.Size = new System.Drawing.Size(76, 39);
-            this.PGH_btn.TabIndex = 39;
-            this.PGH_btn.Text = "In";
-            this.PGH_btn.UseVisualStyleBackColor = false;
-            // 
-            // PGH_preview_btn
-            // 
-            this.PGH_preview_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
-            this.PGH_preview_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.PGH_preview_btn.Location = new System.Drawing.Point(20, 72);
-            this.PGH_preview_btn.Name = "PGH_preview_btn";
-            this.PGH_preview_btn.Size = new System.Drawing.Size(136, 39);
-            this.PGH_preview_btn.TabIndex = 42;
-            this.PGH_preview_btn.Text = "Xem";
-            this.PGH_preview_btn.UseVisualStyleBackColor = false;
-            // 
             // OrderDomesticDetail
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1542, 681);
             this.Controls.Add(this.panel1);
+            this.Controls.Add(this.label8);
+            this.Controls.Add(this.log_GV);
             this.Controls.Add(this.panel2);
             this.Name = "OrderDomesticDetail";
             this.Text = "FormTableData";
@@ -536,16 +566,17 @@ namespace RauViet.ui
             this.panel4.ResumeLayout(false);
             this.panel4.PerformLayout();
             this.panel3.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.log_GV)).EndInit();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            this.phieugiaohang_gb.ResumeLayout(false);
+            this.phieugiaohang_gb.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.tongdon_gb.ResumeLayout(false);
             this.tongdon_gb.PerformLayout();
             this.info_gb.ResumeLayout(false);
             this.info_gb.PerformLayout();
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -560,7 +591,14 @@ namespace RauViet.ui
         private System.Windows.Forms.Label cus_lable;
         private System.Windows.Forms.Label cus_name_label;
         private System.Windows.Forms.Label total_label;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.DataGridView log_GV;
         private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.GroupBox phieugiaohang_gb;
+        private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.Button PGH_btn;
+        private System.Windows.Forms.Button PGH_preview_btn;
+        private System.Windows.Forms.Button packing_btn;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label label4;
@@ -573,6 +611,8 @@ namespace RauViet.ui
         private System.Windows.Forms.Button newCustomerBtn;
         private System.Windows.Forms.Button edit_btn;
         private System.Windows.Forms.GroupBox info_gb;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.ComboBox productType_CBB;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox PCSOrder_tb;
@@ -583,12 +623,5 @@ namespace RauViet.ui
         private System.Windows.Forms.ComboBox product_ccb;
         private System.Windows.Forms.Button LuuThayDoiBtn;
         private System.Windows.Forms.TextBox orderDomesticDetailID_tb;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.ComboBox productType_CBB;
-        private System.Windows.Forms.Button packing_btn;
-        private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.CheckBox checkBox1;
-        private System.Windows.Forms.Button PGH_btn;
-        private System.Windows.Forms.Button PGH_preview_btn;
     }
 }

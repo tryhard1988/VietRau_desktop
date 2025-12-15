@@ -444,9 +444,9 @@ namespace RauViet.ui
             // Lọc packing theo SKU
             DataView dv = new DataView(mProductPacking_dt);
             if(!isNewState)
-                dv.RowFilter = $"SKU = '{selectedSKU}'";
+                dv.RowFilter = $"SKU = '{selectedSKU}' AND Packing <> 'weight'";
             else
-                dv.RowFilter = $"SKU = '{selectedSKU}' AND IsActive = true";
+                dv.RowFilter = $"SKU = '{selectedSKU}' AND IsActive = true AND Packing <> 'weight'";
 
             packing_ccb.DataSource = dv;
             packing_ccb.DisplayMember = "PackingName"; // cột bạn muốn hiển thị

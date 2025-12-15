@@ -1,17 +1,19 @@
-﻿using RauViet.classes;
+﻿
+using RauViet.classes;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Color = System.Drawing.Color;
 
 namespace RauViet.ui
 {
     public partial class ProductDomesticPrices : Form
     {
         System.Data.DataTable mSKU_dt, mProductDomesticPrices_dt;
+        private DataView mLogDV;
         private Timer debounceTimer = new Timer { Interval = 300 };
         bool isNewState = false;
         private LoadingOverlay loadingOverlay;
@@ -52,7 +54,7 @@ namespace RauViet.ui
             {
                 if (e.KeyCode == Keys.Delete)
                 {
-                    Control ctrl = this.ActiveControl;
+                    System.Windows.Forms.Control ctrl = this.ActiveControl;
 
                     if (ctrl is TextBox || ctrl is RichTextBox ||
                         (ctrl is DataGridView dgv && dgv.CurrentCell != null && dgv.IsCurrentCellInEditMode))
@@ -77,6 +79,8 @@ namespace RauViet.ui
                 var parameters = new Dictionary<string, object> { { "IsActive", true } };
                 mSKU_dt = await SQLStore.Instance.getProductSKUAsync(parameters);
                 mProductDomesticPrices_dt = await SQLStore.Instance.getProductDomesticPricesAsync();
+                var logData = await SQLStore.Instance.GetProductDomesticPricesHistoryAsync();
+                mLogDV = new DataView(logData);
 
                 sku_cbb.DataSource = mSKU_dt;
                 sku_cbb.DisplayMember = "ProductNameVN";  // hiển thị tên
@@ -88,13 +92,22 @@ namespace RauViet.ui
                 DataView dv = mProductDomesticPrices_dt.DefaultView;
                 dv.RowFilter = $"IsActive = true";
 
+                log_GV.DataSource = mLogDV;
+
                 dataGV.Columns["PriceID"].Visible = false;
+                dataGV.Columns["ProductNameVN_NoSign"].Visible = false;
+                dataGV.Columns["Package"].Visible = false;
+                dataGV.Columns["Priority"].Visible = false;
 
                 dataGV.Columns["ProductName_VN"].HeaderText = "Tên Sản Phẩm";
                 dataGV.Columns["RawPrice"].HeaderText = "Giá Hàng Xá";
                 dataGV.Columns["RefinedPrice"].HeaderText = "Giá Hàng Tinh";
                 dataGV.Columns["PackedPrice"].HeaderText = "Giá Hàng Đóng Gói";
                 dataGV.Columns["IsActive"].HeaderText = "Active";
+
+                dataGV.Columns["RawPrice"].DefaultCellStyle.Format = "N0";
+                dataGV.Columns["RefinedPrice"].DefaultCellStyle.Format = "N0";
+                dataGV.Columns["PackedPrice"].DefaultCellStyle.Format = "N0";
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
@@ -118,6 +131,20 @@ namespace RauViet.ui
                 dataGV.Columns["RawPrice"].DefaultCellStyle.Format = "N0";
                 dataGV.Columns["RefinedPrice"].DefaultCellStyle.Format = "N0";
                 dataGV.Columns["PackedPrice"].DefaultCellStyle.Format = "N0";
+
+
+                log_GV.Columns["HistoryID"].Visible = false;
+                log_GV.Columns["SKU"].Visible = false;
+                log_GV.Columns["OldValue"].HeaderText = "Giá Trị Cũ";
+                log_GV.Columns["NewValue"].HeaderText = "Giá Trị Mới";
+                log_GV.Columns["ActionBy"].HeaderText = "Người Thực Hiện";
+                log_GV.Columns["CreatedAt"].HeaderText = "Ngày Thực Hiện";
+
+                log_GV.Columns["OldValue"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                log_GV.Columns["NewValue"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                log_GV.Columns["ActionBy"].Width = 150;
+                log_GV.Columns["CreatedAt"].Width = 120;
+
             }
             catch (Exception ex)
             {
@@ -187,6 +214,9 @@ namespace RauViet.ui
                 if (ID.CompareTo(SKU) == 0)
                 {
                     DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+                    string oldValue = $"{row["RawPrice"]} - {row["RefinedPrice"]} - {row["PackedPrice"]} - {row["IsActive"]}";
+                    string newValue = $"{rawPrice} - {refinePrice} - {packedPrice} - {isActive}";
                     if (dialogResult == DialogResult.Yes)
                     {
                         try
@@ -202,17 +232,23 @@ namespace RauViet.ui
                                 row["RefinedPrice"] = refinePrice;
                                 row["PackedPrice"] = packedPrice;
                                 row["IsActive"] = isActive;
+
+                                _ = SQLManager.Instance.InsertProductDomesticPricesHistory(SKU, "Update Success: " + oldValue, newValue);
                             }
                             else
                             {
                                 status_lb.Text = "Thất bại.";
                                 status_lb.ForeColor = Color.Red;
+
+                                _ = SQLManager.Instance.InsertProductDomesticPricesHistory(SKU, "Update Fail: " + oldValue, newValue);
                             }
                         }
                         catch (Exception ex)
                         {
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;
+
+                            _ = SQLManager.Instance.InsertProductDomesticPricesHistory(SKU, "Update Exception: " + ex.Message + oldValue, newValue);
                         }
                     }
                     break;
@@ -233,6 +269,7 @@ namespace RauViet.ui
 
             if (dialogResult == DialogResult.Yes)
             {
+                string newValue = $"{rawPrice} - {refinePrice} - {packedPrice}";
                 try
                 {
                     int newId = await SQLManager.Instance.insertProductDomesticPriceAsync(SKU, rawPrice, refinePrice, packedPrice);
@@ -254,6 +291,7 @@ namespace RauViet.ui
                         status_lb.Text = "Thành công";
                         status_lb.ForeColor = Color.Green;
 
+                        _ = SQLManager.Instance.InsertProductDomesticPricesHistory(SKU, "Create Success: ", newValue);
 
                         newBtn_Click(null, null);
                     }
@@ -261,6 +299,7 @@ namespace RauViet.ui
                     {
                         status_lb.Text = "Thất bại";
                         status_lb.ForeColor = Color.Red;
+                        _ = SQLManager.Instance.InsertProductDomesticPricesHistory(SKU, "Create Fail: ", newValue);
                     }
                 }
                 catch (Exception ex)
@@ -268,6 +307,8 @@ namespace RauViet.ui
                     Console.WriteLine("ERROR: " + ex.Message);
                     status_lb.Text = "Thất bại.";
                     status_lb.ForeColor = Color.Red;
+
+                    _ = SQLManager.Instance.InsertProductDomesticPricesHistory(SKU, "Create Exception: " + ex.Message, newValue);
                 }
 
             }
@@ -420,6 +461,9 @@ namespace RauViet.ui
                     isActive_cb.Checked = isActive;
 
                     status_lb.Text = "";
+
+                    mLogDV.RowFilter = $"SKU = {SKU}";
+                    mLogDV.Sort = "LogID DESC";
                 }
             }
             catch (Exception ex)

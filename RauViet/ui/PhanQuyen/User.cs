@@ -142,7 +142,7 @@ namespace RauViet.ui
             // Lấy danh sách nhóm
             var groups = role_dt.AsEnumerable()
                 .GroupBy(r => r.Field<string>("RoleGroupName"))
-                .OrderBy(g => g.First().Field<int>("RoleGroupID"));
+                .OrderBy(g => g.First().Field<int>("Priority"));
 
             int yGroup = 50; // vị trí top bắt đầu cho nhóm
 

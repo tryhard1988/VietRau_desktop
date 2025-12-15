@@ -1,10 +1,12 @@
-﻿using DocumentFormat.OpenXml.Drawing;
+﻿using DocumentFormat.OpenXml.CustomProperties;
+using DocumentFormat.OpenXml.Drawing;
 using System;
 using System.Data;
 using System.Drawing;
 using System.Drawing.Printing;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using System.Windows.Media;
 
 public class PhieuGiaoHangTrongNuoc_Printer
 {
@@ -109,23 +111,25 @@ public class PhieuGiaoHangTrongNuoc_Printer
         int paddingBottom = e.PageBounds.Bottom - e.MarginBounds.Bottom;
         int startX = 50;
         int startY = firstPage ? 50 : yPosition;
-        int rowHeight = 30;
+        int rowHeight = 27;
 
         int colWidth_STT = 50;
         int colWidth_SKU = 70;
         int colWidth_MV = 130;
-        int colWidth_Product = 140;
+        int colWidth_Product = 115;
         int colWidth_QC = 100;
-        int colWidth_SLGH = 130;
-        int colWidth_gc = e.PageBounds.Width - colWidth_STT - colWidth_SKU - colWidth_MV - colWidth_Product - colWidth_QC - colWidth_SLGH - 100;
+        int colWidth_SLGH = 120;
+        int colWidth_gc = e.PageBounds.Width - colWidth_STT - colWidth_SKU - colWidth_MV - colWidth_Product - colWidth_QC - colWidth_SLGH - startX*2 - 30;
 
         int y = startY;
 
         Font fontTitle1 = new Font("Times New Roman", 16, FontStyle.Bold);
         Font fontTitle = new Font("Times New Roman", 20, FontStyle.Bold);
-        Font fontHeader = new Font("Times New Roman", 13, FontStyle.Bold);
-        Font fontContent = new Font("Times New Roman", 13);
-        Brush brush = Brushes.Black;
+        Font fontHeader = new Font("Times New Roman", 12, FontStyle.Bold);
+        Font fontHeader1 = new Font("Times New Roman", 13, FontStyle.Bold);
+        Font fontContent = new Font("Times New Roman", 12);
+        Font fontContent1 = new Font("Times New Roman", 14);
+        System.Drawing.Brush brush = System.Drawing.Brushes.Black;
 
         StringFormat sfHeader = new StringFormat() { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center };
         StringFormat sfDataLeft = new StringFormat() { Alignment = StringAlignment.Near, LineAlignment = StringAlignment.Center };
@@ -134,34 +138,43 @@ public class PhieuGiaoHangTrongNuoc_Printer
         // Tiêu đề trang đầu
         if (firstPage)
         {
-            e.Graphics.DrawString("CÔNG TY CỔ PHẦN VIỆT RAU", fontTitle1, brush, e.MarginBounds.Left, y);
-            y += (rowHeight);
-            e.Graphics.DrawString("Tổ 1, ấp 4, xã Phước Thái, tỉnh Đồng Nai", fontContent, brush, e.MarginBounds.Left, y);
-            y += (rowHeight + 5);
-            e.Graphics.DrawString("Tel/Zalo: 0909244916      Email: honggam.tran@vietrau.com", fontContent, brush, e.MarginBounds.Left, y);
+            Image img = RauViet.Properties.Resources.ic_logo;
+            e.Graphics.DrawImage(img, e.MarginBounds.Left, y - rowHeight / 3, (int)(img.Width * 0.15), (int)(img.Height * 0.15));
+            y -= rowHeight / 2;
+            e.Graphics.DrawString("CÔNG TY CỔ PHẦN VIỆT RAU", fontTitle1, brush, e.MarginBounds.Left + (int)(img.Width * 0.15) + 30, y);
+            y += (rowHeight + 2);
+            e.Graphics.DrawString("Tổ 1, ấp 4, xã Phước Thái, tỉnh Đồng Nai", fontContent1, brush, e.MarginBounds.Left + (int)(img.Width * 0.15) + 30, y);
+            y += (rowHeight + 10);
+            e.Graphics.DrawString("Tel/Zalo: 0909244916      Email: honggam.tran@vietrau.com", fontContent1, brush, e.MarginBounds.Left + (int)(img.Width * 0.15) + 30, y);
             y += rowHeight;
+            e.Graphics.DrawLine(new System.Drawing.Pen(System.Drawing.Color.Black, 1), startX, y, e.PageBounds.Width - startX*2, y);
+            y += (rowHeight - 10);
 
             string title = "PHIẾU GIAO HÀNG";
             SizeF titleSize = e.Graphics.MeasureString(title, fontTitle);
-            float titleX = e.MarginBounds.Left + (e.MarginBounds.Width - titleSize.Width) / 2;
+            float titleX = e.MarginBounds.Left + (e.MarginBounds.Width - titleSize.Width) / 2 - 20;
             e.Graphics.DrawString(title, fontTitle, brush, titleX, y);
             y += rowHeight;
 
             string code = $"Số: {orderDomesticIndex.ToString("000")}/{deliveryDate.Year}/{customerCode}";
             SizeF codeSize = e.Graphics.MeasureString(code, fontTitle);
-            e.Graphics.DrawString(code, fontHeader, brush, e.MarginBounds.Right - codeSize.Width/2, y);
+            e.Graphics.DrawString(code, fontHeader1, brush, e.PageBounds.Width - startX * 2 - codeSize.Width/2  -30, y);
             y += rowHeight;
 
-            e.Graphics.DrawString($"Người Mua Hàng: {customerName}", fontContent, brush, startX, y);
+            e.Graphics.DrawString($"Người Mua Hàng:", fontContent, brush, startX, y);
+            e.Graphics.DrawString($"{customerName}", fontHeader1, brush, startX + 150, y);
             y += rowHeight;
-            e.Graphics.DrawString($"Đơn Vị: {company}", fontContent, brush, startX, y);
+            e.Graphics.DrawString($"Đơn Vị:", fontContent, brush, startX, y);
+            e.Graphics.DrawString($"{company}", fontHeader1, brush, startX + 150, y);
             y += rowHeight;
-            e.Graphics.DrawString($"Địa Chỉ: {customerAddress}", fontContent, brush, startX, y);
+            e.Graphics.DrawString($"Địa Chỉ:", fontContent, brush, startX, y);
+            e.Graphics.DrawString($"{customerAddress}", fontContent, brush, startX + 150, y);
             y += rowHeight;
-            e.Graphics.DrawString($"Ngày Giao: {deliveryDate:dd/MM/yyyy}", fontContent, brush, startX, y);
-            y += rowHeight * 2;
+            e.Graphics.DrawString($"Ngày Giao:", fontContent, brush, startX, y);
+            e.Graphics.DrawString($"{deliveryDate:dd/MM/yyyy}", fontHeader1, brush, startX + 150, y);
+            y += rowHeight;
         }
-
+        y += 10;
         // Header bảng
         int x = startX;
         e.Graphics.DrawRectangle(Pens.Black, x, y, colWidth_STT, rowHeight*2);
@@ -285,9 +298,9 @@ public class PhieuGiaoHangTrongNuoc_Printer
             }
         }
 
-        y += 50;
-        e.Graphics.DrawString("Người nhận hàng\n\n\n\n................................................", fontHeader, brush, new RectangleF(startX + 50, y, 300, 100), sfDataCenter);
-        e.Graphics.DrawString("Người giao hàng\n\n\n\n................................................", fontHeader, brush, new RectangleF(e.PageBounds.Right - 400, y, 300, 100), sfDataCenter);
+        y += 40;
+        e.Graphics.DrawString("Người nhận hàng\n\n\n\n\n\n\n........................................................", fontHeader, brush, new RectangleF(startX + 40, y, 300, 160), sfDataCenter);
+        e.Graphics.DrawString("Người giao hàng\n\n\n\n\n\n\n........................................................", fontHeader, brush, new RectangleF(e.PageBounds.Right - 400, y, 300, 160), sfDataCenter);
         e.HasMorePages = false;
         currentRowIndex = 0;
         firstPage = true;

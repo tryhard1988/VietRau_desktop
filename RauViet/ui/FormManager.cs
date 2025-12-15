@@ -78,7 +78,7 @@ namespace RauViet.ui
                     sanpham_group_mi.Visible = false;
             }
 
-            if (UserManager.Instance.hasRole_NhapLieuDonHang())
+            if (UserManager.Instance.hasRole_NhapDonNuocNgoai())
             {
                 exportCode_menuItem.Click += exportCode_btn_Click;
                 order_menuitem.Click += others_btn_Click;
@@ -177,11 +177,20 @@ namespace RauViet.ui
             {
                 extension_mi.Visible = false;
             }
-                
-            historyLogin_mi.Click += HistoryLogin_mi_Click;
-            orderDomesticCode_mi.Click += OrderDomesticCode_mi_Click;
-            orderDomesticDetail_mi.Click += OrderDomesticDetail_mi_Click;
 
+            if (UserManager.Instance.hasRole_NhapDonTrongNuoc())
+            {
+                orderDomesticCode_mi.Click += OrderDomesticCode_mi_Click;
+                orderDomesticDetail_mi.Click += OrderDomesticDetail_mi_Click;
+            }
+            else
+            {
+                orderDomestic_group_mi.Visible = false;
+            }
+            
+
+            historyLogin_mi.Click += HistoryLogin_mi_Click;
+            
             string saved = Properties.Settings.Default.current_form;
             if (Enum.TryParse(saved, out EForm status))
             {

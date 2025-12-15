@@ -202,7 +202,7 @@ namespace RauViet.ui
                 dataGV.Columns["NumberCarton"].Width = sizeWidth;
                 dataGV.Columns["FreightCharge"].Width = sizeWidth;
 
-                product_GV.Columns["ProductName_EN"].Visible = false;
+               // product_GV.Columns["ProductName_EN"].Visible = false;
                 product_GV.Columns["ProductName_VN"].HeaderText = "Tên Sản Phẩm";
                 product_GV.Columns["ProductName_EN"].HeaderText = "Product Name";
                 product_GV.Columns["TotalNetWeight"].HeaderText = "Net Weight";

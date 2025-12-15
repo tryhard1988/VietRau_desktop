@@ -63,6 +63,8 @@ namespace RauViet.classes
         DataTable mEmployee_POS_DEP_CON_Log_dt = null;
         DataTable mEmployeeSalary_Log_dt = null;
         DataTable mProductType_dt = null;
+        DataTable mOrderDomesticCodeLog_dt = null;
+        DataTable mProductDomesticPricesLog_dt = null;
 
         Dictionary<int, DataTable> mOrderLists;
         Dictionary<int, DataTable> mOrderDomesticDetails;
@@ -82,7 +84,8 @@ namespace RauViet.classes
         Dictionary<int, DataTable> mOrderPackingLogs;
         Dictionary<int, DataTable> mDo47Logs;
         Dictionary<int, DataTable> mLotCodeLogs;
-        
+        Dictionary<int, DataTable> mOrderDomesticDetailLogs;
+
         private SQLStore() { }
 
         public static SQLStore Instance
@@ -119,7 +122,8 @@ namespace RauViet.classes
                 mOrderLogs = new Dictionary<int, DataTable>();
                 mOrderPackingLogs = new Dictionary<int, DataTable>();
                 mDo47Logs = new Dictionary<int, DataTable>();
-                mLotCodeLogs = new Dictionary<int, DataTable>();                
+                mLotCodeLogs = new Dictionary<int, DataTable>();
+                mOrderDomesticDetailLogs = new Dictionary<int, DataTable>();
 
                 var productSKUTask = SQLManager.Instance.getProductSKUAsync();
                 var productPackingTask = SQLManager.Instance.getProductpackingAsync();
@@ -1820,9 +1824,9 @@ namespace RauViet.classes
             // 3️⃣ Lấy 10 dòng mới nhất theo CreatedAt
             if (top > 0)
             {
-                filteredRows = filteredRows
-                    .OrderByDescending(r => r.Field<int>("ExportCodeID"))
-                    .Take(top);
+                filteredRows = filteredRows.OrderBy(r => r.Field<bool>("Complete"))   // false (0) lên trước true (1)
+                                            .ThenByDescending(r => r.Field<int>("ExportCodeID"))
+                                            .Take(top);
             }
 
             // 4️⃣ Thêm các dòng đã lọc vào bảng kết quả (chỉ giữ cột cần)
@@ -3083,7 +3087,7 @@ namespace RauViet.classes
                     dr["PackingByName"] = packingByRow[0]["FullName"].ToString();
                 if (customerRow.Length > 0)
                 {
-                    dr["CustomerName"] = customerRow[0]["Company"].ToString();
+                    dr["CustomerName"] = customerRow[0]["FullName"].ToString();
                     dr["CustomerCode"] = customerRow[0]["CustomerCode"].ToString();
                     dr["Company"] = customerRow[0]["Company"].ToString();
                     dr["Address"] = customerRow[0]["Address"].ToString();
@@ -3153,6 +3157,8 @@ namespace RauViet.classes
             int count = 0;
             data.Columns["OrderDomesticDetailID"].SetOrdinal(count++);
             data.Columns["ProductNameVN"].SetOrdinal(count++);
+            data.Columns["ProductTypeName"].SetOrdinal(count++);
+            data.Columns["Price"].SetOrdinal(count++);
             data.Columns["PCSOrder"].SetOrdinal(count++);
             data.Columns["NWOrder"].SetOrdinal(count++);
             data.Columns["PCSReal"].SetOrdinal(count++);
@@ -3176,6 +3182,35 @@ namespace RauViet.classes
             }
 
             return mProductType_dt;
+        }
+
+        public async Task<DataTable> GetOrderDomesticCodeLogAsync()
+        {
+            if (mOrderDomesticCodeLog_dt == null)
+            {
+                mOrderDomesticCodeLog_dt = await SQLManager.Instance.GetOrderDomesticCodeLogAsync();
+            }
+            return mOrderDomesticCodeLog_dt;
+        }
+
+        public async Task<DataTable> GetOrderDomesticDetailLogAsync(int OrderDomesticDetailID)
+        {
+            if (!mOrderDomesticDetailLogs.ContainsKey(OrderDomesticDetailID))
+            {
+                DataTable dt = await SQLManager.Instance.GetOrderDomesticDetailLogAsync(OrderDomesticDetailID);
+                mOrderDomesticDetailLogs[OrderDomesticDetailID] = dt;
+            }
+            return mOrderDomesticDetailLogs[OrderDomesticDetailID];
+        }
+
+        public async Task<DataTable> GetProductDomesticPricesHistoryAsync()
+        {
+            if (mProductDomesticPricesLog_dt == null)
+            {
+                DataTable dt = await SQLManager.Instance.GetProductDomesticPricesHistoryAsync();
+                mProductDomesticPricesLog_dt = dt;
+            }
+            return mProductDomesticPricesLog_dt;
         }
     }
 }

@@ -485,7 +485,7 @@ namespace RauViet.classes
             using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
             {
                 await con.OpenAsync();
-                string query = "SELECT TOP 30 * FROM ExportCodes ORDER BY ExportCodeID DESC";
+                string query = "SELECT TOP 30 * FROM ExportCodes ORDER BY Complete ASC, ExportCodeID DESC";
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                 {
@@ -1203,10 +1203,11 @@ namespace RauViet.classes
                                     r.RoleID, 
                                     r.RoleName, 
                                     r.RoleGroupID,
-                                    g.RoleGroupName
+                                    g.RoleGroupName,
+                                    g.Priority
                                 FROM Roles r
                                 LEFT JOIN RoleGroup g ON r.RoleGroupID = g.RoleGroupID
-                                ORDER BY r.RoleGroupID, r.RoleID;";
+                                ORDER BY g.Priority, r.RoleGroupID, r.RoleID;";
 
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
@@ -5376,11 +5377,12 @@ namespace RauViet.classes
             catch { return false; }
         }
 
-        public async Task<bool> updateOrderDomesticDetail_PackingAsync(int orderDomesticDetailID, int PCSReal, decimal NWReal)
+        public async Task<bool> updateOrderDomesticDetail_PackingAsync(int orderDomesticDetailID, int PCSReal, decimal NWReal, string Note)
         {
             string query = @"UPDATE OrderDomesticDetail SET  
                                 PCSReal=@PCSReal,
-                                NWReal=@NWReal
+                                NWReal=@NWReal,
+                                Note=@Note
                              WHERE OrderDomesticDetailID=@OrderDomesticDetailID";
             try
             {
@@ -5392,6 +5394,7 @@ namespace RauViet.classes
                         cmd.Parameters.AddWithValue("@OrderDomesticDetailID", orderDomesticDetailID);
                         cmd.Parameters.AddWithValue("@PCSReal", PCSReal);
                         cmd.Parameters.AddWithValue("@NWReal", NWReal);
+                        cmd.Parameters.AddWithValue("@Note", Note);
                         await cmd.ExecuteNonQueryAsync();
                     }
                 }
@@ -5459,6 +5462,137 @@ namespace RauViet.classes
                 using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                 {
                     dt.Load(reader);
+                }
+            }
+            return dt;
+        }
+
+        public async Task InsertOrderDomesticCodeLogAsync(int OrderDomesticIndex, string OldValue, string NewValue)
+        {
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand("sp_InsertOrderDomesticCodeLog", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@OrderDomesticIndex", OrderDomesticIndex);
+                        cmd.Parameters.AddWithValue("@OldValue", (object)OldValue ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@NewValue", (object)NewValue ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@ActionBy", UserManager.Instance.fullName);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error Auto Update ExportCode: {ex.Message}");
+            }
+        }
+
+        public async Task<DataTable> GetOrderDomesticCodeLogAsync()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr()))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT * FROM OrderDomesticCodeLog";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
+        }
+
+        public async Task InsertOrderDomesticDetailLogAsync(int OrderDomesticDetailID, int OrderDomesticCodeID, string OldValue, string NewValue)
+        {
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand("sp_InsertOrderDomesticDetailLog", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@OrderDomesticDetailID", OrderDomesticDetailID);
+                        cmd.Parameters.AddWithValue("@OrderDomesticCodeID", OrderDomesticCodeID);
+                        cmd.Parameters.AddWithValue("@OldValue", (object)OldValue ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@NewValue", (object)NewValue ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@ActionBy", UserManager.Instance.fullName);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error Auto Update ExportCode: {ex.Message}");
+            }
+        }
+
+        public async Task<DataTable> GetOrderDomesticDetailLogAsync(int orderDomesticCodeID)
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr()))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT * FROM OrderDomesticDetailLog WHERE OrderDomesticCodeID = @OrderDomesticCodeID";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    cmd.Parameters.AddWithValue("@OrderDomesticCodeID", orderDomesticCodeID);
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
+        }
+
+        public async Task InsertProductDomesticPricesHistory(int SKU, string OldValue, string NewValue)
+        {
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_khoHis_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand("sp_InsertProductDomesticPricesHistory", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@SKU", SKU);
+                        cmd.Parameters.AddWithValue("@OldValue", (object)OldValue ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@NewValue", (object)NewValue ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@ActionBy", UserManager.Instance.fullName);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error Auto Update ExportCode: {ex.Message}");
+            }
+        }
+
+        public async Task<DataTable> GetProductDomesticPricesHistoryAsync()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_khoHis_conStr()))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT * FROM ProductDomesticPricesHistory";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
                 }
             }
             return dt;

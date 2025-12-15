@@ -1,4 +1,5 @@
-﻿using RauViet.classes;
+﻿using DocumentFormat.OpenXml.Vml.Office;
+using RauViet.classes;
 using System;
 using System.Data;
 using System.Linq;
@@ -11,6 +12,7 @@ namespace RauViet.ui
     public partial class OrderDomesticCode : Form
     {
         System.Data.DataTable _employeesInDongGoi_dt, mOrderDomesticCode_dt, mCustomer_dt;
+        DataView mLogDV;
         private LoadingOverlay loadingOverlay;
         bool isNewState = false;
         public OrderDomesticCode()
@@ -138,15 +140,19 @@ namespace RauViet.ui
             {
                 // Chạy truy vấn trên thread riêng
                 var orderDomesticCodeTask = SQLStore.Instance.getOrderDomesticCodeAsync();
+                var orderDomesticCodeLogTask = SQLStore.Instance.GetOrderDomesticCodeLogAsync();
                 var customerTask = SQLStore.Instance.getCustomersAsync();
                 var employeesInDongGoiTask = SQLStore.Instance.GetActiveEmployeesIn_DongGoiAsync();
 
-                await Task.WhenAll(orderDomesticCodeTask, employeesInDongGoiTask, customerTask);
+                await Task.WhenAll(orderDomesticCodeTask, employeesInDongGoiTask, customerTask, orderDomesticCodeLogTask);
 
                 mOrderDomesticCode_dt = orderDomesticCodeTask.Result;
                 _employeesInDongGoi_dt = employeesInDongGoiTask.Result;
-               
+                mLogDV = new DataView(orderDomesticCodeLogTask.Result);
+
+
                 dataGV.DataSource = mOrderDomesticCode_dt;
+                log_GV.DataSource = mLogDV;
 
                 dataGV.Columns["OrderDomesticIndex"].HeaderText = "Mã Đơn Hàng";
                 dataGV.Columns["DeliveryDate"].HeaderText = "Ngày Giao";                
@@ -154,17 +160,24 @@ namespace RauViet.ui
                 dataGV.Columns["InputByName"].HeaderText = "NV Nhập S.Liệu";
                 dataGV.Columns["PackingByName"].HeaderText = "NV Đóng Gói";
                 dataGV.Columns["CustomerName"].HeaderText = "Khách Hàng";
+                dataGV.Columns["Company"].HeaderText = "Khách Hàng";
 
-                dataGV.Columns["OrderDomesticIndex"].Width = 120;
-                dataGV.Columns["DeliveryDate"].Width = 100;
-                dataGV.Columns["Complete"].Width = 90;
-                dataGV.Columns["InputByName"].Width = 150;
-                dataGV.Columns["PackingByName"].Width = 150;
+                dataGV.Columns["OrderDomesticIndex"].Width = 70;
+                dataGV.Columns["DeliveryDate"].Width = 70;
+                dataGV.Columns["Complete"].Width = 60;
+                dataGV.Columns["InputByName"].Width = 140;
+                dataGV.Columns["PackingByName"].Width = 140;
+                dataGV.Columns["CustomerName"].Width = 100;
+                dataGV.Columns["Company"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
 
                 dataGV.Columns["InputByName_NoSign"].Visible = false;
                 dataGV.Columns["OrderDomesticCodeID"].Visible = false;
                 dataGV.Columns["InputBy"].Visible = false;
                 dataGV.Columns["PackingBy"].Visible = false;
+                dataGV.Columns["CustomerID"].Visible = false;
+                dataGV.Columns["CustomerCode"].Visible = false;
+                dataGV.Columns["Address"].Visible = false;
+                dataGV.Columns["CustomerName"].Visible = false;
 
                 inputBy_cbb.DataSource = _employeesInDongGoi_dt;
                 inputBy_cbb.DisplayMember = "FullName";  // hiển thị tên
@@ -184,6 +197,18 @@ namespace RauViet.ui
                 customer_cb.DataSource = mCustomer_dt;
                 customer_cb.DisplayMember = "Company";  // hiển thị tên
                 customer_cb.ValueMember = "CustomerID";
+
+                log_GV.Columns["LogID"].Visible = false;
+                log_GV.Columns["OrderDomesticIndex"].Visible = false;
+                log_GV.Columns["OldValue"].HeaderText = "Giá Trị Cũ";
+                log_GV.Columns["NewValue"].HeaderText = "Giá Trị Mới";
+                log_GV.Columns["ActionBy"].HeaderText = "Người Thực Hiện";
+                log_GV.Columns["CreatedAt"].HeaderText = "Ngày Thực Hiện";
+
+                log_GV.Columns["OldValue"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                log_GV.Columns["NewValue"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                log_GV.Columns["ActionBy"].Width = 150;
+                log_GV.Columns["CreatedAt"].Width = 120;
 
                 ReadOnly_btn_Click(null, null);
 
@@ -265,6 +290,9 @@ namespace RauViet.ui
                 complete_cb.BackColor = Color.DarkGray; // background
             }
 
+            mLogDV.RowFilter = $"OrderDomesticIndex = {orderDomesticIndex}";
+            mLogDV.Sort = "LogID DESC";
+
             completeCB_CheckedChanged(null, null);
         }
 
@@ -278,19 +306,23 @@ namespace RauViet.ui
                     DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", " Thay Đổi Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                     if (dialogResult == DialogResult.Yes)
                     {
+                        DataRow[] inputByRow = _employeesInDongGoi_dt.Select($"EmployeeID = {inputBy}");
+                        DataRow[] packingByRow = _employeesInDongGoi_dt.Select($"EmployeeID = {packingBy}");
+                        DataRow[] customerRow = mCustomer_dt.Select($"CustomerID = {customerID}");
+
+                        string oldValue = $"{row["DeliveryDate"]} - {row["InputByName"]} - {row["PackingByName"]} - {row["CustomerName"]}";
+                        string newValue = $"{deliveryDate} - {inputByRow[0]["FullName"]} - {packingByRow[0]["FullName"]} - {customerRow[0]["Company"]}";
                         try
                         {
                             bool isScussess = await SQLManager.Instance.updateOrderDomesticCodeAsync(orderDomesticCodeID, orderDomesticIndex, customerID, deliveryDate, inputBy, packingBy, completed);
-                            DataRow[] inputByRow = _employeesInDongGoi_dt.Select($"EmployeeID = {inputBy}");
-                            DataRow[] packingByRow = _employeesInDongGoi_dt.Select($"EmployeeID = {packingBy}");
-                            DataRow[] customerRow = mCustomer_dt.Select($"CustomerID = {customerID}");
+                            
 
                             if (isScussess == true)
                             {
                                 status_lb.Text = "Thành công.";
                                 status_lb.ForeColor = Color.Green;
 
-                             //   _ = SQLManager.Instance.InsertExportCodeLogAsync(exportCode, "Update Thành Công", exportDate, exRate, shippingCost, inputByRow[0]["FullName"].ToString(), packingByRow[0]["FullName"].ToString(), complete);
+                                _ = SQLManager.Instance.InsertOrderDomesticCodeLogAsync(orderDomesticIndex, "Update Success: " + oldValue, newValue);
 
                                 row["OrderDomesticIndex"] = orderDomesticIndex;
                                 row["DeliveryDate"] = deliveryDate;
@@ -312,16 +344,16 @@ namespace RauViet.ui
                             }
                             else
                             {
-                             //   _ = SQLManager.Instance.InsertExportCodeLogAsync(exportCode, "Update Thất Bại", exportDate, exRate, shippingCost, inputByRow[0]["FullName"].ToString(), packingByRow[0]["FullName"].ToString(), complete);
                                 status_lb.Text = "Thất bại.";
                                 status_lb.ForeColor = Color.Red;
+                                _ = SQLManager.Instance.InsertOrderDomesticCodeLogAsync(orderDomesticIndex, "Update Fail: " + oldValue, newValue);
                             }
                         }
                         catch (Exception ex)
-                        {
-                         //   _ = SQLManager.Instance.InsertExportCodeLogAsync(exportCode, "Update Thất Bại do Exception: " + ex.Message, exportDate, exRate, shippingCost, "", "", complete);
+                        {                         
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;
+                            _ = SQLManager.Instance.InsertOrderDomesticCodeLogAsync(orderDomesticIndex, "Update Exception: " + ex.Message + oldValue, newValue);
                         }
                     }
                     break;
@@ -335,15 +367,19 @@ namespace RauViet.ui
 
             if (dialogResult == DialogResult.Yes)
             {
+                DataRow[] inputByRow = _employeesInDongGoi_dt.Select($"EmployeeID = {inputBy}");
+                DataRow[] packingByRow = _employeesInDongGoi_dt.Select($"EmployeeID = {packingBy}");
+                DataRow[] customerRow = mCustomer_dt.Select($"CustomerID = {customerID}");
+
+                string newValue = $"{deliveryDate} - {inputByRow[0]["FullName"]} - {packingByRow[0]["FullName"]} - {customerRow[0]["Company"]}";
                 try
                 {
-                    DataRow[] inputByRow = _employeesInDongGoi_dt.Select($"EmployeeID = {inputBy}");
-                    DataRow[] packingByRow = _employeesInDongGoi_dt.Select($"EmployeeID = {packingBy}");
-                    DataRow[] customerRow = mCustomer_dt.Select($"CustomerID = {customerID}");
+                    
                     int newId = await SQLManager.Instance.insertOrderDomesticCodeAsync(orderDomesticIndex, customerID, deliveryDate, inputBy, packingBy);
                     if (newId > 0)
                     {
-                       // _ = SQLManager.Instance.InsertExportCodeLogAsync(exportCode, "Tạo Mới Thành Công", exportDate, exRate, shippingCost, inputByRow[0]["FullName"].ToString(), packingByRow[0]["FullName"].ToString(), false);
+
+                        _ = SQLManager.Instance.InsertOrderDomesticCodeLogAsync(orderDomesticIndex, "Create Success: ", newValue);
 
                         DataRow drToAdd = mOrderDomesticCode_dt.NewRow();
 
@@ -371,14 +407,14 @@ namespace RauViet.ui
                     }
                     else
                     {
-                       // _ = SQLManager.Instance.InsertExportCodeLogAsync(exportCode, "Tạo Mới Thất Bại", exportDate, exRate, shippingCost, inputByRow[0]["FullName"].ToString(), packingByRow[0]["FullName"].ToString(), false);
+                        _ = SQLManager.Instance.InsertOrderDomesticCodeLogAsync(orderDomesticIndex, "Create Fail: ", newValue);
                         status_lb.Text = "Thất bại";
                         status_lb.ForeColor = Color.Red;
                     }
                 }
                 catch (Exception ex)
                 {
-                   // _ = SQLManager.Instance.InsertExportCodeLogAsync(exportCode, "Tạo Mới Thất Bại do Exception: " + ex.Message, exportDate, exRate, shippingCost, "", "", false);
+                    _ = SQLManager.Instance.InsertOrderDomesticCodeLogAsync(orderDomesticIndex, "Create Exception: " + ex.Message, newValue);
                     status_lb.Text = "Thất bại.";
                     status_lb.ForeColor = Color.Red;
                 }
