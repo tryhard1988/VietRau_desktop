@@ -242,9 +242,10 @@
     <Compile Include="classes\Ean13Generator.cs" />
     <Compile Include="classes\ICanSave.cs" />
     <Compile Include="classes\printer\LabelPrinter.cs" />
-    <Compile Include="classes\printer\PhieuGiaoHangTrongNuoc_Printer.cs" />
     <Compile Include="classes\printer\OrderDomesticSummaryPrinter.cs" />
     <Compile Include="classes\printer\PhieuCanHangPrinter.cs" />
+    <Compile Include="classes\printer\DoiChieuCongNo_Printer.cs" />
+    <Compile Include="classes\printer\PhieuGiaoHangTrongNuoc_Printer.cs" />
     <Compile Include="classes\printer\SalarySlipPrinter.cs" />
     <Compile Include="classes\printer\OrderListPrinter.cs" />
     <Compile Include="classes\printer\OrderSummaryPrinter.cs" />
@@ -366,6 +367,12 @@
     </Compile>
     <Compile Include="ui\OrderManager_sub\DonHangTrongNuoc\OrderDomesticDetail.Designer.cs">
       <DependentUpon>OrderDomesticDetail.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ui\OrderManager_sub\DonHangTrongNuoc\ResoncileDomesticDebts_Month.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\OrderManager_sub\DonHangTrongNuoc\ResoncileDomesticDebts_Month.Designer.cs">
+      <DependentUpon>ResoncileDomesticDebts_Month.cs</DependentUpon>
     </Compile>
     <Compile Include="ui\OrderManager_sub\YearlyReport.cs">
       <SubType>Form</SubType>
@@ -715,6 +722,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ui\OrderManager_sub\DonHangTrongNuoc\OrderDomesticDetail.resx">
       <DependentUpon>OrderDomesticDetail.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\OrderManager_sub\DonHangTrongNuoc\ResoncileDomesticDebts_Month.resx">
+      <DependentUpon>ResoncileDomesticDebts_Month.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ui\OrderManager_sub\YearlyReport.resx">
       <DependentUpon>YearlyReport.cs</DependentUpon>

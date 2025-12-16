@@ -20,15 +20,16 @@ public class PhieuGiaoHangTrongNuoc_Printer
     private string company;
     private string customerName;
     private string customerAddress;
+    private string InputByName;
     int totalPCS = 0;
     decimal totalNetWeight = 0;
-    // ------------------- Hàm Print Preview -------------------
-    public void PrintPreview(DataTable dataTable, int orderDomesticIndex, DateTime deliveryDate, string customerCode, string  company, string customerName, string customerAddress,Form owner)
+    // ------------------- Hàm Print Preview -------------------, this);
+    public void PrintPreview(DataTable dataTable, int orderDomesticIndex, DateTime deliveryDate, string customerCode, string  company, string customerName, string customerAddress, string InputByName, Form owner)
     {
         if (dataTable == null || dataTable.Rows.Count == 0)
             return;
 
-        SetupPrint(dataTable, orderDomesticIndex, deliveryDate, customerCode, company, customerName, customerAddress);
+        SetupPrint(dataTable, orderDomesticIndex, deliveryDate, customerCode, company, customerName, customerAddress, InputByName);
 
         PrintDocument printDoc = new PrintDocument();
         printDoc.PrintPage += PrintDoc_PrintPage;
@@ -64,12 +65,12 @@ public class PhieuGiaoHangTrongNuoc_Printer
     }
 
     // ------------------- Hàm Print trực tiếp -------------------
-    public void PrintDirect(DataTable dataTable, int orderDomesticIndex, DateTime deliveryDate, string customerCode, string company, string customerName, string customerAddress, bool isIn2Mat)
+    public void PrintDirect(DataTable dataTable, int orderDomesticIndex, DateTime deliveryDate, string customerCode, string company, string customerName, string customerAddress, string InputByName, bool isIn2Mat)
     {
         if (dataTable == null || dataTable.Rows.Count == 0)
             return;
 
-        SetupPrint(dataTable, orderDomesticIndex, deliveryDate, customerCode, company, customerName, customerAddress);
+        SetupPrint(dataTable, orderDomesticIndex, deliveryDate, customerCode, company, customerName, customerAddress, InputByName);
 
         PrintDocument printDoc = new PrintDocument();
         printDoc.PrintPage += PrintDoc_PrintPage;
@@ -89,7 +90,7 @@ public class PhieuGiaoHangTrongNuoc_Printer
     }
 
     // ------------------- Setup dữ liệu chung -------------------
-    private void SetupPrint(DataTable dataTable, int orderDomesticIndex, DateTime deliveryDate, string customerCode, string company, string customerName, string customerAddress)
+    private void SetupPrint(DataTable dataTable, int orderDomesticIndex, DateTime deliveryDate, string customerCode, string company, string customerName, string customerAddress, string InputByName)
     {
         this.data = dataTable;
         this.orderDomesticIndex = orderDomesticIndex;
@@ -98,6 +99,7 @@ public class PhieuGiaoHangTrongNuoc_Printer
         this.company = company;
         this.customerName = customerName;
         this.customerAddress = customerAddress;
+        this.InputByName = InputByName;
         currentRowIndex = 0;
         firstPage = true;
         yPosition = 0;
@@ -263,7 +265,7 @@ public class PhieuGiaoHangTrongNuoc_Printer
             x += colWidth_QC;
 
             // TotalPCSOther
-            int pcs = Convert.ToInt32(row["PCSReal"] ?? 0);
+            int pcs = row.Field<int?>("PCSReal") ?? 0;
             string pcsStr = pcs > 0 ? pcs.ToString() : "";
             e.Graphics.DrawRectangle(Pens.Black, x, y, colWidth_SLGH/2, dynamicHeight);
             e.Graphics.DrawString(pcsStr, fontContent, brush, new RectangleF(x, y, colWidth_SLGH/2, rowHeight), sfDataCenter);
@@ -271,7 +273,7 @@ public class PhieuGiaoHangTrongNuoc_Printer
             x += colWidth_SLGH/2;
 
             // TotalNetWeight
-            decimal net = Convert.ToDecimal(row["NWReal"] ?? 0);
+            decimal net = row.Field<decimal?>("NWReal") ?? 0m;
             e.Graphics.DrawRectangle(Pens.Black, x, y, colWidth_SLGH/2, dynamicHeight);
             e.Graphics.DrawString(net.ToString("N2"), fontContent, brush, new RectangleF(x, y, colWidth_SLGH/2, rowHeight), sfDataCenter);
             totalNetWeight += net;
@@ -300,7 +302,7 @@ public class PhieuGiaoHangTrongNuoc_Printer
 
         y += 40;
         e.Graphics.DrawString("Người nhận hàng\n\n\n\n\n\n\n........................................................", fontHeader, brush, new RectangleF(startX + 40, y, 300, 160), sfDataCenter);
-        e.Graphics.DrawString("Người giao hàng\n\n\n\n\n\n\n........................................................", fontHeader, brush, new RectangleF(e.PageBounds.Right - 400, y, 300, 160), sfDataCenter);
+        e.Graphics.DrawString($"Người giao hàng\n\n\n\n\n\n\n{InputByName}", fontHeader, brush, new RectangleF(e.PageBounds.Right - 400, y, 300, 160), sfDataCenter);
         e.HasMorePages = false;
         currentRowIndex = 0;
         firstPage = true;

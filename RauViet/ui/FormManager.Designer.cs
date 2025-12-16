@@ -95,12 +95,14 @@
             this.monthlyReportForYear_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.yearlyReport_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.monthlyTotalPerYear_mi = new System.Windows.Forms.ToolStripMenuItem();
+            this.báoCáoĐơnHàngTrongNướcToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.extension_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.QR_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.aaaaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadExcelOrderReportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.content_panel = new System.Windows.Forms.Panel();
+            this.ResoncileDomesticDebts_Month_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1.SuspendLayout();
             this.LOT_menuitem.SuspendLayout();
             this.SuspendLayout();
@@ -563,7 +565,8 @@
             // 
             this.thongke_main_mi.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.reportSalary_Month_mi,
-            this.báoCáoĐơnHàngToolStripMenuItem});
+            this.báoCáoĐơnHàngToolStripMenuItem,
+            this.báoCáoĐơnHàngTrongNướcToolStripMenuItem});
             this.thongke_main_mi.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.thongke_main_mi.ForeColor = System.Drawing.Color.Crimson;
             this.thongke_main_mi.Name = "thongke_main_mi";
@@ -573,7 +576,7 @@
             // reportSalary_Month_mi
             // 
             this.reportSalary_Month_mi.Name = "reportSalary_Month_mi";
-            this.reportSalary_Month_mi.Size = new System.Drawing.Size(235, 22);
+            this.reportSalary_Month_mi.Size = new System.Drawing.Size(268, 22);
             this.reportSalary_Month_mi.Text = "Báo Cáo Lương Theo Năm";
             // 
             // báoCáoĐơnHàngToolStripMenuItem
@@ -585,8 +588,8 @@
             this.yearlyReport_mi,
             this.monthlyTotalPerYear_mi});
             this.báoCáoĐơnHàngToolStripMenuItem.Name = "báoCáoĐơnHàngToolStripMenuItem";
-            this.báoCáoĐơnHàngToolStripMenuItem.Size = new System.Drawing.Size(235, 22);
-            this.báoCáoĐơnHàngToolStripMenuItem.Text = "Báo Cáo Đơn Hàng ";
+            this.báoCáoĐơnHàngToolStripMenuItem.Size = new System.Drawing.Size(268, 22);
+            this.báoCáoĐơnHàngToolStripMenuItem.Text = "Báo Cáo Đơn Hàng Ngoài Nước";
             // 
             // reportOrderIn1Year_mi
             // 
@@ -617,6 +620,14 @@
             this.monthlyTotalPerYear_mi.Name = "monthlyTotalPerYear_mi";
             this.monthlyTotalPerYear_mi.Size = new System.Drawing.Size(279, 22);
             this.monthlyTotalPerYear_mi.Text = "Tổng SL và DT";
+            // 
+            // báoCáoĐơnHàngTrongNướcToolStripMenuItem
+            // 
+            this.báoCáoĐơnHàngTrongNướcToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ResoncileDomesticDebts_Month_mi});
+            this.báoCáoĐơnHàngTrongNướcToolStripMenuItem.Name = "báoCáoĐơnHàngTrongNướcToolStripMenuItem";
+            this.báoCáoĐơnHàngTrongNướcToolStripMenuItem.Size = new System.Drawing.Size(268, 22);
+            this.báoCáoĐơnHàngTrongNướcToolStripMenuItem.Text = "Báo Cáo Đơn Hàng Trong Nước";
             // 
             // toolStripMenuItem2
             // 
@@ -665,6 +676,12 @@
             this.content_panel.Name = "content_panel";
             this.content_panel.Size = new System.Drawing.Size(1388, 491);
             this.content_panel.TabIndex = 1;
+            // 
+            // ResoncileDomesticDebts_Month_mi
+            // 
+            this.ResoncileDomesticDebts_Month_mi.Name = "ResoncileDomesticDebts_Month_mi";
+            this.ResoncileDomesticDebts_Month_mi.Size = new System.Drawing.Size(192, 22);
+            this.ResoncileDomesticDebts_Month_mi.Text = "Đối Chiếu Công Nợ";
             // 
             // FormManager
             // 
@@ -759,5 +776,7 @@
         private System.Windows.Forms.ToolStripMenuItem orderDomestic_group_mi;
         private System.Windows.Forms.ToolStripMenuItem orderDomesticCode_mi;
         private System.Windows.Forms.ToolStripMenuItem orderDomesticDetail_mi;
+        private System.Windows.Forms.ToolStripMenuItem báoCáoĐơnHàngTrongNướcToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem ResoncileDomesticDebts_Month_mi;
     }
 }

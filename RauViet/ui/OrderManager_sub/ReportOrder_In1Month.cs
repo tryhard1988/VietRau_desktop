@@ -78,12 +78,12 @@ namespace RauViet.ui
                                                                 .GroupBy(row => new
                                                                 {
                                                                     ProductNameVN = row.Field<string>("ProductName_VN"),
-                                                                    ProductNameEN = row.Field<string>("ProductName_EN"),
+                                                                   // ProductNameEN = row.Field<string>("ProductName_EN"),
                                                                 })
                                                                 .Select(g => new
                                                                 {
                                                                     ProductName_VN = g.Key.ProductNameVN,
-                                                                    ProductName_EN = g.Key.ProductNameEN,
+                                                                    ProductName_EN = g.Select(r => r.Field<string>("ProductName_EN")).FirstOrDefault(en => !string.IsNullOrWhiteSpace(en)),
                                                                     TotalNetWeight = g.Sum(r => r.Field<decimal>("TotalNetWeight")),
                                                                     TotalPCS = g.Sum(r => r.Field<int>("TotalPCS")),
                                                                     TotalAmountCHF = g.Sum(r => r.Field<decimal>("TotalAmountCHF")),
@@ -138,13 +138,13 @@ namespace RauViet.ui
                                                                 {
                                                                     CustomerName = row.Field<string>("CustomerName"),
                                                                     ProductName_VN = row.Field<string>("ProductName_VN"),
-                                                                    ProductName_EN = row.Field<string>("ProductName_EN")
+                                                                  //  ProductName_EN = row.Field<string>("ProductName_EN")
                                                                 })
                                                                 .Select(g => new
                                                                 {
                                                                     CustomerName = g.Key.CustomerName,
                                                                     ProductName_VN = g.Key.ProductName_VN,
-                                                                    ProductName_EN = g.Key.ProductName_EN,
+                                                                    ProductName_EN = g.Select(r => r.Field<string>("ProductName_EN")).FirstOrDefault(en => !string.IsNullOrWhiteSpace(en)),
                                                                     TotalPCS = g.Sum(r => r.Field<int>("TotalPCS")),
                                                                     TotalNetWeight = g.Sum(r => r.Field<decimal>("TotalNetWeight")),
                                                                     TotalAmountCHF = g.Sum(r => r.Field<decimal>("TotalAmountCHF")),

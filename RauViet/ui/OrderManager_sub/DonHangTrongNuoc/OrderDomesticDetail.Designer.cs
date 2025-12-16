@@ -91,7 +91,7 @@ namespace RauViet.ui
             this.panel2.Dock = System.Windows.Forms.DockStyle.Left;
             this.panel2.Location = new System.Drawing.Point(0, 0);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(811, 681);
+            this.panel2.Size = new System.Drawing.Size(811, 827);
             this.panel2.TabIndex = 13;
             // 
             // dataGV
@@ -103,7 +103,7 @@ namespace RauViet.ui
             this.dataGV.Location = new System.Drawing.Point(0, 24);
             this.dataGV.Name = "dataGV";
             this.dataGV.ReadOnly = true;
-            this.dataGV.Size = new System.Drawing.Size(811, 637);
+            this.dataGV.Size = new System.Drawing.Size(811, 783);
             this.dataGV.TabIndex = 76;
             // 
             // panel4
@@ -113,7 +113,7 @@ namespace RauViet.ui
             this.panel4.Controls.Add(this.total_label);
             this.panel4.Controls.Add(this.label1);
             this.panel4.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel4.Location = new System.Drawing.Point(0, 661);
+            this.panel4.Location = new System.Drawing.Point(0, 807);
             this.panel4.Name = "panel4";
             this.panel4.Size = new System.Drawing.Size(811, 20);
             this.panel4.TabIndex = 75;
@@ -192,7 +192,7 @@ namespace RauViet.ui
             this.label8.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.label8.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label8.ForeColor = System.Drawing.Color.DarkOliveGreen;
-            this.label8.Location = new System.Drawing.Point(811, 433);
+            this.label8.Location = new System.Drawing.Point(811, 579);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(731, 23);
             this.label8.TabIndex = 91;
@@ -205,7 +205,7 @@ namespace RauViet.ui
             this.log_GV.AllowUserToDeleteRows = false;
             this.log_GV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.log_GV.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.log_GV.Location = new System.Drawing.Point(811, 456);
+            this.log_GV.Location = new System.Drawing.Point(811, 602);
             this.log_GV.Name = "log_GV";
             this.log_GV.ReadOnly = true;
             this.log_GV.Size = new System.Drawing.Size(731, 225);
@@ -227,7 +227,7 @@ namespace RauViet.ui
             this.panel1.Dock = System.Windows.Forms.DockStyle.Left;
             this.panel1.Location = new System.Drawing.Point(811, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(416, 433);
+            this.panel1.Size = new System.Drawing.Size(416, 579);
             this.panel1.TabIndex = 92;
             // 
             // phieugiaohang_gb
@@ -554,7 +554,7 @@ namespace RauViet.ui
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1542, 681);
+            this.ClientSize = new System.Drawing.Size(1542, 827);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.log_GV);

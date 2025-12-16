@@ -85,6 +85,7 @@ namespace RauViet.classes
         Dictionary<int, DataTable> mDo47Logs;
         Dictionary<int, DataTable> mLotCodeLogs;
         Dictionary<int, DataTable> mOrderDomesticDetailLogs;
+        Dictionary<int, Dictionary<int, DataTable>> mtOrderDomestics;
 
         private SQLStore() { }
 
@@ -124,6 +125,7 @@ namespace RauViet.classes
                 mDo47Logs = new Dictionary<int, DataTable>();
                 mLotCodeLogs = new Dictionary<int, DataTable>();
                 mOrderDomesticDetailLogs = new Dictionary<int, DataTable>();
+                mtOrderDomestics = new Dictionary<int, Dictionary<int, DataTable>>();
 
                 var productSKUTask = SQLManager.Instance.getProductSKUAsync();
                 var productPackingTask = SQLManager.Instance.getProductpackingAsync();
@@ -3211,6 +3213,99 @@ namespace RauViet.classes
                 mProductDomesticPricesLog_dt = dt;
             }
             return mProductDomesticPricesLog_dt;
+        }
+
+        public async Task<DataTable> GetOrderDomesticByMonthYearAsync(int month, int year)
+        {
+            await getOrderDomesticCodeAsync();
+
+            if (!mtOrderDomestics.ContainsKey(year))
+                mtOrderDomestics[year] = new Dictionary<int, DataTable>();
+            if(!mtOrderDomestics[year].ContainsKey(month))
+            {
+                try
+                {
+                    DataTable dt = await SQLManager.Instance.GetOrderDomesticByMonthYearAsync(month, year);
+                    mtOrderDomestics[year][month] = dt;
+                    editOrderDomesticByMonthYear(dt);
+                }
+                catch
+                {
+                    Console.WriteLine("error getCustomersAsync SQLStore");
+                    return null;
+                }
+            }
+
+            return mtOrderDomestics[year][month];
+        }
+
+        private void editOrderDomesticByMonthYear(DataTable data)
+        {
+            data.Columns.Add(new DataColumn("SKU", typeof(int)));
+            data.Columns.Add(new DataColumn("ProductNameVN", typeof(string)));
+            data.Columns.Add(new DataColumn("Package", typeof(string)));
+            data.Columns.Add(new DataColumn("packing", typeof(string)));
+            data.Columns.Add(new DataColumn("AmountPacking", typeof(string)));
+            data.Columns.Add(new DataColumn("Amount", typeof(int)));
+            data.Columns.Add(new DataColumn("CustomerID", typeof(int)));
+            data.Columns.Add(new DataColumn("Company", typeof(string)));
+            data.Columns.Add(new DataColumn("ProductTypeName", typeof(string)));
+            data.Columns.Add(new DataColumn("DeliveryDate", typeof(DateTime)));
+            data.Columns.Add(new DataColumn("TotalAmount", typeof(int)));
+
+            foreach (DataRow dr in data.Rows)
+            {
+                int productPackingID = Convert.ToInt32(dr["ProductPackingID"]);
+                int orderDomesticIndex = Convert.ToInt32(dr["OrderDomesticIndex"]);
+                string customerProductTypesCode = Convert.ToString(dr["CustomerProductTypesCode"]);
+
+                DataRow[] productTypeRows = mProductType_dt.Select($"CustomerProductTypesCode = '{customerProductTypesCode}'");
+                DataRow[] packingRows = mProductpacking_dt.Select($"ProductPackingID = {productPackingID}");
+                DataRow[] orderDomesticCodeRows = mOrderDomesticCode_dt.Select($"OrderDomesticIndex = {orderDomesticIndex}");
+
+                string proVN = packingRows.Length > 0 ? packingRows[0]["Name_VN"].ToString() : "Unknown";
+                string company = orderDomesticCodeRows.Length > 0 ? orderDomesticCodeRows[0]["Company"].ToString() : "Unknown";
+                int customerID = orderDomesticCodeRows.Length > 0 ? Convert.ToInt32(orderDomesticCodeRows[0]["CustomerID"]) : 0;
+                DateTime deliveryDate = orderDomesticCodeRows.Length > 0 ? Convert.ToDateTime(orderDomesticCodeRows[0]["DeliveryDate"]).Date : DateTime.Now.Date;
+                int Amount = packingRows.Length > 0 ? Convert.ToInt32(packingRows[0]["Amount"]) : 0;
+                string Packing = packingRows.Length > 0 ? packingRows[0]["packing"].ToString() : "";
+                string package = packingRows.Length > 0 ? packingRows[0]["Package"].ToString() : "";
+                string AmountPacking = "";
+                if (package.CompareTo("weight") == 0 || Packing.CompareTo("weight") == 0)
+                    AmountPacking = Packing;
+                else
+                    AmountPacking = $"{Amount} {Packing}";
+
+                dr["ProductNameVN"] = proVN;
+                dr["Company"] = company;
+                dr["CustomerID"] = customerID;
+                dr["DeliveryDate"] = deliveryDate;
+                dr["Amount"] = Amount;
+                dr["packing"] = Packing;
+                dr["AmountPacking"] = AmountPacking;
+                dr["SKU"] = packingRows.Length > 0 ? Convert.ToInt32(packingRows[0]["SKU"]) : 0;
+                
+                dr["ProductTypeName"] = productTypeRows.Length > 0 ? Convert.ToString(productTypeRows[0]["TypeName"]) : "";
+                dr["Package"] = package;
+                if (package.CompareTo("weight") == 0)
+                {
+                    dr["PCSReal"] = 0;
+                }
+
+                if(package.CompareTo("weight") == 0 || package.CompareTo("kg") == 0)
+                    dr["TotalAmount"] = Convert.ToDecimal(dr["NWReal"]) * Convert.ToDecimal(dr["Price"]);
+                else
+                    dr["TotalAmount"] = Convert.ToDecimal(dr["PCSReal"]) * Convert.ToDecimal(dr["Price"]);
+            }
+
+            int count = 0;
+            data.Columns["ProductNameVN"].SetOrdinal(count++);
+            data.Columns["ProductTypeName"].SetOrdinal(count++);
+            data.Columns["AmountPacking"].SetOrdinal(count++);
+            data.Columns["Package"].SetOrdinal(count++);            
+            data.Columns["PCSReal"].SetOrdinal(count++);
+            data.Columns["NWReal"].SetOrdinal(count++);
+            data.Columns["Price"].SetOrdinal(count++);
         }
     }
 }

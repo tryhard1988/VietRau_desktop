@@ -684,7 +684,7 @@ namespace RauViet.ui
         }
         private void saveBtn_Click(object sender, EventArgs e)
         {
-            if (orderDomesticCode_cbb.SelectedValue == null || orderDomesticCode_cbb.SelectedValue == null || productType_CBB.SelectedValue == null)
+            if (orderDomesticCode_cbb.SelectedValue == null || orderDomesticCode_cbb.SelectedValue == null || productType_CBB.SelectedValue == null || packing_ccb.SelectedItem == null)
                 return;
 
             DataRowView pdData = (DataRowView)product_ccb.SelectedItem;
@@ -1036,12 +1036,13 @@ namespace RauViet.ui
             string company = Convert.ToString(orderDomesticCodeDRV["Company"]);
             string customerName = Convert.ToString(orderDomesticCodeDRV["CustomerName"]);
             string customerAddress = Convert.ToString(orderDomesticCodeDRV["Address"]);
+            string InputByName = Convert.ToString(orderDomesticCodeDRV["InputByName"]);
             PhieuGiaoHangTrongNuoc_Printer printer = new PhieuGiaoHangTrongNuoc_Printer();
 
             if (state == 1)
-                printer.PrintPreview(mOrderDomesticDetail_dt, orderDomesticIndex, deliveryDate, customerCode, company, customerName, customerAddress, this);
+                printer.PrintPreview(mOrderDomesticDetail_dt, orderDomesticIndex, deliveryDate, customerCode, company, customerName, customerAddress, InputByName, this);
             else if (state == 2)
-                printer.PrintDirect(mOrderDomesticDetail_dt, orderDomesticIndex, deliveryDate, customerCode, company, customerName, customerAddress, tongdon_in2mat_cb.Checked);
+                printer.PrintDirect(mOrderDomesticDetail_dt, orderDomesticIndex, deliveryDate, customerCode, company, customerName, customerAddress, InputByName, tongdon_in2mat_cb.Checked);
             await Task.Delay(200);
             loadingOverlay.Hide();
         }
@@ -1053,20 +1054,23 @@ namespace RauViet.ui
                 DataRowView dataR = (DataRowView)orderDomesticCode_cbb.SelectedItem;
 
                 string staff = dataR["InputByName_NoSign"].ToString();
-                //if (UserManager.Instance.fullName_NoSign.CompareTo(staff) != 0)
-                //{
-                //    edit_btn.Visible = false;
-                //    newCustomerBtn.Visible = false;
-                //    readOnly_btn.Visible = false;
-                //    product_ccb.Enabled = false;
-                //    packing_ccb.Enabled = false;
-                //    PCSOther_tb.ReadOnly = true;
-                //    netWeight_tb.ReadOnly = true;
-                //    return;
-                //}
+                if (UserManager.Instance.fullName_NoSign.CompareTo(staff) != 0)
+                {
+                    edit_btn.Visible = false;
+                    newCustomerBtn.Visible = false;
+                    readOnly_btn.Visible = false;
+                    packing_btn.Visible = false;
+                    product_ccb.Enabled = false;
+                    packing_ccb.Enabled = false;
+                    productType_CBB.Enabled = false;
+                    PCSOrder_tb.ReadOnly = true;
+                    nwOder_tb.ReadOnly = true;
+                    return;
+                }
             }
             product_ccb.Enabled = !isReadOnly;
             packing_ccb.Enabled = !isReadOnly;
+            productType_CBB.Enabled = !isReadOnly;
             PCSOrder_tb.ReadOnly = isReadOnly;
             nwOder_tb.ReadOnly = isReadOnly;
             product_ccb.DropDownStyle = ComboBoxStyle.DropDown;
@@ -1078,22 +1082,22 @@ namespace RauViet.ui
         private void dataGV_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
         {
             oldValue = dataGV.CurrentCell?.Value;
-            //if (orderDomesticCode_cbb.SelectedItem != null)
-            //{
-            //    DataRowView dataR = (DataRowView)orderDomesticCode_cbb.SelectedItem;
-            //    string staff = dataR["InputByName_NoSign"].ToString();
-            //    if (UserManager.Instance.fullName_NoSign.CompareTo(staff) != 0)
-            //    {
-            //        e.Cancel = true;
-            //        return;
-            //    }
-            //}
+            if (orderDomesticCode_cbb.SelectedItem != null)
+            {
+                DataRowView dataR = (DataRowView)orderDomesticCode_cbb.SelectedItem;
+                string staff = dataR["InputByName_NoSign"].ToString();
+                if (UserManager.Instance.fullName_NoSign.CompareTo(staff) != 0)
+                {
+                    e.Cancel = true;
+                    return;
+                }
+            }
 
-            //if (isNewState)
-            //{
-            //    e.Cancel = true;
-            //    return;
-            //}
+            if (isNewState)
+            {
+                e.Cancel = true;
+                return;
+            }
             e.Cancel = !ispackingState;
         }
 

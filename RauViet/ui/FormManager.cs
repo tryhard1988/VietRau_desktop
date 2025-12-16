@@ -163,6 +163,7 @@ namespace RauViet.ui
                 monthlyReportForYear_mi.Click += monthlyReportForYear_mi_Click;
                 yearlyReport_mi.Click += YearlyReport_mi_Click;
                 monthlyTotalPerYear_mi.Click += MonthlyTotalPerYear_mi_Click;
+                ResoncileDomesticDebts_Month_mi.Click += ResoncileDomesticDebts_Month_mi_Click;
             }
             else
             {
@@ -274,7 +275,8 @@ namespace RauViet.ui
             ProductDomesticPrices,
             CreateQR,
             OrderDomesticCode,
-            OrderDomesticDetail
+            OrderDomesticDetail,
+            ResoncileDomesticDebts_Month
         }
 
         private void openCurrentForm(EForm status)
@@ -435,6 +437,9 @@ namespace RauViet.ui
                 case EForm.OrderDomesticDetail:
                     SwitchChildForm<OrderDomesticDetail>("Chi Tiết Đơn Hàng");
                     break;
+                case EForm.ResoncileDomesticDebts_Month:
+                    SwitchChildForm<ResoncileDomesticDebts_Month>("Đối Chiếu Công Nợ Theo Tháng");
+                    break;
             }
             
             Properties.Settings.Default.current_form = status.ToString();
@@ -492,6 +497,7 @@ namespace RauViet.ui
         private void CreateQR_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.CreateQR); }
         private void OrderDomesticCode_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.OrderDomesticCode); }
         private void OrderDomesticDetail_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.OrderDomesticDetail); }
+        private void ResoncileDomesticDebts_Month_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.ResoncileDomesticDebts_Month); }
         private async void checkLoginTimer_Tick(object sender, EventArgs e)
         {
             var isHave = await SQLManager.Instance.HaveOtherComputerLoginAsync();
