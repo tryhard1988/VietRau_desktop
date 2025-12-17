@@ -251,7 +251,10 @@
     <Compile Include="classes\printer\OrderSummaryPrinter.cs" />
     <Compile Include="classes\printer\DeliveryPrinter.cs" />
     <Compile Include="classes\printer\PackingListPrinter.cs" />
-    <Compile Include="classes\SQLStore.cs" />
+    <Compile Include="classes\SQLManager_Kho.cs" />
+    <Compile Include="classes\SQLManager_QLNS.cs" />
+    <Compile Include="classes\SQLStore_QLNS.cs" />
+    <Compile Include="classes\SQLStore_Kho.cs" />
     <Compile Include="classes\LoadingOverlay.cs" />
     <Compile Include="classes\ToolTipHelper.cs" />
     <Compile Include="classes\UserManager.cs" />

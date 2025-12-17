@@ -42,9 +42,9 @@ namespace RauViet.ui
                 {
                     return;
                 }
-                SQLStore.Instance.removeOrdersCartonInvoice(mCurrentExportID);
-                SQLStore.Instance.removeOrdersCusInvoice(mCurrentExportID);
-                SQLStore.Instance.removeOrdersInvoice(mCurrentExportID);
+                SQLStore_Kho.Instance.removeOrdersCartonInvoice(mCurrentExportID);
+                SQLStore_Kho.Instance.removeOrdersCusInvoice(mCurrentExportID);
+                SQLStore_Kho.Instance.removeOrdersInvoice(mCurrentExportID);
                 ShowData();
             }
         }
@@ -60,7 +60,7 @@ namespace RauViet.ui
             {
                 string[] keepColumns = { "ExportCodeID", "ExportCode", "ExportDate", "ExchangeRate", "ShippingCost", "ExportCodeIndex" };
                 var parameters = new Dictionary<string, object> { { "Complete", false } };
-                mExportCode_dt = await SQLStore.Instance.getExportCodesAsync(keepColumns, parameters);                  
+                mExportCode_dt = await SQLStore_Kho.Instance.getExportCodesAsync(keepColumns, parameters);                  
 
                 if (mCurrentExportID <= 0 && mExportCode_dt.Rows.Count > 0)
                 {
@@ -68,9 +68,9 @@ namespace RauViet.ui
                                    .Max(r => r.Field<int>("ExportCodeID")));
                 }
 
-                var cartonOrdersTask = SQLStore.Instance.getOrdersCartonInvoiceAsync(mCurrentExportID);
-                var customersOrdersTask = SQLStore.Instance.getOrdersCusInvoiceAsync(mCurrentExportID);
-                var OrdersInvoiceTask = SQLStore.Instance.getOrdersInvoiceAsync(mCurrentExportID);
+                var cartonOrdersTask = SQLStore_Kho.Instance.getOrdersCartonInvoiceAsync(mCurrentExportID);
+                var customersOrdersTask = SQLStore_Kho.Instance.getOrdersCusInvoiceAsync(mCurrentExportID);
+                var OrdersInvoiceTask = SQLStore_Kho.Instance.getOrdersInvoiceAsync(mCurrentExportID);
 
                 await Task.WhenAll(customersOrdersTask, OrdersInvoiceTask, cartonOrdersTask);
                 mOrdersTotal_dt = OrdersInvoiceTask.Result;
@@ -88,7 +88,7 @@ namespace RauViet.ui
                 exportCode_cbb.SelectedValue = mCurrentExportID;
                 exportCode_cbb.SelectedIndexChanged += exportCode_search_cbb_SelectedIndexChanged;
             }
-            catch (Exception ex)
+            catch
             {
                 status_lb.Text = "Thất bại.";
                 status_lb.ForeColor = Color.Red;
@@ -178,9 +178,9 @@ namespace RauViet.ui
 
             mCurrentExportID = exportCodeId;
 
-            var cartonOrdersTask = SQLStore.Instance.getOrdersCartonInvoiceAsync(mCurrentExportID);
-            var customersOrdersTask = SQLStore.Instance.getOrdersCusInvoiceAsync(mCurrentExportID);
-            var OrdersInvoiceTask = SQLStore.Instance.getOrdersInvoiceAsync(mCurrentExportID);
+            var cartonOrdersTask = SQLStore_Kho.Instance.getOrdersCartonInvoiceAsync(mCurrentExportID);
+            var customersOrdersTask = SQLStore_Kho.Instance.getOrdersCusInvoiceAsync(mCurrentExportID);
+            var OrdersInvoiceTask = SQLStore_Kho.Instance.getOrdersInvoiceAsync(mCurrentExportID);
 
             await Task.WhenAll(customersOrdersTask, OrdersInvoiceTask, cartonOrdersTask);
             mOrdersTotal_dt = OrdersInvoiceTask.Result;
@@ -804,7 +804,7 @@ namespace RauViet.ui
                         }
                     }
 
-                    _ = SQLManager.Instance.UpsertExportHistoryAsync(exportCode, exportDate, totalAmount, totalNWReal, (int)totalCarton1, totalFreightCharge);
+                    _ = SQLManager_Kho.Instance.UpsertExportHistoryAsync(exportCode, exportDate, totalAmount, totalNWReal, (int)totalCarton1, totalFreightCharge);
 
                     _ = SaveCustomerOrderDetailHistory();
                 }
@@ -825,7 +825,7 @@ namespace RauViet.ui
             string exportCode = ((DataRowView)exportCode_cbb.SelectedItem)["ExportCode"].ToString();
             DateTime exportDate = Convert.ToDateTime(((DataRowView)exportCode_cbb.SelectedItem)["ExportDate"]);
 
-            var orders_dt = await SQLStore.Instance.getOrdersAsync(mCurrentExportID);
+            var orders_dt = await SQLStore_Kho.Instance.getOrdersAsync(mCurrentExportID);
             var query = orders_dt.AsEnumerable()
                                 .GroupBy(r => new
                                 {
@@ -877,7 +877,7 @@ namespace RauViet.ui
                 ));
             }
 
-            _ = SQLManager.Instance.CustomerOrderDetailHistory_SaveListAsync(orders);
+            _ = SQLManager_Kho.Instance.CustomerOrderDetailHistory_SaveListAsync(orders);
         }
         
         public string CleanProductName(string name)

@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Data;
-using System.Data;
-using System.Data.OleDb;
 using System.Data.SqlClient;
-using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using ClosedXML.Excel;
@@ -24,7 +21,7 @@ namespace RauViet.ui
 
         private void importToSQL_mi_Click(object sender, EventArgs e)
         {
-            ImportDataGridViewToSql(dataGV, SQLManager.Instance.ql_NhanSu_conStr(), "Customers");
+            ImportDataGridViewToSql(dataGV, SQLManager_QLNS.Instance.ql_NhanSu_conStr(), "Customers");
         }
 
         private void save_mi_Click(object sender, EventArgs e)

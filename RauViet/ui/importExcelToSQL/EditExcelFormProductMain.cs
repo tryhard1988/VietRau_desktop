@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data;
-using System.Data.OleDb;
 using System.Data.SqlClient;
-using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using ClosedXML.Excel;
-using DocumentFormat.OpenXml.Wordprocessing;
 using RauViet.classes;
 
 namespace RauViet.ui
@@ -29,12 +25,12 @@ namespace RauViet.ui
 
         private void importToSQL_mi_Click(object sender, EventArgs e)
         {
-            ImportDataGridViewToSql(dataGV, SQLManager.Instance.ql_NhanSu_conStr(), "ProductSKU");
+            ImportDataGridViewToSql(dataGV, SQLManager_QLNS.Instance.ql_NhanSu_conStr(), "ProductSKU");
         }
 
         private void importToSQL_ProductPacking_mi_Click(object sender, EventArgs e)
         {
-            ImportDataGridViewToSql(dataGV, SQLManager.Instance.ql_NhanSu_conStr(), "ProductPacking");
+            ImportDataGridViewToSql(dataGV, SQLManager_QLNS.Instance.ql_NhanSu_conStr(), "ProductPacking");
         }
 
         private void save_mi_Click(object sender, EventArgs e)

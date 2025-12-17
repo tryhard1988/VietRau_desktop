@@ -50,7 +50,7 @@ namespace RauViet.ui
                     return;
                 } 
 
-                SQLStore.Instance.removeOrdersTotal(mCurrentExportID);
+                SQLStore_Kho.Instance.removeOrdersTotal(mCurrentExportID);
                 ShowData();
             }
         }
@@ -66,7 +66,7 @@ namespace RauViet.ui
             {
                 string[] keepColumns = { "ExportCodeID", "ExportCode", "InputByName_NoSign" };
                 var parameters = new Dictionary<string, object> { { "Complete", false } };
-                mExportCode_dt = await SQLStore.Instance.getExportCodesAsync(keepColumns, parameters);
+                mExportCode_dt = await SQLStore_Kho.Instance.getExportCodesAsync(keepColumns, parameters);
 
                 if (mCurrentExportID <= 0 && mExportCode_dt.Rows.Count > 0)
                 {
@@ -74,8 +74,8 @@ namespace RauViet.ui
                                    .Max(r => r.Field<int>("ExportCodeID")));
                 }
 
-                var ordersTotaltask = SQLStore.Instance.getOrdersTotalAsync(mCurrentExportID);
-                var do47LogTask = SQLStore.Instance.GetDo47LogAsync(mCurrentExportID);
+                var ordersTotaltask = SQLStore_Kho.Instance.getOrdersTotalAsync(mCurrentExportID);
+                var do47LogTask = SQLStore_Kho.Instance.GetDo47LogAsync(mCurrentExportID);
                 await Task.WhenAll(ordersTotaltask, do47LogTask);
 
                 mOrdersTotal_dt = ordersTotaltask.Result;
@@ -158,7 +158,7 @@ namespace RauViet.ui
 
                 calvalueRightUI();
             }
-            catch (Exception ex)
+            catch
             {
                 status_lb.Text = "Thất bại.";
                 status_lb.ForeColor = System.Drawing.Color.Red;
@@ -177,8 +177,8 @@ namespace RauViet.ui
 
             mCurrentExportID = exportCodeId;
 
-            var ordersTotaltask = SQLStore.Instance.getOrdersTotalAsync(mCurrentExportID);
-            var do47LogTask = SQLStore.Instance.GetDo47LogAsync(mCurrentExportID);
+            var ordersTotaltask = SQLStore_Kho.Instance.getOrdersTotalAsync(mCurrentExportID);
+            var do47LogTask = SQLStore_Kho.Instance.GetDo47LogAsync(mCurrentExportID);
             await Task.WhenAll(ordersTotaltask, do47LogTask);
 
             mDo47Log_dv = new DataView(do47LogTask.Result);
@@ -232,17 +232,17 @@ namespace RauViet.ui
                 try
                 {
                     // Gọi hàm upsert
-                    bool result = await SQLManager.Instance.UpsertOrdersTotalListAsync(list);
+                    bool result = await SQLManager_Kho.Instance.UpsertOrdersTotalListAsync(list);
 
                     if (result)
                     {
                         status_lb.Text = "Thành công.";
                         status_lb.ForeColor = System.Drawing.Color.Green;
-                        _ = SQLManager.Instance.InsertDo47LogAsync(exportCodeID, productPackingID, oldValue + " Update Thành Công", nwOrder, netWeightFinal, nwReal);
+                        _ = SQLManager_Kho.Instance.InsertDo47LogAsync(exportCodeID, productPackingID, oldValue + " Update Thành Công", nwOrder, netWeightFinal, nwReal);
                     }
                     else
                     {
-                        _ = SQLManager.Instance.InsertDo47LogAsync(exportCodeID, productPackingID, oldValue + "Update Thất Bại", nwOrder, netWeightFinal, nwReal);
+                        _ = SQLManager_Kho.Instance.InsertDo47LogAsync(exportCodeID, productPackingID, oldValue + "Update Thất Bại", nwOrder, netWeightFinal, nwReal);
                         MessageBox.Show("Cập nhật thất bại!");
                     }
                 }

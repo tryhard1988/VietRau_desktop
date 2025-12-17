@@ -44,7 +44,7 @@ namespace RauViet.ui
                     return;
                 }
 
-                SQLStore.Instance.removeOrdersDKKD(mCurrentExportID);
+                SQLStore_Kho.Instance.removeOrdersDKKD(mCurrentExportID);
                 ShowData();
             }
         }
@@ -61,7 +61,7 @@ namespace RauViet.ui
                 
                 string[] keepColumns = { "ExportCodeID", "ExportCodeIndex", "ExportCode", "ExportDate" };
                 var parameters = new Dictionary<string, object>{{ "Complete", false }};
-                mExportCode_dt = await SQLStore.Instance.getExportCodesAsync(keepColumns, parameters);
+                mExportCode_dt = await SQLStore_Kho.Instance.getExportCodesAsync(keepColumns, parameters);
 
                 if (mCurrentExportID <= 0 && mExportCode_dt.Rows.Count > 0)
                 {
@@ -69,7 +69,7 @@ namespace RauViet.ui
                                    .Max(r => r.Field<int>("ExportCodeID")));
                 }
 
-                mOrdersTotal_dt = await SQLStore.Instance.getOrdersDKKDAsync(mCurrentExportID);
+                mOrdersTotal_dt = await SQLStore_Kho.Instance.getOrdersDKKDAsync(mCurrentExportID);
                 DataView dv = new DataView(mOrdersTotal_dt);
                 dataGV_DK.DataSource = dv;
 
@@ -111,7 +111,7 @@ namespace RauViet.ui
                 exportCode_cbb.SelectedIndexChanged += exportCode_search_cbb_SelectedIndexChanged;
                 
             }
-            catch (Exception ex)
+            catch
             {
                 status_lb.Text = "Thất bại.";
                 status_lb.ForeColor = Color.Red;
@@ -130,7 +130,7 @@ namespace RauViet.ui
 
             mCurrentExportID = exportCodeId;
 
-            mOrdersTotal_dt = await SQLStore.Instance.getOrdersDKKDAsync(mCurrentExportID);
+            mOrdersTotal_dt = await SQLStore_Kho.Instance.getOrdersDKKDAsync(mCurrentExportID);
             DataView dv = new DataView(mOrdersTotal_dt);
             dataGV_DK.DataSource = dv;
         }

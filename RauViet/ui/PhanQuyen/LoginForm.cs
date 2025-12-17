@@ -146,7 +146,7 @@ namespace RauViet.ui.PhanQuyen
                 else if (Utils.VerifyPassword(password, passwordDB))
                 {
                     string employeeCode = data["EmployeeCode"].ToString();
-                    var employeeInfoTask = SQLManager.Instance.GetUserInfoAsync(employeeCode);
+                    var employeeInfoTask = SQLManager_QLNS.Instance.GetUserInfoAsync(employeeCode);
                     var machineInfoTask = SQLManager.Instance.updateMachineInfoWhenLoginAsync(userName);
                     await Task.WhenAll(employeeInfoTask, machineInfoTask);
                     var employeeInfo = employeeInfoTask.Result;

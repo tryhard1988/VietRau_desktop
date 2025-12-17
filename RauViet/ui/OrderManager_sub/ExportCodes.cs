@@ -64,20 +64,20 @@ namespace RauViet.ui
                     {
                         string exportCode = dataGV.CurrentRow.Cells["ExportCode"].Value.ToString();
                         int exportCodeID = Convert.ToInt32(dataGV.CurrentRow.Cells["ExportCodeID"].Value);
-                        bool isScussess = await SQLManager.Instance.updateNewPriceInOrderListWithExportCodeAsync(exportCodeID);
+                        bool isScussess = await SQLManager_Kho.Instance.updateNewPriceInOrderListWithExportCodeAsync(exportCodeID);
                         if(isScussess == true)
                         {
-                            _= SQLStore.Instance.getOrdersAsync(exportCodeID, true);
+                            _= SQLStore_Kho.Instance.getOrdersAsync(exportCodeID, true);
                             MessageBox.Show("Thành Công", " Thay Đổi Giá", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            _ = SQLManager.Instance.InsertExportCodeLogAsync(exportCode, "Cập Nhật Giá Thành Công", null, null, null, "", "", false);
+                            _ = SQLManager_Kho.Instance.InsertExportCodeLogAsync(exportCode, "Cập Nhật Giá Thành Công", null, null, null, "", "", false);
                         }
                         else
                         {
                             MessageBox.Show("Thất Bại", " Thay Đổi Giá", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            _ = SQLManager.Instance.InsertExportCodeLogAsync(exportCode, "Cập Nhật Giá Thất Bại", null, null, null, "", "", false);
+                            _ = SQLManager_Kho.Instance.InsertExportCodeLogAsync(exportCode, "Cập Nhật Giá Thất Bại", null, null, null, "", "", false);
                         }
                     }
-                    catch (Exception ex)
+                    catch
                     {
                         status_lb.Text = "Thất bại.";
                         status_lb.ForeColor = Color.Red;
@@ -137,9 +137,9 @@ namespace RauViet.ui
             try
             {
                 // Chạy truy vấn trên thread riêng
-                var exportCodeTask = SQLStore.Instance.getExportCodesAsync();
-                var ExportCodeLogTask = SQLStore.Instance.GetExportCodeLogAsync();
-                var employeesInDongGoiTask = SQLStore.Instance.GetActiveEmployeesIn_DongGoiAsync();
+                var exportCodeTask = SQLStore_Kho.Instance.getExportCodesAsync();
+                var ExportCodeLogTask = SQLStore_Kho.Instance.GetExportCodeLogAsync();
+                var employeesInDongGoiTask = SQLStore_Kho.Instance.GetActiveEmployeesIn_DongGoiAsync();
 
                 await Task.WhenAll(exportCodeTask, employeesInDongGoiTask, ExportCodeLogTask);
 
@@ -205,7 +205,7 @@ namespace RauViet.ui
                 log_GV.Columns["CreatedDate"].Width = 110;
                 log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
-            catch (Exception ex)
+            catch
             {
                 status_lb.Text = "Thất bại.";
                 status_lb.ForeColor = Color.Red;
@@ -304,7 +304,7 @@ namespace RauViet.ui
                     {
                         try
                         {
-                            bool isScussess = await SQLManager.Instance.updateExportCodeAsync(exportCodeID, exportCode, exportCodeIndex, exportDate, exRate, shippingCost, inputBy, packingBy, complete);
+                            bool isScussess = await SQLManager_Kho.Instance.updateExportCodeAsync(exportCodeID, exportCode, exportCodeIndex, exportDate, exRate, shippingCost, inputBy, packingBy, complete);
                             DataRow[] inputByRow = _employeesInDongGoi_dt.Select($"EmployeeID = {inputBy}");
                             DataRow[] packingByRow = _employeesInDongGoi_dt.Select($"EmployeeID = {packingBy}");
 
@@ -313,7 +313,7 @@ namespace RauViet.ui
                                 status_lb.Text = "Thành công.";
                                 status_lb.ForeColor = Color.Green;
 
-                                _ = SQLManager.Instance.InsertExportCodeLogAsync(exportCode, "Update Thành Công", exportDate, exRate, shippingCost, inputByRow[0]["FullName"].ToString(), packingByRow[0]["FullName"].ToString(), complete);
+                                _ = SQLManager_Kho.Instance.InsertExportCodeLogAsync(exportCode, "Update Thành Công", exportDate, exRate, shippingCost, inputByRow[0]["FullName"].ToString(), packingByRow[0]["FullName"].ToString(), complete);
 
                                 row["ExportCodeIndex"] = exportCodeIndex;
                                 row["ExportCode"] = exportCode;
@@ -336,14 +336,14 @@ namespace RauViet.ui
                             }
                             else
                             {
-                                _ = SQLManager.Instance.InsertExportCodeLogAsync(exportCode, "Update Thất Bại", exportDate, exRate, shippingCost, inputByRow[0]["FullName"].ToString(), packingByRow[0]["FullName"].ToString(), complete);
+                                _ = SQLManager_Kho.Instance.InsertExportCodeLogAsync(exportCode, "Update Thất Bại", exportDate, exRate, shippingCost, inputByRow[0]["FullName"].ToString(), packingByRow[0]["FullName"].ToString(), complete);
                                 status_lb.Text = "Thất bại.";
                                 status_lb.ForeColor = Color.Red;
                             }
                         }
                         catch (Exception ex)
                         {
-                            _ = SQLManager.Instance.InsertExportCodeLogAsync(exportCode, "Update Thất Bại do Exception: " + ex.Message, exportDate, exRate, shippingCost, "", "", complete);
+                            _ = SQLManager_Kho.Instance.InsertExportCodeLogAsync(exportCode, "Update Thất Bại do Exception: " + ex.Message, exportDate, exRate, shippingCost, "", "", complete);
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;
                         }
@@ -363,10 +363,10 @@ namespace RauViet.ui
                 {
                     DataRow[] inputByRow = _employeesInDongGoi_dt.Select($"EmployeeID = {inputBy}");
                     DataRow[] packingByRow = _employeesInDongGoi_dt.Select($"EmployeeID = {packingBy}");
-                    int newId = await SQLManager.Instance.insertExportCodeAsync(exportCode, exportCodeIndex, exportDate, exRate, shippingCost, inputBy, packingBy);
+                    int newId = await SQLManager_Kho.Instance.insertExportCodeAsync(exportCode, exportCodeIndex, exportDate, exRate, shippingCost, inputBy, packingBy);
                     if (newId > 0)
                     {
-                        _ = SQLManager.Instance.InsertExportCodeLogAsync(exportCode, "Tạo Mới Thành Công", exportDate, exRate, shippingCost, inputByRow[0]["FullName"].ToString(), packingByRow[0]["FullName"].ToString(), false);
+                        _ = SQLManager_Kho.Instance.InsertExportCodeLogAsync(exportCode, "Tạo Mới Thành Công", exportDate, exRate, shippingCost, inputByRow[0]["FullName"].ToString(), packingByRow[0]["FullName"].ToString(), false);
 
                         DataRow drToAdd = mExportCode_dt.NewRow();
 
@@ -395,14 +395,14 @@ namespace RauViet.ui
                     }
                     else
                     {
-                        _ = SQLManager.Instance.InsertExportCodeLogAsync(exportCode, "Tạo Mới Thất Bại", exportDate, exRate, shippingCost, inputByRow[0]["FullName"].ToString(), packingByRow[0]["FullName"].ToString(), false);
+                        _ = SQLManager_Kho.Instance.InsertExportCodeLogAsync(exportCode, "Tạo Mới Thất Bại", exportDate, exRate, shippingCost, inputByRow[0]["FullName"].ToString(), packingByRow[0]["FullName"].ToString(), false);
                         status_lb.Text = "Thất bại";
                         status_lb.ForeColor = Color.Red;
                     }
                 }
                 catch (Exception ex)
                 {
-                    _ = SQLManager.Instance.InsertExportCodeLogAsync(exportCode, "Tạo Mới Thất Bại do Exception: " + ex.Message, exportDate, exRate, shippingCost, "", "", false);
+                    _ = SQLManager_Kho.Instance.InsertExportCodeLogAsync(exportCode, "Tạo Mới Thất Bại do Exception: " + ex.Message, exportDate, exRate, shippingCost, "", "", false);
                     status_lb.Text = "Thất bại.";
                     status_lb.ForeColor = Color.Red;
                 }
@@ -425,7 +425,7 @@ namespace RauViet.ui
             int inputBy = Convert.ToInt32(inputBy_cbb.SelectedValue);
             int packingBy = Convert.ToInt32(packingBy_cbb.SelectedValue);
 
-            bool isAdded = await SQLStore.Instance.ExportHistoryIsAddedExportCode(exportCode, exportDate.Year);
+            bool isAdded = await SQLStore_Kho.Instance.ExportHistoryIsAddedExportCode(exportCode, exportDate.Year);
             if (complete_cb.Checked && !isAdded)
             {                
                 MessageBox.Show("Chưa xuất invoice, Vui lòng xuất Invoice trước khi Khóa!", "Thông Báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -471,11 +471,11 @@ namespace RauViet.ui
                     {
                         try
                         {
-                            bool isScussess = await SQLManager.Instance.DeleteExportCodeWithOrdersAsync(Convert.ToInt32(exportCodeID));
+                            bool isScussess = await SQLManager_Kho.Instance.DeleteExportCodeWithOrdersAsync(Convert.ToInt32(exportCodeID));
 
                             if (isScussess == true)
                             {
-                                _ = SQLManager.Instance.InsertExportCodeLogAsync(exportCode, "Xóa Thành Công", null, null, null, "", "", false);
+                                _ = SQLManager_Kho.Instance.InsertExportCodeLogAsync(exportCode, "Xóa Thành Công", null, null, null, "", "", false);
                                 status_lb.Text = "Thành công.";
                                 status_lb.ForeColor = Color.Green;
 

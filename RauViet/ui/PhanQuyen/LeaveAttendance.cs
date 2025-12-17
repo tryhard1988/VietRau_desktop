@@ -13,7 +13,6 @@ namespace RauViet.ui
     {
         System.Data.DataTable mLeaveAttendance_dt, mEmployee_dt, mLeaveType;
         DataView mLogDV;
-        Dictionary<string, (string PositionCode, string ContractTypeCode)> employeeDict;
         bool isNewState = false;
         int curYear = -1;
         // DataTable mShift_dt;
@@ -74,7 +73,7 @@ namespace RauViet.ui
             {
                 int year = Convert.ToInt32(year_tb.Text);
 
-                SQLStore.Instance.removeLeaveAttendances(year);
+                SQLStore_QLNS.Instance.removeLeaveAttendances(year);
                 LoadLeaveAttendance_btn_Click(null, null);
             }
         }
@@ -92,11 +91,11 @@ namespace RauViet.ui
                 var leavecodeParam = new List<string>{"NL_1"};
                 // Chạy truy vấn trên thread riêng
                 string[] keepColumns = { "EmployeeCode", "FullName", "PositionName", "ContractTypeName", };
-                var employeesTask = SQLStore.Instance.GetEmployeesAsync(keepColumns);
-                var leaveTypeTask = SQLStore.Instance.GetLeaveTypeWithoutAsync(leavecodeParam);
-                var employeeRemainingLeaveTask = SQLStore.Instance.GetAnnualLeaveBalanceAsync(year);
-                var leaveAttendanceTask = SQLStore.Instance.GetLeaveAttendancesAsyn(year);
-                var leaveAttendanceLogTask = SQLStore.Instance.GetLeaveAttendanceLogAsync(year);
+                var employeesTask = SQLStore_QLNS.Instance.GetEmployeesAsync(keepColumns);
+                var leaveTypeTask = SQLStore_QLNS.Instance.GetLeaveTypeWithoutAsync(leavecodeParam);
+                var employeeRemainingLeaveTask = SQLStore_QLNS.Instance.GetAnnualLeaveBalanceAsync(year);
+                var leaveAttendanceTask = SQLStore_QLNS.Instance.GetLeaveAttendancesAsyn(year);
+                var leaveAttendanceLogTask = SQLStore_QLNS.Instance.GetLeaveAttendanceLogAsync(year);
 
 
                 await Task.WhenAll(employeeRemainingLeaveTask, leaveAttendanceTask, leaveTypeTask, employeesTask, leaveAttendanceLogTask);
@@ -165,7 +164,7 @@ namespace RauViet.ui
 
                 log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
-            catch (Exception ex)
+            catch
             {
                 status_lb.Text = "Thất bại.";
                 status_lb.ForeColor = Color.Red;
@@ -229,8 +228,8 @@ namespace RauViet.ui
 
             int year = Convert.ToInt32(year_tb.Text);
 
-            var leaveAttendanceTask = SQLStore.Instance.GetLeaveAttendancesAsyn(year);
-            var leaveAttendanceLogTask = SQLStore.Instance.GetLeaveAttendanceLogAsync(year);
+            var leaveAttendanceTask = SQLStore_QLNS.Instance.GetLeaveAttendancesAsyn(year);
+            var leaveAttendanceLogTask = SQLStore_QLNS.Instance.GetLeaveAttendanceLogAsync(year);
             await Task.WhenAll(leaveAttendanceTask, leaveAttendanceLogTask);
 
             mLeaveAttendance_dt = leaveAttendanceTask.Result;
@@ -332,14 +331,14 @@ namespace RauViet.ui
                         string temp4 = row.Cells["Note"].Value.ToString();
                         try
                         {
-                            bool isScussess = await SQLManager.Instance.updateLeaveAttendanceAsync(leaveID, employeeCode, leaveTypeCode, dateOff, Note, hourLeave);
+                            bool isScussess = await SQLManager_QLNS.Instance.updateLeaveAttendanceAsync(leaveID, employeeCode, leaveTypeCode, dateOff, Note, hourLeave);
 
                             DataRow[] foundRows = mLeaveType.Select($"LeaveTypeCode = '{leaveTypeCode}'");
                             string leaveName = foundRows.Length > 0 ? leaveName = foundRows[0]["LeaveTypeName"].ToString() : "";
 
                             if (isScussess == true)
                             {
-                                _ = SQLManager.Instance.InsertLeaveAttandanceLogAsync(employeeCode, leaveName,
+                                _ = SQLManager_QLNS.Instance.InsertLeaveAttandanceLogAsync(employeeCode, leaveName,
                                     $"Edit Success {leaveID} - {temp1} - {temp2} - {temp3} - {temp4}",
                                     dateOff.Date, hourLeave, Note);
 
@@ -360,7 +359,7 @@ namespace RauViet.ui
                             }
                             else
                             {
-                                _ = SQLManager.Instance.InsertLeaveAttandanceLogAsync(employeeCode, leaveName,
+                                _ = SQLManager_QLNS.Instance.InsertLeaveAttandanceLogAsync(employeeCode, leaveName,
                                     $"Edit Fail {leaveID} - {temp1} - {temp2} - {temp3} - {temp4}", 
                                     dateOff.Date, hourLeave, Note);
                                 status_lb.Text = "Thất bại.";
@@ -372,7 +371,7 @@ namespace RauViet.ui
                             DataRow[] foundRows = mLeaveType.Select($"LeaveTypeCode = '{leaveTypeCode}'");
                             string leaveName = foundRows.Length > 0 ? leaveName = foundRows[0]["LeaveTypeName"].ToString() : "";
                             
-                            _ = SQLManager.Instance.InsertLeaveAttandanceLogAsync(employeeCode, leaveName,
+                            _ = SQLManager_QLNS.Instance.InsertLeaveAttandanceLogAsync(employeeCode, leaveName,
                                     $"Edit Fail Exception: {ex.Message} : {leaveID} - {temp1} - {temp2} - {temp3} - {temp4}",
                                     dateOff.Date, hourLeave, Note);
                             status_lb.Text = "Thất bại.";
@@ -402,7 +401,7 @@ namespace RauViet.ui
                 {
                     DataRow[] foundRows = mLeaveType.Select($"LeaveTypeCode = '{leaveTypeCode}'");
                     string leaveName = foundRows.Length > 0 ? foundRows[0]["LeaveTypeName"].ToString() : "";
-                    int newEmployee = await SQLManager.Instance.insertLeaveAttendanceAsync(employeeCode, leaveTypeCode, date, Note, hourLeave);
+                    int newEmployee = await SQLManager_QLNS.Instance.insertLeaveAttendanceAsync(employeeCode, leaveTypeCode, date, Note, hourLeave);
                     if (newEmployee > 0)
                     {
                         DataRow drToAdd = mLeaveAttendance_dt.NewRow();
@@ -420,9 +419,9 @@ namespace RauViet.ui
 
                         mLeaveAttendance_dt.Rows.Add(drToAdd);
 
-                        _ = SQLManager.Instance.InsertLeaveAttandanceLogAsync(employeeCode, leaveName, $"Create Success {newEmployee}", date.Date, hourLeave, Note);
+                        _ = SQLManager_QLNS.Instance.InsertLeaveAttandanceLogAsync(employeeCode, leaveName, $"Create Success {newEmployee}", date.Date, hourLeave, Note);
 
-                        if (SQLStore.Instance.IsDeductAnnualLeave(leaveTypeCode))
+                        if (SQLStore_QLNS.Instance.IsDeductAnnualLeave(leaveTypeCode))
                         {
                             DataRow[] rows = mEmployee_dt.Select($"EmployeeCode = '{employeeCode}'");
                             DataRow row = mEmployee_dt.Select($"EmployeeCode = '{employeeCode}'").FirstOrDefault();
@@ -440,14 +439,14 @@ namespace RauViet.ui
                     {
                         hasError = true;
                         datetimeErrorList.Add(date);
-                        _ = SQLManager.Instance.InsertLeaveAttandanceLogAsync(employeeCode, leaveName, $"Create Fail", date.Date, hourLeave, Note);
+                        _ = SQLManager_QLNS.Instance.InsertLeaveAttandanceLogAsync(employeeCode, leaveName, $"Create Fail", date.Date, hourLeave, Note);
                     }
                 }
                 catch (Exception ex)
                 {
                     DataRow[] foundRows = mLeaveType.Select($"LeaveTypeCode = '{leaveTypeCode}'");
                     string leaveName = foundRows.Length > 0 ? foundRows[0]["LeaveTypeName"].ToString() : "";
-                    _ = SQLManager.Instance.InsertLeaveAttandanceLogAsync(employeeCode, leaveName, $"Create Fail Exception: {ex.Message}", date.Date, hourLeave, Note);
+                    _ = SQLManager_QLNS.Instance.InsertLeaveAttandanceLogAsync(employeeCode, leaveName, $"Create Fail Exception: {ex.Message}", date.Date, hourLeave, Note);
                     Console.WriteLine("Error:" + ex.Message);
                     errorMessage = "Error:" + ex.Message;
                     hasError = true;
@@ -495,7 +494,7 @@ namespace RauViet.ui
 
             for (DateTime date = dateOffStart.Date; date <= dateOffEnd.Date; date = date.AddDays(1))
             {
-                bool isLock = await SQLStore.Instance.IsSalaryLockAsync(date.Month, date.Year);
+                bool isLock = await SQLStore_QLNS.Instance.IsSalaryLockAsync(date.Month, date.Year);
                 if (isLock)
                 {
                     MessageBox.Show("Tháng " + date.Month + "/" + date.Year + " đã bị khóa.", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -517,8 +516,8 @@ namespace RauViet.ui
             else
                 createNew(employeeCode, leaveTypeCode, dateOffStart, dateOffEnd, note, hourLeave);
 
-            SQLStore.Instance.removeAttendamce(dateOffStart.Month, dateOffStart.Year);
-            SQLStore.Instance.removeAttendamce(dateOffEnd.Month, dateOffEnd.Year);
+            SQLStore_QLNS.Instance.removeAttendamce(dateOffStart.Month, dateOffStart.Year);
+            SQLStore_QLNS.Instance.removeAttendamce(dateOffEnd.Month, dateOffEnd.Year);
         }
 
         private void NewBtn_Click(object sender, EventArgs e)
@@ -585,7 +584,7 @@ namespace RauViet.ui
                 if (leaveID.CompareTo(id) == 0)
                 {
                     DateTime dateOff = Convert.ToDateTime(row.Cells["DateOff"].Value);
-                    bool isLock = await SQLStore.Instance.IsSalaryLockAsync(dateOff.Month, dateOff.Year);
+                    bool isLock = await SQLStore_QLNS.Instance.IsSalaryLockAsync(dateOff.Month, dateOff.Year);
                     if (isLock)
                     {
                         MessageBox.Show("Tháng " + dateOff.Month + "/" + dateOff.Year + " đã bị khóa.", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -597,13 +596,13 @@ namespace RauViet.ui
                     {
                         try
                         {
-                            bool isScussess = await SQLManager.Instance.deleteLeaveAttendanceAsync(leaveID);
+                            bool isScussess = await SQLManager_QLNS.Instance.deleteLeaveAttendanceAsync(leaveID);
 
                             if (isScussess == true)
                             {
-                                _ = SQLManager.Instance.InsertLeaveAttandanceLogAsync(employeeCode, leaveName, $"Delete Success", DateTime.Now, 0, "Delete");
+                                _ = SQLManager_QLNS.Instance.InsertLeaveAttandanceLogAsync(employeeCode, leaveName, $"Delete Success", DateTime.Now, 0, "Delete");
 
-                                if (SQLStore.Instance.IsDeductAnnualLeave(row.Cells["LeaveTypeCode"].Value.ToString()))
+                                if (SQLStore_QLNS.Instance.IsDeductAnnualLeave(row.Cells["LeaveTypeCode"].Value.ToString()))
                                 {
                                     DataRow row1 = mEmployee_dt.Select($"EmployeeCode = '{employeeCode}'").FirstOrDefault();
                                     if (row1 != null)
@@ -614,7 +613,7 @@ namespace RauViet.ui
                                         row1["LeaveCount"] = leaveCount - 1;
                                         row1["RemainingLeave"] = remaining + 1;
 
-                                        SQLStore.Instance.removeAttendamce(dateOff.Month, dateOff.Year);
+                                        SQLStore_QLNS.Instance.removeAttendamce(dateOff.Month, dateOff.Year);
                                     }
                                 }
 
@@ -626,14 +625,14 @@ namespace RauViet.ui
                             }
                             else
                             {
-                                _ = SQLManager.Instance.InsertLeaveAttandanceLogAsync(employeeCode, leaveName, $"Delete Fail", DateTime.Now, 0, "Delete");
+                                _ = SQLManager_QLNS.Instance.InsertLeaveAttandanceLogAsync(employeeCode, leaveName, $"Delete Fail", DateTime.Now, 0, "Delete");
                                 status_lb.Text = "Thất bại.";
                                 status_lb.ForeColor = Color.Red;
                             }
                         }
                         catch (Exception ex)
                         {
-                            _ = SQLManager.Instance.InsertLeaveAttandanceLogAsync(employeeCode, leaveName, $"Delete Fail Exception {ex.Message}", DateTime.Now, 0, "Delete");
+                            _ = SQLManager_QLNS.Instance.InsertLeaveAttandanceLogAsync(employeeCode, leaveName, $"Delete Fail Exception {ex.Message}", DateTime.Now, 0, "Delete");
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;
                         }
@@ -657,7 +656,7 @@ namespace RauViet.ui
                     dateOffEnd_dtp.Value = dayyOffStart;
             }
 
-            bool isLock = await SQLStore.Instance.IsSalaryLockAsync(dayyOffStart.Month, dayyOffStart.Year);
+            bool isLock = await SQLStore_QLNS.Instance.IsSalaryLockAsync(dayyOffStart.Month, dayyOffStart.Year);
 
             LuuThayDoiBtn.Enabled = !isLock;
             newBtn.Enabled = !isLock;

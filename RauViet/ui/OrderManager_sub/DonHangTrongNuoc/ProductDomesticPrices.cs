@@ -47,7 +47,7 @@ namespace RauViet.ui
         {
             if (e.KeyCode == Keys.F5)
             {
-                SQLStore.Instance.removeProductDomesticPrices();
+                SQLStore_Kho.Instance.removeProductDomesticPrices();
                 ShowData();
             }
             else if (!isNewState && !edit_btn.Visible)
@@ -77,9 +77,9 @@ namespace RauViet.ui
             try
             {
                 var parameters = new Dictionary<string, object> { { "IsActive", true } };
-                mSKU_dt = await SQLStore.Instance.getProductSKUAsync(parameters);
-                mProductDomesticPrices_dt = await SQLStore.Instance.getProductDomesticPricesAsync();
-                var logData = await SQLStore.Instance.GetProductDomesticPricesHistoryAsync();
+                mSKU_dt = await SQLStore_Kho.Instance.getProductSKUAsync(parameters);
+                mProductDomesticPrices_dt = await SQLStore_Kho.Instance.getProductDomesticPricesAsync();
+                var logData = await SQLStore_Kho.Instance.GetProductDomesticPricesHistoryAsync();
                 mLogDV = new DataView(logData);
 
                 sku_cbb.DataSource = mSKU_dt;
@@ -146,7 +146,7 @@ namespace RauViet.ui
                 log_GV.Columns["CreatedAt"].Width = 120;
 
             }
-            catch (Exception ex)
+            catch
             {
                 status_lb.Text = "Thất bại.";
                 status_lb.ForeColor = Color.Red;
@@ -221,7 +221,7 @@ namespace RauViet.ui
                     {
                         try
                         {
-                            bool isScussess = await SQLManager.Instance.updateProductDomesticPriceAsync(SKU, rawPrice, refinePrice, packedPrice, isActive);
+                            bool isScussess = await SQLManager_Kho.Instance.updateProductDomesticPriceAsync(SKU, rawPrice, refinePrice, packedPrice, isActive);
 
                             if (isScussess == true)
                             {
@@ -233,14 +233,14 @@ namespace RauViet.ui
                                 row["PackedPrice"] = packedPrice;
                                 row["IsActive"] = isActive;
 
-                                _ = SQLManager.Instance.InsertProductDomesticPricesHistory(SKU, "Update Success: " + oldValue, newValue);
+                                _ = SQLManager_Kho.Instance.InsertProductDomesticPricesHistory(SKU, "Update Success: " + oldValue, newValue);
                             }
                             else
                             {
                                 status_lb.Text = "Thất bại.";
                                 status_lb.ForeColor = Color.Red;
 
-                                _ = SQLManager.Instance.InsertProductDomesticPricesHistory(SKU, "Update Fail: " + oldValue, newValue);
+                                _ = SQLManager_Kho.Instance.InsertProductDomesticPricesHistory(SKU, "Update Fail: " + oldValue, newValue);
                             }
                         }
                         catch (Exception ex)
@@ -248,7 +248,7 @@ namespace RauViet.ui
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;
 
-                            _ = SQLManager.Instance.InsertProductDomesticPricesHistory(SKU, "Update Exception: " + ex.Message + oldValue, newValue);
+                            _ = SQLManager_Kho.Instance.InsertProductDomesticPricesHistory(SKU, "Update Exception: " + ex.Message + oldValue, newValue);
                         }
                     }
                     break;
@@ -272,7 +272,7 @@ namespace RauViet.ui
                 string newValue = $"{rawPrice} - {refinePrice} - {packedPrice}";
                 try
                 {
-                    int newId = await SQLManager.Instance.insertProductDomesticPriceAsync(SKU, rawPrice, refinePrice, packedPrice);
+                    int newId = await SQLManager_Kho.Instance.insertProductDomesticPriceAsync(SKU, rawPrice, refinePrice, packedPrice);
                     if (newId > 0)
                     {
                         DataRow drToAdd = mProductDomesticPrices_dt.NewRow();
@@ -291,7 +291,7 @@ namespace RauViet.ui
                         status_lb.Text = "Thành công";
                         status_lb.ForeColor = Color.Green;
 
-                        _ = SQLManager.Instance.InsertProductDomesticPricesHistory(SKU, "Create Success: ", newValue);
+                        _ = SQLManager_Kho.Instance.InsertProductDomesticPricesHistory(SKU, "Create Success: ", newValue);
 
                         newBtn_Click(null, null);
                     }
@@ -299,7 +299,7 @@ namespace RauViet.ui
                     {
                         status_lb.Text = "Thất bại";
                         status_lb.ForeColor = Color.Red;
-                        _ = SQLManager.Instance.InsertProductDomesticPricesHistory(SKU, "Create Fail: ", newValue);
+                        _ = SQLManager_Kho.Instance.InsertProductDomesticPricesHistory(SKU, "Create Fail: ", newValue);
                     }
                 }
                 catch (Exception ex)
@@ -308,7 +308,7 @@ namespace RauViet.ui
                     status_lb.Text = "Thất bại.";
                     status_lb.ForeColor = Color.Red;
 
-                    _ = SQLManager.Instance.InsertProductDomesticPricesHistory(SKU, "Create Exception: " + ex.Message, newValue);
+                    _ = SQLManager_Kho.Instance.InsertProductDomesticPricesHistory(SKU, "Create Exception: " + ex.Message, newValue);
                 }
 
             }
@@ -346,7 +346,7 @@ namespace RauViet.ui
                     {
                         try
                         {
-                            bool isScussess = await SQLManager.Instance.deleteProductDomesticPriceAsync(Convert.ToInt32(id));
+                            bool isScussess = await SQLManager_Kho.Instance.deleteProductDomesticPriceAsync(Convert.ToInt32(id));
 
                             if (isScussess == true)
                             {
@@ -362,7 +362,7 @@ namespace RauViet.ui
                                 status_lb.ForeColor = Color.Red;
                             }
                         }
-                        catch (Exception ex)
+                        catch
                         {
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;

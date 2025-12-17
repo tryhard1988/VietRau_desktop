@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Runtime.CompilerServices;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -12,7 +9,6 @@ namespace RauViet.classes
     {
         private readonly Form _owner;
         private Form _overlayForm;
-        private int _spinnerAngle = 0;
 
         public string Message { get; set; } = "Đang tải dữ liệu, vui lòng chờ...";
 

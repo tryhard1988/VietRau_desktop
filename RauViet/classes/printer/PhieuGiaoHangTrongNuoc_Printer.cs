@@ -279,11 +279,6 @@ public class PhieuGiaoHangTrongNuoc_Printer
             totalNetWeight += net;
             x += colWidth_SLGH/2;
 
-            //string productTypeName = row["ProductTypeName"].ToString();
-            //e.Graphics.DrawRectangle(Pens.Black, x, y, colWidth_nw, dynamicHeight);
-            //e.Graphics.DrawString(productTypeName, fontContent, brush, new RectangleF(x, y, colWidth_productType, rowHeight), sfDataCenter);
-            //x += colWidth_productType;
-
             e.Graphics.DrawRectangle(Pens.Black, x, y, colWidth_gc, dynamicHeight);
             e.Graphics.DrawString(productTypeName, fontContent, brush, new RectangleF(x, y, colWidth_gc, rowHeight), sfDataCenter);
             y += dynamicHeight;

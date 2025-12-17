@@ -17,7 +17,7 @@ namespace RauViet.ui
 {    
     public partial class DepartmentAllowance : Form
     {
-        private DataTable mDepartment_dt, mDepartmentAllowance_dt, mAllowanceType_dt;
+        private DataTable mDepartmentAllowance_dt, mAllowanceType_dt;
         bool isNewState = false;
         public DepartmentAllowance()
         {
@@ -63,9 +63,9 @@ namespace RauViet.ui
             try
             {
                 // Chạy truy vấn trên thread riêng
-                var departmentTask = SQLStore.Instance.GetActiveDepartmentAsync();
-                var departmentAllowanceAsync = SQLManager.Instance.GetDepartmentAllowanceAsybc();
-                var allowanceTypeAsync = SQLManager.Instance.GetAllowanceTypeAsync("DEP");
+                var departmentTask = SQLStore_QLNS.Instance.GetActiveDepartmentAsync();
+                var departmentAllowanceAsync = SQLManager_QLNS.Instance.GetDepartmentAllowanceAsybc();
+                var allowanceTypeAsync = SQLManager_QLNS.Instance.GetAllowanceTypeAsync("DEP");
 
                 await Task.WhenAll(departmentTask, departmentAllowanceAsync, allowanceTypeAsync);
                 DataTable department_dt = departmentTask.Result;
@@ -135,7 +135,7 @@ namespace RauViet.ui
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 allowanceGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
-            catch (Exception ex)
+            catch
             {
                 status_lb.Text = "Thất bại.";
                 status_lb.ForeColor = Color.Red;
@@ -228,7 +228,7 @@ namespace RauViet.ui
                     {
                         try
                         {
-                            bool isScussess = await SQLManager.Instance.updateDepartmentAllowanceAsync(departmentAllowanceID, departmentID, amount, allowanceTypeID, note);
+                            bool isScussess = await SQLManager_QLNS.Instance.updateDepartmentAllowanceAsync(departmentAllowanceID, departmentID, amount, allowanceTypeID, note);
 
                             if (isScussess == true)
                             {
@@ -247,7 +247,7 @@ namespace RauViet.ui
                                 status_lb.ForeColor = Color.Red;
                             }
                         }
-                        catch (Exception ex)
+                        catch
                         {
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;
@@ -266,7 +266,7 @@ namespace RauViet.ui
             {
                 try
                 {
-                    int departmentAllowanceID = await SQLManager.Instance.insertDepartmentAllowanceAsync(departmentID, amount, allowanceTypeID, note);
+                    int departmentAllowanceID = await SQLManager_QLNS.Instance.insertDepartmentAllowanceAsync(departmentID, amount, allowanceTypeID, note);
                     if (allowanceTypeID > 0)
                     {
                         DataRow drToAdd = mDepartmentAllowance_dt.NewRow();
@@ -292,7 +292,7 @@ namespace RauViet.ui
                         status_lb.ForeColor = Color.Red;
                     }
                 }
-                catch (Exception ex)
+                catch
                 {
                     status_lb.Text = "Thất bại.";
                     status_lb.ForeColor = Color.Red;
@@ -336,7 +336,7 @@ namespace RauViet.ui
                     {
                         try
                         {
-                            bool isScussess = await SQLManager.Instance.deleteDepartmentAllowanceAsync(Convert.ToInt32(departmentAllowanceID));
+                            bool isScussess = await SQLManager_QLNS.Instance.deleteDepartmentAllowanceAsync(Convert.ToInt32(departmentAllowanceID));
 
                             if (isScussess == true)
                             {
@@ -352,7 +352,7 @@ namespace RauViet.ui
                                 status_lb.ForeColor = Color.Red;
                             }
                         }
-                        catch (Exception ex)
+                        catch
                         {
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;

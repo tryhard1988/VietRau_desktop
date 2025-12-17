@@ -48,7 +48,7 @@ namespace RauViet.ui
             {
                 int year = monthYearDtp.Value.Year;
 
-                SQLStore.Instance.removeDeduction(year);
+                SQLStore_QLNS.Instance.removeDeduction(year);
                 ShowData();
             }
         }
@@ -66,9 +66,9 @@ namespace RauViet.ui
             {
                 int month = monthYearDtp.Value.Month;
                 int year = monthYearDtp.Value.Year;
-                var employeeTask = SQLManager.Instance.GetActiveEmployee_DeductionATT_Async(month, year);
-                var employeeLeaveAsync = SQLManager.Instance.GetEmployeeLeave_PT_KP_Async(month, year);
-                var EmployeeDeductionLogTask = SQLStore.Instance.GetEmployeeDeductionLogAsync(month, year, DeductionTypeCode);
+                var employeeTask = SQLManager_QLNS.Instance.GetActiveEmployee_DeductionATT_Async(month, year);
+                var employeeLeaveAsync = SQLManager_QLNS.Instance.GetEmployeeLeave_PT_KP_Async(month, year);
+                var EmployeeDeductionLogTask = SQLStore_QLNS.Instance.GetEmployeeDeductionLogAsync(month, year, DeductionTypeCode);
                 await Task.WhenAll(employeeTask, employeeLeaveAsync, EmployeeDeductionLogTask);
                 DataTable employee_dt = employeeTask.Result;
                 mEmployeeLeave_dt = employeeLeaveAsync.Result;
@@ -159,7 +159,7 @@ namespace RauViet.ui
                 log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
             }
-            catch (Exception ex)
+            catch
             {
                 status_lb.Text = "Thất bại.";
                 status_lb.ForeColor = Color.Red;
@@ -242,11 +242,11 @@ namespace RauViet.ui
                     {
                         try
                         {
-                            bool isScussess = await SQLManager.Instance.UpsertEmployeeDeductionAsync(employeeCode, DeductionTypeCode, deductionDate, deductionAmount, "");
+                            bool isScussess = await SQLManager_QLNS.Instance.UpsertEmployeeDeductionAsync(employeeCode, DeductionTypeCode, deductionDate, deductionAmount, "");
 
                             if (isScussess == true)
                             {
-                                _ = SQLManager.Instance.InsertEmployeeDeductionLogAsync(employeeCode, DeductionTypeCode, $"Edit: Success", deductionDate.Date, deductionAmount, "Trừ chuyên cần");
+                                _ = SQLManager_QLNS.Instance.InsertEmployeeDeductionLogAsync(employeeCode, DeductionTypeCode, $"Edit: Success", deductionDate.Date, deductionAmount, "Trừ chuyên cần");
                                 status_lb.Text = "Thành công.";
                                 status_lb.ForeColor = Color.Green;
 
@@ -254,14 +254,14 @@ namespace RauViet.ui
                             }
                             else
                             {
-                                _ = SQLManager.Instance.InsertEmployeeDeductionLogAsync(employeeCode, DeductionTypeCode, $"Edit: Fail", deductionDate.Date, deductionAmount, "Trừ chuyên cần");
+                                _ = SQLManager_QLNS.Instance.InsertEmployeeDeductionLogAsync(employeeCode, DeductionTypeCode, $"Edit: Fail", deductionDate.Date, deductionAmount, "Trừ chuyên cần");
                                 status_lb.Text = "Thất bại.";
                                 status_lb.ForeColor = Color.Red;
                             }
                         }
                         catch (Exception ex)
                         {
-                            _ = SQLManager.Instance.InsertEmployeeDeductionLogAsync(employeeCode, DeductionTypeCode, $"Edit Fail Exception: " + ex.Message, deductionDate.Date, deductionAmount, "Trừ chuyên cần");
+                            _ = SQLManager_QLNS.Instance.InsertEmployeeDeductionLogAsync(employeeCode, DeductionTypeCode, $"Edit Fail Exception: " + ex.Message, deductionDate.Date, deductionAmount, "Trừ chuyên cần");
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;
                         }
@@ -292,7 +292,7 @@ namespace RauViet.ui
                 return;
             }
 
-            bool isLock = await SQLStore.Instance.IsSalaryLockAsync(month, year);
+            bool isLock = await SQLStore_QLNS.Instance.IsSalaryLockAsync(month, year);
             if (isLock)
             {
                 MessageBox.Show("Tháng " + month + "/" + year + " đã bị khóa.", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);

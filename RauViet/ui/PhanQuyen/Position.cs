@@ -48,7 +48,7 @@ namespace RauViet.ui
         {
             if (e.KeyCode == Keys.F5)
             {
-                SQLStore.Instance.removePosition();
+                SQLStore_QLNS.Instance.removePosition();
                 ShowData();
             }
         }
@@ -64,7 +64,7 @@ namespace RauViet.ui
             try
             {
                 // Chạy truy vấn trên thread riêng
-                var postionTask = SQLStore.Instance.GetPositionAsync();
+                var postionTask = SQLStore_QLNS.Instance.GetPositionAsync();
 
                 await Task.WhenAll(postionTask);
                 DataTable postion_dt = postionTask.Result;
@@ -102,7 +102,7 @@ namespace RauViet.ui
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
-            catch (Exception ex)
+            catch
             {
                 status_lb.Text = "Thất bại.";
                 status_lb.ForeColor = Color.Red;
@@ -166,7 +166,7 @@ namespace RauViet.ui
                     {
                         try
                         {
-                            bool isScussess = await SQLManager.Instance.updatePositionAsync(positionId, positionCode, positionName, description, isActive);
+                            bool isScussess = await SQLManager_QLNS.Instance.updatePositionAsync(positionId, positionCode, positionName, description, isActive);
 
                             if (isScussess == true)
                             {
@@ -184,7 +184,7 @@ namespace RauViet.ui
                                 status_lb.ForeColor = Color.Red;
                             }
                         }
-                        catch (Exception ex)
+                        catch
                         {
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;
@@ -207,7 +207,7 @@ namespace RauViet.ui
             {
                 try
                 {
-                    int newId = await SQLManager.Instance.insertPositionAsync(positionCode, positionName, description, isActive);
+                    int newId = await SQLManager_QLNS.Instance.insertPositionAsync(positionCode, positionName, description, isActive);
                     if (newId > 0)
                     {
 
@@ -241,7 +241,7 @@ namespace RauViet.ui
                         status_lb.ForeColor = Color.Red;
                     }
                 }
-                catch (Exception ex)
+                catch
                 {
                     status_lb.Text = "Thất bại.";
                     status_lb.ForeColor = Color.Red;
@@ -290,7 +290,7 @@ namespace RauViet.ui
                     {
                         try
                         {
-                            bool isScussess = await SQLManager.Instance.deletePositionAsync(Convert.ToInt32(positionID));
+                            bool isScussess = await SQLManager_QLNS.Instance.deletePositionAsync(Convert.ToInt32(positionID));
 
                             if (isScussess == true)
                             {
@@ -306,7 +306,7 @@ namespace RauViet.ui
                                 status_lb.ForeColor = Color.Red;
                             }
                         }
-                        catch (Exception ex)
+                        catch
                         {
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;

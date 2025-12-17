@@ -43,7 +43,7 @@ namespace RauViet.ui
             try
             {
                 // Chạy truy vấn trên thread riêng
-                DataTable dt = await SQLStore.Instance.getCustomersAsync();
+                DataTable dt = await SQLStore_Kho.Instance.getCustomersAsync();
                 dataGV.DataSource = dt;
 
                 dataGV.Columns["CustomerID"].HeaderText = "Mã KH";
@@ -53,6 +53,10 @@ namespace RauViet.ui
                 dataGV.Columns["Company"].HeaderText = "Công Ty";
                 dataGV.Columns["Address"].HeaderText = "Địa Chỉ";
 
+                dataGV.Columns["Home"].Width = 50;
+                dataGV.Columns["Priority"].Width = 50;
+                dataGV.Columns["Address"].Width = 150;
+                dataGV.Columns["CustomerID"].Visible = false;
                 dataGV.Columns["FullName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 dataGV.Columns["CustomerCode"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
 
@@ -60,7 +64,7 @@ namespace RauViet.ui
 
                 ReadOnly_btn_Click(null, null);
             }
-            catch (Exception ex)
+            catch
             {
                 status_lb.Text = "Thất bại.";
                 status_lb.ForeColor = Color.Red;
@@ -103,6 +107,8 @@ namespace RauViet.ui
             string home = Convert.ToString(cells["Home"].Value);
             string company = Convert.ToString(cells["Company"].Value);
             string address = Convert.ToString(cells["Address"].Value);
+            string email = Convert.ToString(cells["Email"].Value);
+            string taxCode = Convert.ToString(cells["TaxCode"].Value);
             name_tb.Text = fullName;
             customerCode_tb.Text = customerCode;
             priority_tb.Text = priority.ToString();
@@ -110,12 +116,14 @@ namespace RauViet.ui
             home_tb.Text = home;
             company_tb.Text = company;
             address_tb.Text = address;
+            email_tb.Text = email;
+            taxCode_tb.Text = taxCode;
             delete_btn.Enabled = true;
 
             status_lb.Text = "";
         }
 
-        private async void updateData(int customerId, string fullName, string code, int priority, string home, string company, string address)
+        private async void updateData(int customerId, string fullName, string code, int priority, string home, string company, string address, string email, string taxCode)
         {
             foreach (DataGridViewRow row in dataGV.Rows)
             {
@@ -127,7 +135,7 @@ namespace RauViet.ui
                     {
                         try
                         {
-                            bool isScussess = await SQLManager.Instance.updateCustomerAsync(customerId, fullName, code, priority, home, company, address);
+                            bool isScussess = await SQLManager_Kho.Instance.updateCustomerAsync(customerId, fullName, code, priority, home, company, address, email, taxCode);
 
                             if (isScussess == true)
                             {
@@ -140,6 +148,8 @@ namespace RauViet.ui
                                 row.Cells["Home"].Value = home;
                                 row.Cells["Company"].Value = company;
                                 row.Cells["Address"].Value = address;
+                                row.Cells["Email"].Value = email;
+                                row.Cells["TaxCode"].Value = taxCode;
                             }
                             else
                             {
@@ -147,7 +157,7 @@ namespace RauViet.ui
                                 status_lb.ForeColor = Color.Red;
                             }
                         }
-                        catch (Exception ex)
+                        catch
                         {
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;
@@ -162,7 +172,7 @@ namespace RauViet.ui
             }
         }
 
-        private async void createNew(string fullName, string code, int priority, string home, string company, string address)
+        private async void createNew(string fullName, string code, int priority, string home, string company, string address, string email, string taxCode)
         {
             DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
@@ -170,7 +180,7 @@ namespace RauViet.ui
             {
                 try
                 {
-                    int newId = await SQLManager.Instance.insertCustomerAsync(fullName, code, priority, home, company, address);
+                    int newId = await SQLManager_Kho.Instance.insertCustomerAsync(fullName, code, priority, home, company, address, email, taxCode);
                     if (newId > 0 )
                     {
 
@@ -184,6 +194,8 @@ namespace RauViet.ui
                         drToAdd["Home"] = home;
                         drToAdd["Company"] = company;
                         drToAdd["Address"] = address;
+                        drToAdd["Email"] = email;
+                        drToAdd["TaxCode"] = taxCode;
                         maKH_tb.Text = newId.ToString();
 
 
@@ -205,7 +217,7 @@ namespace RauViet.ui
                         status_lb.ForeColor = Color.Red;
                     }
                 }
-                catch (Exception ex)
+                catch
                 {
                     status_lb.Text = "Thất bại.";
                     status_lb.ForeColor = Color.Red;
@@ -231,15 +243,17 @@ namespace RauViet.ui
             string home = home_tb.Text;
             string company = company_tb.Text;
             string address = address_tb.Text;
+            string email = email_tb.Text;
+            string taxCode = taxCode_tb.Text;
             int priority = Convert.ToInt32(priority_tb.Text);
 
             if (code.CompareTo("") == 0)
                 code = name;
 
             if (maKH_tb.Text.Length != 0)
-                updateData(Convert.ToInt32(maKH_tb.Text), name, code, priority, home, company, address);
+                updateData(Convert.ToInt32(maKH_tb.Text), name, code, priority, home, company, address, email, taxCode);
             else
-                createNew(name, code, priority, home, company, address);
+                createNew(name, code, priority, home, company, address, email, taxCode);
 
         }
         private async void deleteBtn_Click(object sender, EventArgs e)
@@ -258,7 +272,7 @@ namespace RauViet.ui
                     {
                         try
                         {
-                            bool isScussess = await SQLManager.Instance.deleteCustomerAsync(Convert.ToInt32(customerId));
+                            bool isScussess = await SQLManager_Kho.Instance.deleteCustomerAsync(Convert.ToInt32(customerId));
 
                             if (isScussess == true)
                             {
@@ -274,7 +288,7 @@ namespace RauViet.ui
                                 status_lb.ForeColor = Color.Red;
                             }
                         }
-                        catch (Exception ex)
+                        catch
                         {
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;

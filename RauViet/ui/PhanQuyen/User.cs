@@ -61,7 +61,7 @@ namespace RauViet.ui
             {
                 // Chạy truy vấn trên thread riêng
                 var userTask = SQLManager.Instance.GetUserDataAsync();
-                var employeesTask = SQLManager.Instance.GetActiveEmployees_For_CreateUserAsync();
+                var employeesTask = SQLManager_QLNS.Instance.GetActiveEmployees_For_CreateUserAsync();
                 var rolesTask = SQLManager.Instance.GetRolesAsync();
 
                 await Task.WhenAll(userTask, employeesTask, rolesTask);
@@ -277,7 +277,7 @@ namespace RauViet.ui
                                 status_lb.ForeColor = Color.Red;
                             }
                         }
-                        catch (Exception ex)
+                        catch
                         {
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;
@@ -340,7 +340,7 @@ namespace RauViet.ui
                         status_lb.ForeColor = Color.Red;
                     }
                 }
-                catch (Exception ex)
+                catch
                 {
                     status_lb.Text = "Thất bại.";
                     status_lb.ForeColor = Color.Red;
@@ -406,7 +406,7 @@ namespace RauViet.ui
                                 status_lb.ForeColor = Color.Red;
                             }
                         }
-                        catch (Exception ex)
+                        catch
                         {
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;

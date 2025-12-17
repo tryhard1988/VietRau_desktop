@@ -34,6 +34,10 @@ namespace RauViet.ui
             this.newCustomerBtn = new System.Windows.Forms.Button();
             this.edit_btn = new System.Windows.Forms.Button();
             this.info_gb = new System.Windows.Forms.GroupBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.address_tb = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.company_tb = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.home_tb = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
@@ -48,10 +52,10 @@ namespace RauViet.ui
             this.maKH_tb = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.dataGV = new System.Windows.Forms.DataGridView();
-            this.label6 = new System.Windows.Forms.Label();
-            this.company_tb = new System.Windows.Forms.TextBox();
-            this.label7 = new System.Windows.Forms.Label();
-            this.address_tb = new System.Windows.Forms.TextBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.email_tb = new System.Windows.Forms.TextBox();
+            this.label9 = new System.Windows.Forms.Label();
+            this.taxCode_tb = new System.Windows.Forms.TextBox();
             this.panel1.SuspendLayout();
             this.info_gb.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
@@ -69,16 +73,16 @@ namespace RauViet.ui
             this.panel1.Controls.Add(this.maKH_tb);
             this.panel1.Controls.Add(this.label1);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel1.Location = new System.Drawing.Point(718, 0);
+            this.panel1.Location = new System.Drawing.Point(888, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(546, 681);
+            this.panel1.Size = new System.Drawing.Size(590, 681);
             this.panel1.TabIndex = 9;
             // 
             // readOnly_btn
             // 
             this.readOnly_btn.BackColor = System.Drawing.Color.MediumSlateBlue;
             this.readOnly_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.readOnly_btn.Location = new System.Drawing.Point(429, 45);
+            this.readOnly_btn.Location = new System.Drawing.Point(393, 45);
             this.readOnly_btn.Name = "readOnly_btn";
             this.readOnly_btn.Size = new System.Drawing.Size(42, 32);
             this.readOnly_btn.TabIndex = 34;
@@ -89,7 +93,7 @@ namespace RauViet.ui
             // 
             this.newCustomerBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
             this.newCustomerBtn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.newCustomerBtn.Location = new System.Drawing.Point(397, 45);
+            this.newCustomerBtn.Location = new System.Drawing.Point(361, 45);
             this.newCustomerBtn.Name = "newCustomerBtn";
             this.newCustomerBtn.Size = new System.Drawing.Size(74, 32);
             this.newCustomerBtn.TabIndex = 33;
@@ -100,7 +104,7 @@ namespace RauViet.ui
             // 
             this.edit_btn.BackColor = System.Drawing.SystemColors.MenuHighlight;
             this.edit_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.edit_btn.Location = new System.Drawing.Point(289, 45);
+            this.edit_btn.Location = new System.Drawing.Point(253, 45);
             this.edit_btn.Name = "edit_btn";
             this.edit_btn.Size = new System.Drawing.Size(94, 32);
             this.edit_btn.TabIndex = 31;
@@ -109,6 +113,10 @@ namespace RauViet.ui
             // 
             // info_gb
             // 
+            this.info_gb.Controls.Add(this.label8);
+            this.info_gb.Controls.Add(this.email_tb);
+            this.info_gb.Controls.Add(this.label9);
+            this.info_gb.Controls.Add(this.taxCode_tb);
             this.info_gb.Controls.Add(this.label7);
             this.info_gb.Controls.Add(this.address_tb);
             this.info_gb.Controls.Add(this.label6);
@@ -121,17 +129,55 @@ namespace RauViet.ui
             this.info_gb.Controls.Add(this.label2);
             this.info_gb.Controls.Add(this.label3);
             this.info_gb.Controls.Add(this.customerCode_tb);
-            this.info_gb.Location = new System.Drawing.Point(49, 76);
+            this.info_gb.Location = new System.Drawing.Point(13, 76);
             this.info_gb.Name = "info_gb";
-            this.info_gb.Size = new System.Drawing.Size(422, 327);
+            this.info_gb.Size = new System.Drawing.Size(422, 378);
             this.info_gb.TabIndex = 28;
             this.info_gb.TabStop = false;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label7.Location = new System.Drawing.Point(14, 326);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(53, 16);
+            this.label7.TabIndex = 25;
+            this.label7.Text = "Địa Chỉ:";
+            // 
+            // address_tb
+            // 
+            this.address_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.address_tb.Location = new System.Drawing.Point(154, 307);
+            this.address_tb.Multiline = true;
+            this.address_tb.Name = "address_tb";
+            this.address_tb.Size = new System.Drawing.Size(250, 55);
+            this.address_tb.TabIndex = 26;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label6.Location = new System.Drawing.Point(14, 258);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(59, 16);
+            this.label6.TabIndex = 23;
+            this.label6.Text = "Công Ty:";
+            // 
+            // company_tb
+            // 
+            this.company_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.company_tb.Location = new System.Drawing.Point(154, 239);
+            this.company_tb.Multiline = true;
+            this.company_tb.Name = "company_tb";
+            this.company_tb.Size = new System.Drawing.Size(250, 55);
+            this.company_tb.TabIndex = 24;
             // 
             // label5
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(14, 158);
+            this.label5.Location = new System.Drawing.Point(14, 131);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(45, 16);
             this.label5.TabIndex = 21;
@@ -140,7 +186,7 @@ namespace RauViet.ui
             // home_tb
             // 
             this.home_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.home_tb.Location = new System.Drawing.Point(154, 155);
+            this.home_tb.Location = new System.Drawing.Point(154, 128);
             this.home_tb.Name = "home_tb";
             this.home_tb.Size = new System.Drawing.Size(180, 23);
             this.home_tb.TabIndex = 22;
@@ -149,7 +195,7 @@ namespace RauViet.ui
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(14, 118);
+            this.label4.Location = new System.Drawing.Point(14, 100);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(77, 16);
             this.label4.TabIndex = 19;
@@ -158,7 +204,7 @@ namespace RauViet.ui
             // priority_tb
             // 
             this.priority_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.priority_tb.Location = new System.Drawing.Point(154, 115);
+            this.priority_tb.Location = new System.Drawing.Point(154, 97);
             this.priority_tb.Name = "priority_tb";
             this.priority_tb.Size = new System.Drawing.Size(84, 23);
             this.priority_tb.TabIndex = 20;
@@ -185,7 +231,7 @@ namespace RauViet.ui
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(14, 78);
+            this.label3.Location = new System.Drawing.Point(14, 69);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(120, 16);
             this.label3.TabIndex = 11;
@@ -194,7 +240,7 @@ namespace RauViet.ui
             // customerCode_tb
             // 
             this.customerCode_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.customerCode_tb.Location = new System.Drawing.Point(154, 75);
+            this.customerCode_tb.Location = new System.Drawing.Point(154, 66);
             this.customerCode_tb.Name = "customerCode_tb";
             this.customerCode_tb.Size = new System.Drawing.Size(250, 23);
             this.customerCode_tb.TabIndex = 18;
@@ -203,7 +249,7 @@ namespace RauViet.ui
             // 
             this.delete_btn.BackColor = System.Drawing.Color.Red;
             this.delete_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.delete_btn.Location = new System.Drawing.Point(301, 437);
+            this.delete_btn.Location = new System.Drawing.Point(301, 460);
             this.delete_btn.Name = "delete_btn";
             this.delete_btn.Size = new System.Drawing.Size(113, 47);
             this.delete_btn.TabIndex = 27;
@@ -215,7 +261,7 @@ namespace RauViet.ui
             this.status_lb.AutoSize = true;
             this.status_lb.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.status_lb.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.status_lb.Location = new System.Drawing.Point(14, 448);
+            this.status_lb.Location = new System.Drawing.Point(14, 471);
             this.status_lb.Name = "status_lb";
             this.status_lb.Size = new System.Drawing.Size(55, 23);
             this.status_lb.TabIndex = 26;
@@ -225,7 +271,7 @@ namespace RauViet.ui
             // 
             this.LuuThayDoiBtn.BackColor = System.Drawing.SystemColors.Highlight;
             this.LuuThayDoiBtn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LuuThayDoiBtn.Location = new System.Drawing.Point(182, 437);
+            this.LuuThayDoiBtn.Location = new System.Drawing.Point(182, 460);
             this.LuuThayDoiBtn.Name = "LuuThayDoiBtn";
             this.LuuThayDoiBtn.Size = new System.Drawing.Size(113, 47);
             this.LuuThayDoiBtn.TabIndex = 25;
@@ -260,52 +306,50 @@ namespace RauViet.ui
             this.dataGV.Location = new System.Drawing.Point(0, 0);
             this.dataGV.Name = "dataGV";
             this.dataGV.ReadOnly = true;
-            this.dataGV.Size = new System.Drawing.Size(718, 681);
+            this.dataGV.Size = new System.Drawing.Size(888, 681);
             this.dataGV.TabIndex = 1;
             // 
-            // label6
+            // label8
             // 
-            this.label6.AutoSize = true;
-            this.label6.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label6.Location = new System.Drawing.Point(14, 212);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(59, 16);
-            this.label6.TabIndex = 23;
-            this.label6.Text = "Công Ty:";
+            this.label8.AutoSize = true;
+            this.label8.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label8.Location = new System.Drawing.Point(14, 193);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(43, 16);
+            this.label8.TabIndex = 29;
+            this.label8.Text = "Email:";
             // 
-            // company_tb
+            // email_tb
             // 
-            this.company_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.company_tb.Location = new System.Drawing.Point(154, 193);
-            this.company_tb.Multiline = true;
-            this.company_tb.Name = "company_tb";
-            this.company_tb.Size = new System.Drawing.Size(250, 55);
-            this.company_tb.TabIndex = 24;
+            this.email_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.email_tb.Location = new System.Drawing.Point(154, 190);
+            this.email_tb.Name = "email_tb";
+            this.email_tb.Size = new System.Drawing.Size(180, 23);
+            this.email_tb.TabIndex = 30;
             // 
-            // label7
+            // label9
             // 
-            this.label7.AutoSize = true;
-            this.label7.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label7.Location = new System.Drawing.Point(14, 280);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(53, 16);
-            this.label7.TabIndex = 25;
-            this.label7.Text = "Địa Chỉ:";
+            this.label9.AutoSize = true;
+            this.label9.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label9.Location = new System.Drawing.Point(14, 162);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(81, 16);
+            this.label9.TabIndex = 27;
+            this.label9.Text = "Mã Số Thuế:";
             // 
-            // address_tb
+            // taxCode_tb
             // 
-            this.address_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.address_tb.Location = new System.Drawing.Point(154, 261);
-            this.address_tb.Multiline = true;
-            this.address_tb.Name = "address_tb";
-            this.address_tb.Size = new System.Drawing.Size(250, 55);
-            this.address_tb.TabIndex = 26;
+            this.taxCode_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.taxCode_tb.Location = new System.Drawing.Point(154, 159);
+            this.taxCode_tb.Name = "taxCode_tb";
+            this.taxCode_tb.Size = new System.Drawing.Size(84, 23);
+            this.taxCode_tb.TabIndex = 28;
             // 
             // Customers
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1264, 681);
+            this.ClientSize = new System.Drawing.Size(1478, 681);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.dataGV);
             this.Name = "Customers";
@@ -343,5 +387,9 @@ namespace RauViet.ui
         private System.Windows.Forms.TextBox address_tb;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TextBox company_tb;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.TextBox email_tb;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.TextBox taxCode_tb;
     }
 }

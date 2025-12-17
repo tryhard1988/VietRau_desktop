@@ -45,7 +45,7 @@ namespace RauViet.ui
             if (e.KeyCode == Keys.F5)
             {
                 int year = monthYearDtp.Value.Year;
-                SQLStore.Instance.removeAnnualLeaveBalance(year);
+                SQLStore_QLNS.Instance.removeAnnualLeaveBalance(year);
                 ShowData();
             }
         }
@@ -60,14 +60,14 @@ namespace RauViet.ui
             try
             {
                 int year = monthYearDtp.Value.Year;
-                var employeeALBTask = SQLStore.Instance.GetAnnualLeaveBalanceAsync(year);
+                var employeeALBTask = SQLStore_QLNS.Instance.GetAnnualLeaveBalanceAsync(year);
 
                 await Task.WhenAll(employeeALBTask);
                 mEmployee_dt = employeeALBTask.Result;
 
                 DefineEmployeeGV();
             }
-            catch (Exception ex)
+            catch
             {
                 status_lb.Text = "Thất bại.";
                 status_lb.ForeColor = Color.Red;
@@ -194,7 +194,7 @@ namespace RauViet.ui
             await Task.Delay(50);
 
             int year = monthYearDtp.Value.Year;
-            var annualLeaveBalance = SQLStore.Instance.GetAnnualLeaveBalanceAsync(year);            
+            var annualLeaveBalance = SQLStore_QLNS.Instance.GetAnnualLeaveBalanceAsync(year);            
             await Task.WhenAll(annualLeaveBalance);
             mEmployee_dt = annualLeaveBalance.Result;
 
@@ -221,7 +221,7 @@ namespace RauViet.ui
 
             try
             {
-                Boolean iSuccess = await SQLManager.Instance.UpsertAnnualLeaveBalanceBatchAsync(albData);
+                Boolean iSuccess = await SQLManager_QLNS.Instance.UpsertAnnualLeaveBalanceBatchAsync(albData);
                 if (iSuccess)
                 {
                     status_lb.Text = "Thành Công.";
@@ -266,7 +266,7 @@ namespace RauViet.ui
 
                 try
                 {
-                    Boolean iSuccess = await SQLManager.Instance.UpsertAnnualLeaveBalanceBatchAsync(albData);
+                    Boolean iSuccess = await SQLManager_QLNS.Instance.UpsertAnnualLeaveBalanceBatchAsync(albData);
                     if (iSuccess)
                     {
                         status_lb.Text = "Thành Công.";

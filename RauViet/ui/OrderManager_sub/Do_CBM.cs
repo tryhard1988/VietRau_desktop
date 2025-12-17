@@ -38,7 +38,7 @@ namespace RauViet.ui
                     return;
                 }
 
-                SQLStore.Instance.removeOrders(mCurrentExportID);
+                SQLStore_Kho.Instance.removeOrders(mCurrentExportID);
                 ShowData();
             }
         }
@@ -54,13 +54,13 @@ namespace RauViet.ui
             {
                 string[] keepColumns = { "ExportCodeID", "ExportCode", "ExchangeRate", "ShippingCost" };
                 var parameters = new Dictionary<string, object> { { "Complete", false } };
-                mExportCode_dt = await SQLStore.Instance.getExportCodesAsync(keepColumns, parameters);
+                mExportCode_dt = await SQLStore_Kho.Instance.getExportCodesAsync(keepColumns, parameters);
 
                 if(mCurrentExportID <= 0 && mExportCode_dt.Rows.Count > 0)
                     mCurrentExportID = Convert.ToInt32(mExportCode_dt.AsEnumerable().Max(r => r.Field<int>("ExportCodeID")));
 
 
-                mOrders_dt = await SQLStore.Instance.getOrdersAsync(mCurrentExportID);
+                mOrders_dt = await SQLStore_Kho.Instance.getOrdersAsync(mCurrentExportID);
 
                 mGroupCustomer = GroupByCustomer(mOrders_dt);
                 mGroupCartonSize = GroupCartonSize(mOrders_dt);
@@ -292,7 +292,7 @@ namespace RauViet.ui
                 return;
             mCurrentExportID = exportCodeId;
 
-            mOrders_dt = await SQLStore.Instance.getOrdersAsync(exportCodeId);
+            mOrders_dt = await SQLStore_Kho.Instance.getOrdersAsync(exportCodeId);
             mGroupCustomer = GroupByCustomer(mOrders_dt);
             mGroupCartonSize = GroupCartonSize(mOrders_dt);
 

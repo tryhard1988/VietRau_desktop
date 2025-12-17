@@ -37,7 +37,7 @@ namespace RauViet.ui
         {
             if (e.KeyCode == Keys.F5)
             {
-                SQLStore.Instance.removeEmployees();
+                SQLStore_QLNS.Instance.removeEmployees();
                 ShowData();
             }
         }
@@ -55,11 +55,11 @@ namespace RauViet.ui
             {
                 // Chạy truy vấn trên thread riêng
                 string[] keepColumns = { "EmployeeCode", "FullName", "HireDate", "PositionID", "DepartmentID", "ContractTypeID", "PositionName", "DepartmentName", "ContractTypeName"};
-                var employeesTask = SQLStore.Instance.GetEmployeesAsync(keepColumns);
-                var departmentTask = SQLStore.Instance.GetActiveDepartmentAsync();
-                var positionTask = SQLStore.Instance.GetActivePositionAsync();
-                var contractTypeTask = SQLStore.Instance.GetContractTypeAsync();
-                var employee_POS_DEP_CON_LogTask = SQLStore.Instance.GetEmployee_POS_DEP_CON_LogAsync();
+                var employeesTask = SQLStore_QLNS.Instance.GetEmployeesAsync(keepColumns);
+                var departmentTask = SQLStore_QLNS.Instance.GetActiveDepartmentAsync();
+                var positionTask = SQLStore_QLNS.Instance.GetActivePositionAsync();
+                var contractTypeTask = SQLStore_QLNS.Instance.GetContractTypeAsync();
+                var employee_POS_DEP_CON_LogTask = SQLStore_QLNS.Instance.GetEmployee_POS_DEP_CON_LogAsync();
                 await Task.WhenAll(employeesTask, departmentTask, positionTask, contractTypeTask, employee_POS_DEP_CON_LogTask);
                 mEmployees_dt = employeesTask.Result;
                 mDepartment_dt = departmentTask.Result;
@@ -132,7 +132,7 @@ namespace RauViet.ui
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
-            catch (Exception ex)
+            catch
             {
                 status_lb.Text = "Thất bại.";
                 status_lb.ForeColor = Color.Red;
@@ -193,7 +193,7 @@ namespace RauViet.ui
                         string newLog = $"{positionName} - {departmentName} - {contractTypeName}";
                         try
                         {
-                            bool isScussess = await SQLManager.Instance.updateEmployeeWorkAsync(maNV, position, department, contractType);
+                            bool isScussess = await SQLManager_QLNS.Instance.updateEmployeeWorkAsync(maNV, position, department, contractType);
                             
                             if (isScussess == true)
                             {
@@ -223,7 +223,7 @@ namespace RauViet.ui
                                     ["PositionCode"] = positionCode,
                                     ["ContractTypeCode"] = contractTypeCode
                                 };
-                                SQLStore.Instance.updateEmploy(maNV, parameters);
+                                SQLStore_QLNS.Instance.updateEmploy(maNV, parameters);
 
 
                             }
@@ -241,7 +241,7 @@ namespace RauViet.ui
                             status_lb.ForeColor = Color.Red;
                         }
 
-                        _ = SQLManager.Instance.InsertEmployees_POS_DEP_CON_LogAsync(maNV, oldLog, newLog);
+                        _ = SQLManager_QLNS.Instance.InsertEmployees_POS_DEP_CON_LogAsync(maNV, oldLog, newLog);
                     }
                     break;
                 }

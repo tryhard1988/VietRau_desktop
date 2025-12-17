@@ -1,4 +1,5 @@
-﻿using RauViet.classes;
+﻿using DocumentFormat.OpenXml.Bibliography;
+using RauViet.classes;
 using System;
 using System.Data;
 using System.Linq;
@@ -48,8 +49,8 @@ namespace RauViet.ui
             {
                 int year = timeReport_dtp.Value.Year;                
 
-                SQLStore.Instance.RemoveExportHistoryByYear(year);
-                SQLStore.Instance.RemoveCustomerOrderDetailHistoryByYear(year);
+                SQLStore_Kho.Instance.RemoveExportHistoryByYear(year);
+                SQLStore_Kho.Instance.RemoveCustomerOrderDetailHistoryByYear(year);
                 ShowData();
             }
         }
@@ -70,7 +71,7 @@ namespace RauViet.ui
             {
                 int year = timeReport_dtp.Value.Year;
                 int month = timeReport_dtp.Value.Month;
-                var customerOrderHistoryByYearTask = SQLStore.Instance.GetOrderDomesticByMonthYearAsync(month, year);
+                var customerOrderHistoryByYearTask = SQLStore_Kho.Instance.GetOrderDomesticByMonthYearAsync(month, year);
 
                 await Task.WhenAll(customerOrderHistoryByYearTask);
                 mDetail_dt = customerOrderHistoryByYearTask.Result;
@@ -194,9 +195,27 @@ namespace RauViet.ui
                 
                 dataGV.CellClick += CustomerGV_CellClick;
 
-                 CustomerGV_CellClick(null, null);
+                if (dataGV.Rows.Count > 0)
+                {
+                    dataGV.ClearSelection();
+                    dataGV.Rows[0].Selected = true;
+                    dataGV.CurrentCell = dataGV.Rows[0].Cells[1];
+                }
+
+                decimal sumNWReal = mSummary_dt.Compute("SUM(NWReal)", "")
+                               == DBNull.Value ? 0
+                               : Convert.ToDecimal(mSummary_dt.Compute("SUM(NWReal)", ""));
+
+                decimal sumTotalAmount = mSummary_dt.Compute("SUM(TotalAmount)", "")
+                                                    == DBNull.Value ? 0
+                                                    : Convert.ToDecimal(mSummary_dt.Compute("SUM(TotalAmount)", ""));
+
+                totalNW_tb.Text = sumNWReal.ToString("N2");
+                totalMoney_tb.Text = sumTotalAmount.ToString("N0");
+
+                CustomerGV_CellClick(null, null);
             }
-            catch (Exception ex)
+            catch
             {
                 status_lb.Text = "Thất bại.";
                 status_lb.ForeColor = Color.Red;
@@ -225,12 +244,12 @@ namespace RauViet.ui
 
         private void Print_btn_Click(object sender, EventArgs e)
         {
-            PrintPendingOrderSummary(2);
+            _ = PrintPendingOrderSummary(2);
         }
 
         private void Preview_print_TD_btn_Click(object sender, EventArgs e)
         {
-            PrintPendingOrderSummary(1);
+            _ = PrintPendingOrderSummary(1);
         }
 
         private async Task PrintPendingOrderSummary(int state)
@@ -242,7 +261,7 @@ namespace RauViet.ui
             loadingOverlay.Show();
             await Task.Delay(100);
 
-            DataTable cus_dt = await SQLStore.Instance.getCustomersAsync();
+            DataTable cus_dt = await SQLStore_Kho.Instance.getCustomersAsync();
             int CustomerID = Convert.ToInt32(dataGV.CurrentRow.Cells["CustomerID"].Value);
 
             DataRow[] rows = cus_dt.Select($"CustomerID = {CustomerID}");
@@ -255,13 +274,21 @@ namespace RauViet.ui
             string Company = rows[0]["Company"].ToString();
             string Address = rows[0]["Address"].ToString();
             string CustomerName = rows[0]["FullName"].ToString();
+            string email = rows[0]["Email"].ToString();
+            string taxCode = rows[0]["TaxCode"].ToString();
+
+            DataTable sourceTable = mDetail_dt; // DataTable gốc
+
+            DataTable resultTable = sourceTable.AsEnumerable()
+                .Where(r => r.Field<int>("CustomerID") == CustomerID)
+                .CopyToDataTable();
 
             DoiChieuCongNo_Printer printer = new DoiChieuCongNo_Printer();
 
             if (state == 1)
-                printer.PrintPreview(mDetail_dt, CustomerID, Company, CustomerName, Address, " mh.vietducco@gmail.com", "0317114221", this);
+                printer.PrintPreview(resultTable, Company, CustomerName, Address, email, taxCode, this);
             else if (state == 2)
-                printer.PrintDirect(mDetail_dt, CustomerID, Company, CustomerName, Address, " mh.vietducco@gmail.com", "0317114221", tongdon_in2mat_cb.Checked);
+                printer.PrintDirect(resultTable, Company, CustomerName, Address, email, taxCode, tongdon_in2mat_cb.Checked);
             await Task.Delay(200);
             loadingOverlay.Hide();
         }

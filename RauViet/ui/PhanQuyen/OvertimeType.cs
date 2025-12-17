@@ -48,7 +48,7 @@ namespace RauViet.ui
         {
             if (e.KeyCode == Keys.F5)
             {
-                SQLStore.Instance.removeOverTimeType();
+                SQLStore_QLNS.Instance.removeOverTimeType();
                 ShowData();
             }
         }
@@ -64,7 +64,7 @@ namespace RauViet.ui
             try
             {
                 // Chạy truy vấn trên thread riêng
-                var overtimeTypeTask = SQLStore.Instance.GetOvertimeTypeAsync();
+                var overtimeTypeTask = SQLStore_QLNS.Instance.GetOvertimeTypeAsync();
 
                 await Task.WhenAll(overtimeTypeTask);
                 mOvertimeType_dt = overtimeTypeTask.Result;
@@ -97,7 +97,7 @@ namespace RauViet.ui
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
-            catch (Exception ex)
+            catch
             {
                 status_lb.Text = "Thất bại.";
                 status_lb.ForeColor = Color.Red;
@@ -159,7 +159,7 @@ namespace RauViet.ui
                     {
                         try
                         {
-                            bool isScussess = await SQLManager.Instance.updateOvertimeTypeAsync(overtimeTypeID, overtimeName, salaryFactor, isActive);
+                            bool isScussess = await SQLManager_QLNS.Instance.updateOvertimeTypeAsync(overtimeTypeID, overtimeName, salaryFactor, isActive);
 
                             if (isScussess == true)
                             {
@@ -176,7 +176,7 @@ namespace RauViet.ui
                                 status_lb.ForeColor = Color.Red;
                             }
                         }
-                        catch (Exception ex)
+                        catch
                         {
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;
@@ -195,7 +195,7 @@ namespace RauViet.ui
             {
                 try
                 {
-                    int newId = await SQLManager.Instance.insertOvertimeTypeAsync(overtimeName, salaryFactor, isActive);
+                    int newId = await SQLManager_QLNS.Instance.insertOvertimeTypeAsync(overtimeName, salaryFactor, isActive);
                     if (newId > 0)
                     {
 
@@ -228,7 +228,7 @@ namespace RauViet.ui
                         status_lb.ForeColor = Color.Red;
                     }
                 }
-                catch (Exception ex)
+                catch
                 {
                     status_lb.Text = "Thất bại.";
                     status_lb.ForeColor = Color.Red;
@@ -275,7 +275,7 @@ namespace RauViet.ui
                     {
                         try
                         {
-                            bool isScussess = await SQLManager.Instance.deleteOvertimeTypeAsync(Convert.ToInt32(overtimeTypeID));
+                            bool isScussess = await SQLManager_QLNS.Instance.deleteOvertimeTypeAsync(Convert.ToInt32(overtimeTypeID));
 
                             if (isScussess == true)
                             {
@@ -291,7 +291,7 @@ namespace RauViet.ui
                                 status_lb.ForeColor = Color.Red;
                             }
                         }
-                        catch (Exception ex)
+                        catch 
                         {
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;

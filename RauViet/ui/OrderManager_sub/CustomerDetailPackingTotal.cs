@@ -13,7 +13,7 @@ namespace RauViet.ui
 {
     public partial class CustomerDetailPackingTotal : Form
     {
-        DataTable mExportCode_dt, mOrdersTotal_dt;
+        DataTable mOrdersTotal_dt;
         private LoadingOverlay loadingOverlay;
         int mCurrentExportID = -1;
         public CustomerDetailPackingTotal()
@@ -43,7 +43,7 @@ namespace RauViet.ui
                     return;
                 }
 
-                SQLStore.Instance.removeCustomerDetailPacking(mCurrentExportID);
+                SQLStore_Kho.Instance.removeCustomerDetailPacking(mCurrentExportID);
                 ShowData();
             }
         }
@@ -62,14 +62,14 @@ namespace RauViet.ui
             {                
                 string[] keepColumns = { "ExportCodeID", "ExportCode" , "ExportDate", "ExportCodeIndex" };
                 var parameters = new Dictionary<string, object>{ { "Complete", false }};
-                var mExportCode_dt = await SQLStore.Instance.getExportCodesAsync(keepColumns, parameters);
+                var mExportCode_dt = await SQLStore_Kho.Instance.getExportCodesAsync(keepColumns, parameters);
 
                 if (mCurrentExportID <= 0 && mExportCode_dt.Rows.Count > 0)
                 {
                     mCurrentExportID = Convert.ToInt32(mExportCode_dt.AsEnumerable()
                                    .Max(r => r.Field<int>("ExportCodeID")));
                 }
-                mOrdersTotal_dt =await SQLStore.Instance.GetCustomerDetailPackingAsync(mCurrentExportID);
+                mOrdersTotal_dt =await SQLStore_Kho.Instance.GetCustomerDetailPackingAsync(mCurrentExportID);
 
                
 
@@ -116,7 +116,7 @@ namespace RauViet.ui
                 dataGV.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
 
             }
-            catch (Exception ex)
+            catch
             {
                 status_lb.Text = "Thất bại.";
                 status_lb.ForeColor = Color.Red;
@@ -135,7 +135,7 @@ namespace RauViet.ui
 
             mCurrentExportID = exportCodeId;
 
-            mOrdersTotal_dt = await SQLStore.Instance.GetCustomerDetailPackingAsync(mCurrentExportID);
+            mOrdersTotal_dt = await SQLStore_Kho.Instance.GetCustomerDetailPackingAsync(mCurrentExportID);
             DataView dv = new DataView(mOrdersTotal_dt);
             dataGV.DataSource = dv;
         }     

@@ -49,7 +49,7 @@ namespace RauViet.ui
                     return;
                 }
 
-                SQLStore.Instance.removeOrdersTotal(mCurrentExportID);
+                SQLStore_Kho.Instance.removeOrdersTotal(mCurrentExportID);
                 ShowData();
             }
         }
@@ -66,7 +66,7 @@ namespace RauViet.ui
                 
                 string[] keepColumns = { "ExportCodeID", "ExportCode", "InputByName_NoSign" };
                 var parameters = new Dictionary<string, object> { { "Complete", false } };
-                mExportCode_dt = await SQLStore.Instance.getExportCodesAsync(keepColumns, parameters);
+                mExportCode_dt = await SQLStore_Kho.Instance.getExportCodesAsync(keepColumns, parameters);
 
                 if (mCurrentExportID <= 0 && mExportCode_dt.Rows.Count > 0)
                 {
@@ -74,8 +74,8 @@ namespace RauViet.ui
                                    .Max(r => r.Field<int>("ExportCodeID")));
                 }
 
-                var LOTCodeTask = SQLStore.Instance.GetLOTCodeAsync(mCurrentExportID);
-                var LOTCodeLogTask = SQLStore.Instance.GetLotCodeLogAsync(mCurrentExportID);
+                var LOTCodeTask = SQLStore_Kho.Instance.GetLOTCodeAsync(mCurrentExportID);
+                var LOTCodeLogTask = SQLStore_Kho.Instance.GetLotCodeLogAsync(mCurrentExportID);
 
                 await Task.WhenAll(LOTCodeTask, LOTCodeLogTask);
                 mLOTCode_dt = LOTCodeTask.Result;
@@ -143,7 +143,7 @@ namespace RauViet.ui
                 logGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
             }
-            catch (Exception ex)
+            catch
             {
                 status_lb.Text = "Thất bại.";
                 status_lb.ForeColor = Color.Red;
@@ -161,8 +161,8 @@ namespace RauViet.ui
                 return;
             mCurrentExportID = exportCodeId;
 
-            var LOTCodeTask = SQLStore.Instance.GetLOTCodeAsync(mCurrentExportID);
-            var LOTCodeLogTask = SQLStore.Instance.GetLotCodeLogAsync(mCurrentExportID);
+            var LOTCodeTask = SQLStore_Kho.Instance.GetLOTCodeAsync(mCurrentExportID);
+            var LOTCodeLogTask = SQLStore_Kho.Instance.GetLotCodeLogAsync(mCurrentExportID);
 
             await Task.WhenAll(LOTCodeTask, LOTCodeLogTask);
 
@@ -207,23 +207,23 @@ namespace RauViet.ui
 
                 try
                 {
-                    bool result = await SQLManager.Instance.UpsertOrdersLotCodesBySKUAsync(list);
+                    bool result = await SQLManager_Kho.Instance.UpsertOrdersLotCodesBySKUAsync(list);
 
                     if (result)
                     {
-                        _ = SQLManager.Instance.InsertLotCodeLogAsync(exportCodeID, sku, $"{oldValue}: {columnName} Update Thành Công", lotCode, lotCodeHeader, lotCodeComplete);
+                        _ = SQLManager_Kho.Instance.InsertLotCodeLogAsync(exportCodeID, sku, $"{oldValue}: {columnName} Update Thành Công", lotCode, lotCodeHeader, lotCodeComplete);
                         status_lb.Text = "Thành công.";
                         status_lb.ForeColor = System.Drawing.Color.Green;
                     }
                     else
                     {
-                        _ = SQLManager.Instance.InsertLotCodeLogAsync(exportCodeID, sku, $"{oldValue}: {columnName} Update Thất Bại", lotCode, lotCodeHeader, lotCodeComplete);
+                        _ = SQLManager_Kho.Instance.InsertLotCodeLogAsync(exportCodeID, sku, $"{oldValue}: {columnName} Update Thất Bại", lotCode, lotCodeHeader, lotCodeComplete);
                         MessageBox.Show("Cập nhật thất bại!");
                     }
                 }
                 catch (Exception ex)
                 {
-                    _ = SQLManager.Instance.InsertLotCodeLogAsync(exportCodeID, sku, $"{oldValue}: {columnName} Update Thất Bại do Exception:  {ex.Message}", lotCode, lotCodeHeader, lotCodeComplete);
+                    _ = SQLManager_Kho.Instance.InsertLotCodeLogAsync(exportCodeID, sku, $"{oldValue}: {columnName} Update Thất Bại do Exception:  {ex.Message}", lotCode, lotCodeHeader, lotCodeComplete);
                     MessageBox.Show("Cập nhật thất bại!");
                 }
             }
@@ -388,7 +388,7 @@ namespace RauViet.ui
 
             if (list.Count > 0)
             {
-                await SQLManager.Instance.UpsertOrdersLotCodesBySKUAsync(list);
+                await SQLManager_Kho.Instance.UpsertOrdersLotCodesBySKUAsync(list);
             }
 
             var uniqueRows = sourceTable.AsEnumerable()

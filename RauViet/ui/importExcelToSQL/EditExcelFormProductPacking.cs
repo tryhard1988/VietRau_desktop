@@ -1,13 +1,9 @@
 ﻿using ClosedXML.Excel;
-using DocumentFormat.OpenXml.Wordprocessing;
 using RauViet.classes;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data;
-using System.Data.OleDb;
 using System.Data.SqlClient;
-using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
@@ -28,7 +24,7 @@ namespace RauViet.ui
 
         private void importToSQL_ProductPacking_mi_Click(object sender, EventArgs e)
         {
-            ImportDataGridViewToSql(dataGV, SQLManager.Instance.ql_NhanSu_conStr(), "ProductPacking");
+            ImportDataGridViewToSql(dataGV, SQLManager_QLNS.Instance.ql_NhanSu_conStr(), "ProductPacking");
         }
 
         private void save_mi_Click(object sender, EventArgs e)
@@ -684,7 +680,7 @@ namespace RauViet.ui
         {
             HashSet<int> existingSKUs = new HashSet<int>();
 
-            using (SqlConnection conn = new SqlConnection(SQLManager.Instance.ql_NhanSu_conStr()))
+            using (SqlConnection conn = new SqlConnection(SQLManager_QLNS.Instance.ql_NhanSu_conStr()))
             {
                 conn.Open();
                 using (SqlCommand cmd = new SqlCommand("SELECT SKU FROM ProductSKU", conn))

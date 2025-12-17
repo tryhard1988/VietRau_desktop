@@ -95,8 +95,8 @@ namespace RauViet.ui
                 qrImage.Save(ms, ImageFormat.Png);
                 XImage img = XImage.FromStream(ms);
 
-                double x = (page.Width - img.PixelWidth) / 2;
-                double y = (page.Height - img.PixelHeight) / 2;
+                double x = (page.Width.Point - img.PixelWidth) / 2.0;
+                double y = (page.Height.Point - img.PixelHeight) / 2.0;
 
                 gfx.DrawImage(img, x, y);
             }

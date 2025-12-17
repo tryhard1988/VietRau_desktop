@@ -68,7 +68,7 @@ namespace RauViet.ui
             {
                 int year = monthYearDtp.Value.Year;
 
-                SQLStore.Instance.removeDeduction(year);
+                SQLStore_QLNS.Instance.removeDeduction(year);
                 ShowData();
             }
         }
@@ -84,10 +84,10 @@ namespace RauViet.ui
                 int month = monthYearDtp.Value.Month;
                 int year = monthYearDtp.Value.Year;
                 string[] keepColumns = { "EmployeeCode", "FullName", "PositionName", "ContractTypeName", };
-                var employeesTask = SQLStore.Instance.GetEmployeesAsync(keepColumns);
-                var employeeDeductionAsync = SQLStore.Instance.GetDeductionAsync(month, year, DeductionTypeCode);
-                var deductionNameAsync = SQLStore.Instance.GetDeductionNameAsync(DeductionTypeCode);
-                var EmployeeDeductionLogTask = SQLStore.Instance.GetEmployeeDeductionLogAsync(month, year, DeductionTypeCode);
+                var employeesTask = SQLStore_QLNS.Instance.GetEmployeesAsync(keepColumns);
+                var employeeDeductionAsync = SQLStore_QLNS.Instance.GetDeductionAsync(month, year, DeductionTypeCode);
+                var deductionNameAsync = SQLStore_QLNS.Instance.GetDeductionNameAsync(DeductionTypeCode);
+                var EmployeeDeductionLogTask = SQLStore_QLNS.Instance.GetEmployeeDeductionLogAsync(month, year, DeductionTypeCode);
                 await Task.WhenAll(employeesTask, employeeDeductionAsync, deductionNameAsync, EmployeeDeductionLogTask);
                 DataTable employee_dt = employeesTask.Result;
                 mEmployeeDeduction_dt = employeeDeductionAsync.Result;
@@ -147,7 +147,7 @@ namespace RauViet.ui
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 employeeDeductionGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
-                bool isLock = await SQLStore.Instance.IsSalaryLockAsync(month, year);
+                bool isLock = await SQLStore_QLNS.Instance.IsSalaryLockAsync(month, year);
                 LuuThayDoiBtn.Visible = !isLock;
                 newCustomerBtn.Visible = !isLock;
                 delete_btn.Visible = !isLock;
@@ -168,7 +168,7 @@ namespace RauViet.ui
 
                 log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
-            catch (Exception ex)
+            catch
             {
                 status_lb.Text = "Thất bại.";
                 status_lb.ForeColor = Color.Red;
@@ -191,8 +191,8 @@ namespace RauViet.ui
             int month = monthYearDtp.Value.Month;
             int year = monthYearDtp.Value.Year;
 
-            var employeeDeductionAsync = SQLStore.Instance.GetDeductionAsync(month, year, DeductionTypeCode);
-            var EmployeeDeductionLogTask = SQLStore.Instance.GetEmployeeDeductionLogAsync(month, year, DeductionTypeCode);
+            var employeeDeductionAsync = SQLStore_QLNS.Instance.GetDeductionAsync(month, year, DeductionTypeCode);
+            var EmployeeDeductionLogTask = SQLStore_QLNS.Instance.GetEmployeeDeductionLogAsync(month, year, DeductionTypeCode);
             await Task.WhenAll(employeeDeductionAsync, EmployeeDeductionLogTask);
             mEmployeeDeduction_dt = employeeDeductionAsync.Result;
             mDeductionLogDV = new DataView(EmployeeDeductionLogTask.Result);
@@ -207,7 +207,7 @@ namespace RauViet.ui
                 UpdateEmployeeDeductionUI(selectedIndex);
             }
 
-            bool isLock = await SQLStore.Instance.IsSalaryLockAsync(month, year);
+            bool isLock = await SQLStore_QLNS.Instance.IsSalaryLockAsync(month, year);
             LuuThayDoiBtn.Visible = !isLock;
             newCustomerBtn.Visible = !isLock;
             delete_btn.Visible = !isLock;
@@ -306,14 +306,14 @@ namespace RauViet.ui
                     {
                         try
                         {
-                            bool isScussess = await SQLManager.Instance.updateEmployeeDeductionAsync(employeeDeductionID, employeeCode, deductionDate, amount, note);
+                            bool isScussess = await SQLManager_QLNS.Instance.updateEmployeeDeductionAsync(employeeDeductionID, employeeCode, deductionDate, amount, note);
 
                             if (isScussess == true)
                             {
                                 status_lb.Text = "Thành công.";
                                 status_lb.ForeColor = Color.Green;
 
-                                _ = SQLManager.Instance.InsertEmployeeDeductionLogAsync(employeeCode, DeductionTypeCode, $"Edit {row.Cells["DeductionDate"].Value} - {row.Cells["Amount"].Value} - {row.Cells["Note"].Value}: Success", deductionDate.Date, amount, note);
+                                _ = SQLManager_QLNS.Instance.InsertEmployeeDeductionLogAsync(employeeCode, DeductionTypeCode, $"Edit {row.Cells["DeductionDate"].Value} - {row.Cells["Amount"].Value} - {row.Cells["Note"].Value}: Success", deductionDate.Date, amount, note);
 
                                 row.Cells["EmployeeCode"].Value = employeeCode;
                                 row.Cells["DeductionDate"].Value = deductionDate.Date;
@@ -324,19 +324,19 @@ namespace RauViet.ui
                                 if (drv != null)
                                 {
                                     DataRow dr = drv.Row;
-                                    SQLStore.Instance.addOrUpdateDeduction(deductionDate.Year, dr);
+                                    SQLStore_QLNS.Instance.addOrUpdateDeduction(deductionDate.Year, dr);
                                 }
                             }
                             else
                             {
-                                _ = SQLManager.Instance.InsertEmployeeDeductionLogAsync(employeeCode, DeductionTypeCode, $"Edit {row.Cells["DeductionDate"].Value} - {row.Cells["Amount"].Value} - {row.Cells["Note"].Value}: Fail", deductionDate.Date, amount, note);
+                                _ = SQLManager_QLNS.Instance.InsertEmployeeDeductionLogAsync(employeeCode, DeductionTypeCode, $"Edit {row.Cells["DeductionDate"].Value} - {row.Cells["Amount"].Value} - {row.Cells["Note"].Value}: Fail", deductionDate.Date, amount, note);
                                 status_lb.Text = "Thất bại.";
                                 status_lb.ForeColor = Color.Red;
                             }
                         }
                         catch (Exception ex)
                         {
-                            _ = SQLManager.Instance.InsertEmployeeDeductionLogAsync(employeeCode, DeductionTypeCode, $"Edit {row.Cells["DeductionDate"].Value} - {row.Cells["Amount"].Value} - {row.Cells["Note"].Value}: Fail Exception {ex.Message}", deductionDate.Date, amount, note);
+                            _ = SQLManager_QLNS.Instance.InsertEmployeeDeductionLogAsync(employeeCode, DeductionTypeCode, $"Edit {row.Cells["DeductionDate"].Value} - {row.Cells["Amount"].Value} - {row.Cells["Note"].Value}: Fail Exception {ex.Message}", deductionDate.Date, amount, note);
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;
                         }
@@ -354,7 +354,7 @@ namespace RauViet.ui
             {
                 try
                 {
-                    int employeeDeductionID = await SQLManager.Instance.insertEmployeeDeductionAsync(employeeCode, DeductionTypeCode, deductionDate, amount, note);
+                    int employeeDeductionID = await SQLManager_QLNS.Instance.insertEmployeeDeductionAsync(employeeCode, DeductionTypeCode, deductionDate, amount, note);
                     if (employeeDeductionID > 0)
                     {
                         DataRow drToAdd = mEmployeeDeduction_dt.NewRow();
@@ -373,20 +373,20 @@ namespace RauViet.ui
                         status_lb.Text = "Thành công";
                         status_lb.ForeColor = Color.Green;
 
-                        _ = SQLManager.Instance.InsertEmployeeDeductionLogAsync(employeeCode, DeductionTypeCode, $"Create: Success", deductionDate.Date, amount, note);
-                        SQLStore.Instance.addOrUpdateDeduction(deductionDate.Year, drToAdd);
+                        _ = SQLManager_QLNS.Instance.InsertEmployeeDeductionLogAsync(employeeCode, DeductionTypeCode, $"Create: Success", deductionDate.Date, amount, note);
+                        SQLStore_QLNS.Instance.addOrUpdateDeduction(deductionDate.Year, drToAdd);
                         newCustomerBtn_Click(null, null);
                     }
                     else
                     {
-                        _ = SQLManager.Instance.InsertEmployeeDeductionLogAsync(employeeCode, DeductionTypeCode, $"Create: Fail", deductionDate.Date, amount, note);
+                        _ = SQLManager_QLNS.Instance.InsertEmployeeDeductionLogAsync(employeeCode, DeductionTypeCode, $"Create: Fail", deductionDate.Date, amount, note);
                         status_lb.Text = "Thất bại";
                         status_lb.ForeColor = Color.Red;
                     }
                 }
                 catch (Exception ex)
                 {
-                    _ = SQLManager.Instance.InsertEmployeeDeductionLogAsync(employeeCode, DeductionTypeCode, $"Create: Fail Exception {ex.Message}", deductionDate.Date, amount, note);
+                    _ = SQLManager_QLNS.Instance.InsertEmployeeDeductionLogAsync(employeeCode, DeductionTypeCode, $"Create: Fail Exception {ex.Message}", deductionDate.Date, amount, note);
                     status_lb.Text = "Thất bại.";
                     status_lb.ForeColor = Color.Red;
                 }
@@ -412,7 +412,7 @@ namespace RauViet.ui
                 return;
             }
 
-            bool isLock = await SQLStore.Instance.IsSalaryLockAsync(month, year);
+            bool isLock = await SQLStore_QLNS.Instance.IsSalaryLockAsync(month, year);
             if (isLock)
             {
                 MessageBox.Show("Tháng " + month + "/" + year + " đã bị khóa.", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -443,7 +443,7 @@ namespace RauViet.ui
                 if (id.CompareTo(employeeDeductionID) == 0)
                 {
                     DateTime deductionDate = Convert.ToDateTime(row.Cells["DeductionDate"].Value);
-                    bool isLock = await SQLStore.Instance.IsSalaryLockAsync(deductionDate.Month, deductionDate.Year);
+                    bool isLock = await SQLStore_QLNS.Instance.IsSalaryLockAsync(deductionDate.Month, deductionDate.Year);
                     if (isLock)
                     {
                         MessageBox.Show("Tháng " + deductionDate.Month + "/" + deductionDate.Year + " đã bị khóa.", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -455,28 +455,28 @@ namespace RauViet.ui
                     {
                         try
                         {
-                            bool isScussess = await SQLManager.Instance.deleteEmployeeDeductionAsync(Convert.ToInt32(employeeDeductionID));
+                            bool isScussess = await SQLManager_QLNS.Instance.deleteEmployeeDeductionAsync(Convert.ToInt32(employeeDeductionID));
 
                             if (isScussess == true)
                             {
                                 status_lb.Text = "Thành công.";
                                 status_lb.ForeColor = Color.Green;
 
-                                _ = SQLManager.Instance.InsertEmployeeDeductionLogAsync(employeeCode, DeductionTypeCode, "Delete: Success", deductionDate.Date, amount, "Delete");
+                                _ = SQLManager_QLNS.Instance.InsertEmployeeDeductionLogAsync(employeeCode, DeductionTypeCode, "Delete: Success", deductionDate.Date, amount, "Delete");
 
                                 int delRowInd = row.Index;
                                 employeeDeductionGV.Rows.Remove(row);
                             }
                             else
                             {
-                                _ = SQLManager.Instance.InsertEmployeeDeductionLogAsync(employeeCode, DeductionTypeCode, "Delete: Fail", deductionDate.Date, amount, "Delete");
+                                _ = SQLManager_QLNS.Instance.InsertEmployeeDeductionLogAsync(employeeCode, DeductionTypeCode, "Delete: Fail", deductionDate.Date, amount, "Delete");
                                 status_lb.Text = "Thất bại.";
                                 status_lb.ForeColor = Color.Red;
                             }
                         }
                         catch (Exception ex)
                         {
-                            _ = SQLManager.Instance.InsertEmployeeDeductionLogAsync(employeeCode, DeductionTypeCode, "Delete: Fail Exception: " + ex.Message, deductionDate.Date, amount, "Delete");
+                            _ = SQLManager_QLNS.Instance.InsertEmployeeDeductionLogAsync(employeeCode, DeductionTypeCode, "Delete: Fail Exception: " + ex.Message, deductionDate.Date, amount, "Delete");
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;
                         }

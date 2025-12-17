@@ -49,7 +49,7 @@ namespace RauViet.ui
         {
             if (e.KeyCode == Keys.F5)
             {
-                SQLStore.Instance.removeAllowanceType();
+                SQLStore_QLNS.Instance.removeAllowanceType();
                 ShowData();
             }
         }
@@ -63,8 +63,8 @@ namespace RauViet.ui
             try
             {
                 // Chạy truy vấn trên thread riêng
-                var allowanceTypeTask = SQLStore.Instance.GetAllowanceTypeAsync();
-                var applyScopeAsync = SQLStore.Instance.GetApplyScopeAsync();
+                var allowanceTypeTask = SQLStore_QLNS.Instance.GetAllowanceTypeAsync();
+                var applyScopeAsync = SQLStore_QLNS.Instance.GetApplyScopeAsync();
 
                 await Task.WhenAll(allowanceTypeTask, applyScopeAsync);
                 DataTable allowanceType_dt = allowanceTypeTask.Result;
@@ -109,7 +109,7 @@ namespace RauViet.ui
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
-            catch (Exception ex)
+            catch
             {
                 status_lb.Text = "Thất bại.";
                 status_lb.ForeColor = Color.Red;
@@ -165,7 +165,7 @@ namespace RauViet.ui
                     {
                         try
                         {
-                            bool isScussess = await SQLManager.Instance.updateAllowanceTypeAsync(allowanceTypeID, allowanceName, allowanceCode, applyScopeID, isActive, isInsuranceIncluded);
+                            bool isScussess = await SQLManager_QLNS.Instance.updateAllowanceTypeAsync(allowanceTypeID, allowanceName, allowanceCode, applyScopeID, isActive, isInsuranceIncluded);
                             if (isScussess == true)
                             {
                                 status_lb.Text = "Thành công.";
@@ -184,7 +184,7 @@ namespace RauViet.ui
                                 status_lb.ForeColor = Color.Red;
                             }
                         }
-                        catch (Exception ex)
+                        catch
                         {
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;
@@ -207,7 +207,7 @@ namespace RauViet.ui
             {
                 try
                 {
-                    int allowanceTypeID = await SQLManager.Instance.insertAllowanceTypeAsync(allowanceName, allowanceCode, applyScopeID, isActive, isInsuranceIncluded);
+                    int allowanceTypeID = await SQLManager_QLNS.Instance.insertAllowanceTypeAsync(allowanceName, allowanceCode, applyScopeID, isActive, isInsuranceIncluded);
                     if (allowanceTypeID > 0)
                     {
                         DataTable dataTable = (DataTable)dataGV.DataSource;
@@ -243,7 +243,7 @@ namespace RauViet.ui
                         status_lb.ForeColor = Color.Red;
                     }
                 }
-                catch (Exception ex)
+                catch
                 {
                     status_lb.Text = "Thất bại.";
                     status_lb.ForeColor = Color.Red;
@@ -292,7 +292,7 @@ namespace RauViet.ui
                     {
                         try
                         {
-                            bool isScussess = await SQLManager.Instance.deleteAllowanceTypeAsync(Convert.ToInt32(allowanceTypeID));
+                            bool isScussess = await SQLManager_QLNS.Instance.deleteAllowanceTypeAsync(Convert.ToInt32(allowanceTypeID));
 
                             if (isScussess == true)
                             {
@@ -308,7 +308,7 @@ namespace RauViet.ui
                                 status_lb.ForeColor = Color.Red;
                             }
                         }
-                        catch (Exception ex)
+                        catch
                         {
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;

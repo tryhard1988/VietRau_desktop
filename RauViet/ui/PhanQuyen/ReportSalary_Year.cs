@@ -47,7 +47,7 @@ namespace RauViet.ui
             try
             {
                 int year = Convert.ToInt32(year_tb.Text);
-                var salarySummaryByYearTask = SQLStore.Instance.GetSalarySummaryByYearAsync(year);
+                var salarySummaryByYearTask = SQLStore_QLNS.Instance.GetSalarySummaryByYearAsync(year);
 
                 await Task.WhenAll(salarySummaryByYearTask);
                 DataTable salarySummaryByYear_dt = salarySummaryByYearTask.Result;
@@ -104,7 +104,7 @@ namespace RauViet.ui
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
-            catch (Exception ex)
+            catch
             {
                 status_lb.Text = "Thất bại.";
                 status_lb.ForeColor = Color.Red;

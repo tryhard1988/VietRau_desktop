@@ -47,8 +47,8 @@ namespace RauViet.ui
             {
                 int year = timeReport_dtp.Value.Year;                
 
-                SQLStore.Instance.RemoveExportHistoryByYear(year);
-                SQLStore.Instance.RemoveCustomerOrderDetailHistoryByYear(year);
+                SQLStore_Kho.Instance.RemoveExportHistoryByYear(year);
+                SQLStore_Kho.Instance.RemoveCustomerOrderDetailHistoryByYear(year);
                 ShowData();
             }
         }
@@ -66,7 +66,7 @@ namespace RauViet.ui
             try
             {
                 int year = timeReport_dtp.Value.Year;
-                var customerOrderHistoryByYearTask = SQLStore.Instance.GetCustomerOrderDetailHistoryByYear(year);
+                var customerOrderHistoryByYearTask = SQLStore_Kho.Instance.GetCustomerOrderDetailHistoryByYear(year);
 
                 await Task.WhenAll(customerOrderHistoryByYearTask);
                 mProductOrderHistory_dt = new DataTable();
@@ -206,7 +206,7 @@ namespace RauViet.ui
                 product_GV.Columns["TotalQuanitity"].DefaultCellStyle.Format = "N2";
                 product_GV.Columns["TotalAmountCHF"].DefaultCellStyle.Format = "N2";
             }
-            catch (Exception ex)
+            catch
             {
                 status_lb.Text = "Thất bại.";
                 status_lb.ForeColor = Color.Red;

@@ -48,8 +48,8 @@ namespace RauViet.ui
         {
             if (e.KeyCode == Keys.F5)
             {
-                SQLStore.Instance.removeProductpacking();
-                SQLStore.Instance.removeProductSKU();
+                SQLStore_Kho.Instance.removeProductpacking();
+                SQLStore_Kho.Instance.removeProductSKU();
                 ShowData();
             }
             else if (!isNewState && !edit_btn.Visible)
@@ -78,8 +78,8 @@ namespace RauViet.ui
             try
             {
                 var parameters = new Dictionary<string, object> { { "IsActive", true } };
-                mSKU_dt = await SQLStore.Instance.getProductSKUAsync(parameters);
-                 packing_dt = await SQLStore.Instance.getProductpackingAsync();
+                mSKU_dt = await SQLStore_Kho.Instance.getProductSKUAsync(parameters);
+                 packing_dt = await SQLStore_Kho.Instance.getProductpackingAsync();
 
                 foreach (DataColumn col in packing_dt.Columns)
                     col.ReadOnly = false;
@@ -161,7 +161,7 @@ namespace RauViet.ui
 
                 ReadOnly_btn_Click(null, null);
             }
-            catch (Exception ex)
+            catch
             {
                 status_lb.Text = "Thất bại.";
                 status_lb.ForeColor = Color.Red;
@@ -233,7 +233,7 @@ namespace RauViet.ui
                     {
                         try
                         {      
-                            bool isScussess = await SQLManager.Instance.updateProductpackingAsync(ID, SKU, BarCode, PLU, Amount, packing, barCodeEAN13, artNr, GGN, isActive);
+                            bool isScussess = await SQLManager_Kho.Instance.updateProductpackingAsync(ID, SKU, BarCode, PLU, Amount, packing, barCodeEAN13, artNr, GGN, isActive);
 
                             if (isScussess == true)
                             {
@@ -282,7 +282,7 @@ namespace RauViet.ui
                                 status_lb.ForeColor = Color.Red;
                             }
                         }
-                        catch (Exception ex)
+                        catch
                         {
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;
@@ -301,7 +301,7 @@ namespace RauViet.ui
             {
                 try
                 {
-                    int newId = await SQLManager.Instance.insertProductpackingAsync(SKU, BarCode, PLU, Amount, packing, barCodeEAN13, artNr, GGN);
+                    int newId = await SQLManager_Kho.Instance.insertProductpackingAsync(SKU, BarCode, PLU, Amount, packing, barCodeEAN13, artNr, GGN);
                     if (newId > 0)
                     {
                         DataRowView productSKUData = (DataRowView)sku_cbb.SelectedItem;
@@ -367,7 +367,7 @@ namespace RauViet.ui
                         status_lb.ForeColor = Color.Red;
                     }
                 }
-                catch (Exception ex)
+                catch
                 {
                     status_lb.Text = "Thất bại.";
                     status_lb.ForeColor = Color.Red;
@@ -424,7 +424,7 @@ namespace RauViet.ui
                     {
                         try
                         {
-                            bool isScussess = await SQLManager.Instance.deleteProductpackingAsync(Convert.ToInt32(id));
+                            bool isScussess = await SQLManager_Kho.Instance.deleteProductpackingAsync(Convert.ToInt32(id));
 
                             if (isScussess == true)
                             {
@@ -440,7 +440,7 @@ namespace RauViet.ui
                                 status_lb.ForeColor = Color.Red;
                             }
                         }
-                        catch (Exception ex)
+                        catch
                         {
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;

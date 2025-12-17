@@ -61,7 +61,7 @@ namespace RauViet.ui
             {
                 int month = monthYearDtp.Value.Month;
                 int year = monthYearDtp.Value.Year;
-                SQLStore.Instance.removeAttendamce(month, year);
+                SQLStore_QLNS.Instance.removeAttendamce(month, year);
                 LoadAttandance_btn_Click(null, null);
             }
         }
@@ -83,11 +83,11 @@ namespace RauViet.ui
                 int year = monthYearDtp.Value.Year;
                 // Chạy truy vấn trên thread riêng
                 string[] keepColumns = { "EmployeeCode", "FullName", "PositionName", "ContractTypeName", "PositionCode", "ContractTypeCode" };
-                var employeesTask = SQLStore.Instance.GetEmployeesAsync(keepColumns);
-                var attendamceTask = SQLStore.Instance.GetAttendamceAsync(null, month, year);
-                var holidayTask = SQLStore.Instance.GetHolidaysAsync(month, year);
-                var leaveAttendanceTask = SQLStore.Instance.GetLeaveAttendancesAsyn(year);
-                var attendanceLogTask = SQLStore.Instance.GetAttendanceLogAsync(month, year);
+                var employeesTask = SQLStore_QLNS.Instance.GetEmployeesAsync(keepColumns);
+                var attendamceTask = SQLStore_QLNS.Instance.GetAttendamceAsync(null, month, year);
+                var holidayTask = SQLStore_QLNS.Instance.GetHolidaysAsync(month, year);
+                var leaveAttendanceTask = SQLStore_QLNS.Instance.GetLeaveAttendancesAsyn(year);
+                var attendanceLogTask = SQLStore_QLNS.Instance.GetAttendanceLogAsync(month, year);
                 await Task.WhenAll(employeesTask, attendamceTask, holidayTask, leaveAttendanceTask, attendanceLogTask);
                 mEmployee_dt = employeesTask.Result;
                 mAttendamce_dt = attendamceTask.Result;
@@ -170,7 +170,7 @@ namespace RauViet.ui
                 attendanceGV.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
                 attendanceGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
-                bool isLock = await SQLStore.Instance.IsSalaryLockAsync(month, year);
+                bool isLock = await SQLStore_QLNS.Instance.IsSalaryLockAsync(month, year);
                 attendanceGV.ReadOnly = isLock;
                 attendanceGV.Columns["WorkingHours"].ReadOnly = false;
                 attendanceGV.Columns["Note"].ReadOnly = false;
@@ -211,7 +211,7 @@ namespace RauViet.ui
         private async void Attendamce(int month, int year)
         {
 
-            bool isLock = await SQLStore.Instance.IsSalaryLockAsync(month, year);
+            bool isLock = await SQLStore_QLNS.Instance.IsSalaryLockAsync(month, year);
             attendanceGV.ReadOnly = isLock;
 
             cal_WorkingHour_WorkingDay();            
@@ -381,7 +381,7 @@ namespace RauViet.ui
                             {
                                 if (month == -1)
                                 {
-                                    var holidayTask = SQLManager.Instance.GetHolidayAsync(workDate.Month, workDate.Year);
+                                    var holidayTask = SQLManager_QLNS.Instance.GetHolidayAsync(workDate.Month, workDate.Year);
                                     await Task.WhenAll(holidayTask);
                                     mHoliday_dt = holidayTask.Result;
                                 }
@@ -442,7 +442,7 @@ namespace RauViet.ui
                         }
                         else
                         {
-                            bool isLock = await SQLStore.Instance.IsSalaryLockAsync(month, year);
+                            bool isLock = await SQLStore_QLNS.Instance.IsSalaryLockAsync(month, year);
                             if (isLock)
                             {
                                 await Task.Delay(200);
@@ -476,7 +476,7 @@ namespace RauViet.ui
                             {
                                 try
                                 {
-                                    bool isSuccess = await SQLManager.Instance.DeleteAttendanceByMonthYearAsync(month, year);
+                                    bool isSuccess = await SQLManager_QLNS.Instance.DeleteAttendanceByMonthYearAsync(month, year);
                                     if(!isSuccess)
                                     {
                                         await Task.Delay(200);
@@ -485,7 +485,7 @@ namespace RauViet.ui
                                         return;
                                     }
                                     mAttendamce_dt.Clear();
-                                    isSuccess = await SQLManager.Instance.UpsertAttendanceBatchAsync(attendanceData);
+                                    isSuccess = await SQLManager_QLNS.Instance.UpsertAttendanceBatchAsync(attendanceData);
                                     if (isSuccess)
                                     {
                                         var updatedLogs = logs
@@ -500,14 +500,14 @@ namespace RauViet.ui
                                                     )
                                                 ).ToList();
 
-                                        _ = SQLManager.Instance.InsertAttendanceLogListAsync( updatedLogs );
+                                        _ = SQLManager_QLNS.Instance.InsertAttendanceLogListAsync( updatedLogs );
 
                                         monthYearDtp.Value = new DateTime(year, month, 1);
 
                                         await AddMissingEmployees(month, year);
 
-                                        SQLStore.Instance.removeAttendamce(month, year);
-                                        var attendamceTask = SQLStore.Instance.GetAttendamceAsync(null, month, year);
+                                        SQLStore_QLNS.Instance.removeAttendamce(month, year);
+                                        var attendamceTask = SQLStore_QLNS.Instance.GetAttendamceAsync(null, month, year);
                                         await Task.WhenAll(attendamceTask);
                                         mAttendamce_dt = attendamceTask.Result;
 
@@ -527,7 +527,7 @@ namespace RauViet.ui
                                                     )
                                                 ).ToList();
 
-                                        _ = SQLManager.Instance.InsertAttendanceLogListAsync(updatedLogs);
+                                        _ = SQLManager_QLNS.Instance.InsertAttendanceLogListAsync(updatedLogs);
 
                                         MessageBox.Show("Thất Bại ?", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                     }
@@ -550,7 +550,7 @@ namespace RauViet.ui
                                                     )
                                                 ).ToList();
 
-                                    _ = SQLManager.Instance.InsertAttendanceLogListAsync(updatedLogs);
+                                    _ = SQLManager_QLNS.Instance.InsertAttendanceLogListAsync(updatedLogs);
 
                                     MessageBox.Show("Thất Bại ?", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                 }
@@ -580,10 +580,10 @@ namespace RauViet.ui
             int month = monthYearDtp.Value.Month;
             int year = monthYearDtp.Value.Year;
 
-            var attendamceTask = SQLStore.Instance.GetAttendamceAsync(null, month, year);
-            var holidayTask = SQLStore.Instance.GetHolidaysAsync(month, year);
-            var leaveAttendanceTask = SQLStore.Instance.GetLeaveAttendancesAsyn(year);
-            var attendanceLogTask = SQLStore.Instance.GetAttendanceLogAsync(month, year);
+            var attendamceTask = SQLStore_QLNS.Instance.GetAttendamceAsync(null, month, year);
+            var holidayTask = SQLStore_QLNS.Instance.GetHolidaysAsync(month, year);
+            var leaveAttendanceTask = SQLStore_QLNS.Instance.GetLeaveAttendancesAsyn(year);
+            var attendanceLogTask = SQLStore_QLNS.Instance.GetAttendanceLogAsync(month, year);
             await Task.WhenAll(attendamceTask, holidayTask, leaveAttendanceTask, attendanceLogTask);
 
             mCurrentYear = year;
@@ -680,7 +680,7 @@ namespace RauViet.ui
         private async void AttendanceGV_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
         {
             oldValue = attendanceGV.CurrentCell?.Value;
-            bool isLock = await SQLStore.Instance.IsSalaryLockAsync(mCurrentMonth, mCurrentYear);
+            bool isLock = await SQLStore_QLNS.Instance.IsSalaryLockAsync(mCurrentMonth, mCurrentYear);
             if (isLock)
                 e.Cancel = true;
 
@@ -710,12 +710,12 @@ namespace RauViet.ui
 
                 try
                 {
-                    Boolean iSuccess = await SQLManager.Instance.UpsertAttendanceBatchAsync(attendanceData);
+                    Boolean iSuccess = await SQLManager_QLNS.Instance.UpsertAttendanceBatchAsync(attendanceData);
 
                     List<(string EmployeeCode, string Description, DateTime WorkDate, decimal WorkingHours, string Note, string ActionBy)> logs = new List<(string, string, DateTime, decimal, string, string)>();
                     logs.Add((employeeCode, $"Edit {columnName}: {oldValue} {(iSuccess ? "Success" : "Fail")}", workDate, workingHours, note, UserManager.Instance.fullName));
 
-                    _ = SQLManager.Instance.InsertAttendanceLogListAsync(logs);
+                    _ = SQLManager_QLNS.Instance.InsertAttendanceLogListAsync(logs);
                     if (!iSuccess)
                     {                        
                         MessageBox.Show("Cập nhật thất bại!");
@@ -731,7 +731,7 @@ namespace RauViet.ui
                 {
                     List<(string EmployeeCode, string Description, DateTime WorkDate, decimal WorkingHours, string Note, string ActionBy)> logs = new List<(string, string, DateTime, decimal, string, string)>();
                     logs.Add((employeeCode, $"Edit {columnName}: {oldValue} Fail Exception {ex.Message}", workDate, workingHours, note, UserManager.Instance.fullName));
-                    _ = SQLManager.Instance.InsertAttendanceLogListAsync(logs);
+                    _ = SQLManager_QLNS.Instance.InsertAttendanceLogListAsync(logs);
 
                     MessageBox.Show("Thất Bại ?", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
@@ -803,7 +803,7 @@ namespace RauViet.ui
             }
 
             
-            Boolean iSuccess = await SQLManager.Instance.UpsertAttendanceBatchAsync(attendanceData);
+            Boolean iSuccess = await SQLManager_QLNS.Instance.UpsertAttendanceBatchAsync(attendanceData);
 
             var updatedLogs = logs.Select(item =>
                                 (
@@ -814,7 +814,7 @@ namespace RauViet.ui
                                     item.Note,
                                     item.ActionBy
                                 )).ToList();
-            _ = SQLManager.Instance.InsertAttendanceLogListAsync(updatedLogs);
+            _ = SQLManager_QLNS.Instance.InsertAttendanceLogListAsync(updatedLogs);
         }
     }
 }

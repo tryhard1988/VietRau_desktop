@@ -49,7 +49,7 @@ namespace RauViet.ui
         {
             if (e.KeyCode == Keys.F5)
             {
-                SQLStore.Instance.removeHoliday();
+                SQLStore_QLNS.Instance.removeHoliday();
                 ShowData();
             }
         }
@@ -64,7 +64,7 @@ namespace RauViet.ui
             try
             {
                 // Chạy truy vấn trên thread riêng
-                var holidayAsync = SQLStore.Instance.GetHolidaysAsync();
+                var holidayAsync = SQLStore_QLNS.Instance.GetHolidaysAsync();
 
                 await Task.WhenAll(holidayAsync);
                 DataTable holiday_dt = holidayAsync.Result;
@@ -88,7 +88,7 @@ namespace RauViet.ui
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
-            catch (Exception ex)
+            catch
             {
                 status_lb.Text = "Thất bại.";
                 status_lb.ForeColor = Color.Red;
@@ -133,7 +133,7 @@ namespace RauViet.ui
         {
             for (DateTime date = holidayDateStart.Date; date <= holidayDateEnd.Date; date = date.AddDays(1))
             {
-                bool isLock = await SQLStore.Instance.IsSalaryLockAsync(date.Month, date.Year);
+                bool isLock = await SQLStore_QLNS.Instance.IsSalaryLockAsync(date.Month, date.Year);
                 if (isLock)
                 {
                     MessageBox.Show("Tháng/Năm Đã Bị Khóa", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -159,7 +159,7 @@ namespace RauViet.ui
                 try
                 {
 
-                    bool isSuccess = await SQLManager.Instance.insertHolidayAsync(date, holidayName);
+                    bool isSuccess = await SQLManager_QLNS.Instance.insertHolidayAsync(date, holidayName);
                     if (isSuccess)
                     {
 
@@ -186,8 +186,8 @@ namespace RauViet.ui
 
             dataGV.ResumeLayout();
             dataTable.AcceptChanges();
-            SQLStore.Instance.removeLeaveAttendances(holidayDateStart.Year);
-            SQLStore.Instance.removeLeaveAttendances(holidayDateEnd.Year);
+            SQLStore_QLNS.Instance.removeLeaveAttendances(holidayDateStart.Year);
+            SQLStore_QLNS.Instance.removeLeaveAttendances(holidayDateEnd.Year);
 
             if (!hasError)
             {
@@ -218,7 +218,7 @@ namespace RauViet.ui
             foreach (DataGridViewRow row in dataGV.Rows)
             {
                 DateTime holidayDate = Convert.ToDateTime(row.Cells["HolidayDate"].Value);
-                bool isLock = await SQLStore.Instance.IsSalaryLockAsync(holidayDate.Month, holidayDate.Year);
+                bool isLock = await SQLStore_QLNS.Instance.IsSalaryLockAsync(holidayDate.Month, holidayDate.Year);
                 if (isLock)
                 {
                     MessageBox.Show(holidayDate.Date + " đã bị khóa.", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -231,11 +231,11 @@ namespace RauViet.ui
                     {
                         try
                         {
-                            bool isScussess = await SQLManager.Instance.DeleteHolidayAsync(date);
+                            bool isScussess = await SQLManager_QLNS.Instance.DeleteHolidayAsync(date);
 
                             if (isScussess == true)
                             {
-                                SQLStore.Instance.removeLeaveAttendances(holidayDate.Year);
+                                SQLStore_QLNS.Instance.removeLeaveAttendances(holidayDate.Year);
 
                                 status_lb.Text = "Thành công.";
                                 status_lb.ForeColor = Color.Green;
@@ -249,7 +249,7 @@ namespace RauViet.ui
                                 status_lb.ForeColor = Color.Red;
                             }
                         }
-                        catch (Exception ex)
+                        catch
                         {
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;
@@ -268,9 +268,9 @@ namespace RauViet.ui
             string holidayName = holidayName_tb.Text;
 
             await createNew(holidayDateStart, holidayDateEnd, holidayName);
-            SQLStore.Instance.removeAttendamce(holidayDateStart.Month, holidayDateStart.Year);
-            SQLStore.Instance.removeAttendamce(holidayDateEnd.Month, holidayDateEnd.Year);
-            SQLStore.Instance.removeLeaveAttendances(holidayDateStart.Year);
+            SQLStore_QLNS.Instance.removeAttendamce(holidayDateStart.Month, holidayDateStart.Year);
+            SQLStore_QLNS.Instance.removeAttendamce(holidayDateEnd.Month, holidayDateEnd.Year);
+            SQLStore_QLNS.Instance.removeLeaveAttendances(holidayDateStart.Year);
 
             ReadOnly_btn_Click(null, null);
         }
@@ -289,7 +289,7 @@ namespace RauViet.ui
                     holidayDateEnd_dtp.Value = holidayDateStart;
             }
                 
-            bool isLock = await SQLStore.Instance.IsSalaryLockAsync(holidayDateStart.Month, holidayDateStart.Year);
+            bool isLock = await SQLStore_QLNS.Instance.IsSalaryLockAsync(holidayDateStart.Month, holidayDateStart.Year);
             delete_btn.Visible = !isLock;
         }
 

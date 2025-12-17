@@ -48,7 +48,7 @@ namespace RauViet.ui
         {
             if (e.KeyCode == Keys.F5)
             {
-                SQLStore.Instance.removeDepartment();
+                SQLStore_QLNS.Instance.removeDepartment();
                 ShowData();
             }
         }
@@ -62,7 +62,7 @@ namespace RauViet.ui
             try
             {
                 // Chạy truy vấn trên thread riêng
-                var departmentTask = SQLStore.Instance.GetDepartmentAsync();
+                var departmentTask = SQLStore_QLNS.Instance.GetDepartmentAsync();
 
                 await Task.WhenAll(departmentTask);
                 mDepartment_dt = departmentTask.Result;
@@ -94,7 +94,7 @@ namespace RauViet.ui
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
-            catch (Exception ex)
+            catch
             {
                 status_lb.Text = "Thất bại.";
                 status_lb.ForeColor = Color.Red;
@@ -154,7 +154,7 @@ namespace RauViet.ui
                     {
                         try
                         {
-                            bool isScussess = await SQLManager.Instance.updateDepartmentAsync(departmentID, departmentName, description, isActive);
+                            bool isScussess = await SQLManager_QLNS.Instance.updateDepartmentAsync(departmentID, departmentName, description, isActive);
 
                             if (isScussess == true)
                             {
@@ -171,7 +171,7 @@ namespace RauViet.ui
                                 status_lb.ForeColor = Color.Red;
                             }
                         }
-                        catch (Exception ex)
+                        catch
                         {
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;
@@ -190,7 +190,7 @@ namespace RauViet.ui
             {
                 try
                 {
-                    int deparmetnID = await SQLManager.Instance.insertDepartmentAsync(departmentName, description, isActive);
+                    int deparmetnID = await SQLManager_QLNS.Instance.insertDepartmentAsync(departmentName, description, isActive);
                     if (deparmetnID > 0)
                     {
                         DataTable dataTable = (DataTable)dataGV.DataSource;
@@ -221,7 +221,7 @@ namespace RauViet.ui
                         status_lb.ForeColor = Color.Red;
                     }
                 }
-                catch (Exception ex)
+                catch
                 {
                     status_lb.Text = "Thất bại.";
                     status_lb.ForeColor = Color.Red;
@@ -268,7 +268,7 @@ namespace RauViet.ui
                     {
                         try
                         {
-                            bool isScussess = await SQLManager.Instance.deleteDepartmentAsync(Convert.ToInt32(id));
+                            bool isScussess = await SQLManager_QLNS.Instance.deleteDepartmentAsync(Convert.ToInt32(id));
 
                             if (isScussess == true)
                             {
@@ -284,7 +284,7 @@ namespace RauViet.ui
                                 status_lb.ForeColor = Color.Red;
                             }
                         }
-                        catch (Exception ex)
+                        catch
                         {
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;

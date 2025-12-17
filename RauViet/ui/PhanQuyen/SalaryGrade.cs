@@ -48,7 +48,7 @@ namespace RauViet.ui
         {
             if (e.KeyCode == Keys.F5)
             {
-                SQLStore.Instance.removeSalaryGrade();
+                SQLStore_QLNS.Instance.removeSalaryGrade();
                 ShowData();
             }
         }
@@ -63,8 +63,8 @@ namespace RauViet.ui
             try
             {
                 // Chạy truy vấn trên thread riêng
-                var salaryGradeTask = SQLStore.Instance.GetSalaryGradeAsync();
-                var salaryGradeLogTask = SQLManager.Instance.GetSalaryGrade_LogAsync();
+                var salaryGradeTask = SQLStore_QLNS.Instance.GetSalaryGradeAsync();
+                var salaryGradeLogTask = SQLManager_QLNS.Instance.GetSalaryGrade_LogAsync();
                 await Task.WhenAll(salaryGradeTask, salaryGradeLogTask);
                 DataTable salaryGrade_dt = salaryGradeTask.Result;
                 mLogDV = new DataView(salaryGradeLogTask.Result);
@@ -108,7 +108,7 @@ namespace RauViet.ui
                 log_GV.Columns["NewValue"].HeaderText = "Giá trị mới";
                 log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
-            catch (Exception ex)
+            catch
             {
                 status_lb.Text = "Thất bại.";
                 status_lb.ForeColor = Color.Red;
@@ -166,7 +166,7 @@ namespace RauViet.ui
                         string newValue = $"{gradeName} - {salary} - {note} - {isActive}";
                         try
                         {
-                            bool isScussess = await SQLManager.Instance.updateSalaryGradeAsync(salaryGradeID, gradeName, salary, note, isActive);
+                            bool isScussess = await SQLManager_QLNS.Instance.updateSalaryGradeAsync(salaryGradeID, gradeName, salary, note, isActive);
 
                             if (isScussess == true)
                             {
@@ -194,7 +194,7 @@ namespace RauViet.ui
                         }
 
 
-                        _ = SQLManager.Instance.InsertSalaryGrade_LogAsync(salaryGradeID, oldValue, newValue);
+                        _ = SQLManager_QLNS.Instance.InsertSalaryGrade_LogAsync(salaryGradeID, oldValue, newValue);
                         
                     }
                     break;
@@ -212,7 +212,7 @@ namespace RauViet.ui
                 int newId = -1;
                 try
                 {
-                    newId = await SQLManager.Instance.insertSalaryGradeAsync(gradeName, salary, note, isActive);
+                    newId = await SQLManager_QLNS.Instance.insertSalaryGradeAsync(gradeName, salary, note, isActive);
                     if (newId > 0)
                     {
                         DataTable dataTable = (DataTable)dataGV.DataSource;
@@ -253,7 +253,7 @@ namespace RauViet.ui
                     status_lb.ForeColor = Color.Red;
                 }
 
-                _ = SQLManager.Instance.InsertSalaryGrade_LogAsync(newId, "New", newValue);
+                _ = SQLManager_QLNS.Instance.InsertSalaryGrade_LogAsync(newId, "New", newValue);
             }
         }
         private void saveBtn_Click(object sender, EventArgs e)
@@ -298,7 +298,7 @@ namespace RauViet.ui
                         string newValue = "";
                         try
                         {
-                            bool isScussess = await SQLManager.Instance.deletePositionAsync(Convert.ToInt32(salaryGradeID));
+                            bool isScussess = await SQLManager_QLNS.Instance.deletePositionAsync(Convert.ToInt32(salaryGradeID));
 
                             if (isScussess == true)
                             {
@@ -324,7 +324,7 @@ namespace RauViet.ui
                         }
 
                         
-                        _ = SQLManager.Instance.InsertSalaryGrade_LogAsync(Convert.ToInt32(salaryGradeID), "Delete " + oldValue, newValue);
+                        _ = SQLManager_QLNS.Instance.InsertSalaryGrade_LogAsync(Convert.ToInt32(salaryGradeID), "Delete " + oldValue, newValue);
 
                     }
                     break;

@@ -41,7 +41,7 @@ namespace RauViet.ui
         {
             if (e.KeyCode == Keys.F5)
             {
-                SQLStore.Instance.RemoveCustomerOrderDetailHistory();
+                SQLStore_Kho.Instance.RemoveCustomerOrderDetailHistory();
                 ShowData();
             }
         }
@@ -58,7 +58,7 @@ namespace RauViet.ui
 
             try
             {
-                var customerOrderHistoryTask = SQLStore.Instance.GetCustomerOrderDetailHistory();
+                var customerOrderHistoryTask = SQLStore_Kho.Instance.GetCustomerOrderDetailHistory();
                 await Task.WhenAll(customerOrderHistoryTask);
 
                 mYears = customerOrderHistoryTask.Result.AsEnumerable().Select(r => r.Field<int>("Year")).Distinct().OrderBy(y => y).ToList();
@@ -185,7 +185,7 @@ namespace RauViet.ui
                 product_GV.Columns["ProductName_VN"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
                 product_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
-            catch (Exception ex)
+            catch
             {
             }
             finally

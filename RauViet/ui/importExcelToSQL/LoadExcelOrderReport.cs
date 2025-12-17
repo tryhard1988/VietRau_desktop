@@ -174,7 +174,7 @@ namespace RauViet.ui
                 ));
             }
 
-            _ = SQLManager.Instance.CustomerOrderDetailHistory_SaveListAsync(orders);
+            _ = SQLManager_Kho.Instance.CustomerOrderDetailHistory_SaveListAsync(orders);
         }
 
         private void AddExportCode_btn_Click(object sender, EventArgs e)
@@ -254,7 +254,7 @@ namespace RauViet.ui
             dt.Columns.Add("Package", typeof(string));
             dt.Columns.Add("ExportDate", typeof(DateTime));
 
-            var productPacking_dt = await SQLStore.Instance.getProductpackingAsync();
+            var productPacking_dt = await SQLStore_Kho.Instance.getProductpackingAsync();
 
             foreach (var g in grouped)
             {

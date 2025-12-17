@@ -36,7 +36,7 @@ namespace RauViet.ui
         {
             if (e.KeyCode == Keys.F5)
             {
-                SQLStore.Instance.removeEmployees();
+                SQLStore_QLNS.Instance.removeEmployees();
                 ShowData();
             }
         }
@@ -53,8 +53,8 @@ namespace RauViet.ui
             try
             {
                 string[] keepColumns = { "EmployeeCode", "FullName", "SocialInsuranceNumber", "HealthInsuranceNumber" };
-                var employeesTask = SQLStore.Instance.GetEmployeesAsync(keepColumns);
-                var employeeInsuranceLogTask = SQLStore.Instance.GetEmployeeInsuranceLogAsync();
+                var employeesTask = SQLStore_QLNS.Instance.GetEmployeesAsync(keepColumns);
+                var employeeInsuranceLogTask = SQLStore_QLNS.Instance.GetEmployeeInsuranceLogAsync();
                 await Task.WhenAll(employeesTask, employeeInsuranceLogTask);
                 DataTable employee_dt = employeesTask.Result;
                 mLogDV = new DataView(employeeInsuranceLogTask.Result);
@@ -92,7 +92,7 @@ namespace RauViet.ui
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
-            catch (Exception ex)
+            catch
             {
                 status_lb.Text = "Thất bại.";
                 status_lb.ForeColor = Color.Red;
@@ -144,14 +144,14 @@ namespace RauViet.ui
                     {
                         try
                         {
-                            bool isScussess = await SQLManager.Instance.updateEmployeeBHAsync(EmployeeCode, bhxh, bhyt);
+                            bool isScussess = await SQLManager_QLNS.Instance.updateEmployeeBHAsync(EmployeeCode, bhxh, bhyt);
 
                             if (isScussess == true)
                             {
                                 status_lb.Text = "Thành công.";
                                 status_lb.ForeColor = Color.Green;
 
-                                _ = SQLManager.Instance.InsertEmployeesInsuranceLogAsync(EmployeeCode, $"{row.Cells["SocialInsuranceNumber"].Value} - {row.Cells["HealthInsuranceNumber"].Value}",
+                                _ = SQLManager_QLNS.Instance.InsertEmployeesInsuranceLogAsync(EmployeeCode, $"{row.Cells["SocialInsuranceNumber"].Value} - {row.Cells["HealthInsuranceNumber"].Value}",
                                     $"Success: {bhxh} - {bhyt}");
 
                                 row.Cells["SocialInsuranceNumber"].Value = bhxh;
@@ -162,11 +162,11 @@ namespace RauViet.ui
                                     ["SocialInsuranceNumber"] = bhxh,
                                     ["HealthInsuranceNumber"] = bhyt
                                 };
-                                SQLStore.Instance.updateEmploy(EmployeeCode, parameters);
+                                SQLStore_QLNS.Instance.updateEmploy(EmployeeCode, parameters);
                             }
                             else
                             {
-                                _ = SQLManager.Instance.InsertEmployeesInsuranceLogAsync(EmployeeCode, $"{row.Cells["SocialInsuranceNumber"].Value} - {row.Cells["HealthInsuranceNumber"].Value}",
+                                _ = SQLManager_QLNS.Instance.InsertEmployeesInsuranceLogAsync(EmployeeCode, $"{row.Cells["SocialInsuranceNumber"].Value} - {row.Cells["HealthInsuranceNumber"].Value}",
                                     $"Fail: {bhxh} - {bhyt}");
                                 status_lb.Text = "Thất bại.";
                                 status_lb.ForeColor = Color.Red;
@@ -174,7 +174,7 @@ namespace RauViet.ui
                         }
                         catch (Exception ex)
                         {
-                            _ = SQLManager.Instance.InsertEmployeesInsuranceLogAsync(EmployeeCode, $"{row.Cells["SocialInsuranceNumber"].Value} - {row.Cells["HealthInsuranceNumber"].Value}",
+                            _ = SQLManager_QLNS.Instance.InsertEmployeesInsuranceLogAsync(EmployeeCode, $"{row.Cells["SocialInsuranceNumber"].Value} - {row.Cells["HealthInsuranceNumber"].Value}",
                                     $" Fail Exception: {ex.Message}: {bhxh} - {bhyt}");
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;

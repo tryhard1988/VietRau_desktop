@@ -46,8 +46,8 @@ namespace RauViet.ui
             {
                 int year = timeReport_dtp.Value.Year;                
 
-                SQLStore.Instance.RemoveExportHistoryByYear(year);
-                SQLStore.Instance.RemoveCustomerOrderDetailHistoryByYear(year);
+                SQLStore_Kho.Instance.RemoveExportHistoryByYear(year);
+                SQLStore_Kho.Instance.RemoveCustomerOrderDetailHistoryByYear(year);
                 ShowData();
             }
         }
@@ -65,8 +65,8 @@ namespace RauViet.ui
             try
             {
                 int year = timeReport_dtp.Value.Year;
-                var salarySummaryByYearTask = SQLStore.Instance.GetExportHistoryByYear(year);
-                var customerOrderHistoryByYearTask = SQLStore.Instance.GetCustomerOrderDetailHistoryByYear(year);
+                var salarySummaryByYearTask = SQLStore_Kho.Instance.GetExportHistoryByYear(year);
+                var customerOrderHistoryByYearTask = SQLStore_Kho.Instance.GetCustomerOrderDetailHistoryByYear(year);
 
                 await Task.WhenAll(salarySummaryByYearTask, customerOrderHistoryByYearTask);
                 DataTable salarySummaryByYear_dt = salarySummaryByYearTask.Result;
@@ -260,7 +260,7 @@ namespace RauViet.ui
 
                 CustomerGV_CellClick(null, null);
             }
-            catch (Exception ex)
+            catch
             {
                 status_lb.Text = "Thất bại.";
                 status_lb.ForeColor = Color.Red;

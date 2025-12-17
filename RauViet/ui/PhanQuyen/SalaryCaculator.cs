@@ -104,18 +104,18 @@ namespace RauViet.ui
             string[] keepColumnsInfo = { "BaseSalary", "InsuranceBaseSalary", "ContractTypeName", "IsInsuranceRefund" };
             string[] keepColumnsLeave = { "EmployeeCode", "LeaveTypeCode", "DateOff", "LeaveTypeName", "LeaveHours" };
             string[] keepColumnsAttendamce = { "EmployeeCode", "WorkDate", "WorkingHours" };
-            var employeInfoTask = SQLStore.Instance.GetEmployeesAsync(keepColumns);
-            var annualLeaveBalanceTask = SQLStore.Instance.GetAnnualLeaveBalanceAsync(year);
-            var overtimeTypeAsync = SQLStore.Instance.GetOvertimeTypeAsync();
-            var leaveTypeAsync = SQLStore.Instance.GetLeaveTypeWithPaidAsync(true);
-            var deductionTypeAsync = SQLStore.Instance.GetDeductionTypeAsync();
-            var deductionAsync = SQLStore.Instance.GetDeductionAsync(month, year);
-            var overtimeAttendamceAsync = SQLStore.Instance.GetOvertimeAttendamceAsync(month, year);
-            var employeeTask = SQLStore.Instance.GetEmployeeSalaryInfoAsync(keepColumnsInfo, month, year);
-            var leaveAttendanceAsync = SQLStore.Instance.GetLeaveAttendancesAsyn(keepColumnsLeave, month, year, true);
-            var attendamceTask = SQLStore.Instance.GetAttendamceAsync(keepColumnsAttendamce, month, year);
-            var isLockTask = SQLStore.Instance.IsSalaryLockAsync(month, year);
-            var employeeAllowanceAsync = SQLManager.Instance.GetEmployeeAllowanceAsync(month, year);
+            var employeInfoTask = SQLStore_QLNS.Instance.GetEmployeesAsync(keepColumns);
+            var annualLeaveBalanceTask = SQLStore_QLNS.Instance.GetAnnualLeaveBalanceAsync(year);
+            var overtimeTypeAsync = SQLStore_QLNS.Instance.GetOvertimeTypeAsync();
+            var leaveTypeAsync = SQLStore_QLNS.Instance.GetLeaveTypeWithPaidAsync(true);
+            var deductionTypeAsync = SQLStore_QLNS.Instance.GetDeductionTypeAsync();
+            var deductionAsync = SQLStore_QLNS.Instance.GetDeductionAsync(month, year);
+            var overtimeAttendamceAsync = SQLStore_QLNS.Instance.GetOvertimeAttendamceAsync(month, year);
+            var employeeTask = SQLStore_QLNS.Instance.GetEmployeeSalaryInfoAsync(keepColumnsInfo, month, year);
+            var leaveAttendanceAsync = SQLStore_QLNS.Instance.GetLeaveAttendancesAsyn(keepColumnsLeave, month, year, true);
+            var attendamceTask = SQLStore_QLNS.Instance.GetAttendamceAsync(keepColumnsAttendamce, month, year);
+            var isLockTask = SQLStore_QLNS.Instance.IsSalaryLockAsync(month, year);
+            var employeeAllowanceAsync = SQLManager_QLNS.Instance.GetEmployeeAllowanceAsync(month, year);
 
 
             await Task.WhenAll(employeInfoTask, employeeTask, employeeAllowanceAsync, overtimeAttendamceAsync, leaveAttendanceAsync,
@@ -456,7 +456,7 @@ namespace RauViet.ui
 
             // 🔹 Các task còn lại (ẩn cột, header, màu, width) có thể chạy song song
             var tHideCols = Task.Run(() => this.Invoke(new Action(() => HideUnnecessaryColumns())));
-            var tHeaders = Task.Run(() => this.Invoke(new Action(() => SetupGridThemesAsync())));
+            var tHeaders = Task.Run(() => this.Invoke(new Action(() => _ = SetupGridThemesAsync())));
 
             await Task.WhenAll(tHideCols, tHeaders);
         }
@@ -1013,7 +1013,7 @@ namespace RauViet.ui
             int month = Convert.ToInt32(monthYearDtp.Value.Month);
             int year = Convert.ToInt32(monthYearDtp.Value.Year);
 
-            bool isLock = await SQLStore.Instance.IsSalaryLockAsync(month, year);
+            bool isLock = await SQLStore_QLNS.Instance.IsSalaryLockAsync(month, year);
             if (isLock)
             {
                 MessageBox.Show("Tháng " + month + "/" + year + " đã bị khóa.", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1083,8 +1083,8 @@ namespace RauViet.ui
                 try
                 {
                     // Chạy song song 2 task
-                    var task1 = SQLManager.Instance.UpsertSaveEmployeeAllowanceHistoryBatchAsync(allowanceList);
-                    var task2 = SQLManager.Instance.UpsertEmployeeSalaryHistoryAsync(esbsData);
+                    var task1 = SQLManager_QLNS.Instance.UpsertSaveEmployeeAllowanceHistoryBatchAsync(allowanceList);
+                    var task2 = SQLManager_QLNS.Instance.UpsertEmployeeSalaryHistoryAsync(esbsData);
 
                     // Chờ cả 2 task hoàn tất
                     var results = await Task.WhenAll(task1, task2);
@@ -1101,7 +1101,7 @@ namespace RauViet.ui
 
                     if (success1 && success2 && success3)
                     {
-                        SQLStore.Instance.ResetlockSalary();
+                        SQLStore_QLNS.Instance.ResetlockSalary();
                         MessageBox.Show("✅ Thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                     else

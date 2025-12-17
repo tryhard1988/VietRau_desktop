@@ -66,10 +66,10 @@ namespace RauViet.ui
             try
             {
                 string[] keepColumns = { "EmployeeCode", "FullName", "DepartmentName", "PositionName", "ContractTypeName", };
-                var employeesTask = SQLStore.Instance.GetEmployeesAsync(keepColumns);
-                var employeeAllowanceAsync = SQLManager.Instance.GetEmployeeAllowanceAsybc();
-                var allowanceTypeAsync = SQLManager.Instance.GetAllowanceTypeAsync("EMP");
-                var EmployeeAllowanceLogTask = SQLStore.Instance.GetEmployeeAllowanceLogAsync();
+                var employeesTask = SQLStore_QLNS.Instance.GetEmployeesAsync(keepColumns);
+                var employeeAllowanceAsync = SQLManager_QLNS.Instance.GetEmployeeAllowanceAsybc();
+                var allowanceTypeAsync = SQLManager_QLNS.Instance.GetAllowanceTypeAsync("EMP");
+                var EmployeeAllowanceLogTask = SQLStore_QLNS.Instance.GetEmployeeAllowanceLogAsync();
 
                 await Task.WhenAll(employeesTask, employeeAllowanceAsync, allowanceTypeAsync, EmployeeAllowanceLogTask);
                 DataTable employee_dt = employeesTask.Result;
@@ -153,7 +153,7 @@ namespace RauViet.ui
 
                 log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
-            catch (Exception ex)
+            catch
             {
                 status_lb.Text = "Thất bại.";
                 status_lb.ForeColor = Color.Red;
@@ -248,11 +248,11 @@ namespace RauViet.ui
                         string allowanceName = mAllowanceType_dt.Select($"AllowanceTypeID = {allowanceTypeID}")[0]["AllowanceName"].ToString();
                         try
                         {
-                            bool isScussess = await SQLManager.Instance.updateEmployeeAllowanceAsync(employeeAllowanceID, employeeCode, amount, allowanceTypeID, note);
+                            bool isScussess = await SQLManager_QLNS.Instance.updateEmployeeAllowanceAsync(employeeAllowanceID, employeeCode, amount, allowanceTypeID, note);
 
                             if (isScussess == true)
                             {
-                                _ = SQLManager.Instance.InsertEmployeeAllowanceLogAsync(employeeCode, allowanceName, $"Create Success: {row.Cells["AllowanceName"].Value} - {row.Cells["Amount"].Value} - {row.Cells["Note"].Value}", amount, note);
+                                _ = SQLManager_QLNS.Instance.InsertEmployeeAllowanceLogAsync(employeeCode, allowanceName, $"Create Success: {row.Cells["AllowanceName"].Value} - {row.Cells["Amount"].Value} - {row.Cells["Note"].Value}", amount, note);
                                 status_lb.Text = "Thành công.";
                                 status_lb.ForeColor = Color.Green;
 
@@ -264,14 +264,14 @@ namespace RauViet.ui
                             }
                             else
                             {
-                                _ = SQLManager.Instance.InsertEmployeeAllowanceLogAsync(employeeCode, allowanceName, $"Create Fail: {row.Cells["AllowanceName"].Value} - {row.Cells["Amount"].Value} - {row.Cells["Note"].Value}", amount, note);
+                                _ = SQLManager_QLNS.Instance.InsertEmployeeAllowanceLogAsync(employeeCode, allowanceName, $"Create Fail: {row.Cells["AllowanceName"].Value} - {row.Cells["Amount"].Value} - {row.Cells["Note"].Value}", amount, note);
                                 status_lb.Text = "Thất bại.";
                                 status_lb.ForeColor = Color.Red;
                             }
                         }
                         catch (Exception ex)
                         {
-                            _ = SQLManager.Instance.InsertEmployeeAllowanceLogAsync(employeeCode, allowanceName, $"Create Fail Exception {ex.Message}: {row.Cells["AllowanceName"].Value} - {row.Cells["Amount"].Value} - {row.Cells["Note"].Value}", amount, note);
+                            _ = SQLManager_QLNS.Instance.InsertEmployeeAllowanceLogAsync(employeeCode, allowanceName, $"Create Fail Exception {ex.Message}: {row.Cells["AllowanceName"].Value} - {row.Cells["Amount"].Value} - {row.Cells["Note"].Value}", amount, note);
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;
                         }
@@ -290,11 +290,11 @@ namespace RauViet.ui
                 string allowanceName = mAllowanceType_dt.Select($"AllowanceTypeID = {allowanceTypeID}")[0]["AllowanceName"].ToString();
                 try
                 {
-                    int employeeAllowanceID = await SQLManager.Instance.insertEmployeeAllowanceAsync(employeeCode, amount, allowanceTypeID, note);
+                    int employeeAllowanceID = await SQLManager_QLNS.Instance.insertEmployeeAllowanceAsync(employeeCode, amount, allowanceTypeID, note);
 
                     if (allowanceTypeID > 0)
                     {
-                        _ = SQLManager.Instance.InsertEmployeeAllowanceLogAsync(employeeCode, allowanceName, $"Create Success", amount, note);
+                        _ = SQLManager_QLNS.Instance.InsertEmployeeAllowanceLogAsync(employeeCode, allowanceName, $"Create Success", amount, note);
 
                         DataRow drToAdd = mEmployeeAllowance_dt.NewRow();
 
@@ -315,14 +315,14 @@ namespace RauViet.ui
                     }
                     else
                     {
-                        _ = SQLManager.Instance.InsertEmployeeAllowanceLogAsync(employeeCode, allowanceName, $"Create Fail", amount, note);
+                        _ = SQLManager_QLNS.Instance.InsertEmployeeAllowanceLogAsync(employeeCode, allowanceName, $"Create Fail", amount, note);
                         status_lb.Text = "Thất bại";
                         status_lb.ForeColor = Color.Red;
                     }
                 }
                 catch (Exception ex)
                 {
-                    _ = SQLManager.Instance.InsertEmployeeAllowanceLogAsync(employeeCode, allowanceName, $"Create Fail Exception: {ex.Message}", amount, note);
+                    _ = SQLManager_QLNS.Instance.InsertEmployeeAllowanceLogAsync(employeeCode, allowanceName, $"Create Fail Exception: {ex.Message}", amount, note);
                     status_lb.Text = "Thất bại.";
                     status_lb.ForeColor = Color.Red;
                 }
@@ -366,11 +366,11 @@ namespace RauViet.ui
                     {
                         try
                         {
-                            bool isScussess = await SQLManager.Instance.deleteEmployeeAllowanceAsync(Convert.ToInt32(employeeAllowanceID));
+                            bool isScussess = await SQLManager_QLNS.Instance.deleteEmployeeAllowanceAsync(Convert.ToInt32(employeeAllowanceID));
 
                             if (isScussess == true)
                             {
-                                _ = SQLManager.Instance.InsertEmployeeAllowanceLogAsync(employeeCode, allowanceName, $"Delete Success", 0, "Delete");
+                                _ = SQLManager_QLNS.Instance.InsertEmployeeAllowanceLogAsync(employeeCode, allowanceName, $"Delete Success", 0, "Delete");
                                 status_lb.Text = "Thành công.";
                                 status_lb.ForeColor = Color.Green;
 
@@ -379,14 +379,14 @@ namespace RauViet.ui
                             }
                             else
                             {
-                                _ = SQLManager.Instance.InsertEmployeeAllowanceLogAsync(employeeCode, allowanceName, $"Delete Fail", 0, "Delete");
+                                _ = SQLManager_QLNS.Instance.InsertEmployeeAllowanceLogAsync(employeeCode, allowanceName, $"Delete Fail", 0, "Delete");
                                 status_lb.Text = "Thất bại.";
                                 status_lb.ForeColor = Color.Red;
                             }
                         }
                         catch (Exception ex)
                         {
-                            _ = SQLManager.Instance.InsertEmployeeAllowanceLogAsync(employeeCode, allowanceName, $"Delete Fail Exception: {ex.Message}", 0, "Delete");
+                            _ = SQLManager_QLNS.Instance.InsertEmployeeAllowanceLogAsync(employeeCode, allowanceName, $"Delete Fail Exception: {ex.Message}", 0, "Delete");
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;
                         }

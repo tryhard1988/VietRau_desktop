@@ -79,10 +79,10 @@ namespace RauViet.ui
                 int year = monthYearDtp.Value.Year;
 
                 string[] keepColumns = { "EmployeeCode", "FullName", "DepartmentName", "PositionName", "ContractTypeName", };
-                var employeesTask = SQLStore.Instance.GetEmployeesAsync(keepColumns);
-                var monthlyAllowanceAsync = SQLManager.Instance.GetMonthlyAllowanceAsybc(month, year);
-                var allowanceTypeAsync = SQLManager.Instance.GetAllowanceTypeAsync("ONCE");                
-                var monthlyAllowanceLogTask = SQLManager.Instance.GetMonthlyAllowanceLogAsync(month, year);
+                var employeesTask = SQLStore_QLNS.Instance.GetEmployeesAsync(keepColumns);
+                var monthlyAllowanceAsync = SQLManager_QLNS.Instance.GetMonthlyAllowanceAsybc(month, year);
+                var allowanceTypeAsync = SQLManager_QLNS.Instance.GetAllowanceTypeAsync("ONCE");                
+                var monthlyAllowanceLogTask = SQLManager_QLNS.Instance.GetMonthlyAllowanceLogAsync(month, year);
 
                 await Task.WhenAll(employeesTask, monthlyAllowanceAsync, allowanceTypeAsync, monthlyAllowanceLogTask);
                 DataTable employee_dt = employeesTask.Result;
@@ -187,7 +187,7 @@ namespace RauViet.ui
 
                 log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
-            catch (Exception ex)
+            catch
             {
                 status_lb.Text = "Thất bại.";
                 status_lb.ForeColor = Color.Red;
@@ -287,12 +287,12 @@ namespace RauViet.ui
                         try
                         {
                             string allowanceName = mAllowanceType_dt.Select($"AllowanceTypeID = {allowanceTypeID}")[0]["AllowanceName"].ToString();
-                            bool isScussess = await SQLManager.Instance.updateMonthlyAllowanceAsync(monthlyAllowanceID, employeeCode, month, year, amount, allowanceTypeID, note);
+                            bool isScussess = await SQLManager_QLNS.Instance.updateMonthlyAllowanceAsync(monthlyAllowanceID, employeeCode, month, year, amount, allowanceTypeID, note);
                             if (isScussess == true)
                             {
                                 status_lb.Text = "Thành công.";
                                 status_lb.ForeColor = Color.Green;                                
-                                _ = SQLManager.Instance.InsertMonthlyAllowanceLogAsync(employeeCode, allowanceName,
+                                _ = SQLManager_QLNS.Instance.InsertMonthlyAllowanceLogAsync(employeeCode, allowanceName,
                                     $"Edit Success {row.Cells["AllowanceName"].Value} - {row.Cells["Month"].Value}/{row.Cells["Year"].Value} - {row.Cells["Note"].Value} - {row.Cells["Amount"].Value}",
                                     month, year, amount, note);
 
@@ -307,7 +307,7 @@ namespace RauViet.ui
                             }
                             else
                             {
-                                _ = SQLManager.Instance.InsertMonthlyAllowanceLogAsync(employeeCode, allowanceName,
+                                _ = SQLManager_QLNS.Instance.InsertMonthlyAllowanceLogAsync(employeeCode, allowanceName,
                                     $"Edit Fail {row.Cells["AllowanceName"].Value} - {row.Cells["Month"].Value}/{row.Cells["Year"].Value} - {row.Cells["Note"].Value} - {row.Cells["Amount"].Value}",
                                     month, year, amount, note);
                                 status_lb.Text = "Thất bại.";
@@ -316,7 +316,7 @@ namespace RauViet.ui
                         }
                         catch (Exception ex)
                         {
-                            _ = SQLManager.Instance.InsertMonthlyAllowanceLogAsync(employeeCode, allowanceTypeID.ToString(),$"Edit Fail Exception: {ex.Message}",
+                            _ = SQLManager_QLNS.Instance.InsertMonthlyAllowanceLogAsync(employeeCode, allowanceTypeID.ToString(),$"Edit Fail Exception: {ex.Message}",
                                     month, year, amount, note);
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;
@@ -335,7 +335,7 @@ namespace RauViet.ui
             {
                 try
                 {
-                    int monthlyAllowanceID = await SQLManager.Instance.insertMonthlyAllowanceAsync(employeeCode, month, year, amount, allowanceTypeID, note);
+                    int monthlyAllowanceID = await SQLManager_QLNS.Instance.insertMonthlyAllowanceAsync(employeeCode, month, year, amount, allowanceTypeID, note);
                     string allowanceName = mAllowanceType_dt.Select($"AllowanceTypeID = {allowanceTypeID}")[0]["AllowanceName"].ToString();
                     if (monthlyAllowanceID > 0)
                     {
@@ -354,7 +354,7 @@ namespace RauViet.ui
                         mMonthlyAllowance_dt.Rows.Add(drToAdd);
                         mMonthlyAllowance_dt.AcceptChanges();
 
-                        _ = SQLManager.Instance.InsertMonthlyAllowanceLogAsync(employeeCode, allowanceName, $"Create Success", month, year, amount, note);
+                        _ = SQLManager_QLNS.Instance.InsertMonthlyAllowanceLogAsync(employeeCode, allowanceName, $"Create Success", month, year, amount, note);
 
                         status_lb.Text = "Thành công";
                         status_lb.ForeColor = Color.Green;
@@ -363,14 +363,14 @@ namespace RauViet.ui
                     }
                     else
                     {
-                        _ = SQLManager.Instance.InsertMonthlyAllowanceLogAsync(employeeCode, allowanceName, $"Create Fail", month, year, amount, note);
+                        _ = SQLManager_QLNS.Instance.InsertMonthlyAllowanceLogAsync(employeeCode, allowanceName, $"Create Fail", month, year, amount, note);
                         status_lb.Text = "Thất bại";
                         status_lb.ForeColor = Color.Red;
                     }
                 }
                 catch (Exception ex)
                 {
-                    _ = SQLManager.Instance.InsertMonthlyAllowanceLogAsync(employeeCode, allowanceTypeID.ToString(), $"Create Fail Exception: {ex.Message}", month, year, amount, note);
+                    _ = SQLManager_QLNS.Instance.InsertMonthlyAllowanceLogAsync(employeeCode, allowanceTypeID.ToString(), $"Create Fail Exception: {ex.Message}", month, year, amount, note);
                     status_lb.Text = "Thất bại.";
                     status_lb.ForeColor = Color.Red;
                 }
@@ -400,7 +400,7 @@ namespace RauViet.ui
                 return;
             }
 
-            bool isLock = await SQLStore.Instance.IsSalaryLockAsync(month, year);
+            bool isLock = await SQLStore_QLNS.Instance.IsSalaryLockAsync(month, year);
             if (isLock)
             {
                 MessageBox.Show("Tháng " + month + "/" + year + " đã bị khóa.", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -435,11 +435,11 @@ namespace RauViet.ui
                     {
                         try
                         {
-                            bool isScussess = await SQLManager.Instance.deleteMonthlyAllowanceAsync(Convert.ToInt32(monthlyAllowanceID));
+                            bool isScussess = await SQLManager_QLNS.Instance.deleteMonthlyAllowanceAsync(Convert.ToInt32(monthlyAllowanceID));
 
                             if (isScussess == true)
                             {
-                                _ = SQLManager.Instance.InsertMonthlyAllowanceLogAsync(employeeCode, allowanceName, $"Delete Success", month, year, amount, "Delete");
+                                _ = SQLManager_QLNS.Instance.InsertMonthlyAllowanceLogAsync(employeeCode, allowanceName, $"Delete Success", month, year, amount, "Delete");
                                 status_lb.Text = "Thành công.";
                                 status_lb.ForeColor = Color.Green;
 
@@ -448,14 +448,14 @@ namespace RauViet.ui
                             }
                             else
                             {
-                                _ = SQLManager.Instance.InsertMonthlyAllowanceLogAsync(employeeCode, allowanceName, $"Delete Fail", month, year, amount, "Delete");
+                                _ = SQLManager_QLNS.Instance.InsertMonthlyAllowanceLogAsync(employeeCode, allowanceName, $"Delete Fail", month, year, amount, "Delete");
                                 status_lb.Text = "Thất bại.";
                                 status_lb.ForeColor = Color.Red;
                             }
                         }
                         catch (Exception ex)
                         {
-                            _ = SQLManager.Instance.InsertMonthlyAllowanceLogAsync(employeeCode, allowanceName, $"Delete Fail Exception: {ex.Message}", month, year, amount, "Delete");
+                            _ = SQLManager_QLNS.Instance.InsertMonthlyAllowanceLogAsync(employeeCode, allowanceName, $"Delete Fail Exception: {ex.Message}", month, year, amount, "Delete");
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;
                         }
@@ -517,7 +517,7 @@ namespace RauViet.ui
         {
             int month = monthYearDtp.Value.Month;
             int year = monthYearDtp.Value.Year;
-            bool isLock = await SQLStore.Instance.IsSalaryLockAsync(month, year);
+            bool isLock = await SQLStore_QLNS.Instance.IsSalaryLockAsync(month, year);
             if (readOnly_btn.Visible)
             {
                 LuuThayDoiBtn.Visible = !isLock;

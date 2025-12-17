@@ -1,20 +1,18 @@
-﻿using DocumentFormat.OpenXml.CustomProperties;
-using DocumentFormat.OpenXml.Drawing;
+﻿using RauViet.classes;
 using System;
 using System.Data;
 using System.Drawing;
 using System.Drawing.Printing;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using System.Windows.Media;
 
 public class DoiChieuCongNo_Printer
 {
     private int currentRowIndex = 0; // chỉ số dòng hiện tại
     private int yPosition = 0;
     private bool firstPage = true;
+    private bool firstRowData = true;
     private DataTable data;
-    private int CustomerID;
     private string company;
     private string customerName;
     private string customerAddress;
@@ -22,13 +20,14 @@ public class DoiChieuCongNo_Printer
     private string taxCode;
     int totalPCS = 0;
     decimal totalNetWeight = 0;
+    int TotalAmount = 0;
     // ------------------- Hàm Print Preview -------------------, this);
-    public void PrintPreview(DataTable dataTable, int CustomerID, string company, string customerName, string customerAddress, string email, string taxCode, Form owner)
+    public void PrintPreview(DataTable dataTable, string company, string customerName, string customerAddress, string email, string taxCode, Form owner)
     {
         if (dataTable == null || dataTable.Rows.Count == 0)
             return;
 
-        SetupPrint(dataTable, CustomerID, company, customerName, customerAddress, email, taxCode);
+        SetupPrint(dataTable, company, customerName, customerAddress, email, taxCode);
 
         PrintDocument printDoc = new PrintDocument();
         printDoc.PrintPage += PrintDoc_PrintPage;
@@ -64,12 +63,12 @@ public class DoiChieuCongNo_Printer
     }
 
     // ------------------- Hàm Print trực tiếp -------------------
-    public void PrintDirect(DataTable dataTable, int CustomerID, string company, string customerName, string customerAddress, string email, string taxCode, bool isIn2Mat)
+    public void PrintDirect(DataTable dataTable, string company, string customerName, string customerAddress, string email, string taxCode, bool isIn2Mat)
     {
         if (dataTable == null || dataTable.Rows.Count == 0)
             return;
 
-        SetupPrint(dataTable, CustomerID, company, customerName, customerAddress, email, taxCode);
+        SetupPrint(dataTable, company, customerName, customerAddress, email, taxCode);
 
         PrintDocument printDoc = new PrintDocument();
         printDoc.PrintPage += PrintDoc_PrintPage;
@@ -89,10 +88,9 @@ public class DoiChieuCongNo_Printer
     }
 
     // ------------------- Setup dữ liệu chung -------------------
-    private void SetupPrint(DataTable dataTable, int CustomerID, string company, string customerName, string customerAddress, string email, string taxCode)
+    private void SetupPrint(DataTable dataTable, string company, string customerName, string customerAddress, string email, string taxCode)
     {
         this.data = dataTable;
-        this.CustomerID = CustomerID;
         this.company = company;
         this.customerName = customerName;
         this.customerAddress = customerAddress;
@@ -109,19 +107,21 @@ public class DoiChieuCongNo_Printer
     // ------------------- Hàm PrintPage -------------------
     private void PrintDoc_PrintPage(object sender, PrintPageEventArgs e)
     {
+        if (data.Rows.Count == 0) return;
+
         int paddingBottom = e.PageBounds.Bottom - e.MarginBounds.Bottom;
         int startX = 50;
         int startY = firstPage ? 50 : yPosition;
         int rowHeight = 27;
 
         int colWidth_STT = 35;
-        int colWidth_DeliveryDate = 90;
+        int colWidth_DeliveryDate = 85;
         int colWidth_SKU = 55;
         int colWidth_ProductType = 105;
         int colWidth_Product = 115;
         int colWidth_Package = 40;
-        int colWidth_Price = 70;
-        int colWidth_TotalAmount = 75;
+        int colWidth_Price = 65;
+        int colWidth_TotalAmount = 85;
         int colWidth_SLGH = 90;
         int colWidth_Code = e.PageBounds.Width - colWidth_STT - colWidth_DeliveryDate - colWidth_SKU - colWidth_ProductType - colWidth_Product - 
             colWidth_Package - colWidth_Price - colWidth_TotalAmount - colWidth_SLGH - startX*2 - 30;
@@ -134,106 +134,153 @@ public class DoiChieuCongNo_Printer
         Font fontHeader1 = new Font("Times New Roman", 13, FontStyle.Bold);
         Font fontContent = new Font("Times New Roman", 11);
         Font fontContent1 = new Font("Times New Roman", 14);
+        Font fontContent2 = new Font("Times New Roman", 10, FontStyle.Italic);
         System.Drawing.Brush brush = System.Drawing.Brushes.Black;
+        System.Drawing.Brush brush1 = new SolidBrush(System.Drawing.Color.FromArgb(198, 89, 17));
+        System.Drawing.Brush headerBackBrush = new SolidBrush(System.Drawing.Color.FromArgb(248, 203, 173));
 
         StringFormat sfHeader = new StringFormat() { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center };
         StringFormat sfDataLeft = new StringFormat() { Alignment = StringAlignment.Near, LineAlignment = StringAlignment.Center };
         StringFormat sfDataRight = new StringFormat() { Alignment = StringAlignment.Far, LineAlignment = StringAlignment.Center };
         StringFormat sfDataCenter = new StringFormat() { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center };
 
+        DateTime deliveryDate0 = Convert.ToDateTime(data.Rows[0]["DeliveryDate"]);
         // Tiêu đề trang đầu
         if (firstPage)
         {
             Image img = RauViet.Properties.Resources.ic_logo;
             e.Graphics.DrawImage(img, e.MarginBounds.Left, y - rowHeight / 3, (int)(img.Width * 0.15), (int)(img.Height * 0.15));
             y -= rowHeight / 2;
-            e.Graphics.DrawString("CÔNG TY CỔ PHẦN VIỆT RAU", fontTitle1, brush, e.MarginBounds.Left + (int)(img.Width * 0.15) + 30, y);
-            y += (rowHeight + 2);
-            e.Graphics.DrawString("MST : 0313983703", fontContent1, brush, e.MarginBounds.Left + (int)(img.Width * 0.15) + 30, y);
-            y += (rowHeight + 10);
-            e.Graphics.DrawString("Địa chỉ: Tổ 1, Ấp 4, Xã Phước Thái, Tỉnh Đông Nai, Việt Nam", fontContent1, brush, e.MarginBounds.Left + (int)(img.Width * 0.15) + 30, y);
-            y += (rowHeight + 10);
-            e.Graphics.DrawString("Email: Acc@vietrau.com                           ĐT: 0251 2860828/0909244916", fontContent1, brush, e.MarginBounds.Left + (int)(img.Width * 0.15) + 30, y);
-            y += rowHeight;
-            e.Graphics.DrawLine(new System.Drawing.Pen(System.Drawing.Color.Black, 1), startX, y, e.PageBounds.Width - startX*2, y);
-            y += (rowHeight - 10);
 
-            string title = "BẢNG KÊ CHI TIẾT HÀNG BÁN HÀNG THÁNG 11/2025";
+            // vùng in (giữa trang)
+            System.Drawing.Rectangle printRect = new System.Drawing.Rectangle(e.MarginBounds.Left + 10, y, e.MarginBounds.Width, rowHeight + 10);
+
+            e.Graphics.DrawString("CÔNG TY CỔ PHẦN VIỆT RAU", fontTitle1, brush1, printRect, sfDataCenter);
+            y += rowHeight - 5;
+
+            printRect.Y = y;
+            e.Graphics.DrawString("MST : 0313983703", fontContent2, brush1, printRect, sfDataCenter);
+            y += rowHeight - 7;
+
+            printRect.Y = y;
+            e.Graphics.DrawString("Địa chỉ: Tổ 1, Ấp 4, Xã Phước Thái, Tỉnh Đồng Nai, Việt Nam", fontContent2, brush1, printRect, sfDataCenter);
+            y += rowHeight - 7;
+
+            printRect.Y = y;
+            e.Graphics.DrawString("Email: Acc@vietrau.com      ĐT: 0251 2860828 / 0909244916", fontContent2, brush1, printRect, sfDataCenter);
+            y += (rowHeight*2);
+
+            // kẻ line giữa
+            e.Graphics.DrawLine(Pens.Black, startX, y, e.PageBounds.Width - startX, y);
+            e.Graphics.DrawLine(Pens.Black, startX, y + 2, e.PageBounds.Width - startX, y + 2);
+            y += 10;
+
+            string title = "BẢNG KÊ CHI TIẾT HÀNG BÁN HÀNG THÁNG " + deliveryDate0.Month + "/" + deliveryDate0.Year;
             SizeF titleSize = e.Graphics.MeasureString(title, fontTitle);
-            float titleX = e.MarginBounds.Left + (e.MarginBounds.Width - titleSize.Width) / 2 - 20;
+            float titleX = e.MarginBounds.Left + (e.MarginBounds.Width - titleSize.Width) / 2;
             e.Graphics.DrawString(title, fontTitle, brush, titleX, y);
-            y += rowHeight;
+            y += rowHeight*2;
 
             e.Graphics.DrawString($"Tên đơn vị:", fontContent, brush, startX, y);
-            e.Graphics.DrawString($"{company}", fontHeader1, brush, startX + 150, y);
-            y += rowHeight;
+            e.Graphics.DrawString($"{company}", fontHeader1, brush, startX + 100, y);
+            y += (rowHeight - 3);
             e.Graphics.DrawString($"MST:", fontContent, brush, startX, y);
-            e.Graphics.DrawString($"{taxCode}", fontContent, brush, startX + 150, y);
-            y += rowHeight;
+            e.Graphics.DrawString($"{taxCode}", fontHeader1, brush, startX + 100, y);
+            y += (rowHeight - 3);
             e.Graphics.DrawString($"Địa chỉ:", fontContent, brush, startX, y);
-            e.Graphics.DrawString($"{customerAddress}", fontHeader1, brush, startX + 150, y);
-            y += rowHeight;
+            e.Graphics.DrawString($"{customerAddress}", fontHeader1, brush, startX + 100, y);
+            y += (rowHeight - 3);
             e.Graphics.DrawString($"Liên hệ:", fontContent, brush, startX, y);
-            e.Graphics.DrawString($"{customerName}", fontHeader1, brush, startX + 150, y);
-            y += rowHeight;
+            e.Graphics.DrawString($"{customerName}", fontHeader1, brush, startX + 100, y);
+            y += (rowHeight - 3);
+            e.Graphics.DrawString($"Email:", fontContent, brush, startX, y);
+            e.Graphics.DrawString($"{email}", fontHeader1, brush, startX + 100, y);
+            y += (rowHeight - 3);
         }
         y += 10;
         // Header bảng
         int x = startX;
-        e.Graphics.DrawRectangle(Pens.Black, x, y, colWidth_STT, rowHeight * 2);
-        e.Graphics.DrawString("STT", fontHeader, brush, new RectangleF(x, y, colWidth_STT, rowHeight * 2), sfHeader);
+        System.Drawing.Rectangle rectSTT = new System.Drawing.Rectangle(x, y, colWidth_STT, rowHeight * 2);
+        e.Graphics.FillRectangle(headerBackBrush, rectSTT);
+        e.Graphics.DrawRectangle(Pens.Black, rectSTT);
+        e.Graphics.DrawString("STT", fontHeader, brush, rectSTT, sfHeader);
         x += colWidth_STT;
 
-        e.Graphics.DrawRectangle(Pens.Black, x, y, colWidth_DeliveryDate, rowHeight * 2);
-        e.Graphics.DrawString("Ngày Xuất", fontHeader, brush, new RectangleF(x, y, colWidth_DeliveryDate, rowHeight * 2), sfHeader);
+        System.Drawing.Rectangle rectDeliveryDate = new System.Drawing.Rectangle(x, y, colWidth_DeliveryDate, rowHeight * 2);
+        e.Graphics.FillRectangle(headerBackBrush, rectDeliveryDate);
+        e.Graphics.DrawRectangle(Pens.Black, rectDeliveryDate);
+        e.Graphics.DrawString("Ngày Xuất", fontHeader, brush, rectDeliveryDate, sfHeader);
         x += colWidth_DeliveryDate;
 
+        System.Drawing.Rectangle rectCode = new System.Drawing.Rectangle(x, y, colWidth_Code, rowHeight * 2);
+        e.Graphics.FillRectangle(headerBackBrush, rectCode);
         e.Graphics.DrawRectangle(Pens.Black, x, y, colWidth_Code, rowHeight * 2);
-        e.Graphics.DrawString("Số Phiếu", fontHeader, brush, new RectangleF(x, y, colWidth_Code, rowHeight * 2), sfHeader);
+        e.Graphics.DrawString("Số Phiếu", fontHeader, brush, rectCode, sfHeader);
         x += colWidth_Code;
 
-        e.Graphics.DrawRectangle(Pens.Black, x, y, colWidth_SKU, rowHeight);
-        e.Graphics.DrawString("SKU", fontHeader, brush, new RectangleF(x, y, colWidth_SKU, rowHeight), sfHeader);
-        e.Graphics.DrawRectangle(Pens.Black, x, y + rowHeight, colWidth_SKU, rowHeight);
-        e.Graphics.DrawString("Art.Nr", fontHeader, brush, new RectangleF(x, y + rowHeight, colWidth_SKU, rowHeight), sfHeader);
+        System.Drawing.Rectangle rectSKU = new System.Drawing.Rectangle(x, y, colWidth_SKU, rowHeight);
+        e.Graphics.FillRectangle(headerBackBrush, rectSKU);
+        e.Graphics.DrawRectangle(Pens.Black, rectSKU);
+
+        e.Graphics.DrawString("SKU", fontHeader, brush, rectSKU, sfHeader);
+        rectSKU = new System.Drawing.Rectangle(x, y + rowHeight, colWidth_SKU, rowHeight);
+        e.Graphics.FillRectangle(headerBackBrush, rectSKU);
+        e.Graphics.DrawRectangle(Pens.Black, rectSKU);
+        e.Graphics.DrawString("Art.Nr", fontHeader, brush, rectSKU, sfHeader);
         x += colWidth_SKU;
 
-        e.Graphics.DrawRectangle(Pens.Black, x, y, colWidth_Product, rowHeight * 2);
-        e.Graphics.DrawString("Tên Sản Phẩm", fontHeader, brush, new RectangleF(x, y, colWidth_Product, rowHeight * 2), sfHeader);
+        System.Drawing.Rectangle rectProduct = new System.Drawing.Rectangle(x, y, colWidth_Product, rowHeight * 2);
+        e.Graphics.FillRectangle(headerBackBrush, rectProduct);
+        e.Graphics.DrawRectangle(Pens.Black, rectProduct);
+        e.Graphics.DrawString("Tên Sản Phẩm", fontHeader, brush, rectProduct, sfHeader);
         x += colWidth_Product;
 
+        System.Drawing.Rectangle rectProductType = new System.Drawing.Rectangle(x, y, colWidth_ProductType, rowHeight * 2);
+        e.Graphics.FillRectangle(headerBackBrush, rectProductType);
         e.Graphics.DrawRectangle(Pens.Black, x, y, colWidth_ProductType, rowHeight * 2);
-        e.Graphics.DrawString("Loại Hàng", fontHeader, brush, new RectangleF(x, y, colWidth_ProductType, rowHeight * 2), sfHeader);
+        e.Graphics.DrawString("Loại Hàng", fontHeader, brush, rectProductType, sfHeader);
         x += colWidth_ProductType;
 
-        e.Graphics.DrawRectangle(Pens.Black, x, y, colWidth_Package, rowHeight * 2);
-        e.Graphics.DrawString("Đ.Vị", fontHeader, brush, new RectangleF(x, y, colWidth_Package, rowHeight * 2), sfHeader);
+        System.Drawing.Rectangle rectPackage = new System.Drawing.Rectangle(x, y, colWidth_Package, rowHeight * 2);
+        e.Graphics.FillRectangle(headerBackBrush, rectPackage);
+        e.Graphics.DrawRectangle(Pens.Black, rectPackage);
+        e.Graphics.DrawString("Đ.Vị", fontHeader, brush, rectPackage, sfHeader);
         x += colWidth_Package;
 
-        e.Graphics.DrawRectangle(Pens.Black, x, y, colWidth_SLGH, rowHeight);
-        e.Graphics.DrawString("Số Lượng", fontHeader, brush, new RectangleF(x, y, colWidth_SLGH, rowHeight), sfHeader);
-        e.Graphics.DrawRectangle(Pens.Black, x, y + rowHeight, colWidth_SLGH / 2, rowHeight);
-        e.Graphics.DrawString("Gói", fontHeader, brush, new RectangleF(x, y + rowHeight, colWidth_SLGH / 2, rowHeight), sfHeader);
+        System.Drawing.Rectangle rectSLGH = new System.Drawing.Rectangle(x, y, colWidth_SLGH, rowHeight);
+        e.Graphics.FillRectangle(headerBackBrush, rectSLGH);
+        e.Graphics.DrawRectangle(Pens.Black, rectSLGH);
+        e.Graphics.DrawString("Số Lượng", fontHeader, brush, rectSLGH, sfHeader);
+
+        rectSLGH = new System.Drawing.Rectangle(x, y + rowHeight, colWidth_SLGH / 2, rowHeight);
+        e.Graphics.FillRectangle(headerBackBrush, rectSLGH);
+        e.Graphics.DrawRectangle(Pens.Black, rectSLGH);
+        e.Graphics.DrawString("Gói", fontHeader, brush, rectSLGH, sfHeader);
         x += colWidth_SLGH / 2;
 
-        e.Graphics.DrawRectangle(Pens.Black, x, y + rowHeight, colWidth_SLGH / 2, rowHeight);
-        e.Graphics.DrawString("Kg", fontHeader, brush, new RectangleF(x, y + rowHeight, colWidth_SLGH / 2, rowHeight), sfHeader);
+        rectSLGH = new System.Drawing.Rectangle(x, y + rowHeight, colWidth_SLGH/2, rowHeight);
+        e.Graphics.FillRectangle(headerBackBrush, rectSLGH);
+        e.Graphics.DrawRectangle(Pens.Black, rectSLGH);
+        e.Graphics.DrawString("Kg", fontHeader, brush, rectSLGH, sfHeader);
         x += colWidth_SLGH / 2;
 
-        e.Graphics.DrawRectangle(Pens.Black, x, y, colWidth_Price, rowHeight * 2);
-        e.Graphics.DrawString("Đơn Giá", fontHeader, brush, new RectangleF(x, y, colWidth_Price, rowHeight * 2), sfHeader);
+        System.Drawing.Rectangle rectPrice = new System.Drawing.Rectangle(x, y, colWidth_Price, rowHeight * 2);
+        e.Graphics.FillRectangle(headerBackBrush, rectPrice);
+        e.Graphics.DrawRectangle(Pens.Black, rectPrice);
+        e.Graphics.DrawString("Đơn Giá", fontHeader, brush, rectPrice, sfHeader);
         x += colWidth_Price;
 
-        e.Graphics.DrawRectangle(Pens.Black, x, y, colWidth_TotalAmount, rowHeight * 2);
-        e.Graphics.DrawString("Thành\nTiền", fontHeader, brush, new RectangleF(x, y, colWidth_TotalAmount, rowHeight * 2), sfHeader);
+        System.Drawing.Rectangle rectTotalAmount = new System.Drawing.Rectangle(x, y, colWidth_TotalAmount, rowHeight * 2);
+        e.Graphics.FillRectangle(headerBackBrush, rectTotalAmount);
+        e.Graphics.DrawRectangle(Pens.Black, rectTotalAmount);
+        e.Graphics.DrawString("Thành\nTiền", fontHeader, brush, rectTotalAmount, sfHeader);
         x += colWidth_TotalAmount;
 
         
         y += (rowHeight * 2);
 
         // ------------------ Dữ liệu ------------------
-
-
+                
         for (; currentRowIndex < data.Rows.Count; currentRowIndex++)
         {
             var row = data.Rows[currentRowIndex];
@@ -261,6 +308,12 @@ public class DoiChieuCongNo_Printer
                 int tempHeight = Math.Max(rowHeight, (int)size.Height);
                 groupHeight += tempHeight;
 
+                if (y + groupHeight > e.MarginBounds.Bottom + paddingBottom / 2)
+                {
+                    groupHeight -= tempHeight;
+                    break;
+                }
+
                 tempIndex++;
             }
 
@@ -269,6 +322,7 @@ public class DoiChieuCongNo_Printer
                 yPosition = e.MarginBounds.Top;
                 firstPage = false;
                 e.HasMorePages = true;
+                firstRowData = true;
                 return;
             }
 
@@ -290,7 +344,7 @@ public class DoiChieuCongNo_Printer
             e.Graphics.DrawString((currentRowIndex + 1).ToString(), fontContent, brush, new RectangleF(x, y, colWidth_STT, rowHeight), sfHeader);
             x += colWidth_STT;
 
-            if (currentRowIndex == 0 || data.Rows[currentRowIndex - 1].Field<DateTime>("DeliveryDate").Date != currentDate)
+            if (firstRowData ||currentRowIndex == 0 || data.Rows[currentRowIndex - 1].Field<DateTime>("DeliveryDate").Date != currentDate)
             {
                 e.Graphics.DrawRectangle(Pens.Black, x, y, colWidth_DeliveryDate, groupHeight);
                 e.Graphics.DrawString(currentDate.ToString("dd/MM/yyyy"), fontContent, brush, new RectangleF(x, y, colWidth_DeliveryDate, groupHeight), sfHeader);
@@ -298,14 +352,12 @@ public class DoiChieuCongNo_Printer
             }
             x += colWidth_DeliveryDate;
 
-            if (currentRowIndex == 0 || data.Rows[currentRowIndex - 1].Field<DateTime>("DeliveryDate").Date != currentDate)
+            if (firstRowData ||currentRowIndex == 0 || data.Rows[currentRowIndex - 1].Field<DateTime>("DeliveryDate").Date != currentDate)
             {
                 e.Graphics.DrawRectangle(Pens.Black, x, y, colWidth_Code, groupHeight);
                 e.Graphics.DrawString(orderDomesticIndex.ToString(), fontContent, brush, new RectangleF(x, y, colWidth_Code, groupHeight), sfHeader);
 
             }
-         //   e.Graphics.DrawRectangle(Pens.Black, x, y, colWidth_Code, dynamicHeight);
-         //   e.Graphics.DrawString(orderDomesticIndex.ToString(), fontContent, brush, new RectangleF(x, y, colWidth_Code, dynamicHeight), sfDataCenter);
             x += colWidth_Code;
 
             e.Graphics.DrawRectangle(Pens.Black, x, y, colWidth_SKU, dynamicHeight);
@@ -346,9 +398,12 @@ public class DoiChieuCongNo_Printer
 
             e.Graphics.DrawRectangle(Pens.Black, x, y, colWidth_TotalAmount, dynamicHeight);
             e.Graphics.DrawString(totalAmount.ToString("N0"), fontContent, brush, new RectangleF(x, y, colWidth_TotalAmount, dynamicHeight), sfDataRight);
+            this.TotalAmount += totalAmount;
             x += colWidth_TotalAmount; 
 
+
             y += dynamicHeight;
+            firstRowData = false;
 
 
             if (y + rowHeight > e.MarginBounds.Bottom + paddingBottom / 2)
@@ -357,13 +412,22 @@ public class DoiChieuCongNo_Printer
                 yPosition = e.MarginBounds.Top;
                 firstPage = false;//
                 e.HasMorePages = true;
+                firstRowData = true;
                 return;
             }
         }
 
+        float width_totalAmount = colWidth_STT + colWidth_DeliveryDate + colWidth_SKU + colWidth_ProductType + colWidth_Product +
+            colWidth_Package + colWidth_Price + colWidth_SLGH + colWidth_Code;
+        e.Graphics.DrawRectangle(Pens.Black, startX, y, width_totalAmount, 25);
+        e.Graphics.DrawString("TỔNG CỘNG", fontHeader, brush, new RectangleF(startX, y, width_totalAmount, 25), sfDataCenter);
+
+        e.Graphics.DrawRectangle(Pens.Black, startX + width_totalAmount, y, colWidth_TotalAmount, 25);
+        e.Graphics.DrawString(TotalAmount.ToString("N0"), fontHeader, brush, new RectangleF(startX + width_totalAmount, y, colWidth_TotalAmount, 25), sfDataCenter);
+
         y += 40;
-        e.Graphics.DrawString("Người nhận hàng\n\n\n\n\n\n\n........................................................", fontHeader, brush, new RectangleF(startX + 40, y, 300, 160), sfDataCenter);
-        e.Graphics.DrawString($"Người giao hàng\n\n\n\n\n\n\n.......................................................", fontHeader, brush, new RectangleF(e.PageBounds.Right - 400, y, 300, 160), sfDataCenter);
+        DateTime lastDayOfMonth = new DateTime(deliveryDate0.Year, deliveryDate0.Month, DateTime.DaysInMonth(deliveryDate0.Year, deliveryDate0.Month));
+        e.Graphics.DrawString($"Ngày {lastDayOfMonth.Day} tháng {lastDayOfMonth.Month} năm {lastDayOfMonth.Year}\n\nNgười Lập Bảng\n\n\n\n\n{UserManager.Instance.fullName}", fontHeader, brush, new RectangleF(e.PageBounds.Right - 400, y, 400, 160), sfDataCenter);
         e.HasMorePages = false;
         currentRowIndex = 0;
         firstPage = true;

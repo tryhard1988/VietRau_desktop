@@ -63,7 +63,7 @@ namespace RauViet.ui
         {
             if (e.KeyCode == Keys.F5)
             {
-                SQLStore.Instance.removeEmployees();
+                SQLStore_QLNS.Instance.removeEmployees();
                 ShowData();
             }
         }
@@ -76,9 +76,9 @@ namespace RauViet.ui
 
             try
             {
-                var employeesTask = SQLStore.Instance.GetEmployeesAsync();
-                var salaryGradeTask = SQLStore.Instance.GetActiveSalaryGradeAsync();
-                var employeeLogTask = SQLStore.Instance.GetEmployeeLogAsync();
+                var employeesTask = SQLStore_QLNS.Instance.GetEmployeesAsync();
+                var salaryGradeTask = SQLStore_QLNS.Instance.GetActiveSalaryGradeAsync();
+                var employeeLogTask = SQLStore_QLNS.Instance.GetEmployeeLogAsync();
                 await Task.WhenAll(employeesTask, salaryGradeTask, employeeLogTask);
                 mEmployees_dt = employeesTask.Result;
                 mSalaryGrade_dt = salaryGradeTask.Result;
@@ -198,7 +198,7 @@ namespace RauViet.ui
                     UpdateRightUI(0);
                 }
             }
-            catch (Exception ex)
+            catch
             {
                 status_lb.Text = "Thất bại.";
                 status_lb.ForeColor = Color.Red;
@@ -335,7 +335,7 @@ namespace RauViet.ui
 
                         try
                         {
-                            bool isScussess = await SQLManager.Instance.updateEmployeesAsync(employeeId, maNV, tenNV, birthDate, hireDate,
+                            bool isScussess = await SQLManager_QLNS.Instance.updateEmployeesAsync(employeeId, maNV, tenNV, birthDate, hireDate,
                                     isMale, homeTown, address, citizenID, issueDate, issuePlace, isActive, canCreateUserName, 
                                     probationSalaryPercent, phone, noteResignUpdate, isInsuranceRefund, salaryGradeID);
 
@@ -345,7 +345,7 @@ namespace RauViet.ui
                                 status_lb.Text = "Thành công.";
                                 status_lb.ForeColor = Color.Green;
 
-                                _ = SQLManager.Instance.InsertEmployeesLogAsync(maNV, oldValueLog, "Edit Success: " + newValueLog);
+                                _ = SQLManager_QLNS.Instance.InsertEmployeesLogAsync(maNV, oldValueLog, "Edit Success: " + newValueLog);
 
                                 row.Cells["EmployeeCode"].Value = maNV;
                                 row.Cells["FullName"].Value = tenNV;
@@ -372,14 +372,14 @@ namespace RauViet.ui
                             }
                             else
                             {
-                                _ = SQLManager.Instance.InsertEmployeesLogAsync(maNV, oldValueLog, "Edit Fail: " + newValueLog);
+                                _ = SQLManager_QLNS.Instance.InsertEmployeesLogAsync(maNV, oldValueLog, "Edit Fail: " + newValueLog);
                                 status_lb.Text = "Thất bại.";
                                 status_lb.ForeColor = Color.Red;
                             }
                         }
                         catch (Exception ex)
                         {
-                            _ = SQLManager.Instance.InsertEmployeesLogAsync(maNV, oldValueLog, "Edit Exception: " + ex .Message +" : "+ newValueLog);
+                            _ = SQLManager_QLNS.Instance.InsertEmployeesLogAsync(maNV, oldValueLog, "Edit Exception: " + ex .Message +" : "+ newValueLog);
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;
                         }
@@ -411,7 +411,7 @@ namespace RauViet.ui
                 try
                 {
                     string nvCode_temp = "VR" + 0.ToString("D4");
-                    var result = await SQLManager.Instance.insertEmployeeAsync(nvCode_temp,tenNV, birthDate, hireDate,isMale, homeTown, address, 
+                    var result = await SQLManager_QLNS.Instance.insertEmployeeAsync(nvCode_temp,tenNV, birthDate, hireDate,isMale, homeTown, address, 
                         citizenID, issueDate, issuePlace, isActive, canCreateUserName, probationSalaryPercent, phone, noteResign, isInsuranceRefund, salaryGradeID);
                     if (result.EmployeeID > 0)
                     {
@@ -457,10 +457,10 @@ namespace RauViet.ui
                         status_lb.ForeColor = Color.Green;
 
                         
-                       int id = await SQLManager.Instance.insertEmployeeSalaryInfoAsync(employeeCode, DateTime.Now.Month, DateTime.Now.Year, salaryGrade, salaryGrade, "Theo Bậc Lương");
-                       await SQLStore.Instance.UpdateEmployeeSalaryInfo(id, employeeCode, DateTime.Now.Month, DateTime.Now.Year, salaryGrade, salaryGrade, "Theo Bậc Lương");
+                       int id = await SQLManager_QLNS.Instance.insertEmployeeSalaryInfoAsync(employeeCode, DateTime.Now.Month, DateTime.Now.Year, salaryGrade, salaryGrade, "Theo Bậc Lương");
+                       await SQLStore_QLNS.Instance.UpdateEmployeeSalaryInfo(id, employeeCode, DateTime.Now.Month, DateTime.Now.Year, salaryGrade, salaryGrade, "Theo Bậc Lương");
 
-                        _ = SQLManager.Instance.InsertEmployeesLogAsync(employeeCode, newValueLog, "Create Success");
+                        _ = SQLManager_QLNS.Instance.InsertEmployeesLogAsync(employeeCode, newValueLog, "Create Success");
                         newCustomerBtn_Click(null, null);
                     }
                     else
@@ -469,7 +469,7 @@ namespace RauViet.ui
                         status_lb.ForeColor = Color.Red;
                     }
                 }
-                catch (Exception ex)
+                catch
                 {
                     status_lb.Text = "Thất bại.";
                     status_lb.ForeColor = Color.Red;
@@ -549,7 +549,7 @@ namespace RauViet.ui
                     {
                         try
                         {
-                            bool isScussess = await SQLManager.Instance.deleteEmployeeAsync(Convert.ToInt32(employeeID));
+                            bool isScussess = await SQLManager_QLNS.Instance.deleteEmployeeAsync(Convert.ToInt32(employeeID));
 
                             if (isScussess == true)
                             {
@@ -565,7 +565,7 @@ namespace RauViet.ui
                                 status_lb.ForeColor = Color.Red;
                             }
                         }
-                        catch (Exception ex)
+                        catch
                         {
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;

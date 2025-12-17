@@ -88,7 +88,7 @@ namespace RauViet.ui
                     return;
                 }
                 
-                SQLStore.Instance.removeOrderDomesticDetail(mCurrentOrderDomesticCodeID);
+                SQLStore_Kho.Instance.removeOrderDomesticDetail(mCurrentOrderDomesticCodeID);
                 ShowData();
             }
             else if(!isNewState && !edit_btn.Visible /* && UserManager.Instance.fullName_NoSign.CompareTo(staff) == 0*/)
@@ -118,12 +118,12 @@ namespace RauViet.ui
             orderDomesticCode_cbb.SelectedIndexChanged -= exportCode_search_cbb_SelectedIndexChanged;
             try
             {
-                mProduct_dt = await SQLStore.Instance.getProductDomesticPricesAsync();
+                mProduct_dt = await SQLStore_Kho.Instance.getProductDomesticPricesAsync();
 
                 var parameters = new Dictionary<string, object> { { "Complete", false } };
-                var orderDomesticCode_dtTask = SQLStore.Instance.getOrderDomesticCodeAsync(parameters);
-                var productTypeTask = SQLStore.Instance.getProductTypeAsync();
-                var packingTask = SQLStore.Instance.getProductpackingAsync();          
+                var orderDomesticCode_dtTask = SQLStore_Kho.Instance.getOrderDomesticCodeAsync(parameters);
+                var productTypeTask = SQLStore_Kho.Instance.getProductTypeAsync();
+                var packingTask = SQLStore_Kho.Instance.getProductpackingAsync();          
                 await Task.WhenAll(packingTask, orderDomesticCode_dtTask, productTypeTask);              
                 mProductPacking_dt = packingTask.Result;
                 mOrderDomesticCode_dt = orderDomesticCode_dtTask.Result;
@@ -134,8 +134,8 @@ namespace RauViet.ui
                     mCurrentOrderDomesticCodeID = Convert.ToInt32(mOrderDomesticCode_dt.AsEnumerable().Max(r => r.Field<int>("OrderDomesticCodeID")));
                 }
 
-                var orderLogTask = SQLStore.Instance.GetOrderDomesticDetailLogAsync(mCurrentOrderDomesticCodeID);
-                var othersTask = SQLStore.Instance.getOrderDomesticDetailAsync(mCurrentOrderDomesticCodeID);
+                var orderLogTask = SQLStore_Kho.Instance.GetOrderDomesticDetailLogAsync(mCurrentOrderDomesticCodeID);
+                var othersTask = SQLStore_Kho.Instance.getOrderDomesticDetailAsync(mCurrentOrderDomesticCodeID);
               //  var latestOrdersTask = SQLStore.Instance.get3LatestOrdersAsync();
                 await Task.WhenAll(othersTask, orderLogTask);
 
@@ -295,10 +295,14 @@ namespace RauViet.ui
             if (productType_CBB.SelectedValue == null || product_ccb.SelectedValue == null)
                 return;
 
+            var productItem = (DataRowView)product_ccb.SelectedItem;
+
             int selectedSKU = Convert.ToInt32(product_ccb.SelectedValue);
             string productTypeCode = productType_CBB.SelectedValue.ToString();
+            string Package = productItem["Package"].ToString();
+
             DataView dv = new DataView(mProductPacking_dt);
-            if (productTypeCode.CompareTo("HX") == 0 || productTypeCode.CompareTo("HT") == 0)
+            if (productTypeCode.CompareTo("HX") == 0 || productTypeCode.CompareTo("HT") == 0 || Package.CompareTo("weight") == 0)
             {
 
                 if (!isNewState)
@@ -365,8 +369,8 @@ namespace RauViet.ui
 
             mCurrentOrderDomesticCodeID = exportCodeId;
 
-            var orderLogTask = SQLStore.Instance.GetOrderDomesticDetailLogAsync(mCurrentOrderDomesticCodeID);
-            var othersTask = SQLStore.Instance.getOrderDomesticDetailAsync(mCurrentOrderDomesticCodeID);
+            var orderLogTask = SQLStore_Kho.Instance.GetOrderDomesticDetailLogAsync(mCurrentOrderDomesticCodeID);
+            var othersTask = SQLStore_Kho.Instance.getOrderDomesticDetailAsync(mCurrentOrderDomesticCodeID);
             await Task.WhenAll(othersTask, orderLogTask);
 
             mOrderDomesticDetail_dt = othersTask.Result;
@@ -586,7 +590,7 @@ namespace RauViet.ui
 
                     try
                     {
-                        bool isScussess = await SQLManager.Instance.updateOrderDomesticDetailAsync(orderDomesticDetailID, packingId, productType, PCSOrder, NWOrder, price);
+                        bool isScussess = await SQLManager_Kho.Instance.updateOrderDomesticDetailAsync(orderDomesticDetailID, packingId, productType, PCSOrder, NWOrder, price);
 
                         if (isScussess == true)
                         {
@@ -604,20 +608,20 @@ namespace RauViet.ui
                             row["packing"] = packing;                               
                             row["ProductNameVN"] = proVN;
                             row["SKU"] = sku;
-                            _ = SQLManager.Instance.InsertOrderDomesticDetailLogAsync(orderDomesticDetailID, orderDomesticCodeID, "Update Success: " + oldValue, newValue);
+                            _ = SQLManager_Kho.Instance.InsertOrderDomesticDetailLogAsync(orderDomesticDetailID, orderDomesticCodeID, "Update Success: " + oldValue, newValue);
                         }
                         else
                         {
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = System.Drawing.Color.Red;
-                            _ = SQLManager.Instance.InsertOrderDomesticDetailLogAsync(orderDomesticDetailID, orderDomesticCodeID, "Update Fail: " + oldValue, newValue);
+                            _ = SQLManager_Kho.Instance.InsertOrderDomesticDetailLogAsync(orderDomesticDetailID, orderDomesticCodeID, "Update Fail: " + oldValue, newValue);
                         }
                     }
                     catch (Exception ex)
                     {
                         status_lb.Text = "Thất bại.";
                         status_lb.ForeColor = System.Drawing.Color.Red;
-                        _ = SQLManager.Instance.InsertOrderDomesticDetailLogAsync(orderDomesticDetailID, orderDomesticCodeID, "Update Exception : " + ex.Message + oldValue, newValue);
+                        _ = SQLManager_Kho.Instance.InsertOrderDomesticDetailLogAsync(orderDomesticDetailID, orderDomesticCodeID, "Update Exception : " + ex.Message + oldValue, newValue);
                     }
                     
                     break;
@@ -639,7 +643,7 @@ namespace RauViet.ui
             string newValue = $"{proVN} - {productTypeName} - {PCSOrder} - {NWOrder} - {amount} {packing}";
             try
             {
-                int newId = await SQLManager.Instance.insertOrderDomesticDetailAsync(OrderDomesticCodeID, packingId, productType, PCSOrder, NWOrder, price);
+                int newId = await SQLManager_Kho.Instance.insertOrderDomesticDetailAsync(OrderDomesticCodeID, packingId, productType, PCSOrder, NWOrder, price);
                 if (newId > 0)
                 {
                     DataRow drToAdd = mOrderDomesticDetail_dt.NewRow();
@@ -666,20 +670,20 @@ namespace RauViet.ui
 
                     newCustomerBtn_Click(null, null);
 
-                    _ = SQLManager.Instance.InsertOrderDomesticDetailLogAsync(newId, OrderDomesticCodeID, "Create Success", newValue);
+                    _ = SQLManager_Kho.Instance.InsertOrderDomesticDetailLogAsync(newId, OrderDomesticCodeID, "Create Success", newValue);
                 }
                 else
                 {
                     status_lb.Text = "Thất bại";
                     status_lb.ForeColor = System.Drawing.Color.Red;
-                    _ = SQLManager.Instance.InsertOrderDomesticDetailLogAsync(newId, OrderDomesticCodeID, "Create Fail", newValue);
+                    _ = SQLManager_Kho.Instance.InsertOrderDomesticDetailLogAsync(newId, OrderDomesticCodeID, "Create Fail", newValue);
                 }
             }
             catch (Exception ex)
             {
                 status_lb.Text = "Thất bại.";
                 status_lb.ForeColor = System.Drawing.Color.Red;
-                _ = SQLManager.Instance.InsertOrderDomesticDetailLogAsync(-1, OrderDomesticCodeID, "Create Exception: " + ex.Message, newValue);
+                _ = SQLManager_Kho.Instance.InsertOrderDomesticDetailLogAsync(-1, OrderDomesticCodeID, "Create Exception: " + ex.Message, newValue);
             }
         }
         private void saveBtn_Click(object sender, EventArgs e)
@@ -833,7 +837,7 @@ namespace RauViet.ui
                   //  int exportCodeId = Convert.ToInt32(row["ExportCodeID"]);
                     try
                     {   
-                        bool isSuccess = await SQLManager.Instance.deleteOrderDomesticDetailAsync(id);
+                        bool isSuccess = await SQLManager_Kho.Instance.deleteOrderDomesticDetailAsync(id);
 
                         if (isSuccess)
                         {
@@ -854,7 +858,7 @@ namespace RauViet.ui
                            // _ = SQLManager.Instance.InsertOrderLogAsync(exportCodeId, orderId, "Delete M" + mode + " Thất Bại ","", "", 0, 0);
                         }
                     }
-                    catch (Exception ex)
+                    catch
                     {
                         status_lb.Text = "Thất bại.";
                         status_lb.ForeColor = System.Drawing.Color.Red;
@@ -1131,21 +1135,21 @@ namespace RauViet.ui
 
                 try
                 {
-                    bool isSuccess = await SQLManager.Instance.updateOrderDomesticDetail_PackingAsync(orderDomesticDetailID, Convert.ToInt32(orderRow["PCSReal"]), Convert.ToDecimal(orderRow["NWReal"]), orderRow["Note"].ToString());
+                    bool isSuccess = await SQLManager_Kho.Instance.updateOrderDomesticDetail_PackingAsync(orderDomesticDetailID, Convert.ToInt32(orderRow["PCSReal"]), Convert.ToDecimal(orderRow["NWReal"]), orderRow["Note"].ToString());
                     if (!isSuccess)
                     {
                         MessageBox.Show($"Cập Nhật Thất Bại", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        _ = SQLManager.Instance.InsertOrderDomesticDetailLogAsync(orderDomesticDetailID, orderDomesticCodeID, columnName + " - Update đóng thùng Fail", newValueStr);
+                        _ = SQLManager_Kho.Instance.InsertOrderDomesticDetailLogAsync(orderDomesticDetailID, orderDomesticCodeID, columnName + " - Update đóng thùng Fail", newValueStr);
                     }
                     else
                     {
-                        _ = SQLManager.Instance.InsertOrderDomesticDetailLogAsync(orderDomesticDetailID, orderDomesticCodeID, columnName + " - Update đóng thùng Success", newValueStr);
+                        _ = SQLManager_Kho.Instance.InsertOrderDomesticDetailLogAsync(orderDomesticDetailID, orderDomesticCodeID, columnName + " - Update đóng thùng Success", newValueStr);
                     }
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine("ERROR: " + ex.Message);
-                    _ = SQLManager.Instance.InsertOrderDomesticDetailLogAsync(orderDomesticDetailID, orderDomesticCodeID, columnName + " - Update đóng thùng Exception " + ex.Message, newValueStr);
+                    _ = SQLManager_Kho.Instance.InsertOrderDomesticDetailLogAsync(orderDomesticDetailID, orderDomesticCodeID, columnName + " - Update đóng thùng Exception " + ex.Message, newValueStr);
                 }
             }
         }

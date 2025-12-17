@@ -36,7 +36,7 @@ namespace RauViet.ui
         {
             if (e.KeyCode == Keys.F5)
             {
-                SQLStore.Instance.removeEmployees();
+                SQLStore_QLNS.Instance.removeEmployees();
                 ShowData();
             }
         }
@@ -53,8 +53,8 @@ namespace RauViet.ui
             try
             {
                 string[] keepColumns = { "EmployeeCode", "FullName", "BankName", "BankAccountHolder", "BankAccountNumber", "BankBranch" };
-                var employeesTask = SQLStore.Instance.GetEmployeesAsync(keepColumns);
-                var employeeBankLogTask = SQLStore.Instance.GetEmployeeBankLogAsync();
+                var employeesTask = SQLStore_QLNS.Instance.GetEmployeesAsync(keepColumns);
+                var employeeBankLogTask = SQLStore_QLNS.Instance.GetEmployeeBankLogAsync();
                 await Task.WhenAll(employeesTask, employeeBankLogTask);
                 DataTable employee_dt = employeesTask.Result;
                 mLogDV = new DataView(employeeBankLogTask.Result);
@@ -100,7 +100,7 @@ namespace RauViet.ui
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
-            catch (Exception ex)
+            catch
             {
                 status_lb.Text = "Thất bại.";
                 status_lb.ForeColor = Color.Red;
@@ -156,14 +156,14 @@ namespace RauViet.ui
                     {
                         try
                         {
-                            bool isScussess = await SQLManager.Instance.updateEmployeeBankAsync(employeeCode, bankName, bankBranch, bankAccountNumber, bankAccountHolder);
+                            bool isScussess = await SQLManager_QLNS.Instance.updateEmployeeBankAsync(employeeCode, bankName, bankBranch, bankAccountNumber, bankAccountHolder);
 
                             if (isScussess == true)
                             {
                                 status_lb.Text = "Thành công.";
                                 status_lb.ForeColor = Color.Green;
 
-                                _ = SQLManager.Instance.InsertEmployeesBankLogAsync(employeeCode, $"{row.Cells["BankName"].Value} - {row.Cells["BankBranch"].Value} - {row.Cells["BankAccountNumber"].Value} - {row.Cells["BankAccountHolder"].Value}",
+                                _ = SQLManager_QLNS.Instance.InsertEmployeesBankLogAsync(employeeCode, $"{row.Cells["BankName"].Value} - {row.Cells["BankBranch"].Value} - {row.Cells["BankAccountNumber"].Value} - {row.Cells["BankAccountHolder"].Value}",
                                     $"Success: {bankName} - {bankBranch} - {bankAccountNumber} - {bankAccountHolder}");
                                 row.Cells["BankName"].Value = bankName;
                                 row.Cells["BankBranch"].Value = bankBranch;
@@ -177,11 +177,11 @@ namespace RauViet.ui
                                     ["BankAccountNumber"] = bankAccountNumber,
                                     ["BankAccountHolder"] = bankAccountHolder
                                 };
-                                SQLStore.Instance.updateEmploy(employeeCode, parameters);
+                                SQLStore_QLNS.Instance.updateEmploy(employeeCode, parameters);
                             }
                             else
                             {
-                                _ = SQLManager.Instance.InsertEmployeesBankLogAsync(employeeCode, $"{row.Cells["BankName"].Value} - {row.Cells["BankBranch"].Value} - {row.Cells["BankAccountNumber"].Value} - {row.Cells["BankAccountHolder"].Value}",
+                                _ = SQLManager_QLNS.Instance.InsertEmployeesBankLogAsync(employeeCode, $"{row.Cells["BankName"].Value} - {row.Cells["BankBranch"].Value} - {row.Cells["BankAccountNumber"].Value} - {row.Cells["BankAccountHolder"].Value}",
                                     $"Fail: {bankName} - {bankBranch} - {bankAccountNumber} - {bankAccountHolder}");
                                 status_lb.Text = "Thất bại.";
                                 status_lb.ForeColor = Color.Red;
@@ -189,7 +189,7 @@ namespace RauViet.ui
                         }
                         catch (Exception ex)
                         {
-                            _ = SQLManager.Instance.InsertEmployeesBankLogAsync(employeeCode, $"{row.Cells["BankName"].Value} - {row.Cells["BankBranch"].Value} - {row.Cells["BankAccountNumber"].Value} - {row.Cells["BankAccountHolder"].Value}",
+                            _ = SQLManager_QLNS.Instance.InsertEmployeesBankLogAsync(employeeCode, $"{row.Cells["BankName"].Value} - {row.Cells["BankBranch"].Value} - {row.Cells["BankAccountNumber"].Value} - {row.Cells["BankAccountHolder"].Value}",
                                     $"Fail Exception: {ex.Message} - {bankName} - {bankBranch} - {bankAccountNumber} - {bankAccountHolder}");
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;

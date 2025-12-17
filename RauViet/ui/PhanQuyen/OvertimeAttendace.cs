@@ -70,7 +70,7 @@ namespace RauViet.ui
             {
                 int month = monthYearDtp.Value.Month;
                 int year = monthYearDtp.Value.Year;
-                SQLStore.Instance.removeOvertimeAttendamce(month, year);
+                SQLStore_QLNS.Instance.removeOvertimeAttendamce(month, year);
                 LoadAttandance_btn_Click(null, null);
             }
         }
@@ -92,10 +92,10 @@ namespace RauViet.ui
                 int year = monthYearDtp.Value.Year;
                 // Chạy truy vấn trên thread riêng
                 string[] keepColumns = { "EmployeeCode", "FullName", "PositionName", "ContractTypeName"};
-                mEmployee_dt = await SQLStore.Instance.GetEmployeesAsync(keepColumns);
-                var overtimeAttendamceTask = SQLStore.Instance.GetOvertimeAttendamceAsync(month, year);
-                var overtimeTypeTask = SQLStore.Instance.GetOvertimeTypeAsync(true);
-                var OvertimeAttendanceLogTask = SQLStore.Instance.GetOvertimeAttendanceLogAsync(month, year);
+                mEmployee_dt = await SQLStore_QLNS.Instance.GetEmployeesAsync(keepColumns);
+                var overtimeAttendamceTask = SQLStore_QLNS.Instance.GetOvertimeAttendamceAsync(month, year);
+                var overtimeTypeTask = SQLStore_QLNS.Instance.GetOvertimeTypeAsync(true);
+                var OvertimeAttendanceLogTask = SQLStore_QLNS.Instance.GetOvertimeAttendanceLogAsync(month, year);
                 await Task.WhenAll(overtimeAttendamceTask, overtimeTypeTask, OvertimeAttendanceLogTask);
 
                 mOvertimeAttendamce_dt = overtimeAttendamceTask.Result;
@@ -148,7 +148,7 @@ namespace RauViet.ui
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
-                bool isLock = await SQLStore.Instance.IsSalaryLockAsync(month, year);
+                bool isLock = await SQLStore_QLNS.Instance.IsSalaryLockAsync(month, year);
                 edit_btn.Visible = !isLock;
                 newBtn.Visible = !isLock;
 
@@ -253,8 +253,8 @@ namespace RauViet.ui
             int month = monthYearDtp.Value.Month;
             int year = monthYearDtp.Value.Year;
 
-            var overtimeAttendamceTask = SQLStore.Instance.GetOvertimeAttendamceAsync(month, year);
-            var OvertimeAttendanceLogTask = SQLStore.Instance.GetOvertimeAttendanceLogAsync(month, year);
+            var overtimeAttendamceTask = SQLStore_QLNS.Instance.GetOvertimeAttendamceAsync(month, year);
+            var OvertimeAttendanceLogTask = SQLStore_QLNS.Instance.GetOvertimeAttendanceLogAsync(month, year);
 
             await Task.WhenAll(overtimeAttendamceTask, OvertimeAttendanceLogTask);
 
@@ -263,7 +263,7 @@ namespace RauViet.ui
             log_GV.DataSource = mLogDV;
             Attendamce();
 
-            bool isLock = await SQLStore.Instance.IsSalaryLockAsync(month, year);
+            bool isLock = await SQLStore_QLNS.Instance.IsSalaryLockAsync(month, year);
 
             newBtn.Visible = !isLock;
             edit_btn.Visible = !isLock;
@@ -344,13 +344,13 @@ namespace RauViet.ui
                     {
                         try
                         {
-                            bool isScussess = await SQLManager.Instance.updateOvertimeAttendanceAsync(overtimeAttendanceID, employeeCode, workDate, 
+                            bool isScussess = await SQLManager_QLNS.Instance.updateOvertimeAttendanceAsync(overtimeAttendanceID, employeeCode, workDate, 
                                                                             startTime, endTime, overtimeTypeID, note);
                             
                             DataRow[] rows = mOvertimeType.Select($"OvertimeTypeID = {overtimeTypeID}");
                             string overtimeName = rows.Length > 0 ? rows[0]["OvertimeName"].ToString() : "";
 
-                            _ = SQLManager.Instance.InsertOvertimeAttandanceLogAsync(employeeCode, overtimeName,
+                            _ = SQLManager_QLNS.Instance.InsertOvertimeAttandanceLogAsync(employeeCode, overtimeName,
                                 $"edit {(isScussess == true ? "Success" : "Fail")} {overtimeAttendanceID} - {row.Cells["OvertimeName"].Value} - {row.Cells["WorkDate"].Value} - {row.Cells["StartTime"].Value} -> {row.Cells["EndTime"].Value} - {row.Cells["Note"].Value}",
                                 workDate.Date, startTime, endTime, note);
                             if (isScussess == true)
@@ -365,7 +365,7 @@ namespace RauViet.ui
                                 row.Cells["OvertimeTypeID"].Value = overtimeTypeID;
                                 row.Cells["Note"].Value = note;
                                 row.Cells["HourWork"].Value = (endTime - startTime).TotalHours;
-                                row.Cells["SalaryFactor"].Value = SQLStore.Instance.GetOvertime_SalaryFactor(overtimeTypeID);
+                                row.Cells["SalaryFactor"].Value = SQLStore_QLNS.Instance.GetOvertime_SalaryFactor(overtimeTypeID);
                                 row.Cells["OvertimeName"].Value = overtimeName;
 
 
@@ -386,7 +386,7 @@ namespace RauViet.ui
                         {
                             DataRow[] rows = mOvertimeType.Select($"OvertimeTypeID = {overtimeTypeID}");
                             string overtimeName = rows.Length > 0 ? rows[0]["OvertimeName"].ToString() : "";
-                            _ = SQLManager.Instance.InsertOvertimeAttandanceLogAsync(employeeCode, overtimeName,
+                            _ = SQLManager_QLNS.Instance.InsertOvertimeAttandanceLogAsync(employeeCode, overtimeName,
                                 $"edit Fail Exception: {ex.Message}: {overtimeAttendanceID} - {row.Cells["OvertimeName"].Value} - {row.Cells["WorkDate"].Value} - {row.Cells["StartTime"].Value} -> {row.Cells["EndTime"].Value} - {row.Cells["Note"].Value}",
                                 workDate.Date, startTime, endTime, note);
                             status_lb.Text = "Thất bại.";
@@ -407,12 +407,12 @@ namespace RauViet.ui
             {
                 try
                 {
-                    int newEmployee = await SQLManager.Instance.insertOvertimeAttendanceAsync(employeeCode, workDate, startTime, endTime, overtimeTypeID, note);
+                    int newEmployee = await SQLManager_QLNS.Instance.insertOvertimeAttendanceAsync(employeeCode, workDate, startTime, endTime, overtimeTypeID, note);
 
                     DataRow[] rows = mOvertimeType.Select($"OvertimeTypeID = {overtimeTypeID}");
                     string overtimeName = rows.Length > 0 ? rows[0]["OvertimeName"].ToString() : "";
 
-                    _ = SQLManager.Instance.InsertOvertimeAttandanceLogAsync(employeeCode, overtimeName, $"Create {(newEmployee > 0 ? "Success" : "Fail")}",workDate.Date, startTime, endTime, note);
+                    _ = SQLManager_QLNS.Instance.InsertOvertimeAttandanceLogAsync(employeeCode, overtimeName, $"Create {(newEmployee > 0 ? "Success" : "Fail")}",workDate.Date, startTime, endTime, note);
                     if (newEmployee > 0)
                     {
                         DataRow drToAdd = mOvertimeAttendamce_dt.NewRow();
@@ -427,7 +427,7 @@ namespace RauViet.ui
                         drToAdd["OvertimeTypeID"] = overtimeTypeID;
                         drToAdd["Note"] = note;
                         drToAdd["HourWork"] = (endTime - startTime).TotalHours;
-                        drToAdd["SalaryFactor"] = SQLStore.Instance.GetOvertime_SalaryFactor(overtimeTypeID);
+                        drToAdd["SalaryFactor"] = SQLStore_QLNS.Instance.GetOvertime_SalaryFactor(overtimeTypeID);
                         drToAdd["OvertimeName"] = overtimeName;
 
                         string[] vietDays = { "CN", "T.2", "T.3", "T.4", "T.5", "T.6", "T.7" };
@@ -460,7 +460,7 @@ namespace RauViet.ui
                 {
                     DataRow[] rows = mOvertimeType.Select($"OvertimeTypeID = {overtimeTypeID}");
                     string overtimeName = rows.Length > 0 ? rows[0]["OvertimeName"].ToString() : "";
-                    _ = SQLManager.Instance.InsertOvertimeAttandanceLogAsync(employeeCode, overtimeName, $"Create Fail Exception: {ex.Message}", workDate.Date, startTime, endTime, note);
+                    _ = SQLManager_QLNS.Instance.InsertOvertimeAttandanceLogAsync(employeeCode, overtimeName, $"Create Fail Exception: {ex.Message}", workDate.Date, startTime, endTime, note);
                     status_lb.Text = "Thất bại.";
                     status_lb.ForeColor = Color.Red;
                 }
@@ -501,7 +501,7 @@ namespace RauViet.ui
             else
                 createNew(employeeCode, workDate, startTime, endTime, overtimeAttendanceID, note);
 
-            SQLStore.Instance.removeAttendamce(workDate.Month, workDate.Year);
+            SQLStore_QLNS.Instance.removeAttendamce(workDate.Month, workDate.Year);
         }
 
         private void NewBtn_Click(object sender, EventArgs e)

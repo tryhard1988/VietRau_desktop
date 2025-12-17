@@ -50,44 +50,46 @@ namespace RauViet.ui
 
         private async void updatePrice_btn_click(object sender, EventArgs e)
         {
-            //if (dataGV.CurrentRow != null && !dataGV.CurrentRow.IsNewRow)
-            //{
-            //    DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", " Thay Đổi Giá", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-            //    if (dialogResult == DialogResult.Yes)
-            //    {
-            //        try
-            //        {
-            //            await Task.Delay(50);
-            //            loadingOverlay = new LoadingOverlay(this);
-            //            loadingOverlay.Show();
-            //            await Task.Delay(200);
-            //            string exportCode = dataGV.CurrentRow.Cells["ExportCode"].Value.ToString();
-            //            int exportCodeID = Convert.ToInt32(dataGV.CurrentRow.Cells["ExportCodeID"].Value);
-            //            bool isScussess = await SQLManager.Instance.updateNewPriceInOrderListWithExportCodeAsync(exportCodeID);
-            //            if(isScussess == true)
-            //            {
-            //                _= SQLStore.Instance.getOrdersAsync(exportCodeID, true);
-            //                MessageBox.Show("Thành Công", " Thay Đổi Giá", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            //                _ = SQLManager.Instance.InsertExportCodeLogAsync(exportCode, "Cập Nhật Giá Thành Công", null, null, null, "", "", false);
-            //            }
-            //            else
-            //            {
-            //                MessageBox.Show("Thất Bại", " Thay Đổi Giá", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            //                _ = SQLManager.Instance.InsertExportCodeLogAsync(exportCode, "Cập Nhật Giá Thất Bại", null, null, null, "", "", false);
-            //            }
-            //        }
-            //        catch (Exception ex)
-            //        {
-            //            status_lb.Text = "Thất bại.";
-            //            status_lb.ForeColor = Color.Red;
-            //        }
-            //        finally
-            //        {
-            //            await Task.Delay(100);
-            //            loadingOverlay.Hide();
-            //        }
-            //    }
-            //}            
+            if (dataGV.CurrentRow != null && !dataGV.CurrentRow.IsNewRow)
+            {
+                DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", " Thay Đổi Giá", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if (dialogResult == DialogResult.Yes)
+                {
+                    int OrderDomesticCodeID = Convert.ToInt32(dataGV.CurrentRow.Cells["OrderDomesticCodeID"].Value);
+                    int OrderDomesticIndex = Convert.ToInt32(dataGV.CurrentRow.Cells["OrderDomesticIndex"].Value);
+                    try
+                    {
+                        await Task.Delay(50);
+                        loadingOverlay = new LoadingOverlay(this);
+                        loadingOverlay.Show();
+                        await Task.Delay(200);
+                        
+                        bool isScussess = await SQLManager_Kho.Instance.updateNewPriceInOrderDomesticDetailAsync(OrderDomesticCodeID);
+                        if (isScussess == true)
+                        {
+                            SQLStore_Kho.Instance.removeOrderDomesticDetail(OrderDomesticCodeID);
+                            MessageBox.Show("Thành Công", " Thay Đổi Giá", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            _ = SQLManager_Kho.Instance.InsertOrderDomesticCodeLogAsync(OrderDomesticIndex, "Cập Nhật Giá Thành Công","");
+                        }
+                        else
+                        {
+                            MessageBox.Show("Thất Bại", " Thay Đổi Giá", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            _ = SQLManager_Kho.Instance.InsertOrderDomesticCodeLogAsync(OrderDomesticIndex, "Cập Nhật Giá Thất Bại", "");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _ = SQLManager_Kho.Instance.InsertOrderDomesticCodeLogAsync(OrderDomesticIndex, "Cập Nhật Giá Thất Bại", "Exception: " + ex.Message);
+                        status_lb.Text = "Thất bại.";
+                        status_lb.ForeColor = Color.Red;
+                    }
+                    finally
+                    {
+                        await Task.Delay(100);
+                        loadingOverlay.Hide();
+                    }
+                }
+            }
         }
 
         private void autoCreateExportId_btn_Click(object sender, EventArgs e)
@@ -139,10 +141,10 @@ namespace RauViet.ui
             try
             {
                 // Chạy truy vấn trên thread riêng
-                var orderDomesticCodeTask = SQLStore.Instance.getOrderDomesticCodeAsync();
-                var orderDomesticCodeLogTask = SQLStore.Instance.GetOrderDomesticCodeLogAsync();
-                var customerTask = SQLStore.Instance.getCustomersAsync();
-                var employeesInDongGoiTask = SQLStore.Instance.GetActiveEmployeesIn_DongGoiAsync();
+                var orderDomesticCodeTask = SQLStore_Kho.Instance.getOrderDomesticCodeAsync();
+                var orderDomesticCodeLogTask = SQLStore_Kho.Instance.GetOrderDomesticCodeLogAsync();
+                var customerTask = SQLStore_Kho.Instance.getCustomersAsync();
+                var employeesInDongGoiTask = SQLStore_Kho.Instance.GetActiveEmployeesIn_DongGoiAsync();
 
                 await Task.WhenAll(orderDomesticCodeTask, employeesInDongGoiTask, customerTask, orderDomesticCodeLogTask);
 
@@ -213,7 +215,7 @@ namespace RauViet.ui
                 ReadOnly_btn_Click(null, null);
 
             }
-            catch (Exception ex)
+            catch
             {
                 status_lb.Text = "Thất bại.";
                 status_lb.ForeColor = Color.Red;
@@ -314,7 +316,7 @@ namespace RauViet.ui
                         string newValue = $"{deliveryDate} - {inputByRow[0]["FullName"]} - {packingByRow[0]["FullName"]} - {customerRow[0]["Company"]}";
                         try
                         {
-                            bool isScussess = await SQLManager.Instance.updateOrderDomesticCodeAsync(orderDomesticCodeID, orderDomesticIndex, customerID, deliveryDate, inputBy, packingBy, completed);
+                            bool isScussess = await SQLManager_Kho.Instance.updateOrderDomesticCodeAsync(orderDomesticCodeID, orderDomesticIndex, customerID, deliveryDate, inputBy, packingBy, completed);
                             
 
                             if (isScussess == true)
@@ -322,7 +324,7 @@ namespace RauViet.ui
                                 status_lb.Text = "Thành công.";
                                 status_lb.ForeColor = Color.Green;
 
-                                _ = SQLManager.Instance.InsertOrderDomesticCodeLogAsync(orderDomesticIndex, "Update Success: " + oldValue, newValue);
+                                _ = SQLManager_Kho.Instance.InsertOrderDomesticCodeLogAsync(orderDomesticIndex, "Update Success: " + oldValue, newValue);
 
                                 row["OrderDomesticIndex"] = orderDomesticIndex;
                                 row["DeliveryDate"] = deliveryDate;
@@ -346,14 +348,14 @@ namespace RauViet.ui
                             {
                                 status_lb.Text = "Thất bại.";
                                 status_lb.ForeColor = Color.Red;
-                                _ = SQLManager.Instance.InsertOrderDomesticCodeLogAsync(orderDomesticIndex, "Update Fail: " + oldValue, newValue);
+                                _ = SQLManager_Kho.Instance.InsertOrderDomesticCodeLogAsync(orderDomesticIndex, "Update Fail: " + oldValue, newValue);
                             }
                         }
                         catch (Exception ex)
                         {                         
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;
-                            _ = SQLManager.Instance.InsertOrderDomesticCodeLogAsync(orderDomesticIndex, "Update Exception: " + ex.Message + oldValue, newValue);
+                            _ = SQLManager_Kho.Instance.InsertOrderDomesticCodeLogAsync(orderDomesticIndex, "Update Exception: " + ex.Message + oldValue, newValue);
                         }
                     }
                     break;
@@ -375,11 +377,11 @@ namespace RauViet.ui
                 try
                 {
                     
-                    int newId = await SQLManager.Instance.insertOrderDomesticCodeAsync(orderDomesticIndex, customerID, deliveryDate, inputBy, packingBy);
+                    int newId = await SQLManager_Kho.Instance.insertOrderDomesticCodeAsync(orderDomesticIndex, customerID, deliveryDate, inputBy, packingBy);
                     if (newId > 0)
                     {
 
-                        _ = SQLManager.Instance.InsertOrderDomesticCodeLogAsync(orderDomesticIndex, "Create Success: ", newValue);
+                        _ = SQLManager_Kho.Instance.InsertOrderDomesticCodeLogAsync(orderDomesticIndex, "Create Success: ", newValue);
 
                         DataRow drToAdd = mOrderDomesticCode_dt.NewRow();
 
@@ -407,14 +409,14 @@ namespace RauViet.ui
                     }
                     else
                     {
-                        _ = SQLManager.Instance.InsertOrderDomesticCodeLogAsync(orderDomesticIndex, "Create Fail: ", newValue);
+                        _ = SQLManager_Kho.Instance.InsertOrderDomesticCodeLogAsync(orderDomesticIndex, "Create Fail: ", newValue);
                         status_lb.Text = "Thất bại";
                         status_lb.ForeColor = Color.Red;
                     }
                 }
                 catch (Exception ex)
                 {
-                    _ = SQLManager.Instance.InsertOrderDomesticCodeLogAsync(orderDomesticIndex, "Create Exception: " + ex.Message, newValue);
+                    _ = SQLManager_Kho.Instance.InsertOrderDomesticCodeLogAsync(orderDomesticIndex, "Create Exception: " + ex.Message, newValue);
                     status_lb.Text = "Thất bại.";
                     status_lb.ForeColor = Color.Red;
                 }
@@ -462,7 +464,7 @@ namespace RauViet.ui
                     {
                         try
                         {
-                            bool isScussess = await SQLManager.Instance.DeleteOrderDomesticCodeAsync(Convert.ToInt32(orderDomesticCodeID));
+                            bool isScussess = await SQLManager_Kho.Instance.DeleteOrderDomesticCodeAsync(Convert.ToInt32(orderDomesticCodeID));
 
                             if (isScussess == true)
                             {

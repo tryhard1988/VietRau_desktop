@@ -86,8 +86,8 @@ namespace RauViet.ui
                     return;
                 }
 
-                SQLStore.Instance.removeOrders(mCurrentExportID);
-                SQLStore.Instance.removeLatestOrdersAsync();
+                SQLStore_Kho.Instance.removeOrders(mCurrentExportID);
+                SQLStore_Kho.Instance.removeLatestOrdersAsync();
                 ShowData();
             }
             else if(!isNewState && !edit_btn.Visible && UserManager.Instance.fullName_NoSign.CompareTo(staff) == 0)
@@ -154,14 +154,14 @@ namespace RauViet.ui
 
             try
             {
-                mProduct_dt = await SQLStore.Instance.getProductSKUAsync();
+                mProduct_dt = await SQLStore_Kho.Instance.getProductSKUAsync();
 
                 string[] keepColumns = { "ExportCodeID", "ExportCode", "ExportDate", "PackingByName", "InputByName_NoSign" };
                 var parameters = new Dictionary<string, object> { { "Complete", false } };
-                var exportCodeTask = SQLStore.Instance.getExportCodesAsync(keepColumns, parameters);
-                var customersTask = SQLStore.Instance.getCustomersAsync();
+                var exportCodeTask = SQLStore_Kho.Instance.getExportCodesAsync(keepColumns, parameters);
+                var customersTask = SQLStore_Kho.Instance.getCustomersAsync();
                 
-                var packingTask = SQLStore.Instance.getProductpackingAsync();          
+                var packingTask = SQLStore_Kho.Instance.getProductpackingAsync();          
                 await Task.WhenAll(customersTask, packingTask, exportCodeTask);
                 var productTask = 
                 mCustomers_dt = customersTask.Result;                
@@ -174,9 +174,9 @@ namespace RauViet.ui
                                    .Max(r => r.Field<int>("ExportCodeID")));
                 }
 
-                var orderLogTask = SQLStore.Instance.GetOrderLogAsync(mCurrentExportID);
-                var othersTask = SQLStore.Instance.getOrdersAsync(mCurrentExportID);
-                var latestOrdersTask = SQLStore.Instance.get3LatestOrdersAsync();
+                var orderLogTask = SQLStore_Kho.Instance.GetOrderLogAsync(mCurrentExportID);
+                var othersTask = SQLStore_Kho.Instance.getOrdersAsync(mCurrentExportID);
+                var latestOrdersTask = SQLStore_Kho.Instance.get3LatestOrdersAsync();
                 await Task.WhenAll(othersTask, latestOrdersTask, orderLogTask);
 
                 mOrderLog_dv = new DataView(orderLogTask.Result);
@@ -411,8 +411,8 @@ namespace RauViet.ui
 
             mCurrentExportID = exportCodeId;
 
-            var orderLogTask = SQLStore.Instance.GetOrderLogAsync(mCurrentExportID);
-            var othersTask = SQLStore.Instance.getOrdersAsync(mCurrentExportID);
+            var orderLogTask = SQLStore_Kho.Instance.GetOrderLogAsync(mCurrentExportID);
+            var othersTask = SQLStore_Kho.Instance.getOrdersAsync(mCurrentExportID);
             await Task.WhenAll(othersTask, orderLogTask);
 
             mOrderLog_dv = new DataView(orderLogTask.Result);
@@ -429,7 +429,7 @@ namespace RauViet.ui
                 .Where(r => r.Field<int>("ExportCodeID") == exportCodeId && (r.Field<decimal?>("NWReal")?? 0) > 0) // chỉ lấy ExportCode cần xử lý
                 .ToList();
 
-            canUseMode2 = !(rows.Count > 0);
+            canUseMode2 = true;// !(rows.Count > 0);
 
             loadDataCusProduct();
             ReadOnly_btn_Click(null, null);
@@ -444,9 +444,9 @@ namespace RauViet.ui
             // Lọc packing theo SKU
             DataView dv = new DataView(mProductPacking_dt);
             if(!isNewState)
-                dv.RowFilter = $"SKU = '{selectedSKU}' AND Packing <> 'weight'";
+                dv.RowFilter = $"SKU = '{selectedSKU}' AND (Packing <> 'weight' OR Package = 'weight')";
             else
-                dv.RowFilter = $"SKU = '{selectedSKU}' AND IsActive = true AND Packing <> 'weight'";
+                dv.RowFilter = $"SKU = '{selectedSKU}' AND IsActive = true AND(Packing <> 'weight' OR Package = 'weight')";
 
             packing_ccb.DataSource = dv;
             packing_ccb.DisplayMember = "PackingName"; // cột bạn muốn hiển thị
@@ -674,7 +674,7 @@ namespace RauViet.ui
                     }
                     try
                     {
-                        bool isScussess = await SQLManager.Instance.updateOrdersAsync(orderId, exportCodeId, customerId, packingId, PCSOther, NWOther, priceCNF);
+                        bool isScussess = await SQLManager_Kho.Instance.updateOrdersAsync(orderId, exportCodeId, customerId, packingId, PCSOther, NWOther, priceCNF);
 
                         if (isScussess == true)
                         {
@@ -701,20 +701,20 @@ namespace RauViet.ui
                                 updateCusProduct(customerId, packingId, cusName, priceCNF, PCSOther, NWOther, package, packing, amount);
                             }
 
-                            _ = SQLManager.Instance.InsertOrderLogAsync(exportCodeId, orderId, "Update M" + mode + " Thành Công", cusName, proVN, PCSOther, NWOther);
+                            _ = SQLManager_Kho.Instance.InsertOrderLogAsync(exportCodeId, orderId, "Update M" + mode + " Thành Công", cusName, proVN, PCSOther, NWOther);
                         }
                         else
                         {
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = System.Drawing.Color.Red;
-                            _ = SQLManager.Instance.InsertOrderLogAsync(exportCodeId, orderId, "Update M" + mode + " Thất Bại", cusName, proVN, PCSOther, NWOther);
+                            _ = SQLManager_Kho.Instance.InsertOrderLogAsync(exportCodeId, orderId, "Update M" + mode + " Thất Bại", cusName, proVN, PCSOther, NWOther);
                         }
                     }
                     catch (Exception ex)
                     {
                         status_lb.Text = "Thất bại.";
                         status_lb.ForeColor = System.Drawing.Color.Red;
-                        _ = SQLManager.Instance.InsertOrderLogAsync(exportCodeId, orderId, "Update M" + mode + " Thất Bại Do Exception: " + ex.Message, cusName, proVN, PCSOther, NWOther);
+                        _ = SQLManager_Kho.Instance.InsertOrderLogAsync(exportCodeId, orderId, "Update M" + mode + " Thất Bại Do Exception: " + ex.Message, cusName, proVN, PCSOther, NWOther);
                     }
                     
                     break;
@@ -736,7 +736,7 @@ namespace RauViet.ui
             int sku = Convert.ToInt32(packingRows[0]["SKU"]);
             try
             {
-                int newId = await SQLManager.Instance.insertOrderAsync(customerId, exportCodeId, packingId, PCSOther, NWOther, priceCNF);
+                int newId = await SQLManager_Kho.Instance.insertOrderAsync(customerId, exportCodeId, packingId, PCSOther, NWOther, priceCNF);
                 if (newId > 0)
                 {
                     DataRow drToAdd = mOrders_dt.NewRow();
@@ -786,20 +786,20 @@ namespace RauViet.ui
                         newCustomerBtn_Click(null, null);
                     }
 
-                    _ = SQLManager.Instance.InsertOrderLogAsync(exportCodeId, newId, "Create M" + mode + " Thành Công", cusName, proVN, PCSOther, NWOther);
+                    _ = SQLManager_Kho.Instance.InsertOrderLogAsync(exportCodeId, newId, "Create M" + mode + " Thành Công", cusName, proVN, PCSOther, NWOther);
                 }
                 else
                 {
                     status_lb.Text = "Thất bại";
                     status_lb.ForeColor = System.Drawing.Color.Red;
-                    _ = SQLManager.Instance.InsertOrderLogAsync(exportCodeId, newId, "Create M" + mode + " Thất Bại", cusName, proVN, PCSOther, NWOther);
+                    _ = SQLManager_Kho.Instance.InsertOrderLogAsync(exportCodeId, newId, "Create M" + mode + " Thất Bại", cusName, proVN, PCSOther, NWOther);
                 }
             }
             catch (Exception ex)
             {
                 status_lb.Text = "Thất bại.";
                 status_lb.ForeColor = System.Drawing.Color.Red;
-                _ = SQLManager.Instance.InsertOrderLogAsync(exportCodeId, -1, "Create M" + mode + " Thất Bại Do Exception: " + ex.Message, cusName, proVN, PCSOther, NWOther);
+                _ = SQLManager_Kho.Instance.InsertOrderLogAsync(exportCodeId, -1, "Create M" + mode + " Thất Bại Do Exception: " + ex.Message, cusName, proVN, PCSOther, NWOther);
             }
         }
         private void saveBtn_Click(object sender, EventArgs e)
@@ -915,7 +915,7 @@ namespace RauViet.ui
                     int exportCodeId = Convert.ToInt32(row["ExportCodeID"]);
                     try
                     {   
-                        bool isSuccess = await SQLManager.Instance.deleteOrderAsync(id);
+                        bool isSuccess = await SQLManager_Kho.Instance.deleteOrderAsync(id);
 
                         if (isSuccess)
                         {
@@ -936,7 +936,7 @@ namespace RauViet.ui
                                 updateCusProduct(cusID, ppID, name, price, 0, 0, package, packing, amount);
                             }
 
-                            _ = SQLManager.Instance.InsertOrderLogAsync(exportCodeId, orderId, "Delete M" + mode + " Thành Công ", "", "", 0, 0);
+                            _ = SQLManager_Kho.Instance.InsertOrderLogAsync(exportCodeId, orderId, "Delete M" + mode + " Thành Công ", "", "", 0, 0);
                             // Xóa row khỏi DataTable
                             mOrders_dt.Rows.Remove(row);
                             mOrders_dt.AcceptChanges();
@@ -946,14 +946,14 @@ namespace RauViet.ui
                         {
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = System.Drawing.Color.Red;
-                            _ = SQLManager.Instance.InsertOrderLogAsync(exportCodeId, orderId, "Delete M" + mode + " Thất Bại ","", "", 0, 0);
+                            _ = SQLManager_Kho.Instance.InsertOrderLogAsync(exportCodeId, orderId, "Delete M" + mode + " Thất Bại ","", "", 0, 0);
                         }
                     }
                     catch (Exception ex)
                     {
                         status_lb.Text = "Thất bại.";
                         status_lb.ForeColor = System.Drawing.Color.Red;
-                        _ = SQLManager.Instance.InsertOrderLogAsync(exportCodeId, orderId, "Delete M" + mode + " Thất Bại Do Exception: " + ex.Message,"", "", 0, 0);
+                        _ = SQLManager_Kho.Instance.InsertOrderLogAsync(exportCodeId, orderId, "Delete M" + mode + " Thất Bại Do Exception: " + ex.Message,"", "", 0, 0);
                     }
 
                     break; // Dừng vòng lặp sau khi xóa
@@ -1005,7 +1005,7 @@ namespace RauViet.ui
             newCustomerBtn.Visible = false;
             readOnly_btn.Visible = true;
             LuuThayDoiBtn.Visible = true;            
-            cusProduct_GV.Visible = canUseMode2 == false ? false : true;
+            cusProduct_GV.Visible = canUseMode2;
             LuuThayDoiBtn.Text = "Lưu Mới";            
             setRightUIReadOnly(false);
             if (dataGV.Rows.Count > 0)
@@ -1048,7 +1048,7 @@ namespace RauViet.ui
             LuuThayDoiBtn.Visible = true;
             info_gb.BackColor = edit_btn.BackColor;
             
-            cusProduct_GV.Visible = canUseMode2 == false ? false : true;
+            cusProduct_GV.Visible = canUseMode2;
             LuuThayDoiBtn.Text = "Lưu C.Sửa";
             setRightUIReadOnly(false);
 
@@ -1132,7 +1132,7 @@ namespace RauViet.ui
             string exportCode = pakingData["ExportCode"].ToString();
             DateTime exportDate = Convert.ToDateTime(pakingData["ExportDate"]);
 
-            System.Data.DataTable pendingOrderSummary = await SQLManager.Instance.getPendingOrderSummary(Convert.ToInt32(pakingData["ExportCodeID"]));
+            System.Data.DataTable pendingOrderSummary = await SQLManager_Kho.Instance.getPendingOrderSummary(Convert.ToInt32(pakingData["ExportCodeID"]));
 
             OrderSummaryPrinter printer = new OrderSummaryPrinter();
 
@@ -1159,7 +1159,7 @@ namespace RauViet.ui
             DataRowView pakingData = (DataRowView)exportCode_search_cbb.SelectedItem;
             string exportCode = pakingData["ExportCode"].ToString();
 
-            System.Data.DataTable pendingOrderSummary = await SQLManager.Instance.getPendingOrderSummary(Convert.ToInt32(pakingData["ExportCodeID"]));
+            System.Data.DataTable pendingOrderSummary = await SQLManager_Kho.Instance.getPendingOrderSummary(Convert.ToInt32(pakingData["ExportCodeID"]));
 
             DateTime exportDate = Convert.ToDateTime(((DataRowView)exportCode_search_cbb.SelectedItem)["ExportDate"]);
             try
