@@ -1,7 +1,10 @@
-﻿using DocumentFormat.OpenXml.Bibliography;
+﻿using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Spreadsheet;
 using RauViet.classes;
 using System;
 using System.Data;
+using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -41,6 +44,7 @@ namespace RauViet.ui
 
             preview_print_TD_btn.Click += Preview_print_TD_btn_Click;
             print_btn.Click += Print_btn_Click;
+            exportToExcel_btn.Click += ExportToExcel_btn_Click;
         }
 
         private void ReportOrder_Year_KeyDown(object sender, KeyEventArgs e)
@@ -202,13 +206,11 @@ namespace RauViet.ui
                     dataGV.CurrentCell = dataGV.Rows[0].Cells[1];
                 }
 
-                decimal sumNWReal = mSummary_dt.Compute("SUM(NWReal)", "")
-                               == DBNull.Value ? 0
-                               : Convert.ToDecimal(mSummary_dt.Compute("SUM(NWReal)", ""));
+                var sumNWRealObj = mSummary_dt.Compute("SUM(NWReal)", "");
+                decimal sumNWReal = sumNWRealObj == DBNull.Value ? 0 : Convert.ToDecimal(sumNWRealObj);
 
-                decimal sumTotalAmount = mSummary_dt.Compute("SUM(TotalAmount)", "")
-                                                    == DBNull.Value ? 0
-                                                    : Convert.ToDecimal(mSummary_dt.Compute("SUM(TotalAmount)", ""));
+                var sumTotalAmountObj = mSummary_dt.Compute("SUM(TotalAmount)", "");
+                decimal sumTotalAmount = sumTotalAmountObj == DBNull.Value ? 0 : Convert.ToDecimal(sumTotalAmountObj);
 
                 totalNW_tb.Text = sumNWReal.ToString("N2");
                 totalMoney_tb.Text = sumTotalAmount.ToString("N0");
@@ -277,9 +279,7 @@ namespace RauViet.ui
             string email = rows[0]["Email"].ToString();
             string taxCode = rows[0]["TaxCode"].ToString();
 
-            DataTable sourceTable = mDetail_dt; // DataTable gốc
-
-            DataTable resultTable = sourceTable.AsEnumerable()
+            DataTable resultTable = mDetail_dt.AsEnumerable()
                 .Where(r => r.Field<int>("CustomerID") == CustomerID)
                 .CopyToDataTable();
 
@@ -291,6 +291,368 @@ namespace RauViet.ui
                 printer.PrintDirect(resultTable, Company, CustomerName, Address, email, taxCode, tongdon_in2mat_cb.Checked);
             await Task.Delay(200);
             loadingOverlay.Hide();
+        }
+
+
+        private async void ExportToExcel_btn_Click(object sender, EventArgs e)
+        {
+            DataTable cus_dt = await SQLStore_Kho.Instance.getCustomersAsync();
+            int CustomerID = Convert.ToInt32(dataGV.CurrentRow.Cells["CustomerID"].Value);
+
+            DataRow[] rows = cus_dt.Select($"CustomerID = {CustomerID}");
+            if (rows.Length < 0)
+            {
+                MessageBox.Show("Có Lỗi");
+                return;
+            }
+
+            string Company = rows[0]["Company"].ToString();
+            string Address = rows[0]["Address"].ToString();
+            string CustomerName = rows[0]["FullName"].ToString();
+            string email = rows[0]["Email"].ToString();
+            string taxCode = rows[0]["TaxCode"].ToString();
+
+            DataTable resultTable = mDetail_dt.AsEnumerable()
+                .Where(r => r.Field<int>("CustomerID") == CustomerID)
+                .CopyToDataTable();
+
+            loadingOverlay = new LoadingOverlay(this);
+            loadingOverlay.Message = "Đang xử lý ...";
+            loadingOverlay.Show();
+            await Task.Delay(100);
+
+            try
+            {
+                using (var wb = new XLWorkbook())
+                {
+                    var ws = wb.Worksheets.Add("Data");
+                    ws.Style.Font.FontName = "Times New Roman";
+                    ws.Style.Font.FontSize = 11;
+                    ws.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+                    
+                    ws.Range(1, 4, 1, 5).Merge();
+                    int rowInd = 1;
+
+                    int totalColumn = 11;
+                    ws.Range(rowInd, 1, rowInd, totalColumn).Merge();
+                    ws.Cell(rowInd, 1).Value = "CÔNG TY CỔ PHẦN VIỆT RAU";
+                    ws.Cell(rowInd, 1).Style.Font.Bold = true;
+                    ws.Cell(rowInd, 1).Style.Font.FontSize = 15;
+                    ws.Cell(rowInd, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    ws.Cell(rowInd, 1).Style.Font.FontColor = XLColor.FromArgb(198, 89, 17);
+
+                    rowInd++;
+                    ws.Range(rowInd, 1, rowInd, totalColumn).Merge();
+                    ws.Cell(rowInd, 1).Value = "MST : 0313983703";
+                    ws.Cell(rowInd, 1).Style.Font.Bold = true;
+                    ws.Cell(rowInd, 1).Style.Font.FontSize = 10;
+                    ws.Cell(rowInd, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    ws.Cell(rowInd, 1).Style.Font.FontColor = XLColor.FromArgb(198, 89, 17);
+
+                    rowInd++;
+                    ws.Range(rowInd, 1, rowInd, totalColumn).Merge();
+                    ws.Cell(rowInd, 1).Value = "Địa chỉ: Tổ 1, Ấp 4, Xã Phước Thái, Tỉnh Đông Nai, Việt Nam";
+                    ws.Cell(rowInd, 1).Style.Font.FontSize = 10;
+                    ws.Cell(rowInd, 1).Style.Font.Italic = true;
+                    ws.Cell(rowInd, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    ws.Cell(rowInd, 1).Style.Font.FontColor = XLColor.FromArgb(198, 89, 17);
+
+                    rowInd++;
+                    ws.Range(rowInd, 1, rowInd, totalColumn).Merge();
+                    ws.Cell(rowInd, 1).Value = "Email: Acc@vietrau.com                           ĐT: 0251 2860828/0909244916";
+                    ws.Cell(rowInd, 1).Style.Font.FontSize = 10;
+                    ws.Cell(rowInd, 1).Style.Font.Italic = true;
+                    ws.Cell(rowInd, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    ws.Cell(rowInd, 1).Style.Font.FontColor = XLColor.FromArgb(198, 89, 17);
+
+                    rowInd+=2;
+                    ws.Range(rowInd, 1, rowInd, totalColumn).Merge();
+                    ws.Range(rowInd, 1, rowInd, totalColumn).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+
+                    rowInd++;
+                    ws.Range(rowInd, 1, rowInd, totalColumn).Merge();
+                    ws.Cell(rowInd, 1).Value = "BẢNG KÊ CHI TIẾT HÀNG BÁN HÀNG THÁNG 11/2025";
+                    ws.Cell(rowInd, 1).Style.Font.Bold = true;
+                    ws.Cell(rowInd, 1).Style.Font.FontSize = 15;
+                    ws.Cell(rowInd, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+                    rowInd+=2;
+                    ws.Range(rowInd, 1, rowInd, totalColumn).Merge();
+                    ws.Cell(rowInd, 1).Value = "Tên đơn vị: " + Company;
+                    ws.Cell(rowInd, 1).Style.Font.Bold = true;
+                    ws.Cell(rowInd, 1).Style.Font.FontSize = 11;
+                    ws.Cell(rowInd, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+
+                    rowInd++;
+                    ws.Range(rowInd, 1, rowInd, totalColumn/2).Merge();
+                    ws.Cell(rowInd, 1).Value = "MST: " + taxCode;
+                    ws.Cell(rowInd, 1).Style.Font.Bold = true;
+                    ws.Cell(rowInd, 1).Style.Font.FontSize = 10;
+                    ws.Cell(rowInd, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+
+                    ws.Range(rowInd, totalColumn/2 + 1, rowInd, totalColumn).Merge();
+                    ws.Cell(rowInd, totalColumn / 2 + 1).Value = "Email: " + email;
+                    ws.Cell(rowInd, totalColumn / 2 + 1).Style.Font.FontSize = 11;
+                    ws.Cell(rowInd, totalColumn / 2 + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+
+                    rowInd++;
+                    ws.Range(rowInd, 1, rowInd, totalColumn).Merge();
+                    ws.Cell(rowInd, 1).Value = "Địa chỉ: " + Address;
+                    ws.Cell(rowInd, 1).Style.Font.Bold = true;
+                    ws.Cell(rowInd, 1).Style.Font.FontSize = 10;
+                    ws.Cell(rowInd, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+
+                    rowInd++;
+                    ws.Range(rowInd, 1, rowInd, totalColumn).Merge();
+                    ws.Cell(rowInd, 1).Value = "Liện hệ: " + CustomerName;
+                    ws.Cell(rowInd, 1).Style.Font.FontSize = 10;
+                    ws.Cell(rowInd, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+                                        
+                    int headerStartRow = 13; // Header cấp 2 và 3 bắt đầu từ hàng 5
+                    int columnIndex = 1;
+
+                    SetHeader(ws, headerStartRow, columnIndex++, "STT");
+                    SetHeader(ws, headerStartRow, columnIndex++, "NGÀY XUẤT");
+                    SetHeader(ws, headerStartRow, columnIndex++, "SỐ PHIẾU");
+
+                    SetSubHeader(ws, headerStartRow, columnIndex, "SKU");
+                    SetSubHeader(ws, headerStartRow + 1, columnIndex, "Art.\nNr");
+                    columnIndex++;
+
+                    SetHeader(ws, headerStartRow, columnIndex++, "TÊN HÀNG");
+                    SetHeader(ws, headerStartRow, columnIndex++, "loại Hàng");
+                    SetHeader(ws, headerStartRow, columnIndex++, "Đ.Vị");
+
+                    SetHeader(ws, headerStartRow, columnIndex, "SỐ LƯỢNG", rowSpan: 1, colSpan: 2);
+                    SetSubHeader(ws, headerStartRow + 1, columnIndex++, "Gói");
+                    SetSubHeader(ws, headerStartRow + 1, columnIndex++, "Kg");
+
+                    SetHeader(ws, headerStartRow, columnIndex++, "ĐƠN GIÁ");
+                    SetHeader(ws, headerStartRow, columnIndex++, "THÀNH TIỀN");
+                    string[] columnsToExport = new string[] { "DeliveryDate", "SKU", "ProductNameVN", "ProductTypeName", "Package", "PCSReal", "NWReal", "Price", "TotalAmount"};
+                    // ===== Data bắt đầu từ hàng 7 =====
+                    decimal totalAmount = 0; // Biến lưu tổng
+                    int rowIndex = headerStartRow + 2;
+                    int STTCount = 1;
+
+                    DateTime? currentDate = null;
+                    int deliveryDateStartRow = rowIndex;
+                    int deliveryDateColumnIndex = 0;
+
+                    foreach (DataRow row in resultTable.Rows)
+                    {
+                        columnIndex = 1;
+                        var STTcell = ws.Cell(rowIndex, columnIndex);
+                        STTcell.Value = STTCount++;
+                        STTcell.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                        columnIndex++;
+
+                        foreach (var col in columnsToExport)
+                        {
+                            var cell = ws.Cell(rowIndex, columnIndex);
+                            var cellValue = row[col].ToString() ?? "";
+                            cell.Value = cellValue;
+                            cell.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                            if (col == "Package")
+                            {
+                                cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                                if (cellValue.CompareTo("weight") == 0)
+                                    cell.Value = "kg";
+                            }
+                            else if(col == "NWReal")
+                            {
+                                cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                                cell.Style.NumberFormat.Format = "#,##0.00";
+                                if (decimal.TryParse(cellValue, out decimal num))
+                                    cell.Value = num;
+                            }
+                            else if (col == "PCSReal" )
+                            {
+                                cell.Style.NumberFormat.Format = "#,##0;-#,##0;;";
+                                cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                                if (decimal.TryParse(cellValue, out decimal num))
+                                    cell.Value = num;
+                            }
+                            else if (col == "Price" || col == "TotalAmount")
+                            {
+                                cell.Style.NumberFormat.Format = "#,##0";
+                                cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
+                                if (decimal.TryParse(cellValue, out decimal num))
+                                    cell.Value = num;
+
+                                if (col == "TotalAmount")
+                                {
+                                    totalAmount += num;
+                                }
+                            }
+                            else if (col == "DeliveryDate")
+                            {
+                                deliveryDateColumnIndex = columnIndex;
+
+                                DateTime dateValue = Convert.ToDateTime(row[col]);
+
+                                // Nếu là ngày đầu tiên hoặc khác ngày trước
+                                if (currentDate == null || currentDate.Value.Date != dateValue.Date)
+                                {
+                                    // merge nhóm trước đó
+                                    if (currentDate != null && rowIndex - 1 > deliveryDateStartRow)
+                                    {
+                                        ws.Range(deliveryDateStartRow, deliveryDateColumnIndex,  rowIndex - 1, deliveryDateColumnIndex)
+                                            .Merge().Style.Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center).Alignment.SetVertical(XLAlignmentVerticalValues.Center);
+
+                                        ws.Range(deliveryDateStartRow, deliveryDateColumnIndex + 1, rowIndex - 1, deliveryDateColumnIndex + 1)
+                                            .Merge().Style.Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center).Alignment.SetVertical(XLAlignmentVerticalValues.Center);
+                                    }
+
+                                    // bắt đầu nhóm mới
+                                    currentDate = dateValue.Date;
+                                    deliveryDateStartRow = rowIndex;
+
+                                    cell.Value = dateValue;
+                                    cell.Style.DateFormat.Format = "dd/MM/yyyy";
+                                    cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                                    cell.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+
+                                    ws.Cell(rowIndex, columnIndex + 1).Value = row["OrderDomesticIndex"].ToString() ?? "";
+                                    ws.Cell(rowIndex, columnIndex + 1).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                                }
+                                else
+                                {
+                                    // cùng ngày → không set value (để merge)
+                                    cell.Value = "";
+                                    ws.Cell(rowIndex, columnIndex + 1).Value = "";
+                                }
+                                columnIndex++;
+                            }
+                            columnIndex++;
+                        }
+
+                        
+                        rowIndex++;
+                    }
+
+                    if (currentDate != null && rowIndex - 1 > deliveryDateStartRow)
+                    {
+                        ws.Range(deliveryDateStartRow, deliveryDateColumnIndex, rowIndex - 1, deliveryDateColumnIndex)
+                            .Merge().Style.Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center).Alignment.SetVertical(XLAlignmentVerticalValues.Center);
+
+                        ws.Range(deliveryDateStartRow, deliveryDateColumnIndex + 1, rowIndex - 1, deliveryDateColumnIndex + 1)
+                            .Merge().Style.Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center).Alignment.SetVertical(XLAlignmentVerticalValues.Center);
+
+                        ws.Range(deliveryDateStartRow, deliveryDateColumnIndex + 1, rowIndex - 1, deliveryDateColumnIndex + 1).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                    }
+
+                    ws.Range(rowIndex, 1, rowIndex, totalColumn - 2)
+                        .Merge().Style.Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center).Alignment.SetVertical(XLAlignmentVerticalValues.Center);
+                    ws.Range(rowIndex, 1, rowIndex, totalColumn - 2).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                    ws.Cell(rowIndex, 1).Value = "TỔNG CỘNG";
+                    ws.Cell(rowIndex, 1).Style.Font.Bold = true;
+                    ws.Cell(rowIndex, totalColumn-1).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                    ws.Cell(rowIndex, totalColumn).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+
+                    
+                    ws.Cell(rowIndex, 1).Value = "TỔNG CỘNG";
+                    ws.Cell(rowIndex, totalColumn).Style.Font.Bold = true;
+                    ws.Cell(rowIndex, totalColumn).Value = totalAmount;
+                    ws.Cell(rowIndex, totalColumn).Style.NumberFormat.Format = "#,##0";
+
+                    ws.Columns().AdjustToContents();
+
+                    // Lấy hình từ Resources
+                    Image logo1 = Properties.Resources.ic_logo;
+
+                    // Chuyển Image thành Stream
+                    using (var ms = new MemoryStream())
+                    {
+                        logo1.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+                        ms.Position = 0; // reset vị trí stream về đầu
+
+                        // Thêm hình vào Excel
+                        var picture = ws.AddPicture(ms).MoveTo(ws.Cell(1, 1), 25, 10).Scale(0.13);
+                    }
+
+                    ws.Row(6).Height = 2;
+                    ws.Row(13).Height = 29.5;
+                    ws.Row(14).Height = 29.5;
+                    ws.Column(1).Width = 4;
+                    ws.Column(2).Width = 9.5;
+                    ws.Column(3).Width = 8;
+                    ws.Column(4).Width = 4.8;
+                    ws.Column(5).Width = 18;
+                    ws.Column(6).Width = 13;
+                    ws.Column(7).Width = 5.5;
+                    ws.Column(8).Width = 3.7;
+                    ws.Column(9).Width = 5.7;
+                    ws.Column(10).Width = 7.5;
+                    ws.Column(11).Width = 12;
+                    
+
+                    // ===== Save file =====
+                    using (SaveFileDialog sfd = new SaveFileDialog())
+                    {
+                        sfd.Filter = "Excel Workbook|*.xlsx";
+                        sfd.FileName = "Gam.xlsx";
+                        if (sfd.ShowDialog() == DialogResult.OK)
+                        {
+                            wb.SaveAs(sfd.FileName);
+                            DialogResult result = MessageBox.Show("Bạn có muốn mở file này không?", "Lưu file thành công", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                            if (result == DialogResult.Yes)
+                            {
+                                try
+                                {
+                                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo()
+                                    {
+                                        FileName = sfd.FileName,
+                                        UseShellExecute = true
+                                    });
+                                }
+                                catch (Exception ex)
+                                {
+                                    MessageBox.Show("Không thể mở file: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi khi xuất Excel: " + ex.Message);
+            }
+            finally
+            {
+                await Task.Delay(200);
+                loadingOverlay.Hide();
+            }
+        }
+
+        void SetHeader(IXLWorksheet ws, int row, int col, string text, int rowSpan = 2, int colSpan = 1, bool bold = true)
+        {
+            var range = ws.Range(row, col, row + rowSpan - 1, col + colSpan - 1);
+            range.Merge();
+
+            var cell = ws.Cell(row, col);
+            cell.Value = text;
+            cell.Style.Font.Bold = bold;
+            cell.Style.Font.FontSize = 11;
+            cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            cell.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+            cell.Style.Alignment.WrapText = true;
+            range.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+            range.Style.Fill.BackgroundColor = XLColor.FromArgb(248, 203, 173);
+        }
+
+        void SetSubHeader(IXLWorksheet ws, int row, int col, string text, bool bold = true)
+        {
+            var cell = ws.Cell(row, col);
+            cell.Value = text;
+            cell.Style.Font.Bold = bold;
+            cell.Style.Alignment.WrapText = true;
+            cell.Style.Font.FontSize = 11;
+            cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            cell.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+            cell.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+            cell.Style.Fill.BackgroundColor = XLColor.FromArgb(248, 203, 173);
         }
     }
 }

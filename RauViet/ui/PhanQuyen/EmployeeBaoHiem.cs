@@ -30,6 +30,8 @@ namespace RauViet.ui
             readOnly_btn.Click += ReadOnly_btn_Click;
             ReadOnly_btn_Click(null, null);
             this.KeyDown += EmployeeBaoHiem_KeyDown;
+
+            search_tb.TextChanged += Search_tb_TextChanged;
         }
 
         private void EmployeeBaoHiem_KeyDown(object sender, KeyEventArgs e)
@@ -52,7 +54,7 @@ namespace RauViet.ui
             await Task.Delay(200);
             try
             {
-                string[] keepColumns = { "EmployeeCode", "FullName", "SocialInsuranceNumber", "HealthInsuranceNumber" };
+                string[] keepColumns = { "EmployeeCode", "FullName", "SocialInsuranceNumber", "HealthInsuranceNumber", "EmployessName_NoSign" };
                 var employeesTask = SQLStore_QLNS.Instance.GetEmployeesAsync(keepColumns);
                 var employeeInsuranceLogTask = SQLStore_QLNS.Instance.GetEmployeeInsuranceLogAsync();
                 await Task.WhenAll(employeesTask, employeeInsuranceLogTask);
@@ -70,6 +72,8 @@ namespace RauViet.ui
                 dataGV.Columns["FullName"].Width = 160;
                 dataGV.Columns["SocialInsuranceNumber"].Width = 160;
                 dataGV.Columns["HealthInsuranceNumber"].Width = 160;
+
+                dataGV.Columns["EmployessName_NoSign"].Visible = false;
 
                 log_GV.Columns["LogID"].Visible = false;
                 log_GV.Columns["EmployeeCode"].Visible = false;
@@ -216,6 +220,18 @@ namespace RauViet.ui
         {
             bhxh_tb.ReadOnly = isReadOnly;
             bhyt_tb.ReadOnly = isReadOnly;
+        }
+
+        private void Search_tb_TextChanged(object sender, EventArgs e)
+        {
+            string keyword = Utils.RemoveVietnameseSigns(search_tb.Text.Trim().ToLower())
+                     .Replace("'", "''"); // tránh lỗi cú pháp '
+
+            DataTable dt = dataGV.DataSource as DataTable;
+            if (dt == null) return;
+
+            DataView dv = dt.DefaultView;
+            dv.RowFilter = $"[EmployessName_NoSign] LIKE '%{keyword}%'";
         }
     }
 }

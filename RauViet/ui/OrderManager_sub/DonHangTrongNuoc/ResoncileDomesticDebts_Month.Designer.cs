@@ -39,6 +39,10 @@ namespace RauViet.ui
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.tongdon_gb = new System.Windows.Forms.GroupBox();
+            this.tongdon_in2mat_cb = new System.Windows.Forms.CheckBox();
+            this.print_btn = new System.Windows.Forms.Button();
+            this.preview_print_TD_btn = new System.Windows.Forms.Button();
             this.load_gb = new System.Windows.Forms.GroupBox();
             this.timeReport_dtp = new System.Windows.Forms.DateTimePicker();
             this.load_btn = new System.Windows.Forms.Button();
@@ -62,11 +66,9 @@ namespace RauViet.ui
             this.detailGV = new System.Windows.Forms.DataGridView();
             this.panel3 = new System.Windows.Forms.Panel();
             this.label8 = new System.Windows.Forms.Label();
-            this.tongdon_gb = new System.Windows.Forms.GroupBox();
-            this.tongdon_in2mat_cb = new System.Windows.Forms.CheckBox();
-            this.print_btn = new System.Windows.Forms.Button();
-            this.preview_print_TD_btn = new System.Windows.Forms.Button();
+            this.exportToExcel_btn = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
+            this.tongdon_gb.SuspendLayout();
             this.load_gb.SuspendLayout();
             this.info_gb.SuspendLayout();
             this.panel6.SuspendLayout();
@@ -78,7 +80,6 @@ namespace RauViet.ui
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.detailGV)).BeginInit();
             this.panel3.SuspendLayout();
-            this.tongdon_gb.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel1
@@ -92,6 +93,52 @@ namespace RauViet.ui
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(420, 724);
             this.panel1.TabIndex = 15;
+            // 
+            // tongdon_gb
+            // 
+            this.tongdon_gb.Controls.Add(this.exportToExcel_btn);
+            this.tongdon_gb.Controls.Add(this.tongdon_in2mat_cb);
+            this.tongdon_gb.Controls.Add(this.print_btn);
+            this.tongdon_gb.Controls.Add(this.preview_print_TD_btn);
+            this.tongdon_gb.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tongdon_gb.Location = new System.Drawing.Point(111, 409);
+            this.tongdon_gb.Name = "tongdon_gb";
+            this.tongdon_gb.Size = new System.Drawing.Size(189, 179);
+            this.tongdon_gb.TabIndex = 70;
+            this.tongdon_gb.TabStop = false;
+            // 
+            // tongdon_in2mat_cb
+            // 
+            this.tongdon_in2mat_cb.AutoSize = true;
+            this.tongdon_in2mat_cb.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tongdon_in2mat_cb.Location = new System.Drawing.Point(102, 37);
+            this.tongdon_in2mat_cb.Name = "tongdon_in2mat_cb";
+            this.tongdon_in2mat_cb.Size = new System.Drawing.Size(65, 17);
+            this.tongdon_in2mat_cb.TabIndex = 69;
+            this.tongdon_in2mat_cb.Text = "In 2 Mặt";
+            this.tongdon_in2mat_cb.UseVisualStyleBackColor = true;
+            // 
+            // print_btn
+            // 
+            this.print_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.print_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.print_btn.Location = new System.Drawing.Point(20, 25);
+            this.print_btn.Name = "print_btn";
+            this.print_btn.Size = new System.Drawing.Size(76, 39);
+            this.print_btn.TabIndex = 39;
+            this.print_btn.Text = "In";
+            this.print_btn.UseVisualStyleBackColor = false;
+            // 
+            // preview_print_TD_btn
+            // 
+            this.preview_print_TD_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.preview_print_TD_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.preview_print_TD_btn.Location = new System.Drawing.Point(20, 72);
+            this.preview_print_TD_btn.Name = "preview_print_TD_btn";
+            this.preview_print_TD_btn.Size = new System.Drawing.Size(136, 39);
+            this.preview_print_TD_btn.TabIndex = 42;
+            this.preview_print_TD_btn.Text = "Xem";
+            this.preview_print_TD_btn.UseVisualStyleBackColor = false;
             // 
             // load_gb
             // 
@@ -416,50 +463,16 @@ namespace RauViet.ui
             this.label8.Text = "Chi Tiết";
             this.label8.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // tongdon_gb
+            // exportToExcel_btn
             // 
-            this.tongdon_gb.Controls.Add(this.tongdon_in2mat_cb);
-            this.tongdon_gb.Controls.Add(this.print_btn);
-            this.tongdon_gb.Controls.Add(this.preview_print_TD_btn);
-            this.tongdon_gb.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tongdon_gb.Location = new System.Drawing.Point(111, 409);
-            this.tongdon_gb.Name = "tongdon_gb";
-            this.tongdon_gb.Size = new System.Drawing.Size(189, 131);
-            this.tongdon_gb.TabIndex = 70;
-            this.tongdon_gb.TabStop = false;
-            // 
-            // tongdon_in2mat_cb
-            // 
-            this.tongdon_in2mat_cb.AutoSize = true;
-            this.tongdon_in2mat_cb.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tongdon_in2mat_cb.Location = new System.Drawing.Point(102, 37);
-            this.tongdon_in2mat_cb.Name = "tongdon_in2mat_cb";
-            this.tongdon_in2mat_cb.Size = new System.Drawing.Size(65, 17);
-            this.tongdon_in2mat_cb.TabIndex = 69;
-            this.tongdon_in2mat_cb.Text = "In 2 Mặt";
-            this.tongdon_in2mat_cb.UseVisualStyleBackColor = true;
-            // 
-            // print_btn
-            // 
-            this.print_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
-            this.print_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.print_btn.Location = new System.Drawing.Point(20, 25);
-            this.print_btn.Name = "print_btn";
-            this.print_btn.Size = new System.Drawing.Size(76, 39);
-            this.print_btn.TabIndex = 39;
-            this.print_btn.Text = "In";
-            this.print_btn.UseVisualStyleBackColor = false;
-            // 
-            // preview_print_TD_btn
-            // 
-            this.preview_print_TD_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
-            this.preview_print_TD_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.preview_print_TD_btn.Location = new System.Drawing.Point(20, 72);
-            this.preview_print_TD_btn.Name = "preview_print_TD_btn";
-            this.preview_print_TD_btn.Size = new System.Drawing.Size(136, 39);
-            this.preview_print_TD_btn.TabIndex = 42;
-            this.preview_print_TD_btn.Text = "Xem";
-            this.preview_print_TD_btn.UseVisualStyleBackColor = false;
+            this.exportToExcel_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.exportToExcel_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.exportToExcel_btn.Location = new System.Drawing.Point(20, 118);
+            this.exportToExcel_btn.Name = "exportToExcel_btn";
+            this.exportToExcel_btn.Size = new System.Drawing.Size(136, 39);
+            this.exportToExcel_btn.TabIndex = 70;
+            this.exportToExcel_btn.Text = "Xuất Excel";
+            this.exportToExcel_btn.UseVisualStyleBackColor = false;
             // 
             // ResoncileDomesticDebts_Month
             // 
@@ -474,6 +487,8 @@ namespace RauViet.ui
             this.Text = "FormTableData";
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            this.tongdon_gb.ResumeLayout(false);
+            this.tongdon_gb.PerformLayout();
             this.load_gb.ResumeLayout(false);
             this.load_gb.PerformLayout();
             this.info_gb.ResumeLayout(false);
@@ -487,8 +502,6 @@ namespace RauViet.ui
             this.panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.detailGV)).EndInit();
             this.panel3.ResumeLayout(false);
-            this.tongdon_gb.ResumeLayout(false);
-            this.tongdon_gb.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -522,5 +535,6 @@ namespace RauViet.ui
         private System.Windows.Forms.CheckBox tongdon_in2mat_cb;
         private System.Windows.Forms.Button print_btn;
         private System.Windows.Forms.Button preview_print_TD_btn;
+        private System.Windows.Forms.Button exportToExcel_btn;
     }
 }

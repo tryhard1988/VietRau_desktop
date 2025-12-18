@@ -31,6 +31,8 @@ namespace RauViet.ui
             readOnly_btn.Click += ReadOnly_btn_Click;
             ReadOnly_btn_Click(null, null);
             this.KeyDown += Employee_POS_DEP_CON_KeyDown;
+
+            search_tb.TextChanged += Search_tb_TextChanged;
         }
 
         private void Employee_POS_DEP_CON_KeyDown(object sender, KeyEventArgs e)
@@ -54,7 +56,7 @@ namespace RauViet.ui
             try
             {
                 // Chạy truy vấn trên thread riêng
-                string[] keepColumns = { "EmployeeCode", "FullName", "HireDate", "PositionID", "DepartmentID", "ContractTypeID", "PositionName", "DepartmentName", "ContractTypeName"};
+                string[] keepColumns = { "EmployeeCode", "FullName", "HireDate", "PositionID", "DepartmentID", "ContractTypeID", "PositionName", "DepartmentName", "ContractTypeName", "EmployessName_NoSign" };
                 var employeesTask = SQLStore_QLNS.Instance.GetEmployeesAsync(keepColumns);
                 var departmentTask = SQLStore_QLNS.Instance.GetActiveDepartmentAsync();
                 var positionTask = SQLStore_QLNS.Instance.GetActivePositionAsync();
@@ -98,6 +100,7 @@ namespace RauViet.ui
                 dataGV.Columns["DepartmentName"].HeaderText = "Phòng Ban";
                 dataGV.Columns["ContractTypeName"].HeaderText = "Loại Hợp Đồng";
 
+                dataGV.Columns["EmployessName_NoSign"].Visible = false;
                 dataGV.Columns["PositionID"].Visible = false;
                 dataGV.Columns["DepartmentID"].Visible = false;
                 dataGV.Columns["ContractTypeID"].Visible = false;
@@ -293,5 +296,16 @@ namespace RauViet.ui
             contractType_cbb.Enabled = !isReadOnly;
         }
 
+        private void Search_tb_TextChanged(object sender, EventArgs e)
+        {
+            string keyword = Utils.RemoveVietnameseSigns(search_tb.Text.Trim().ToLower())
+                     .Replace("'", "''"); // tránh lỗi cú pháp '
+
+            DataTable dt = dataGV.DataSource as DataTable;
+            if (dt == null) return;
+
+            DataView dv = dt.DefaultView;
+            dv.RowFilter = $"[EmployessName_NoSign] LIKE '%{keyword}%'";
+        }
     }
 }

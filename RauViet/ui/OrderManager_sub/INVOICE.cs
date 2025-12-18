@@ -87,6 +87,8 @@ namespace RauViet.ui
                 exportCode_cbb.ValueMember = "ExportCodeID";
                 exportCode_cbb.SelectedValue = mCurrentExportID;
                 exportCode_cbb.SelectedIndexChanged += exportCode_search_cbb_SelectedIndexChanged;
+
+                UpdateBotttomUI();
             }
             catch
             {
@@ -98,6 +100,27 @@ namespace RauViet.ui
                 await Task.Delay(200);
                 loadingOverlay.Hide();
             }
+        }
+
+        private void UpdateBotttomUI()
+        {
+            var sumNWObj = mCustomerOrdersTotal_dt.Compute("SUM(NWReal)", "");
+            decimal sumNWOrder = sumNWObj == DBNull.Value ? 0 : Convert.ToDecimal(sumNWObj);
+
+            var sumCNTSObj = mCustomerOrdersTotal_dt.Compute("SUM(CNTS)", "");
+            int sumCNTS = sumCNTSObj == DBNull.Value ? 0 : Convert.ToInt32(sumCNTSObj);
+
+            var sumPCSObj = mOrdersTotal_dt.Compute("SUM(PCSReal)", "");
+            int sumPCS = sumPCSObj == DBNull.Value ? 0 : Convert.ToInt32(sumPCSObj);
+
+            var sumAmountCHFObj = mCustomerOrdersTotal_dt.Compute("SUM(AmountCHF)", "");
+            decimal sumAmountCHF = sumAmountCHFObj == DBNull.Value ? 0 : Convert.ToDecimal(sumAmountCHFObj);
+
+            NWTotal_label.Text = sumNWOrder.ToString("N2");
+            TotalAmount_label.Text = sumAmountCHF.ToString("N2");
+            CNTSTotal_label.Text = sumCNTS.ToString("N0");
+            PCSTotal_label.Text = sumPCS.ToString("N0");
+
         }
 
         private void showOrdersExport()
@@ -142,6 +165,7 @@ namespace RauViet.ui
             DataView dv = new DataView(mCustomerOrdersTotal_dt);
             cusOrderGV.DataSource = dv;
 
+            cusOrderGV.Columns["Home"].Visible = false;
             cusOrderGV.Columns["ExportCodeID"].Visible = false;
             cusOrderGV.Columns["FullName"].HeaderText = "MARK";
             cusOrderGV.Columns["NWReal"].HeaderText = "N.W";
@@ -196,6 +220,8 @@ namespace RauViet.ui
 
             DataView dvCarton = new DataView(mCartonOrdersTotal_dt);
             cartonSizeGV.DataSource = dvCarton;
+
+            UpdateBotttomUI();
         }      
         
         private void saveBtn_Click(object sender, EventArgs e)

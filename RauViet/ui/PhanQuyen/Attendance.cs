@@ -392,7 +392,7 @@ namespace RauViet.ui
                             bool isWork_Afternoon = false;
 
                             string log = "";
-                            for (int colIndex = 6; colIndex < excelData.Columns.Count; colIndex++)
+                            for (int colIndex = 5; colIndex < excelData.Columns.Count; colIndex++)
                             {
                                 var cellValue = edr[colIndex];
                                 if (cellValue != null && cellValue != DBNull.Value)

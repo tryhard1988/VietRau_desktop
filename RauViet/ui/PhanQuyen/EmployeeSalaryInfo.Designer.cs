@@ -29,11 +29,15 @@ namespace RauViet.ui
         /// </summary>
         private void InitializeComponent()
         {
-            this.dataGV = new System.Windows.Forms.DataGridView();
             this.log_GV = new System.Windows.Forms.DataGridView();
             this.label7 = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.status_lb = new System.Windows.Forms.Label();
+            this.panel4 = new System.Windows.Forms.Panel();
+            this.label16 = new System.Windows.Forms.Label();
+            this.search_tb = new System.Windows.Forms.TextBox();
+            this.dataGV = new System.Windows.Forms.DataGridView();
             this.salaryInfoGV = new System.Windows.Forms.DataGridView();
             this.panel3 = new System.Windows.Forms.Panel();
             this.readOnly_btn = new System.Windows.Forms.Button();
@@ -53,27 +57,15 @@ namespace RauViet.ui
             this.label2 = new System.Windows.Forms.Label();
             this.delete_btn = new System.Windows.Forms.Button();
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
-            this.status_lb = new System.Windows.Forms.Label();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.log_GV)).BeginInit();
             this.panel2.SuspendLayout();
             this.panel1.SuspendLayout();
+            this.panel4.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.salaryInfoGV)).BeginInit();
             this.panel3.SuspendLayout();
             this.info_gb.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // dataGV
-            // 
-            this.dataGV.AllowUserToAddRows = false;
-            this.dataGV.AllowUserToDeleteRows = false;
-            this.dataGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGV.Dock = System.Windows.Forms.DockStyle.Left;
-            this.dataGV.Location = new System.Drawing.Point(0, 0);
-            this.dataGV.Name = "dataGV";
-            this.dataGV.ReadOnly = true;
-            this.dataGV.Size = new System.Drawing.Size(536, 724);
-            this.dataGV.TabIndex = 10;
             // 
             // log_GV
             // 
@@ -84,7 +76,7 @@ namespace RauViet.ui
             this.log_GV.Location = new System.Drawing.Point(0, 519);
             this.log_GV.Name = "log_GV";
             this.log_GV.ReadOnly = true;
-            this.log_GV.Size = new System.Drawing.Size(728, 205);
+            this.log_GV.Size = new System.Drawing.Size(1264, 205);
             this.log_GV.TabIndex = 82;
             // 
             // label7
@@ -95,7 +87,7 @@ namespace RauViet.ui
             this.label7.ForeColor = System.Drawing.Color.DarkOliveGreen;
             this.label7.Location = new System.Drawing.Point(0, 496);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(728, 23);
+            this.label7.Size = new System.Drawing.Size(1264, 23);
             this.label7.TabIndex = 85;
             this.label7.Text = "Lịch sử thay đổi";
             this.label7.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -106,21 +98,76 @@ namespace RauViet.ui
             this.panel2.Controls.Add(this.label7);
             this.panel2.Controls.Add(this.log_GV);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel2.Location = new System.Drawing.Point(536, 0);
+            this.panel2.Location = new System.Drawing.Point(0, 0);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(728, 724);
+            this.panel2.Size = new System.Drawing.Size(1264, 724);
             this.panel2.TabIndex = 11;
             // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.salaryInfoGV);
             this.panel1.Controls.Add(this.panel3);
+            this.panel1.Controls.Add(this.salaryInfoGV);
+            this.panel1.Controls.Add(this.dataGV);
+            this.panel1.Controls.Add(this.panel4);
             this.panel1.Controls.Add(this.status_lb);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(728, 496);
+            this.panel1.Size = new System.Drawing.Size(1264, 496);
             this.panel1.TabIndex = 86;
+            // 
+            // status_lb
+            // 
+            this.status_lb.AutoSize = true;
+            this.status_lb.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.status_lb.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.status_lb.Location = new System.Drawing.Point(176, 549);
+            this.status_lb.Name = "status_lb";
+            this.status_lb.Size = new System.Drawing.Size(55, 23);
+            this.status_lb.TabIndex = 26;
+            this.status_lb.Text = "Email";
+            // 
+            // panel4
+            // 
+            this.panel4.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.panel4.Controls.Add(this.label16);
+            this.panel4.Controls.Add(this.search_tb);
+            this.panel4.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel4.Location = new System.Drawing.Point(0, 0);
+            this.panel4.Name = "panel4";
+            this.panel4.Size = new System.Drawing.Size(1264, 34);
+            this.panel4.TabIndex = 44;
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label16.Location = new System.Drawing.Point(7, 8);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(66, 16);
+            this.label16.TabIndex = 20;
+            this.label16.Text = "Tìm Kiếm:";
+            // 
+            // search_tb
+            // 
+            this.search_tb.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.search_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.search_tb.Location = new System.Drawing.Point(78, 5);
+            this.search_tb.Name = "search_tb";
+            this.search_tb.Size = new System.Drawing.Size(287, 23);
+            this.search_tb.TabIndex = 19;
+            // 
+            // dataGV
+            // 
+            this.dataGV.AllowUserToAddRows = false;
+            this.dataGV.AllowUserToDeleteRows = false;
+            this.dataGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGV.Dock = System.Windows.Forms.DockStyle.Left;
+            this.dataGV.Location = new System.Drawing.Point(0, 34);
+            this.dataGV.Name = "dataGV";
+            this.dataGV.ReadOnly = true;
+            this.dataGV.Size = new System.Drawing.Size(536, 462);
+            this.dataGV.TabIndex = 45;
             // 
             // salaryInfoGV
             // 
@@ -128,11 +175,11 @@ namespace RauViet.ui
             this.salaryInfoGV.AllowUserToDeleteRows = false;
             this.salaryInfoGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.salaryInfoGV.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.salaryInfoGV.Location = new System.Drawing.Point(0, 0);
+            this.salaryInfoGV.Location = new System.Drawing.Point(536, 34);
             this.salaryInfoGV.Name = "salaryInfoGV";
             this.salaryInfoGV.ReadOnly = true;
-            this.salaryInfoGV.Size = new System.Drawing.Size(343, 496);
-            this.salaryInfoGV.TabIndex = 43;
+            this.salaryInfoGV.Size = new System.Drawing.Size(728, 462);
+            this.salaryInfoGV.TabIndex = 46;
             // 
             // panel3
             // 
@@ -142,10 +189,10 @@ namespace RauViet.ui
             this.panel3.Controls.Add(this.delete_btn);
             this.panel3.Controls.Add(this.LuuThayDoiBtn);
             this.panel3.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel3.Location = new System.Drawing.Point(343, 0);
+            this.panel3.Location = new System.Drawing.Point(879, 34);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(385, 496);
-            this.panel3.TabIndex = 40;
+            this.panel3.Size = new System.Drawing.Size(385, 462);
+            this.panel3.TabIndex = 47;
             // 
             // readOnly_btn
             // 
@@ -322,31 +369,21 @@ namespace RauViet.ui
             this.LuuThayDoiBtn.Text = "Lưu";
             this.LuuThayDoiBtn.UseVisualStyleBackColor = false;
             // 
-            // status_lb
-            // 
-            this.status_lb.AutoSize = true;
-            this.status_lb.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.status_lb.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.status_lb.Location = new System.Drawing.Point(176, 549);
-            this.status_lb.Name = "status_lb";
-            this.status_lb.Size = new System.Drawing.Size(55, 23);
-            this.status_lb.TabIndex = 26;
-            this.status_lb.Text = "Email";
-            // 
             // EmployeeSalaryInfo
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1264, 724);
             this.Controls.Add(this.panel2);
-            this.Controls.Add(this.dataGV);
             this.Name = "EmployeeSalaryInfo";
             this.Text = "FormTableData";
-            ((System.ComponentModel.ISupportInitialize)(this.dataGV)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.log_GV)).EndInit();
             this.panel2.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            this.panel4.ResumeLayout(false);
+            this.panel4.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGV)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.salaryInfoGV)).EndInit();
             this.panel3.ResumeLayout(false);
             this.info_gb.ResumeLayout(false);
@@ -356,12 +393,11 @@ namespace RauViet.ui
         }
 
         #endregion
-        private System.Windows.Forms.DataGridView dataGV;
         private System.Windows.Forms.DataGridView log_GV;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.DataGridView salaryInfoGV;
+        private System.Windows.Forms.Label status_lb;
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.Button readOnly_btn;
         private System.Windows.Forms.Button new_btn;
@@ -380,6 +416,10 @@ namespace RauViet.ui
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button delete_btn;
         private System.Windows.Forms.Button LuuThayDoiBtn;
-        private System.Windows.Forms.Label status_lb;
+        private System.Windows.Forms.DataGridView salaryInfoGV;
+        private System.Windows.Forms.DataGridView dataGV;
+        private System.Windows.Forms.Panel panel4;
+        private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.TextBox search_tb;
     }
 }

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.Globalization;
+using System.IO.Packaging;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -65,6 +66,11 @@ namespace RauViet.ui
             packing_btn.Click += Packing_btn_Click;
 
             this.KeyDown += OrdersList_KeyDown;
+
+            TotalAmount_Real_label.Visible = !UserManager.Instance.hasRole_AnGiaSanPham();
+            TotalAmount_Order_lable.Visible = !UserManager.Instance.hasRole_AnGiaSanPham();
+            label159.Visible = !UserManager.Instance.hasRole_AnGiaSanPham();
+            label12.Visible = !UserManager.Instance.hasRole_AnGiaSanPham();
 
             packing_ccb.SelectedIndexChanged += packing_cbb_SelectedIndexChanged;
 
@@ -170,6 +176,8 @@ namespace RauViet.ui
                 dataGV.Columns["OrderDomesticDetailID"].HeaderText = "ID";
                 dataGV.Columns["ProductTypeName"].HeaderText = "Loại Hàng";
 
+                dataGV.Columns["TotalAmountOrder"].Visible = false;
+                dataGV.Columns["TotalAmountReal"].Visible = false;
                 dataGV.Columns["packing"].Visible = false;
                 dataGV.Columns["Package"].Visible = false;
                 dataGV.Columns["SKU"].Visible = false;
@@ -234,6 +242,8 @@ namespace RauViet.ui
                 log_GV.Columns["NewValue"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 log_GV.Columns["ActionBy"].Width = 140;
                 log_GV.Columns["CreatedAt"].Width = 110;
+
+                UpdateBottomUI();
             }
             catch (Exception ex)
             {
@@ -248,7 +258,26 @@ namespace RauViet.ui
             }
         }
 
+        private void UpdateBottomUI()
+        {
+            var sumNWOrderObj = mOrderDomesticDetail_dt.Compute("SUM(NWOrder)", "");
+            decimal sumNWOrder = sumNWOrderObj == DBNull.Value ? 0 : Convert.ToDecimal(sumNWOrderObj);
 
+            var sumNWRealObj = mOrderDomesticDetail_dt.Compute("SUM(NWReal)", "");
+            decimal sumNWReal = sumNWRealObj == DBNull.Value ? 0 : Convert.ToDecimal(sumNWRealObj);
+
+            var sumOrderObj = mOrderDomesticDetail_dt.Compute("SUM(TotalAmountOrder)", "");
+            decimal totalAmount_Order = sumOrderObj == DBNull.Value ? 0 : Convert.ToDecimal(sumOrderObj);
+
+            var sumRealObj = mOrderDomesticDetail_dt.Compute("SUM(TotalAmountReal)", "");
+
+            decimal totalAmount_Real = sumRealObj == DBNull.Value ? 0 : Convert.ToDecimal(sumRealObj);
+
+            NWOrder_label.Text = sumNWOrder.ToString("N2");
+            NWReal_label.Text = sumNWReal.ToString("N2");
+            TotalAmount_Real_label.Text = totalAmount_Real.ToString("N2");
+            TotalAmount_Order_lable.Text = totalAmount_Order.ToString("N2");
+        }
         private void product_ccb_TextUpdate(object sender, EventArgs e)
         {
             debounceTimer.Stop();
@@ -380,6 +409,7 @@ namespace RauViet.ui
             dataGV.DataSource = mOrderDomesticDetail_dt;
             log_GV.DataSource = mLogDV;
             ReadOnly_btn_Click(null, null);
+            UpdateBottomUI();
         }
 
         private void product_ccb_SelectedIndexChanged(object sender, EventArgs e)
@@ -418,25 +448,6 @@ namespace RauViet.ui
             }
             productType_CBB_SelectedIndexChanged(null, null);
             productType_CBB.SelectedIndexChanged += productType_CBB_SelectedIndexChanged;
-
-            /*
-            DataRowView pdpData = (DataRowView)packing_ccb.SelectedItem;
-            DataRowView pdData = (DataRowView)product_ccb.SelectedItem;
-            string package = pdData["Package"].ToString();
-            string packing = pdpData["packing"].ToString();
-
-            if (package.CompareTo("weight") == 0 || packing.CompareTo("weight") == 0)
-            {
-                nwOder_tb.Enabled = true;
-                PCSOrder_tb.Enabled = false;
-                PCSOrder_tb.Text = "";
-            }
-            else
-            {
-                nwOder_tb.Enabled = false;
-                PCSOrder_tb.Enabled = true;
-                updateNetWeight();
-            }*/
         }
 
         private void packing_ccb_SelectedIndexChanged(object sender, EventArgs e)
@@ -495,9 +506,9 @@ namespace RauViet.ui
                 sumPCS += pcs;
             }
 
-            total_label.Text = "[" + sumPCS + " pcs, " + sumNW + " kg" + "]";
-            cus_name_label.Text = Convert.ToString(currentRow.Cells["CustomerName"].Value) + ": ";
-            cus_lable.Text = "[" + (sumPCS_cus.ToString() + " pcs, ") + (sumNW_cus.ToString() + " kg") + "]";
+            NWOrder_label.Text = "[" + sumPCS + " pcs, " + sumNW + " kg" + "]";
+            label159.Text = Convert.ToString(currentRow.Cells["CustomerName"].Value) + ": ";
+            TotalAmount_Order_lable.Text = "[" + (sumPCS_cus.ToString() + " pcs, ") + (sumNW_cus.ToString() + " kg") + "]";
         }
 
         private async Task updateRightUI(int indexRowSelected)
@@ -608,6 +619,14 @@ namespace RauViet.ui
                             row["packing"] = packing;                               
                             row["ProductNameVN"] = proVN;
                             row["SKU"] = sku;
+
+                            if (package.CompareTo("weight") == 0 || package.CompareTo("kg") == 0)
+                                row["TotalAmountOrder"] = NWOrder * price;
+                            else
+                                row["TotalAmountOrder"] = PCSOrder * price;
+
+                            UpdateBottomUI();
+
                             _ = SQLManager_Kho.Instance.InsertOrderDomesticDetailLogAsync(orderDomesticDetailID, orderDomesticCodeID, "Update Success: " + oldValue, newValue);
                         }
                         else
@@ -661,6 +680,10 @@ namespace RauViet.ui
                     drToAdd["SKU"] = sku;
                     drToAdd["CustomerProductTypesCode"] = productType;
                     drToAdd["ProductTypeName"] = productTypeName;
+                    if (package.CompareTo("weight") == 0 || package.CompareTo("kg") == 0)
+                        drToAdd["TotalAmountOrder"] = NWOrder * price;
+                    else
+                        drToAdd["TotalAmountOrder"] = PCSOrder * price;
 
                     mOrderDomesticDetail_dt.Rows.Add(drToAdd);
                     mOrderDomesticDetail_dt.AcceptChanges();
@@ -669,6 +692,7 @@ namespace RauViet.ui
                     status_lb.ForeColor = System.Drawing.Color.Green;
 
                     newCustomerBtn_Click(null, null);
+                    UpdateBottomUI();
 
                     _ = SQLManager_Kho.Instance.InsertOrderDomesticDetailLogAsync(newId, OrderDomesticCodeID, "Create Success", newValue);
                 }
@@ -1130,7 +1154,17 @@ namespace RauViet.ui
                 {
                     orderRow["PCSReal"] = 0;
                 }
-                
+
+                decimal price = orderRow["Price"] == DBNull.Value ? 0 : Convert.ToDecimal(orderRow["Price"]);
+                decimal nwReal = orderRow["NWReal"] == DBNull.Value ? 0 : Convert.ToDecimal(orderRow["NWReal"]);
+                decimal pcsReal = orderRow["PCSReal"] == DBNull.Value ? 0 : Convert.ToDecimal(orderRow["PCSReal"]);
+                string package = orderRow["Package"].ToString();
+                if (package.CompareTo("weight") == 0 || package.CompareTo("kg") == 0)
+                    orderRow["TotalAmountReal"] = nwReal * price;
+                else
+                    orderRow["TotalAmountReal"] = pcsReal * price;
+
+                UpdateBottomUI();
                 string newValueStr = $"{orderRow["PCSReal"]} - {orderRow["NWReal"]} - {orderRow["Note"].ToString()}";
 
                 try

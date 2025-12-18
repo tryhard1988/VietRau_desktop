@@ -57,6 +57,7 @@ namespace RauViet.ui
             ReadOnly_btn_Click(null, null);
 
             this.KeyDown += Employee_KeyDown;
+            search_tb.TextChanged += Search_tb_TextChanged;
         }
 
         private void Employee_KeyDown(object sender, KeyEventArgs e)
@@ -131,6 +132,7 @@ namespace RauViet.ui
                 dataGV.Columns["HireDate"].DefaultCellStyle.Format = "dd/MM/yyyy";
                 dataGV.Columns["IssueDate"].DefaultCellStyle.Format = "dd/MM/yyyy";
 
+                dataGV.Columns["EmployessName_NoSign"].Visible = false;
                 log_GV.Columns["LogID"].Visible = false;
                 log_GV.Columns["EmployeeCode"].Visible = false;
                 dataGV.Columns["NoteResign"].Visible = false;
@@ -305,12 +307,12 @@ namespace RauViet.ui
                                     bool isMale, string homeTown, string address, string citizenID, DateTime? issueDate, string issuePlace,
                                     bool isActive, bool canCreateUserName, decimal probationSalaryPercent, string phone, string noteResign, bool isInsuranceRefund, int salaryGradeID)
         {
-            foreach (DataGridViewRow row in dataGV.Rows)
+            foreach (DataRow row in mEmployees_dt.Rows)
             {
-                int id = Convert.ToInt32(row.Cells["EmployeeID"].Value);
+                int id = Convert.ToInt32(row["EmployeeID"]);
                 if (id.CompareTo(employeeId) == 0)
                 {
-                    bool isActiveCurrent = Convert.ToBoolean(row.Cells["IsActive"].Value);
+                    bool isActiveCurrent = Convert.ToBoolean(row["IsActive"]);
                     string noteResignUpdate = noteResign;
                     if (isActiveCurrent != isActive)
                     {
@@ -322,10 +324,10 @@ namespace RauViet.ui
                     {
                         string gradeName = mSalaryGrade_dt.Select($"SalaryGradeID = {salaryGradeID}")[0]["GradeName"].ToString();
 
-                        string oldValueLog = $"{row.Cells["FullName"].Value} - {row.Cells["BirthDate"].Value} - {row.Cells["HireDate"].Value} - {row.Cells["Gender"].Value} - " +
-                            $"{row.Cells["Hometown"].Value} - {row.Cells["Address"].Value} - {row.Cells["CitizenID"].Value} - {row.Cells["IssueDate"].Value} - {row.Cells["IssuePlace"].Value} - " +
-                            $"{row.Cells["IsActive"].Value} - {row.Cells["PhoneNumber"].Value} - {row.Cells["NoteResign"].Value} - {row.Cells["canCreateUserName"].Value} - " +
-                            $"{row.Cells["ProbationSalaryPercent"].Value} - {row.Cells["IsInsuranceRefund"].Value} - {row.Cells["GradeName"].Value}";
+                        string oldValueLog = $"{row["FullName"]} - {row["BirthDate"]} - {row["HireDate"]} - {row["Gender"]} - " +
+                            $"{row["Hometown"]} - {row["Address"]} - {row["CitizenID"]} - {row["IssueDate"]} - {row["IssuePlace"]} - " +
+                            $"{row["IsActive"]} - {row["PhoneNumber"]} - {row["NoteResign"]} - {row["canCreateUserName"]} - " +
+                            $"{row["ProbationSalaryPercent"]} - {row["IsInsuranceRefund"]} - {row["GradeName"]}";
 
                         string newValueLog = $"{tenNV} - {birthDate} - {hireDate} - {isMale} - " +
                             $"{homeTown} - {address} - {citizenID} - {issueDate} - {issuePlace} - " +
@@ -347,26 +349,27 @@ namespace RauViet.ui
 
                                 _ = SQLManager_QLNS.Instance.InsertEmployeesLogAsync(maNV, oldValueLog, "Edit Success: " + newValueLog);
 
-                                row.Cells["EmployeeCode"].Value = maNV;
-                                row.Cells["FullName"].Value = tenNV;
-                                row.Cells["BirthDate"].Value = birthDate;
-                                row.Cells["HireDate"].Value = hireDate;
-                                row.Cells["Gender"].Value = isMale;
-                                row.Cells["Hometown"].Value = homeTown;
-                                row.Cells["Address"].Value = address;
-                                row.Cells["CitizenID"].Value = citizenID;
-                                row.Cells["IssueDate"].Value = issueDate;
-                                row.Cells["IssuePlace"].Value = issuePlace;
-                                row.Cells["IsActive"].Value = isActive;
-                                row.Cells["PhoneNumber"].Value = phone;
-                                row.Cells["NoteResign"].Value = noteResignUpdate;
-                                row.Cells["canCreateUserName"].Value = canCreateUserName;
-                                row.Cells["ProbationSalaryPercent"].Value = probationSalaryPercent;
-                                row.Cells["IsInsuranceRefund"].Value = isInsuranceRefund;
-                                row.Cells["GradeName"].Value = gradeName;
+                                row["EmployeeCode"] = maNV;
+                                row["FullName"] = tenNV;
+                                row["BirthDate"] = birthDate;
+                                row["HireDate"] = hireDate;
+                                row["Gender"] = isMale;
+                                row["Hometown"] = homeTown;
+                                row["Address"] = address;
+                                row["CitizenID"] = citizenID;
+                                row["IssueDate"] = issueDate;
+                                row["IssuePlace"] = issuePlace;
+                                row["IsActive"] = isActive;
+                                row["PhoneNumber"] = phone;
+                                row["NoteResign"] = noteResignUpdate;
+                                row["canCreateUserName"] = canCreateUserName;
+                                row["ProbationSalaryPercent"] = probationSalaryPercent;
+                                row["IsInsuranceRefund"] = isInsuranceRefund;
+                                row["GradeName"] = gradeName;
+                                row["EmployessName_NoSign"] = Utils.RemoveVietnameseSigns(tenNV);
                                 int age = DateTime.Now.Year - birthDate.Year;
 
-                                row.Cells["GenderName"].Value = (isMale == true ? "Nam" : "Nữ  ") + " - " + age;
+                                row["GenderName"] = (isMale == true ? "Nam" : "Nữ  ") + " - " + age;
 
 
                             }
@@ -440,6 +443,7 @@ namespace RauViet.ui
                         drToAdd["IsInsuranceRefund"] = isInsuranceRefund;
                         drToAdd["GradeName"] = gradeName;
                         drToAdd["SalaryGrade"] = salaryGrade;
+                        drToAdd["EmployessName_NoSign"] = Utils.RemoveVietnameseSigns(tenNV);
                         int age = DateTime.Now.Year - birthDate.Year;
 
                         drToAdd["GenderName"] = (isMale == true ? "Nam" : "Nữ  ") + " - " + age;
@@ -664,6 +668,18 @@ namespace RauViet.ui
             isActive_cb.Enabled = !isReadOnly;
             canCreateUserName_cb.Enabled = !isReadOnly;
             isInsuranceRefund_CB.Enabled = !isReadOnly;
+        }
+
+        private void Search_tb_TextChanged(object sender, EventArgs e)
+        {
+            string keyword = Utils.RemoveVietnameseSigns(search_tb.Text.Trim().ToLower())
+                     .Replace("'", "''"); // tránh lỗi cú pháp '
+
+            DataTable dt = dataGV.DataSource as DataTable;
+            if (dt == null) return;
+
+            DataView dv = dt.DefaultView;
+            dv.RowFilter = $"[EmployessName_NoSign] LIKE '%{keyword}%'";
         }
     }
 }

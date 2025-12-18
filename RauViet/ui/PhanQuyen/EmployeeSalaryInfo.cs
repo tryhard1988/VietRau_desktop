@@ -51,6 +51,7 @@ namespace RauViet.ui
             ReadOnly_btn_Click(null, null);
 
             this.KeyDown += EmployeeSalaryInfo_KeyDown;
+            search_tb.TextChanged += Search_tb_TextChanged;
         }
 
         private void EmployeeSalaryInfo_KeyDown(object sender, KeyEventArgs e)
@@ -73,7 +74,7 @@ namespace RauViet.ui
             await Task.Delay(200);
             try
             {
-                string[] keepColumns = { "EmployeeCode", "FullName", "PositionName", "ContractTypeName", "GradeName", "SalaryGrade" };
+                string[] keepColumns = { "EmployeeCode", "FullName", "PositionName", "ContractTypeName", "GradeName", "SalaryGrade", "EmployessName_NoSign" };
                 var employeesTask = SQLStore_QLNS.Instance.GetEmployeesAsync(keepColumns);
                 var employeeSalaryInfoAsync = SQLStore_QLNS.Instance.GetEmployeeSalaryInfoAsync();
                 var employeeSalary_LogTask = SQLStore_QLNS.Instance.GetEmployeeSalary_LogAsync();
@@ -97,6 +98,7 @@ namespace RauViet.ui
 
                 log_GV.Columns["LogID"].Visible = false;
                 log_GV.Columns["EmployeeCode"].Visible = false;
+                dataGV.Columns["EmployessName_NoSign"].Visible = false;
                 dataGV.Columns["SalaryGrade"].Visible = false;
                 salaryInfoGV.Columns["Month"].Visible = false;
                 salaryInfoGV.Columns["Year"].Visible = false;
@@ -456,6 +458,18 @@ namespace RauViet.ui
             baseSalary_tb.ReadOnly = isReadOnly;
             insuranceBaseSalary_tb.ReadOnly = isReadOnly;
             note_tb.ReadOnly = isReadOnly;
+        }
+
+        private void Search_tb_TextChanged(object sender, EventArgs e)
+        {
+            string keyword = Utils.RemoveVietnameseSigns(search_tb.Text.Trim().ToLower())
+                     .Replace("'", "''"); // tránh lỗi cú pháp '
+
+            DataTable dt = dataGV.DataSource as DataTable;
+            if (dt == null) return;
+
+            DataView dv = dt.DefaultView;
+            dv.RowFilter = $"[EmployessName_NoSign] LIKE '%{keyword}%'";
         }
     }
 }

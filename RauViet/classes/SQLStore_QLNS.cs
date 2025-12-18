@@ -225,6 +225,7 @@ namespace RauViet.classes
             mEmployee_dt.Columns.Add(new DataColumn("ContractTypeCode", typeof(string)));
             mEmployee_dt.Columns.Add(new DataColumn("GradeName", typeof(string)));
             mEmployee_dt.Columns.Add(new DataColumn("SalaryGrade", typeof(int)));
+            mEmployee_dt.Columns.Add(new DataColumn("EmployessName_NoSign", typeof(string)));
 
             foreach (DataRow dr in mEmployee_dt.Rows)
             {
@@ -300,7 +301,8 @@ namespace RauViet.classes
                 dr["ContractTypeName"] = contractTypeName;
                 dr["ContractTypeCode"] = contractTypeCode;
                 dr["GradeName"] = gradeName;
-                dr["SalaryGrade"] = salaryGrade;
+                dr["SalaryGrade"] = salaryGrade; 
+                dr["EmployessName_NoSign"] = Utils.RemoveVietnameseSigns(dr["FullName"].ToString());
             }
         }
 

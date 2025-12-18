@@ -420,8 +420,5 @@ namespace RauViet.ui
                 loadingOverlay.Hide();
             }
         }
-
-
-
     }
 }

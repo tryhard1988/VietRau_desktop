@@ -32,9 +32,13 @@ namespace RauViet.ui
             this.panel2 = new System.Windows.Forms.Panel();
             this.dataGV = new System.Windows.Forms.DataGridView();
             this.panel4 = new System.Windows.Forms.Panel();
-            this.cus_lable = new System.Windows.Forms.Label();
-            this.cus_name_label = new System.Windows.Forms.Label();
-            this.total_label = new System.Windows.Forms.Label();
+            this.TotalAmount_Real_label = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
+            this.TotalAmount_Order_lable = new System.Windows.Forms.Label();
+            this.label159 = new System.Windows.Forms.Label();
+            this.NWReal_label = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
+            this.NWOrder_label = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.panel3 = new System.Windows.Forms.Panel();
             this.orderDomesticCode_cbb = new System.Windows.Forms.ComboBox();
@@ -108,9 +112,13 @@ namespace RauViet.ui
             // 
             // panel4
             // 
-            this.panel4.Controls.Add(this.cus_lable);
-            this.panel4.Controls.Add(this.cus_name_label);
-            this.panel4.Controls.Add(this.total_label);
+            this.panel4.Controls.Add(this.TotalAmount_Real_label);
+            this.panel4.Controls.Add(this.label12);
+            this.panel4.Controls.Add(this.TotalAmount_Order_lable);
+            this.panel4.Controls.Add(this.label159);
+            this.panel4.Controls.Add(this.NWReal_label);
+            this.panel4.Controls.Add(this.label11);
+            this.panel4.Controls.Add(this.NWOrder_label);
             this.panel4.Controls.Add(this.label1);
             this.panel4.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panel4.Location = new System.Drawing.Point(0, 807);
@@ -118,41 +126,89 @@ namespace RauViet.ui
             this.panel4.Size = new System.Drawing.Size(811, 20);
             this.panel4.TabIndex = 75;
             // 
-            // cus_lable
+            // TotalAmount_Real_label
             // 
-            this.cus_lable.AutoSize = true;
-            this.cus_lable.Dock = System.Windows.Forms.DockStyle.Left;
-            this.cus_lable.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.cus_lable.ForeColor = System.Drawing.Color.ForestGreen;
-            this.cus_lable.Location = new System.Drawing.Point(115, 0);
-            this.cus_lable.Name = "cus_lable";
-            this.cus_lable.Size = new System.Drawing.Size(35, 16);
-            this.cus_lable.TabIndex = 78;
-            this.cus_lable.Text = "PCS:";
+            this.TotalAmount_Real_label.AutoSize = true;
+            this.TotalAmount_Real_label.Dock = System.Windows.Forms.DockStyle.Left;
+            this.TotalAmount_Real_label.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.TotalAmount_Real_label.ForeColor = System.Drawing.Color.MediumPurple;
+            this.TotalAmount_Real_label.Location = new System.Drawing.Point(546, 0);
+            this.TotalAmount_Real_label.Name = "TotalAmount_Real_label";
+            this.TotalAmount_Real_label.Size = new System.Drawing.Size(35, 16);
+            this.TotalAmount_Real_label.TabIndex = 84;
+            this.TotalAmount_Real_label.Text = "PCS:";
             // 
-            // cus_name_label
+            // label12
             // 
-            this.cus_name_label.AutoSize = true;
-            this.cus_name_label.Dock = System.Windows.Forms.DockStyle.Left;
-            this.cus_name_label.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.cus_name_label.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.cus_name_label.Location = new System.Drawing.Point(79, 0);
-            this.cus_name_label.Name = "cus_name_label";
-            this.cus_name_label.Size = new System.Drawing.Size(36, 16);
-            this.cus_name_label.TabIndex = 77;
-            this.cus_name_label.Text = "PCS:";
+            this.label12.AutoSize = true;
+            this.label12.Dock = System.Windows.Forms.DockStyle.Left;
+            this.label12.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label12.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.label12.Location = new System.Drawing.Point(405, 0);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(141, 16);
+            this.label12.TabIndex = 83;
+            this.label12.Text = "Tổng Tiền Hàng Giao:";
             // 
-            // total_label
+            // TotalAmount_Order_lable
             // 
-            this.total_label.AutoSize = true;
-            this.total_label.Dock = System.Windows.Forms.DockStyle.Left;
-            this.total_label.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.total_label.ForeColor = System.Drawing.SystemColors.Highlight;
-            this.total_label.Location = new System.Drawing.Point(44, 0);
-            this.total_label.Name = "total_label";
-            this.total_label.Size = new System.Drawing.Size(35, 16);
-            this.total_label.TabIndex = 76;
-            this.total_label.Text = "PCS:";
+            this.TotalAmount_Order_lable.AutoSize = true;
+            this.TotalAmount_Order_lable.Dock = System.Windows.Forms.DockStyle.Left;
+            this.TotalAmount_Order_lable.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.TotalAmount_Order_lable.ForeColor = System.Drawing.Color.ForestGreen;
+            this.TotalAmount_Order_lable.Location = new System.Drawing.Point(370, 0);
+            this.TotalAmount_Order_lable.Name = "TotalAmount_Order_lable";
+            this.TotalAmount_Order_lable.Size = new System.Drawing.Size(35, 16);
+            this.TotalAmount_Order_lable.TabIndex = 82;
+            this.TotalAmount_Order_lable.Text = "PCS:";
+            // 
+            // label159
+            // 
+            this.label159.AutoSize = true;
+            this.label159.Dock = System.Windows.Forms.DockStyle.Left;
+            this.label159.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label159.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.label159.Location = new System.Drawing.Point(232, 0);
+            this.label159.Name = "label159";
+            this.label159.Size = new System.Drawing.Size(138, 16);
+            this.label159.TabIndex = 81;
+            this.label159.Text = "Tổng Tiền Đặt Hàng:";
+            // 
+            // NWReal_label
+            // 
+            this.NWReal_label.AutoSize = true;
+            this.NWReal_label.Dock = System.Windows.Forms.DockStyle.Left;
+            this.NWReal_label.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.NWReal_label.ForeColor = System.Drawing.Color.Brown;
+            this.NWReal_label.Location = new System.Drawing.Point(197, 0);
+            this.NWReal_label.Name = "NWReal_label";
+            this.NWReal_label.Size = new System.Drawing.Size(35, 16);
+            this.NWReal_label.TabIndex = 80;
+            this.NWReal_label.Text = "PCS:";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Dock = System.Windows.Forms.DockStyle.Left;
+            this.label11.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label11.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.label11.Location = new System.Drawing.Point(133, 0);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(64, 16);
+            this.label11.TabIndex = 79;
+            this.label11.Text = "NW Giao:";
+            // 
+            // NWOrder_label
+            // 
+            this.NWOrder_label.AutoSize = true;
+            this.NWOrder_label.Dock = System.Windows.Forms.DockStyle.Left;
+            this.NWOrder_label.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.NWOrder_label.ForeColor = System.Drawing.SystemColors.Highlight;
+            this.NWOrder_label.Location = new System.Drawing.Point(98, 0);
+            this.NWOrder_label.Name = "NWOrder_label";
+            this.NWOrder_label.Size = new System.Drawing.Size(35, 16);
+            this.NWOrder_label.TabIndex = 76;
+            this.NWOrder_label.Text = "PCS:";
             // 
             // label1
             // 
@@ -162,9 +218,9 @@ namespace RauViet.ui
             this.label1.ForeColor = System.Drawing.SystemColors.ControlText;
             this.label1.Location = new System.Drawing.Point(0, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(44, 16);
+            this.label1.Size = new System.Drawing.Size(98, 16);
             this.label1.TabIndex = 73;
-            this.label1.Text = "Total:";
+            this.label1.Text = "NW Đặt Hàng:";
             // 
             // panel3
             // 
@@ -588,9 +644,7 @@ namespace RauViet.ui
         private System.Windows.Forms.DataGridView dataGV;
         private System.Windows.Forms.Panel panel4;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label cus_lable;
-        private System.Windows.Forms.Label cus_name_label;
-        private System.Windows.Forms.Label total_label;
+        private System.Windows.Forms.Label NWOrder_label;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.DataGridView log_GV;
         private System.Windows.Forms.Panel panel1;
@@ -623,5 +677,11 @@ namespace RauViet.ui
         private System.Windows.Forms.ComboBox product_ccb;
         private System.Windows.Forms.Button LuuThayDoiBtn;
         private System.Windows.Forms.TextBox orderDomesticDetailID_tb;
+        private System.Windows.Forms.Label TotalAmount_Order_lable;
+        private System.Windows.Forms.Label label159;
+        private System.Windows.Forms.Label NWReal_label;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Label TotalAmount_Real_label;
+        private System.Windows.Forms.Label label12;
     }
 }

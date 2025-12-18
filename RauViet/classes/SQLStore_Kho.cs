@@ -1651,6 +1651,8 @@ namespace RauViet.classes
             data.Columns.Add(new DataColumn("Package", typeof(string)));
             data.Columns.Add(new DataColumn("packing", typeof(string)));
             data.Columns.Add(new DataColumn("Amount", typeof(int)));
+            data.Columns.Add(new DataColumn("TotalAmountOrder", typeof(int)));
+            data.Columns.Add(new DataColumn("TotalAmountReal", typeof(int)));
 
             foreach (DataRow dr in data.Rows)
             {
@@ -1673,6 +1675,22 @@ namespace RauViet.classes
                 if (package.CompareTo("weight") == 0)
                 {
                     dr["PCSReal"] = 0;
+                }
+
+                decimal price = dr["Price"] == DBNull.Value ? 0 : Convert.ToDecimal(dr["Price"]);
+                decimal nwOrder = dr["NWOrder"] == DBNull.Value ? 0 : Convert.ToDecimal(dr["NWOrder"]);
+                decimal pcsOrder = dr["PCSOrder"] == DBNull.Value ? 0 : Convert.ToDecimal(dr["PCSOrder"]);
+                decimal nwReal = dr["NWReal"] == DBNull.Value ? 0 : Convert.ToDecimal(dr["NWReal"]);
+                decimal pcsReal = dr["PCSReal"] == DBNull.Value ? 0 : Convert.ToDecimal(dr["PCSReal"]);
+                if (package.CompareTo("weight") == 0 || package.CompareTo("kg") == 0)
+                {
+                    dr["TotalAmountOrder"] = nwOrder * price;
+                    dr["TotalAmountReal"] = nwReal * price;
+                }
+                else
+                {
+                    dr["TotalAmountOrder"] = pcsOrder * price;
+                    dr["TotalAmountReal"] = pcsReal * price;
                 }
             }
 

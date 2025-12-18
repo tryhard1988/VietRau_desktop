@@ -30,6 +30,8 @@ namespace RauViet.ui
             readOnly_btn.Click += ReadOnly_btn_Click;
             ReadOnly_btn_Click(null, null);
             this.KeyDown += EmployeeNganHang_KeyDown;
+
+            search_tb.TextChanged += Search_tb_TextChanged;
         }
 
         private void EmployeeNganHang_KeyDown(object sender, KeyEventArgs e)
@@ -52,7 +54,7 @@ namespace RauViet.ui
             await Task.Delay(200);
             try
             {
-                string[] keepColumns = { "EmployeeCode", "FullName", "BankName", "BankAccountHolder", "BankAccountNumber", "BankBranch" };
+                string[] keepColumns = { "EmployeeCode", "FullName", "BankName", "BankAccountHolder", "BankAccountNumber", "BankBranch", "EmployessName_NoSign" };
                 var employeesTask = SQLStore_QLNS.Instance.GetEmployeesAsync(keepColumns);
                 var employeeBankLogTask = SQLStore_QLNS.Instance.GetEmployeeBankLogAsync();
                 await Task.WhenAll(employeesTask, employeeBankLogTask);
@@ -63,6 +65,7 @@ namespace RauViet.ui
 
                 log_GV.Columns["LogID"].Visible = false;
                 log_GV.Columns["EmployeeCode"].Visible = false;
+                dataGV.Columns["EmployessName_NoSign"].Visible = false;
 
                 dataGV.Columns["EmployeeCode"].HeaderText = "Mã NV";
                 dataGV.Columns["FullName"].HeaderText = "Tên NV";
@@ -245,6 +248,18 @@ namespace RauViet.ui
             bankAccountHolder_tb.ReadOnly = isReadOnly;
             bankAccountNumber_tb.ReadOnly = isReadOnly;
             bankBranch_tb.ReadOnly = isReadOnly;
+        }
+
+        private void Search_tb_TextChanged(object sender, EventArgs e)
+        {
+            string keyword = Utils.RemoveVietnameseSigns(search_tb.Text.Trim().ToLower())
+                     .Replace("'", "''"); // tránh lỗi cú pháp '
+
+            DataTable dt = dataGV.DataSource as DataTable;
+            if (dt == null) return;
+
+            DataView dv = dt.DefaultView;
+            dv.RowFilter = $"[EmployessName_NoSign] LIKE '%{keyword}%'";
         }
     }
 }
