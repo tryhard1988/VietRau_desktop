@@ -58,7 +58,7 @@ namespace RauViet.ui
         {
             if (e.KeyCode == Keys.F5)
             {
-                SQLStore_QLNS.Instance.EmployeeSalaryInfo();
+                SQLStore_QLNS.Instance.removeEmployeeSalaryInfo();
                 ShowData();
             }
         }

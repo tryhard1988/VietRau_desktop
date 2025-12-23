@@ -9,6 +9,7 @@ namespace RauViet.ui
 {    
     public partial class EmployeeDeduction_CEP : Form
     {
+        private Timer _monthYearDebounceTimer;
         private DataTable mEmployeeDeduction_dt;
         private DataView mDeductionLogDV;
         private const string DeductionTypeCode = "CEP";
@@ -53,13 +54,22 @@ namespace RauViet.ui
             
             amount_tb.KeyPress += Tb_KeyPress_OnlyNumber;
             year_tb.KeyPress += Tb_KeyPress_OnlyNumber;
-            load_btn.Click += Load_btn_Click;
             month_cbb.SelectedIndexChanged += Month_cbb_SelectedIndexChanged;
 
             edit_btn.Click += Edit_btn_Click;
             readOnly_btn.Click += ReadOnly_btn_Click;
             ReadOnly_btn_Click(null, null);
             this.KeyDown += EmployeeDeduction_CEP_KeyDown;
+
+            search_tb.TextChanged += Search_tb_TextChanged;
+            this.Load += OvertimeAttendace_Load;
+        }
+
+        private void OvertimeAttendace_Load(object sender, EventArgs e)
+        {
+            _monthYearDebounceTimer = new Timer();
+            _monthYearDebounceTimer.Interval = 500;
+            _monthYearDebounceTimer.Tick += MonthYearDebounceTimer_Tick;
         }
 
         private void EmployeeDeduction_CEP_KeyDown(object sender, KeyEventArgs e)
@@ -81,9 +91,10 @@ namespace RauViet.ui
             await Task.Delay(200);
             try
             {
+                year_tb.TextChanged -= monthYearDtp_ValueChanged;
                 int month = Convert.ToInt32(month_cbb.SelectedItem);
                 int year = Convert.ToInt32(year_tb.Text);
-                string[] keepColumns = { "EmployeeCode", "FullName", "PositionName", "ContractTypeName", };
+                string[] keepColumns = { "EmployeeCode", "FullName", "PositionName", "ContractTypeName", "EmployessName_NoSign" };
                 var employeesTask = SQLStore_QLNS.Instance.GetEmployeesAsync(keepColumns);
                 var employeeDeductionAsync = SQLStore_QLNS.Instance.GetDeductionAsync(year, DeductionTypeCode);
                 var deductionNameAsync = SQLStore_QLNS.Instance.GetDeductionNameAsync(DeductionTypeCode);
@@ -98,6 +109,8 @@ namespace RauViet.ui
                     if (dr["PositionName"] == DBNull.Value) dr["PositionName"] = "";
                     if (dr["ContractTypeName"] == DBNull.Value) dr["ContractTypeName"] = "";
                 }
+
+                monthYearLabel.Text = $"Năm {year}";
 
                 employeeDeductionGV.DataSource = mEmployeeDeduction_dt;
 
@@ -128,6 +141,9 @@ namespace RauViet.ui
                 dataGV.Columns["EmployeeCode"].HeaderText = "Mã NV";
                 dataGV.Columns["PositionName"].HeaderText = "Chức Vụ";
                 dataGV.Columns["ContractTypeName"].HeaderText = "Loại Hợp Đồng";
+                dataGV.Columns["EmployessName_NoSign"].Visible = false;
+                dataGV.Columns["EmployeeCode"].Width = 60;
+                dataGV.Columns["FullName"].Width = 160;
 
                 employeeDeductionGV.Columns["DeductionDate"].Width = 70;
                 employeeDeductionGV.Columns["Amount"].Width = 60;
@@ -155,6 +171,7 @@ namespace RauViet.ui
                 log_GV.Columns["DeductionDate"].HeaderText = "Ngày";
                 log_GV.Columns["Amount"].HeaderText = "Số Tiền";
 
+                year_tb.TextChanged += monthYearDtp_ValueChanged;
                 log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
             }
@@ -170,29 +187,6 @@ namespace RauViet.ui
             } 
         }
 
-        private async void Load_btn_Click(object sender, EventArgs e)
-        {
-            await Task.Delay(50);
-            LoadingOverlay loadingOverlay = new LoadingOverlay(this);
-            loadingOverlay.Show();
-
-            int year = Convert.ToInt32(year_tb.Text);
-
-            var employeeDeductionAsync = SQLStore_QLNS.Instance.GetDeductionAsync(year, DeductionTypeCode);
-            var EmployeeDeductionLogTask = SQLStore_QLNS.Instance.GetEmployeeDeductionLogAsync(year, DeductionTypeCode);
-            await Task.WhenAll(employeeDeductionAsync);
-            mEmployeeDeduction_dt = employeeDeductionAsync.Result;
-            mDeductionLogDV = new DataView(EmployeeDeductionLogTask.Result);
-            log_GV.DataSource = mDeductionLogDV;
-            if (dataGV.CurrentRow != null)
-            {
-                int selectedIndex = dataGV.CurrentRow?.Index ?? -1;
-                UpdateEmployeeDeductionUI(selectedIndex);
-            }
-
-            await Task.Delay(100);
-            loadingOverlay.Hide();
-        }
 
         private void Tb_KeyPress_OnlyNumber(object sender, KeyPressEventArgs e)
         {
@@ -555,6 +549,57 @@ namespace RauViet.ui
             month_cbb.Enabled = !isReadOnly;
             amount_tb.ReadOnly = isReadOnly;
             note_tb.ReadOnly = isReadOnly;
+        }
+
+        private void Search_tb_TextChanged(object sender, EventArgs e)
+        {
+            string keyword = Utils.RemoveVietnameseSigns(search_tb.Text.Trim().ToLower())
+                     .Replace("'", "''"); // tránh lỗi cú pháp '
+
+            DataTable dt = dataGV.DataSource as DataTable;
+            if (dt == null) return;
+
+            DataView dv = dt.DefaultView;
+            dv.RowFilter = $"[EmployessName_NoSign] LIKE '%{keyword}%'";
+        }
+
+        private void monthYearDtp_ValueChanged(object sender, EventArgs e)
+        {
+            // Mỗi lần thay đổi thì reset timer
+            _monthYearDebounceTimer.Stop();
+            _monthYearDebounceTimer.Start();
+        }
+
+        private void MonthYearDebounceTimer_Tick(object sender, EventArgs e)
+        {
+            _monthYearDebounceTimer.Stop();
+            HandleMonthYearChanged();
+        }
+
+        private async void HandleMonthYearChanged()
+        {
+            await Task.Delay(50);
+            LoadingOverlay loadingOverlay = new LoadingOverlay(this);
+            loadingOverlay.Show();
+            await Task.Delay(200);
+            int year = Convert.ToInt32(year_tb.Text);
+
+            var employeeDeductionAsync = SQLStore_QLNS.Instance.GetDeductionAsync(year, DeductionTypeCode);
+            var EmployeeDeductionLogTask = SQLStore_QLNS.Instance.GetEmployeeDeductionLogAsync(year, DeductionTypeCode);
+            await Task.WhenAll(employeeDeductionAsync, EmployeeDeductionLogTask);
+            mEmployeeDeduction_dt = employeeDeductionAsync.Result;
+            mDeductionLogDV = new DataView(EmployeeDeductionLogTask.Result);
+            log_GV.DataSource = mDeductionLogDV;
+            if (dataGV.CurrentRow != null)
+            {
+                int selectedIndex = dataGV.CurrentRow?.Index ?? -1;
+                UpdateEmployeeDeductionUI(selectedIndex);
+            }
+
+            monthYearLabel.Text = $"Năm {year}";
+
+            await Task.Delay(100);
+            loadingOverlay.Hide();
         }
     }
 }

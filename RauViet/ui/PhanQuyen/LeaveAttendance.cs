@@ -11,6 +11,7 @@ namespace RauViet.ui
 {
     public partial class LeaveAttendance : Form
     {
+        private Timer _monthYearDebounceTimer;
         System.Data.DataTable mLeaveAttendance_dt, mEmployee_dt, mLeaveType;
         DataView mLogDV;
         bool isNewState = false;
@@ -50,8 +51,6 @@ namespace RauViet.ui
             LuuThayDoiBtn.Click += saveBtn_Click;
             dataGV.SelectionChanged += this.dataGV_CellClick;
             
-
-            loadAttandance_btn.Click += LoadLeaveAttendance_btn_Click;
             newBtn.Click += NewBtn_Click;
             delete_btn.Click += Delete_btn_Click;
             hourLeave_tb.KeyPress += Tb_KeyPress_OnlyNumber;
@@ -65,6 +64,16 @@ namespace RauViet.ui
 
             linkStartEnd_cb.CheckedChanged += LinkStartEnd_cb_CheckedChanged;
             this.KeyDown += LeaveAttendance_KeyDown;
+
+            search_tb.TextChanged += Search_tb_TextChanged;
+            this.Load += OvertimeAttendace_Load;
+        }
+
+        private void OvertimeAttendace_Load(object sender, EventArgs e)
+        {
+            _monthYearDebounceTimer = new Timer();
+            _monthYearDebounceTimer.Interval = 500;
+            _monthYearDebounceTimer.Tick += MonthYearDebounceTimer_Tick;
         }
 
         private void LeaveAttendance_KeyDown(object sender, KeyEventArgs e)
@@ -87,23 +96,23 @@ namespace RauViet.ui
             await Task.Delay(200);
             try
             {
+                year_tb.TextChanged -= monthYearDtp_ValueChanged;
+
                 int year = Convert.ToInt32(year_tb.Text);
                 var leavecodeParam = new List<string>{"NL_1"};
-                // Chạy truy vấn trên thread riêng
-                string[] keepColumns = { "EmployeeCode", "FullName", "PositionName", "ContractTypeName", };
-                var employeesTask = SQLStore_QLNS.Instance.GetEmployeesAsync(keepColumns);
                 var leaveTypeTask = SQLStore_QLNS.Instance.GetLeaveTypeWithoutAsync(leavecodeParam);
                 var employeeRemainingLeaveTask = SQLStore_QLNS.Instance.GetAnnualLeaveBalanceAsync(year);
                 var leaveAttendanceTask = SQLStore_QLNS.Instance.GetLeaveAttendancesAsyn(year);
                 var leaveAttendanceLogTask = SQLStore_QLNS.Instance.GetLeaveAttendanceLogAsync(year);
 
 
-                await Task.WhenAll(employeeRemainingLeaveTask, leaveAttendanceTask, leaveTypeTask, employeesTask, leaveAttendanceLogTask);
+                await Task.WhenAll(employeeRemainingLeaveTask, leaveAttendanceTask, leaveTypeTask, leaveAttendanceLogTask);
                 mEmployee_dt = employeeRemainingLeaveTask.Result;
                 mLeaveAttendance_dt = leaveAttendanceTask.Result;
                 mLeaveType = leaveTypeTask.Result;
                 mLogDV = new DataView(leaveAttendanceLogTask.Result);
                 curYear = year;
+                monthYearLabel.Text = $"Năm {year}";
 
                 leaveType_cbb.DataSource = mLeaveType;
                 leaveType_cbb.DisplayMember = "LeaveTypeName";
@@ -125,7 +134,8 @@ namespace RauViet.ui
                 dataGV.Columns["Month"].Visible = false;
                 dataGV.Columns["Year"].Visible = false;
                 dataGV.Columns["LeaveCount"].Visible = false;
-                
+                dataGV.Columns["EmployessName_NoSign"].Visible = false;
+
 
                 dataGV.Columns["EmployeeCode"].Width = 50;
                 dataGV.Columns["FullName"].Width = 160;
@@ -163,6 +173,7 @@ namespace RauViet.ui
                 log_GV.Columns["LeaveHour"].HeaderText = "Số giờ nghỉ";
 
                 log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                year_tb.TextChanged += monthYearDtp_ValueChanged;
             }
             catch
             {
@@ -226,18 +237,7 @@ namespace RauViet.ui
         private async void LoadLeaveAttendance_btn_Click(object sender, EventArgs e)
         {
 
-            int year = Convert.ToInt32(year_tb.Text);
-
-            var leaveAttendanceTask = SQLStore_QLNS.Instance.GetLeaveAttendancesAsyn(year);
-            var leaveAttendanceLogTask = SQLStore_QLNS.Instance.GetLeaveAttendanceLogAsync(year);
-            await Task.WhenAll(leaveAttendanceTask, leaveAttendanceLogTask);
-
-            mLeaveAttendance_dt = leaveAttendanceTask.Result;
-            mLogDV = new DataView(leaveAttendanceLogTask.Result);
-            log_GV.DataSource = mLogDV;
-            loadLeaveAttendance();
-
-            curYear = year;
+            
 
         }
 
@@ -697,6 +697,57 @@ namespace RauViet.ui
                 DateTime dayyOffStart = dateOffStart_dtp.Value.Date;
                 dateOffEnd_dtp.Value = dayyOffStart;
             }
+        }
+
+        private void Search_tb_TextChanged(object sender, EventArgs e)
+        {
+            string keyword = Utils.RemoveVietnameseSigns(search_tb.Text.Trim().ToLower())
+                     .Replace("'", "''"); // tránh lỗi cú pháp '
+
+            DataTable dt = dataGV.DataSource as DataTable;
+            if (dt == null) return;
+
+            DataView dv = dt.DefaultView;
+            dv.RowFilter = $"[EmployessName_NoSign] LIKE '%{keyword}%'";
+        }
+
+        private void monthYearDtp_ValueChanged(object sender, EventArgs e)
+        {
+            // Mỗi lần thay đổi thì reset timer
+            _monthYearDebounceTimer.Stop();
+            _monthYearDebounceTimer.Start();
+        }
+
+        private void MonthYearDebounceTimer_Tick(object sender, EventArgs e)
+        {
+            _monthYearDebounceTimer.Stop();
+            HandleMonthYearChanged();
+        }
+
+        private async void HandleMonthYearChanged()
+        {
+            await Task.Delay(50);
+            LoadingOverlay loadingOverlay = new LoadingOverlay(this);
+            loadingOverlay.Show();
+            await Task.Delay(200);
+
+            int year = Convert.ToInt32(year_tb.Text);
+
+            var leaveAttendanceTask = SQLStore_QLNS.Instance.GetLeaveAttendancesAsyn(year);
+            var leaveAttendanceLogTask = SQLStore_QLNS.Instance.GetLeaveAttendanceLogAsync(year);
+            await Task.WhenAll(leaveAttendanceTask, leaveAttendanceLogTask);
+
+            mLeaveAttendance_dt = leaveAttendanceTask.Result;
+            mLogDV = new DataView(leaveAttendanceLogTask.Result);
+            log_GV.DataSource = mLogDV;
+            loadLeaveAttendance();
+
+            curYear = year;
+
+            monthYearLabel.Text = $"Năm {year}";
+
+            await Task.Delay(100);
+            loadingOverlay.Hide();
         }
     }
 }

@@ -135,14 +135,13 @@ namespace RauViet.ui
                     !UserManager.Instance.hasRole_Chot_PHYTO() && !UserManager.Instance.hasRole_PHYTO() && !UserManager.Instance.hasRole_DangKyKiemDich())
                     xuatExcelGuiKH_Group_mi.Visible = false;
             }
-            if (UserManager.Instance.hasRole_ChamCong())
+            if (UserManager.Instance.hasRole_ChamCongHanhChanh() || UserManager.Instance.hasRole_ChamCongTangCa() || UserManager.Instance.hasRole_CacKhoanTru())
             {
+
                 attendanceHC_mi.Click += attendanceHC_mi_Click;
                 overtimeAttendace_mi.Click += OvertimeAttendace_mi_Click;
                 annualLeaveBalance_mi.Click += AnnualLeaveBalance_mi_Click;
                 leaveAttendance_mi.Click += LeaveAttendance_mi_Click;
-                //departmentAllowance_mi.Click += DepartmentAllowance_mi_Click;
-                //positionAllowance_mi.Click += PositionAllowance_mi_Click;
                 employeeAllowance_mi.Click += EmployeeAllowance_mi_Click;
                 monthlyAllowance_mi.Click += MonthlyAllowance_mi_Click;
                 deduction_VEG_mi.Click += deduction_VEG_mi_Click;
@@ -151,6 +150,22 @@ namespace RauViet.ui
                 deduction_ADV_mi.Click += Deduction_ADV_mi_Click;
                 deduction_ATT_mi.Click += Deduction_ATT_mi_Click;
                 salaryCaculator_mi.Click += SalaryCaculator_mi_Click;
+
+                deduction_VEG_mi.Visible = UserManager.Instance.hasRole_TruTienRau();
+                deduction_OTH_mi.Visible = UserManager.Instance.hasRole_TruKhac();
+                deduction_CEP_mi.Visible = UserManager.Instance.hasRole_TruCEP();
+                deduction_ADV_mi.Visible = UserManager.Instance.hasRole_TruUngLuong();
+                deduction_ATT_mi.Visible = UserManager.Instance.hasRole_TruChuyenCan();
+
+                employeeDeduction_mi.Visible = UserManager.Instance.hasRole_CacKhoanTru();
+
+                attendanceHC_mi.Visible = UserManager.Instance.hasRole_ChamCongHanhChanh();
+                leaveAttendance_mi.Visible = UserManager.Instance.hasRole_ChamCongHanhChanh();
+                annualLeaveBalance_mi.Visible = UserManager.Instance.hasRole_ChamCongHanhChanh();
+                allowanceGroup_mi.Visible = UserManager.Instance.hasRole_ChamCongHanhChanh();
+                salaryCaculator_mi.Visible = UserManager.Instance.hasRole_ChamCongHanhChanh();
+
+                overtimeAttendace_mi.Visible = UserManager.Instance.hasRole_ChamCongTangCa();
             }
             else
                 chamcong_pmi.Visible = false;

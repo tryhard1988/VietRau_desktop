@@ -30,9 +30,9 @@ namespace RauViet.ui
         private void InitializeComponent()
         {
             this.panel2 = new System.Windows.Forms.Panel();
-            this.dataGV = new System.Windows.Forms.DataGridView();
-            this.search_tb = new System.Windows.Forms.TextBox();
             this.label16 = new System.Windows.Forms.Label();
+            this.search_tb = new System.Windows.Forms.TextBox();
+            this.dataGV = new System.Windows.Forms.DataGridView();
             this.panel1 = new System.Windows.Forms.Panel();
             this.label5 = new System.Windows.Forms.Label();
             this.log_GV = new System.Windows.Forms.DataGridView();
@@ -48,8 +48,6 @@ namespace RauViet.ui
             this.noteResign_tb = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.phone_tb = new System.Windows.Forms.TextBox();
-            this.label15 = new System.Windows.Forms.Label();
-            this.probationSalaryPercent_tb = new System.Windows.Forms.TextBox();
             this.canCreateUserName_cb = new System.Windows.Forms.CheckBox();
             this.label13 = new System.Windows.Forms.Label();
             this.issuePlace_tb = new System.Windows.Forms.TextBox();
@@ -93,17 +91,15 @@ namespace RauViet.ui
             this.panel2.Size = new System.Drawing.Size(1375, 34);
             this.panel2.TabIndex = 12;
             // 
-            // dataGV
+            // label16
             // 
-            this.dataGV.AllowUserToAddRows = false;
-            this.dataGV.AllowUserToDeleteRows = false;
-            this.dataGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGV.Dock = System.Windows.Forms.DockStyle.Left;
-            this.dataGV.Location = new System.Drawing.Point(0, 34);
-            this.dataGV.Name = "dataGV";
-            this.dataGV.ReadOnly = true;
-            this.dataGV.Size = new System.Drawing.Size(866, 690);
-            this.dataGV.TabIndex = 13;
+            this.label16.AutoSize = true;
+            this.label16.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label16.Location = new System.Drawing.Point(7, 8);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(66, 16);
+            this.label16.TabIndex = 20;
+            this.label16.Text = "Tìm Kiếm:";
             // 
             // search_tb
             // 
@@ -114,15 +110,17 @@ namespace RauViet.ui
             this.search_tb.Size = new System.Drawing.Size(287, 23);
             this.search_tb.TabIndex = 19;
             // 
-            // label16
+            // dataGV
             // 
-            this.label16.AutoSize = true;
-            this.label16.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label16.Location = new System.Drawing.Point(7, 8);
-            this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(66, 16);
-            this.label16.TabIndex = 20;
-            this.label16.Text = "Tìm Kiếm:";
+            this.dataGV.AllowUserToAddRows = false;
+            this.dataGV.AllowUserToDeleteRows = false;
+            this.dataGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGV.Dock = System.Windows.Forms.DockStyle.Left;
+            this.dataGV.Location = new System.Drawing.Point(0, 34);
+            this.dataGV.Name = "dataGV";
+            this.dataGV.ReadOnly = true;
+            this.dataGV.Size = new System.Drawing.Size(866, 793);
+            this.dataGV.TabIndex = 13;
             // 
             // panel1
             // 
@@ -139,7 +137,7 @@ namespace RauViet.ui
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(866, 34);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(509, 690);
+            this.panel1.Size = new System.Drawing.Size(509, 793);
             this.panel1.TabIndex = 14;
             // 
             // label5
@@ -148,7 +146,7 @@ namespace RauViet.ui
             this.label5.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.label5.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label5.ForeColor = System.Drawing.Color.DarkOliveGreen;
-            this.label5.Location = new System.Drawing.Point(0, 494);
+            this.label5.Location = new System.Drawing.Point(0, 597);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(509, 23);
             this.label5.TabIndex = 80;
@@ -161,7 +159,7 @@ namespace RauViet.ui
             this.log_GV.AllowUserToDeleteRows = false;
             this.log_GV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.log_GV.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.log_GV.Location = new System.Drawing.Point(0, 517);
+            this.log_GV.Location = new System.Drawing.Point(0, 620);
             this.log_GV.Name = "log_GV";
             this.log_GV.ReadOnly = true;
             this.log_GV.Size = new System.Drawing.Size(509, 173);
@@ -220,8 +218,6 @@ namespace RauViet.ui
             this.info_gb.Controls.Add(this.noteResign_tb);
             this.info_gb.Controls.Add(this.label1);
             this.info_gb.Controls.Add(this.phone_tb);
-            this.info_gb.Controls.Add(this.label15);
-            this.info_gb.Controls.Add(this.probationSalaryPercent_tb);
             this.info_gb.Controls.Add(this.canCreateUserName_cb);
             this.info_gb.Controls.Add(this.label13);
             this.info_gb.Controls.Add(this.issuePlace_tb);
@@ -246,7 +242,7 @@ namespace RauViet.ui
             this.info_gb.Controls.Add(this.hometown_tb);
             this.info_gb.Location = new System.Drawing.Point(19, 61);
             this.info_gb.Name = "info_gb";
-            this.info_gb.Size = new System.Drawing.Size(422, 505);
+            this.info_gb.Size = new System.Drawing.Size(422, 473);
             this.info_gb.TabIndex = 28;
             this.info_gb.TabStop = false;
             // 
@@ -254,7 +250,7 @@ namespace RauViet.ui
             // 
             this.salaryGrade_ccb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.salaryGrade_ccb.FormattingEnabled = true;
-            this.salaryGrade_ccb.Location = new System.Drawing.Point(128, 395);
+            this.salaryGrade_ccb.Location = new System.Drawing.Point(128, 364);
             this.salaryGrade_ccb.Name = "salaryGrade_ccb";
             this.salaryGrade_ccb.Size = new System.Drawing.Size(200, 21);
             this.salaryGrade_ccb.TabIndex = 47;
@@ -263,7 +259,7 @@ namespace RauViet.ui
             // 
             this.label14.AutoSize = true;
             this.label14.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label14.Location = new System.Drawing.Point(54, 397);
+            this.label14.Location = new System.Drawing.Point(54, 366);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(71, 16);
             this.label14.TabIndex = 46;
@@ -272,7 +268,7 @@ namespace RauViet.ui
             // isInsuranceRefund_CB
             // 
             this.isInsuranceRefund_CB.AutoSize = true;
-            this.isInsuranceRefund_CB.Location = new System.Drawing.Point(293, 477);
+            this.isInsuranceRefund_CB.Location = new System.Drawing.Point(293, 446);
             this.isInsuranceRefund_CB.Name = "isInsuranceRefund_CB";
             this.isInsuranceRefund_CB.Size = new System.Drawing.Size(101, 17);
             this.isInsuranceRefund_CB.TabIndex = 52;
@@ -283,7 +279,7 @@ namespace RauViet.ui
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(18, 436);
+            this.label4.Location = new System.Drawing.Point(18, 405);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(104, 16);
             this.label4.TabIndex = 50;
@@ -293,7 +289,7 @@ namespace RauViet.ui
             // 
             this.noteResign_tb.Enabled = false;
             this.noteResign_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.noteResign_tb.Location = new System.Drawing.Point(128, 423);
+            this.noteResign_tb.Location = new System.Drawing.Point(128, 392);
             this.noteResign_tb.Multiline = true;
             this.noteResign_tb.Name = "noteResign_tb";
             this.noteResign_tb.ReadOnly = true;
@@ -318,28 +314,10 @@ namespace RauViet.ui
             this.phone_tb.Size = new System.Drawing.Size(122, 23);
             this.phone_tb.TabIndex = 49;
             // 
-            // label15
-            // 
-            this.label15.AutoSize = true;
-            this.label15.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label15.Location = new System.Drawing.Point(7, 366);
-            this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(118, 16);
-            this.label15.TabIndex = 46;
-            this.label15.Text = "% Lương Thử Việc:";
-            // 
-            // probationSalaryPercent_tb
-            // 
-            this.probationSalaryPercent_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.probationSalaryPercent_tb.Location = new System.Drawing.Point(128, 363);
-            this.probationSalaryPercent_tb.Name = "probationSalaryPercent_tb";
-            this.probationSalaryPercent_tb.Size = new System.Drawing.Size(113, 23);
-            this.probationSalaryPercent_tb.TabIndex = 47;
-            // 
             // canCreateUserName_cb
             // 
             this.canCreateUserName_cb.AutoSize = true;
-            this.canCreateUserName_cb.Location = new System.Drawing.Point(171, 477);
+            this.canCreateUserName_cb.Location = new System.Drawing.Point(171, 446);
             this.canCreateUserName_cb.Name = "canCreateUserName_cb";
             this.canCreateUserName_cb.Size = new System.Drawing.Size(79, 17);
             this.canCreateUserName_cb.TabIndex = 43;
@@ -492,7 +470,7 @@ namespace RauViet.ui
             // isActive_cb
             // 
             this.isActive_cb.AutoSize = true;
-            this.isActive_cb.Location = new System.Drawing.Point(24, 477);
+            this.isActive_cb.Location = new System.Drawing.Point(24, 446);
             this.isActive_cb.Name = "isActive_cb";
             this.isActive_cb.Size = new System.Drawing.Size(99, 17);
             this.isActive_cb.TabIndex = 21;
@@ -570,7 +548,7 @@ namespace RauViet.ui
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1375, 724);
+            this.ClientSize = new System.Drawing.Size(1375, 827);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.dataGV);
             this.Controls.Add(this.panel2);
@@ -608,8 +586,6 @@ namespace RauViet.ui
         private System.Windows.Forms.TextBox noteResign_tb;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox phone_tb;
-        private System.Windows.Forms.Label label15;
-        private System.Windows.Forms.TextBox probationSalaryPercent_tb;
         private System.Windows.Forms.CheckBox canCreateUserName_cb;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.TextBox issuePlace_tb;

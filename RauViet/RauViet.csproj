@@ -243,6 +243,7 @@
     <Compile Include="classes\ICanSave.cs" />
     <Compile Include="classes\printer\LabelPrinter.cs" />
     <Compile Include="classes\printer\OrderDomesticSummaryPrinter.cs" />
+    <Compile Include="classes\printer\DSTangCa_Printer.cs" />
     <Compile Include="classes\printer\PhieuCanHangPrinter.cs" />
     <Compile Include="classes\printer\DoiChieuCongNo_Printer.cs" />
     <Compile Include="classes\printer\PhieuGiaoHangTrongNuoc_Printer.cs" />

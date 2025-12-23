@@ -30,6 +30,7 @@ namespace RauViet.ui
         private void InitializeComponent()
         {
             this.load_gb = new System.Windows.Forms.GroupBox();
+            this.monthYearDtp = new System.Windows.Forms.DateTimePicker();
             this.exportPDF_btn = new System.Windows.Forms.Button();
             this.printPreview_pl_btn = new System.Windows.Forms.Button();
             this.print_pl_btn = new System.Windows.Forms.Button();
@@ -53,8 +54,6 @@ namespace RauViet.ui
             this.allowancePanel = new System.Windows.Forms.Panel();
             this.allowanceGV = new System.Windows.Forms.DataGridView();
             this.label2 = new System.Windows.Forms.Label();
-            this.monthYearDtp = new System.Windows.Forms.DateTimePicker();
-            this.load_btn = new System.Windows.Forms.Button();
             this.load_gb.SuspendLayout();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
@@ -78,7 +77,6 @@ namespace RauViet.ui
             this.load_gb.Controls.Add(this.exportPDF_btn);
             this.load_gb.Controls.Add(this.printPreview_pl_btn);
             this.load_gb.Controls.Add(this.print_pl_btn);
-            this.load_gb.Controls.Add(this.load_btn);
             this.load_gb.Controls.Add(this.LuuThayDoiBtn);
             this.load_gb.Dock = System.Windows.Forms.DockStyle.Top;
             this.load_gb.Location = new System.Drawing.Point(0, 0);
@@ -86,6 +84,15 @@ namespace RauViet.ui
             this.load_gb.Size = new System.Drawing.Size(1427, 51);
             this.load_gb.TabIndex = 29;
             this.load_gb.TabStop = false;
+            // 
+            // monthYearDtp
+            // 
+            this.monthYearDtp.CalendarFont = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.monthYearDtp.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.monthYearDtp.Location = new System.Drawing.Point(514, 14);
+            this.monthYearDtp.Name = "monthYearDtp";
+            this.monthYearDtp.Size = new System.Drawing.Size(121, 31);
+            this.monthYearDtp.TabIndex = 34;
             // 
             // exportPDF_btn
             // 
@@ -124,7 +131,7 @@ namespace RauViet.ui
             // 
             this.LuuThayDoiBtn.BackColor = System.Drawing.SystemColors.Highlight;
             this.LuuThayDoiBtn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LuuThayDoiBtn.Location = new System.Drawing.Point(181, 9);
+            this.LuuThayDoiBtn.Location = new System.Drawing.Point(651, 10);
             this.LuuThayDoiBtn.Name = "LuuThayDoiBtn";
             this.LuuThayDoiBtn.Size = new System.Drawing.Size(99, 40);
             this.LuuThayDoiBtn.TabIndex = 25;
@@ -188,6 +195,7 @@ namespace RauViet.ui
             // 
             // label7
             // 
+            this.label7.BackColor = System.Drawing.Color.PeachPuff;
             this.label7.Dock = System.Windows.Forms.DockStyle.Top;
             this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label7.Location = new System.Drawing.Point(0, 0);
@@ -344,25 +352,6 @@ namespace RauViet.ui
             this.label2.Text = "Phụ Cấp";
             this.label2.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
-            // monthYearDtp
-            // 
-            this.monthYearDtp.CalendarFont = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.monthYearDtp.Location = new System.Drawing.Point(6, 17);
-            this.monthYearDtp.Name = "monthYearDtp";
-            this.monthYearDtp.Size = new System.Drawing.Size(99, 20);
-            this.monthYearDtp.TabIndex = 34;
-            // 
-            // load_btn
-            // 
-            this.load_btn.BackColor = System.Drawing.SystemColors.Highlight;
-            this.load_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.load_btn.Location = new System.Drawing.Point(109, 11);
-            this.load_btn.Name = "load_btn";
-            this.load_btn.Size = new System.Drawing.Size(66, 32);
-            this.load_btn.TabIndex = 30;
-            this.load_btn.Text = "Load";
-            this.load_btn.UseVisualStyleBackColor = false;
-            // 
             // SalaryCaculator
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -417,6 +406,5 @@ namespace RauViet.ui
         private System.Windows.Forms.Button printPreview_pl_btn;
         private System.Windows.Forms.Button exportPDF_btn;
         private System.Windows.Forms.DateTimePicker monthYearDtp;
-        private System.Windows.Forms.Button load_btn;
     }
 }

@@ -1,14 +1,8 @@
-﻿using DocumentFormat.OpenXml.Drawing.Charts;
-using DocumentFormat.OpenXml.Spreadsheet;
-using RauViet.ui;
+﻿
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
-using System.IO.Packaging;
 using System.Linq;
-using System.Threading.Tasks;
-using DataTable = System.Data.DataTable;
 
 namespace RauViet.classes
 {
@@ -72,6 +66,16 @@ namespace RauViet.classes
             return false;
         }
 
+        public bool hasRoles(params string[] roleCodes)
+        {
+            foreach (string roleCode in roleCodes)
+            {
+                if (this.roleCodes.Contains(roleCode, StringComparer.OrdinalIgnoreCase))
+                    return true;
+            }
+            return false;
+        }
+
         public bool hasRole_User(){return hasRole("ql_user");}
         public bool hasRole_NhanSu(){ return hasRole("qlns");}
         public bool hasRole_KhachHang() { return hasRole("qlkh"); }
@@ -86,10 +90,32 @@ namespace RauViet.classes
         public bool hasRole_Invoice() { return hasRole("xuat_invoice"); }
         public bool hasRole_PackingTotal() { return hasRole("xuat_pt"); }
         public bool hasRole_CustomerDetailPacking() { return hasRole("xuat_cdp"); }
-        public bool hasRole_ChamCong() { return hasRole("cc"); }
+        public bool hasRole_ChamCongHanhChanh() { return hasRole("cc"); }
+        public bool hasRole_ChamCongTangCa() { return hasRoles("cctc_28", "cctc_29", "cctc_26", "cctc_24", "cctc_25", "cctc_27"); }
+        public bool hasRole_CacKhoanTru() { return hasRoles("tt_rau", "tt_ULuong", "tt_CCan", "tt_CEP", "tt_Other"); }
+        public bool hasRole_TruTienRau() { return hasRole("tt_rau"); }
+        public bool hasRole_TruUngLuong() { return hasRole("tt_ULuong"); }
+        public bool hasRole_TruChuyenCan() { return hasRole("tt_CCan"); }
+        public bool hasRole_TruCEP() { return hasRole("tt_CEP"); }
+        public bool hasRole_TruKhac() { return hasRole("tt_Other"); }
         public bool hasRole_ThongKe() { return hasRole("tknsvk"); }
         public bool hasRole_CreateQR() { return hasRole("tqr"); }
         public bool hasRole_NhapDonTrongNuoc() { return hasRole("ndtn"); }
+
+        public int[] get_ChamCongTangCa_Departments()
+        {
+            int[] departmentIDs = roleCodes.Where(r => r.StartsWith("cctc_", StringComparison.OrdinalIgnoreCase))
+                                        .Select(r =>
+                                        {
+                                            string numberPart = r.Substring(5); // bỏ "cctc_"
+                                            return int.TryParse(numberPart, out int n) ? n : (int?)null;
+                                        })
+                                        .Where(n => n.HasValue)
+                                        .Select(n => n.Value)
+                                        .ToArray();
+
+            return departmentIDs;
+        }
         public void reset()
         {
             this.userName = "";

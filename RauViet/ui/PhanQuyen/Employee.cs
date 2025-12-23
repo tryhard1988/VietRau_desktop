@@ -31,7 +31,6 @@ namespace RauViet.ui
             issueDate_dtp.TabIndex = countTab++; issueDate_dtp.TabStop = true;
             issuePlace_tb.TabIndex = countTab++; issuePlace_tb.TabStop = true;
             phone_tb.TabIndex = countTab++; phone_tb.TabStop = true;
-            probationSalaryPercent_tb.TabIndex = countTab++; probationSalaryPercent_tb.TabStop = true;
             salaryGrade_ccb.TabIndex = countTab++; salaryGrade_ccb.TabStop = true;
             isActive_cb.TabIndex = countTab++; isActive_cb.TabStop = true;
             canCreateUserName_cb.TabIndex = countTab++; canCreateUserName_cb.TabStop = true;
@@ -50,7 +49,6 @@ namespace RauViet.ui
             LuuThayDoiBtn.Click += saveBtn_Click;
             delete_btn.Click += deleteBtn_Click;
             dataGV.SelectionChanged += this.dataGV_CellClick;
-            probationSalaryPercent_tb.KeyPress += Tb_KeyPress_OnlyNumber;
 
             edit_btn.Click += Edit_btn_Click;
             readOnly_btn.Click += ReadOnly_btn_Click;
@@ -99,7 +97,6 @@ namespace RauViet.ui
                 mEmployees_dt.Columns["BirthDate"].SetOrdinal(count++);
                 mEmployees_dt.Columns["HireDate"].SetOrdinal(count++);                
                 mEmployees_dt.Columns["IsActive"].SetOrdinal(count++);
-                mEmployees_dt.Columns["ProbationSalaryPercent"].SetOrdinal(count++);
                 mEmployees_dt.Columns["CitizenID"].SetOrdinal(count++);
                 mEmployees_dt.Columns["Address"].SetOrdinal(count++);
                 mEmployees_dt.Columns["PhoneNumber"].SetOrdinal(count++);
@@ -119,7 +116,6 @@ namespace RauViet.ui
                 dataGV.Columns["HireDate"].HeaderText = "Ngày Vào Làm";
                 dataGV.Columns["GenderName"].HeaderText = "G.Tính";
                 dataGV.Columns["IsActive"].HeaderText = "Đang Làm";
-                dataGV.Columns["ProbationSalaryPercent"].HeaderText = "%Lương Thử Việc";
                 dataGV.Columns["CitizenID"].HeaderText = "CCCD/CMND";
                 dataGV.Columns["PhoneNumber"].HeaderText = "Số Điện Thoại";
                 dataGV.Columns["NoteResign"].HeaderText = "Ra/Vào Công Ty";
@@ -174,13 +170,11 @@ namespace RauViet.ui
                 dataGV.Columns["IsActive"].Width = 50;
                 dataGV.Columns["CitizenID"].Width = 90;
                 dataGV.Columns["NoteResign"].Width = 90;
-                dataGV.Columns["ProbationSalaryPercent"].Width = 65;
                 dataGV.Columns["Gradename"].Width = 70;
                 dataGV.Columns["PhoneNumber"].Width = 70;
 
                 dataGV.Columns["PhoneNumber"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 dataGV.Columns["Gradename"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                dataGV.Columns["ProbationSalaryPercent"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
                 log_GV.Columns["CreatedAt"].Width = 120;
@@ -268,7 +262,6 @@ namespace RauViet.ui
             string phone = cells["PhoneNumber"].Value.ToString();
             string noteResign = cells["NoteResign"].Value.ToString();
             int? salaryGradeID = Utils.GetIntValue(cells["SalaryGradeID"]);
-            decimal? probationSalaryPercent = Utils.GetDecimalValue(cells["ProbationSalaryPercent"]);
             DateTime? birthDate = DateTime.TryParse(cells["BirthDate"].Value?.ToString(), out DateTime tmp1) ? tmp1 : (DateTime?)null;
             DateTime? issueDate = DateTime.TryParse(cells["IssueDate"].Value?.ToString(), out DateTime tmp) ? tmp : (DateTime?)null;
 
@@ -292,7 +285,6 @@ namespace RauViet.ui
             issuePlace_tb.Text = issuePlace;
             phone_tb.Text = phone;
             noteResign_tb.Text = noteResign;
-            probationSalaryPercent_tb.Text = (probationSalaryPercent != null ? probationSalaryPercent : 0).ToString();
             isActive_cb.Checked = isActive;
             canCreateUserName_cb.Checked = canCreateUserName;
             isInsuranceRefund_CB.Checked = isInsuranceRefund;
@@ -305,7 +297,7 @@ namespace RauViet.ui
         
         private async void updateData(int employeeId, string maNV, string tenNV, DateTime birthDate, DateTime hireDate,
                                     bool isMale, string homeTown, string address, string citizenID, DateTime? issueDate, string issuePlace,
-                                    bool isActive, bool canCreateUserName, decimal probationSalaryPercent, string phone, string noteResign, bool isInsuranceRefund, int salaryGradeID)
+                                    bool isActive, bool canCreateUserName, string phone, string noteResign, bool isInsuranceRefund, int salaryGradeID)
         {
             foreach (DataRow row in mEmployees_dt.Rows)
             {
@@ -327,19 +319,19 @@ namespace RauViet.ui
                         string oldValueLog = $"{row["FullName"]} - {row["BirthDate"]} - {row["HireDate"]} - {row["Gender"]} - " +
                             $"{row["Hometown"]} - {row["Address"]} - {row["CitizenID"]} - {row["IssueDate"]} - {row["IssuePlace"]} - " +
                             $"{row["IsActive"]} - {row["PhoneNumber"]} - {row["NoteResign"]} - {row["canCreateUserName"]} - " +
-                            $"{row["ProbationSalaryPercent"]} - {row["IsInsuranceRefund"]} - {row["GradeName"]}";
+                            $"{row["IsInsuranceRefund"]} - {row["GradeName"]}";
 
                         string newValueLog = $"{tenNV} - {birthDate} - {hireDate} - {isMale} - " +
                             $"{homeTown} - {address} - {citizenID} - {issueDate} - {issuePlace} - " +
                             $"{isActive} - {phone} - {noteResignUpdate} - {canCreateUserName} - " +
-                            $"{probationSalaryPercent} - {isInsuranceRefund} - {gradeName}";
+                            $"{isInsuranceRefund} - {gradeName}";
 
 
                         try
                         {
                             bool isScussess = await SQLManager_QLNS.Instance.updateEmployeesAsync(employeeId, maNV, tenNV, birthDate, hireDate,
                                     isMale, homeTown, address, citizenID, issueDate, issuePlace, isActive, canCreateUserName, 
-                                    probationSalaryPercent, phone, noteResignUpdate, isInsuranceRefund, salaryGradeID);
+                                    phone, noteResignUpdate, isInsuranceRefund, salaryGradeID);
 
                             
                             if (isScussess == true)
@@ -363,10 +355,9 @@ namespace RauViet.ui
                                 row["PhoneNumber"] = phone;
                                 row["NoteResign"] = noteResignUpdate;
                                 row["canCreateUserName"] = canCreateUserName;
-                                row["ProbationSalaryPercent"] = probationSalaryPercent;
                                 row["IsInsuranceRefund"] = isInsuranceRefund;
                                 row["GradeName"] = gradeName;
-                                row["EmployessName_NoSign"] = Utils.RemoveVietnameseSigns(tenNV);
+                                row["EmployessName_NoSign"] = Utils.RemoveVietnameseSigns(maNV + " " + tenNV);
                                 int age = DateTime.Now.Year - birthDate.Year;
 
                                 row["GenderName"] = (isMale == true ? "Nam" : "Nữ  ") + " - " + age;
@@ -398,7 +389,7 @@ namespace RauViet.ui
 
         private async void createNew(string tenNV, DateTime birthDate, DateTime hireDate, bool isMale, string homeTown, 
                                     string address, string citizenID, DateTime? issueDate, string issuePlace, bool isActive,
-                                    bool canCreateUserName, decimal probationSalaryPercent, string phone, string noteResign,bool isInsuranceRefund, int salaryGradeID)
+                                    bool canCreateUserName, string phone, string noteResign,bool isInsuranceRefund, int salaryGradeID)
         {
             DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
@@ -410,12 +401,12 @@ namespace RauViet.ui
                 string newValueLog = $"{tenNV} - {birthDate} - {hireDate} - {isMale} - " +
                             $"{homeTown} - {address} - {citizenID} - {issueDate} - {issuePlace} - " +
                             $"{isActive} - {phone} - {noteResign} - {canCreateUserName} - " +
-                            $"{probationSalaryPercent} - {isInsuranceRefund} - {gradeName}";
+                            $"{isInsuranceRefund} - {gradeName}";
                 try
                 {
                     string nvCode_temp = "VR" + 0.ToString("D4");
                     var result = await SQLManager_QLNS.Instance.insertEmployeeAsync(nvCode_temp,tenNV, birthDate, hireDate,isMale, homeTown, address, 
-                        citizenID, issueDate, issuePlace, isActive, canCreateUserName, probationSalaryPercent, phone, noteResign, isInsuranceRefund, salaryGradeID);
+                        citizenID, issueDate, issuePlace, isActive, canCreateUserName, phone, noteResign, isInsuranceRefund, salaryGradeID);
                     if (result.EmployeeID > 0)
                     {
                         DataTable dataTable = (DataTable)dataGV.DataSource;
@@ -439,11 +430,10 @@ namespace RauViet.ui
                         drToAdd["PhoneNumber"] = phone;
                         drToAdd["NoteResign"] = noteResign;
                         drToAdd["canCreateUserName"] = canCreateUserName;
-                        drToAdd["ProbationSalaryPercent"] = probationSalaryPercent;
                         drToAdd["IsInsuranceRefund"] = isInsuranceRefund;
                         drToAdd["GradeName"] = gradeName;
                         drToAdd["SalaryGrade"] = salaryGrade;
-                        drToAdd["EmployessName_NoSign"] = Utils.RemoveVietnameseSigns(tenNV);
+                        drToAdd["EmployessName_NoSign"] = Utils.RemoveVietnameseSigns(employeeCode + " " + tenNV);
                         int age = DateTime.Now.Year - birthDate.Year;
 
                         drToAdd["GenderName"] = (isMale == true ? "Nam" : "Nữ  ") + " - " + age;
@@ -488,7 +478,7 @@ namespace RauViet.ui
             DateTime hireDate = hireDate_dtp.Value;
 
             if ((string.IsNullOrEmpty(nvCode_tb.Text) && !string.IsNullOrEmpty(employeeID_tb.Text)) || salaryGrade_ccb.SelectedItem == null ||
-                tenNV_tb.Text.CompareTo("") == 0 || string.IsNullOrEmpty(probationSalaryPercent_tb.Text))
+                tenNV_tb.Text.CompareTo("") == 0)
             {
                 MessageBox.Show("Sai Dữ Liệu, Kiểm Tra Lại!", "Thông Báo", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
@@ -510,7 +500,6 @@ namespace RauViet.ui
             string noteResign = noteResign_tb.Text;
             DateTime? issueDate = issueDate_dtp.Value;
             string issuePlace = issuePlace_tb.Text;
-            decimal probationSalaryPercent = Convert.ToDecimal(probationSalaryPercent_tb.Text);
             bool isActive = isActive_cb.Checked;
             bool canCreateUserName = canCreateUserName_cb.Checked;
             bool isInsuranceRefund = isInsuranceRefund_CB.Checked;
@@ -531,10 +520,10 @@ namespace RauViet.ui
 
             if (employeeID_tb.Text.Length != 0)
                 updateData(Convert.ToInt32(employeeID_tb.Text), maNV, tenNV, birthDate, hireDate,isMale, homeTown, 
-                    address, citizenID, issueDate, issuePlace, isActive, canCreateUserName, probationSalaryPercent, phone, noteResign, isInsuranceRefund, salaryGradeID);
+                    address, citizenID, issueDate, issuePlace, isActive, canCreateUserName, phone, noteResign, isInsuranceRefund, salaryGradeID);
             else
                 createNew(tenNV, birthDate, hireDate,isMale, homeTown, 
-                    address, citizenID, issueDate, issuePlace, isActive, canCreateUserName, probationSalaryPercent, phone, noteResign, isInsuranceRefund, salaryGradeID);
+                    address, citizenID, issueDate, issuePlace, isActive, canCreateUserName, phone, noteResign, isInsuranceRefund, salaryGradeID);
 
         }
         private async void deleteBtn_Click(object sender, EventArgs e)
@@ -664,7 +653,6 @@ namespace RauViet.ui
             salaryGrade_ccb.Enabled = !isReadOnly;
             issuePlace_tb.ReadOnly = isReadOnly;
             phone_tb.ReadOnly = isReadOnly;
-            probationSalaryPercent_tb.ReadOnly = isReadOnly;
             isActive_cb.Enabled = !isReadOnly;
             canCreateUserName_cb.Enabled = !isReadOnly;
             isInsuranceRefund_CB.Enabled = !isReadOnly;

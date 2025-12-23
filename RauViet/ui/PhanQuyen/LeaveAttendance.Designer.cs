@@ -29,10 +29,10 @@ namespace RauViet.ui
         /// </summary>
         private void InitializeComponent()
         {
+            this.panel4 = new System.Windows.Forms.Panel();
             this.dataGV = new System.Windows.Forms.DataGridView();
             this.panel2 = new System.Windows.Forms.Panel();
-            this.log_GV = new System.Windows.Forms.DataGridView();
-            this.label6 = new System.Windows.Forms.Label();
+            this.attendanceGV = new System.Windows.Forms.DataGridView();
             this.panel1 = new System.Windows.Forms.Panel();
             this.readOnly_btn = new System.Windows.Forms.Button();
             this.edit_btn = new System.Windows.Forms.Button();
@@ -53,20 +53,35 @@ namespace RauViet.ui
             this.label15 = new System.Windows.Forms.Label();
             this.note_tb = new System.Windows.Forms.TextBox();
             this.status_lb = new System.Windows.Forms.Label();
-            this.load_gb = new System.Windows.Forms.GroupBox();
-            this.loadAttandance_btn = new System.Windows.Forms.Button();
             this.year_tb = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
-            this.attendanceGV = new System.Windows.Forms.DataGridView();
+            this.label6 = new System.Windows.Forms.Label();
+            this.log_GV = new System.Windows.Forms.DataGridView();
+            this.panel5 = new System.Windows.Forms.Panel();
+            this.label16 = new System.Windows.Forms.Label();
+            this.search_tb = new System.Windows.Forms.TextBox();
+            this.monthYearLabel = new System.Windows.Forms.Label();
+            this.panel4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
             this.panel2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.log_GV)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.attendanceGV)).BeginInit();
             this.panel1.SuspendLayout();
             this.info_gb.SuspendLayout();
-            this.load_gb.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.attendanceGV)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.log_GV)).BeginInit();
+            this.panel5.SuspendLayout();
             this.SuspendLayout();
+            // 
+            // panel4
+            // 
+            this.panel4.BackColor = System.Drawing.Color.Brown;
+            this.panel4.Controls.Add(this.monthYearLabel);
+            this.panel4.Controls.Add(this.panel5);
+            this.panel4.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel4.Location = new System.Drawing.Point(0, 0);
+            this.panel4.Name = "panel4";
+            this.panel4.Size = new System.Drawing.Size(1309, 55);
+            this.panel4.TabIndex = 39;
             // 
             // dataGV
             // 
@@ -74,11 +89,11 @@ namespace RauViet.ui
             this.dataGV.AllowUserToDeleteRows = false;
             this.dataGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGV.Dock = System.Windows.Forms.DockStyle.Left;
-            this.dataGV.Location = new System.Drawing.Point(0, 0);
+            this.dataGV.Location = new System.Drawing.Point(0, 55);
             this.dataGV.Name = "dataGV";
             this.dataGV.ReadOnly = true;
-            this.dataGV.Size = new System.Drawing.Size(403, 681);
-            this.dataGV.TabIndex = 1;
+            this.dataGV.Size = new System.Drawing.Size(403, 626);
+            this.dataGV.TabIndex = 40;
             // 
             // panel2
             // 
@@ -87,38 +102,27 @@ namespace RauViet.ui
             this.panel2.Controls.Add(this.label6);
             this.panel2.Controls.Add(this.log_GV);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel2.Location = new System.Drawing.Point(403, 0);
+            this.panel2.Location = new System.Drawing.Point(403, 55);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(906, 681);
-            this.panel2.TabIndex = 12;
+            this.panel2.Size = new System.Drawing.Size(906, 626);
+            this.panel2.TabIndex = 41;
             // 
-            // log_GV
+            // attendanceGV
             // 
-            this.log_GV.AllowUserToAddRows = false;
-            this.log_GV.AllowUserToDeleteRows = false;
-            this.log_GV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.log_GV.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.log_GV.Location = new System.Drawing.Point(0, 455);
-            this.log_GV.Name = "log_GV";
-            this.log_GV.ReadOnly = true;
-            this.log_GV.Size = new System.Drawing.Size(906, 226);
-            this.log_GV.TabIndex = 41;
-            // 
-            // label6
-            // 
-            this.label6.BackColor = System.Drawing.Color.PeachPuff;
-            this.label6.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.label6.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label6.ForeColor = System.Drawing.Color.DarkOliveGreen;
-            this.label6.Location = new System.Drawing.Point(0, 432);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(906, 23);
-            this.label6.TabIndex = 50;
-            this.label6.Text = "Lịch sử thay đổi";
-            this.label6.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.attendanceGV.AllowUserToAddRows = false;
+            this.attendanceGV.AllowUserToDeleteRows = false;
+            this.attendanceGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.attendanceGV.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.attendanceGV.Location = new System.Drawing.Point(0, 0);
+            this.attendanceGV.Name = "attendanceGV";
+            this.attendanceGV.ReadOnly = true;
+            this.attendanceGV.Size = new System.Drawing.Size(518, 377);
+            this.attendanceGV.TabIndex = 53;
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.year_tb);
+            this.panel1.Controls.Add(this.label2);
             this.panel1.Controls.Add(this.readOnly_btn);
             this.panel1.Controls.Add(this.edit_btn);
             this.panel1.Controls.Add(this.delete_btn);
@@ -126,12 +130,11 @@ namespace RauViet.ui
             this.panel1.Controls.Add(this.newBtn);
             this.panel1.Controls.Add(this.info_gb);
             this.panel1.Controls.Add(this.status_lb);
-            this.panel1.Controls.Add(this.load_gb);
             this.panel1.Controls.Add(this.LuuThayDoiBtn);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Right;
             this.panel1.Location = new System.Drawing.Point(518, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(388, 432);
+            this.panel1.Size = new System.Drawing.Size(388, 377);
             this.panel1.TabIndex = 52;
             // 
             // readOnly_btn
@@ -330,43 +333,21 @@ namespace RauViet.ui
             this.status_lb.TabIndex = 26;
             this.status_lb.Text = "Email";
             // 
-            // load_gb
-            // 
-            this.load_gb.Controls.Add(this.loadAttandance_btn);
-            this.load_gb.Controls.Add(this.year_tb);
-            this.load_gb.Controls.Add(this.label2);
-            this.load_gb.Location = new System.Drawing.Point(53, 16);
-            this.load_gb.Name = "load_gb";
-            this.load_gb.Size = new System.Drawing.Size(241, 79);
-            this.load_gb.TabIndex = 28;
-            this.load_gb.TabStop = false;
-            // 
-            // loadAttandance_btn
-            // 
-            this.loadAttandance_btn.BackColor = System.Drawing.SystemColors.Highlight;
-            this.loadAttandance_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.loadAttandance_btn.Location = new System.Drawing.Point(128, 24);
-            this.loadAttandance_btn.Name = "loadAttandance_btn";
-            this.loadAttandance_btn.Size = new System.Drawing.Size(90, 40);
-            this.loadAttandance_btn.TabIndex = 30;
-            this.loadAttandance_btn.Text = "Load";
-            this.loadAttandance_btn.UseVisualStyleBackColor = false;
-            // 
             // year_tb
             // 
-            this.year_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.year_tb.Location = new System.Drawing.Point(65, 32);
+            this.year_tb.Font = new System.Drawing.Font("Tahoma", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.year_tb.Location = new System.Drawing.Point(156, 38);
             this.year_tb.Name = "year_tb";
-            this.year_tb.Size = new System.Drawing.Size(48, 23);
+            this.year_tb.Size = new System.Drawing.Size(61, 33);
             this.year_tb.TabIndex = 20;
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(14, 33);
+            this.label2.Font = new System.Drawing.Font("Tahoma", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.Location = new System.Drawing.Point(95, 39);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(38, 16);
+            this.label2.Size = new System.Drawing.Size(62, 25);
             this.label2.TabIndex = 10;
             this.label2.Text = "Năm:";
             // 
@@ -381,17 +362,73 @@ namespace RauViet.ui
             this.LuuThayDoiBtn.Text = "Lưu";
             this.LuuThayDoiBtn.UseVisualStyleBackColor = false;
             // 
-            // attendanceGV
+            // label6
             // 
-            this.attendanceGV.AllowUserToAddRows = false;
-            this.attendanceGV.AllowUserToDeleteRows = false;
-            this.attendanceGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.attendanceGV.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.attendanceGV.Location = new System.Drawing.Point(0, 0);
-            this.attendanceGV.Name = "attendanceGV";
-            this.attendanceGV.ReadOnly = true;
-            this.attendanceGV.Size = new System.Drawing.Size(518, 432);
-            this.attendanceGV.TabIndex = 53;
+            this.label6.BackColor = System.Drawing.Color.PeachPuff;
+            this.label6.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.label6.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label6.ForeColor = System.Drawing.Color.DarkOliveGreen;
+            this.label6.Location = new System.Drawing.Point(0, 377);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(906, 23);
+            this.label6.TabIndex = 50;
+            this.label6.Text = "Lịch sử thay đổi";
+            this.label6.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // log_GV
+            // 
+            this.log_GV.AllowUserToAddRows = false;
+            this.log_GV.AllowUserToDeleteRows = false;
+            this.log_GV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.log_GV.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.log_GV.Location = new System.Drawing.Point(0, 400);
+            this.log_GV.Name = "log_GV";
+            this.log_GV.ReadOnly = true;
+            this.log_GV.Size = new System.Drawing.Size(906, 226);
+            this.log_GV.TabIndex = 41;
+            // 
+            // panel5
+            // 
+            this.panel5.Controls.Add(this.label16);
+            this.panel5.Controls.Add(this.search_tb);
+            this.panel5.Dock = System.Windows.Forms.DockStyle.Left;
+            this.panel5.Location = new System.Drawing.Point(0, 0);
+            this.panel5.Name = "panel5";
+            this.panel5.Size = new System.Drawing.Size(382, 55);
+            this.panel5.TabIndex = 24;
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label16.ForeColor = System.Drawing.Color.PeachPuff;
+            this.label16.Location = new System.Drawing.Point(12, 17);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(66, 16);
+            this.label16.TabIndex = 22;
+            this.label16.Text = "Tìm Kiếm:";
+            // 
+            // search_tb
+            // 
+            this.search_tb.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.search_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.search_tb.Location = new System.Drawing.Point(83, 14);
+            this.search_tb.Name = "search_tb";
+            this.search_tb.Size = new System.Drawing.Size(287, 23);
+            this.search_tb.TabIndex = 21;
+            // 
+            // monthYearLabel
+            // 
+            this.monthYearLabel.BackColor = System.Drawing.Color.Transparent;
+            this.monthYearLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.monthYearLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 36F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.monthYearLabel.ForeColor = System.Drawing.Color.Bisque;
+            this.monthYearLabel.Location = new System.Drawing.Point(382, 0);
+            this.monthYearLabel.Name = "monthYearLabel";
+            this.monthYearLabel.Size = new System.Drawing.Size(927, 55);
+            this.monthYearLabel.TabIndex = 25;
+            this.monthYearLabel.Text = "Tháng 11";
+            this.monthYearLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // LeaveAttendance
             // 
@@ -400,27 +437,29 @@ namespace RauViet.ui
             this.ClientSize = new System.Drawing.Size(1309, 681);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.dataGV);
+            this.Controls.Add(this.panel4);
             this.Name = "LeaveAttendance";
             this.Text = "FormTableData";
+            this.panel4.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).EndInit();
             this.panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.log_GV)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.attendanceGV)).EndInit();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.info_gb.ResumeLayout(false);
             this.info_gb.PerformLayout();
-            this.load_gb.ResumeLayout(false);
-            this.load_gb.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.attendanceGV)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.log_GV)).EndInit();
+            this.panel5.ResumeLayout(false);
+            this.panel5.PerformLayout();
             this.ResumeLayout(false);
 
         }
 
         #endregion
+
+        private System.Windows.Forms.Panel panel4;
         private System.Windows.Forms.DataGridView dataGV;
         private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.DataGridView log_GV;
-        private System.Windows.Forms.Label label6;
         private System.Windows.Forms.DataGridView attendanceGV;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Button readOnly_btn;
@@ -442,10 +481,14 @@ namespace RauViet.ui
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.TextBox note_tb;
         private System.Windows.Forms.Label status_lb;
-        private System.Windows.Forms.GroupBox load_gb;
-        private System.Windows.Forms.Button loadAttandance_btn;
         private System.Windows.Forms.TextBox year_tb;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button LuuThayDoiBtn;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.DataGridView log_GV;
+        private System.Windows.Forms.Panel panel5;
+        private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.TextBox search_tb;
+        private System.Windows.Forms.Label monthYearLabel;
     }
 }

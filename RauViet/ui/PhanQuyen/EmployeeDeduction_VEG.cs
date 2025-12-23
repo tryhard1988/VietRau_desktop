@@ -9,6 +9,7 @@ namespace RauViet.ui
 {    
     public partial class EmployeeDeduction_VEG : Form
     {
+        private Timer _monthYearDebounceTimer;
         private DataTable mEmployeeDeduction_dt;
         private DataView mDeductionLogDV;
         private const string DeductionTypeCode = "VEG";
@@ -45,19 +46,29 @@ namespace RauViet.ui
             status_lb.Text = "";         
 
             deductionDate_dtp.Format = DateTimePickerFormat.Custom;
-            deductionDate_dtp.CustomFormat = "dd/MM/yyyy";
+            deductionDate_dtp.CustomFormat = "dd";
+            deductionDate_dtp.ShowUpDown = true;
 
             newCustomerBtn.Click += newCustomerBtn_Click;
             LuuThayDoiBtn.Click += saveBtn_Click;
             delete_btn.Click += deleteBtn_Click;
             dataGV.SelectionChanged += this.dataGV_CellClick;            
             amount_tb.KeyPress += Tb_KeyPress_OnlyNumber;
-            load_btn.Click += Load_btn_Click;
 
             edit_btn.Click += Edit_btn_Click;
             readOnly_btn.Click += ReadOnly_btn_Click;
             ReadOnly_btn_Click(null, null);
             this.KeyDown += EmployeeDeduction_VEG_KeyDown;
+
+            search_tb.TextChanged += Search_tb_TextChanged;
+            this.Load += OvertimeAttendace_Load;
+        }
+
+        private void OvertimeAttendace_Load(object sender, EventArgs e)
+        {
+            _monthYearDebounceTimer = new Timer();
+            _monthYearDebounceTimer.Interval = 500;
+            _monthYearDebounceTimer.Tick += MonthYearDebounceTimer_Tick;
         }
 
         private void EmployeeDeduction_VEG_KeyDown(object sender, KeyEventArgs e)
@@ -80,10 +91,10 @@ namespace RauViet.ui
             try
             {
                 employeeDeductionGV.SelectionChanged -= this.allowanceGV_CellClick;
-
+                monthYearDtp.ValueChanged -= monthYearDtp_ValueChanged;
                 int month = monthYearDtp.Value.Month;
                 int year = monthYearDtp.Value.Year;
-                string[] keepColumns = { "EmployeeCode", "FullName", "PositionName", "ContractTypeName", };
+                string[] keepColumns = { "EmployeeCode", "FullName", "PositionName", "ContractTypeName", "EmployessName_NoSign" };
                 var employeesTask = SQLStore_QLNS.Instance.GetEmployeesAsync(keepColumns);
                 var employeeDeductionAsync = SQLStore_QLNS.Instance.GetDeductionAsync(month, year, DeductionTypeCode);
                 var deductionNameAsync = SQLStore_QLNS.Instance.GetDeductionNameAsync(DeductionTypeCode);
@@ -96,6 +107,7 @@ namespace RauViet.ui
 
                 currMonth = month;
                 currYear = year;
+                monthYearLabel.Text = $"Tháng {month}/{year}";
 
                 foreach (DataRow dr in employee_dt.Rows)
                 {
@@ -137,7 +149,9 @@ namespace RauViet.ui
 
                 //dataGV.Columns["AllowanceTypeID"].Visible = false;
                 //dataGV.Columns["ApplyScopeID"].Visible = false;
-
+                dataGV.Columns["EmployessName_NoSign"].Visible = false;
+                dataGV.Columns["EmployeeCode"].Width = 60;
+                dataGV.Columns["FullName"].Width = 160;
                 employeeDeductionGV.Columns["DeductionDate"].Width = 70;
                 employeeDeductionGV.Columns["Amount"].Width = 60;
                 employeeDeductionGV.Columns["Note"].Width = 200;
@@ -157,6 +171,7 @@ namespace RauViet.ui
 
                 
                 employeeDeductionGV.SelectionChanged += this.allowanceGV_CellClick;
+                monthYearDtp.ValueChanged += monthYearDtp_ValueChanged;
 
                 log_GV.Columns["CreateAt"].Width = 120;
                 log_GV.Columns["ActionBy"].Width = 150;
@@ -183,37 +198,6 @@ namespace RauViet.ui
             }
         }
 
-        private async void Load_btn_Click(object sender, EventArgs e)
-        {
-            await Task.Delay(50);
-            LoadingOverlay loadingOverlay = new LoadingOverlay(this);
-            loadingOverlay.Show();
-
-            int month = monthYearDtp.Value.Month;
-            int year = monthYearDtp.Value.Year;
-
-            var employeeDeductionAsync = SQLStore_QLNS.Instance.GetDeductionAsync(month, year, DeductionTypeCode);
-            var EmployeeDeductionLogTask = SQLStore_QLNS.Instance.GetEmployeeDeductionLogAsync(month, year, DeductionTypeCode);
-
-            
-            await Task.WhenAll(employeeDeductionAsync, EmployeeDeductionLogTask);
-            mEmployeeDeduction_dt = employeeDeductionAsync.Result;
-            mDeductionLogDV = new DataView(EmployeeDeductionLogTask.Result);
-            log_GV.DataSource = mDeductionLogDV;
-
-            if (dataGV.CurrentRow != null)
-            {
-                int selectedIndex = dataGV.CurrentRow?.Index ?? -1;
-                UpdateEmployeeDeductionUI(selectedIndex);
-            }
-
-            bool isLock = await SQLStore_QLNS.Instance.IsSalaryLockAsync(month, year);
-            newCustomerBtn.Visible = !isLock;
-            edit_btn.Visible = !isLock;
-
-            await Task.Delay(100);
-            loadingOverlay.Hide();
-        }
 
         private void Tb_KeyPress_OnlyNumber(object sender, KeyPressEventArgs e)
         {
@@ -399,16 +383,15 @@ namespace RauViet.ui
                 return;
             }
 
-            
-            DateTime deductionDate = deductionDate_dtp.Value;
             int month = monthYearDtp.Value.Month;
             int year = monthYearDtp.Value.Year;
+            DateTime deductionDate = new DateTime(year, month, deductionDate_dtp.Value.Day);
 
-            if (deductionDate.Year != year || month != deductionDate.Month)
-            {
-                MessageBox.Show("Tháng hoặc Năm có vẫn đề", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
+            //if (deductionDate.Year != year || month != deductionDate.Month)
+            //{
+            //    MessageBox.Show("Tháng hoặc Năm có vẫn đề", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //    return;
+            //}
 
             bool isLock = await SQLStore_QLNS.Instance.IsSalaryLockAsync(deductionDate.Month, deductionDate.Year);
             if (isLock)
@@ -539,6 +522,65 @@ namespace RauViet.ui
             deductionDate_dtp.Enabled = !isReadOnly;
             amount_tb.ReadOnly = isReadOnly;
             note_tb.ReadOnly = isReadOnly;
+        }
+
+        private void Search_tb_TextChanged(object sender, EventArgs e)
+        {
+            string keyword = Utils.RemoveVietnameseSigns(search_tb.Text.Trim().ToLower())
+                     .Replace("'", "''"); // tránh lỗi cú pháp '
+
+            DataTable dt = dataGV.DataSource as DataTable;
+            if (dt == null) return;
+
+            DataView dv = dt.DefaultView;
+            dv.RowFilter = $"[EmployessName_NoSign] LIKE '%{keyword}%'";
+        }
+
+        private void monthYearDtp_ValueChanged(object sender, EventArgs e)
+        {
+            // Mỗi lần thay đổi thì reset timer
+            _monthYearDebounceTimer.Stop();
+            _monthYearDebounceTimer.Start();
+        }
+
+        private void MonthYearDebounceTimer_Tick(object sender, EventArgs e)
+        {
+            _monthYearDebounceTimer.Stop();
+            HandleMonthYearChanged();
+        }
+
+        private async void HandleMonthYearChanged()
+        {
+            await Task.Delay(50);
+            LoadingOverlay loadingOverlay = new LoadingOverlay(this);
+            loadingOverlay.Show();
+            await Task.Delay(200);
+            int month = monthYearDtp.Value.Month;
+            int year = monthYearDtp.Value.Year;
+
+            var employeeDeductionAsync = SQLStore_QLNS.Instance.GetDeductionAsync(month, year, DeductionTypeCode);
+            var EmployeeDeductionLogTask = SQLStore_QLNS.Instance.GetEmployeeDeductionLogAsync(month, year, DeductionTypeCode);
+
+
+            await Task.WhenAll(employeeDeductionAsync, EmployeeDeductionLogTask);
+            mEmployeeDeduction_dt = employeeDeductionAsync.Result;
+            mDeductionLogDV = new DataView(EmployeeDeductionLogTask.Result);
+            log_GV.DataSource = mDeductionLogDV;
+
+            if (dataGV.CurrentRow != null)
+            {
+                int selectedIndex = dataGV.CurrentRow?.Index ?? -1;
+                UpdateEmployeeDeductionUI(selectedIndex);
+            }
+
+            bool isLock = await SQLStore_QLNS.Instance.IsSalaryLockAsync(month, year);
+            newCustomerBtn.Visible = !isLock;
+            edit_btn.Visible = !isLock;
+
+            monthYearLabel.Text = $"Tháng {month}/{year}";
+
+            await Task.Delay(100);
+            loadingOverlay.Hide();
         }
     }
 }

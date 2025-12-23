@@ -14,7 +14,7 @@ namespace RauViet.ui
 {
     public partial class INVOICE : Form
     {
-        DataTable mExportCode_dt, mOrdersTotal_dt, mCustomerOrdersTotal_dt, mCartonOrdersTotal_dt;
+        DataTable mExportCode_dt, mOrdersTotal_dt, mCustomerOrdersTotal_dt, mCartonOrdersTotal_dt, mProductSKU_dt;
         private LoadingOverlay loadingOverlay;
         int mCurrentExportID = -1;
         public INVOICE()
@@ -71,11 +71,13 @@ namespace RauViet.ui
                 var cartonOrdersTask = SQLStore_Kho.Instance.getOrdersCartonInvoiceAsync(mCurrentExportID);
                 var customersOrdersTask = SQLStore_Kho.Instance.getOrdersCusInvoiceAsync(mCurrentExportID);
                 var OrdersInvoiceTask = SQLStore_Kho.Instance.getOrdersInvoiceAsync(mCurrentExportID);
+                var ProductSKUTask = SQLManager_Kho.Instance.getProductSKUAsync();
 
-                await Task.WhenAll(customersOrdersTask, OrdersInvoiceTask, cartonOrdersTask);
+                await Task.WhenAll(customersOrdersTask, OrdersInvoiceTask, cartonOrdersTask, ProductSKUTask);
                 mOrdersTotal_dt = OrdersInvoiceTask.Result;
                 mCustomerOrdersTotal_dt = customersOrdersTask.Result;
                 mCartonOrdersTotal_dt = cartonOrdersTask.Result;
+                mProductSKU_dt = ProductSKUTask.Result;
 
                 showOrdersExport();
                 showCustomerOrderGV();
@@ -87,6 +89,9 @@ namespace RauViet.ui
                 exportCode_cbb.ValueMember = "ExportCodeID";
                 exportCode_cbb.SelectedValue = mCurrentExportID;
                 exportCode_cbb.SelectedIndexChanged += exportCode_search_cbb_SelectedIndexChanged;
+
+
+
 
                 UpdateBotttomUI();
             }
@@ -158,6 +163,8 @@ namespace RauViet.ui
             dataGV.Columns["AmountCHF"].Width = 70;
 
             dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+
+            CheckWarning();
         }
 
         private void showCustomerOrderGV()
@@ -178,6 +185,56 @@ namespace RauViet.ui
             cusOrderGV.Columns["FullName"].Width = 100;
 
             cusOrderGV.Columns["AmountCHF"].DefaultCellStyle.Format = "N3";
+            
+        }
+        private void CheckWarning()
+        {
+          //  await Task.Delay(500);
+
+            var priceLookup = mProductSKU_dt.AsEnumerable()
+                .Where(r => r["SKU"] != DBNull.Value)
+                .ToDictionary(
+                    r => r.Field<int>("SKU"),
+                    r => r.Field<decimal>("PriceCNF")
+                );
+
+            foreach (DataGridViewRow row in dataGV.Rows)
+            {
+                if (row.IsNewRow) continue;
+
+                int sku = 0;
+                if (!int.TryParse(row.Cells["SKU"].Value?.ToString(), out sku))
+                {
+                    // SKU không hợp lệ → bỏ qua dòng này
+                    continue;
+                }
+
+                decimal orderPrice = 0;
+                if (row.Cells["OrderPackingPriceCNF"].Value != DBNull.Value)
+                    decimal.TryParse(row.Cells["OrderPackingPriceCNF"].Value.ToString(), out orderPrice);
+
+                // Nếu SKU tồn tại trong ProductSKU
+                if (priceLookup.ContainsKey(sku))
+                {
+                    decimal priceCNF = priceLookup[sku];
+
+                    // Điều kiện cảnh báo
+                    if (orderPrice <= 0)
+                    {
+                        row.DefaultCellStyle.BackColor = Color.Red;
+                    }
+                    else if (orderPrice != priceCNF)
+                    {
+                        row.DefaultCellStyle.BackColor = Color.Khaki;
+                    }
+                    else
+                    {
+                        // reset màu nếu hợp lệ
+                        row.DefaultCellStyle.BackColor = Color.White;
+                        row.DefaultCellStyle.ForeColor = Color.Black;
+                    }
+                }
+            }
         }
 
         private void showCartonOrderGV()
@@ -222,6 +279,7 @@ namespace RauViet.ui
             cartonSizeGV.DataSource = dvCarton;
 
             UpdateBotttomUI();
+            CheckWarning();
         }      
         
         private void saveBtn_Click(object sender, EventArgs e)
@@ -507,6 +565,12 @@ namespace RauViet.ui
                                     cell.Value = num;
                                     cell.Style.NumberFormat.Format = "0.00";
                                     totalAmount += num;
+
+                                    if (num <= 0)
+                                    {
+                                        ws.Range(rowIndex, 1, rowIndex, colIndex).Style.Fill.BackgroundColor = XLColor.Red;
+                                        ws.Range(rowIndex, 1, rowIndex, colIndex).Style.Font.FontColor = XLColor.Black;
+                                    }
                                 }
                             }
 
@@ -755,6 +819,11 @@ namespace RauViet.ui
                                 {
                                     cell.Value = num;
                                     totalAmount1 += num;
+                                    if(num <= 0)
+                                    {
+                                        cell.Style.Fill.BackgroundColor = XLColor.Red;
+                                        cell.Style.Font.FontColor = XLColor.Black;
+                                    }
                                 }
                             }
                             else if (col.Name == "No")

@@ -1,4 +1,5 @@
 ﻿
+using Org.BouncyCastle.Asn1.X509;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -7,8 +8,16 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using DataTable = System.Data.DataTable;
 
+
+
 namespace RauViet.classes
 {
+    public class OvertimeAttendanceResult
+    {
+        public int OvertimeAttendanceID { get; set; }
+        public string EmployeeCode { get; set; }
+    }
+
     public sealed class SQLManager_QLNS
     {
         private static SQLManager_QLNS ins = null;
@@ -86,7 +95,7 @@ namespace RauViet.classes
 
         public async Task<bool> updateEmployeesAsync(int employeeId, string maNV, string tenNV, DateTime birthDate, DateTime hireDate,
                                     bool isMale, string homeTown, string address, string citizenID, DateTime? issueDate, string issuePlace, 
-                                    bool isActive, bool canCreateUserName, decimal probationSalaryPercent, string phone, string noteResign, bool isInsuranceRefund, int salaryGradeID)
+                                    bool isActive, bool canCreateUserName, string phone, string noteResign, bool isInsuranceRefund, int salaryGradeID)
         {
             string query = @"UPDATE Employee SET 
                                 EmployeeCode=@EmployeeCode, 
@@ -101,7 +110,6 @@ namespace RauViet.classes
                                 IssuePlace=@IssuePlace,                                
                                 IsActive=@IsActive,
                                 canCreateUserName=@canCreateUserName,
-                                ProbationSalaryPercent=@ProbationSalaryPercent,
                                 PhoneNumber=@PhoneNumber,
                                 IsInsuranceRefund=@IsInsuranceRefund,
                                 SalaryGradeID=@SalaryGradeID,
@@ -127,7 +135,6 @@ namespace RauViet.classes
                         cmd.Parameters.AddWithValue("@IssuePlace", issuePlace);
                         cmd.Parameters.AddWithValue("@IsActive", isActive);
                         cmd.Parameters.AddWithValue("@canCreateUserName", canCreateUserName);
-                        cmd.Parameters.AddWithValue("@ProbationSalaryPercent", probationSalaryPercent);
                         cmd.Parameters.AddWithValue("@PhoneNumber", phone);
                         cmd.Parameters.AddWithValue("@NoteResign", noteResign);
                         cmd.Parameters.AddWithValue("@IsInsuranceRefund", isInsuranceRefund);
@@ -162,7 +169,7 @@ namespace RauViet.classes
 
         public async Task<(int EmployeeID, string EmployeeCode)> insertEmployeeAsync(string maNV_temp, string tenNV, DateTime birthDate, DateTime hireDate, bool isMale, string homeTown,
                                                     string address, string citizenID, DateTime? issueDate, string issuePlace, bool isActive, bool canCreateUserName, 
-                                                    decimal probationSalaryPercent, string phone, string noteResign, bool isInsuranceRefund, int salaryGradeID)
+                                                    string phone, string noteResign, bool isInsuranceRefund, int salaryGradeID)
         {
             int newId = -1;
             string newCode = null;
@@ -188,7 +195,6 @@ namespace RauViet.classes
                         cmd.Parameters.AddWithValue("@IssuePlace", issuePlace);
                         cmd.Parameters.AddWithValue("@IsActive", isActive);
                         cmd.Parameters.AddWithValue("@CanCreateUserName", canCreateUserName);
-                        cmd.Parameters.AddWithValue("@ProbationSalaryPercent", probationSalaryPercent);
                         cmd.Parameters.AddWithValue("@PhoneNumber", phone);
                         cmd.Parameters.AddWithValue("@NoteResign", noteResign);
                         cmd.Parameters.AddWithValue("@IsInsuranceRefund", isInsuranceRefund);
@@ -918,6 +924,65 @@ namespace RauViet.classes
                 return true;
             }
             catch { return false; }
+        }
+
+        public async Task<List<OvertimeAttendanceResult>> InsertOvertimeAttendanceAsync(List<string> employeeCodes, DateTime workDate, TimeSpan startTime, TimeSpan endTime, int overtimeTypeID, string note)
+        {
+            var results = new List<OvertimeAttendanceResult>();
+
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
+                {
+                    await con.OpenAsync();
+
+                    using (SqlCommand cmd = new SqlCommand(
+                        "sp_InsertOvertimeAttendance_MultiEmployee", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        // 1️⃣ Tạo DataTable cho TVP
+                        DataTable dtEmployeeCodes = new DataTable();
+                        dtEmployeeCodes.Columns.Add("EmployeeCode", typeof(string));
+
+                        foreach (var code in employeeCodes)
+                            dtEmployeeCodes.Rows.Add(code);
+
+                        // 2️⃣ TVP parameter
+                        SqlParameter tvpParam = cmd.Parameters.AddWithValue(
+                            "@EmployeeCodes", dtEmployeeCodes);
+                        tvpParam.SqlDbType = SqlDbType.Structured;
+                        tvpParam.TypeName = "dbo.EmployeeCode_TVP";
+
+                        // 3️⃣ Các param dùng chung
+                        cmd.Parameters.Add("@WorkDate", SqlDbType.Date).Value = workDate.Date;
+                        cmd.Parameters.Add("@StartTime", SqlDbType.Time).Value = startTime;
+                        cmd.Parameters.Add("@EndTime", SqlDbType.Time).Value = endTime;
+                        cmd.Parameters.Add("@OvertimeTypeID", SqlDbType.Int).Value = overtimeTypeID;
+                        cmd.Parameters.Add("@Note", SqlDbType.NVarChar, 255).Value = note ?? (object)DBNull.Value;
+
+                        // 4️⃣ Đọc kết quả trả về
+                        using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                        {
+                            while (await reader.ReadAsync())
+                            {
+                                results.Add(new OvertimeAttendanceResult
+                                {
+                                    OvertimeAttendanceID = reader.GetInt32(0),
+                                    EmployeeCode = reader.GetString(1)
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error: " + ex.Message);
+                return new List<OvertimeAttendanceResult>();
+            }
+
+            return results;
         }
 
         public async Task<int> insertOvertimeAttendanceAsync(string employeeCode, DateTime workDate, TimeSpan startTime, TimeSpan endTime, 
@@ -2637,6 +2702,54 @@ namespace RauViet.classes
             catch (Exception ex)
             {
                 Console.WriteLine($"Error InsertOvertimeAttandanceLogAsync: {ex.Message}");
+            }
+        }
+
+        public async Task InsertOvertimeAttandance_MultiEmployee_LogAsync(List<string> employeeCodes, string overName, string description, DateTime workDate, TimeSpan startTime, TimeSpan endTime, string note)
+        {
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_Log_conStr()))
+                {
+                    await con.OpenAsync();
+
+                    using (SqlCommand cmd = new SqlCommand(
+                        "InsertOvertimeAttendance_MultiEmployee_Log", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        // 1️⃣ Tạo DataTable cho TVP
+                        DataTable dtEmployeeCodes = new DataTable();
+                        dtEmployeeCodes.Columns.Add("EmployeeCode", typeof(string));
+
+                        foreach (string code in employeeCodes)
+                        {
+                            dtEmployeeCodes.Rows.Add(code);
+                        }
+
+                        // 2️⃣ TVP parameter
+                        SqlParameter tvpParam = cmd.Parameters.AddWithValue("@EmployeeCodes", dtEmployeeCodes);
+                        tvpParam.SqlDbType = SqlDbType.Structured;
+                        tvpParam.TypeName = "dbo.EmployeeCode_TVP";
+
+                        // 3️⃣ Các parameter dùng chung
+                        cmd.Parameters.Add("@OvertimeTypeName", SqlDbType.NVarChar, 100).Value = overName;
+                        cmd.Parameters.Add("@Description", SqlDbType.NVarChar, 255).Value = (object)description ?? DBNull.Value;
+                        cmd.Parameters.Add("@WorkDate", SqlDbType.Date).Value = workDate.Date;
+                        cmd.Parameters.Add("@StartTime", SqlDbType.Time).Value = startTime;
+                        cmd.Parameters.Add("@EndTime", SqlDbType.Time).Value = endTime;
+                        cmd.Parameters.Add("@Note", SqlDbType.NVarChar, 255).Value = (object)note ?? DBNull.Value;
+                        cmd.Parameters.Add("@ActionBy", SqlDbType.NVarChar, 50).Value = UserManager.Instance.fullName;
+
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(
+                    $"Error InsertOvertimeAttendance_MultiEmployee_LogAsync: {ex.Message}");
+                throw; // hoặc bỏ throw nếu không muốn bubble error
             }
         }
 

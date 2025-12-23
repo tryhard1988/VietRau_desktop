@@ -15,7 +15,7 @@ namespace RauViet.ui
     {
         private DataTable mEmployee_dt, mAllowance_dt, mOvertimeAttendance_dt, mLeaveAttendance_dt, 
             mDeduction_dt, mLeaveType_dt, mDeductionType, mAttendamce_dt, mOvertimeType_dt;
-
+        private Timer _monthYearDebounceTimer;
         private LoadingOverlay loadingOverlay;
 
         private int mCurentMonth = -1;
@@ -24,11 +24,8 @@ namespace RauViet.ui
         public SalaryCaculator()
         {
             InitializeComponent();
-
-            print_pl_btn.Visible = false;
-            printPreview_pl_btn.Visible = false;
+            this.KeyPreview = true;
             LuuThayDoiBtn.Visible = false;
-            exportPDF_btn.Visible = false;
 
             dataGV.EnableHeadersVisualStyles = false;
             allowancePanel.Height = this.ClientSize.Height * 2/5;
@@ -48,7 +45,6 @@ namespace RauViet.ui
 
             dataGV.SelectionChanged += this.dataGV_CellClick;
 
-            load_btn.Click += Load_btn_Click;
             LuuThayDoiBtn.Click += saveBtn_Click;
             print_pl_btn.Click += Print_pl_btn_Click;
             printPreview_pl_btn.Click += PrintPreview_pl_btn_Click; ;
@@ -61,6 +57,31 @@ namespace RauViet.ui
             monthYearDtp.Format = DateTimePickerFormat.Custom;
             monthYearDtp.CustomFormat = "MM/yyyy";
             monthYearDtp.ShowUpDown = true;
+
+            this.KeyDown += SalaryCaculator_KeyDown;
+            this.Load += OvertimeAttendace_Load;
+        }
+
+        private void OvertimeAttendace_Load(object sender, EventArgs e)
+        {
+            _monthYearDebounceTimer = new Timer();
+            _monthYearDebounceTimer.Interval = 1000;
+            _monthYearDebounceTimer.Tick += MonthYearDebounceTimer_Tick;
+        }
+
+        private void SalaryCaculator_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.F5)
+            {
+                int month = monthYearDtp.Value.Month;
+                int year = monthYearDtp.Value.Year;
+
+                SQLStore_QLNS.Instance.removeLeaveAttendances(year);
+                SQLStore_QLNS.Instance.removeAttendamce(month, year);
+                SQLStore_QLNS.Instance.removeOvertimeAttendamce(month, year);
+                SQLStore_QLNS.Instance.removeEmployeeSalaryInfo();
+                ShowData();
+            }
         }
 
         private void SalaryCaculatorForm_Resize(object sender, EventArgs e)
@@ -80,9 +101,12 @@ namespace RauViet.ui
 
             try
             {
-                await Task.Delay(150);
-                await LoadSalaryDataAsync();
+                monthYearDtp.ValueChanged -= monthYearDtp_ValueChanged;
                 await Task.Delay(200);
+                await LoadSalaryDataAsync();
+                await Task.Delay(100);
+
+                monthYearDtp.ValueChanged += monthYearDtp_ValueChanged;
 
             }
             catch (Exception ex)
@@ -91,6 +115,7 @@ namespace RauViet.ui
             }
             finally
             {
+                await Task.Delay(200);
                 loadingOverlay.Hide();
             }
         }
@@ -173,9 +198,6 @@ namespace RauViet.ui
                 //   UpdateAllowancetUI(0);
             }
 
-            print_pl_btn.Visible = isLockData;
-            printPreview_pl_btn.Visible = isLockData;
-            exportPDF_btn.Visible = isLockData;
             LuuThayDoiBtn.Visible = !isLockData;
 
             dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
@@ -321,7 +343,6 @@ namespace RauViet.ui
                 decimal totalHourWork = hwMatch?.TotalHourWork ?? 0;
                 totalSalaryHourWork = totalHourWork * hourSalary;
 
-                Console.WriteLine("employeeCode: " + employeeCode);
                 dr["TotalHourWork"] = totalHourWork;
                 dr["TotalSalaryHourWork"] = totalSalaryHourWork;
 
@@ -902,35 +923,7 @@ namespace RauViet.ui
                 AddColumnIfNotExists(mEmployee_dt, col, typeof(decimal));
             }
         }
-
-        private async void Load_btn_Click(object sender, EventArgs e)
-        {
-            print_pl_btn.Visible = false;
-            printPreview_pl_btn.Visible = false;
-            exportPDF_btn.Visible = false;
-            LuuThayDoiBtn.Visible = false;
-            ShowData();
-            //MessageBox.Show("✅ Xong!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-
-        //private void Tb_KeyPress_OnlyNumber(object sender, KeyPressEventArgs e)
-        //{
-        //    System.Windows.Forms.TextBox tb = sender as System.Windows.Forms.TextBox;
-
-        //    // Chỉ cho nhập số, phím điều khiển hoặc dấu chấm
-        //    if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) && e.KeyChar != '.')
-        //    {
-        //        e.Handled = true; // chặn ký tự không hợp lệ
-        //    }
-
-        //    // Không cho nhập nhiều dấu chấm
-        //    if (e.KeyChar == '.' && tb.Text.Contains("."))
-        //    {
-        //        e.Handled = true;
-        //    }
-        //}
-
-        private void dataGV_CellClick(object sender, EventArgs e)
+                private void dataGV_CellClick(object sender, EventArgs e)
         {
             if (dataGV.CurrentRow == null) return;
             int rowIndex = dataGV.CurrentRow.Index;
@@ -1171,6 +1164,25 @@ namespace RauViet.ui
 
             // Hiển thị Print Preview
             printer.ExportAllToPdf();
+        }
+
+        private void monthYearDtp_ValueChanged(object sender, EventArgs e)
+        {
+            // Mỗi lần thay đổi thì reset timer
+            _monthYearDebounceTimer.Stop();
+            _monthYearDebounceTimer.Start();
+        }
+
+        private void MonthYearDebounceTimer_Tick(object sender, EventArgs e)
+        {
+            _monthYearDebounceTimer.Stop();
+            HandleMonthYearChanged();
+        }
+
+        private async void HandleMonthYearChanged()
+        {
+            LuuThayDoiBtn.Visible = false;
+            ShowData();
         }
     }
 }

@@ -11,6 +11,7 @@ namespace RauViet.ui
 {    
     public partial class EmployeeDeduction_ATT : Form
     {
+        private Timer _monthYearDebounceTimer;
         private DataTable mEmployeeLeave_dt;
         private DataView mDeductionLogDV;
         private const string DeductionTypeCode = "ATT";
@@ -38,8 +39,16 @@ namespace RauViet.ui
             LuuThayDoiBtn.Click += saveBtn_Click;
             dataGV.SelectionChanged += this.dataGV_CellClick;
             amount_tb.KeyPress += Tb_KeyPress_OnlyNumber;
-            load_btn.Click += Load_btn_Click;
             this.KeyDown += EmployeeDeduction_ATT_KeyDown;
+            search_tb.TextChanged += Search_tb_TextChanged;
+            this.Load += OvertimeAttendace_Load;
+        }
+
+        private void OvertimeAttendace_Load(object sender, EventArgs e)
+        {
+            _monthYearDebounceTimer = new Timer();
+            _monthYearDebounceTimer.Interval = 500;
+            _monthYearDebounceTimer.Tick += MonthYearDebounceTimer_Tick;
         }
 
         private void EmployeeDeduction_ATT_KeyDown(object sender, KeyEventArgs e)
@@ -64,6 +73,8 @@ namespace RauViet.ui
             await Task.Delay(200);
             try
             {
+                monthYearDtp.ValueChanged -= monthYearDtp_ValueChanged;
+
                 int month = monthYearDtp.Value.Month;
                 int year = monthYearDtp.Value.Year;
                 var employeeTask = SQLManager_QLNS.Instance.GetActiveEmployee_DeductionATT_Async(month, year);
@@ -76,6 +87,8 @@ namespace RauViet.ui
                 curMonth = month;
                 curYear = year;
 
+                monthYearLabel.Text = $"Tháng {month}/{year}";
+                
                 foreach (DataRow dr in employee_dt.Rows)
                 {
                     if (dr["PositionName"] == DBNull.Value) dr["PositionName"] = "";
@@ -83,11 +96,13 @@ namespace RauViet.ui
                 }
 
                 employee_dt.Columns.Add(new DataColumn("TotalOffDay", typeof(int)));
+                employee_dt.Columns.Add("EmployessName_NoSign", typeof(string));
                 Dictionary<string, int> grouped = mEmployeeLeave_dt.AsEnumerable().GroupBy(r => r.Field<string>("EmployeeCode")).ToDictionary(g => g.Key, g => g.Count());
                 foreach (DataRow dr in employee_dt.Rows)
                 {
                     string empCode = dr["EmployeeCode"].ToString();
                     dr["TotalOffDay"] = grouped.ContainsKey(empCode) ? grouped[empCode] : 0;
+                    dr["EmployessName_NoSign"] =Utils.RemoveVietnameseSigns($"{dr["EmployeeCode"]} {dr["FullName"]}");
                 }
 
                 employeeDeductionGV.DataSource = mEmployeeLeave_dt;
@@ -98,6 +113,7 @@ namespace RauViet.ui
                 log_GV.DataSource = mDeductionLogDV;
 
                 employeeDeductionGV.Columns["EmployeeCode"].Visible = false;
+                dataGV.Columns["EmployessName_NoSign"].Visible = false;
 
                 int count = 0;
                 mEmployeeLeave_dt.Columns["DateOff"].SetOrdinal(count++);
@@ -158,6 +174,7 @@ namespace RauViet.ui
 
                 log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
+                monthYearDtp.ValueChanged += monthYearDtp_ValueChanged;
             }
             catch
             {
@@ -171,10 +188,6 @@ namespace RauViet.ui
             }
         }
 
-        private async void Load_btn_Click(object sender, EventArgs e)
-        {
-            ShowData();
-        }
 
         private void Tb_KeyPress_OnlyNumber(object sender, KeyPressEventArgs e)
         {
@@ -301,6 +314,34 @@ namespace RauViet.ui
 
             updateData(employeeCode, deductionDate, amount);
         }
+        private void Search_tb_TextChanged(object sender, EventArgs e)
+        {
+            string keyword = Utils.RemoveVietnameseSigns(search_tb.Text.Trim().ToLower())
+                     .Replace("'", "''"); // tránh lỗi cú pháp '
 
+            DataTable dt = dataGV.DataSource as DataTable;
+            if (dt == null) return;
+
+            DataView dv = dt.DefaultView;
+            dv.RowFilter = $"[EmployessName_NoSign] LIKE '%{keyword}%'";
+        }
+
+        private void monthYearDtp_ValueChanged(object sender, EventArgs e)
+        {
+            // Mỗi lần thay đổi thì reset timer
+            _monthYearDebounceTimer.Stop();
+            _monthYearDebounceTimer.Start();
+        }
+
+        private void MonthYearDebounceTimer_Tick(object sender, EventArgs e)
+        {
+            _monthYearDebounceTimer.Stop();
+            HandleMonthYearChanged();
+        }
+
+        private async void HandleMonthYearChanged()
+        {
+            ShowData();
+        }
     }
 }

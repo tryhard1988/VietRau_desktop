@@ -576,8 +576,10 @@ namespace RauViet.classes
         }
 
 
-        private void editOrders(DataTable data)
+        private async Task editOrders(DataTable data)
         {
+            await getProductSKUAsync();
+            await getProductpackingAsync();
             data.Columns.Add(new DataColumn("Search_NoSign", typeof(string)));
             data.Columns.Add(new DataColumn("SKU", typeof(int)));
             data.Columns.Add(new DataColumn("GroupProduct", typeof(int)));

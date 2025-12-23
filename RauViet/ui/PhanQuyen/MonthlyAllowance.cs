@@ -9,6 +9,7 @@ namespace RauViet.ui
 {    
     public partial class MonthlyAllowance : Form
     {
+        private Timer _monthYearDebounceTimer;
         private DataTable mMonthlyAllowance_dt, mAllowanceType_dt;
         private DataView mlog_DV;
         bool isNewState = false;
@@ -53,9 +54,18 @@ namespace RauViet.ui
 
             edit_btn.Click += Edit_btn_Click;
             readOnly_btn.Click += ReadOnly_btn_Click;
-            load_btn.Click += Load_btn_Click;
             ReadOnly_btn_Click(null, null);
             this.KeyDown += MonthlyAllowance_KeyDown;
+
+            search_tb.TextChanged += Search_tb_TextChanged;
+            this.Load += OvertimeAttendace_Load;
+        }
+
+        private void OvertimeAttendace_Load(object sender, EventArgs e)
+        {
+            _monthYearDebounceTimer = new Timer();
+            _monthYearDebounceTimer.Interval = 500;
+            _monthYearDebounceTimer.Tick += MonthYearDebounceTimer_Tick;
         }
 
         private void MonthlyAllowance_KeyDown(object sender, KeyEventArgs e)
@@ -75,10 +85,12 @@ namespace RauViet.ui
             await Task.Delay(200);
             try
             {
+                monthYearDtp.ValueChanged -= monthYearDtp_ValueChanged;
+
                 int month = monthYearDtp.Value.Month;
                 int year = monthYearDtp.Value.Year;
 
-                string[] keepColumns = { "EmployeeCode", "FullName", "DepartmentName", "PositionName", "ContractTypeName", };
+                string[] keepColumns = { "EmployeeCode", "FullName", "DepartmentName", "PositionName", "ContractTypeName", "EmployessName_NoSign" };
                 var employeesTask = SQLStore_QLNS.Instance.GetEmployeesAsync(keepColumns);
                 var monthlyAllowanceAsync = SQLManager_QLNS.Instance.GetMonthlyAllowanceAsybc(month, year);
                 var allowanceTypeAsync = SQLManager_QLNS.Instance.GetAllowanceTypeAsync("ONCE");                
@@ -91,6 +103,8 @@ namespace RauViet.ui
                 mlog_DV = new DataView(monthlyAllowanceLogTask.Result);
                 mCurrentMonth = month;
                 mCurrentYear = year;
+
+                monthYearLabel.Text = $"Tháng {month}/{year}";
 
                 mMonthlyAllowance_dt.Columns.Add(new DataColumn("AllowanceName", typeof(string)));
                 mMonthlyAllowance_dt.Columns.Add(new DataColumn("Date", typeof(string)));
@@ -153,6 +167,10 @@ namespace RauViet.ui
                 dataGV.Columns["ContractTypeName"].HeaderText = "Loại Hợp Đồng";
                 dataGV.Columns["DepartmentName"].HeaderText = "Phòng Ban";
 
+                dataGV.Columns["EmployessName_NoSign"].Visible = false;
+                dataGV.Columns["EmployeeCode"].Width = 60;
+                dataGV.Columns["FullName"].Width = 160;
+
                 allowanceGV.Columns["MonthlyAllowanceID"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
                 allowanceGV.Columns["Date"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
                 allowanceGV.Columns["AllowanceName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
@@ -186,6 +204,7 @@ namespace RauViet.ui
                 log_GV.Columns["Amount"].HeaderText = "Số Tiền";
 
                 log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                monthYearDtp.ValueChanged += monthYearDtp_ValueChanged;
             }
             catch
             {
@@ -197,11 +216,6 @@ namespace RauViet.ui
                 await Task.Delay(100);
                 loadingOverlay.Hide();
             }
-        }
-
-        private async void Load_btn_Click(object sender, EventArgs e)
-        {
-            ShowData();
         }
 
         private void Tb_KeyPress_OnlyNumber(object sender, KeyPressEventArgs e)
@@ -530,6 +544,37 @@ namespace RauViet.ui
             allowanceType_cbb.Enabled = !isReadOnly;
             amount_tb.ReadOnly = isReadOnly;
             note_tb.ReadOnly = isReadOnly;
+        }
+
+        private void Search_tb_TextChanged(object sender, EventArgs e)
+        {
+            string keyword = Utils.RemoveVietnameseSigns(search_tb.Text.Trim().ToLower())
+                     .Replace("'", "''"); // tránh lỗi cú pháp '
+
+            DataTable dt = dataGV.DataSource as DataTable;
+            if (dt == null) return;
+
+            DataView dv = dt.DefaultView;
+            dv.RowFilter = $"[EmployessName_NoSign] LIKE '%{keyword}%'";
+        }
+
+
+        private void monthYearDtp_ValueChanged(object sender, EventArgs e)
+        {
+            // Mỗi lần thay đổi thì reset timer
+            _monthYearDebounceTimer.Stop();
+            _monthYearDebounceTimer.Start();
+        }
+
+        private void MonthYearDebounceTimer_Tick(object sender, EventArgs e)
+        {
+            _monthYearDebounceTimer.Stop();
+            HandleMonthYearChanged();
+        }
+
+        private async void HandleMonthYearChanged()
+        {
+            ShowData();
         }
     }
 }

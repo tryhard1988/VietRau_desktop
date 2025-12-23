@@ -54,7 +54,7 @@
             this.overtimeAttendace_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.leaveAttendance_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.annualLeaveBalance_mi = new System.Windows.Forms.ToolStripMenuItem();
-            this.phụCấpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.allowanceGroup_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.employeeAllowance_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.monthlyAllowance_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.employeeDeduction_mi = new System.Windows.Forms.ToolStripMenuItem();
@@ -96,13 +96,13 @@
             this.yearlyReport_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.monthlyTotalPerYear_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.báoCáoĐơnHàngTrongNướcToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ResoncileDomesticDebts_Month_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.extension_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.QR_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.aaaaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadExcelOrderReportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.content_panel = new System.Windows.Forms.Panel();
-            this.ResoncileDomesticDebts_Month_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1.SuspendLayout();
             this.LOT_menuitem.SuspendLayout();
             this.SuspendLayout();
@@ -283,7 +283,7 @@
             this.overtimeAttendace_mi,
             this.leaveAttendance_mi,
             this.annualLeaveBalance_mi,
-            this.phụCấpToolStripMenuItem,
+            this.allowanceGroup_mi,
             this.employeeDeduction_mi});
             this.chamcong_pmi.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.chamcong_pmi.ForeColor = System.Drawing.Color.SeaGreen;
@@ -321,14 +321,14 @@
             this.annualLeaveBalance_mi.Size = new System.Drawing.Size(227, 22);
             this.annualLeaveBalance_mi.Text = "Tồn Phép Nghỉ  NV";
             // 
-            // phụCấpToolStripMenuItem
+            // allowanceGroup_mi
             // 
-            this.phụCấpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.allowanceGroup_mi.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.employeeAllowance_mi,
             this.monthlyAllowance_mi});
-            this.phụCấpToolStripMenuItem.Name = "phụCấpToolStripMenuItem";
-            this.phụCấpToolStripMenuItem.Size = new System.Drawing.Size(227, 22);
-            this.phụCấpToolStripMenuItem.Text = "Phụ Cấp";
+            this.allowanceGroup_mi.Name = "allowanceGroup_mi";
+            this.allowanceGroup_mi.Size = new System.Drawing.Size(227, 22);
+            this.allowanceGroup_mi.Text = "Phụ Cấp";
             // 
             // employeeAllowance_mi
             // 
@@ -629,6 +629,12 @@
             this.báoCáoĐơnHàngTrongNướcToolStripMenuItem.Size = new System.Drawing.Size(268, 22);
             this.báoCáoĐơnHàngTrongNướcToolStripMenuItem.Text = "Báo Cáo Đơn Hàng Trong Nước";
             // 
+            // ResoncileDomesticDebts_Month_mi
+            // 
+            this.ResoncileDomesticDebts_Month_mi.Name = "ResoncileDomesticDebts_Month_mi";
+            this.ResoncileDomesticDebts_Month_mi.Size = new System.Drawing.Size(192, 22);
+            this.ResoncileDomesticDebts_Month_mi.Text = "Đối Chiếu Công Nợ";
+            // 
             // toolStripMenuItem2
             // 
             this.toolStripMenuItem2.BackColor = System.Drawing.Color.Bisque;
@@ -676,12 +682,6 @@
             this.content_panel.Name = "content_panel";
             this.content_panel.Size = new System.Drawing.Size(1388, 491);
             this.content_panel.TabIndex = 1;
-            // 
-            // ResoncileDomesticDebts_Month_mi
-            // 
-            this.ResoncileDomesticDebts_Month_mi.Name = "ResoncileDomesticDebts_Month_mi";
-            this.ResoncileDomesticDebts_Month_mi.Size = new System.Drawing.Size(192, 22);
-            this.ResoncileDomesticDebts_Month_mi.Text = "Đối Chiếu Công Nợ";
             // 
             // FormManager
             // 
@@ -734,7 +734,7 @@
         private System.Windows.Forms.ToolStripMenuItem customerDetailPacking_mi;
         private System.Windows.Forms.ToolStripMenuItem leaveAttendance_mi;
         private System.Windows.Forms.ToolStripMenuItem annualLeaveBalance_mi;
-        private System.Windows.Forms.ToolStripMenuItem phụCấpToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem allowanceGroup_mi;
         private System.Windows.Forms.ToolStripMenuItem employeeAllowance_mi;
         private System.Windows.Forms.ToolStripMenuItem monthlyAllowance_mi;
         private System.Windows.Forms.ToolStripMenuItem dữLiệuToolStripMenuItem1;

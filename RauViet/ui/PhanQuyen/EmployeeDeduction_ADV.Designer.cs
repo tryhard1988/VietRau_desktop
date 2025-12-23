@@ -29,14 +29,13 @@ namespace RauViet.ui
         /// </summary>
         private void InitializeComponent()
         {
+            this.panel4 = new System.Windows.Forms.Panel();
+            this.panel3 = new System.Windows.Forms.Panel();
             this.dataGV = new System.Windows.Forms.DataGridView();
             this.panel2 = new System.Windows.Forms.Panel();
-            this.label3 = new System.Windows.Forms.Label();
-            this.log_GV = new System.Windows.Forms.DataGridView();
+            this.employeeDeductionGV = new System.Windows.Forms.DataGridView();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.load_gb = new System.Windows.Forms.GroupBox();
             this.monthYearDtp = new System.Windows.Forms.DateTimePicker();
-            this.load_btn = new System.Windows.Forms.Button();
             this.readOnly_btn = new System.Windows.Forms.Button();
             this.edit_btn = new System.Windows.Forms.Button();
             this.info_gb = new System.Windows.Forms.GroupBox();
@@ -51,27 +50,54 @@ namespace RauViet.ui
             this.newCustomerBtn = new System.Windows.Forms.Button();
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
             this.employeeDeductionID_tb = new System.Windows.Forms.TextBox();
-            this.employeeDeductionGV = new System.Windows.Forms.DataGridView();
+            this.label3 = new System.Windows.Forms.Label();
+            this.log_GV = new System.Windows.Forms.DataGridView();
+            this.panel5 = new System.Windows.Forms.Panel();
+            this.label16 = new System.Windows.Forms.Label();
+            this.search_tb = new System.Windows.Forms.TextBox();
+            this.monthYearLabel = new System.Windows.Forms.Label();
+            this.panel4.SuspendLayout();
+            this.panel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
             this.panel2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.log_GV)).BeginInit();
-            this.panel1.SuspendLayout();
-            this.load_gb.SuspendLayout();
-            this.info_gb.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.employeeDeductionGV)).BeginInit();
+            this.panel1.SuspendLayout();
+            this.info_gb.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.log_GV)).BeginInit();
+            this.panel5.SuspendLayout();
             this.SuspendLayout();
+            // 
+            // panel4
+            // 
+            this.panel4.BackColor = System.Drawing.Color.Brown;
+            this.panel4.Controls.Add(this.monthYearLabel);
+            this.panel4.Controls.Add(this.panel5);
+            this.panel4.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel4.Location = new System.Drawing.Point(0, 0);
+            this.panel4.Name = "panel4";
+            this.panel4.Size = new System.Drawing.Size(1264, 56);
+            this.panel4.TabIndex = 38;
+            // 
+            // panel3
+            // 
+            this.panel3.Controls.Add(this.dataGV);
+            this.panel3.Dock = System.Windows.Forms.DockStyle.Left;
+            this.panel3.Location = new System.Drawing.Point(0, 56);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(452, 668);
+            this.panel3.TabIndex = 39;
             // 
             // dataGV
             // 
             this.dataGV.AllowUserToAddRows = false;
             this.dataGV.AllowUserToDeleteRows = false;
             this.dataGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGV.Dock = System.Windows.Forms.DockStyle.Left;
+            this.dataGV.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGV.Location = new System.Drawing.Point(0, 0);
             this.dataGV.Name = "dataGV";
             this.dataGV.ReadOnly = true;
-            this.dataGV.Size = new System.Drawing.Size(428, 724);
-            this.dataGV.TabIndex = 10;
+            this.dataGV.Size = new System.Drawing.Size(452, 668);
+            this.dataGV.TabIndex = 15;
             // 
             // panel2
             // 
@@ -80,39 +106,26 @@ namespace RauViet.ui
             this.panel2.Controls.Add(this.label3);
             this.panel2.Controls.Add(this.log_GV);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel2.Location = new System.Drawing.Point(428, 0);
+            this.panel2.Location = new System.Drawing.Point(452, 56);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(836, 724);
-            this.panel2.TabIndex = 11;
+            this.panel2.Size = new System.Drawing.Size(812, 668);
+            this.panel2.TabIndex = 40;
             // 
-            // label3
+            // employeeDeductionGV
             // 
-            this.label3.BackColor = System.Drawing.Color.PeachPuff;
-            this.label3.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.label3.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.ForeColor = System.Drawing.Color.DarkOliveGreen;
-            this.label3.Location = new System.Drawing.Point(0, 442);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(836, 23);
-            this.label3.TabIndex = 47;
-            this.label3.Text = "Lịch sử thay đổi";
-            this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // log_GV
-            // 
-            this.log_GV.AllowUserToAddRows = false;
-            this.log_GV.AllowUserToDeleteRows = false;
-            this.log_GV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.log_GV.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.log_GV.Location = new System.Drawing.Point(0, 465);
-            this.log_GV.Name = "log_GV";
-            this.log_GV.ReadOnly = true;
-            this.log_GV.Size = new System.Drawing.Size(836, 259);
-            this.log_GV.TabIndex = 46;
+            this.employeeDeductionGV.AllowUserToAddRows = false;
+            this.employeeDeductionGV.AllowUserToDeleteRows = false;
+            this.employeeDeductionGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.employeeDeductionGV.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.employeeDeductionGV.Location = new System.Drawing.Point(0, 0);
+            this.employeeDeductionGV.Name = "employeeDeductionGV";
+            this.employeeDeductionGV.ReadOnly = true;
+            this.employeeDeductionGV.Size = new System.Drawing.Size(359, 386);
+            this.employeeDeductionGV.TabIndex = 50;
             // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.load_gb);
+            this.panel1.Controls.Add(this.monthYearDtp);
             this.panel1.Controls.Add(this.readOnly_btn);
             this.panel1.Controls.Add(this.edit_btn);
             this.panel1.Controls.Add(this.info_gb);
@@ -122,39 +135,19 @@ namespace RauViet.ui
             this.panel1.Controls.Add(this.LuuThayDoiBtn);
             this.panel1.Controls.Add(this.employeeDeductionID_tb);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel1.Location = new System.Drawing.Point(383, 0);
+            this.panel1.Location = new System.Drawing.Point(359, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(453, 442);
+            this.panel1.Size = new System.Drawing.Size(453, 386);
             this.panel1.TabIndex = 49;
-            // 
-            // load_gb
-            // 
-            this.load_gb.Controls.Add(this.monthYearDtp);
-            this.load_gb.Controls.Add(this.load_btn);
-            this.load_gb.Location = new System.Drawing.Point(133, 32);
-            this.load_gb.Name = "load_gb";
-            this.load_gb.Size = new System.Drawing.Size(218, 66);
-            this.load_gb.TabIndex = 33;
-            this.load_gb.TabStop = false;
             // 
             // monthYearDtp
             // 
             this.monthYearDtp.CalendarFont = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.monthYearDtp.Location = new System.Drawing.Point(26, 25);
+            this.monthYearDtp.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.monthYearDtp.Location = new System.Drawing.Point(149, 41);
             this.monthYearDtp.Name = "monthYearDtp";
-            this.monthYearDtp.Size = new System.Drawing.Size(99, 20);
+            this.monthYearDtp.Size = new System.Drawing.Size(120, 31);
             this.monthYearDtp.TabIndex = 39;
-            // 
-            // load_btn
-            // 
-            this.load_btn.BackColor = System.Drawing.SystemColors.Highlight;
-            this.load_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.load_btn.Location = new System.Drawing.Point(131, 19);
-            this.load_btn.Name = "load_btn";
-            this.load_btn.Size = new System.Drawing.Size(65, 32);
-            this.load_btn.TabIndex = 30;
-            this.load_btn.Text = "Load";
-            this.load_btn.UseVisualStyleBackColor = false;
             // 
             // readOnly_btn
             // 
@@ -196,7 +189,7 @@ namespace RauViet.ui
             // 
             this.deductionDate_dtp.Location = new System.Drawing.Point(92, 32);
             this.deductionDate_dtp.Name = "deductionDate_dtp";
-            this.deductionDate_dtp.Size = new System.Drawing.Size(126, 20);
+            this.deductionDate_dtp.Size = new System.Drawing.Size(46, 20);
             this.deductionDate_dtp.TabIndex = 31;
             // 
             // label4
@@ -299,17 +292,73 @@ namespace RauViet.ui
             this.employeeDeductionID_tb.TabIndex = 16;
             this.employeeDeductionID_tb.Visible = false;
             // 
-            // employeeDeductionGV
+            // label3
             // 
-            this.employeeDeductionGV.AllowUserToAddRows = false;
-            this.employeeDeductionGV.AllowUserToDeleteRows = false;
-            this.employeeDeductionGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.employeeDeductionGV.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.employeeDeductionGV.Location = new System.Drawing.Point(0, 0);
-            this.employeeDeductionGV.Name = "employeeDeductionGV";
-            this.employeeDeductionGV.ReadOnly = true;
-            this.employeeDeductionGV.Size = new System.Drawing.Size(383, 442);
-            this.employeeDeductionGV.TabIndex = 50;
+            this.label3.BackColor = System.Drawing.Color.PeachPuff;
+            this.label3.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.label3.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label3.ForeColor = System.Drawing.Color.DarkOliveGreen;
+            this.label3.Location = new System.Drawing.Point(0, 386);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(812, 23);
+            this.label3.TabIndex = 47;
+            this.label3.Text = "Lịch sử thay đổi";
+            this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // log_GV
+            // 
+            this.log_GV.AllowUserToAddRows = false;
+            this.log_GV.AllowUserToDeleteRows = false;
+            this.log_GV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.log_GV.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.log_GV.Location = new System.Drawing.Point(0, 409);
+            this.log_GV.Name = "log_GV";
+            this.log_GV.ReadOnly = true;
+            this.log_GV.Size = new System.Drawing.Size(812, 259);
+            this.log_GV.TabIndex = 46;
+            // 
+            // panel5
+            // 
+            this.panel5.Controls.Add(this.label16);
+            this.panel5.Controls.Add(this.search_tb);
+            this.panel5.Dock = System.Windows.Forms.DockStyle.Left;
+            this.panel5.Location = new System.Drawing.Point(0, 0);
+            this.panel5.Name = "panel5";
+            this.panel5.Size = new System.Drawing.Size(382, 56);
+            this.panel5.TabIndex = 24;
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label16.ForeColor = System.Drawing.Color.PeachPuff;
+            this.label16.Location = new System.Drawing.Point(12, 17);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(66, 16);
+            this.label16.TabIndex = 22;
+            this.label16.Text = "Tìm Kiếm:";
+            // 
+            // search_tb
+            // 
+            this.search_tb.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.search_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.search_tb.Location = new System.Drawing.Point(83, 14);
+            this.search_tb.Name = "search_tb";
+            this.search_tb.Size = new System.Drawing.Size(287, 23);
+            this.search_tb.TabIndex = 21;
+            // 
+            // monthYearLabel
+            // 
+            this.monthYearLabel.BackColor = System.Drawing.Color.Transparent;
+            this.monthYearLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.monthYearLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 36F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.monthYearLabel.ForeColor = System.Drawing.Color.Bisque;
+            this.monthYearLabel.Location = new System.Drawing.Point(382, 0);
+            this.monthYearLabel.Name = "monthYearLabel";
+            this.monthYearLabel.Size = new System.Drawing.Size(882, 56);
+            this.monthYearLabel.TabIndex = 25;
+            this.monthYearLabel.Text = "Tháng 11";
+            this.monthYearLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // EmployeeDeduction_ADV
             // 
@@ -317,32 +366,35 @@ namespace RauViet.ui
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1264, 724);
             this.Controls.Add(this.panel2);
-            this.Controls.Add(this.dataGV);
+            this.Controls.Add(this.panel3);
+            this.Controls.Add(this.panel4);
             this.Name = "EmployeeDeduction_ADV";
             this.Text = "FormTableData";
+            this.panel4.ResumeLayout(false);
+            this.panel3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).EndInit();
             this.panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.log_GV)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.employeeDeductionGV)).EndInit();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
-            this.load_gb.ResumeLayout(false);
             this.info_gb.ResumeLayout(false);
             this.info_gb.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.employeeDeductionGV)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.log_GV)).EndInit();
+            this.panel5.ResumeLayout(false);
+            this.panel5.PerformLayout();
             this.ResumeLayout(false);
 
         }
 
         #endregion
+
+        private System.Windows.Forms.Panel panel4;
+        private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.DataGridView dataGV;
         private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.DataGridView log_GV;
         private System.Windows.Forms.DataGridView employeeDeductionGV;
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.GroupBox load_gb;
         private System.Windows.Forms.DateTimePicker monthYearDtp;
-        private System.Windows.Forms.Button load_btn;
         private System.Windows.Forms.Button readOnly_btn;
         private System.Windows.Forms.Button edit_btn;
         private System.Windows.Forms.GroupBox info_gb;
@@ -357,5 +409,11 @@ namespace RauViet.ui
         private System.Windows.Forms.Button newCustomerBtn;
         private System.Windows.Forms.Button LuuThayDoiBtn;
         private System.Windows.Forms.TextBox employeeDeductionID_tb;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.DataGridView log_GV;
+        private System.Windows.Forms.Panel panel5;
+        private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.TextBox search_tb;
+        private System.Windows.Forms.Label monthYearLabel;
     }
 }

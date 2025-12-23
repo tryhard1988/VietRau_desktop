@@ -11,7 +11,9 @@ namespace RauViet.ui
 {
     public partial class AnnualLeaveBalance : Form
     {
+        private Timer _monthYearDebounceTimer;
         DataTable mEmployee_dt;
+        int currentYear;
         // DataTable mShift_dt;
         public AnnualLeaveBalance()
         {
@@ -33,11 +35,18 @@ namespace RauViet.ui
             dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             dataGV.CellFormatting += DataGV_CellFormatting;
 
-            load_btn.Click += Load_btn_Click;
             capphep_btn.Click += Capphep_btn_Click;
 
             dataGV.CellEndEdit += DataGV_CellEndEdit;
             this.KeyDown += AnnualLeaveBalance_KeyDown;
+            this.Load += OvertimeAttendace_Load;
+        }
+
+        private void OvertimeAttendace_Load(object sender, EventArgs e)
+        {
+            _monthYearDebounceTimer = new Timer();
+            _monthYearDebounceTimer.Interval = 500;
+            _monthYearDebounceTimer.Tick += MonthYearDebounceTimer_Tick;
         }
 
         private void AnnualLeaveBalance_KeyDown(object sender, KeyEventArgs e)
@@ -59,13 +68,15 @@ namespace RauViet.ui
 
             try
             {
+                monthYearDtp.ValueChanged -= monthYearDtp_ValueChanged;
                 int year = monthYearDtp.Value.Year;
                 var employeeALBTask = SQLStore_QLNS.Instance.GetAnnualLeaveBalanceAsync(year);
-
+                currentYear = year;
                 await Task.WhenAll(employeeALBTask);
                 mEmployee_dt = employeeALBTask.Result;
 
                 DefineEmployeeGV();
+                monthYearDtp.ValueChanged += monthYearDtp_ValueChanged;
             }
             catch
             {
@@ -185,25 +196,7 @@ namespace RauViet.ui
 
             SaveData(false);
         }
-
-        private async void Load_btn_Click(object sender, EventArgs e)
-        {
-            await Task.Delay(50);
-            LoadingOverlay loadingOverlay = new LoadingOverlay(this);
-            loadingOverlay.Show();
-            await Task.Delay(50);
-
-            int year = monthYearDtp.Value.Year;
-            var annualLeaveBalance = SQLStore_QLNS.Instance.GetAnnualLeaveBalanceAsync(year);            
-            await Task.WhenAll(annualLeaveBalance);
-            mEmployee_dt = annualLeaveBalance.Result;
-
-            DefineEmployeeGV();
-
-            await Task.Delay(500);
-            loadingOverlay.Hide();
-        }
-                
+                        
 
         public async void SaveData(bool ask = true)
         {
@@ -284,6 +277,40 @@ namespace RauViet.ui
                     MessageBox.Show("Thất Bại", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
+        }
+
+        private void monthYearDtp_ValueChanged(object sender, EventArgs e)
+        {
+            // Mỗi lần thay đổi thì reset timer
+            _monthYearDebounceTimer.Stop();
+
+            int year = monthYearDtp.Value.Year;
+            if (currentYear != year)
+            _monthYearDebounceTimer.Start();
+        }
+
+        private void MonthYearDebounceTimer_Tick(object sender, EventArgs e)
+        {
+            _monthYearDebounceTimer.Stop();
+            HandleMonthYearChanged();
+        }
+
+        private async void HandleMonthYearChanged()
+        {
+            await Task.Delay(50);
+            LoadingOverlay loadingOverlay = new LoadingOverlay(this);
+            loadingOverlay.Show();
+            await Task.Delay(200);
+
+            int year = monthYearDtp.Value.Year;
+            var annualLeaveBalance = SQLStore_QLNS.Instance.GetAnnualLeaveBalanceAsync(year);
+            await Task.WhenAll(annualLeaveBalance);
+            mEmployee_dt = annualLeaveBalance.Result;
+            currentYear = year;
+            DefineEmployeeGV();
+
+            await Task.Delay(100);
+            loadingOverlay.Hide();
         }
     }
 }

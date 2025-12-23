@@ -302,7 +302,7 @@ namespace RauViet.classes
                 dr["ContractTypeCode"] = contractTypeCode;
                 dr["GradeName"] = gradeName;
                 dr["SalaryGrade"] = salaryGrade; 
-                dr["EmployessName_NoSign"] = Utils.RemoveVietnameseSigns(dr["FullName"].ToString());
+                dr["EmployessName_NoSign"] = Utils.RemoveVietnameseSigns(dr["EmployeeCode"].ToString() + " " + dr["FullName"].ToString());
             }
         }
 
@@ -446,7 +446,7 @@ namespace RauViet.classes
             return result;
         }
 
-        public void EmployeeSalaryInfo() { mEmployeeSalaryInfo_dt = null; }
+        public void removeEmployeeSalaryInfo() { mEmployeeSalaryInfo_dt = null; }
         public async Task<DataTable> GetEmployeeSalaryInfoAsync()
         {
             if (mEmployeeSalaryInfo_dt == null)
@@ -533,7 +533,6 @@ namespace RauViet.classes
                 {
                     string empCode = empRow.Field<string>("EmployeeCode");
                     string contractTypeCode = empRow.Field<string>("ContractTypeCode");
-                    decimal probationSalaryPercent = empRow.Field<decimal>("ProbationSalaryPercent");
                     DataRow newRow = result.NewRow();
 
                     newRow["EmployeeCode"] = empCode;
@@ -549,7 +548,7 @@ namespace RauViet.classes
                                 {
                                     if (col.CompareTo("BaseSalary") == 0)
                                     {
-                                        decimal baseSalary = (Convert.ToDecimal(salaryRow[col]) * probationSalaryPercent);
+                                        decimal baseSalary = (Convert.ToDecimal(salaryRow[col]));
                                         newRow[col] = baseSalary;
                                     }
                                     else if (col.CompareTo("InsuranceBaseSalary") == 0)
@@ -916,6 +915,16 @@ namespace RauViet.classes
             return activeDept;
         }
 
+        public async Task<DataTable> GetActiveDepartmentAsync(int[] departmentIds)
+        {
+            await GetDepartmentAsync();
+            DataTable filtered_dt = mDepartment_dt.AsEnumerable()
+                                                .Where(r =>departmentIds.Contains(r.Field<int>("DepartmentID")) && r.Field<bool>("IsActive") == true)
+                                                .CopyToDataTable();
+
+            return filtered_dt;
+        }
+
         public void removePosition() { mPosition_dt = null; }
         public async Task<DataTable> GetPositionAsync()
         {
@@ -1078,6 +1087,7 @@ namespace RauViet.classes
             employeeALB_dt.Columns.Add(new DataColumn("Year", typeof(int)));
             employeeALB_dt.Columns.Add(new DataColumn("FullName", typeof(string)));
             employeeALB_dt.Columns.Add(new DataColumn("PositionName", typeof(string)));
+            employeeALB_dt.Columns.Add(new DataColumn("EmployessName_NoSign", typeof(string)));
 
             var employeeLookup = mEmployee_dt.AsEnumerable().ToDictionary(r => r.Field<string>("EmployeeCode"));
             foreach (DataRow dr in employeeALB_dt.Rows)
@@ -1099,6 +1109,7 @@ namespace RauViet.classes
                 {
                     dr["PositionName"] = matchRow["PositionName"]?.ToString();
                     dr["FullName"] = matchRow["FullName"]?.ToString();
+                    dr["EmployessName_NoSign"] = Utils.RemoveVietnameseSigns(empCode + " " + matchRow["FullName"]?.ToString());
                 }
             }
         }

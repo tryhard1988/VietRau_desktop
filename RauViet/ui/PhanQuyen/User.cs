@@ -1,16 +1,11 @@
-﻿using DocumentFormat.OpenXml.Vml.Office;
-using RauViet.classes;
+﻿using RauViet.classes;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Windows.Forms.VisualStyles;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
 
 namespace RauViet.ui
 {
@@ -40,8 +35,6 @@ namespace RauViet.ui
             dataGV.MultiSelect = false;
 
             status_lb.Text = "";
-            loading_lb.Text = "Đang tải dữ liệu, vui lòng chờ...";
-            loading_lb.Visible = false;
 
             newCustomerBtn.Click += newCustomerBtn_Click;
             LuuThayDoiBtn.Click += saveBtn_Click;
@@ -54,9 +47,7 @@ namespace RauViet.ui
         }
 
         public async void ShowData()
-        {
-            loading_lb.Visible = true;            
-
+        {       
             try
             {
                 // Chạy truy vấn trên thread riêng
@@ -128,11 +119,6 @@ namespace RauViet.ui
                 status_lb.Text = "Thất bại.";
                 status_lb.ForeColor = Color.Red;
             }
-            finally
-            {
-                loading_lb.Visible = false; // ẩn loading
-                loading_lb.Enabled = true; // enable lại button
-            }
         }
 
         private void LoadRolesToGroupBox(DataTable role_dt)
@@ -144,7 +130,7 @@ namespace RauViet.ui
                 .GroupBy(r => r.Field<string>("RoleGroupName"))
                 .OrderBy(g => g.First().Field<int>("Priority"));
 
-            int yGroup = 50; // vị trí top bắt đầu cho nhóm
+            int yGroup = 10; // vị trí top bắt đầu cho nhóm
 
             foreach (var g in groups)
             {
