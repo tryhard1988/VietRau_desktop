@@ -130,7 +130,7 @@ namespace RauViet.ui
             string[] keepColumnsLeave = { "EmployeeCode", "LeaveTypeCode", "DateOff", "LeaveTypeName", "LeaveHours" };
             string[] keepColumnsAttendamce = { "EmployeeCode", "WorkDate", "WorkingHours" };
             var employeInfoTask = SQLStore_QLNS.Instance.GetEmployeesAsync(keepColumns);
-            var annualLeaveBalanceTask = SQLStore_QLNS.Instance.GetAnnualLeaveBalanceAsync(year);
+            var annualLeaveBalanceTask = SQLStore_QLNS.Instance.GetAnnualLeaveBalanceAsync();
             var overtimeTypeAsync = SQLStore_QLNS.Instance.GetOvertimeTypeAsync();
             var leaveTypeAsync = SQLStore_QLNS.Instance.GetLeaveTypeWithPaidAsync(true);
             var deductionTypeAsync = SQLStore_QLNS.Instance.GetDeductionTypeAsync();

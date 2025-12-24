@@ -31,10 +31,10 @@ namespace RauViet.ui
         {
             this.panel1 = new System.Windows.Forms.Panel();
             this.info_gb = new System.Windows.Forms.GroupBox();
-            this.monthYearDtp = new System.Windows.Forms.DateTimePicker();
             this.capphep_btn = new System.Windows.Forms.Button();
             this.status_lb = new System.Windows.Forms.Label();
             this.dataGV = new System.Windows.Forms.DataGridView();
+            this.ResetPhep_btn = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.info_gb.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
@@ -52,32 +52,23 @@ namespace RauViet.ui
             // 
             // info_gb
             // 
-            this.info_gb.Controls.Add(this.monthYearDtp);
+            this.info_gb.Controls.Add(this.ResetPhep_btn);
             this.info_gb.Controls.Add(this.capphep_btn);
             this.info_gb.Location = new System.Drawing.Point(35, 156);
             this.info_gb.Name = "info_gb";
-            this.info_gb.Size = new System.Drawing.Size(241, 135);
+            this.info_gb.Size = new System.Drawing.Size(241, 166);
             this.info_gb.TabIndex = 28;
             this.info_gb.TabStop = false;
-            // 
-            // monthYearDtp
-            // 
-            this.monthYearDtp.CalendarFont = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.monthYearDtp.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.monthYearDtp.Location = new System.Drawing.Point(51, 19);
-            this.monthYearDtp.Name = "monthYearDtp";
-            this.monthYearDtp.Size = new System.Drawing.Size(132, 31);
-            this.monthYearDtp.TabIndex = 38;
             // 
             // capphep_btn
             // 
             this.capphep_btn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
             this.capphep_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.capphep_btn.Location = new System.Drawing.Point(35, 71);
+            this.capphep_btn.Location = new System.Drawing.Point(39, 19);
             this.capphep_btn.Name = "capphep_btn";
-            this.capphep_btn.Size = new System.Drawing.Size(169, 46);
+            this.capphep_btn.Size = new System.Drawing.Size(169, 58);
             this.capphep_btn.TabIndex = 32;
-            this.capphep_btn.Text = "Cấp Phép";
+            this.capphep_btn.Text = "Cấp 1 Phép";
             this.capphep_btn.UseVisualStyleBackColor = false;
             // 
             // status_lb
@@ -103,6 +94,17 @@ namespace RauViet.ui
             this.dataGV.Size = new System.Drawing.Size(900, 681);
             this.dataGV.TabIndex = 12;
             // 
+            // ResetPhep_btn
+            // 
+            this.ResetPhep_btn.BackColor = System.Drawing.Color.OrangeRed;
+            this.ResetPhep_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ResetPhep_btn.Location = new System.Drawing.Point(39, 83);
+            this.ResetPhep_btn.Name = "ResetPhep_btn";
+            this.ResetPhep_btn.Size = new System.Drawing.Size(169, 54);
+            this.ResetPhep_btn.TabIndex = 33;
+            this.ResetPhep_btn.Text = "Reset Phép";
+            this.ResetPhep_btn.UseVisualStyleBackColor = false;
+            // 
             // AnnualLeaveBalance
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -126,6 +128,6 @@ namespace RauViet.ui
         private System.Windows.Forms.Label status_lb;
         private System.Windows.Forms.Button capphep_btn;
         private System.Windows.Forms.DataGridView dataGV;
-        private System.Windows.Forms.DateTimePicker monthYearDtp;
+        private System.Windows.Forms.Button ResetPhep_btn;
     }
 }

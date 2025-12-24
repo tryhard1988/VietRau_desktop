@@ -35,8 +35,8 @@ namespace RauViet.classes
         DataTable mEmployee_POS_DEP_CON_Log_dt = null;
         DataTable mEmployeeSalary_Log_dt = null;
         DataTable mMonthlyAllowanceLog_dt = null;
+        DataTable mAnnualLeaveBalance_dt = null;
 
-        Dictionary<int, DataTable> mAnnualLeaveBalances;
         Dictionary<int, DataTable> mDeductions;
         Dictionary<string, DataTable> mOvertimeAttendaces;
         Dictionary<int, DataTable> mLeaveAttendances;
@@ -69,7 +69,6 @@ namespace RauViet.classes
             {
                 int monthCur = DateTime.Now.Month;
                 int yearCur = DateTime.Now.Year;
-                mAnnualLeaveBalances = new Dictionary<int, DataTable>();
                 mDeductions = new Dictionary<int, DataTable>();
                 mOvertimeAttendaces = new Dictionary<string, DataTable>();
                 mLeaveAttendances = new Dictionary<int, DataTable>();
@@ -100,8 +99,7 @@ namespace RauViet.classes
                     allowanceTypeTask, applyScopeAsync, contractTypeTask, salaryGradeTask, holidayAsync);
 
 
-                var employeeALBTask1 = SQLManager_QLNS.Instance.GetAnnualLeaveBalanceAsync(yearCur - 1);
-                var employeeALBTask2 = SQLManager_QLNS.Instance.GetAnnualLeaveBalanceAsync(yearCur);
+                var employeeALBTask = SQLManager_QLNS.Instance.GetAnnualLeaveBalanceAsync();
                 var deductionAsync1 = SQLManager_QLNS.Instance.GetEmployeeDeductions(yearCur - 1);
                 var deductionAsync2 = SQLManager_QLNS.Instance.GetEmployeeDeductions(yearCur);
 
@@ -123,8 +121,8 @@ namespace RauViet.classes
                 var salaryHistoryTask1 = SQLManager_QLNS.Instance.GetSalaryHistoryAsyc(monthCur, yearCur);
                 var salaryHistoryTask2 = SQLManager_QLNS.Instance.GetSalaryHistoryAsyc(monthPre, yearPre);
 
-                await Task.WhenAll(leaveAttendanceTask1, leaveAttendanceTask2, employeeSalaryInfoAsync, employeeALBTask1, employeeALBTask2,
-                    deductionAsync1, deductionAsync2, overtimeAttendamceTask1, overtimeAttendamceTask2, attendamceTask1, attendamceTask2, salaryHistoryTask1, salaryHistoryTask2);
+                await Task.WhenAll(leaveAttendanceTask1, leaveAttendanceTask2, employeeSalaryInfoAsync, employeeALBTask, deductionAsync1, deductionAsync2,
+                    overtimeAttendamceTask1, overtimeAttendamceTask2, attendamceTask1, attendamceTask2, salaryHistoryTask1, salaryHistoryTask2);
 
                 string keyStrCur = monthCur.ToString() + "_" + yearCur.ToString();
                 string keyStrPre = monthPre.ToString() + "_" + yearPre.ToString();
@@ -138,8 +136,7 @@ namespace RauViet.classes
                 if (salaryHistoryTask1.Status == TaskStatus.RanToCompletion && salaryHistoryTask1.Result != null) mSalaryInfoHistories[keyStrCur] = salaryHistoryTask1.Result;
                 if (salaryHistoryTask2.Status == TaskStatus.RanToCompletion && salaryHistoryTask2.Result != null) mSalaryInfoHistories[keyStrPre] = salaryHistoryTask2.Result;
 
-                if (employeeALBTask1.Status == TaskStatus.RanToCompletion && employeeALBTask1.Result != null) mAnnualLeaveBalances[yearCur - 1] = employeeALBTask1.Result;
-                if (employeeALBTask2.Status == TaskStatus.RanToCompletion && employeeALBTask2.Result != null) mAnnualLeaveBalances[yearCur] = employeeALBTask2.Result;
+                if (employeeALBTask.Status == TaskStatus.RanToCompletion && employeeALBTask.Result != null) mAnnualLeaveBalance_dt = employeeALBTask.Result;
                 if (deductionAsync1.Status == TaskStatus.RanToCompletion && deductionAsync1.Result != null) mDeductions[yearCur - 1] = deductionAsync1.Result;
                 if (deductionAsync2.Status == TaskStatus.RanToCompletion && deductionAsync2.Result != null) mDeductions[yearCur] = deductionAsync2.Result;
                 if (employeesTask.Status == TaskStatus.RanToCompletion && employeesTask.Result != null) mEmployee_dt = employeesTask.Result;
@@ -157,8 +154,7 @@ namespace RauViet.classes
                 editEmployee();
                 editAllowanceType();
                 editEmployeeSalaryInfo();
-                editAnnualLeaveBalance(mAnnualLeaveBalances[yearCur - 1], yearCur - 1);
-                editAnnualLeaveBalance(mAnnualLeaveBalances[yearCur], yearCur);
+                editAnnualLeaveBalance(mAnnualLeaveBalance_dt);
                 editOvertimeAttendamce(overtimeAttendamceTask1.Result);
                 editOvertimeAttendamce(overtimeAttendamceTask2.Result);
                 editLeaveAttendances(leaveAttendanceTask1.Result);
@@ -1056,19 +1052,19 @@ namespace RauViet.classes
             return activeSalaryGrade;
         }
 
-        public void removeAnnualLeaveBalance(int year)
+        public void removeAnnualLeaveBalance()
         {
-            mAnnualLeaveBalances.Remove(year);
+            mAnnualLeaveBalance_dt = null;
         }
 
-        public async Task<DataTable> GetAnnualLeaveBalanceAsync(int year)
+        public async Task<DataTable> GetAnnualLeaveBalanceAsync()
         {
-            if (!mAnnualLeaveBalances.ContainsKey(year))
+            if (mAnnualLeaveBalance_dt == null)
             {
                 try
                 {
-                    mAnnualLeaveBalances[year] = await SQLManager_QLNS.Instance.GetAnnualLeaveBalanceAsync(year);
-                    editAnnualLeaveBalance(mAnnualLeaveBalances[year], year);
+                    mAnnualLeaveBalance_dt = await SQLManager_QLNS.Instance.GetAnnualLeaveBalanceAsync();
+                    editAnnualLeaveBalance(mAnnualLeaveBalance_dt);
                 }
                 catch
                 {
@@ -1077,31 +1073,19 @@ namespace RauViet.classes
                 }
             }
 
-            return mAnnualLeaveBalances[year];
+            return mAnnualLeaveBalance_dt;
         }
 
-        private void editAnnualLeaveBalance(DataTable employeeALB_dt, int year)
+        private void editAnnualLeaveBalance(DataTable employeeALB_dt)
         {
-            employeeALB_dt.Columns["LeaveCount"].ReadOnly = false;
-            employeeALB_dt.Columns.Add(new DataColumn("RemainingLeave", typeof(int)));
-            employeeALB_dt.Columns.Add(new DataColumn("Year", typeof(int)));
             employeeALB_dt.Columns.Add(new DataColumn("FullName", typeof(string)));
             employeeALB_dt.Columns.Add(new DataColumn("PositionName", typeof(string)));
+            employeeALB_dt.Columns.Add(new DataColumn("RemainingLeaveDays_1", typeof(int)));
             employeeALB_dt.Columns.Add(new DataColumn("EmployessName_NoSign", typeof(string)));
 
             var employeeLookup = mEmployee_dt.AsEnumerable().ToDictionary(r => r.Field<string>("EmployeeCode"));
             foreach (DataRow dr in employeeALB_dt.Rows)
             {
-                List<int> monthList = new List<int>();
-                string month_str = Convert.ToString(dr["Month"]);
-                if (!string.IsNullOrEmpty(month_str))
-                {
-                    monthList = month_str.Split(',', (char)StringSplitOptions.RemoveEmptyEntries).Select(m => int.Parse(m.Trim())).ToList();
-                }
-
-                dr["Year"] = year;
-                dr["RemainingLeave"] = monthList.Count - Convert.ToInt32(dr["LeaveCount"]);
-
                 string empCode = dr["EmployeeCode"]?.ToString();
                 if (string.IsNullOrEmpty(empCode)) continue;
 
@@ -1110,6 +1094,7 @@ namespace RauViet.classes
                     dr["PositionName"] = matchRow["PositionName"]?.ToString();
                     dr["FullName"] = matchRow["FullName"]?.ToString();
                     dr["EmployessName_NoSign"] = Utils.RemoveVietnameseSigns(empCode + " " + matchRow["FullName"]?.ToString());
+                    dr["RemainingLeaveDays_1"] = Convert.ToInt32(dr["RemainingLeaveDays"]) - Convert.ToInt32(dr["LeaveCount"]);
                 }
             }
         }

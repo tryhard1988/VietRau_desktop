@@ -1,4 +1,5 @@
-﻿using RauViet.classes;
+﻿using DocumentFormat.OpenXml.Vml.Office;
+using RauViet.classes;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -11,24 +12,19 @@ namespace RauViet.ui
 {
     public partial class AnnualLeaveBalance : Form
     {
-        private Timer _monthYearDebounceTimer;
         DataTable mEmployee_dt;
-        int currentYear;
+        object oldValue;
         // DataTable mShift_dt;
         public AnnualLeaveBalance()
         {
             InitializeComponent();
             this.KeyPreview = true;
-            monthYearDtp.Format = DateTimePickerFormat.Custom;
-            monthYearDtp.CustomFormat = "MM/yyyy";
-            monthYearDtp.ShowUpDown = true;
-            monthYearDtp.Value = DateTime.Now;
 
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Dock = DockStyle.Fill;
 
             dataGV.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dataGV.MultiSelect = false;
+            dataGV.MultiSelect = true;
 
             status_lb.Text = "";
 
@@ -36,25 +32,18 @@ namespace RauViet.ui
             dataGV.CellFormatting += DataGV_CellFormatting;
 
             capphep_btn.Click += Capphep_btn_Click;
+            ResetPhep_btn.Click += ResetPhep_btn_Click;
 
+            dataGV.CellBeginEdit += dataGV_CellBeginEdit;
             dataGV.CellEndEdit += DataGV_CellEndEdit;
             this.KeyDown += AnnualLeaveBalance_KeyDown;
-            this.Load += OvertimeAttendace_Load;
-        }
-
-        private void OvertimeAttendace_Load(object sender, EventArgs e)
-        {
-            _monthYearDebounceTimer = new Timer();
-            _monthYearDebounceTimer.Interval = 500;
-            _monthYearDebounceTimer.Tick += MonthYearDebounceTimer_Tick;
         }
 
         private void AnnualLeaveBalance_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.F5)
             {
-                int year = monthYearDtp.Value.Year;
-                SQLStore_QLNS.Instance.removeAnnualLeaveBalance(year);
+                SQLStore_QLNS.Instance.removeAnnualLeaveBalance();
                 ShowData();
             }
         }
@@ -68,15 +57,11 @@ namespace RauViet.ui
 
             try
             {
-                monthYearDtp.ValueChanged -= monthYearDtp_ValueChanged;
-                int year = monthYearDtp.Value.Year;
-                var employeeALBTask = SQLStore_QLNS.Instance.GetAnnualLeaveBalanceAsync(year);
-                currentYear = year;
+                var employeeALBTask = SQLStore_QLNS.Instance.GetAnnualLeaveBalanceAsync();
                 await Task.WhenAll(employeeALBTask);
                 mEmployee_dt = employeeALBTask.Result;
 
                 DefineEmployeeGV();
-                monthYearDtp.ValueChanged += monthYearDtp_ValueChanged;
             }
             catch
             {
@@ -92,18 +77,14 @@ namespace RauViet.ui
 
         private void DefineEmployeeGV()
         {
-            int year = monthYearDtp.Value.Year;
-
             int count = 0;
             mEmployee_dt.Columns["EmployeeCode"].SetOrdinal(count++);
             mEmployee_dt.Columns["FullName"].SetOrdinal(count++);
             mEmployee_dt.Columns["PositionName"].SetOrdinal(count++);
-            mEmployee_dt.Columns["Year"].SetOrdinal(count++);
 
             dataGV.ReadOnly = false;
             
-            mEmployee_dt.Columns["Month"].ReadOnly = false;
-            mEmployee_dt.Columns["Year"].ReadOnly = false;
+            mEmployee_dt.Columns["RemainingLeaveDays"].ReadOnly = false;
 
             dataGV.DataSource = mEmployee_dt;
 
@@ -111,22 +92,22 @@ namespace RauViet.ui
             {
                 col.ReadOnly = true;
             }
-            dataGV.Columns["Month"].ReadOnly = false;
+            dataGV.Columns["RemainingLeaveDays_1"].ReadOnly = false;
+            dataGV.Columns["EmployessName_NoSign"].Visible = false;
+            dataGV.Columns["RemainingLeaveDays"].Visible = false;
+            dataGV.Columns["LeaveCount"].Visible = false;
 
-            dataGV.Columns["EmployeeCode"].HeaderText = "Mã Nhân Viên";
+            dataGV.Columns["EmployeeCode"].HeaderText = "Mã NV";
             dataGV.Columns["FullName"].HeaderText = "Tên Nhân Viên";
             dataGV.Columns["PositionName"].HeaderText = "Chức Vụ";
             dataGV.Columns["Month"].HeaderText = "Tháng Có phép";
-            dataGV.Columns["Year"].HeaderText = "Năm Cấp phép";
-            dataGV.Columns["LeaveCount"].HeaderText = "Đã Dùng";
-            dataGV.Columns["RemainingLeave"].HeaderText = "Còn Lại";
+            dataGV.Columns["RemainingLeaveDays_1"].HeaderText = "Còn Lại";
 
             dataGV.Columns["EmployeeCode"].Width = 70;
             dataGV.Columns["FullName"].Width = 200;
             dataGV.Columns["Month"].Width = 200;
             dataGV.Columns["PositionName"].Width = 90;
-            dataGV.Columns["LeaveCount"].Width = 70;
-            dataGV.Columns["RemainingLeave"].Width = 70;
+            dataGV.Columns["RemainingLeaveDays_1"].Width = 70;
 
             if (dataGV.Rows.Count > 0)
             {
@@ -155,60 +136,61 @@ namespace RauViet.ui
 
         private void Capphep_btn_Click(object sender, EventArgs e)
         {
-
-            int year = monthYearDtp.Value.Year;
-            int month = monthYearDtp.Value.Month;
-
-            DialogResult dialogResult = MessageBox.Show($"Cấp phép tháng {month}/{year} cho toàn bộ nhân viên ?", "Cập Nhật Tồn Phép", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            DialogResult dialogResult = MessageBox.Show($"Cấp thêm 1 Phép cho nhân viên đang chọn ?", "Cập Nhật Tồn Phép", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
             if (dialogResult != DialogResult.Yes)
                 return;
-                
 
-            foreach (DataRow dr in mEmployee_dt.Rows)
+
+            foreach (DataGridViewRow dr in dataGV.SelectedRows)
             {
-                int yearInDR = 0;
-                if (dr["Year"] != DBNull.Value && !string.IsNullOrWhiteSpace(dr["Year"].ToString()))
-                    yearInDR = Convert.ToInt32(dr["Year"]);
+                int remainingLeaveDays = 0;
 
-                if (yearInDR != year && yearInDR != 0)
-                {
-                    MessageBox.Show("Đang Cập Nhật Khác Năm", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
+                if (dr.Cells["RemainingLeaveDays"].Value != DBNull.Value)
+                    remainingLeaveDays = Convert.ToInt32(dr.Cells["RemainingLeaveDays"].Value);
 
-                List<int> monthList = new List<int>();
-                string month_str = Convert.ToString(dr["Month"]);
-                if (!string.IsNullOrEmpty(month_str))
-                {
-                    monthList = month_str.Split(',', (char)StringSplitOptions.RemoveEmptyEntries).Select(m => int.Parse(m.Trim())).ToList();
-                }
+                dr.Cells["RemainingLeaveDays"].Value = remainingLeaveDays + 1;
+                dr.Cells["RemainingLeaveDays_1"].Value = remainingLeaveDays + 1 - Convert.ToInt32(dr.Cells["LeaveCount"].Value);
+            }
 
-                if (monthList.Contains(month)) continue;
+              SaveData(false);
+        }
 
-                monthList.Add(month);
-                monthList.Sort();
+        private void ResetPhep_btn_Click(object sender, EventArgs e)
+        {
+            DialogResult dialogResult = MessageBox.Show($"Reset Phép Năm cho nhân viên đang chọn ?", "Cập Nhật Tồn Phép", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
-                dr["Year"] = year;
-                dr["Month"] = string.Join(",", monthList);
-                dr["RemainingLeave"] = monthList.Count - Convert.ToInt32(dr["LeaveCount"]);
+            if (dialogResult != DialogResult.Yes)
+                return;
+
+            int month = DateTime.Now.Month;
+            foreach (DataGridViewRow dr in dataGV.SelectedRows)
+            {
+                int remainingLeaveDays = 0;
+
+                if (dr.Cells["RemainingLeaveDays_1"].Value != DBNull.Value)
+                    remainingLeaveDays = Convert.ToInt32(dr.Cells["RemainingLeaveDays_1"].Value);
+
+                int remainingLeaveDays_new = Math.Min(remainingLeaveDays, month);
+
+                dr.Cells["RemainingLeaveDays_1"].Value = remainingLeaveDays_new;
+                dr.Cells["RemainingLeaveDays"].Value = Convert.ToInt32(dr.Cells["RemainingLeaveDays"].Value) - (remainingLeaveDays - remainingLeaveDays_new);
             }
 
             SaveData(false);
         }
-                        
+
 
         public async void SaveData(bool ask = true)
         {
-            List<(string EmployeeCode, int year, string month)> albData = new List<(string, int, string)>();
+            List<(string EmployeeCode, int RemainingLeaveDays)> albData = new List<(string, int)>();
 
-            foreach (DataRow dr in mEmployee_dt.Rows)
+            foreach (DataGridViewRow dr in dataGV.SelectedRows)
             {
-                string employeeCode = Convert.ToString(dr["EmployeeCode"]);
-                int year = Convert.ToInt32(dr["Year"]);
-                string months = Convert.ToString(dr["Month"]);
+                string employeeCode = Convert.ToString(dr.Cells["EmployeeCode"].Value);
+                int remainingLeaveDays = Convert.ToInt32(dr.Cells["RemainingLeaveDays"].Value);
 
-                albData.Add((employeeCode, year, months));
+                albData.Add((employeeCode, remainingLeaveDays));
 
             }
 
@@ -238,25 +220,40 @@ namespace RauViet.ui
         {
             if (e.RowIndex < 0) return;
 
-            if (dataGV.Columns[e.ColumnIndex].Name == "Month")
+            if (dataGV.Columns[e.ColumnIndex].Name == "RemainingLeaveDays_1")
             {
                 e.CellStyle.BackColor = System.Drawing.Color.LightGray;
             }
         }
 
+        private void dataGV_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
+        {
+            oldValue = dataGV.CurrentCell?.Value;
+        }
         private async void DataGV_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
             {
-                var row = dataGV.Rows[e.RowIndex];
+                object newValue = dataGV.CurrentCell?.Value;
+                if (object.Equals(oldValue, newValue)) return;
 
-                List<(string EmployeeCode, int year, string month)> albData = new List<(string, int, string)>();
+                var row = dataGV.CurrentRow;
+
+                int newValueInt = 0;
+                int oldValueInt = 0;
+
+                if (newValue != null && int.TryParse(newValue.ToString(), out int tmpNew))
+                    newValueInt = tmpNew;
+
+                if (oldValue != null && int.TryParse(oldValue.ToString(), out int tmpOld))
+                    oldValueInt = tmpOld;
+
+                List<(string EmployeeCode, int RemainingLeaveDays)> albData = new List<(string, int)>();
                 string employeeCode = Convert.ToString(row.Cells["EmployeeCode"].Value);
-                int year = Convert.ToInt32(row.Cells["Year"].Value);
-                string months = Convert.ToString(row.Cells["Month"].Value);
+                int remainingLeaveDays = Convert.ToInt32(row.Cells["RemainingLeaveDays"].Value) - (oldValueInt - newValueInt);
 
-                albData.Add((employeeCode, year, months));
-
+                albData.Add((employeeCode, remainingLeaveDays));
+                row.Cells["RemainingLeaveDays"].Value = remainingLeaveDays;
                 try
                 {
                     Boolean iSuccess = await SQLManager_QLNS.Instance.UpsertAnnualLeaveBalanceBatchAsync(albData);
@@ -279,38 +276,5 @@ namespace RauViet.ui
             }
         }
 
-        private void monthYearDtp_ValueChanged(object sender, EventArgs e)
-        {
-            // Mỗi lần thay đổi thì reset timer
-            _monthYearDebounceTimer.Stop();
-
-            int year = monthYearDtp.Value.Year;
-            if (currentYear != year)
-            _monthYearDebounceTimer.Start();
-        }
-
-        private void MonthYearDebounceTimer_Tick(object sender, EventArgs e)
-        {
-            _monthYearDebounceTimer.Stop();
-            HandleMonthYearChanged();
-        }
-
-        private async void HandleMonthYearChanged()
-        {
-            await Task.Delay(50);
-            LoadingOverlay loadingOverlay = new LoadingOverlay(this);
-            loadingOverlay.Show();
-            await Task.Delay(200);
-
-            int year = monthYearDtp.Value.Year;
-            var annualLeaveBalance = SQLStore_QLNS.Instance.GetAnnualLeaveBalanceAsync(year);
-            await Task.WhenAll(annualLeaveBalance);
-            mEmployee_dt = annualLeaveBalance.Result;
-            currentYear = year;
-            DefineEmployeeGV();
-
-            await Task.Delay(100);
-            loadingOverlay.Hide();
-        }
     }
 }

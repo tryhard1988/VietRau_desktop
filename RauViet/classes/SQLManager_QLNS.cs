@@ -1,4 +1,5 @@
 ﻿
+using DocumentFormat.OpenXml.Bibliography;
 using Org.BouncyCastle.Asn1.X509;
 using System;
 using System.Collections.Generic;
@@ -1027,7 +1028,7 @@ namespace RauViet.classes
                 return -1;
             }
         }
-        public async Task<DataTable> GetAnnualLeaveBalanceAsync(int year)
+        public async Task<DataTable> GetAnnualLeaveBalanceAsync()
         {
             DataTable dt = new DataTable();
 
@@ -1038,7 +1039,6 @@ namespace RauViet.classes
                 using (SqlCommand cmd = new SqlCommand("sp_GetAnnualLeaveReport", con))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@Year", year);
 
                     using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                     {
@@ -1051,18 +1051,17 @@ namespace RauViet.classes
         }
 
 
-        public async Task<bool> UpsertAnnualLeaveBalanceBatchAsync(List<(string EmployeeCode, int Year, string Month)> albData)
+        public async Task<bool> UpsertAnnualLeaveBalanceBatchAsync(List<(string EmployeeCode, int RemainingLeaveDays)> albData)
         {
             try
             {
                 DataTable dt = new DataTable();
                 dt.Columns.Add("EmployeeCode", typeof(string));
-                dt.Columns.Add("Year", typeof(int));
-                dt.Columns.Add("Month", typeof(string));
+                dt.Columns.Add("RemainingLeaveDays", typeof(string));
 
                 foreach (var item in albData)
                 {
-                    dt.Rows.Add(item.EmployeeCode, item.Year, item.Month);
+                    dt.Rows.Add(item.EmployeeCode, item.RemainingLeaveDays);
                 }
 
                 using (SqlConnection conn = new SqlConnection(ql_NhanSu_conStr()))

@@ -101,7 +101,7 @@ namespace RauViet.ui
                 int year = Convert.ToInt32(year_tb.Text);
                 var leavecodeParam = new List<string>{"NL_1"};
                 var leaveTypeTask = SQLStore_QLNS.Instance.GetLeaveTypeWithoutAsync(leavecodeParam);
-                var employeeRemainingLeaveTask = SQLStore_QLNS.Instance.GetAnnualLeaveBalanceAsync(year);
+                var employeeRemainingLeaveTask = SQLStore_QLNS.Instance.GetAnnualLeaveBalanceAsync();
                 var leaveAttendanceTask = SQLStore_QLNS.Instance.GetLeaveAttendancesAsyn(year);
                 var leaveAttendanceLogTask = SQLStore_QLNS.Instance.GetLeaveAttendanceLogAsync(year);
 
@@ -122,18 +122,16 @@ namespace RauViet.ui
                 mEmployee_dt.Columns["EmployeeCode"].SetOrdinal(count++);
                 mEmployee_dt.Columns["FullName"].SetOrdinal(count++);
                 mEmployee_dt.Columns["PositionName"].SetOrdinal(count++);
-                mEmployee_dt.Columns["RemainingLeave"].SetOrdinal(count++);
+                mEmployee_dt.Columns["RemainingLeaveDays"].SetOrdinal(count++);
 
                 dataGV.DataSource = mEmployee_dt;
                 dataGV.Columns["EmployeeCode"].HeaderText = "Mã Nhân Viên";
                 dataGV.Columns["FullName"].HeaderText = "Tên Nhân Viên";
               //  dataGV.Columns["ContractTypeName"].HeaderText = "Loại H.Đồng";
                 dataGV.Columns["PositionName"].HeaderText = "Chức Vụ";
-                dataGV.Columns["RemainingLeave"].HeaderText = "Phép Năm Còn";
+                dataGV.Columns["RemainingLeaveDays"].HeaderText = "Phép Năm Còn";
 
                 dataGV.Columns["Month"].Visible = false;
-                dataGV.Columns["Year"].Visible = false;
-                dataGV.Columns["LeaveCount"].Visible = false;
                 dataGV.Columns["EmployessName_NoSign"].Visible = false;
 
 
@@ -428,10 +426,10 @@ namespace RauViet.ui
                             if (row != null)
                             {
                                 int leaveCount = row.Field<int?>("LeaveCount") ?? 0;
-                                int remaining = row.Field<int?>("RemainingLeave") ?? 0;
+                                int remaining = row.Field<int?>("RemainingLeaveDays") ?? 0;
 
                                 row["LeaveCount"] = leaveCount + 1;
-                                row["RemainingLeave"] = remaining - 1;
+                                row["RemainingLeaveDays"] = remaining - 1;
                             }
                         }
                     }
