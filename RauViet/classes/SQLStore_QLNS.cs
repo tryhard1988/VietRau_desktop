@@ -396,6 +396,12 @@ namespace RauViet.classes
                     row["DayOfWeek"] = vietDays[(int)dayOff.DayOfWeek];
                 }
             }
+
+            int count = 0;
+            data.Columns["DayOfWeek"].SetOrdinal(count++);
+            data.Columns["DateOff"].SetOrdinal(count++);
+            data.Columns["LeaveTypeName"].SetOrdinal(count++);
+            data.Columns["Note"].SetOrdinal(count++);
         }
 
         public void removeHoliday() { mHoliday_dt = null; }
@@ -1248,6 +1254,8 @@ namespace RauViet.classes
             data.Columns.Add("DayOfWeek", typeof(string));
             data.Columns.Add("OvertimeName", typeof(string));
             data.Columns.Add("SalaryFactor", typeof(decimal));
+            data.Columns.Add("EmployeeName", typeof(string));
+            data.Columns.Add("DepartmentID", typeof(string));
 
             data.Columns["HourWork"].ReadOnly = false;
 
@@ -1259,11 +1267,18 @@ namespace RauViet.classes
 
 
                 int overtimeTypeID = Convert.ToInt32(row["OvertimeTypeID"]);
+                string employeeCode = Convert.ToString(row["EmployeeCode"]);
                 DataRow[] rows = mOvertimeType_dt.Select($"OvertimeTypeID = {overtimeTypeID}");
+                DataRow[] eRows = mEmployee_dt.Select($"EmployeeCode = '{employeeCode}'");
                 if (rows.Length > 0)
                 {
                     row["OvertimeName"] = rows[0]["OvertimeName"].ToString();
                     row["SalaryFactor"] = rows[0]["SalaryFactor"].ToString();
+                }
+                if(eRows.Length > 0)
+                {
+                    row["EmployeeName"] = eRows[0]["FullName"].ToString();
+                    row["DepartmentID"] = Convert.ToInt32(eRows[0]["DepartmentID"]);
                 }
 
                 TimeSpan startTime = (TimeSpan)row["StartTime"];
@@ -1271,6 +1286,18 @@ namespace RauViet.classes
 
                 TimeSpan duration = endTime - startTime;
             }
+
+            int count = 0;
+            data.Columns["EmployeeCode"].SetOrdinal(count++);
+            data.Columns["EmployeeName"].SetOrdinal(count++);
+            data.Columns["WorkDate"].SetOrdinal(count++);
+            data.Columns["DayOfWeek"].SetOrdinal(count++);
+            data.Columns["WorkDate"].SetOrdinal(count++);
+            data.Columns["OvertimeName"].SetOrdinal(count++);
+            data.Columns["StartTime"].SetOrdinal(count++);
+            data.Columns["EndTime"].SetOrdinal(count++);
+            data.Columns["HourWork"].SetOrdinal(count++);
+            data.Columns["Note"].SetOrdinal(count++);
         }
 
         public async Task<DataTable> GetAttendamceAsync(int month, int year)

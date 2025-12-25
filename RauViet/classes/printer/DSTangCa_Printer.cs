@@ -189,12 +189,19 @@ public class DSTangCa_Printer
             TimeSpan startTime = (TimeSpan)row["StartTime"];
             TimeSpan endTime = (TimeSpan)row["EndTime"];
 
+            decimal hourWork = 0;
+            if (row["HourWork"] != DBNull.Value)
+            {
+                decimal.TryParse(row["HourWork"].ToString(), out hourWork);
+            }
+
+
             DrawCellText(g, (rowIndex + 1).ToString(), normalFont, new Rectangle(col1, y, col2 - col1, lineHeight1));
             DrawCellText(g, row["EmployeeCode"].ToString(), normalFont, new Rectangle(col2, y, col3 - col2, lineHeight1));
             DrawCellText(g, row["EmployeeName"].ToString(), normalFont, new Rectangle(col3, y, col4 - col3, lineHeight1), StringAlignment.Near);
             DrawCellText(g, startTime.ToString(@"hh\:mm"), normalFont, new Rectangle(col4, y, col5 - col4, lineHeight1));
             DrawCellText(g, endTime.ToString(@"hh\:mm"), normalFont, new Rectangle(col5, y, col5Width, lineHeight1));
-            DrawCellText(g, row["HourWork"].ToString(), normalFont, new Rectangle(col6, y, col6Width, lineHeight1));
+            DrawCellText(g, hourWork == 0 ? "" : hourWork.ToString("F2"), normalFont, new Rectangle(col6, y, col6Width, lineHeight1));
             DrawCellText(g, "", normalFont, new Rectangle(col7, y, col7Width, lineHeight1));
             DrawCellText(g, row["Note"].ToString(), normalFont, new Rectangle(col8, y, col8Width, lineHeight1));
 

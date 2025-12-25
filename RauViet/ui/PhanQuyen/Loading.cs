@@ -33,8 +33,10 @@ namespace RauViet.ui.PhanQuyen
             //var task4 = SQLManager.Instance.AutoDeleteOrderPackingLogAsync();
             //var task5 = SQLManager.Instance.AutoDeleteDo47LogAsync();
             //await Task.WhenAll(task1, task2, task3, task4, task5);
-            await SQLManager_Kho.Instance.AutoUpdateCompleteExportCodeAsync();
-            await SQLManager_QLNS.Instance.AutoUpsertAnnualLeaveMonthListAsync();
+            var task1 = SQLManager_Kho.Instance.AutoUpdateCompleteExportCodeAsync();
+            var task2 = SQLManager_QLNS.Instance.AutoUpsertAnnualLeaveMonthListAsync();
+            await Task.WhenAll(task1, task2);
+
             await SQLStore_QLNS.Instance.preload();
             await SQLStore_Kho.Instance.preload();
             await Task.Delay(200);

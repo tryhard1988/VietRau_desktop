@@ -1,4 +1,5 @@
-﻿using DocumentFormat.OpenXml.Vml.Office;
+﻿using DocumentFormat.OpenXml.Bibliography;
+using DocumentFormat.OpenXml.Vml.Office;
 using RauViet.classes;
 using System;
 using System.Collections.Generic;
@@ -158,37 +159,37 @@ namespace RauViet.ui
 
         private void ResetPhep_btn_Click(object sender, EventArgs e)
         {
-            DialogResult dialogResult = MessageBox.Show($"Reset Phép Năm cho nhân viên đang chọn ?", "Cập Nhật Tồn Phép", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            DialogResult dialogResult = MessageBox.Show($"Reset Phép Năm cho tất cả nhân viên?", "Cập Nhật Tồn Phép", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
             if (dialogResult != DialogResult.Yes)
                 return;
 
-            int month = DateTime.Now.Month;
-            foreach (DataGridViewRow dr in dataGV.SelectedRows)
+            int prevMonth = DateTime.Now.AddMonths(-1).Month;
+            foreach (DataRow dr in mEmployee_dt.Rows)
             {
                 int remainingLeaveDays = 0;
 
-                if (dr.Cells["RemainingLeaveDays_1"].Value != DBNull.Value)
-                    remainingLeaveDays = Convert.ToInt32(dr.Cells["RemainingLeaveDays_1"].Value);
+                if (dr["RemainingLeaveDays_1"] != DBNull.Value)
+                    remainingLeaveDays = Convert.ToInt32(dr["RemainingLeaveDays_1"]);
 
-                int remainingLeaveDays_new = Math.Min(remainingLeaveDays, month);
+                int remainingLeaveDays_new = Math.Min(remainingLeaveDays, prevMonth);
 
-                dr.Cells["RemainingLeaveDays_1"].Value = remainingLeaveDays_new;
-                dr.Cells["RemainingLeaveDays"].Value = Convert.ToInt32(dr.Cells["RemainingLeaveDays"].Value) - (remainingLeaveDays - remainingLeaveDays_new);
+                dr["RemainingLeaveDays_1"] = remainingLeaveDays_new;
+                dr["RemainingLeaveDays"] = remainingLeaveDays_new;// Convert.ToInt32(dr.Cells["RemainingLeaveDays"].Value) - (remainingLeaveDays - remainingLeaveDays_new);
             }
 
-            SaveData(false);
+            SaveData(true);
         }
 
 
-        public async void SaveData(bool ask = true)
+        public async void SaveData(bool isResetPhep)
         {
             List<(string EmployeeCode, int RemainingLeaveDays)> albData = new List<(string, int)>();
 
-            foreach (DataGridViewRow dr in dataGV.SelectedRows)
+            foreach (DataRow dr in mEmployee_dt.Rows)
             {
-                string employeeCode = Convert.ToString(dr.Cells["EmployeeCode"].Value);
-                int remainingLeaveDays = Convert.ToInt32(dr.Cells["RemainingLeaveDays"].Value);
+                string employeeCode = Convert.ToString(dr["EmployeeCode"]);
+                int remainingLeaveDays = Convert.ToInt32(dr["RemainingLeaveDays"]);
 
                 albData.Add((employeeCode, remainingLeaveDays));
 
@@ -196,11 +197,19 @@ namespace RauViet.ui
 
             try
             {
-                Boolean iSuccess = await SQLManager_QLNS.Instance.UpsertAnnualLeaveBalanceBatchAsync(albData);
+                int prevMonth = DateTime.Now.AddMonths(-1).Month;
+
+                Boolean iSuccess = await SQLManager_QLNS.Instance.UpsertAnnualLeaveBalanceBatchAsync(albData, isResetPhep, prevMonth, DateTime.Now.Year);
                 if (iSuccess)
                 {
                     status_lb.Text = "Thành Công.";
                     status_lb.ForeColor = Color.Green;
+                    if (isResetPhep)
+                    {
+                        SQLStore_QLNS.Instance.removeLeaveAttendances(DateTime.Now.Year);
+                        SQLStore_QLNS.Instance.removeLeaveAttendances(DateTime.Now.AddYears(-1).Year);
+                        await SQLStore_QLNS.Instance.GetLeaveAttendancesAsyn(DateTime.Now.Year);
+                    }
                 }
                 else
                 {
@@ -256,7 +265,8 @@ namespace RauViet.ui
                 row.Cells["RemainingLeaveDays"].Value = remainingLeaveDays;
                 try
                 {
-                    Boolean iSuccess = await SQLManager_QLNS.Instance.UpsertAnnualLeaveBalanceBatchAsync(albData);
+                    int prevMonth = DateTime.Now.AddMonths(-1).Month;
+                    Boolean iSuccess = await SQLManager_QLNS.Instance.UpsertAnnualLeaveBalanceBatchAsync(albData , false, prevMonth, DateTime.Now.Year);
                     if (iSuccess)
                     {
                         status_lb.Text = "Thành Công.";

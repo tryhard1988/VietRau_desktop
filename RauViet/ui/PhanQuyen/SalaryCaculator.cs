@@ -247,7 +247,14 @@ namespace RauViet.ui
                         dr["HireDate"] = Convert.ToDateTime(matchRow["HireDate"]);
                         dr["FullName"] = matchRow["FullName"]?.ToString();
                     }
-
+                    if (annualLeaveBalanceLookup.TryGetValue(employeeCode, out DataRow matchRow1))
+                    {
+                        dr["RemainingLeave"] = Convert.ToInt32(matchRow1["RemainingLeaveDays_1"]);
+                    }
+                    else
+                    {
+                        dr["RemainingLeave"] = 0;
+                    }
                 }
             });
 
@@ -521,20 +528,20 @@ namespace RauViet.ui
             {
                 this.Invoke(new Action(() =>
                 {
-                    attendamceGV.Columns["EmployeeCode"].Visible = false;
-                    allowanceGV.Columns["EmployeeCode"].Visible = false;
-                    allowanceGV.Columns["AllowanceTypeID"].Visible = false;
-                    allowanceGV.Columns["ScopeCode"].Visible = false;
-                    overtimeAttendanceGV.Columns["EmployeeCode"].Visible = false;
-                    overtimeAttendanceGV.Columns["SalaryFactor"].Visible = false;
-                    overtimeAttendanceGV.Columns["OvertimeTypeID"].Visible = false;
-                    leaveGV.Columns["EmployeeCode"].Visible = false;
-                    leaveGV.Columns["LeaveTypeCode"].Visible = false;
-                    deductionGV.Columns["EmployeeCode"].Visible = false;
-                    deductionGV.Columns["DeductionTypeCode"].Visible = false;
-                    dataGV.Columns["IsInsuranceRefund"].Visible = false;
-                    dataGV.Columns["HireDate"].Visible = false;
-                    dataGV.Columns["RemainingLeave"].Visible = false;
+                  //  attendamceGV.Columns["EmployeeCode"].Visible = false;
+                   // allowanceGV.Columns["EmployeeCode"].Visible = false;
+                  //  allowanceGV.Columns["AllowanceTypeID"].Visible = false;
+                  //  allowanceGV.Columns["ScopeCode"].Visible = false;
+                  //  overtimeAttendanceGV.Columns["EmployeeCode"].Visible = false;
+                  //  overtimeAttendanceGV.Columns["SalaryFactor"].Visible = false;
+                  //  overtimeAttendanceGV.Columns["OvertimeTypeID"].Visible = false;
+                    //leaveGV.Columns["EmployeeCode"].Visible = false;
+                    //leaveGV.Columns["LeaveTypeCode"].Visible = false;
+                   // deductionGV.Columns["EmployeeCode"].Visible = false;
+                   // deductionGV.Columns["DeductionTypeCode"].Visible = false;
+                   // dataGV.Columns["IsInsuranceRefund"].Visible = false;
+                   // dataGV.Columns["HireDate"].Visible = false;
+                   // dataGV.Columns["RemainingLeave"].Visible = false;
                 }));
             }));
 

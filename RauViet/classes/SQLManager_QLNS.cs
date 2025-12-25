@@ -894,12 +894,11 @@ namespace RauViet.classes
             return dt;
         }
 
-        public async Task<bool> updateOvertimeAttendanceAsync(int overtimeAttendanceID, string employeeCode, DateTime workDate,
+        public async Task<bool> updateOvertimeAttendanceAsync(int overtimeAttendanceID, string employeeCode,
                                         TimeSpan startTime, TimeSpan endTime, int overtimeTypeID, string note)
         {
             string query = @"UPDATE OvertimeAttendance SET 
                                 EmployeeCode=@EmployeeCode, 
-                                WorkDate=@WorkDate,
                                 StartTime=@StartTime, 
                                 EndTime=@EndTime,
                                 OvertimeTypeID=@OvertimeTypeID, 
@@ -914,7 +913,6 @@ namespace RauViet.classes
                     {
                         cmd.Parameters.AddWithValue("@OvertimeAttendanceID", overtimeAttendanceID);
                         cmd.Parameters.AddWithValue("@EmployeeCode", employeeCode);
-                        cmd.Parameters.AddWithValue("@WorkDate", workDate.Date);
                         cmd.Parameters.AddWithValue("@StartTime", startTime);
                         cmd.Parameters.AddWithValue("@EndTime", endTime);
                         cmd.Parameters.AddWithValue("@OvertimeTypeID", overtimeTypeID);
@@ -1051,13 +1049,13 @@ namespace RauViet.classes
         }
 
 
-        public async Task<bool> UpsertAnnualLeaveBalanceBatchAsync(List<(string EmployeeCode, int RemainingLeaveDays)> albData)
+        public async Task<bool> UpsertAnnualLeaveBalanceBatchAsync(List<(string EmployeeCode, int RemainingLeaveDays)> albData, bool isResetPhep, int month, int year)
         {
             try
             {
                 DataTable dt = new DataTable();
                 dt.Columns.Add("EmployeeCode", typeof(string));
-                dt.Columns.Add("RemainingLeaveDays", typeof(string));
+                dt.Columns.Add("RemainingLeaveDays", typeof(int));
 
                 foreach (var item in albData)
                 {
@@ -1073,6 +1071,10 @@ namespace RauViet.classes
                         var param = cmd.Parameters.AddWithValue("@AnnualLeaveList", dt);
                         param.SqlDbType = SqlDbType.Structured;
                         param.TypeName = "AnnualLeaveBalanceType";
+
+                        cmd.Parameters.Add("@IsResetPhep", SqlDbType.Bit).Value = isResetPhep;
+                        cmd.Parameters.Add("@Month", SqlDbType.Int).Value = month;
+                        cmd.Parameters.Add("@Year", SqlDbType.Int).Value = year;
 
                         await cmd.ExecuteNonQueryAsync();
                     }

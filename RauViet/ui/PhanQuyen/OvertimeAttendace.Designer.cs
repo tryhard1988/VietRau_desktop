@@ -36,6 +36,7 @@ namespace RauViet.ui
             this.panel2 = new System.Windows.Forms.Panel();
             this.attendanceGV = new System.Windows.Forms.DataGridView();
             this.panel3 = new System.Windows.Forms.Panel();
+            this.in_DS_TCa_btn = new System.Windows.Forms.Button();
             this.monthYearDtp = new System.Windows.Forms.DateTimePicker();
             this.readOnly_btn = new System.Windows.Forms.Button();
             this.edit_btn = new System.Windows.Forms.Button();
@@ -46,8 +47,6 @@ namespace RauViet.ui
             this.endTime_dtp = new System.Windows.Forms.DateTimePicker();
             this.label8 = new System.Windows.Forms.Label();
             this.startTime_dtp = new System.Windows.Forms.DateTimePicker();
-            this.label7 = new System.Windows.Forms.Label();
-            this.workDate_dtp = new System.Windows.Forms.DateTimePicker();
             this.overtimeType_cbb = new System.Windows.Forms.ComboBox();
             this.label4 = new System.Windows.Forms.Label();
             this.label15 = new System.Windows.Forms.Label();
@@ -56,7 +55,8 @@ namespace RauViet.ui
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.log_GV = new System.Windows.Forms.DataGridView();
-            this.in_DS_TCa_btn = new System.Windows.Forms.Button();
+            this.attendanceMonth_CB = new System.Windows.Forms.CheckBox();
+            this.inPreview_btn = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.departmentGV)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
@@ -110,7 +110,7 @@ namespace RauViet.ui
             this.dataGV.Location = new System.Drawing.Point(170, 56);
             this.dataGV.Name = "dataGV";
             this.dataGV.ReadOnly = true;
-            this.dataGV.Size = new System.Drawing.Size(403, 748);
+            this.dataGV.Size = new System.Drawing.Size(253, 748);
             this.dataGV.TabIndex = 59;
             // 
             // panel2
@@ -120,9 +120,9 @@ namespace RauViet.ui
             this.panel2.Controls.Add(this.label1);
             this.panel2.Controls.Add(this.log_GV);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel2.Location = new System.Drawing.Point(573, 56);
+            this.panel2.Location = new System.Drawing.Point(423, 56);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(736, 748);
+            this.panel2.Size = new System.Drawing.Size(886, 748);
             this.panel2.TabIndex = 60;
             // 
             // attendanceGV
@@ -134,11 +134,13 @@ namespace RauViet.ui
             this.attendanceGV.Location = new System.Drawing.Point(0, 0);
             this.attendanceGV.Name = "attendanceGV";
             this.attendanceGV.ReadOnly = true;
-            this.attendanceGV.Size = new System.Drawing.Size(393, 496);
+            this.attendanceGV.Size = new System.Drawing.Size(543, 496);
             this.attendanceGV.TabIndex = 67;
             // 
             // panel3
             // 
+            this.panel3.Controls.Add(this.inPreview_btn);
+            this.panel3.Controls.Add(this.attendanceMonth_CB);
             this.panel3.Controls.Add(this.in_DS_TCa_btn);
             this.panel3.Controls.Add(this.monthYearDtp);
             this.panel3.Controls.Add(this.readOnly_btn);
@@ -149,25 +151,36 @@ namespace RauViet.ui
             this.panel3.Controls.Add(this.status_lb);
             this.panel3.Controls.Add(this.LuuThayDoiBtn);
             this.panel3.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel3.Location = new System.Drawing.Point(393, 0);
+            this.panel3.Location = new System.Drawing.Point(543, 0);
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(343, 496);
             this.panel3.TabIndex = 66;
+            // 
+            // in_DS_TCa_btn
+            // 
+            this.in_DS_TCa_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.in_DS_TCa_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.in_DS_TCa_btn.Location = new System.Drawing.Point(13, 128);
+            this.in_DS_TCa_btn.Name = "in_DS_TCa_btn";
+            this.in_DS_TCa_btn.Size = new System.Drawing.Size(110, 33);
+            this.in_DS_TCa_btn.TabIndex = 38;
+            this.in_DS_TCa_btn.Text = "In DS T.Ca";
+            this.in_DS_TCa_btn.UseVisualStyleBackColor = false;
             // 
             // monthYearDtp
             // 
             this.monthYearDtp.CalendarFont = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.monthYearDtp.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.monthYearDtp.Location = new System.Drawing.Point(117, 14);
+            this.monthYearDtp.Location = new System.Drawing.Point(103, 57);
             this.monthYearDtp.Name = "monthYearDtp";
-            this.monthYearDtp.Size = new System.Drawing.Size(122, 31);
+            this.monthYearDtp.Size = new System.Drawing.Size(150, 31);
             this.monthYearDtp.TabIndex = 37;
             // 
             // readOnly_btn
             // 
             this.readOnly_btn.BackColor = System.Drawing.Color.MediumSlateBlue;
             this.readOnly_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.readOnly_btn.Location = new System.Drawing.Point(301, 61);
+            this.readOnly_btn.Location = new System.Drawing.Point(295, 129);
             this.readOnly_btn.Name = "readOnly_btn";
             this.readOnly_btn.Size = new System.Drawing.Size(42, 32);
             this.readOnly_btn.TabIndex = 34;
@@ -178,7 +191,7 @@ namespace RauViet.ui
             // 
             this.edit_btn.BackColor = System.Drawing.SystemColors.MenuHighlight;
             this.edit_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.edit_btn.Location = new System.Drawing.Point(165, 61);
+            this.edit_btn.Location = new System.Drawing.Point(159, 129);
             this.edit_btn.Name = "edit_btn";
             this.edit_btn.Size = new System.Drawing.Size(94, 32);
             this.edit_btn.TabIndex = 33;
@@ -187,7 +200,7 @@ namespace RauViet.ui
             // 
             // overtimeAttendaceID_tb
             // 
-            this.overtimeAttendaceID_tb.Location = new System.Drawing.Point(266, 25);
+            this.overtimeAttendaceID_tb.Location = new System.Drawing.Point(260, 464);
             this.overtimeAttendaceID_tb.Name = "overtimeAttendaceID_tb";
             this.overtimeAttendaceID_tb.ReadOnly = true;
             this.overtimeAttendaceID_tb.Size = new System.Drawing.Size(55, 20);
@@ -198,7 +211,7 @@ namespace RauViet.ui
             // 
             this.newBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
             this.newBtn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.newBtn.Location = new System.Drawing.Point(260, 61);
+            this.newBtn.Location = new System.Drawing.Point(254, 129);
             this.newBtn.Name = "newBtn";
             this.newBtn.Size = new System.Drawing.Size(83, 32);
             this.newBtn.TabIndex = 30;
@@ -211,15 +224,13 @@ namespace RauViet.ui
             this.info_gb.Controls.Add(this.endTime_dtp);
             this.info_gb.Controls.Add(this.label8);
             this.info_gb.Controls.Add(this.startTime_dtp);
-            this.info_gb.Controls.Add(this.label7);
-            this.info_gb.Controls.Add(this.workDate_dtp);
             this.info_gb.Controls.Add(this.overtimeType_cbb);
             this.info_gb.Controls.Add(this.label4);
             this.info_gb.Controls.Add(this.label15);
             this.info_gb.Controls.Add(this.note_tb);
-            this.info_gb.Location = new System.Drawing.Point(19, 91);
+            this.info_gb.Location = new System.Drawing.Point(13, 159);
             this.info_gb.Name = "info_gb";
-            this.info_gb.Size = new System.Drawing.Size(324, 228);
+            this.info_gb.Size = new System.Drawing.Size(324, 188);
             this.info_gb.TabIndex = 29;
             this.info_gb.TabStop = false;
             // 
@@ -227,7 +238,7 @@ namespace RauViet.ui
             // 
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label6.Location = new System.Drawing.Point(12, 87);
+            this.label6.Location = new System.Drawing.Point(12, 50);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(84, 16);
             this.label6.TabIndex = 45;
@@ -235,7 +246,7 @@ namespace RauViet.ui
             // 
             // endTime_dtp
             // 
-            this.endTime_dtp.Location = new System.Drawing.Point(107, 86);
+            this.endTime_dtp.Location = new System.Drawing.Point(107, 49);
             this.endTime_dtp.Name = "endTime_dtp";
             this.endTime_dtp.Size = new System.Drawing.Size(113, 20);
             this.endTime_dtp.TabIndex = 44;
@@ -244,7 +255,7 @@ namespace RauViet.ui
             // 
             this.label8.AutoSize = true;
             this.label8.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label8.Location = new System.Drawing.Point(17, 58);
+            this.label8.Location = new System.Drawing.Point(17, 21);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(79, 16);
             this.label8.TabIndex = 31;
@@ -252,33 +263,16 @@ namespace RauViet.ui
             // 
             // startTime_dtp
             // 
-            this.startTime_dtp.Location = new System.Drawing.Point(107, 55);
+            this.startTime_dtp.Location = new System.Drawing.Point(107, 18);
             this.startTime_dtp.Name = "startTime_dtp";
             this.startTime_dtp.Size = new System.Drawing.Size(113, 20);
             this.startTime_dtp.TabIndex = 30;
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label7.Location = new System.Drawing.Point(4, 29);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(92, 16);
-            this.label7.TabIndex = 29;
-            this.label7.Text = "Ngày Tăng Ca:";
-            // 
-            // workDate_dtp
-            // 
-            this.workDate_dtp.Location = new System.Drawing.Point(107, 26);
-            this.workDate_dtp.Name = "workDate_dtp";
-            this.workDate_dtp.Size = new System.Drawing.Size(113, 20);
-            this.workDate_dtp.TabIndex = 28;
             // 
             // overtimeType_cbb
             // 
             this.overtimeType_cbb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.overtimeType_cbb.FormattingEnabled = true;
-            this.overtimeType_cbb.Location = new System.Drawing.Point(107, 114);
+            this.overtimeType_cbb.Location = new System.Drawing.Point(107, 77);
             this.overtimeType_cbb.Name = "overtimeType_cbb";
             this.overtimeType_cbb.Size = new System.Drawing.Size(170, 21);
             this.overtimeType_cbb.TabIndex = 20;
@@ -287,7 +281,7 @@ namespace RauViet.ui
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(9, 116);
+            this.label4.Location = new System.Drawing.Point(9, 79);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(87, 16);
             this.label4.TabIndex = 19;
@@ -297,7 +291,7 @@ namespace RauViet.ui
             // 
             this.label15.AutoSize = true;
             this.label15.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label15.Location = new System.Drawing.Point(40, 161);
+            this.label15.Location = new System.Drawing.Point(40, 124);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(56, 16);
             this.label15.TabIndex = 11;
@@ -306,7 +300,7 @@ namespace RauViet.ui
             // note_tb
             // 
             this.note_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.note_tb.Location = new System.Drawing.Point(107, 143);
+            this.note_tb.Location = new System.Drawing.Point(107, 106);
             this.note_tb.Multiline = true;
             this.note_tb.Name = "note_tb";
             this.note_tb.Size = new System.Drawing.Size(195, 67);
@@ -317,7 +311,7 @@ namespace RauViet.ui
             this.status_lb.AutoSize = true;
             this.status_lb.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.status_lb.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.status_lb.Location = new System.Drawing.Point(19, 336);
+            this.status_lb.Location = new System.Drawing.Point(19, 361);
             this.status_lb.Name = "status_lb";
             this.status_lb.Size = new System.Drawing.Size(55, 23);
             this.status_lb.TabIndex = 26;
@@ -327,7 +321,7 @@ namespace RauViet.ui
             // 
             this.LuuThayDoiBtn.BackColor = System.Drawing.SystemColors.Highlight;
             this.LuuThayDoiBtn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LuuThayDoiBtn.Location = new System.Drawing.Point(149, 325);
+            this.LuuThayDoiBtn.Location = new System.Drawing.Point(149, 350);
             this.LuuThayDoiBtn.Name = "LuuThayDoiBtn";
             this.LuuThayDoiBtn.Size = new System.Drawing.Size(110, 47);
             this.LuuThayDoiBtn.TabIndex = 25;
@@ -342,7 +336,7 @@ namespace RauViet.ui
             this.label1.ForeColor = System.Drawing.Color.DarkOliveGreen;
             this.label1.Location = new System.Drawing.Point(0, 496);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(736, 23);
+            this.label1.Size = new System.Drawing.Size(886, 23);
             this.label1.TabIndex = 64;
             this.label1.Text = "Lịch sử thay đổi";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -356,19 +350,32 @@ namespace RauViet.ui
             this.log_GV.Location = new System.Drawing.Point(0, 519);
             this.log_GV.Name = "log_GV";
             this.log_GV.ReadOnly = true;
-            this.log_GV.Size = new System.Drawing.Size(736, 229);
+            this.log_GV.Size = new System.Drawing.Size(886, 229);
             this.log_GV.TabIndex = 63;
             // 
-            // in_DS_TCa_btn
+            // attendanceMonth_CB
             // 
-            this.in_DS_TCa_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
-            this.in_DS_TCa_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.in_DS_TCa_btn.Location = new System.Drawing.Point(19, 60);
-            this.in_DS_TCa_btn.Name = "in_DS_TCa_btn";
-            this.in_DS_TCa_btn.Size = new System.Drawing.Size(110, 33);
-            this.in_DS_TCa_btn.TabIndex = 38;
-            this.in_DS_TCa_btn.Text = "In DS T.Ca";
-            this.in_DS_TCa_btn.UseVisualStyleBackColor = false;
+            this.attendanceMonth_CB.AutoSize = true;
+            this.attendanceMonth_CB.BackColor = System.Drawing.Color.Bisque;
+            this.attendanceMonth_CB.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.attendanceMonth_CB.ForeColor = System.Drawing.Color.ForestGreen;
+            this.attendanceMonth_CB.Location = new System.Drawing.Point(7, 6);
+            this.attendanceMonth_CB.Name = "attendanceMonth_CB";
+            this.attendanceMonth_CB.Size = new System.Drawing.Size(274, 20);
+            this.attendanceMonth_CB.TabIndex = 39;
+            this.attendanceMonth_CB.Text = "Hiện Thì Dữ Liệu Chấm Công Theo Tháng";
+            this.attendanceMonth_CB.UseVisualStyleBackColor = false;
+            // 
+            // inPreview_btn
+            // 
+            this.inPreview_btn.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.inPreview_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.inPreview_btn.Location = new System.Drawing.Point(149, 403);
+            this.inPreview_btn.Name = "inPreview_btn";
+            this.inPreview_btn.Size = new System.Drawing.Size(110, 47);
+            this.inPreview_btn.TabIndex = 40;
+            this.inPreview_btn.Text = "Xem Bảng In";
+            this.inPreview_btn.UseVisualStyleBackColor = false;
             // 
             // OvertimeAttendace
             // 
@@ -412,8 +419,6 @@ namespace RauViet.ui
         private System.Windows.Forms.DateTimePicker endTime_dtp;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.DateTimePicker startTime_dtp;
-        private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.DateTimePicker workDate_dtp;
         private System.Windows.Forms.ComboBox overtimeType_cbb;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label15;
@@ -424,5 +429,7 @@ namespace RauViet.ui
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.DataGridView log_GV;
         private System.Windows.Forms.Button in_DS_TCa_btn;
+        private System.Windows.Forms.CheckBox attendanceMonth_CB;
+        private System.Windows.Forms.Button inPreview_btn;
     }
 }
