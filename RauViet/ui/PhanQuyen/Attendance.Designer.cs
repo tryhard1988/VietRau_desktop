@@ -31,21 +31,22 @@ namespace RauViet.ui
         {
             this.dataGV = new System.Windows.Forms.DataGridView();
             this.panel2 = new System.Windows.Forms.Panel();
-            this.log_GV = new System.Windows.Forms.DataGridView();
-            this.label1 = new System.Windows.Forms.Label();
+            this.attendanceGV = new System.Windows.Forms.DataGridView();
             this.panel1 = new System.Windows.Forms.Panel();
             this.excelAttendance_btn = new System.Windows.Forms.Button();
             this.info_gb = new System.Windows.Forms.GroupBox();
             this.monthYearDtp = new System.Windows.Forms.DateTimePicker();
             this.loadAttandance_btn = new System.Windows.Forms.Button();
             this.status_lb = new System.Windows.Forms.Label();
-            this.attendanceGV = new System.Windows.Forms.DataGridView();
+            this.label1 = new System.Windows.Forms.Label();
+            this.log_GV = new System.Windows.Forms.DataGridView();
+            this.RonaldMachine_btn = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
             this.panel2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.log_GV)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.attendanceGV)).BeginInit();
             this.panel1.SuspendLayout();
             this.info_gb.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.attendanceGV)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.log_GV)).BeginInit();
             this.SuspendLayout();
             // 
             // dataGV
@@ -72,33 +73,21 @@ namespace RauViet.ui
             this.panel2.Size = new System.Drawing.Size(901, 681);
             this.panel2.TabIndex = 12;
             // 
-            // log_GV
+            // attendanceGV
             // 
-            this.log_GV.AllowUserToAddRows = false;
-            this.log_GV.AllowUserToDeleteRows = false;
-            this.log_GV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.log_GV.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.log_GV.Location = new System.Drawing.Point(0, 392);
-            this.log_GV.Name = "log_GV";
-            this.log_GV.ReadOnly = true;
-            this.log_GV.Size = new System.Drawing.Size(901, 289);
-            this.log_GV.TabIndex = 78;
-            // 
-            // label1
-            // 
-            this.label1.BackColor = System.Drawing.Color.PeachPuff;
-            this.label1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.label1.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.ForeColor = System.Drawing.Color.DarkOliveGreen;
-            this.label1.Location = new System.Drawing.Point(0, 369);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(901, 23);
-            this.label1.TabIndex = 79;
-            this.label1.Text = "Lịch sử thay đổi";
-            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.attendanceGV.AllowUserToAddRows = false;
+            this.attendanceGV.AllowUserToDeleteRows = false;
+            this.attendanceGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.attendanceGV.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.attendanceGV.Location = new System.Drawing.Point(0, 0);
+            this.attendanceGV.Name = "attendanceGV";
+            this.attendanceGV.ReadOnly = true;
+            this.attendanceGV.Size = new System.Drawing.Size(592, 369);
+            this.attendanceGV.TabIndex = 82;
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.RonaldMachine_btn);
             this.panel1.Controls.Add(this.excelAttendance_btn);
             this.panel1.Controls.Add(this.info_gb);
             this.panel1.Controls.Add(this.status_lb);
@@ -159,17 +148,41 @@ namespace RauViet.ui
             this.status_lb.TabIndex = 26;
             this.status_lb.Text = "Email";
             // 
-            // attendanceGV
+            // label1
             // 
-            this.attendanceGV.AllowUserToAddRows = false;
-            this.attendanceGV.AllowUserToDeleteRows = false;
-            this.attendanceGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.attendanceGV.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.attendanceGV.Location = new System.Drawing.Point(0, 0);
-            this.attendanceGV.Name = "attendanceGV";
-            this.attendanceGV.ReadOnly = true;
-            this.attendanceGV.Size = new System.Drawing.Size(592, 369);
-            this.attendanceGV.TabIndex = 82;
+            this.label1.BackColor = System.Drawing.Color.PeachPuff;
+            this.label1.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.label1.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.ForeColor = System.Drawing.Color.DarkOliveGreen;
+            this.label1.Location = new System.Drawing.Point(0, 369);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(901, 23);
+            this.label1.TabIndex = 79;
+            this.label1.Text = "Lịch sử thay đổi";
+            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // log_GV
+            // 
+            this.log_GV.AllowUserToAddRows = false;
+            this.log_GV.AllowUserToDeleteRows = false;
+            this.log_GV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.log_GV.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.log_GV.Location = new System.Drawing.Point(0, 392);
+            this.log_GV.Name = "log_GV";
+            this.log_GV.ReadOnly = true;
+            this.log_GV.Size = new System.Drawing.Size(901, 289);
+            this.log_GV.TabIndex = 78;
+            // 
+            // RonaldMachine_btn
+            // 
+            this.RonaldMachine_btn.BackColor = System.Drawing.Color.LightSeaGreen;
+            this.RonaldMachine_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.RonaldMachine_btn.Location = new System.Drawing.Point(87, 69);
+            this.RonaldMachine_btn.Name = "RonaldMachine_btn";
+            this.RonaldMachine_btn.Size = new System.Drawing.Size(192, 40);
+            this.RonaldMachine_btn.TabIndex = 30;
+            this.RonaldMachine_btn.Text = "Máy Chấm Công";
+            this.RonaldMachine_btn.UseVisualStyleBackColor = false;
             // 
             // Attendance
             // 
@@ -182,11 +195,11 @@ namespace RauViet.ui
             this.Text = "FormTableData";
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).EndInit();
             this.panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.log_GV)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.attendanceGV)).EndInit();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.info_gb.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.attendanceGV)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.log_GV)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -203,5 +216,6 @@ namespace RauViet.ui
         private System.Windows.Forms.DateTimePicker monthYearDtp;
         private System.Windows.Forms.Button loadAttandance_btn;
         private System.Windows.Forms.Label status_lb;
+        private System.Windows.Forms.Button RonaldMachine_btn;
     }
 }

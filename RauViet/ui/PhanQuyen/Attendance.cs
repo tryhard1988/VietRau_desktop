@@ -1,4 +1,5 @@
-﻿using RauViet.classes;
+﻿using Microsoft.Win32;
+using RauViet.classes;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -6,6 +7,7 @@ using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using zkemkeeper;
 using DataTable = System.Data.DataTable;
 
 namespace RauViet.ui
@@ -19,6 +21,8 @@ namespace RauViet.ui
         int mCurrentMonth = -1;
         int mCurrentYear = -1;
         object oldValue;
+        CZKEM axCZKEM = new CZKEM();
+        int machineNumber = 1;
         public Attendance()
         {
             InitializeComponent();
@@ -45,7 +49,8 @@ namespace RauViet.ui
             attendanceGV.CellBeginEdit += AttendanceGV_CellBeginEdit;
             attendanceGV.CellEndEdit += AttendanceGV_CellEndEdit;
 
-            excelAttendance_btn.Click += ExcelAttendance_btn_Click;                       
+            excelAttendance_btn.Click += ExcelAttendance_btn_Click;
+            RonaldMachine_btn.Click += RonaldMachine_btn_Click;
 
             loadAttandance_btn.Click += LoadAttandance_btn_Click;
 
@@ -336,7 +341,7 @@ namespace RauViet.ui
             await Task.Delay(200);
             try
             {
-                using (OpenFileDialog ofd = new OpenFileDialog())
+                using (System.Windows.Forms.OpenFileDialog ofd = new System.Windows.Forms.OpenFileDialog())
                 {
                     ofd.Title = "Chọn file Excel";
                     ofd.Filter = "Excel Files|*.xlsx;*.xls|All Files|*.*";
@@ -815,6 +820,57 @@ namespace RauViet.ui
                                     item.ActionBy
                                 )).ToList();
             _ = SQLManager_QLNS.Instance.InsertAttendanceLogListAsync(updatedLogs);
+        }
+
+        private void RonaldMachine_btn_Click(object sender, EventArgs e)
+        {
+            // 1. Kiểm tra trong registry 32-bit (WOW6432Node)
+            //bool existsIn32BitRegistry = false;
+            //using (var key = Registry.ClassesRoot.OpenSubKey(@"WOW6432Node\zkemkeeper.CZKEM"))
+            //{
+            //    existsIn32BitRegistry = key != null;
+            //}
+
+            //Console.WriteLine("Registry 32-bit: " + (existsIn32BitRegistry ? "FOUND" : "NOT FOUND"));
+
+            //// 2. Lấy Type từ ProgID
+            //Type t = Type.GetTypeFromProgID("zkemkeeper.CZKEM");
+            //Console.WriteLine("Type.GetTypeFromProgID: " + (t == null ? "NOT FOUND" : "FOUND"));
+
+            //// 3. Thử tạo instance COM
+            //if (t != null)
+            //{
+            //    try
+            //    {
+            //        dynamic device = Activator.CreateInstance(t);
+            //        Console.WriteLine("COM object created successfully!");
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        Console.WriteLine("Error creating COM object: " + ex.Message);
+            //    }
+            //}
+            //else
+            //{
+            //    Console.WriteLine("Cannot create COM object because Type is null.");
+            //}
+            var t = Type.GetTypeFromProgID("zkemkeeper.CZKEM");
+            Console.WriteLine(t == null ? "NOT FOUND" : "FOUND");
+            zkemkeeper.CZKEM zk = new zkemkeeper.CZKEM();
+            bool connected = zk.Connect_Net("192.168.1.201", 4370);
+
+            if (!connected)
+            {
+                int errorCode = 0;
+                zk.GetLastError(ref errorCode);
+                MessageBox.Show("Kết nối thất bại. ErrorCode = " + errorCode);
+                return;
+            }
+            else
+            {
+                MessageBox.Show("Đã kết nối được máy chấm công");
+                return;
+            }
         }
     }
 }
