@@ -1,12 +1,12 @@
-﻿using DocumentFormat.OpenXml.Bibliography;
+﻿
 using RauViet.classes;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Color = System.Drawing.Color;
 
 namespace RauViet.ui
 {
@@ -44,7 +44,7 @@ namespace RauViet.ui
             departmentGV.MultiSelect = false;
 
             dataGV.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dataGV.MultiSelect = false;
+            dataGV.MultiSelect = true;
 
             attendanceGV.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             attendanceGV.MultiSelect = false;
@@ -74,6 +74,8 @@ namespace RauViet.ui
             this.KeyDown += OvertimeAttendace_KeyDown;
 
             this.Load += OvertimeAttendace_Load;
+
+            attendanceMonth_CB.CheckedChanged += AttendanceMonth_CB_CheckedChanged;
         }
 
         private void OvertimeAttendace_Load(object sender, EventArgs e)
@@ -92,6 +94,26 @@ namespace RauViet.ui
                 mCurMonth = -1;
                 SQLStore_QLNS.Instance.removeOvertimeAttendamce(month, year);
                 HandleMonthYearChanged();
+            }
+            else if (!isNewState && !edit_btn.Visible)
+            {
+                if (e.KeyCode == Keys.Delete)
+                {
+                    Control ctrl = this.ActiveControl;
+
+                    if (ctrl is TextBox || ctrl is RichTextBox ||
+                        (ctrl is DataGridView dgv && dgv.CurrentCell != null && dgv.IsCurrentCellInEditMode))
+                    {
+                        return; // không xử lý Delete
+                    }
+
+                    DialogResult dialogResult = MessageBox.Show("Xóa Nha Bà", "Thông Báo", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+
+                    if (dialogResult != DialogResult.Yes) return;
+
+                    int id = Convert.ToInt32(attendanceGV.CurrentRow.Cells["OvertimeAttendanceID"].Value);
+                    deleteOvertimeAttendanceID(id);
+                }
             }
         }
 
@@ -160,7 +182,9 @@ namespace RauViet.ui
                 dataGV.Columns["PositionName"].Visible = false;
                 dataGV.Columns["ContractTypeName"].Visible = false;
 
+                departmentGV.Columns["DepartmentName"].HeaderText = "Bộ Phận";
                 departmentGV.Columns["DepartmentName"].Width = 120;
+                departmentGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
                 log_GV.Columns["CreatedAt"].Width = 120;
                 log_GV.Columns["ActionBy"].Width = 130;
@@ -312,6 +336,10 @@ namespace RauViet.ui
             dv.RowFilter = filter;
             attendanceGV.DataSource = dv;
 
+            attendanceGV.ClearSelection();
+            dataGV.ClearSelection();
+            UpdateInfoUI();
+            In_DS_TCa_btn_Click(null, null);
         }
         private void dataGV_CellClick(object sender, EventArgs e)
         {
@@ -319,8 +347,10 @@ namespace RauViet.ui
             int rowIndex = dataGV.CurrentRow.Index;
             if (rowIndex < 0)
                 return;
-                        
-            UpdateAttendanceUI(rowIndex);            
+            attendanceGV.ClearSelection();
+            NewBtn_Click(null, null);
+            UpdateAttendanceUI(rowIndex);
+            
         }
 
         private void attendanceGV_CellClick(object sender, EventArgs e)
@@ -329,7 +359,8 @@ namespace RauViet.ui
             int rowIndex = attendanceGV.CurrentRow.Index;
             if (rowIndex < 0)
                 return;
-
+            dataGV.ClearSelection();
+            Edit_btn_Click(null, null);
             UpdateRightUI(rowIndex);
         }
 
@@ -405,6 +436,8 @@ namespace RauViet.ui
                                 var rowData = mOvertimeType.Select($"OvertimeTypeID = {overtimeTypeID}")[0];
                                 string positionName = rowData["OvertimeName"].ToString();
                                 double salaryFactor = Convert.ToDouble(rowData["SalaryFactor"]);
+
+                                UpdateInfoUI();
                             }
                             else
                             {
@@ -497,6 +530,8 @@ namespace RauViet.ui
 
                             status_lb.Text = "Thành công";
                             status_lb.ForeColor = Color.Green;
+
+                            UpdateInfoUI();
                         }
 
                         NewBtn_Click(null, null);
@@ -526,7 +561,7 @@ namespace RauViet.ui
             int month = monthYearDtp.Value.Month;
             int year = monthYearDtp.Value.Year;
 
-            string employeeCode = dataGV.CurrentRow.Cells["EmployeeCode"].Value?.ToString();
+            
             DateTime workDate = monthYearDtp.Value;// new DateTime(year, month, workDate_dtp.Value.Day);
 
             //if (workDate.Year != year || month != workDate.Month)
@@ -553,7 +588,10 @@ namespace RauViet.ui
             else
             {
                 if (overtimeAttendaceID_tb.Text.Length != 0)
+                {
+                    string employeeCode = attendanceGV.CurrentRow.Cells["EmployeeCode"].Value?.ToString();
                     updateData(Convert.ToInt32(overtimeAttendaceID_tb.Text), employeeCode, startTime, endTime, overtimeAttendanceID, note);
+                }
                 else
                     createNew(workDate, startTime, endTime, overtimeAttendanceID, note);
 
@@ -575,12 +613,14 @@ namespace RauViet.ui
             edit_btn.Visible = false;
             newBtn.Visible = false;
             in_DS_TCa_btn.Visible = false;
-            readOnly_btn.Visible = true;
+            readOnly_btn.Visible = false;
             LuuThayDoiBtn.Visible = true;
             isNewState = true;
+            isPrintState = false;
+            inPreview_btn.Visible = false;
             LuuThayDoiBtn.Text = "Lưu Mới";
             SetUIReadOnly(false);
-            dataGV.MultiSelect = true;
+           // dataGV.MultiSelect = true;
         }
 
         private void In_DS_TCa_btn_Click(object sender, EventArgs e)
@@ -593,14 +633,15 @@ namespace RauViet.ui
             info_gb.BackColor = in_DS_TCa_btn.BackColor;
             edit_btn.Visible = false;
             newBtn.Visible = false;
-            readOnly_btn.Visible = true;
+            readOnly_btn.Visible = false;
             LuuThayDoiBtn.Visible = true;
             in_DS_TCa_btn.Visible = false;
             inPreview_btn.Visible = true;
             isPrintState = true;
+            isNewState = false;
             LuuThayDoiBtn.Text = "In";
             SetUIReadOnly(false);
-            dataGV.MultiSelect = true;
+            //dataGV.MultiSelect = true;
         }
 
         private void ReadOnly_btn_Click(object sender, EventArgs e)
@@ -614,7 +655,7 @@ namespace RauViet.ui
             inPreview_btn.Visible = false;
             isNewState = false;
             isPrintState = false;
-            dataGV.MultiSelect = false;
+            //dataGV.MultiSelect = false;
             SetUIReadOnly(true);
             attendanceGV_CellClick(null, null);
         }
@@ -624,11 +665,14 @@ namespace RauViet.ui
             edit_btn.Visible = false;
             newBtn.Visible = false;
             in_DS_TCa_btn.Visible = false;
-            readOnly_btn.Visible = true;
+           // readOnly_btn.Visible = true;
             LuuThayDoiBtn.Visible = true;
+            inPreview_btn.Visible = false;
+            isNewState = false;
+            isPrintState = false;
             info_gb.BackColor = edit_btn.BackColor;
             LuuThayDoiBtn.Text = "Lưu C.Sửa";
-            dataGV.MultiSelect = false;
+            //dataGV.MultiSelect = false;
             SetUIReadOnly(false);
         }
 
@@ -763,6 +807,79 @@ namespace RauViet.ui
         private void InPreview_btn_Click(object sender, EventArgs e)
         {
             InDSDonHang(1);
+        }
+
+        private async void deleteOvertimeAttendanceID(int overtimeAttendanceID)
+        {
+            foreach (DataRow row in mOvertimeAttendamce_dt.Rows)
+            {
+                
+                string employeeCode = Convert.ToString(row["EmployeeCode"]);
+                string overtimeName = Convert.ToString(row["OvertimeName"]);
+                TimeSpan startTime = (TimeSpan)row["StartTime"];
+                TimeSpan endTime = (TimeSpan)row["EndTime"];
+                int orderId = Convert.ToInt32(row["OvertimeAttendanceID"]);
+                if (overtimeAttendanceID.CompareTo(orderId) == 0)
+                {                   
+                    try
+                    {
+                        bool isSuccess = await SQLManager_QLNS.Instance.deleteOvertimeAttendanceAsync(overtimeAttendanceID);
+                                                
+                        _ = SQLManager_QLNS.Instance.InsertOvertimeAttandanceLogAsync(employeeCode, overtimeName,
+                               $"Delete {(isSuccess == true ? "Success" : "Fail")}",
+                               Convert.ToDateTime(row["WorkDate"]), startTime, endTime, "Delete");
+
+                        if (isSuccess)
+                        {
+                            status_lb.Text = "Thành công.";
+                            status_lb.ForeColor = System.Drawing.Color.Green;
+
+                            // Xóa row khỏi DataTable
+                            mOvertimeAttendamce_dt.Rows.Remove(row);
+                            mOvertimeAttendamce_dt.AcceptChanges();
+
+                        }
+                        else
+                        {
+                            status_lb.Text = "Thất bại.";
+                            status_lb.ForeColor = System.Drawing.Color.Red;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        status_lb.Text = "Thất bại.";
+                        status_lb.ForeColor = System.Drawing.Color.Red;
+                        _ = SQLManager_QLNS.Instance.InsertOvertimeAttandanceLogAsync(employeeCode, overtimeName,
+                               $"Delete Fail Exception: {ex.Message}",
+                               Convert.ToDateTime(row["WorkDate"]), startTime, endTime, "Delete");
+                    }
+
+                    break; // Dừng vòng lặp sau khi xóa
+                }
+            }
+        }
+
+        void UpdateInfoUI()
+        {
+            int count = 0;
+            decimal totalHW = 0;
+            foreach(DataGridViewRow row in attendanceGV.Rows)
+            {
+                decimal hw = Convert.ToDecimal(row.Cells["HourWork"].Value);
+                if (hw > 0)
+                {
+                    totalHW += hw;
+                    count++;
+                }
+            }
+
+            count_label.Text = count.ToString();
+            totalHour_label.Text = totalHW.ToString();
+        }
+
+        private void AttendanceMonth_CB_CheckedChanged(object sender, EventArgs e)
+        {
+            DepartmentGV_SelectionChanged(null, null);
         }
     }
 }

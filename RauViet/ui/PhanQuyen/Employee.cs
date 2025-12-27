@@ -486,8 +486,7 @@ namespace RauViet.ui
 
             if (DateTime.Now.Year - birthDate.Year < 18)
             {
-                MessageBox.Show("Nhân Viên Chưa Đủ 18t, Kiểm Tra Lại!", "Thông Báo", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
+                MessageBox.Show("Nhân Viên Chưa Đủ 18t, Kiểm Tra Lại!", "Thông Báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
 
             string maNV = nvCode_tb.Text;

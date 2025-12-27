@@ -84,6 +84,7 @@ namespace RauViet.classes
         public bool hasRole_AnGiaSanPham() { return hasRole("agsp"); }
         public bool hasRole_HoanThanhDonHang() { return hasRole("htdh"); }
         public bool hasRole_NhapDonNuocNgoai() { return hasRole("nldh"); }
+        public bool hasRole_SuaDonNuocNgoai() { return hasRole("csdnn"); }
         public bool hasRole_DangKyKiemDich() { return hasRole("xuat_dkkd"); }
         public bool hasRole_PHYTO() { return hasRole("xuat_phyto"); }
         public bool hasRole_Chot_PHYTO() { return hasRole("xuat_c_phyto"); }
@@ -101,7 +102,7 @@ namespace RauViet.classes
         public bool hasRole_ThongKe() { return hasRole("tknsvk"); }
         public bool hasRole_CreateQR() { return hasRole("tqr"); }
         public bool hasRole_NhapDonTrongNuoc() { return hasRole("ndtn"); }
-
+        public bool hasRole_SuaDonTrongNuoc() { return hasRole("csdtn"); }
         public int[] get_ChamCongTangCa_Departments()
         {
             int[] departmentIDs = roleCodes.Where(r => r.StartsWith("cctc_", StringComparison.OrdinalIgnoreCase))

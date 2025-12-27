@@ -984,6 +984,25 @@ namespace RauViet.classes
             return results;
         }
 
+        public async Task<bool> deleteOvertimeAttendanceAsync(int id)
+        {
+            string query = "DELETE FROM OvertimeAttendance WHERE OvertimeAttendanceID=@OvertimeAttendanceID";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@OvertimeAttendanceID", id);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+                return true;
+            }
+            catch { return false; }
+        }
+
         public async Task<int> insertOvertimeAttendanceAsync(string employeeCode, DateTime workDate, TimeSpan startTime, TimeSpan endTime, 
                                                                 int overtimeTypeID, string note)
         {

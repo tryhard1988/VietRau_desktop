@@ -1,5 +1,4 @@
-﻿using DocumentFormat.OpenXml.Vml.Office;
-using RauViet.classes;
+﻿using RauViet.classes;
 using System;
 using System.Data;
 using System.Linq;
@@ -35,7 +34,8 @@ namespace RauViet.ui
             autoCreateExportId_btn.Click += autoCreateExportId_btn_Click;
             newCustomerBtn.Click += newCustomerBtn_Click;
             LuuThayDoiBtn.Click += saveBtn_Click;
-            delete_btn.Click += deleteBtn_Click;
+            // delete_btn.Click += deleteBtn_Click;
+            delete_btn.Visible = false;
             dataGV.SelectionChanged += this.dataGV_CellClick;
       //      this.dataGV.RowPrePaint += new System.Windows.Forms.DataGridViewRowPrePaintEventHandler(this.dataGV_RowPrePaint);
             complete_cb.CheckedChanged += completeCB_CheckedChanged;
@@ -173,7 +173,7 @@ namespace RauViet.ui
                 dataGV.Columns["Company"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
 
                 dataGV.Columns["InputByName_NoSign"].Visible = false;
-                dataGV.Columns["OrderDomesticCodeID"].Visible = false;
+              //  dataGV.Columns["OrderDomesticCodeID"].Visible = false;
                 dataGV.Columns["InputBy"].Visible = false;
                 dataGV.Columns["PackingBy"].Visible = false;
                 dataGV.Columns["CustomerID"].Visible = false;
@@ -267,9 +267,9 @@ namespace RauViet.ui
 
             if (readOnly_btn.Visible == true)
             {
-                complete_cb.AutoCheck = !complete;
+             //   complete_cb.AutoCheck = !complete;
                 updatePrice_btn.Enabled = !complete;
-                LuuThayDoiBtn.Enabled = !complete;
+             //   LuuThayDoiBtn.Enabled = !complete;
                 inputBy_cbb.Enabled = !complete;
                 packingBy_cbb.Enabled = !complete;
                 delete_btn.Enabled = !complete;
@@ -341,7 +341,7 @@ namespace RauViet.ui
                                 {
                                     updatePrice_btn.Enabled = false;
                                     LuuThayDoiBtn.Enabled = false;
-                                    delete_btn.Enabled = false;
+                                  //  delete_btn.Enabled = false;
                                 }
                             }
                             else
@@ -508,7 +508,7 @@ namespace RauViet.ui
             newCustomerBtn.Visible = false;
             readOnly_btn.Visible = true;
             LuuThayDoiBtn.Visible = true;
-            delete_btn.Visible = false;
+          //  delete_btn.Visible = false;
             isNewState = true;
             LuuThayDoiBtn.Text = "Lưu Mới";
             rightUIReadOnly(false);
@@ -525,7 +525,7 @@ namespace RauViet.ui
             newCustomerBtn.Visible = true;
             readOnly_btn.Visible = false;
             LuuThayDoiBtn.Visible = false;
-            delete_btn.Visible = false;
+         //   delete_btn.Visible = false;
             info_gb.BackColor = Color.DarkGray;
             isNewState = false;
             orderDomesticIndex_tb.Enabled = false;
@@ -542,7 +542,7 @@ namespace RauViet.ui
             newCustomerBtn.Visible = false;
             readOnly_btn.Visible = true;
             LuuThayDoiBtn.Visible = true;
-            delete_btn.Visible = true;
+         //   delete_btn.Visible = true;
             info_gb.BackColor = edit_btn.BackColor;
             isNewState = false;
             LuuThayDoiBtn.Text = "Lưu C.Sửa";

@@ -1082,7 +1082,7 @@ namespace RauViet.ui
                 DataRowView dataR = (DataRowView)orderDomesticCode_cbb.SelectedItem;
 
                 string staff = dataR["InputByName_NoSign"].ToString();
-                if (UserManager.Instance.fullName_NoSign.CompareTo(staff) != 0)
+                if (UserManager.Instance.fullName_NoSign.CompareTo(staff) != 0 && !UserManager.Instance.hasRole_SuaDonTrongNuoc())
                 {
                     edit_btn.Visible = false;
                     newCustomerBtn.Visible = false;
@@ -1114,7 +1114,7 @@ namespace RauViet.ui
             {
                 DataRowView dataR = (DataRowView)orderDomesticCode_cbb.SelectedItem;
                 string staff = dataR["InputByName_NoSign"].ToString();
-                if (UserManager.Instance.fullName_NoSign.CompareTo(staff) != 0)
+                if (UserManager.Instance.fullName_NoSign.CompareTo(staff) != 0 && !UserManager.Instance.hasRole_SuaDonTrongNuoc())
                 {
                     e.Cancel = true;
                     return;

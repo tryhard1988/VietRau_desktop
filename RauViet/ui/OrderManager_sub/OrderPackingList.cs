@@ -658,7 +658,7 @@ namespace RauViet.ui
             {
                 DataRowView dataR = (DataRowView)exportCode_cbb.SelectedItem; 
                 string staff = dataR["InputByName_NoSign"].ToString();
-                if (UserManager.Instance.fullName_NoSign.CompareTo(staff) != 0)
+                if (UserManager.Instance.fullName_NoSign.CompareTo(staff) != 0 && !UserManager.Instance.hasRole_SuaDonNuocNgoai())
                 {
                     e.Cancel = true;
                     return;
@@ -1457,7 +1457,7 @@ namespace RauViet.ui
 
                 string staff = dataR["InputByName_NoSign"].ToString();
                 bool complete = Convert.ToBoolean(dataR["Complete"]);
-                if (UserManager.Instance.fullName_NoSign.CompareTo(staff) != 0 || complete)
+                if ((UserManager.Instance.fullName_NoSign.CompareTo(staff) != 0 && !UserManager.Instance.hasRole_SuaDonNuocNgoai()) || complete)
                 {
                     edit_btn.Visible = false;
                     readOnly_btn.Visible = false;
@@ -1675,7 +1675,7 @@ namespace RauViet.ui
                 SQLStore_Kho.Instance.removeOrders(mCurrentExportID);
                 ShowData();
             }
-            else if (edit_btn.Visible == false && UserManager.Instance.fullName_NoSign.CompareTo(staff) == 0)
+            else if (edit_btn.Visible == false && (UserManager.Instance.fullName_NoSign.CompareTo(staff) == 0 || UserManager.Instance.hasRole_SuaDonNuocNgoai()))
             {
                 if (e.KeyCode == Keys.F2)
                 {

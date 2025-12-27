@@ -33,7 +33,8 @@ namespace RauViet.ui
             autoCreateExportId_btn.Click += autoCreateExportId_btn_Click;
             newCustomerBtn.Click += newCustomerBtn_Click;
             LuuThayDoiBtn.Click += saveBtn_Click;
-            delete_btn.Click += deleteBtn_Click;
+            // delete_btn.Click += deleteBtn_Click;
+            delete_btn.Visible = false;
             exRate_btn.Click += exRate_btn_Click;
             dataGV.SelectionChanged += this.dataGV_CellClick;
       //      this.dataGV.RowPrePaint += new System.Windows.Forms.DataGridViewRowPrePaintEventHandler(this.dataGV_RowPrePaint);
@@ -535,7 +536,7 @@ namespace RauViet.ui
             newCustomerBtn.Visible = false;
             readOnly_btn.Visible = true;
             LuuThayDoiBtn.Visible = true;
-            delete_btn.Visible = false;
+            //delete_btn.Visible = false;
             isNewState = true;
             LuuThayDoiBtn.Text = "Lưu Mới";            
             updatePrice_btn.Visible = false;
@@ -557,7 +558,7 @@ namespace RauViet.ui
             newCustomerBtn.Visible = true;
             readOnly_btn.Visible = false;
             LuuThayDoiBtn.Visible = false;
-            delete_btn.Visible = false;
+            //delete_btn.Visible = false;
             info_gb.BackColor = Color.DarkGray;
             isNewState = false;
             exportCode_tb.Enabled = false;            
@@ -576,7 +577,7 @@ namespace RauViet.ui
             newCustomerBtn.Visible = false;
             readOnly_btn.Visible = true;
             LuuThayDoiBtn.Visible = true;
-            delete_btn.Visible = true;
+            //delete_btn.Visible = true;
             info_gb.BackColor = edit_btn.BackColor;
             isNewState = false;
             LuuThayDoiBtn.Text = "Lưu C.Sửa";            

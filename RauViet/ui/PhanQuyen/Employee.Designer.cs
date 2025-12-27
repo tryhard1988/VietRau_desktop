@@ -119,7 +119,7 @@ namespace RauViet.ui
             this.dataGV.Location = new System.Drawing.Point(0, 34);
             this.dataGV.Name = "dataGV";
             this.dataGV.ReadOnly = true;
-            this.dataGV.Size = new System.Drawing.Size(866, 793);
+            this.dataGV.Size = new System.Drawing.Size(866, 859);
             this.dataGV.TabIndex = 13;
             // 
             // panel1
@@ -137,7 +137,7 @@ namespace RauViet.ui
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(866, 34);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(509, 793);
+            this.panel1.Size = new System.Drawing.Size(509, 859);
             this.panel1.TabIndex = 14;
             // 
             // label5
@@ -146,7 +146,7 @@ namespace RauViet.ui
             this.label5.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.label5.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label5.ForeColor = System.Drawing.Color.DarkOliveGreen;
-            this.label5.Location = new System.Drawing.Point(0, 597);
+            this.label5.Location = new System.Drawing.Point(0, 663);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(509, 23);
             this.label5.TabIndex = 80;
@@ -159,7 +159,7 @@ namespace RauViet.ui
             this.log_GV.AllowUserToDeleteRows = false;
             this.log_GV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.log_GV.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.log_GV.Location = new System.Drawing.Point(0, 620);
+            this.log_GV.Location = new System.Drawing.Point(0, 686);
             this.log_GV.Name = "log_GV";
             this.log_GV.ReadOnly = true;
             this.log_GV.Size = new System.Drawing.Size(509, 173);
@@ -191,7 +191,7 @@ namespace RauViet.ui
             // 
             this.delete_btn.BackColor = System.Drawing.Color.Red;
             this.delete_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.delete_btn.Location = new System.Drawing.Point(257, 605);
+            this.delete_btn.Location = new System.Drawing.Point(260, 540);
             this.delete_btn.Name = "delete_btn";
             this.delete_btn.Size = new System.Drawing.Size(113, 47);
             this.delete_btn.TabIndex = 27;
@@ -202,7 +202,7 @@ namespace RauViet.ui
             // 
             this.LuuThayDoiBtn.BackColor = System.Drawing.SystemColors.Highlight;
             this.LuuThayDoiBtn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LuuThayDoiBtn.Location = new System.Drawing.Point(138, 605);
+            this.LuuThayDoiBtn.Location = new System.Drawing.Point(141, 540);
             this.LuuThayDoiBtn.Name = "LuuThayDoiBtn";
             this.LuuThayDoiBtn.Size = new System.Drawing.Size(113, 47);
             this.LuuThayDoiBtn.TabIndex = 25;
@@ -518,7 +518,7 @@ namespace RauViet.ui
             this.status_lb.AutoSize = true;
             this.status_lb.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.status_lb.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.status_lb.Location = new System.Drawing.Point(3, 616);
+            this.status_lb.Location = new System.Drawing.Point(6, 551);
             this.status_lb.Name = "status_lb";
             this.status_lb.Size = new System.Drawing.Size(55, 23);
             this.status_lb.TabIndex = 26;
@@ -548,7 +548,7 @@ namespace RauViet.ui
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1375, 827);
+            this.ClientSize = new System.Drawing.Size(1375, 893);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.dataGV);
             this.Controls.Add(this.panel2);

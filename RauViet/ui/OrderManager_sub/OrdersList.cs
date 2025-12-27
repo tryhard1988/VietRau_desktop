@@ -90,7 +90,7 @@ namespace RauViet.ui
                 SQLStore_Kho.Instance.removeLatestOrdersAsync();
                 ShowData();
             }
-            else if(!isNewState && !edit_btn.Visible && UserManager.Instance.fullName_NoSign.CompareTo(staff) == 0)
+            else if(!isNewState && !edit_btn.Visible && (UserManager.Instance.fullName_NoSign.CompareTo(staff) == 0 || UserManager.Instance.hasRole_SuaDonNuocNgoai()))
             {
                 if (e.KeyCode == Keys.Delete)
                 {
@@ -1352,7 +1352,7 @@ namespace RauViet.ui
                 DataRowView dataR = (DataRowView)exportCode_search_cbb.SelectedItem;
 
                 string staff = dataR["InputByName_NoSign"].ToString();
-                if (UserManager.Instance.fullName_NoSign.CompareTo(staff) != 0)
+                if (UserManager.Instance.fullName_NoSign.CompareTo(staff) != 0 && !UserManager.Instance.hasRole_SuaDonNuocNgoai())
                 {
                     edit_btn.Visible = false;
                     newCustomerBtn.Visible = false;
