@@ -10,7 +10,7 @@ namespace RauViet.ui
     public partial class EmployeeDeduction_OTH : Form
     {
         private Timer _monthYearDebounceTimer;
-        private DataTable mEmployeeDeduction_dt;
+        private DataTable mEmployeeDeduction_dt, mEmployee_dt;
         private DataView mDeductionLogDV;
         private const string DeductionTypeCode = "OTH";
         private string mDeductionname = "";
@@ -49,9 +49,7 @@ namespace RauViet.ui
 
             newCustomerBtn.Click += newCustomerBtn_Click;
             LuuThayDoiBtn.Click += saveBtn_Click;
-            delete_btn.Click += deleteBtn_Click;
-            dataGV.SelectionChanged += this.dataGV_CellClick;
-            employeeDeductionGV.SelectionChanged += this.allowanceGV_CellClick;
+            
             amount_tb.KeyPress += Tb_KeyPress_OnlyNumber;
 
             edit_btn.Click += Edit_btn_Click;
@@ -80,6 +78,21 @@ namespace RauViet.ui
                 SQLStore_QLNS.Instance.removeDeduction(year);
                 ShowData();
             }
+            else if (!isNewState && !edit_btn.Visible)
+            {
+                if (e.KeyCode == Keys.Delete)
+                {
+                    Control ctrl = this.ActiveControl;
+
+                    if (ctrl is TextBox || ctrl is RichTextBox ||
+                        (ctrl is DataGridView dgv && dgv.CurrentCell != null && dgv.IsCurrentCellInEditMode))
+                    {
+                        return; // không xử lý Delete
+                    }
+
+                    deleteBtn_Click(null, null);
+                }
+            }
         }
 
         public async void ShowData()
@@ -91,7 +104,8 @@ namespace RauViet.ui
             try
             {
                 monthYearDtp.ValueChanged -= monthYearDtp_ValueChanged;
-
+                employeeDeductionGV.SelectionChanged -= this.allowanceGV_CellClick;
+                dataGV.SelectionChanged -= this.dataGV_CellClick;
                 int month = monthYearDtp.Value.Month;
                 int year = monthYearDtp.Value.Year;
                 string[] keepColumns = { "EmployeeCode", "FullName", "PositionName", "ContractTypeName", "EmployessName_NoSign" };
@@ -100,7 +114,7 @@ namespace RauViet.ui
                 var deductionNameAsync = SQLStore_QLNS.Instance.GetDeductionNameAsync(DeductionTypeCode);
                 var EmployeeDeductionLogTask = SQLStore_QLNS.Instance.GetEmployeeDeductionLogAsync(month, year, DeductionTypeCode);
                 await Task.WhenAll(employeesTask, employeeDeductionAsync, deductionNameAsync, EmployeeDeductionLogTask);
-                DataTable employee_dt = employeesTask.Result;
+                mEmployee_dt = employeesTask.Result;
                 mEmployeeDeduction_dt = employeeDeductionAsync.Result;
                 mDeductionname = deductionNameAsync.Result;
                 mDeductionLogDV = new DataView(EmployeeDeductionLogTask.Result);
@@ -109,20 +123,29 @@ namespace RauViet.ui
 
                 monthYearLabel.Text = $"Tháng {month}/{year}";
 
-                foreach (DataRow dr in employee_dt.Rows)
+                foreach (DataRow dr in mEmployee_dt.Rows)
                 {
                     if (dr["PositionName"] == DBNull.Value) dr["PositionName"] = "";
                     if (dr["ContractTypeName"] == DBNull.Value) dr["ContractTypeName"] = "";
                 }
 
+                mEmployeeDeduction_dt.Columns.Add("EmployeeName", typeof(string));
+                foreach (DataRow dr in mEmployeeDeduction_dt.Rows)
+                {
+                    string employeeCode = dr["EmployeeCode"].ToString();
+                    DataRow[] rows = mEmployee_dt.Select($"EmployeeCode = '{employeeCode}'");
+                    if (rows.Length > 0)
+                        dr["EmployeeName"] = rows[0]["FullName"];
+                }
+
                 employeeDeductionGV.DataSource = mEmployeeDeduction_dt;
 
                 dataGV.AutoGenerateColumns = true;
-                dataGV.DataSource = employee_dt;
+                dataGV.DataSource = mEmployee_dt;
                 log_GV.DataSource = mDeductionLogDV;
 
                 employeeDeductionGV.Columns["EmployeeDeductionID"].Visible = false;
-                employeeDeductionGV.Columns["EmployeeCode"].Visible = false;
+               // employeeDeductionGV.Columns["EmployeeCode"].Visible = false;
                 employeeDeductionGV.Columns["DeductionTypeCode"].Visible = false;
                 employeeDeductionGV.Columns["DeductionTypeName"].Visible = false;
 
@@ -131,11 +154,14 @@ namespace RauViet.ui
                 log_GV.Columns["DeductionTypeCode"].Visible = false;
 
                 int count = 0;
+                mEmployeeDeduction_dt.Columns["EmployeeCode"].SetOrdinal(count++);
+                mEmployeeDeduction_dt.Columns["EmployeeName"].SetOrdinal(count++);
                 mEmployeeDeduction_dt.Columns["DeductionDate"].SetOrdinal(count++);
                 mEmployeeDeduction_dt.Columns["Amount"].SetOrdinal(count++);
                 mEmployeeDeduction_dt.Columns["Note"].SetOrdinal(count++);
 
-
+                employeeDeductionGV.Columns["EmployeeCode"].HeaderText = "Mã NV";
+                employeeDeductionGV.Columns["EmployeeName"].HeaderText = "Tên NV";
                 employeeDeductionGV.Columns["DeductionDate"].HeaderText = "Ngày Chi";
                 employeeDeductionGV.Columns["Amount"].HeaderText = "Số Tiền";
                 employeeDeductionGV.Columns["Note"].HeaderText = "Ghi Chú";
@@ -185,6 +211,10 @@ namespace RauViet.ui
                 log_GV.Columns["Amount"].HeaderText = "Số Tiền";
 
                 log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+
+                dataGV.SelectionChanged += this.dataGV_CellClick;
+                employeeDeductionGV.SelectionChanged += this.allowanceGV_CellClick;
+                allowanceGV_CellClick(null, null);
             }
             catch (Exception ex)
             {
@@ -226,6 +256,8 @@ namespace RauViet.ui
                 return;
 
 
+            dataGV.ClearSelection();
+            Edit_btn_Click(null, null);
             UpdateRightUI(rowIndex);
         }
 
@@ -237,7 +269,10 @@ namespace RauViet.ui
                 return;
 
 
+            employeeDeductionGV.ClearSelection();
+            newCustomerBtn_Click(null, null);
             UpdateEmployeeDeductionUI(rowIndex);
+            UpdateRightUI(rowIndex);
         }
 
         private void UpdateEmployeeDeductionUI(int index)
@@ -249,29 +284,35 @@ namespace RauViet.ui
             var cells = dataGV.Rows[index].Cells;
             string employeeCode = Convert.ToString(cells["EmployeeCode"].Value);
 
-            DataView dv = new DataView(mEmployeeDeduction_dt);
-            dv.RowFilter = $"EmployeeCode = '{employeeCode}'";
+            //DataView dv = new DataView(mEmployeeDeduction_dt);
+            //dv.RowFilter = $"EmployeeCode = '{employeeCode}'";
 
-            employeeDeductionGV.DataSource = dv;
-
+            //employeeDeductionGV.DataSource = dv;
             mDeductionLogDV.RowFilter = $"EmployeeCode = '{employeeCode}'";
         }
         private void UpdateRightUI(int index)
         {
-            if (isNewState) return;
-            
-            var cells = employeeDeductionGV.Rows[index].Cells;
-            int employeeDeductionID = Convert.ToInt32(cells["EmployeeDeductionID"].Value);
-            DateTime deductionDate = Convert.ToDateTime(cells["DeductionDate"].Value);
-            int amount = Convert.ToInt32(cells["Amount"].Value);
-            string note = cells["Note"].Value.ToString();
+            if (!isNewState)
+            {
+                var cells = employeeDeductionGV.Rows[index].Cells;
+                int employeeDeductionID = Convert.ToInt32(cells["EmployeeDeductionID"].Value);
+                DateTime deductionDate = Convert.ToDateTime(cells["DeductionDate"].Value);
+                int amount = Convert.ToInt32(cells["Amount"].Value);
+                string note = cells["Note"].Value.ToString();
 
-            this.employeeDeductionID_tb.Text = employeeDeductionID.ToString();
-            deductionDate_dtp.Value = deductionDate;
-            amount_tb.Text = amount.ToString();
-            note_tb.Text = note;
-
-            status_lb.Text = "";
+                this.employeeDeductionID_tb.Text = employeeDeductionID.ToString();
+                deductionDate_dtp.Value = deductionDate;
+                amount_tb.Text = amount.ToString();
+                note_tb.Text = note;
+                employeeName.Text = cells["EmployeeName"].Value.ToString();
+                status_lb.Text = "";
+            }
+            else
+            {
+                var cells = dataGV.Rows[index].Cells;
+                employeeName.Text = cells["FullName"].Value.ToString();
+                status_lb.Text = "";
+            }
         }
         
         private async void updateData(int employeeDeductionID, string employeeCode, DateTime deductionDate, int amount, string note)
@@ -338,6 +379,7 @@ namespace RauViet.ui
                     int employeeDeductionID = await SQLManager_QLNS.Instance.insertEmployeeDeductionAsync(employeeCode, DeductionTypeCode, deductionDate, amount, note);
                     if (employeeDeductionID > 0)
                     {
+                        DataRow[] rows = mEmployee_dt.Select($"EmployeeCode = '{employeeCode}'");
                         DataRow drToAdd = mEmployeeDeduction_dt.NewRow();
 
                         drToAdd["EmployeeDeductionID"] = employeeDeductionID;
@@ -347,6 +389,7 @@ namespace RauViet.ui
                         drToAdd["DeductionDate"] = deductionDate.Date;
                         drToAdd["Amount"] = amount;
                         drToAdd["Note"] = note;
+                        drToAdd["EmployeeName"] = rows[0]["FullName"];
 
                         mEmployeeDeduction_dt.Rows.Add(drToAdd);
                         mEmployeeDeduction_dt.AcceptChanges();
@@ -406,7 +449,7 @@ namespace RauViet.ui
         }
         private async void deleteBtn_Click(object sender, EventArgs e)
         {
-            if (dataGV.SelectedRows.Count == 0) return;
+            if (employeeDeductionGV.SelectedRows.Count == 0) return;
 
             string employeeDeductionID = employeeDeductionID_tb.Text;
 
@@ -460,7 +503,6 @@ namespace RauViet.ui
             int month = monthYearDtp.Value.Month;
             int year = monthYearDtp.Value.Year;
             employeeDeductionID_tb.Text = "";
-            amount_tb.Text = "";
             deductionDate_dtp.Value = new DateTime(year, month, deductionDate_dtp.Value.Day);
 
             status_lb.Text = "";
@@ -470,9 +512,8 @@ namespace RauViet.ui
             info_gb.BackColor = newCustomerBtn.BackColor;
             edit_btn.Visible = false;
             newCustomerBtn.Visible = false;
-            readOnly_btn.Visible = true;
+            readOnly_btn.Visible = false;// true;
             LuuThayDoiBtn.Visible = true;
-            delete_btn.Visible = false;
             isNewState = true;
             LuuThayDoiBtn.Text = "Lưu Mới";
             SetUIReadOnly(false);
@@ -484,7 +525,6 @@ namespace RauViet.ui
             newCustomerBtn.Visible = true;
             readOnly_btn.Visible = false;
             LuuThayDoiBtn.Visible = false;
-            delete_btn.Visible = false;
             info_gb.BackColor = Color.DarkGray;
             isNewState = false;
             SetUIReadOnly(true);
@@ -495,9 +535,8 @@ namespace RauViet.ui
         {
             edit_btn.Visible = false;
             newCustomerBtn.Visible = false;
-            readOnly_btn.Visible = true;
+            readOnly_btn.Visible = false;// true;
             LuuThayDoiBtn.Visible = true;
-            delete_btn.Visible = true;
             info_gb.BackColor = edit_btn.BackColor;
             isNewState = false;
             LuuThayDoiBtn.Text = "Lưu C.Sửa";

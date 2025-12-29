@@ -89,7 +89,7 @@ namespace RauViet.ui
             this.employeeDeductionGV.Location = new System.Drawing.Point(0, 0);
             this.employeeDeductionGV.Name = "employeeDeductionGV";
             this.employeeDeductionGV.ReadOnly = true;
-            this.employeeDeductionGV.Size = new System.Drawing.Size(811, 444);
+            this.employeeDeductionGV.Size = new System.Drawing.Size(811, 466);
             this.employeeDeductionGV.TabIndex = 46;
             // 
             // panel1
@@ -106,7 +106,7 @@ namespace RauViet.ui
             this.panel1.Dock = System.Windows.Forms.DockStyle.Right;
             this.panel1.Location = new System.Drawing.Point(811, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(453, 444);
+            this.panel1.Size = new System.Drawing.Size(453, 466);
             this.panel1.TabIndex = 45;
             // 
             // readOnly_btn
@@ -288,7 +288,7 @@ namespace RauViet.ui
             this.label4.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.label4.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label4.ForeColor = System.Drawing.Color.DarkOliveGreen;
-            this.label4.Location = new System.Drawing.Point(0, 444);
+            this.label4.Location = new System.Drawing.Point(0, 466);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(1264, 23);
             this.label4.TabIndex = 43;
@@ -301,10 +301,10 @@ namespace RauViet.ui
             this.log_GV.AllowUserToDeleteRows = false;
             this.log_GV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.log_GV.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.log_GV.Location = new System.Drawing.Point(0, 467);
+            this.log_GV.Location = new System.Drawing.Point(0, 489);
             this.log_GV.Name = "log_GV";
             this.log_GV.ReadOnly = true;
-            this.log_GV.Size = new System.Drawing.Size(1264, 257);
+            this.log_GV.Size = new System.Drawing.Size(1264, 235);
             this.log_GV.TabIndex = 42;
             // 
             // panel4

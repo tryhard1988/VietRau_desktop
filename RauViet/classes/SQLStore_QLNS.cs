@@ -1136,11 +1136,6 @@ namespace RauViet.classes
 
             DataTable filteredTable;
 
-            foreach (DataColumn col in deduction_dt.Columns)
-            {
-                Console.WriteLine(col.ColumnName);
-            }
-
             // Nếu có dòng thỏa mãn thì copy vào DataTable mới
             if (filteredRows.Any())
                 filteredTable = filteredRows.CopyToDataTable();
@@ -1161,11 +1156,6 @@ namespace RauViet.classes
                                                         );
 
             DataTable filteredTable;
-
-            foreach (DataColumn col in deduction_dt.Columns)
-            {
-                Console.WriteLine(col.ColumnName);
-            }
 
             // Nếu có dòng thỏa mãn thì copy vào DataTable mới
             if (filteredRows.Any())

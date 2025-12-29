@@ -10,7 +10,7 @@ namespace RauViet.ui
     public partial class MonthlyAllowance : Form
     {
         private Timer _monthYearDebounceTimer;
-        private DataTable mMonthlyAllowance_dt, mAllowanceType_dt;
+        private DataTable mMonthlyAllowance_dt, mAllowanceType_dt, mEmployee_dt;
         private DataView mlog_DV;
         bool isNewState = false;
         int mCurrentMonth = -1;
@@ -46,7 +46,6 @@ namespace RauViet.ui
 
             newCustomerBtn.Click += newCustomerBtn_Click;
             LuuThayDoiBtn.Click += saveBtn_Click;
-            delete_btn.Click += deleteBtn_Click;
             
             amount_tb.KeyPress += Tb_KeyPress_OnlyNumber;
 
@@ -74,6 +73,21 @@ namespace RauViet.ui
             {
                 ShowData();
             }
+            else if (!isNewState && !edit_btn.Visible)
+            {
+                if (e.KeyCode == Keys.Delete)
+                {
+                    Control ctrl = this.ActiveControl;
+
+                    if (ctrl is TextBox || ctrl is RichTextBox ||
+                        (ctrl is DataGridView dgv && dgv.CurrentCell != null && dgv.IsCurrentCellInEditMode))
+                    {
+                        return; // không xử lý Delete
+                    }
+
+                    deleteBtn_Click(null, null);
+                }
+            }
         }
 
         public async void ShowData()
@@ -97,7 +111,7 @@ namespace RauViet.ui
                 var monthlyAllowanceLogTask = SQLManager_QLNS.Instance.GetMonthlyAllowanceLogAsync(month, year);
 
                 await Task.WhenAll(employeesTask, monthlyAllowanceAsync, allowanceTypeAsync, monthlyAllowanceLogTask);
-                DataTable employee_dt = employeesTask.Result;
+                mEmployee_dt = employeesTask.Result;
                 mMonthlyAllowance_dt = monthlyAllowanceAsync.Result;
                 mAllowanceType_dt = allowanceTypeAsync.Result;
                 mlog_DV = new DataView(monthlyAllowanceLogTask.Result);
@@ -106,20 +120,25 @@ namespace RauViet.ui
 
                 monthYearLabel.Text = $"Tháng {month}/{year}";
 
+                mMonthlyAllowance_dt.Columns.Add(new DataColumn("EmployeeName", typeof(string)));
                 mMonthlyAllowance_dt.Columns.Add(new DataColumn("AllowanceName", typeof(string)));
                 mMonthlyAllowance_dt.Columns.Add(new DataColumn("Date", typeof(string)));
                 foreach (DataRow dr in mMonthlyAllowance_dt.Rows)
                 {
                     int allowanceTypeID = Convert.ToInt32(dr["AllowanceTypeID"]);
+                    string employeeCode = Convert.ToString(dr["EmployeeCode"]);
                     DataRow[] applyScopeRows = mAllowanceType_dt.Select($"AllowanceTypeID = {allowanceTypeID}");
+                    DataRow[] employeeRows = mEmployee_dt.Select($"EmployeeCode = '{employeeCode}'");
 
                     if (applyScopeRows.Length > 0)
                         dr["AllowanceName"] = applyScopeRows[0]["AllowanceName"].ToString();
+                    if(employeeRows.Length > 0)
+                        dr["EmployeeName"] = employeeRows[0]["FullName"].ToString();
 
                     dr["Date"] = dr["Month"] + "/" + dr["Year"];
                 }
 
-                foreach (DataRow dr in employee_dt.Rows)
+                foreach (DataRow dr in mEmployee_dt.Rows)
                 {
                     if (dr["PositionName"] == DBNull.Value) dr["PositionName"] = "";
                     if (dr["ContractTypeName"] == DBNull.Value) dr["ContractTypeName"] = "";
@@ -135,13 +154,14 @@ namespace RauViet.ui
                 allowanceGV.DataSource = mMonthlyAllowance_dt;
 
                 dataGV.AutoGenerateColumns = true;
-                dataGV.DataSource = employee_dt;
+                dataGV.DataSource = mEmployee_dt;
                 log_GV.DataSource = mlog_DV;
 
                 allowanceGV.Columns["Month"].Visible = false;
                 allowanceGV.Columns["Year"].Visible = false;
-                allowanceGV.Columns["EmployeeCode"].Visible = false;
+                //allowanceGV.Columns["EmployeeCode"].Visible = false;
                 allowanceGV.Columns["AllowanceTypeID"].Visible = false;
+                allowanceGV.Columns["MonthlyAllowanceID"].Visible = false;
 
                 log_GV.Columns["LogID"].Visible = false;
                 log_GV.Columns["EmployeeCode"].Visible = false;
@@ -149,6 +169,8 @@ namespace RauViet.ui
                 log_GV.Columns["Year"].Visible = false;
 
                 int count = 0;
+                mMonthlyAllowance_dt.Columns["EmployeeCode"].SetOrdinal(count++);
+                mMonthlyAllowance_dt.Columns["EmployeeName"].SetOrdinal(count++);
                 mMonthlyAllowance_dt.Columns["Date"].SetOrdinal(count++);
                 mMonthlyAllowance_dt.Columns["AllowanceName"].SetOrdinal(count++);
                 mMonthlyAllowance_dt.Columns["Amount"].SetOrdinal(count++);
@@ -159,7 +181,9 @@ namespace RauViet.ui
                 allowanceGV.Columns["AllowanceName"].HeaderText = "Loại Phụ Cấp";
                 allowanceGV.Columns["Amount"].HeaderText = "Số Tiền";
                 allowanceGV.Columns["Note"].HeaderText = "Ghi Chú";
-                
+                allowanceGV.Columns["EmployeeCode"].HeaderText = "Mã NV";
+                allowanceGV.Columns["EmployeeName"].HeaderText = "Tên NV";
+
 
                 dataGV.Columns["FullName"].HeaderText = "Tên Nhân Viên";
                 dataGV.Columns["EmployeeCode"].HeaderText = "Mã NV";
@@ -171,11 +195,13 @@ namespace RauViet.ui
                 dataGV.Columns["EmployeeCode"].Width = 60;
                 dataGV.Columns["FullName"].Width = 160;
 
-                allowanceGV.Columns["MonthlyAllowanceID"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                allowanceGV.Columns["Date"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+                allowanceGV.Columns["Amount"].DefaultCellStyle.Format = "N0";
+                allowanceGV.Columns["EmployeeCode"].Width = 60;
+                allowanceGV.Columns["EmployeeName"].Width = 160;
+                allowanceGV.Columns["Date"].Width = 60;
                 allowanceGV.Columns["AllowanceName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                allowanceGV.Columns["Amount"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                allowanceGV.Columns["Note"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+                allowanceGV.Columns["Amount"].Width = 70;
+                allowanceGV.Columns["Note"].Width = 120;
 
                 dataGV.SelectionChanged -= this.dataGV_CellClick;
                 allowanceGV.SelectionChanged -= this.allowanceGV_CellClick;
@@ -242,6 +268,8 @@ namespace RauViet.ui
             if (rowIndex < 0)
                 return;
 
+            dataGV.ClearSelection();
+            Edit_btn_Click(null, null);
             UpdateRightUI(rowIndex);
         }
 
@@ -252,6 +280,8 @@ namespace RauViet.ui
             if (rowIndex < 0)
                 return;
 
+            allowanceGV.ClearSelection();
+            newCustomerBtn_Click(null, null);
             UpdateAllowancetUI(rowIndex);
         }
 
@@ -260,31 +290,36 @@ namespace RauViet.ui
             var cells = dataGV.Rows[index].Cells;
             string employeeCode = Convert.ToString(cells["EmployeeCode"].Value);
 
-            DataView dv = new DataView(mMonthlyAllowance_dt);
-            dv.RowFilter = $"EmployeeCode = '{employeeCode}'";
+            //DataView dv = new DataView(mMonthlyAllowance_dt);
+            //dv.RowFilter = $"EmployeeCode = '{employeeCode}'";
 
-            allowanceGV.DataSource = dv;
-
+            // allowanceGV.DataSource = dv;
+            UpdateRightUI(index);
             mlog_DV.RowFilter = $"EmployeeCode = '{employeeCode}'";
         }
         private void UpdateRightUI(int index)
         {
-            if (isNewState) return;
+            if (isNewState)
+            {
+                var cells = dataGV.Rows[index].Cells;
+                employeeName_tb.Text = cells["FullName"].Value.ToString();
+            }
+            else
+            {
+                var cells = allowanceGV.Rows[index].Cells;
+                string monthlyAllowanceID = cells["MonthlyAllowanceID"].Value.ToString();
+                string allowanceTypeID = Convert.ToString(cells["AllowanceTypeID"].Value);
+                int month = Convert.ToInt32(cells["Month"].Value);
+                int year = Convert.ToInt32(cells["Year"].Value);
+                int amount = Convert.ToInt32(cells["Amount"].Value);
+                string note = cells["Note"].Value.ToString();
 
-            var cells = allowanceGV.Rows[index].Cells;
-            string monthlyAllowanceID = cells["MonthlyAllowanceID"].Value.ToString();
-            string allowanceTypeID = Convert.ToString(cells["AllowanceTypeID"].Value);
-            int month = Convert.ToInt32(cells["Month"].Value);
-            int year = Convert.ToInt32(cells["Year"].Value);
-            int amount = Convert.ToInt32(cells["Amount"].Value);
-            string note = cells["Note"].Value.ToString();
-
-            this.monthlyAllowanceID_tb.Text = monthlyAllowanceID;
-            amount_tb.Text = amount.ToString();
-            note_tb.Text = note;
-            allowanceType_cbb.SelectedValue = allowanceTypeID;
-
-            info_gb.BackColor = Color.DarkGray;
+                employeeName_tb.Text = cells["EmployeeName"].Value.ToString();
+                this.monthlyAllowanceID_tb.Text = monthlyAllowanceID;
+                amount_tb.Text = amount.ToString();
+                note_tb.Text = note;
+                allowanceType_cbb.SelectedValue = allowanceTypeID;
+            }
             status_lb.Text = "";
         }
         
@@ -353,6 +388,7 @@ namespace RauViet.ui
                     string allowanceName = mAllowanceType_dt.Select($"AllowanceTypeID = {allowanceTypeID}")[0]["AllowanceName"].ToString();
                     if (monthlyAllowanceID > 0)
                     {
+                        DataRow[] rows = mEmployee_dt.Select($"EmployeeCode = '{employeeCode}'");
                         DataRow drToAdd = mMonthlyAllowance_dt.NewRow();
 
                         drToAdd["MonthlyAllowanceID"] = monthlyAllowanceID;
@@ -364,7 +400,7 @@ namespace RauViet.ui
                         drToAdd["Date"] = month + "/" + year;
                         drToAdd["Note"] = note;
                         drToAdd["AllowanceName"] = mAllowanceType_dt.Select($"AllowanceTypeID = {allowanceTypeID}")[0]["AllowanceName"].ToString();
-
+                        drToAdd["EmployeeName"] = rows[0]["FullName"];
                         mMonthlyAllowance_dt.Rows.Add(drToAdd);
                         mMonthlyAllowance_dt.AcceptChanges();
 
@@ -429,7 +465,7 @@ namespace RauViet.ui
         }
         private async void deleteBtn_Click(object sender, EventArgs e)
         {
-            if (dataGV.SelectedRows.Count == 0) return;
+            if (allowanceGV.SelectedRows.Count == 0) return;
 
             string monthlyAllowanceID = monthlyAllowanceID_tb.Text;
 
@@ -493,9 +529,8 @@ namespace RauViet.ui
             info_gb.BackColor = newCustomerBtn.BackColor;
             edit_btn.Visible = false;
             newCustomerBtn.Visible = false;
-            readOnly_btn.Visible = true;
+            readOnly_btn.Visible = false;// true;
             LuuThayDoiBtn.Visible = true;
-            delete_btn.Visible = false;
             isNewState = true;
             LuuThayDoiBtn.Text = "Lưu Mới";
             SetUIReadOnly(false);
@@ -507,7 +542,6 @@ namespace RauViet.ui
             newCustomerBtn.Visible = true;
             readOnly_btn.Visible = false;
             LuuThayDoiBtn.Visible = false;
-            delete_btn.Visible = false;
             info_gb.BackColor = Color.DarkGray;
             isNewState = false;
             SetUIReadOnly(true);
@@ -518,9 +552,8 @@ namespace RauViet.ui
         {
             edit_btn.Visible = false;
             newCustomerBtn.Visible = false;
-            readOnly_btn.Visible = true;
+            readOnly_btn.Visible = false;// true;
             LuuThayDoiBtn.Visible = true;
-            delete_btn.Visible = true;
             info_gb.BackColor = edit_btn.BackColor;
             isNewState = false;
             LuuThayDoiBtn.Text = "Lưu C.Sửa";
@@ -535,7 +568,6 @@ namespace RauViet.ui
             if (readOnly_btn.Visible)
             {
                 LuuThayDoiBtn.Visible = !isLock;
-                delete_btn.Visible = !isLock;
             }
         }
 
