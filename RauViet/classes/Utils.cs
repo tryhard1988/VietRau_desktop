@@ -166,7 +166,7 @@ public static class Utils
         return inputForm.ShowDialog() == DialogResult.OK ? textBox.Text : null;
     }
 
-    public static DataTable LoadExcel_NoHeader(string filePath)
+    public static DataTable LoadExcel_NoHeader(string filePath, int skipRows = 0)
     {
         DataTable dt = new DataTable();
         try
@@ -179,20 +179,27 @@ public static class Utils
 
                 int rowCount = range.RowCount();
                 int colCount = range.ColumnCount();
-
+                int startRow = 1 + skipRows;
                 // Tạo cột tự động: Column1, Column2, ...
                 for (int c = 1; c <= colCount; c++)
                     dt.Columns.Add($"Column{c}");
 
                 // Đọc dữ liệu
-                for (int r = 1; r <= rowCount; r++)
+                for (int r = startRow; r <= rowCount; r++)
                 {
                     DataRow row = dt.NewRow();
+                    bool isEmptyRow = true;
                     for (int c = 1; c <= colCount; c++)
                     {
-                        row[c - 1] = ws.Cell(r, c).GetValue<string>();
+                        string value = ws.Cell(r, c).GetValue<string>();
+                        row[c - 1] = value;
+
+                        if (!string.IsNullOrWhiteSpace(value))
+                            isEmptyRow = false;
                     }
-                    dt.Rows.Add(row);
+
+                    if (!isEmptyRow)
+                        dt.Rows.Add(row);
                 }
             }
 

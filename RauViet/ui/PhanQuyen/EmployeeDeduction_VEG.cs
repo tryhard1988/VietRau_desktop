@@ -1,6 +1,9 @@
-﻿using RauViet.classes;
+﻿using DocumentFormat.OpenXml.Bibliography;
+using RauViet.classes;
 using System;
+using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Color = System.Drawing.Color;
@@ -17,6 +20,7 @@ namespace RauViet.ui
         bool isNewState = false;
         int currMonth = -1;
         int currYear = -1;
+        LoadingOverlay loadingOverlay;
         public EmployeeDeduction_VEG()
         {
             InitializeComponent();
@@ -60,7 +64,10 @@ namespace RauViet.ui
 
             search_tb.TextChanged += Search_tb_TextChanged;
             this.Load += OvertimeAttendace_Load;
+
+            loadFromExcel_btn.Click += LoadFromExcel_btn_Click;
         }
+
 
         private void OvertimeAttendace_Load(object sender, EventArgs e)
         {
@@ -98,7 +105,7 @@ namespace RauViet.ui
         public async void ShowData()
         {
             await Task.Delay(50);
-            LoadingOverlay loadingOverlay = new LoadingOverlay(this);
+            loadingOverlay = new LoadingOverlay(this);
             loadingOverlay.Show();
             await Task.Delay(200);
             try
@@ -517,23 +524,25 @@ namespace RauViet.ui
 
         private void newCustomerBtn_Click(object sender, EventArgs e)
         {
-            int month = monthYearDtp.Value.Month;
-            int year = monthYearDtp.Value.Year;
-            employeeDeductionID_tb.Text = "";
-            amount_tb.Text = "";
-            deductionDate_dtp.Value = new DateTime(year, month, deductionDate_dtp.Value.Day);
-            status_lb.Text = "";
-            info_gb.BackColor = Color.Green;
+            info_gb.Enabled = false;
+            LuuThayDoiBtn.Visible = false;
+            //int month = monthYearDtp.Value.Month;
+            //int year = monthYearDtp.Value.Year;
+            //employeeDeductionID_tb.Text = "";
+            //amount_tb.Text = "";
+            //deductionDate_dtp.Value = new DateTime(year, month, deductionDate_dtp.Value.Day);
+            //status_lb.Text = "";
+            //info_gb.BackColor = Color.Green;
 
-            deductionDate_dtp.Focus();
-            info_gb.BackColor = newCustomerBtn.BackColor;
-            edit_btn.Visible = false;
-            newCustomerBtn.Visible = false;
-            readOnly_btn.Visible = false;// true;
-            LuuThayDoiBtn.Visible = true;
+            //deductionDate_dtp.Focus();
+            //info_gb.BackColor = newCustomerBtn.BackColor;
+            //edit_btn.Visible = false;
+            //newCustomerBtn.Visible = false;
+            //readOnly_btn.Visible = false;// true;
+            //LuuThayDoiBtn.Visible = true;
             isNewState = true;
-            LuuThayDoiBtn.Text = "Lưu Mới";
-            SetUIReadOnly(false);
+            //LuuThayDoiBtn.Text = "Lưu Mới";
+            //SetUIReadOnly(false);
         }
 
         private void ReadOnly_btn_Click(object sender, EventArgs e)
@@ -550,6 +559,7 @@ namespace RauViet.ui
 
         private void Edit_btn_Click(object sender, EventArgs e)
         {
+            info_gb.Enabled = true;
             edit_btn.Visible = false;
             newCustomerBtn.Visible = false;
             readOnly_btn.Visible = false;//true;
@@ -625,6 +635,140 @@ namespace RauViet.ui
 
             await Task.Delay(100);
             loadingOverlay.Hide();
+        }
+
+        private async void LoadFromExcel_btn_Click(object sender, EventArgs e)
+        {
+            await Task.Delay(50);
+            loadingOverlay = new LoadingOverlay(this);
+            loadingOverlay.Message = "Đang xử lý ...";
+            loadingOverlay.Show();
+            await Task.Delay(200);
+
+            DateTime updateDate = new DateTime(monthYearDtp.Value.Year, monthYearDtp.Value.Month,
+                                                            DateTime.DaysInMonth(monthYearDtp.Value.Year, monthYearDtp.Value.Month)
+                                                        );
+            bool isLock = await SQLStore_QLNS.Instance.IsSalaryLockAsync(updateDate.Month, updateDate.Year);
+            if (isLock)
+            {
+                await Task.Delay(200);
+                loadingOverlay.Hide();
+                MessageBox.Show($"Tháng {updateDate.Month}/{updateDate.Year} Đã Bị Khóa Rồi ?", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            DialogResult dialogResult = MessageBox.Show($"Sẽ cập nhật dữ liệu mua rau vào tháng {monthYearDtp.Value.Month}/{monthYearDtp.Value.Year}?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (dialogResult != DialogResult.Yes)
+                return;
+
+            try
+            {
+                using (System.Windows.Forms.OpenFileDialog ofd = new System.Windows.Forms.OpenFileDialog())
+                {
+                    ofd.Title = "Chọn file Excel";
+                    ofd.Filter = "Excel Files|*.xlsx;*.xls|All Files|*.*";
+                    ofd.Multiselect = false; // chỉ cho chọn 1 file
+
+                    if (ofd.ShowDialog() == DialogResult.OK)
+                    {
+                        string filePath = ofd.FileName;
+                        System.Data.DataTable excelData = Utils.LoadExcel_NoHeader(filePath, 2);
+                        List<(string employeeCode, string DeductionTypeCode, DateTime deductionDate, int amount, string note)> newData = new List<(string employeeCode, string DeductionTypeCodev, DateTime deductionDate, int amount, string note)>();
+                        List<(string employeeCode, string deductionTypeCode, string description, DateTime deductionDate, int amount, string note)> logs = new List<(string, string, string, DateTime, int, string)>();
+
+                        
+                        HashSet<string> employeeSet = mEmployee_dt.AsEnumerable().Select(r => r.Field<string>("EmployeeCode")).ToHashSet();
+                        foreach (DataRow edr in excelData.Rows)
+                        {
+                            string employeeCode = edr["Column2"].ToString();
+                            int amount = Convert.ToInt32(edr["Column4"]);
+                            if (string.IsNullOrWhiteSpace(employeeCode) || !employeeSet.Contains(employeeCode) || amount <= 0)
+                                continue;
+
+                            newData.Add((employeeCode, DeductionTypeCode, updateDate, amount, $"Excel: Tiền mua rau T{monthYearDtp.Value.Month}/{monthYearDtp.Value.Year}"));
+                            logs.Add((employeeCode, DeductionTypeCode, "Tải từ Excel T{monthYearDtp.Value.Month}/{monthYearDtp.Value.Year}", updateDate, amount, ""));
+                        }
+
+                        try
+                        {
+                            bool isSuccess = await SQLManager_QLNS.Instance.InsertEmployeeDeduction_ListAsync(newData);
+                            if (isSuccess)
+                            {
+                                var updatedLogs = logs
+                                        .Select(item =>
+                                            (
+                                                item.employeeCode,
+                                                item.deductionTypeCode,
+                                                Description: item.description + " Success",   // <— sửa ở đây
+                                                item.deductionDate,
+                                                item.amount,
+                                                item.note
+                                            )
+                                        ).ToList();
+
+                                _ = SQLManager_QLNS.Instance.InsertEmployeeDeductionLog_ListAsync(updatedLogs);
+
+                                await Task.Delay(200);
+                                loadingOverlay.Hide();
+                                SQLStore_QLNS.Instance.removeDeduction(updateDate.Year);
+                                ShowData();
+                            }
+                            else
+                            {
+                                var updatedLogs = logs
+                                       .Select(item =>
+                                           (
+                                               item.employeeCode,
+                                               item.deductionTypeCode,
+                                               Description: item.description + " Fail",   // <— sửa ở đây
+                                               item.deductionDate,
+                                               item.amount,
+                                               item.note
+                                           )
+                                       ).ToList();
+
+                                _ = SQLManager_QLNS.Instance.InsertEmployeeDeductionLog_ListAsync(updatedLogs);
+
+                                MessageBox.Show("Thất Bại ?", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                                await Task.Delay(200);
+                                loadingOverlay.Hide();
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            await Task.Delay(200);
+                            loadingOverlay.Hide();
+                            Console.WriteLine("ERROR: " + ex.ToString());
+
+                            var updatedLogs = logs
+                               .Select(item =>
+                                   (
+                                       item.employeeCode,
+                                       item.deductionTypeCode,
+                                       Description: item.description + " Fail Exception: " + ex.Message,   // <— sửa ở đây
+                                       item.deductionDate,
+                                       item.amount,
+                                       item.note
+                                   )
+                               ).ToList();
+
+                            _ = SQLManager_QLNS.Instance.InsertEmployeeDeductionLog_ListAsync(updatedLogs);
+
+                            MessageBox.Show("Thất Bại ?" + ex.Message, "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }                            
+                    }
+
+                    
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("ERROR: " + ex.ToString());
+                MessageBox.Show("Thất Bại ?", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                await Task.Delay(200);
+                loadingOverlay.Hide();
+            }
         }
     }
 }

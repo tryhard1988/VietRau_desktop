@@ -2288,6 +2288,60 @@ namespace RauViet.classes
             return newId;
         }
 
+        public async Task<bool> InsertEmployeeDeduction_ListAsync(List<(string employeeCode, string DeductionTypeCode, DateTime deductionDate, int amount, string note)> newData)
+        {
+            if (newData == null || newData.Count == 0)
+                return false;
+
+            try
+            {
+                // 1️⃣ Tạo DataTable đúng cấu trúc dbo.EmployeeDeductionType
+                DataTable dt = new DataTable();
+                dt.Columns.Add("EmployeeCode", typeof(string));
+                dt.Columns.Add("DeductionTypeCode", typeof(string));
+                dt.Columns.Add("DeductionDate", typeof(DateTime));
+                dt.Columns.Add("Amount", typeof(int));
+                dt.Columns.Add("Note", typeof(string));
+
+                foreach (var item in newData)
+                {
+                    dt.Rows.Add(
+                        item.employeeCode,
+                        item.DeductionTypeCode,
+                        item.deductionDate,
+                        item.amount,
+                        item.note
+                    );
+                }
+
+                // 2️⃣ Gọi Stored Procedure
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
+                {
+                    await con.OpenAsync();
+
+                    using (SqlCommand cmd = new SqlCommand("sp_Insert_EmployeeDeduction_List", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        SqlParameter param = cmd.Parameters.Add("@DeductionList", SqlDbType.Structured);
+                        param.TypeName = "dbo.EmployeeDeductionType";
+                        param.Value = dt;
+
+                        await cmd.ExecuteNonQueryAsync();
+
+                        return true;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // TODO: log lỗi
+                Console.WriteLine($"[InsertEmployeeDeduction_ListAsync] {ex.Message}");
+                return false;
+            }
+        }
+
+
         public async Task<bool> UpsertEmployeeDeductionAsync(string EmployeeCode, string DeductionTypeCode, DateTime DeductionDate, int amount, string note)
         {
             try
@@ -2531,6 +2585,59 @@ namespace RauViet.classes
             catch (Exception ex)
             {
                 Console.WriteLine($"Error Insert Do47 Log: {ex.Message}");
+            }
+        }
+
+        public async Task<bool> InsertEmployeeDeductionLog_ListAsync( List<(string employeeCode, string deductionTypeCode, string description, DateTime deductionDate, int amount, string note)> logList)
+        {
+            if (logList == null || logList.Count == 0)
+                return false;
+
+            try
+            {
+                DataTable dt = new DataTable();
+                dt.Columns.Add("EmployeeCode", typeof(string));
+                dt.Columns.Add("DeductionTypeCode", typeof(string));
+                dt.Columns.Add("Description", typeof(string));
+                dt.Columns.Add("DeductionDate", typeof(DateTime));
+                dt.Columns.Add("Amount", typeof(int));
+                dt.Columns.Add("Note", typeof(string));
+                dt.Columns.Add("ActionBy", typeof(string));
+
+                foreach (var item in logList)
+                {
+                    dt.Rows.Add(
+                        item.employeeCode,
+                        item.deductionTypeCode,
+                        item.description,
+                        item.deductionDate,
+                        item.amount,
+                        item.note,
+                        UserManager.Instance.fullName
+                    );
+                }
+
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_Log_conStr()))
+                {
+                    await con.OpenAsync();
+
+                    using (SqlCommand cmd = new SqlCommand("sp_InsertEmployeeDeductionLog_List", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        SqlParameter p = cmd.Parameters.Add("@LogList", SqlDbType.Structured);
+                        p.TypeName = "dbo.EmployeeDeductionLogType";
+                        p.Value = dt;
+
+                        await cmd.ExecuteNonQueryAsync();
+                        return true;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[InsertEmployeeDeductionLog_ListAsync] {ex.Message}");
+                return false;
             }
         }
 

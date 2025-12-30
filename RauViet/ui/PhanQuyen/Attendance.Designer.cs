@@ -33,6 +33,7 @@ namespace RauViet.ui
             this.panel2 = new System.Windows.Forms.Panel();
             this.attendanceGV = new System.Windows.Forms.DataGridView();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.RonaldMachine_btn = new System.Windows.Forms.Button();
             this.excelAttendance_btn = new System.Windows.Forms.Button();
             this.info_gb = new System.Windows.Forms.GroupBox();
             this.monthYearDtp = new System.Windows.Forms.DateTimePicker();
@@ -40,7 +41,6 @@ namespace RauViet.ui
             this.status_lb = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.log_GV = new System.Windows.Forms.DataGridView();
-            this.RonaldMachine_btn = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.attendanceGV)).BeginInit();
@@ -82,7 +82,7 @@ namespace RauViet.ui
             this.attendanceGV.Location = new System.Drawing.Point(0, 0);
             this.attendanceGV.Name = "attendanceGV";
             this.attendanceGV.ReadOnly = true;
-            this.attendanceGV.Size = new System.Drawing.Size(592, 369);
+            this.attendanceGV.Size = new System.Drawing.Size(592, 497);
             this.attendanceGV.TabIndex = 82;
             // 
             // panel1
@@ -94,8 +94,19 @@ namespace RauViet.ui
             this.panel1.Dock = System.Windows.Forms.DockStyle.Right;
             this.panel1.Location = new System.Drawing.Point(592, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(309, 369);
+            this.panel1.Size = new System.Drawing.Size(309, 497);
             this.panel1.TabIndex = 81;
+            // 
+            // RonaldMachine_btn
+            // 
+            this.RonaldMachine_btn.BackColor = System.Drawing.Color.LightSeaGreen;
+            this.RonaldMachine_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.RonaldMachine_btn.Location = new System.Drawing.Point(87, 69);
+            this.RonaldMachine_btn.Name = "RonaldMachine_btn";
+            this.RonaldMachine_btn.Size = new System.Drawing.Size(192, 40);
+            this.RonaldMachine_btn.TabIndex = 30;
+            this.RonaldMachine_btn.Text = "Máy Chấm Công";
+            this.RonaldMachine_btn.UseVisualStyleBackColor = false;
             // 
             // excelAttendance_btn
             // 
@@ -154,7 +165,7 @@ namespace RauViet.ui
             this.label1.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.label1.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.ForeColor = System.Drawing.Color.DarkOliveGreen;
-            this.label1.Location = new System.Drawing.Point(0, 369);
+            this.label1.Location = new System.Drawing.Point(0, 497);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(901, 23);
             this.label1.TabIndex = 79;
@@ -167,22 +178,11 @@ namespace RauViet.ui
             this.log_GV.AllowUserToDeleteRows = false;
             this.log_GV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.log_GV.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.log_GV.Location = new System.Drawing.Point(0, 392);
+            this.log_GV.Location = new System.Drawing.Point(0, 520);
             this.log_GV.Name = "log_GV";
             this.log_GV.ReadOnly = true;
-            this.log_GV.Size = new System.Drawing.Size(901, 289);
+            this.log_GV.Size = new System.Drawing.Size(901, 161);
             this.log_GV.TabIndex = 78;
-            // 
-            // RonaldMachine_btn
-            // 
-            this.RonaldMachine_btn.BackColor = System.Drawing.Color.LightSeaGreen;
-            this.RonaldMachine_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.RonaldMachine_btn.Location = new System.Drawing.Point(87, 69);
-            this.RonaldMachine_btn.Name = "RonaldMachine_btn";
-            this.RonaldMachine_btn.Size = new System.Drawing.Size(192, 40);
-            this.RonaldMachine_btn.TabIndex = 30;
-            this.RonaldMachine_btn.Text = "Máy Chấm Công";
-            this.RonaldMachine_btn.UseVisualStyleBackColor = false;
             // 
             // Attendance
             // 

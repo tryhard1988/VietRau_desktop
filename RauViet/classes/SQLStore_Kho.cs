@@ -1839,6 +1839,8 @@ namespace RauViet.classes
             }
 
             int count = 0;
+            data.Columns["DeliveryDate"].SetOrdinal(count++);
+            data.Columns["ProductNameVN"].SetOrdinal(count++);
             data.Columns["ProductNameVN"].SetOrdinal(count++);
             data.Columns["ProductTypeName"].SetOrdinal(count++);
             data.Columns["AmountPacking"].SetOrdinal(count++);

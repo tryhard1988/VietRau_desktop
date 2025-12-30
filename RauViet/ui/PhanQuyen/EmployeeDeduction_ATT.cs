@@ -1,4 +1,5 @@
-﻿using RauViet.classes;
+﻿using DocumentFormat.OpenXml.Vml.Office;
+using RauViet.classes;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -16,6 +17,7 @@ namespace RauViet.ui
         private DataView mDeductionLogDV;
         private const string DeductionTypeCode = "ATT";
         private int curMonth, curYear;
+        private object oldValue;
         public EmployeeDeduction_ATT()
         {
             InitializeComponent();
@@ -36,12 +38,15 @@ namespace RauViet.ui
 
             status_lb.Text = "";
 
-            LuuThayDoiBtn.Click += saveBtn_Click;
             dataGV.SelectionChanged += this.dataGV_CellClick;
-            amount_tb.KeyPress += Tb_KeyPress_OnlyNumber;
             this.KeyDown += EmployeeDeduction_ATT_KeyDown;
             search_tb.TextChanged += Search_tb_TextChanged;
             this.Load += OvertimeAttendace_Load;
+
+            dataGV.CellFormatting += dataGV_CellFormatting;
+            dataGV.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.dataGV_EditingControlShowing);
+            dataGV.CellBeginEdit += dataGV_CellBeginEdit;
+            dataGV.CellEndEdit += dataGV_CellEndEdit;
         }
 
         private void OvertimeAttendace_Load(object sender, EventArgs e)
@@ -105,6 +110,11 @@ namespace RauViet.ui
                     dr["EmployessName_NoSign"] =Utils.RemoveVietnameseSigns($"{dr["EmployeeCode"]} {dr["FullName"]}");
                 }
 
+                DataRow[] rowsToDelete = employee_dt.Select("TotalOffDay = 0");
+                foreach (DataRow row in rowsToDelete)
+                    row.Delete();
+                employee_dt.AcceptChanges();
+
                 employeeDeductionGV.DataSource = mEmployeeLeave_dt;
 
                 employee_dt.Columns["DeductionAmount"].ReadOnly = false;
@@ -129,6 +139,16 @@ namespace RauViet.ui
                 employeeDeductionGV.Columns["LeaveTypeName"].HeaderText = "Loại Nghỉ Phép";
                 employeeDeductionGV.Columns["LeaveHours"].HeaderText = "Số Giờ Vắng";
                 employeeDeductionGV.Columns["Note"].HeaderText = "Ghi Chú";
+
+                bool isLock = await SQLStore_QLNS.Instance.IsSalaryLockAsync(month, year);
+                dataGV.ReadOnly = isLock;
+                dataGV.Columns["FullName"].ReadOnly = true;
+                dataGV.Columns["EmployeeCode"].ReadOnly = true;
+                dataGV.Columns["PositionName"].ReadOnly = true;
+                dataGV.Columns["ContractTypeName"].ReadOnly = true;
+                dataGV.Columns["AllowanceAmount"].ReadOnly = true;
+                dataGV.Columns["DeductionAmount"].ReadOnly = isLock;
+                dataGV.Columns["TotalOffDay"].ReadOnly = true;
 
                 dataGV.Columns["FullName"].HeaderText = "Tên Nhân Viên";
                 dataGV.Columns["EmployeeCode"].HeaderText = "Mã NV";
@@ -214,13 +234,10 @@ namespace RauViet.ui
 
 
             UpdateEmployeeDeductionUI(rowIndex);
-            UpdateRightUI(rowIndex);
         }
 
         private void UpdateEmployeeDeductionUI(int index)
         {
-            amount_tb.Text = "0";
-
             employeeDeductionGV.ClearSelection();
 
             var cells = dataGV.Rows[index].Cells;
@@ -233,87 +250,30 @@ namespace RauViet.ui
 
             mDeductionLogDV.RowFilter = $"EmployeeCode = '{employeeCode}'";
         }
-        private void UpdateRightUI(int index)
-        {
-            var cells = dataGV.Rows[index].Cells;
-            int amount = Convert.ToInt32(cells["DeductionAmount"].Value);
-
-            amount_tb.Text = amount.ToString();
-            info_gb.BackColor = Color.DarkGray;
-            status_lb.Text = "";
-        }
 
         private async void updateData(string employeeCode, DateTime deductionDate, int deductionAmount)
         {
-            foreach (DataGridViewRow row in dataGV.Rows)
+            try
             {
-                string id = Convert.ToString(row.Cells["EmployeeCode"].Value);
-                if (id.CompareTo(employeeCode) == 0)
+                bool isScussess = await SQLManager_QLNS.Instance.UpsertEmployeeDeductionAsync(employeeCode, DeductionTypeCode, deductionDate, deductionAmount, "");
+
+                if (isScussess == true)
                 {
-                    DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                    if (dialogResult == DialogResult.Yes)
-                    {
-                        try
-                        {
-                            bool isScussess = await SQLManager_QLNS.Instance.UpsertEmployeeDeductionAsync(employeeCode, DeductionTypeCode, deductionDate, deductionAmount, "");
-
-                            if (isScussess == true)
-                            {
-                                _ = SQLManager_QLNS.Instance.InsertEmployeeDeductionLogAsync(employeeCode, DeductionTypeCode, $"Edit: Success", deductionDate.Date, deductionAmount, "Trừ chuyên cần");
-                                status_lb.Text = "Thành công.";
-                                status_lb.ForeColor = Color.Green;
-
-                                row.Cells["DeductionAmount"].Value = deductionAmount;
-                            }
-                            else
-                            {
-                                _ = SQLManager_QLNS.Instance.InsertEmployeeDeductionLogAsync(employeeCode, DeductionTypeCode, $"Edit: Fail", deductionDate.Date, deductionAmount, "Trừ chuyên cần");
-                                status_lb.Text = "Thất bại.";
-                                status_lb.ForeColor = Color.Red;
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            _ = SQLManager_QLNS.Instance.InsertEmployeeDeductionLogAsync(employeeCode, DeductionTypeCode, $"Edit Fail Exception: " + ex.Message, deductionDate.Date, deductionAmount, "Trừ chuyên cần");
-                            status_lb.Text = "Thất bại.";
-                            status_lb.ForeColor = Color.Red;
-                        }
-                    }
-                    break;
+                    _ = SQLManager_QLNS.Instance.InsertEmployeeDeductionLogAsync(employeeCode, DeductionTypeCode, $"Edit: Success", deductionDate.Date, deductionAmount, "Trừ chuyên cần");                    
+                }
+                else
+                {
+                    MessageBox.Show("Thất bại rồi ! Huhu", "Thong Báo", MessageBoxButtons.OK);
+                    _ = SQLManager_QLNS.Instance.InsertEmployeeDeductionLogAsync(employeeCode, DeductionTypeCode, $"Edit: Fail", deductionDate.Date, deductionAmount, "Trừ chuyên cần");
                 }
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Thất bại rồi ! Huhu: \n" + ex.Message, "Thong Báo", MessageBoxButtons.OK);
+                _ = SQLManager_QLNS.Instance.InsertEmployeeDeductionLogAsync(employeeCode, DeductionTypeCode, $"Edit Fail Exception: " + ex.Message, deductionDate.Date, deductionAmount, "Trừ chuyên cần");
+            }
         }
 
-        private async void saveBtn_Click(object sender, EventArgs e)
-        {
-            if (string.IsNullOrEmpty(amount_tb.Text) || dataGV.CurrentRow == null)
-            {
-                MessageBox.Show("Sai Dữ Liệu, Kiểm Tra Lại!", "Thông Báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            int month = monthYearDtp.Value.Month;
-            int year = monthYearDtp.Value.Year;
-            DateTime deductionDate = new DateTime(year, month, 15);
-
-            string employeeCode = Convert.ToString(dataGV.CurrentRow.Cells["EmployeeCode"].Value);
-            int amount = Convert.ToInt32(amount_tb.Text);
-
-            if(month != curMonth || year != curYear)
-            {
-                MessageBox.Show("Tháng, Năm có vẫn đề.", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            bool isLock = await SQLStore_QLNS.Instance.IsSalaryLockAsync(month, year);
-            if (isLock)
-            {
-                MessageBox.Show("Tháng " + month + "/" + year + " đã bị khóa.", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            updateData(employeeCode, deductionDate, amount);
-        }
         private void Search_tb_TextChanged(object sender, EventArgs e)
         {
             string keyword = Utils.RemoveVietnameseSigns(search_tb.Text.Trim().ToLower())
@@ -342,6 +302,67 @@ namespace RauViet.ui
         private async void HandleMonthYearChanged()
         {
             ShowData();
+        }
+
+        private async void dataGV_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            if (e.RowIndex < 0) return;
+            
+            if (dataGV.Columns[e.ColumnIndex].Name == "DeductionAmount")
+            {
+                e.CellStyle.BackColor = System.Drawing.Color.LightGray;
+            }            
+        }
+
+        private void dataGV_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
+        {
+            System.Windows.Forms.TextBox tb = e.Control as System.Windows.Forms.TextBox;
+            if (tb == null) return;
+
+            tb.KeyPress -= Tb_KeyPress_OnlyNumber;
+
+            var colName = dataGV.CurrentCell.OwningColumn.Name;
+
+            if (colName == "DeductionAmount")
+            {
+                tb.KeyPress += Tb_KeyPress_OnlyNumber;
+            }
+        }
+
+        private async void dataGV_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
+        {
+            oldValue = dataGV.CurrentCell?.Value;
+            bool isLock = await SQLStore_QLNS.Instance.IsSalaryLockAsync(curMonth, curYear);
+            if (isLock)
+                e.Cancel = true;
+
+            status_lb.Text = "";
+        }
+
+        private async void dataGV_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
+            {
+                var columnName = dataGV.Columns[e.ColumnIndex].Name;
+                object newValue = dataGV.CurrentCell?.Value;//.Rows[e.RowIndex].Cells[e.ColumnIndex].Value?.ToString() ?? "";
+
+                if (object.Equals(oldValue, newValue)) return;
+
+                int month = monthYearDtp.Value.Month;
+                int year = monthYearDtp.Value.Year;
+                DateTime deductionDate = new DateTime(year, month, 15);
+
+                string employeeCode = Convert.ToString(dataGV.CurrentRow.Cells["EmployeeCode"].Value);
+                int amount = Convert.ToInt32(newValue);
+
+                if (month != curMonth || year != curYear)
+                {
+                    MessageBox.Show("Tháng, Năm có vẫn đề.", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                updateData(employeeCode, deductionDate, amount);
+            }
         }
     }
 }

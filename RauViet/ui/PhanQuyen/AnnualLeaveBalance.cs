@@ -164,7 +164,7 @@ namespace RauViet.ui
             if (dialogResult != DialogResult.Yes)
                 return;
 
-            int prevMonth = DateTime.Now.AddMonths(-1).Month;
+            int prevMonth = DateTime.Now.Month;
             foreach (DataRow dr in mEmployee_dt.Rows)
             {
                 int remainingLeaveDays = 0;
