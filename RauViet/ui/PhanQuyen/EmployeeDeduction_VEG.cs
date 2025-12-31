@@ -36,7 +36,7 @@ namespace RauViet.ui
             monthYearDtp.Format = DateTimePickerFormat.Custom;
             monthYearDtp.CustomFormat = "MM/yyyy";
             monthYearDtp.ShowUpDown = true;
-            monthYearDtp.Value = DateTime.Now;
+            monthYearDtp.Value = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
 
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Dock = DockStyle.Fill;
@@ -225,7 +225,9 @@ namespace RauViet.ui
                 ReadOnly_btn_Click(null, null);
                 employeeDeductionGV.SelectionChanged += this.allowanceGV_CellClick;
                 monthYearDtp.ValueChanged += monthYearDtp_ValueChanged;
-                dataGV.SelectionChanged += this.dataGV_CellClick;                
+                dataGV.SelectionChanged += this.dataGV_CellClick;
+
+                UpdateInfo();
             }
             catch
             {
@@ -296,7 +298,7 @@ namespace RauViet.ui
 
             //employeeDeductionGV.DataSource = dv;
 
-            mDeductionLogDV.RowFilter = $"EmployeeCode = '{employeeCode}'";
+            
         }
         private void UpdateRightUI(int index)
         {
@@ -349,7 +351,7 @@ namespace RauViet.ui
                                 row.Cells["Amount"].Value = amount;
                                 row.Cells["Note"].Value = note;
 
-                                
+                                UpdateInfo();
 
                                 DataRowView drv = row.DataBoundItem as DataRowView;
                                 if (drv != null)
@@ -410,6 +412,7 @@ namespace RauViet.ui
 
                         SQLStore_QLNS.Instance.addOrUpdateDeduction(deductionDate.Year, drToAdd);
                         newCustomerBtn_Click(null, null);
+                        UpdateInfo();
                     }
                     else
                     {
@@ -454,13 +457,18 @@ namespace RauViet.ui
                 return;
             }
 
-            string employeeCode = Convert.ToString(dataGV.CurrentRow.Cells["EmployeeCode"].Value);
+            //
             string note = note_tb.Text;
 
             if (employeeDeductionID_tb.Text.Length != 0)
+            {
+                string employeeCode = Convert.ToString(employeeDeductionGV.CurrentRow.Cells["EmployeeCode"].Value);                
                 updateData(Convert.ToInt32(employeeDeductionID_tb.Text), employeeCode, deductionDate, amount, note);
-            else
+            }
+            else {
+                string employeeCode = Convert.ToString(dataGV.CurrentRow.Cells["EmployeeCode"].Value);
                 createNew(employeeCode, deductionDate, amount, note);
+            }
 
         }
         private async void deleteBtn_Click(object sender, EventArgs e)
@@ -516,6 +524,8 @@ namespace RauViet.ui
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;
                         }
+
+                        UpdateInfo();
                     }
                     break;
                 }
@@ -632,7 +642,7 @@ namespace RauViet.ui
             edit_btn.Visible = !isLock;
 
             monthYearLabel.Text = $"Tháng {month}/{year}";
-
+            UpdateInfo();
             await Task.Delay(100);
             loadingOverlay.Hide();
         }
@@ -769,6 +779,14 @@ namespace RauViet.ui
                 await Task.Delay(200);
                 loadingOverlay.Hide();
             }
+        }
+
+        private void UpdateInfo()
+        {
+            int rowCount = mEmployeeDeduction_dt.Rows.Count;
+            decimal totalAmount = mEmployeeDeduction_dt.AsEnumerable().Where(r => r["Amount"] != DBNull.Value).Sum(r => r.Field<int>("Amount"));
+            count_label.Text = rowCount.ToString();
+            totalAmount_label.Text = totalAmount.ToString("N0");
         }
     }
 }

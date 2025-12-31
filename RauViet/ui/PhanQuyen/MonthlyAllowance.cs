@@ -25,7 +25,7 @@ namespace RauViet.ui
             monthYearDtp.Format = DateTimePickerFormat.Custom;
             monthYearDtp.CustomFormat = "MM/yyyy";
             monthYearDtp.ShowUpDown = true;
-            monthYearDtp.Value = DateTime.Now;
+            monthYearDtp.Value = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
 
             int countTab = 0;
             allowanceType_cbb.TabIndex = countTab++; allowanceType_cbb.TabStop = true;

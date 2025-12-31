@@ -25,12 +25,12 @@ namespace RauViet.ui
             monthYearDtp.Format = DateTimePickerFormat.Custom;
             monthYearDtp.CustomFormat = "MM/yyyy";
             monthYearDtp.ShowUpDown = true;
-            monthYearDtp.Value = DateTime.Now;
+            monthYearDtp.Value = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
 
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Dock = DockStyle.Fill;
 
-            dataGV.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dataGV.SelectionMode = DataGridViewSelectionMode.CellSelect;
             dataGV.MultiSelect = false;
 
             employeeDeductionGV.SelectionMode = DataGridViewSelectionMode.FullRowSelect;

@@ -38,7 +38,14 @@ namespace RauViet.ui
             this.dataGV = new System.Windows.Forms.DataGridView();
             this.panel3 = new System.Windows.Forms.Panel();
             this.employeeDeductionGV = new System.Windows.Forms.DataGridView();
+            this.panel6 = new System.Windows.Forms.Panel();
+            this.totalAmount_label = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this.count_label = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.loadFromExcel_btn = new System.Windows.Forms.Button();
             this.monthYearDtp = new System.Windows.Forms.DateTimePicker();
             this.readOnly_btn = new System.Windows.Forms.Button();
             this.employeeDeductionID_tb = new System.Windows.Forms.TextBox();
@@ -57,13 +64,13 @@ namespace RauViet.ui
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
             this.log_GV = new System.Windows.Forms.DataGridView();
-            this.loadFromExcel_btn = new System.Windows.Forms.Button();
             this.panel4.SuspendLayout();
             this.panel5.SuspendLayout();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
             this.panel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.employeeDeductionGV)).BeginInit();
+            this.panel6.SuspendLayout();
             this.panel2.SuspendLayout();
             this.info_gb.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.log_GV)).BeginInit();
@@ -147,6 +154,7 @@ namespace RauViet.ui
             // panel3
             // 
             this.panel3.Controls.Add(this.employeeDeductionGV);
+            this.panel3.Controls.Add(this.panel6);
             this.panel3.Controls.Add(this.panel2);
             this.panel3.Controls.Add(this.label3);
             this.panel3.Controls.Add(this.log_GV);
@@ -165,8 +173,78 @@ namespace RauViet.ui
             this.employeeDeductionGV.Location = new System.Drawing.Point(0, 0);
             this.employeeDeductionGV.Name = "employeeDeductionGV";
             this.employeeDeductionGV.ReadOnly = true;
-            this.employeeDeductionGV.Size = new System.Drawing.Size(334, 511);
-            this.employeeDeductionGV.TabIndex = 50;
+            this.employeeDeductionGV.Size = new System.Drawing.Size(334, 480);
+            this.employeeDeductionGV.TabIndex = 51;
+            // 
+            // panel6
+            // 
+            this.panel6.Controls.Add(this.totalAmount_label);
+            this.panel6.Controls.Add(this.label10);
+            this.panel6.Controls.Add(this.label7);
+            this.panel6.Controls.Add(this.count_label);
+            this.panel6.Controls.Add(this.label6);
+            this.panel6.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.panel6.Location = new System.Drawing.Point(0, 480);
+            this.panel6.Name = "panel6";
+            this.panel6.Size = new System.Drawing.Size(334, 31);
+            this.panel6.TabIndex = 49;
+            // 
+            // totalAmount_label
+            // 
+            this.totalAmount_label.AutoSize = true;
+            this.totalAmount_label.Dock = System.Windows.Forms.DockStyle.Left;
+            this.totalAmount_label.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.totalAmount_label.ForeColor = System.Drawing.Color.Firebrick;
+            this.totalAmount_label.Location = new System.Drawing.Point(253, 0);
+            this.totalAmount_label.Name = "totalAmount_label";
+            this.totalAmount_label.Size = new System.Drawing.Size(72, 16);
+            this.totalAmount_label.TabIndex = 47;
+            this.totalAmount_label.Text = "Số Lượng:";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Dock = System.Windows.Forms.DockStyle.Left;
+            this.label10.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label10.Location = new System.Drawing.Point(157, 0);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(96, 16);
+            this.label10.TabIndex = 46;
+            this.label10.Text = "Tổng Tiền Rau:";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Dock = System.Windows.Forms.DockStyle.Left;
+            this.label7.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label7.Location = new System.Drawing.Point(136, 0);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(21, 16);
+            this.label7.TabIndex = 45;
+            this.label7.Text = " | ";
+            // 
+            // count_label
+            // 
+            this.count_label.AutoSize = true;
+            this.count_label.Dock = System.Windows.Forms.DockStyle.Left;
+            this.count_label.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.count_label.ForeColor = System.Drawing.Color.Firebrick;
+            this.count_label.Location = new System.Drawing.Point(64, 0);
+            this.count_label.Name = "count_label";
+            this.count_label.Size = new System.Drawing.Size(72, 16);
+            this.count_label.TabIndex = 44;
+            this.count_label.Text = "Số Lượng:";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Dock = System.Windows.Forms.DockStyle.Left;
+            this.label6.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label6.Location = new System.Drawing.Point(0, 0);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(64, 16);
+            this.label6.TabIndex = 43;
+            this.label6.Text = "Số Người:";
             // 
             // panel2
             // 
@@ -184,6 +262,17 @@ namespace RauViet.ui
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(453, 511);
             this.panel2.TabIndex = 48;
+            // 
+            // loadFromExcel_btn
+            // 
+            this.loadFromExcel_btn.BackColor = System.Drawing.Color.ForestGreen;
+            this.loadFromExcel_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.loadFromExcel_btn.Location = new System.Drawing.Point(19, 93);
+            this.loadFromExcel_btn.Name = "loadFromExcel_btn";
+            this.loadFromExcel_btn.Size = new System.Drawing.Size(116, 39);
+            this.loadFromExcel_btn.TabIndex = 42;
+            this.loadFromExcel_btn.Text = "Tải Từ Excel";
+            this.loadFromExcel_btn.UseVisualStyleBackColor = false;
             // 
             // monthYearDtp
             // 
@@ -372,17 +461,6 @@ namespace RauViet.ui
             this.log_GV.Size = new System.Drawing.Size(787, 185);
             this.log_GV.TabIndex = 45;
             // 
-            // loadFromExcel_btn
-            // 
-            this.loadFromExcel_btn.BackColor = System.Drawing.Color.ForestGreen;
-            this.loadFromExcel_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.loadFromExcel_btn.Location = new System.Drawing.Point(19, 93);
-            this.loadFromExcel_btn.Name = "loadFromExcel_btn";
-            this.loadFromExcel_btn.Size = new System.Drawing.Size(116, 39);
-            this.loadFromExcel_btn.TabIndex = 42;
-            this.loadFromExcel_btn.Text = "Tải Từ Excel";
-            this.loadFromExcel_btn.UseVisualStyleBackColor = false;
-            // 
             // EmployeeDeduction_VEG
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -400,6 +478,8 @@ namespace RauViet.ui
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).EndInit();
             this.panel3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.employeeDeductionGV)).EndInit();
+            this.panel6.ResumeLayout(false);
+            this.panel6.PerformLayout();
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
             this.info_gb.ResumeLayout(false);
@@ -414,7 +494,6 @@ namespace RauViet.ui
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.DataGridView dataGV;
         private System.Windows.Forms.Panel panel3;
-        private System.Windows.Forms.DataGridView employeeDeductionGV;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Button readOnly_btn;
         private System.Windows.Forms.TextBox employeeDeductionID_tb;
@@ -439,5 +518,12 @@ namespace RauViet.ui
         private System.Windows.Forms.TextBox employeeName_tb;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Button loadFromExcel_btn;
+        private System.Windows.Forms.DataGridView employeeDeductionGV;
+        private System.Windows.Forms.Panel panel6;
+        private System.Windows.Forms.Label totalAmount_label;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label count_label;
+        private System.Windows.Forms.Label label6;
     }
 }

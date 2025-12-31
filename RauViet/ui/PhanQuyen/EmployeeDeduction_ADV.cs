@@ -1,6 +1,7 @@
 ﻿using RauViet.classes;
 using System;
 using System.Data;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Color = System.Drawing.Color;
@@ -32,7 +33,7 @@ namespace RauViet.ui
             monthYearDtp.Format = DateTimePickerFormat.Custom;
             monthYearDtp.CustomFormat = "MM/yyyy";
             monthYearDtp.ShowUpDown = true;
-            monthYearDtp.Value = DateTime.Now;
+            monthYearDtp.Value = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
 
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Dock = DockStyle.Fill;
@@ -215,6 +216,7 @@ namespace RauViet.ui
 
                 ReadOnly_btn_Click(null, null);
                 employeeDeductionGV.SelectionChanged += this.deductionGV_CellClick;
+                UpdateInfo();
             }
             catch
             {
@@ -336,6 +338,8 @@ namespace RauViet.ui
                                     DataRow dr = drv.Row;
                                     SQLStore_QLNS.Instance.addOrUpdateDeduction(deductionDate.Year, dr);
                                 }
+
+                                UpdateInfo();
                             }
                             else
                             {
@@ -392,6 +396,7 @@ namespace RauViet.ui
                         _ = SQLManager_QLNS.Instance.InsertEmployeeDeductionLogAsync(employeeCode, DeductionTypeCode, $"Create: Success", deductionDate.Date, amount, note);
                         SQLStore_QLNS.Instance.addOrUpdateDeduction(deductionDate.Year, drToAdd);
                         newCustomerBtn_Click(null, null);
+                        UpdateInfo();
                     }
                     else
                     {
@@ -502,6 +507,8 @@ namespace RauViet.ui
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;
                         }
+
+                        UpdateInfo();
                     }
                     break;
                 }
@@ -520,7 +527,9 @@ namespace RauViet.ui
             status_lb.Text = "";
             info_gb.BackColor = Color.Green;
 
-            deductionDate_dtp.Focus();
+            if (!search_tb.Focused)
+                deductionDate_dtp.Focus();
+
             info_gb.BackColor = newCustomerBtn.BackColor;
             edit_btn.Visible = false;
             newCustomerBtn.Visible = false;
@@ -618,12 +627,20 @@ namespace RauViet.ui
             readOnly_btn.Visible = false;// !isLock;
             edit_btn.Visible = !isLock;
             isNewState = false;
-
+            UpdateInfo();
             if (!isLock) ReadOnly_btn_Click(null, null);
 
             monthYearLabel.Text = $"Tháng {month}/{year}";
             await Task.Delay(50);
             loadingOverlay.Hide();
+        }
+
+        private void UpdateInfo()
+        {
+            int rowCount = mEmployeeDeduction_dt.Rows.Count;
+            decimal totalAmount = mEmployeeDeduction_dt.AsEnumerable().Where(r => r["Amount"] != DBNull.Value).Sum(r => r.Field<int>("Amount"));
+            count_label.Text = rowCount.ToString();
+            totalAmount_label.Text = totalAmount.ToString("N0");
         }
     }
 }

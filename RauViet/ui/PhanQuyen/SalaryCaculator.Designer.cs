@@ -54,6 +54,8 @@ namespace RauViet.ui
             this.allowancePanel = new System.Windows.Forms.Panel();
             this.allowanceGV = new System.Windows.Forms.DataGridView();
             this.label2 = new System.Windows.Forms.Label();
+            this.Print_BCC_btn = new System.Windows.Forms.Button();
+            this.preview_BCC_btn = new System.Windows.Forms.Button();
             this.load_gb.SuspendLayout();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
@@ -73,6 +75,8 @@ namespace RauViet.ui
             // 
             // load_gb
             // 
+            this.load_gb.Controls.Add(this.preview_BCC_btn);
+            this.load_gb.Controls.Add(this.Print_BCC_btn);
             this.load_gb.Controls.Add(this.monthYearDtp);
             this.load_gb.Controls.Add(this.exportPDF_btn);
             this.load_gb.Controls.Add(this.printPreview_pl_btn);
@@ -89,7 +93,7 @@ namespace RauViet.ui
             // 
             this.monthYearDtp.CalendarFont = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.monthYearDtp.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.monthYearDtp.Location = new System.Drawing.Point(514, 14);
+            this.monthYearDtp.Location = new System.Drawing.Point(29, 12);
             this.monthYearDtp.Name = "monthYearDtp";
             this.monthYearDtp.Size = new System.Drawing.Size(121, 31);
             this.monthYearDtp.TabIndex = 34;
@@ -131,7 +135,7 @@ namespace RauViet.ui
             // 
             this.LuuThayDoiBtn.BackColor = System.Drawing.SystemColors.Highlight;
             this.LuuThayDoiBtn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LuuThayDoiBtn.Location = new System.Drawing.Point(651, 10);
+            this.LuuThayDoiBtn.Location = new System.Drawing.Point(166, 8);
             this.LuuThayDoiBtn.Name = "LuuThayDoiBtn";
             this.LuuThayDoiBtn.Size = new System.Drawing.Size(99, 40);
             this.LuuThayDoiBtn.TabIndex = 25;
@@ -352,6 +356,28 @@ namespace RauViet.ui
             this.label2.Text = "Phụ Cấp";
             this.label2.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
+            // Print_BCC_btn
+            // 
+            this.Print_BCC_btn.BackColor = System.Drawing.Color.MediumAquamarine;
+            this.Print_BCC_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Print_BCC_btn.Location = new System.Drawing.Point(497, 12);
+            this.Print_BCC_btn.Name = "Print_BCC_btn";
+            this.Print_BCC_btn.Size = new System.Drawing.Size(189, 34);
+            this.Print_BCC_btn.TabIndex = 35;
+            this.Print_BCC_btn.Text = "In Bảng Chấm Công";
+            this.Print_BCC_btn.UseVisualStyleBackColor = false;
+            // 
+            // preview_BCC_btn
+            // 
+            this.preview_BCC_btn.BackColor = System.Drawing.Color.MediumAquamarine;
+            this.preview_BCC_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.preview_BCC_btn.Location = new System.Drawing.Point(692, 11);
+            this.preview_BCC_btn.Name = "preview_BCC_btn";
+            this.preview_BCC_btn.Size = new System.Drawing.Size(105, 34);
+            this.preview_BCC_btn.TabIndex = 36;
+            this.preview_BCC_btn.Text = "Xem Trước";
+            this.preview_BCC_btn.UseVisualStyleBackColor = false;
+            // 
             // SalaryCaculator
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -406,5 +432,7 @@ namespace RauViet.ui
         private System.Windows.Forms.Button printPreview_pl_btn;
         private System.Windows.Forms.Button exportPDF_btn;
         private System.Windows.Forms.DateTimePicker monthYearDtp;
+        private System.Windows.Forms.Button Print_BCC_btn;
+        private System.Windows.Forms.Button preview_BCC_btn;
     }
 }

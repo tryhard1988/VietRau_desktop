@@ -290,4 +290,37 @@ public static class Utils
             combo.SelectedIndex = -1; // Không chọn gì nếu không tồn tại
         }
     }
+
+    public static string getCompanyAddress()
+    {
+        return "Tổ 1, Ấp 4, X. Phước Thái, T. Đồng Nai, Việt Nam";
+    }
+
+    public static string getTaxCode()
+    {
+        return "0313983703";
+    }
+
+    public static string GetThu_Viet(DateTime date)
+    {
+        switch (date.DayOfWeek)
+        {
+            case DayOfWeek.Monday:
+                return "T2";
+            case DayOfWeek.Tuesday:
+                return "T3";
+            case DayOfWeek.Wednesday:
+                return "T4";
+            case DayOfWeek.Thursday:
+                return "T5";
+            case DayOfWeek.Friday:
+                return "T6";
+            case DayOfWeek.Saturday:
+                return "T7";
+            case DayOfWeek.Sunday:
+                return "CN";
+            default:
+                return "";
+        }
+    }
 }

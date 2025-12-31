@@ -42,6 +42,8 @@ namespace RauViet.ui
             this.readOnly_btn = new System.Windows.Forms.Button();
             this.edit_btn = new System.Windows.Forms.Button();
             this.info_gb = new System.Windows.Forms.GroupBox();
+            this.employeeName_tb = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
             this.deductionDate_dtp = new System.Windows.Forms.DateTimePicker();
             this.label4 = new System.Windows.Forms.Label();
             this.note_tb = new System.Windows.Forms.TextBox();
@@ -54,8 +56,6 @@ namespace RauViet.ui
             this.employeeDeductionID_tb = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.log_GV = new System.Windows.Forms.DataGridView();
-            this.employeeName = new System.Windows.Forms.TextBox();
-            this.label5 = new System.Windows.Forms.Label();
             this.panel4.SuspendLayout();
             this.panel5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
@@ -205,7 +205,7 @@ namespace RauViet.ui
             // 
             // info_gb
             // 
-            this.info_gb.Controls.Add(this.employeeName);
+            this.info_gb.Controls.Add(this.employeeName_tb);
             this.info_gb.Controls.Add(this.label5);
             this.info_gb.Controls.Add(this.deductionDate_dtp);
             this.info_gb.Controls.Add(this.label4);
@@ -218,6 +218,26 @@ namespace RauViet.ui
             this.info_gb.Size = new System.Drawing.Size(422, 222);
             this.info_gb.TabIndex = 28;
             this.info_gb.TabStop = false;
+            // 
+            // employeeName_tb
+            // 
+            this.employeeName_tb.Enabled = false;
+            this.employeeName_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.employeeName_tb.Location = new System.Drawing.Point(92, 17);
+            this.employeeName_tb.Name = "employeeName_tb";
+            this.employeeName_tb.ReadOnly = true;
+            this.employeeName_tb.Size = new System.Drawing.Size(189, 23);
+            this.employeeName_tb.TabIndex = 44;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label5.Location = new System.Drawing.Point(26, 20);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(54, 16);
+            this.label5.TabIndex = 43;
+            this.label5.Text = "Tên NV:";
             // 
             // deductionDate_dtp
             // 
@@ -340,26 +360,6 @@ namespace RauViet.ui
             this.log_GV.Size = new System.Drawing.Size(826, 211);
             this.log_GV.TabIndex = 37;
             // 
-            // employeeName
-            // 
-            this.employeeName.Enabled = false;
-            this.employeeName.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.employeeName.Location = new System.Drawing.Point(92, 17);
-            this.employeeName.Name = "employeeName";
-            this.employeeName.ReadOnly = true;
-            this.employeeName.Size = new System.Drawing.Size(189, 23);
-            this.employeeName.TabIndex = 44;
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(26, 20);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(54, 16);
-            this.label5.TabIndex = 43;
-            this.label5.Text = "Tên NV:";
-            // 
             // EmployeeDeduction_OTH
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -412,7 +412,7 @@ namespace RauViet.ui
         private System.Windows.Forms.Panel panel5;
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.TextBox search_tb;
-        private System.Windows.Forms.TextBox employeeName;
+        private System.Windows.Forms.TextBox employeeName_tb;
         private System.Windows.Forms.Label label5;
     }
 }

@@ -24,7 +24,7 @@ namespace RauViet.ui
             monthYearDtp.Format = DateTimePickerFormat.Custom;
             monthYearDtp.CustomFormat = "MM/yyyy";
             monthYearDtp.ShowUpDown = true;
-            monthYearDtp.Value = DateTime.Now;
+            monthYearDtp.Value = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
 
             int countTab = 0;
             deductionDate_dtp.TabIndex = countTab++; deductionDate_dtp.TabStop = true;
@@ -304,13 +304,13 @@ namespace RauViet.ui
                 deductionDate_dtp.Value = deductionDate;
                 amount_tb.Text = amount.ToString();
                 note_tb.Text = note;
-                employeeName.Text = cells["EmployeeName"].Value.ToString();
+                employeeName_tb.Text = cells["EmployeeName"].Value.ToString();
                 status_lb.Text = "";
             }
             else
             {
                 var cells = dataGV.Rows[index].Cells;
-                employeeName.Text = cells["FullName"].Value.ToString();
+                employeeName_tb.Text = cells["FullName"].Value.ToString();
                 status_lb.Text = "";
             }
         }
@@ -437,14 +437,20 @@ namespace RauViet.ui
             //    return;
             //}
 
-            string employeeCode = Convert.ToString(dataGV.CurrentRow.Cells["EmployeeCode"].Value);
+            
             int amount = Convert.ToInt32(amount_tb.Text);
             string note = note_tb.Text;
 
             if (employeeDeductionID_tb.Text.Length != 0)
+            {
+                string employeeCode = Convert.ToString(employeeDeductionGV.CurrentRow.Cells["EmployeeCode"].Value);
                 updateData(Convert.ToInt32(employeeDeductionID_tb.Text), employeeCode, deductionDate, amount, note);
+            }
             else
+            {
+                string employeeCode = Convert.ToString(dataGV.CurrentRow.Cells["EmployeeCode"].Value);
                 createNew(employeeCode, deductionDate, amount, note);
+            }
 
         }
         private async void deleteBtn_Click(object sender, EventArgs e)
@@ -508,7 +514,9 @@ namespace RauViet.ui
             status_lb.Text = "";
             info_gb.BackColor = Color.Green;
 
-            deductionDate_dtp.Focus();
+            if(!search_tb.Focused)
+                deductionDate_dtp.Focus();
+
             info_gb.BackColor = newCustomerBtn.BackColor;
             edit_btn.Visible = false;
             newCustomerBtn.Visible = false;

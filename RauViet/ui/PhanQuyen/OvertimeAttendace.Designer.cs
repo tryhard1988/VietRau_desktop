@@ -34,6 +34,13 @@ namespace RauViet.ui
             this.departmentGV = new System.Windows.Forms.DataGridView();
             this.dataGV = new System.Windows.Forms.DataGridView();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.attendanceGV = new System.Windows.Forms.DataGridView();
+            this.panel4 = new System.Windows.Forms.Panel();
+            this.totalHour_label = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this.count_label = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
             this.panel3 = new System.Windows.Forms.Panel();
             this.inPreview_btn = new System.Windows.Forms.Button();
             this.attendanceMonth_CB = new System.Windows.Forms.CheckBox();
@@ -56,22 +63,15 @@ namespace RauViet.ui
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.log_GV = new System.Windows.Forms.DataGridView();
-            this.panel4 = new System.Windows.Forms.Panel();
-            this.attendanceGV = new System.Windows.Forms.DataGridView();
-            this.label2 = new System.Windows.Forms.Label();
-            this.count_label = new System.Windows.Forms.Label();
-            this.label7 = new System.Windows.Forms.Label();
-            this.totalHour_label = new System.Windows.Forms.Label();
-            this.label10 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.departmentGV)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
             this.panel2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.attendanceGV)).BeginInit();
+            this.panel4.SuspendLayout();
             this.panel3.SuspendLayout();
             this.info_gb.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.log_GV)).BeginInit();
-            this.panel4.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.attendanceGV)).BeginInit();
             this.SuspendLayout();
             // 
             // panel1
@@ -132,6 +132,88 @@ namespace RauViet.ui
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(886, 748);
             this.panel2.TabIndex = 60;
+            // 
+            // attendanceGV
+            // 
+            this.attendanceGV.AllowUserToAddRows = false;
+            this.attendanceGV.AllowUserToDeleteRows = false;
+            this.attendanceGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.attendanceGV.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.attendanceGV.Location = new System.Drawing.Point(0, 0);
+            this.attendanceGV.Name = "attendanceGV";
+            this.attendanceGV.ReadOnly = true;
+            this.attendanceGV.Size = new System.Drawing.Size(543, 470);
+            this.attendanceGV.TabIndex = 68;
+            // 
+            // panel4
+            // 
+            this.panel4.Controls.Add(this.totalHour_label);
+            this.panel4.Controls.Add(this.label10);
+            this.panel4.Controls.Add(this.label7);
+            this.panel4.Controls.Add(this.count_label);
+            this.panel4.Controls.Add(this.label2);
+            this.panel4.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.panel4.Location = new System.Drawing.Point(0, 470);
+            this.panel4.Name = "panel4";
+            this.panel4.Size = new System.Drawing.Size(543, 26);
+            this.panel4.TabIndex = 67;
+            // 
+            // totalHour_label
+            // 
+            this.totalHour_label.AutoSize = true;
+            this.totalHour_label.Dock = System.Windows.Forms.DockStyle.Left;
+            this.totalHour_label.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.totalHour_label.ForeColor = System.Drawing.Color.Firebrick;
+            this.totalHour_label.Location = new System.Drawing.Point(253, 0);
+            this.totalHour_label.Name = "totalHour_label";
+            this.totalHour_label.Size = new System.Drawing.Size(72, 16);
+            this.totalHour_label.TabIndex = 37;
+            this.totalHour_label.Text = "Số Lượng:";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Dock = System.Windows.Forms.DockStyle.Left;
+            this.label10.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label10.Location = new System.Drawing.Point(159, 0);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(94, 16);
+            this.label10.TabIndex = 36;
+            this.label10.Text = "Tổng Giờ T.Ca:";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Dock = System.Windows.Forms.DockStyle.Left;
+            this.label7.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label7.Location = new System.Drawing.Point(138, 0);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(21, 16);
+            this.label7.TabIndex = 34;
+            this.label7.Text = " | ";
+            // 
+            // count_label
+            // 
+            this.count_label.AutoSize = true;
+            this.count_label.Dock = System.Windows.Forms.DockStyle.Left;
+            this.count_label.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.count_label.ForeColor = System.Drawing.Color.Firebrick;
+            this.count_label.Location = new System.Drawing.Point(66, 0);
+            this.count_label.Name = "count_label";
+            this.count_label.Size = new System.Drawing.Size(72, 16);
+            this.count_label.TabIndex = 33;
+            this.count_label.Text = "Số Lượng:";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Dock = System.Windows.Forms.DockStyle.Left;
+            this.label2.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.Location = new System.Drawing.Point(0, 0);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(66, 16);
+            this.label2.TabIndex = 32;
+            this.label2.Text = "Số Lượng:";
             // 
             // panel3
             // 
@@ -373,88 +455,6 @@ namespace RauViet.ui
             this.log_GV.Size = new System.Drawing.Size(886, 229);
             this.log_GV.TabIndex = 63;
             // 
-            // panel4
-            // 
-            this.panel4.Controls.Add(this.totalHour_label);
-            this.panel4.Controls.Add(this.label10);
-            this.panel4.Controls.Add(this.label7);
-            this.panel4.Controls.Add(this.count_label);
-            this.panel4.Controls.Add(this.label2);
-            this.panel4.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel4.Location = new System.Drawing.Point(0, 470);
-            this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(543, 26);
-            this.panel4.TabIndex = 67;
-            // 
-            // attendanceGV
-            // 
-            this.attendanceGV.AllowUserToAddRows = false;
-            this.attendanceGV.AllowUserToDeleteRows = false;
-            this.attendanceGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.attendanceGV.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.attendanceGV.Location = new System.Drawing.Point(0, 0);
-            this.attendanceGV.Name = "attendanceGV";
-            this.attendanceGV.ReadOnly = true;
-            this.attendanceGV.Size = new System.Drawing.Size(543, 470);
-            this.attendanceGV.TabIndex = 68;
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Dock = System.Windows.Forms.DockStyle.Left;
-            this.label2.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(0, 0);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(66, 16);
-            this.label2.TabIndex = 32;
-            this.label2.Text = "Số Lượng:";
-            // 
-            // count_label
-            // 
-            this.count_label.AutoSize = true;
-            this.count_label.Dock = System.Windows.Forms.DockStyle.Left;
-            this.count_label.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.count_label.ForeColor = System.Drawing.Color.Firebrick;
-            this.count_label.Location = new System.Drawing.Point(66, 0);
-            this.count_label.Name = "count_label";
-            this.count_label.Size = new System.Drawing.Size(72, 16);
-            this.count_label.TabIndex = 33;
-            this.count_label.Text = "Số Lượng:";
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Dock = System.Windows.Forms.DockStyle.Left;
-            this.label7.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label7.Location = new System.Drawing.Point(138, 0);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(21, 16);
-            this.label7.TabIndex = 34;
-            this.label7.Text = " | ";
-            // 
-            // totalHour_label
-            // 
-            this.totalHour_label.AutoSize = true;
-            this.totalHour_label.Dock = System.Windows.Forms.DockStyle.Left;
-            this.totalHour_label.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.totalHour_label.ForeColor = System.Drawing.Color.Firebrick;
-            this.totalHour_label.Location = new System.Drawing.Point(253, 0);
-            this.totalHour_label.Name = "totalHour_label";
-            this.totalHour_label.Size = new System.Drawing.Size(72, 16);
-            this.totalHour_label.TabIndex = 37;
-            this.totalHour_label.Text = "Số Lượng:";
-            // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Dock = System.Windows.Forms.DockStyle.Left;
-            this.label10.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label10.Location = new System.Drawing.Point(159, 0);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(94, 16);
-            this.label10.TabIndex = 36;
-            this.label10.Text = "Tổng Giờ T.Ca:";
-            // 
             // OvertimeAttendace
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -470,14 +470,14 @@ namespace RauViet.ui
             ((System.ComponentModel.ISupportInitialize)(this.departmentGV)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).EndInit();
             this.panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.attendanceGV)).EndInit();
+            this.panel4.ResumeLayout(false);
+            this.panel4.PerformLayout();
             this.panel3.ResumeLayout(false);
             this.panel3.PerformLayout();
             this.info_gb.ResumeLayout(false);
             this.info_gb.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.log_GV)).EndInit();
-            this.panel4.ResumeLayout(false);
-            this.panel4.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.attendanceGV)).EndInit();
             this.ResumeLayout(false);
 
         }

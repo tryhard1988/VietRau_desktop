@@ -6,6 +6,7 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 using Color = System.Drawing.Color;
 using DataTable = System.Data.DataTable;
 
@@ -60,6 +61,8 @@ namespace RauViet.ui
 
             this.KeyDown += SalaryCaculator_KeyDown;
             this.Load += OvertimeAttendace_Load;
+            Print_BCC_btn.Click += Print_BCC_btn_Click;
+            preview_BCC_btn.Click += Preview_BCC_btn_Click;
         }
 
         private void OvertimeAttendace_Load(object sender, EventArgs e)
@@ -1191,5 +1194,33 @@ namespace RauViet.ui
             LuuThayDoiBtn.Visible = false;
             ShowData();
         }
+
+
+        private void Preview_BCC_btn_Click(object sender, EventArgs e)
+        {
+            Print_BangChamCong(true);
+        }
+
+        private void Print_BCC_btn_Click(object sender, EventArgs e)
+        {
+            Print_BangChamCong(false);
+        }
+        private void Print_BangChamCong(bool isPreview)
+        {
+            if(dataGV.CurrentRow == null)
+            {
+                MessageBox.Show("Chưa chọn phòng Ban cần in", "thông báo", MessageBoxButtons.OK);
+                return;
+            }
+
+            DateTime date = monthYearDtp.Value;
+            BangChamCong_Printer deliveryPrinter = new BangChamCong_Printer(dataGV.CurrentRow.Cells["DepartmentName"].Value.ToString(), mEmployee_dt, mAttendamce_dt, date.Month, date.Year);
+
+            if (!isPreview)
+                deliveryPrinter.PrintDirect();
+            else
+                deliveryPrinter.PrintPreview(this);
+        }
+
     }
 }
