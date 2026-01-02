@@ -98,7 +98,7 @@ public class BangChamCong_Printer
         int pageHeight = e.PageBounds.Height - 50; // margin dưới
         int days = DateTime.DaysInMonth(year, month);
         // Cột
-        int col1Width = 27, col2Width = 38, col3Width = 110, col4Width = 30, col5Width = 30, col6Width = 30, col7Width = 30, col8Width = 30, colDayWidth = 20;
+        int col1Width = 29, col2Width = 40, col3Width = 110, col4Width = 36, col5Width = 32, col6Width = 32, col7Width = 32, col8Width = 32, colDayWidth = 19;
         int col1 = startX;
         int col2 = col1 + col1Width;
         int col3 = col2 + col2Width;
@@ -109,8 +109,9 @@ public class BangChamCong_Printer
         int col8 = col7 + col7Width;
         int colDay = col8 + col8Width;
         int colKT = colDay + colDayWidth * days;
-        int colKTWidth = pageWidth - startX - colKT - 10;
+        int colKTWidth = pageWidth - startX - colKT - 50;
 
+        Font header1Font = new Font("Times New Roman", 7, FontStyle.Bold);
         Font headerFont = new Font("Times New Roman", 14, FontStyle.Bold);
         Font normalFont = new Font("Times New Roman", 7);
         Font tableHeaderFont = new Font("Times New Roman", 7, FontStyle.Bold);
@@ -121,15 +122,15 @@ public class BangChamCong_Printer
         // Header chỉ in 1 lần ở đầu trang
         if (rowIndex == 0)
         {
-            g.DrawString("Công Ty CP Việt Rau", headerFont, Brushes.Black, startX, y);
-            g.DrawString($"MST: {Utils.getTaxCode()}", headerFont, Brushes.Black, startX + 200, y);
-            y += lineHeight1;
+            g.DrawString("Công Ty CP Việt Rau", header1Font, Brushes.Black, startX, y);
+            y += lineHeight1 / 2;
+            g.DrawString($"MST:   {Utils.getTaxCode()}", normalFont, Brushes.Black, startX, y);
+            y += lineHeight1/2;
 
-            g.DrawString($"Địa Chỉ: {Utils.getCompanyAddress()}", headerFont, Brushes.Black, startX, y);
+            g.DrawString($"Địa Chỉ:   {Utils.getCompanyAddress()}", normalFont, Brushes.Black, startX, y);
             y += lineHeight1;
 
             g.DrawString($"Phòng Ban: {departmentName}", headerFont, Brushes.Black, startX, y);
-            y += lineHeight1;
 
             string titleStr = $"BẢNG CHẤM CÔNG THÁNG {month}/{year}";
             SizeF codeSize = g.MeasureString(titleStr, headerFont);
@@ -151,11 +152,11 @@ public class BangChamCong_Printer
         DrawCellText(g, "STT", tableHeaderFont, new Rectangle(col1, y, col1Width, lineHeightHeader));
         DrawCellText(g, "Mã NV", tableHeaderFont, new Rectangle(col2, y, col2Width, lineHeightHeader));
         DrawCellText(g, "Họ và tên", tableHeaderFont, new Rectangle(col3, y, col3Width, lineHeightHeader));
-        DrawCellText(g, "Nghỉ P.Thường", tableHeaderFont, new Rectangle(col4, y, col4Width, lineHeightHeader));
+        DrawCellText(g, "Nghỉ phép thường", tableHeaderFont, new Rectangle(col4, y, col4Width, lineHeightHeader));
         DrawCellText(g, "Ngày lễ", tableHeaderFont, new Rectangle(col5, y, col5Width, lineHeightHeader));
-        DrawCellText(g, "Nghỉ PN(h)", tableHeaderFont, new Rectangle(col6, y, col6Width, lineHeightHeader));
-        DrawCellText(g, "Nghỉ h.lương", tableHeaderFont, new Rectangle(col7, y, col7Width, lineHeightHeader));
-        DrawCellText(g, "Tổng g.công", tableHeaderFont, new Rectangle(col8, y, col8Width, lineHeightHeader));
+        DrawCellText(g, "Nghỉ PN (h)", tableHeaderFont, new Rectangle(col6, y, col6Width, lineHeightHeader));
+        DrawCellText(g, "Nghỉ hưởng lương", tableHeaderFont, new Rectangle(col7, y, col7Width, lineHeightHeader));
+        DrawCellText(g, "Tổng giờ công", tableHeaderFont, new Rectangle(col8, y, col8Width, lineHeightHeader));
 
         SolidBrush bgBrush_LightGreen = new SolidBrush(Color.FromArgb(198, 224, 180));
         SolidBrush bgBrush_Yellow = new SolidBrush(Color.Yellow);
@@ -215,8 +216,8 @@ public class BangChamCong_Printer
             g.DrawLine(Pens.Black, colKT, y, colKT, y + lineHeight);
 
             DrawCellText(g, (countSTT).ToString(), normalFont, new Rectangle(col1, y, col1Width, lineHeight));
-            DrawCellText(g, employeeCode, normalFont, new Rectangle(col2, y, col2Width, lineHeight));
-            DrawCellText(g, row["FullName"].ToString(), normalFont, new Rectangle(col3, y, col3Width, lineHeight));
+            DrawCellText(g, employeeCode, tableHeaderFont, new Rectangle(col2, y, col2Width, lineHeight));
+            DrawCellText(g, row["FullName"].ToString(), tableHeaderFont, new Rectangle(col3, y, col3Width, lineHeight));
             DrawCellText(g, Convert.ToDecimal(row["c_LeaveTypeNL_1"]).ToString("F1"), normalFont, new Rectangle(col4, y, col4Width, lineHeight));
             DrawCellText(g, Convert.ToDecimal(row["c_LeaveTypeNL_1"]).ToString("F1"), normalFont, new Rectangle(col5, y, col5Width, lineHeight));
             DrawCellText(g, Convert.ToDecimal(row["c_LeaveTypePN_1"]).ToString("F1"), normalFont, new Rectangle(col6, y, col6Width, lineHeight));

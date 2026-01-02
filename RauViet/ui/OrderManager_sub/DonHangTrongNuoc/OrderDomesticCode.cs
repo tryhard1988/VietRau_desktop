@@ -95,16 +95,19 @@ namespace RauViet.ui
         private void autoCreateExportId_btn_Click(object sender, EventArgs e)
         {
             int maxExportIndex = 0;
+            int currentYear = DateTime.Now.Year;
 
-            foreach (DataGridViewRow row in dataGV.Rows)
+            foreach (DataRow row in mOrderDomesticCode_dt.Rows)
             {
-                if (row.IsNewRow) continue; // bỏ dòng mới chưa nhập dữ liệu
-
-                if (row.Cells["OrderDomesticIndex"].Value != null &&
-                    int.TryParse(row.Cells["OrderDomesticIndex"].Value.ToString(), out int value))
+                if (DateTime.TryParse(row["DeliveryDate"].ToString(), out DateTime deliveryDate))
                 {
-                    if (value > maxExportIndex)
-                        maxExportIndex = value;
+                    if (deliveryDate.Year != currentYear)
+                        continue;
+                    if (int.TryParse(row["OrderDomesticIndex"].ToString(), out int value))
+                    {
+                        if (value > maxExportIndex)
+                            maxExportIndex = value;
+                    }
                 }
             }
 
@@ -173,13 +176,14 @@ namespace RauViet.ui
                 dataGV.Columns["Company"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
 
                 dataGV.Columns["InputByName_NoSign"].Visible = false;
-              //  dataGV.Columns["OrderDomesticCodeID"].Visible = false;
+                dataGV.Columns["OrderDomesticCodeID"].Visible = false;
                 dataGV.Columns["InputBy"].Visible = false;
                 dataGV.Columns["PackingBy"].Visible = false;
                 dataGV.Columns["CustomerID"].Visible = false;
                 dataGV.Columns["CustomerCode"].Visible = false;
                 dataGV.Columns["Address"].Visible = false;
                 dataGV.Columns["CustomerName"].Visible = false;
+                dataGV.Columns["DeliveryYear"].Visible = false;
 
                 inputBy_cbb.DataSource = _employeesInDongGoi_dt;
                 inputBy_cbb.DisplayMember = "FullName";  // hiển thị tên
@@ -190,7 +194,10 @@ namespace RauViet.ui
                 packingBy_cbb.DisplayMember = "FullName";  // hiển thị tên
                 packingBy_cbb.ValueMember = "EmployeeID";
 
-                var rows = customerTask.Result.AsEnumerable().Where(r => !string.IsNullOrWhiteSpace(r.Field<string>("Company")));
+                var rows = customerTask.Result.AsEnumerable().Where(r =>
+                                                    !string.IsNullOrWhiteSpace(r.Field<string>("Company")) &&
+                                                    string.Equals(r.Field<string>("Home"), "TRONG_NUOC", StringComparison.OrdinalIgnoreCase)
+                                                );
                 if (rows.Any())
                     mCustomer_dt = rows.CopyToDataTable();
                 else
@@ -332,9 +339,10 @@ namespace RauViet.ui
                                 row["PackingBy"] = packingBy;
                                 row["CustomerID"] = customerID;
                                 row["Complete"] = completed;
-                                row["InputByName"] = inputByRow[0]["FullName"].ToString();
+                                row["InputByName"] = inputByRow[0]["FullName"].ToString(); 
                                 row["PackingByName"] = packingByRow[0]["FullName"].ToString();
-                                row["CustomerName"] = customerRow[0]["Company"].ToString();
+                                row["CustomerName"] = customerRow[0]["FullName"].ToString();
+                                row["Company"] = customerRow[0]["Company"].ToString();
                                 row["InputByName_NoSign"] = Utils.RemoveVietnameseSigns(inputByRow[0]["FullName"].ToString()).Replace(" ", "");
 
                                 if (completed)
@@ -388,13 +396,15 @@ namespace RauViet.ui
                         drToAdd["OrderDomesticCodeID"] = newId;
                         drToAdd["OrderDomesticIndex"] = orderDomesticIndex;
                         drToAdd["DeliveryDate"] = deliveryDate;
+                        drToAdd["DeliveryYear"] = deliveryDate.Year;
                         drToAdd["Complete"] = false;
                         drToAdd["InputBy"] = inputBy;
                         drToAdd["PackingBy"] = packingBy;
                         drToAdd["CustomerID"] = customerID;
                         drToAdd["InputByName"] = inputByRow[0]["FullName"].ToString(); ;
                         drToAdd["PackingByName"] = packingByRow[0]["FullName"].ToString();
-                        drToAdd["CustomerName"] = customerRow[0]["Company"].ToString();
+                        drToAdd["CustomerName"] = customerRow[0]["FullName"].ToString();
+                        drToAdd["Company"] = customerRow[0]["Company"].ToString();
                         drToAdd["InputByName_NoSign"] = Utils.RemoveVietnameseSigns(inputByRow[0]["FullName"].ToString()).Replace(" ", "");
                         
 

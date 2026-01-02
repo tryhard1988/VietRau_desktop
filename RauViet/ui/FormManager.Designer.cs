@@ -103,6 +103,7 @@
             this.aaaaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadExcelOrderReportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.content_panel = new System.Windows.Forms.Panel();
+            this.thốngKêTrongNămToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1.SuspendLayout();
             this.LOT_menuitem.SuspendLayout();
             this.SuspendLayout();
@@ -624,7 +625,8 @@
             // báoCáoĐơnHàngTrongNướcToolStripMenuItem
             // 
             this.báoCáoĐơnHàngTrongNướcToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.ResoncileDomesticDebts_Month_mi});
+            this.ResoncileDomesticDebts_Month_mi,
+            this.thốngKêTrongNămToolStripMenuItem});
             this.báoCáoĐơnHàngTrongNướcToolStripMenuItem.Name = "báoCáoĐơnHàngTrongNướcToolStripMenuItem";
             this.báoCáoĐơnHàngTrongNướcToolStripMenuItem.Size = new System.Drawing.Size(268, 22);
             this.báoCáoĐơnHàngTrongNướcToolStripMenuItem.Text = "Báo Cáo Đơn Hàng Trong Nước";
@@ -632,7 +634,7 @@
             // ResoncileDomesticDebts_Month_mi
             // 
             this.ResoncileDomesticDebts_Month_mi.Name = "ResoncileDomesticDebts_Month_mi";
-            this.ResoncileDomesticDebts_Month_mi.Size = new System.Drawing.Size(192, 22);
+            this.ResoncileDomesticDebts_Month_mi.Size = new System.Drawing.Size(206, 22);
             this.ResoncileDomesticDebts_Month_mi.Text = "Đối Chiếu Công Nợ";
             // 
             // toolStripMenuItem2
@@ -682,6 +684,12 @@
             this.content_panel.Name = "content_panel";
             this.content_panel.Size = new System.Drawing.Size(1388, 491);
             this.content_panel.TabIndex = 1;
+            // 
+            // thốngKêTrongNămToolStripMenuItem
+            // 
+            this.thốngKêTrongNămToolStripMenuItem.Name = "thốngKêTrongNămToolStripMenuItem";
+            this.thốngKêTrongNămToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
+            this.thốngKêTrongNămToolStripMenuItem.Text = "Thống Kê Trong Năm";
             // 
             // FormManager
             // 
@@ -778,5 +786,6 @@
         private System.Windows.Forms.ToolStripMenuItem orderDomesticDetail_mi;
         private System.Windows.Forms.ToolStripMenuItem báoCáoĐơnHàngTrongNướcToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem ResoncileDomesticDebts_Month_mi;
+        private System.Windows.Forms.ToolStripMenuItem thốngKêTrongNămToolStripMenuItem;
     }
 }
