@@ -79,16 +79,35 @@ namespace RauViet.ui
 
                 await Task.WhenAll(customerOrderHistoryByYearTask);
                 mDetail_dt = customerOrderHistoryByYearTask.Result;
+
+                if (mDetail_dt != null)
+                {
+                    // 1️⃣ Log header (tên cột)
+                    Console.WriteLine(string.Join(" | ",
+                        mDetail_dt.Columns
+                                  .Cast<DataColumn>()
+                                  .Select(c => c.ColumnName)));
+
+                    // 2️⃣ Log từng dòng dữ liệu
+                    foreach (DataRow row in mDetail_dt.Rows)
+                    {
+                        Console.WriteLine(string.Join(" | ",
+                            row.ItemArray.Select(x =>
+                                x == DBNull.Value ? "NULL" : x.ToString())));
+                    }
+                }
+
+
                 DataTable customer_dt = new DataTable();
                 {
-                    var query = customerOrderHistoryByYearTask.Result
-                                                                .AsEnumerable()
-                                                                .GroupBy(r => r.Field<int>("CustomerID"))
-                                                                .Select(g => new
-                                                                {
-                                                                    CustomerID = g.Key,
-                                                                    Company = g.Select(r => r.Field<string>("Company")).FirstOrDefault(c => !string.IsNullOrWhiteSpace(c))
-                                                                });
+                    var query = mDetail_dt
+                        .AsEnumerable()
+                        .GroupBy(r => r.Field<int>("CustomerID"))
+                        .Select(g => new
+                        {
+                            CustomerID = g.Key,
+                            Company = g.Select(r => r.Field<string>("Company")).FirstOrDefault(c => !string.IsNullOrWhiteSpace(c))
+                        });
 
                     customer_dt.Columns.Add("CustomerID", typeof(int));
                     customer_dt.Columns.Add("Company", typeof(string));
@@ -101,9 +120,7 @@ namespace RauViet.ui
 
                 mSummary_dt = new DataTable();
                 {
-                    var query = customerOrderHistoryByYearTask.Result
-                                                            .AsEnumerable()
-                                                            .GroupBy(r => new
+                    var query = mDetail_dt.AsEnumerable().GroupBy(r => new
                                                             {
                                                                 CustomerID = r.Field<int>("CustomerID"),
                                                                 ProductNameVN = r.Field<string>("ProductNameVN"),
@@ -216,9 +233,12 @@ namespace RauViet.ui
                 totalMoney_tb.Text = sumTotalAmount.ToString("N0");
 
                 CustomerGV_CellClick(null, null);
+
+                status_lb.Visible = false;
             }
-            catch
+            catch(Exception ex) 
             {
+                Console.WriteLine("ERROR: " + ex.Message);
                 status_lb.Text = "Thất bại.";
                 status_lb.ForeColor = Color.Red;
             }

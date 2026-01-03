@@ -1769,9 +1769,9 @@ namespace RauViet.classes
                     mtOrderDomestics[year][month] = dt;
                     editOrderDomesticByMonthYear(dt);
                 }
-                catch
+                catch (Exception ex)
                 {
-                    Console.WriteLine("error getCustomersAsync SQLStore");
+                    Console.WriteLine("error getCustomersAsync SQLStore: " + ex.Message);
                     return null;
                 }
             }
@@ -1832,10 +1832,14 @@ namespace RauViet.classes
                     dr["PCSReal"] = 0;
                 }
 
-                if(package.CompareTo("weight") == 0 || package.CompareTo("kg") == 0)
-                    dr["TotalAmount"] = Convert.ToDecimal(dr["NWReal"]) * Convert.ToDecimal(dr["Price"]);
+                decimal nw = dr.IsNull("NWReal") ? 0m : Convert.ToDecimal(dr["NWReal"]);
+                decimal pcs = dr.IsNull("PCSReal") ? 0m : Convert.ToDecimal(dr["PCSReal"]);
+                decimal price = dr.IsNull("Price") ? 0m : Convert.ToDecimal(dr["Price"]);
+
+                if (package == "weight" || package == "kg")
+                    dr["TotalAmount"] = nw * price;
                 else
-                    dr["TotalAmount"] = Convert.ToDecimal(dr["PCSReal"]) * Convert.ToDecimal(dr["Price"]);
+                    dr["TotalAmount"] = pcs * price;
             }
 
             int count = 0;

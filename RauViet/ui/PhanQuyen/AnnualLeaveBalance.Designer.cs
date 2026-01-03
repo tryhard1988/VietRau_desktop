@@ -31,10 +31,10 @@ namespace RauViet.ui
         {
             this.panel1 = new System.Windows.Forms.Panel();
             this.info_gb = new System.Windows.Forms.GroupBox();
+            this.ResetPhep_btn = new System.Windows.Forms.Button();
             this.capphep_btn = new System.Windows.Forms.Button();
             this.status_lb = new System.Windows.Forms.Label();
             this.dataGV = new System.Windows.Forms.DataGridView();
-            this.ResetPhep_btn = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.info_gb.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
@@ -59,6 +59,17 @@ namespace RauViet.ui
             this.info_gb.Size = new System.Drawing.Size(241, 166);
             this.info_gb.TabIndex = 28;
             this.info_gb.TabStop = false;
+            // 
+            // ResetPhep_btn
+            // 
+            this.ResetPhep_btn.BackColor = System.Drawing.Color.OrangeRed;
+            this.ResetPhep_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ResetPhep_btn.Location = new System.Drawing.Point(39, 83);
+            this.ResetPhep_btn.Name = "ResetPhep_btn";
+            this.ResetPhep_btn.Size = new System.Drawing.Size(169, 54);
+            this.ResetPhep_btn.TabIndex = 33;
+            this.ResetPhep_btn.Text = "Reset Phép";
+            this.ResetPhep_btn.UseVisualStyleBackColor = false;
             // 
             // capphep_btn
             // 
@@ -93,17 +104,6 @@ namespace RauViet.ui
             this.dataGV.ReadOnly = true;
             this.dataGV.Size = new System.Drawing.Size(900, 681);
             this.dataGV.TabIndex = 12;
-            // 
-            // ResetPhep_btn
-            // 
-            this.ResetPhep_btn.BackColor = System.Drawing.Color.OrangeRed;
-            this.ResetPhep_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ResetPhep_btn.Location = new System.Drawing.Point(39, 83);
-            this.ResetPhep_btn.Name = "ResetPhep_btn";
-            this.ResetPhep_btn.Size = new System.Drawing.Size(169, 54);
-            this.ResetPhep_btn.TabIndex = 33;
-            this.ResetPhep_btn.Text = "Reset Phép";
-            this.ResetPhep_btn.UseVisualStyleBackColor = false;
             // 
             // AnnualLeaveBalance
             // 

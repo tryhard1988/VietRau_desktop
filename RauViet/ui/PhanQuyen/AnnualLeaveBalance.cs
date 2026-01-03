@@ -286,5 +286,58 @@ namespace RauViet.ui
             }
         }
 
+        private async void button1_Click(object sender, EventArgs e)
+        {
+            using (System.Windows.Forms.OpenFileDialog ofd = new System.Windows.Forms.OpenFileDialog())
+            {
+                ofd.Title = "Chọn file Excel";
+                ofd.Filter = "Excel Files|*.xlsx;*.xls|All Files|*.*";
+                ofd.Multiselect = false; // chỉ cho chọn 1 file
+
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    string filePath = ofd.FileName;
+                    System.Data.DataTable excelData = Utils.LoadExcel_NoHeader(filePath);
+
+                    List<(string EmployeeCode, int RemainingLeaveDays)> albData = new List<(string, int)>();
+
+                    foreach (DataRow dr in excelData.Rows)
+                    {
+                        string employeeCode = Convert.ToString(dr["Column1"]);
+                        int remainingLeaveDays = 0;
+
+                        if (dr["Column2"] != DBNull.Value && int.TryParse(dr["Column2"].ToString().Trim(), out int value))
+                        {
+                            remainingLeaveDays = value;
+                        }
+
+                        albData.Add((employeeCode, remainingLeaveDays));
+
+                    }
+
+                    try
+                    {
+                        int prevMonth = DateTime.Now.AddMonths(-1).Month;
+
+                        Boolean iSuccess = await SQLManager_QLNS.Instance.UpsertAnnualLeaveBalanceBatchAsync(albData, false, prevMonth, 2025);
+                        if (iSuccess)
+                        {
+                            status_lb.Text = "Thành Công.";
+                            status_lb.ForeColor = Color.Green;                            
+                        }
+                        else
+                        {
+                            status_lb.Text = "";
+                            MessageBox.Show("Thất Bại", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                    }
+                    catch
+                    {
+                        status_lb.Text = "";
+                        MessageBox.Show("Thất Bại", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+        }
     }
 }

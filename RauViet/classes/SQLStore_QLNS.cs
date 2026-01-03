@@ -1100,7 +1100,13 @@ namespace RauViet.classes
                     dr["PositionName"] = matchRow["PositionName"]?.ToString();
                     dr["FullName"] = matchRow["FullName"]?.ToString();
                     dr["EmployessName_NoSign"] = Utils.RemoveVietnameseSigns(empCode + " " + matchRow["FullName"]?.ToString());
-                    dr["RemainingLeaveDays_1"] = Convert.ToInt32(dr["RemainingLeaveDays"]) - Convert.ToInt32(dr["LeaveCount"]);
+                    int remaining = 0;
+                    int leaveCount = 0;
+
+                    int.TryParse(dr["RemainingLeaveDays"]?.ToString(), out remaining);
+                    int.TryParse(dr["LeaveCount"]?.ToString(), out leaveCount);
+
+                    dr["RemainingLeaveDays_1"] = remaining - leaveCount;
                 }
             }
         }

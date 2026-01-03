@@ -1,11 +1,8 @@
-﻿using DocumentFormat.OpenXml.Wordprocessing;
-using RauViet.classes;
+﻿using RauViet.classes;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Drawing;
 using System.Globalization;
-using System.IO.Packaging;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;

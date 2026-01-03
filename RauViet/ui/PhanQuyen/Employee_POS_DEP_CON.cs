@@ -227,7 +227,7 @@ namespace RauViet.ui
                                     ["ContractTypeCode"] = contractTypeCode
                                 };
                                 SQLStore_QLNS.Instance.updateEmploy(maNV, parameters);
-
+                                SQLStore_QLNS.Instance.removeAnnualLeaveBalance();
 
                             }
                             else

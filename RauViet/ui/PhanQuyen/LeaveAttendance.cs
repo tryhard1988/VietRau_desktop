@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Management.Instrumentation;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -27,6 +26,7 @@ namespace RauViet.ui
             int countTab = 0;
             leaveType_cbb.TabIndex = countTab++; leaveType_cbb.TabStop = true;
             dateOffStart_dtp.TabIndex = countTab++; dateOffStart_dtp.TabStop = true;
+            dateOffEnd_dtp.TabIndex = countTab++; dateOffEnd_dtp.TabStop = true;
             hourLeave_tb.TabIndex = countTab++; hourLeave_tb.TabStop = true;
             note_tb.TabIndex = countTab++; note_tb.TabStop = true;
             LuuThayDoiBtn.TabIndex = countTab++; LuuThayDoiBtn.TabStop = true;
@@ -83,9 +83,9 @@ namespace RauViet.ui
             if (e.KeyCode == Keys.F5)
             {
                 int year = Convert.ToInt32(year_tb.Text);
-
+                SQLStore_QLNS.Instance.removeAnnualLeaveBalance();
                 SQLStore_QLNS.Instance.removeLeaveAttendances(year);
-               // LoadLeaveAttendance_btn_Click(null, null);
+                ShowData();
             }
         }
 
@@ -119,6 +119,9 @@ namespace RauViet.ui
                 leaveType_cbb.DataSource = mLeaveType;
                 leaveType_cbb.DisplayMember = "LeaveTypeName";
                 leaveType_cbb.ValueMember = "LeaveTypeCode";
+
+                DataView dv = mEmployee_dt.DefaultView;
+                dv.RowFilter = "";
 
                 dataGV.DataSource = mEmployee_dt;
                 dataGV.Columns["EmployeeCode"].HeaderText = "Mã Nhân Viên";
@@ -183,8 +186,6 @@ namespace RauViet.ui
                 loadingOverlay.Hide();
             }
         }
-
-        
 
         private async void loadLeaveAttendance()
         {
@@ -261,6 +262,20 @@ namespace RauViet.ui
 
 
             UpdateAttendanceUI(rowIndex);
+
+            if (isNewState)
+            {
+                int remainingLeaveDays = Convert.ToInt32(dataGV.CurrentRow.Cells["RemainingLeaveDays_1"].Value);
+                if (remainingLeaveDays > 0)
+                {
+                    leaveType_cbb.SelectedValue = "PN_1";
+                }
+                else
+                {
+                    leaveType_cbb.SelectedValue = "PT_1";
+                }
+                return;
+            }
         }
 
         private void attendanceGV_CellClick(object sender, EventArgs e)
@@ -275,7 +290,10 @@ namespace RauViet.ui
 
         private void UpdateRightUI(int rowIndex)
         {
-            if (isNewState) return;
+            if (isNewState)
+            {
+                return;
+            }
             var cells = attendanceGV.Rows[rowIndex].Cells;
             int leaveID = Convert.ToInt32(cells["LeaveID"].Value);
             string leaveTypeCode = cells["LeaveTypeCode"].Value.ToString();
@@ -544,7 +562,6 @@ namespace RauViet.ui
         private void NewBtn_Click(object sender, EventArgs e)
         {
             leaveID_tb.Text = "";
-            note_tb.Text = "";
             leaveType_cbb.Focus();
             info_gb.BackColor = newBtn.BackColor;
             edit_btn.Visible = false;
@@ -559,6 +576,16 @@ namespace RauViet.ui
             label5.Visible = true;
             SetUIReadOnly(false);
             linkStartEnd_cb.Visible = true;
+
+            int remainingLeaveDays = Convert.ToInt32(dataGV.CurrentRow.Cells["RemainingLeaveDays_1"].Value);
+            if(remainingLeaveDays > 0)
+            {
+                leaveType_cbb.SelectedValue = "PN_1";
+            }
+            else
+            {
+                leaveType_cbb.SelectedValue = "PT_1";
+            }
         }
 
         private void ReadOnly_btn_Click(object sender, EventArgs e)
