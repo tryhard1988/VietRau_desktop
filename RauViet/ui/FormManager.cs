@@ -42,11 +42,10 @@ namespace RauViet.ui
                 employeeWork_mi.Click += EmployeeWork_mi_Click;
                 department_mi.Click += department_mi_Click;
                 position_mi.Click += position_mi_Click;
-                overtimeType_mi.Click += OvertimeType_mi_Click;
                 holiday_mi.Click += Holiday_mi_Click;
-                allowanceType_mi.Click += AllowanceType_mi_Click;
                 salaryGrade_mi.Click += SalaryGrade_mi_Click;
                 employeeSalaryInfo_mi.Click += EmployeeSalaryInfo_mi_Click;
+                
             }
             else
             {
@@ -144,12 +143,13 @@ namespace RauViet.ui
                 leaveAttendance_mi.Click += LeaveAttendance_mi_Click;
                 employeeAllowance_mi.Click += EmployeeAllowance_mi_Click;
                 monthlyAllowance_mi.Click += MonthlyAllowance_mi_Click;
+                MonthlyAllowance_TienAnCaDem_mi.Click += MonthlyAllowance_TienAnCaDem_mi_Click;
                 deduction_VEG_mi.Click += deduction_VEG_mi_Click;
                 deduction_OTH_mi.Click += Deduction_OTH_mi_Click;
                 deduction_CEP_mi.Click += Deduction_CEP_mi_Click;
                 deduction_ADV_mi.Click += Deduction_ADV_mi_Click;
                 deduction_ATT_mi.Click += Deduction_ATT_mi_Click;
-                salaryCaculator_mi.Click += SalaryCaculator_mi_Click;
+                salaryCaculator_mi.Click += SalaryCaculator_mi_Click;                
 
                 deduction_VEG_mi.Visible = UserManager.Instance.hasRole_TruTienRau();
                 deduction_OTH_mi.Visible = UserManager.Instance.hasRole_TruKhac();
@@ -179,6 +179,7 @@ namespace RauViet.ui
                 yearlyReport_mi.Click += YearlyReport_mi_Click;
                 monthlyTotalPerYear_mi.Click += MonthlyTotalPerYear_mi_Click;
                 ResoncileDomesticDebts_Month_mi.Click += ResoncileDomesticDebts_Month_mi_Click;
+                resoncileDomesticDebts_Year_mi.Click += ResoncileDomesticDebts_Year_mi_Click;
             }
             else
             {
@@ -214,15 +215,23 @@ namespace RauViet.ui
             }
         }
 
+
         private async void SwitchChildForm<T>(string title) where T : Form, new()
         {
             // Lưu form hiện tại nếu có
             if (this.content_panel.Controls.Count > 0)
             {
-                if (this.content_panel.Controls[0] is ICanSave currentForm)
-                    currentForm.SaveData();
+                var oldForm = this.content_panel.Controls[0] as Form;
+
+                if (oldForm is ICanSave savable)
+                    savable.SaveData();
 
                 await Task.Delay(300);
+
+                // ✅ QUAN TRỌNG
+                oldForm?.Close();   // 👉 sẽ gọi FormClosing + FormClosed
+                oldForm?.Dispose();
+
                 this.content_panel.Controls.Clear();
             }
             // Tạo form mới
@@ -291,7 +300,9 @@ namespace RauViet.ui
             CreateQR,
             OrderDomesticCode,
             OrderDomesticDetail,
-            ResoncileDomesticDebts_Month
+            ResoncileDomesticDebts_Month,
+            ResoncileDomesticDebts_Year,
+            MonthlyAllowance_TienAnCaDem
         }
 
         private void openCurrentForm(EForm status)
@@ -455,6 +466,12 @@ namespace RauViet.ui
                 case EForm.ResoncileDomesticDebts_Month:
                     SwitchChildForm<ResoncileDomesticDebts_Month>("Đối Chiếu Công Nợ Theo Tháng");
                     break;
+                case EForm.ResoncileDomesticDebts_Year:
+                    SwitchChildForm<ResoncileDomesticDebts_Year>("Báo Cáo Thống Kê Trong Năm");
+                    break;
+                case EForm.MonthlyAllowance_TienAnCaDem:
+                    SwitchChildForm<MonthlyAllowance_TienAnCaDem>("Phụ Cấp Tiền Ăn Ca Đêm");
+                    break;
             }
             
             Properties.Settings.Default.current_form = status.ToString();
@@ -476,7 +493,9 @@ namespace RauViet.ui
         private void EmployeeBH_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.EmployeeBaoHiem); }
         private void EmployeeSalaryInfo_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.EmployeeSalaryInfo); }
         private void SalaryGrade_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.SalaryGrade); }
+        
         private void MonthlyAllowance_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.MonthlyAllowance); }
+        private void MonthlyAllowance_TienAnCaDem_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.MonthlyAllowance_TienAnCaDem); }
         private void EmployeeAllowance_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.EmployeeAllowance); }
         private void PositionAllowance_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.PositionAllowance); }
         private void DepartmentAllowance_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.DepartmentAllowance); }
@@ -513,6 +532,7 @@ namespace RauViet.ui
         private void OrderDomesticCode_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.OrderDomesticCode); }
         private void OrderDomesticDetail_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.OrderDomesticDetail); }
         private void ResoncileDomesticDebts_Month_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.ResoncileDomesticDebts_Month); }
+        private void ResoncileDomesticDebts_Year_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.ResoncileDomesticDebts_Year); }
         private async void checkLoginTimer_Tick(object sender, EventArgs e)
         {
             var isHave = await SQLManager.Instance.HaveOtherComputerLoginAsync();

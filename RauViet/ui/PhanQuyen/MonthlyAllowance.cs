@@ -99,6 +99,8 @@ namespace RauViet.ui
             await Task.Delay(200);
             try
             {
+                dataGV.SelectionChanged -= this.dataGV_CellClick;
+                allowanceGV.SelectionChanged -= this.allowanceGV_CellClick;
                 monthYearDtp.ValueChanged -= monthYearDtp_ValueChanged;
 
                 int month = monthYearDtp.Value.Month;
@@ -202,9 +204,7 @@ namespace RauViet.ui
                 allowanceGV.Columns["AllowanceName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
                 allowanceGV.Columns["Amount"].Width = 70;
                 allowanceGV.Columns["Note"].Width = 120;
-
-                dataGV.SelectionChanged -= this.dataGV_CellClick;
-                allowanceGV.SelectionChanged -= this.allowanceGV_CellClick;
+                                
                 dataGV.SelectionChanged += this.dataGV_CellClick;
                 allowanceGV.SelectionChanged += this.allowanceGV_CellClick;
                 if (dataGV.Rows.Count > 0)

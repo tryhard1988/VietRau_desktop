@@ -326,7 +326,7 @@ namespace RauViet.classes
             mLeaveAttendances.Remove(year);
         }
 
-        public async Task<DataTable> GetLeaveAttendancesAsyn(string[] colNames, int month, int year, bool isPaid)
+        public async Task<DataTable> GetLeaveAttendancesAsyn(string[] colNames, int month, int year)
         {
             if (!mLeaveAttendances.ContainsKey(year))
             {
@@ -361,13 +361,13 @@ namespace RauViet.classes
             {
                 string leaveTypeCode = row["LeaveTypeCode"].ToString();
 
-                DataRow[] foundRows = mLeaveType_dt.Select($"LeaveTypeCode = '{leaveTypeCode}'");
-                if (foundRows.Length > 0)
-                {
-                    bool isPaid1 = Convert.ToBoolean(foundRows[0]["IsPaid"]);
-                    if (isPaid1 != isPaid)
-                        continue;
-                }
+                //DataRow[] foundRows = mLeaveType_dt.Select($"LeaveTypeCode = '{leaveTypeCode}'");
+                //if (foundRows.Length > 0)
+                //{
+                //    bool isPaid1 = Convert.ToBoolean(foundRows[0]["IsPaid"]);
+                //    if (isPaid1 != isPaid)
+                //        continue;
+                //}
                 DataRow newRow = result.NewRow();
                 foreach (string col in colNames)
                 {
@@ -1245,10 +1245,46 @@ namespace RauViet.classes
             return mOvertimeAttendaces[key];
         }
 
+        public async Task<DataTable> GetMonthlyAllowance_AnDem_Async(int month, int year)
+        {
+            string key = month.ToString() + "_" + year.ToString();
+            if (!mOvertimeAttendaces.ContainsKey(key))
+            {
+                try
+                {
+                    mOvertimeAttendaces[key] = await SQLManager_QLNS.Instance.GetOvertimeAttendamceAsync(month, year);
+                    editOvertimeAttendamce(mOvertimeAttendaces[key]);
+                }
+                catch
+                {
+                    Console.WriteLine("error GetĐeuctionAsync SQLStore");
+                    return null;
+                }
+            }
+
+            DataTable data = mOvertimeAttendaces[key];
+            var rows = data.AsEnumerable().Where(r => r.Field<string>("OvertimeTypeCode") == "OT_Dem");
+
+            string[] keepColumns ={"EmployeeCode", "EmployeeName", "WorkDate", "OvertimeTypeID", "HourWork", "Note", "DepartmentID"};
+
+            DataTable dtOTDem;
+
+            if (rows.Any())
+            {
+                dtOTDem = rows.CopyToDataTable().DefaultView.ToTable(false, keepColumns);
+            }
+            else
+            {
+                dtOTDem = data.Clone().DefaultView.ToTable(false, keepColumns);
+            }
+            return dtOTDem;
+        }
+
         public void editOvertimeAttendamce(DataTable data)
         {
             data.Columns.Add("DayOfWeek", typeof(string));
             data.Columns.Add("OvertimeName", typeof(string));
+            data.Columns.Add("OvertimeTypeCode", typeof(string));
             data.Columns.Add("SalaryFactor", typeof(decimal));
             data.Columns.Add("EmployeeName", typeof(string));
             data.Columns.Add("DepartmentID", typeof(string));
@@ -1269,6 +1305,7 @@ namespace RauViet.classes
                 if (rows.Length > 0)
                 {
                     row["OvertimeName"] = rows[0]["OvertimeName"].ToString();
+                    row["OvertimeTypeCode"] = rows[0]["OvertimeTypeCode"].ToString();
                     row["SalaryFactor"] = rows[0]["SalaryFactor"].ToString();
                 }
                 if(eRows.Length > 0)

@@ -1,5 +1,4 @@
-﻿using DocumentFormat.OpenXml.Bibliography;
-using RauViet.classes;
+﻿using RauViet.classes;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -206,9 +205,6 @@ namespace RauViet.ui
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 employeeDeductionGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
-                
-                
-
                 log_GV.Columns["CreateAt"].Width = 120;
                 log_GV.Columns["ActionBy"].Width = 150;
                 log_GV.Columns["Description"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
@@ -282,6 +278,7 @@ namespace RauViet.ui
             newCustomerBtn_Click(null, null);
             UpdateEmployeeDeductionUI(rowIndex);            
             UpdateRightUI(rowIndex);
+
         }
 
         private void UpdateEmployeeDeductionUI(int index)

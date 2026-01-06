@@ -11,18 +11,18 @@ using Color = System.Drawing.Color;
 
 namespace RauViet.ui
 {
-    public partial class ResoncileDomesticDebts_Month : Form
+    public partial class ResoncileDomesticDebts_Year : Form
     {
         private LoadingOverlay loadingOverlay;
         DataTable mDetail_dt, mSummary_dt;
         DataView mDetail_DV, mSummary_DV;
-        public ResoncileDomesticDebts_Month()
+        public ResoncileDomesticDebts_Year()
         {
             InitializeComponent();
             this.KeyPreview = true;
 
             timeReport_dtp.Format = DateTimePickerFormat.Custom;
-            timeReport_dtp.CustomFormat = "MM/yyyy";
+            timeReport_dtp.CustomFormat = "yyyy";
             timeReport_dtp.ShowUpDown = true;
             timeReport_dtp.Value = DateTime.Now;
 
@@ -51,9 +51,8 @@ namespace RauViet.ui
             if (e.KeyCode == Keys.F5)
             {
                 int year = timeReport_dtp.Value.Year;
-                int month = timeReport_dtp.Value.Month;
 
-                SQLStore_Kho.Instance.removeOrderDomesticByMonthYear(month, year);
+                SQLStore_Kho.Instance.removeOrderDomesticByYear(year);
                 ShowData();
             }
         }
@@ -73,8 +72,7 @@ namespace RauViet.ui
             try
             {
                 int year = timeReport_dtp.Value.Year;
-                int month = timeReport_dtp.Value.Month;
-                var customerOrderHistoryByYearTask = SQLStore_Kho.Instance.GetOrderDomesticByMonthYearAsync(month, year);
+                var customerOrderHistoryByYearTask = SQLStore_Kho.Instance.GetOrderDomesticByYearAsync(year);
 
                 await Task.WhenAll(customerOrderHistoryByYearTask);
                 mDetail_dt = customerOrderHistoryByYearTask.Result;
@@ -191,7 +189,7 @@ namespace RauViet.ui
                 detailGV.Columns["PCSReal"].Width = 50;
                 detailGV.Columns["NWReal"].Width = 50;
                 detailGV.Columns["Price"].Width = 50;
-                detailGV.Columns["Package"].Width = 45;
+                detailGV.Columns["Package"].Width = 50;
                 detailGV.Columns["OrderDomesticIndex"].Width = 50;
                 detailGV.Columns["DeliveryDate"].Width = 80;
                 detailGV.Columns["TotalAmount"].Width = 80;
@@ -379,7 +377,7 @@ namespace RauViet.ui
 
                     rowInd++;
                     ws.Range(rowInd, 1, rowInd, totalColumn).Merge();
-                    ws.Cell(rowInd, 1).Value = $"BẢNG KÊ CHI TIẾT HÀNG BÁN HÀNG THÁNG {timeReport_dtp.Value.Month.ToString("D2")}/{timeReport_dtp.Value.Year}";
+                    ws.Cell(rowInd, 1).Value = $"BẢNG KÊ CHI TIẾT HÀNG BÁN HÀNG NĂM {timeReport_dtp.Value.Year}";
                     ws.Cell(rowInd, 1).Style.Font.Bold = true;
                     ws.Cell(rowInd, 1).Style.Font.FontSize = 15;
                     ws.Cell(rowInd, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;

@@ -2230,6 +2230,25 @@ namespace RauViet.classes
             return dt;
         }
 
+        public async Task<DataTable> GetOrderDomesticByYearAsync(int year)
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
+            {
+                await con.OpenAsync();
+                using (SqlCommand cmd = new SqlCommand("sp_GetOrderDomesticByYear", con))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add("@Year", SqlDbType.Int).Value = year;
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
+        }
+
         public async Task<bool> updateNewPriceInOrderDomesticDetailAsync(int OrderDomesticCodeID)
         {
             try

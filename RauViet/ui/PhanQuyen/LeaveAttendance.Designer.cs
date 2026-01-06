@@ -42,7 +42,6 @@ namespace RauViet.ui
             this.label2 = new System.Windows.Forms.Label();
             this.readOnly_btn = new System.Windows.Forms.Button();
             this.edit_btn = new System.Windows.Forms.Button();
-            this.delete_btn = new System.Windows.Forms.Button();
             this.leaveID_tb = new System.Windows.Forms.TextBox();
             this.newBtn = new System.Windows.Forms.Button();
             this.info_gb = new System.Windows.Forms.GroupBox();
@@ -168,7 +167,6 @@ namespace RauViet.ui
             this.panel1.Controls.Add(this.label2);
             this.panel1.Controls.Add(this.readOnly_btn);
             this.panel1.Controls.Add(this.edit_btn);
-            this.panel1.Controls.Add(this.delete_btn);
             this.panel1.Controls.Add(this.leaveID_tb);
             this.panel1.Controls.Add(this.newBtn);
             this.panel1.Controls.Add(this.info_gb);
@@ -219,17 +217,6 @@ namespace RauViet.ui
             this.edit_btn.TabIndex = 34;
             this.edit_btn.Text = "Chỉnh sửa";
             this.edit_btn.UseVisualStyleBackColor = false;
-            // 
-            // delete_btn
-            // 
-            this.delete_btn.BackColor = System.Drawing.Color.Red;
-            this.delete_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.delete_btn.Location = new System.Drawing.Point(240, 381);
-            this.delete_btn.Name = "delete_btn";
-            this.delete_btn.Size = new System.Drawing.Size(96, 47);
-            this.delete_btn.TabIndex = 33;
-            this.delete_btn.Text = "Xóa";
-            this.delete_btn.UseVisualStyleBackColor = false;
             // 
             // leaveID_tb
             // 
@@ -464,7 +451,6 @@ namespace RauViet.ui
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Button readOnly_btn;
         private System.Windows.Forms.Button edit_btn;
-        private System.Windows.Forms.Button delete_btn;
         private System.Windows.Forms.TextBox leaveID_tb;
         private System.Windows.Forms.Button newBtn;
         private System.Windows.Forms.GroupBox info_gb;

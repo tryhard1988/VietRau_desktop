@@ -41,7 +41,7 @@ namespace RauViet.ui
             status_lb.Text = "";
 
 
-            dataGV.SelectionChanged += this.dataGV_CellClick;
+            
 
             attendanceGV.CellFormatting += AttandaceGV_CellFormatting;
             attendanceGV.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.attendanceGV_EditingControlShowing);
@@ -73,17 +73,13 @@ namespace RauViet.ui
 
         public async void ShowData()
         {
-            
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Dock = DockStyle.Fill;
-
-
             await Task.Delay(50);
             loadingOverlay = new LoadingOverlay(this);
             loadingOverlay.Show();
 
             try
             {
+                dataGV.SelectionChanged -= this.dataGV_CellClick;
                 int month = monthYearDtp.Value.Month;
                 int year = monthYearDtp.Value.Year;
                 // Chạy truy vấn trên thread riêng
@@ -196,6 +192,8 @@ namespace RauViet.ui
                 log_GV.Columns["WorkDate"].HeaderText = "Ngày Làm";
                 log_GV.Columns["WorkingHours"].HeaderText = "Giờ Làm";
                 log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+
+                dataGV.SelectionChanged += this.dataGV_CellClick;
 
             }
             catch (Exception ex)

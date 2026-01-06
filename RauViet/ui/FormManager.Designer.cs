@@ -44,9 +44,7 @@
             this.department_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.position_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.dữLiệuToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.overtimeType_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.holiday_mi = new System.Windows.Forms.ToolStripMenuItem();
-            this.allowanceType_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.salaryGrade_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.chamcong_pmi = new System.Windows.Forms.ToolStripMenuItem();
             this.salaryCaculator_mi = new System.Windows.Forms.ToolStripMenuItem();
@@ -97,13 +95,14 @@
             this.monthlyTotalPerYear_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.báoCáoĐơnHàngTrongNướcToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ResoncileDomesticDebts_Month_mi = new System.Windows.Forms.ToolStripMenuItem();
+            this.resoncileDomesticDebts_Year_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.extension_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.QR_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.aaaaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadExcelOrderReportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.content_panel = new System.Windows.Forms.Panel();
-            this.thốngKêTrongNămToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.MonthlyAllowance_TienAnCaDem_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1.SuspendLayout();
             this.LOT_menuitem.SuspendLayout();
             this.SuspendLayout();
@@ -244,31 +243,17 @@
             // dữLiệuToolStripMenuItem1
             // 
             this.dữLiệuToolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.overtimeType_mi,
             this.holiday_mi,
-            this.allowanceType_mi,
             this.salaryGrade_mi});
             this.dữLiệuToolStripMenuItem1.Name = "dữLiệuToolStripMenuItem1";
             this.dữLiệuToolStripMenuItem1.Size = new System.Drawing.Size(207, 22);
             this.dữLiệuToolStripMenuItem1.Text = "Dữ Liệu";
-            // 
-            // overtimeType_mi
-            // 
-            this.overtimeType_mi.Name = "overtimeType_mi";
-            this.overtimeType_mi.Size = new System.Drawing.Size(183, 22);
-            this.overtimeType_mi.Text = "Loại Tăng Ca";
             // 
             // holiday_mi
             // 
             this.holiday_mi.Name = "holiday_mi";
             this.holiday_mi.Size = new System.Drawing.Size(183, 22);
             this.holiday_mi.Text = "Lập Ngày Nghỉ Lễ";
-            // 
-            // allowanceType_mi
-            // 
-            this.allowanceType_mi.Name = "allowanceType_mi";
-            this.allowanceType_mi.Size = new System.Drawing.Size(183, 22);
-            this.allowanceType_mi.Text = "Loại Phụ Cấp";
             // 
             // salaryGrade_mi
             // 
@@ -326,7 +311,8 @@
             // 
             this.allowanceGroup_mi.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.employeeAllowance_mi,
-            this.monthlyAllowance_mi});
+            this.monthlyAllowance_mi,
+            this.MonthlyAllowance_TienAnCaDem_mi});
             this.allowanceGroup_mi.Name = "allowanceGroup_mi";
             this.allowanceGroup_mi.Size = new System.Drawing.Size(227, 22);
             this.allowanceGroup_mi.Text = "Phụ Cấp";
@@ -626,7 +612,7 @@
             // 
             this.báoCáoĐơnHàngTrongNướcToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.ResoncileDomesticDebts_Month_mi,
-            this.thốngKêTrongNămToolStripMenuItem});
+            this.resoncileDomesticDebts_Year_mi});
             this.báoCáoĐơnHàngTrongNướcToolStripMenuItem.Name = "báoCáoĐơnHàngTrongNướcToolStripMenuItem";
             this.báoCáoĐơnHàngTrongNướcToolStripMenuItem.Size = new System.Drawing.Size(268, 22);
             this.báoCáoĐơnHàngTrongNướcToolStripMenuItem.Text = "Báo Cáo Đơn Hàng Trong Nước";
@@ -634,8 +620,14 @@
             // ResoncileDomesticDebts_Month_mi
             // 
             this.ResoncileDomesticDebts_Month_mi.Name = "ResoncileDomesticDebts_Month_mi";
-            this.ResoncileDomesticDebts_Month_mi.Size = new System.Drawing.Size(206, 22);
-            this.ResoncileDomesticDebts_Month_mi.Text = "Đối Chiếu Công Nợ";
+            this.ResoncileDomesticDebts_Month_mi.Size = new System.Drawing.Size(273, 22);
+            this.ResoncileDomesticDebts_Month_mi.Text = "Đối Chiếu Công Nợ Trong Tháng";
+            // 
+            // resoncileDomesticDebts_Year_mi
+            // 
+            this.resoncileDomesticDebts_Year_mi.Name = "resoncileDomesticDebts_Year_mi";
+            this.resoncileDomesticDebts_Year_mi.Size = new System.Drawing.Size(273, 22);
+            this.resoncileDomesticDebts_Year_mi.Text = "Thống Kê Trong Năm";
             // 
             // toolStripMenuItem2
             // 
@@ -685,11 +677,11 @@
             this.content_panel.Size = new System.Drawing.Size(1388, 491);
             this.content_panel.TabIndex = 1;
             // 
-            // thốngKêTrongNămToolStripMenuItem
+            // MonthlyAllowance_TienAnCaDem_mi
             // 
-            this.thốngKêTrongNămToolStripMenuItem.Name = "thốngKêTrongNămToolStripMenuItem";
-            this.thốngKêTrongNămToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
-            this.thốngKêTrongNămToolStripMenuItem.Text = "Thống Kê Trong Năm";
+            this.MonthlyAllowance_TienAnCaDem_mi.Name = "MonthlyAllowance_TienAnCaDem_mi";
+            this.MonthlyAllowance_TienAnCaDem_mi.Size = new System.Drawing.Size(236, 22);
+            this.MonthlyAllowance_TienAnCaDem_mi.Text = "P.C Tiền Ăn Tăng Ca Đêm";
             // 
             // FormManager
             // 
@@ -746,9 +738,7 @@
         private System.Windows.Forms.ToolStripMenuItem employeeAllowance_mi;
         private System.Windows.Forms.ToolStripMenuItem monthlyAllowance_mi;
         private System.Windows.Forms.ToolStripMenuItem dữLiệuToolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem overtimeType_mi;
         private System.Windows.Forms.ToolStripMenuItem holiday_mi;
-        private System.Windows.Forms.ToolStripMenuItem allowanceType_mi;
         private System.Windows.Forms.ToolStripMenuItem salaryGrade_mi;
         private System.Windows.Forms.ToolStripMenuItem employee_mi;
         private System.Windows.Forms.ToolStripMenuItem employeeBH_mi;
@@ -786,6 +776,7 @@
         private System.Windows.Forms.ToolStripMenuItem orderDomesticDetail_mi;
         private System.Windows.Forms.ToolStripMenuItem báoCáoĐơnHàngTrongNướcToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem ResoncileDomesticDebts_Month_mi;
-        private System.Windows.Forms.ToolStripMenuItem thốngKêTrongNămToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem resoncileDomesticDebts_Year_mi;
+        private System.Windows.Forms.ToolStripMenuItem MonthlyAllowance_TienAnCaDem_mi;
     }
 }

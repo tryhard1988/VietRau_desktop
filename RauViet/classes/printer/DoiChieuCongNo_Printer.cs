@@ -181,20 +181,18 @@ public class DoiChieuCongNo_Printer
             e.Graphics.DrawString(title, fontTitle, brush, titleX, y);
             y += rowHeight*2;
 
-            e.Graphics.DrawString($"Tên đơn vị:", fontContent, brush, startX, y);
+            e.Graphics.DrawString($"Tên đơn vị:", fontContent, brush, startX, y + 2);
             e.Graphics.DrawString($"{company}", fontHeader1, brush, startX + 100, y);
+            e.Graphics.DrawString($"MST:", fontContent, brush, startX + e.MarginBounds.Width - 200, y + 2);
+            e.Graphics.DrawString($"{taxCode}", fontHeader1, brush, startX + e.MarginBounds.Width - 130, y);
             y += (rowHeight - 3);
-            e.Graphics.DrawString($"MST:", fontContent, brush, startX, y);
-            e.Graphics.DrawString($"{taxCode}", fontHeader1, brush, startX + 100, y);
-            y += (rowHeight - 3);
-            e.Graphics.DrawString($"Địa chỉ:", fontContent, brush, startX, y);
+            e.Graphics.DrawString($"Địa chỉ:", fontContent, brush, startX, y + 2);
             e.Graphics.DrawString($"{customerAddress}", fontHeader1, brush, startX + 100, y);
             y += (rowHeight - 3);
-            e.Graphics.DrawString($"Liên hệ:", fontContent, brush, startX, y);
+            e.Graphics.DrawString($"Liên hệ:", fontContent, brush, startX, y + 2);
             e.Graphics.DrawString($"{customerName}", fontHeader1, brush, startX + 100, y);
-            y += (rowHeight - 3);
-            e.Graphics.DrawString($"Email:", fontContent, brush, startX, y);
-            e.Graphics.DrawString($"{email}", fontHeader1, brush, startX + 100, y);
+            e.Graphics.DrawString($"Email:", fontContent, brush, startX + e.MarginBounds.Width - 200, y + 2);
+            e.Graphics.DrawString($"{email}", fontHeader1, brush, startX + e.MarginBounds.Width - 130, y);
             y += (rowHeight - 3);
         }
         y += 10;
@@ -425,9 +423,19 @@ public class DoiChieuCongNo_Printer
         e.Graphics.DrawRectangle(Pens.Black, startX + width_totalAmount, y, colWidth_TotalAmount, 25);
         e.Graphics.DrawString(TotalAmount.ToString("N0"), fontHeader, brush, new RectangleF(startX + width_totalAmount, y, colWidth_TotalAmount, 25), sfDataCenter);
 
-        y += 40;
+        if (y + 150 > e.MarginBounds.Bottom + paddingBottom)
+        {
+            currentRowIndex++;
+            yPosition = e.MarginBounds.Top;
+            firstPage = false;//
+            e.HasMorePages = true;
+            firstRowData = true;
+            return;
+        }
+
+        y += 10;
         DateTime lastDayOfMonth = new DateTime(deliveryDate0.Year, deliveryDate0.Month, DateTime.DaysInMonth(deliveryDate0.Year, deliveryDate0.Month));
-        e.Graphics.DrawString($"Ngày {lastDayOfMonth.Day} tháng {lastDayOfMonth.Month} năm {lastDayOfMonth.Year}\n\nNgười Lập Bảng\n\n\n\n\n{UserManager.Instance.fullName}", fontHeader, brush, new RectangleF(e.PageBounds.Right - 400, y, 400, 160), sfDataCenter);
+        e.Graphics.DrawString($"Ngày {lastDayOfMonth.Day} tháng {lastDayOfMonth.Month} năm {lastDayOfMonth.Year}\nNgười Lập Bảng\n\n\n\n{UserManager.Instance.fullName}", fontHeader, brush, new RectangleF(e.PageBounds.Right - 400, y, 400, 160), sfDataCenter);
         e.HasMorePages = false;
         currentRowIndex = 0;
         firstPage = true;

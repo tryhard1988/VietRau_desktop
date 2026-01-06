@@ -132,8 +132,8 @@ namespace RauViet.classes
 
                 foreach (var (id, data) in results)
                 {
-                    mOrderLists[id] = data;
-                    editOrders(data);
+                    await editOrders(data);
+                    mOrderLists[id] = data;                    
                 }
 
                 mOrderDomesticCode_dt.DefaultView.Sort = "OrderDomesticCodeID ASC";
@@ -552,8 +552,8 @@ namespace RauViet.classes
                 try
                 {
                     DataTable dt = await SQLManager_Kho.Instance.getOrdersAsync(exportCodeID);
-                    mOrderLists[exportCodeID] = dt;
-                    editOrders(dt);
+                    await editOrders(dt);
+                    mOrderLists[exportCodeID] = dt;                    
                 }
                 catch
                 {
@@ -1755,6 +1755,19 @@ namespace RauViet.classes
             return mProductDomesticPricesLog_dt;
         }
 
+        public void removeOrderDomesticByYear(int year)
+        {
+            if (mtOrderDomestics.ContainsKey(year))
+                mtOrderDomestics.Remove(year);
+        }
+        public void removeOrderDomesticByMonthYear(int month, int year)
+        {
+            if (!mtOrderDomestics.ContainsKey(year))
+                return;
+
+            if (mtOrderDomestics[year].ContainsKey(month))
+                mtOrderDomestics[year].Remove(month);
+        }
         public async Task<DataTable> GetOrderDomesticByMonthYearAsync(int month, int year)
         {
             await getOrderDomesticCodeAsync();
@@ -1777,6 +1790,57 @@ namespace RauViet.classes
             }
 
             return mtOrderDomestics[year][month];
+        }
+
+        public async Task<DataTable> GetOrderDomesticByYearAsync(int year)
+        {
+            await getOrderDomesticCodeAsync();
+
+            if (!mtOrderDomestics.ContainsKey(year))
+                mtOrderDomestics[year] = new Dictionary<int, DataTable>();
+
+            if (mtOrderDomestics[year].Count < 12)
+            {
+                try
+                {
+                    DataTable dt = await SQLManager_Kho.Instance.GetOrderDomesticByYearAsync(year);
+                    editOrderDomesticByMonthYear(dt);
+
+                    var monthDict = dt.AsEnumerable()
+                                    .Where(r => r.Field<DateTime?>("DeliveryDate") != null)
+                                    .GroupBy(r => r.Field<DateTime>("DeliveryDate").Month)
+                                    .ToDictionary(
+                                        g => g.Key,               // month: 1..12
+                                        g => g.CopyToDataTable()
+                                    );
+
+
+                    foreach (var kv in monthDict)
+                    {
+                        mtOrderDomestics[year][kv.Key] = kv.Value;
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("error getCustomersAsync SQLStore: " + ex.Message);
+                    return null;
+                }
+            }
+
+            Dictionary<int, DataTable> yearDict = mtOrderDomestics[year];
+
+            // Clone schema từ 1 DataTable bất kỳ
+            DataTable dtYear = yearDict.Values.First().Clone();
+
+            foreach (var dtMonth in yearDict.Values)
+            {
+                foreach (DataRow row in dtMonth.Rows)
+                {
+                    dtYear.ImportRow(row);
+                }
+            }
+            return dtYear;
         }
 
         private void editOrderDomesticByMonthYear(DataTable data)
@@ -1852,6 +1916,7 @@ namespace RauViet.classes
             data.Columns["PCSReal"].SetOrdinal(count++);
             data.Columns["NWReal"].SetOrdinal(count++);
             data.Columns["Price"].SetOrdinal(count++);
+            data.Columns["TotalAmount"].SetOrdinal(count++);
         }
     }
 }

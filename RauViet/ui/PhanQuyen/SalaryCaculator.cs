@@ -6,7 +6,6 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 using Color = System.Drawing.Color;
 using DataTable = System.Data.DataTable;
 
@@ -63,6 +62,8 @@ namespace RauViet.ui
             this.Load += OvertimeAttendace_Load;
             Print_BCC_btn.Click += Print_BCC_btn_Click;
             preview_BCC_btn.Click += Preview_BCC_btn_Click;
+            print_BTC_btn.Click += Print_BTC_btn_Click; ;
+            printPreview_BTC_btn.Click += PrintPreview_BTC_btn_Click; ;
         }
 
         private void OvertimeAttendace_Load(object sender, EventArgs e)
@@ -140,7 +141,7 @@ namespace RauViet.ui
             var deductionAsync = SQLStore_QLNS.Instance.GetDeductionAsync(month, year);
             var overtimeAttendamceAsync = SQLStore_QLNS.Instance.GetOvertimeAttendamceAsync(month, year);
             var employeeTask = SQLStore_QLNS.Instance.GetEmployeeSalaryInfoAsync(keepColumnsInfo, month, year);
-            var leaveAttendanceAsync = SQLStore_QLNS.Instance.GetLeaveAttendancesAsyn(keepColumnsLeave, month, year, true);
+            var leaveAttendanceAsync = SQLStore_QLNS.Instance.GetLeaveAttendancesAsyn(keepColumnsLeave, month, year);
             var attendamceTask = SQLStore_QLNS.Instance.GetAttendamceAsync(keepColumnsAttendamce, month, year);
             var isLockTask = SQLStore_QLNS.Instance.IsSalaryLockAsync(month, year);
             var employeeAllowanceAsync = SQLManager_QLNS.Instance.GetEmployeeAllowanceAsync(month, year);
@@ -500,7 +501,7 @@ namespace RauViet.ui
                 if (allowanceGV.Columns.Contains(col))
                     allowanceGV.Columns[col].Visible = false;
 
-            string[] hideOverCols = { "EmployeeCode", "SalaryFactor", "OvertimeTypeID", "OvertimeAttendanceID", "StartTime", "EndTime", "Note", "UpdatedHistory", "DayOfWeek" };
+            string[] hideOverCols = { "EmployeeCode", "SalaryFactor", "OvertimeTypeID", "OvertimeAttendanceID", "StartTime", "EndTime", "Note", "UpdatedHistory", "EmployeeName", "DepartmentID" };
             foreach (string col in hideOverCols)
                 if (overtimeAttendanceGV.Columns.Contains(col))
                     overtimeAttendanceGV.Columns[col].Visible = false;
@@ -599,10 +600,12 @@ namespace RauViet.ui
                     overtimeAttendanceGV.Columns["OvertimeName"].HeaderText = "Loại T.Ca";
                     overtimeAttendanceGV.Columns["HourWork"].HeaderText = "S.Giờ";
                     overtimeAttendanceGV.Columns["OvertimeAttendanceSalary"].HeaderText = "T.Công";
+                    overtimeAttendanceGV.Columns["DayOfWeek"].HeaderText = "Thứ";
                     overtimeAttendanceGV.Columns["WorkDate"].Width = 70;
-                    overtimeAttendanceGV.Columns["OvertimeName"].Width = 80;
+                    overtimeAttendanceGV.Columns["OvertimeName"].Width = 70;
                     overtimeAttendanceGV.Columns["HourWork"].Width = 40;
                     overtimeAttendanceGV.Columns["OvertimeAttendanceSalary"].Width = 60;
+                    overtimeAttendanceGV.Columns["DayOfWeek"].Width = 40;
                 }));
             }));
 
@@ -1214,12 +1217,39 @@ namespace RauViet.ui
             }
 
             DateTime date = monthYearDtp.Value;
-            BangChamCong_Printer deliveryPrinter = new BangChamCong_Printer(dataGV.CurrentRow.Cells["DepartmentName"].Value.ToString(), mEmployee_dt, mAttendamce_dt, date.Month, date.Year);
+            BangChamCong_Printer deliveryPrinter = new BangChamCong_Printer(dataGV.CurrentRow.Cells["DepartmentName"].Value.ToString(), mEmployee_dt, mAttendamce_dt, mLeaveAttendance_dt, date.Month, date.Year);
 
             if (!isPreview)
                 deliveryPrinter.PrintDirect();
             else
                 deliveryPrinter.PrintPreview(this);
+        }
+
+        private void PrintPreview_BTC_btn_Click(object sender, EventArgs e)
+        {
+            Print_BangTăngCa(true);
+        }
+
+        private void Print_BTC_btn_Click(object sender, EventArgs e)
+        {
+            Print_BangTăngCa(false);
+        }
+
+        private void Print_BangTăngCa(bool isPreview)
+        {
+            if (dataGV.CurrentRow == null)
+            {
+                MessageBox.Show("Chưa chọn phòng Ban cần in", "thông báo", MessageBoxButtons.OK);
+                return;
+            }
+
+            DateTime date = monthYearDtp.Value;
+            BangChamTăngCa_Printer printer = new BangChamTăngCa_Printer(dataGV.CurrentRow.Cells["DepartmentName"].Value.ToString(), mEmployee_dt, mOvertimeAttendance_dt, date.Month, date.Year);
+
+            if (!isPreview)
+                printer.PrintDirect();
+            else
+                printer.PrintPreview(this);
         }
 
     }

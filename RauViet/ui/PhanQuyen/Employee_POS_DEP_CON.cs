@@ -31,8 +31,17 @@ namespace RauViet.ui
             readOnly_btn.Click += ReadOnly_btn_Click;
             ReadOnly_btn_Click(null, null);
             this.KeyDown += Employee_POS_DEP_CON_KeyDown;
-
+            this.FormClosing += Employee_POS_DEP_CON_FormClosing;
             search_tb.TextChanged += Search_tb_TextChanged;
+        }
+
+        private async void Employee_POS_DEP_CON_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            SQLStore_QLNS.Instance.removeAnnualLeaveBalance();
+            await Task.WhenAll(
+                    SQLManager_QLNS.Instance.AutoUpsertAnnualLeaveMonthListAsync(),
+                    SQLManager_QLNS.Instance.GetAnnualLeaveBalanceAsync()
+                );
         }
 
         private void Employee_POS_DEP_CON_KeyDown(object sender, KeyEventArgs e)
