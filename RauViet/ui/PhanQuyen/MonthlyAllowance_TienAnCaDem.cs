@@ -1,6 +1,7 @@
 ﻿using DocumentFormat.OpenXml.Bibliography;
 using RauViet.classes;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,9 +13,11 @@ namespace RauViet.ui
     public partial class MonthlyAllowance_TienAnCaDem : Form
     {
         private Timer _monthYearDebounceTimer;
-        private DataTable mMonthlyAllowance_dt, mDepartment_dt, _mAllowance_dt;
-        private DataView mlog_DV;
-        
+        private DataTable mOvertime_dt, mDepartment_dt, _mAllowance_dt;
+        private DataView mOvertimeDV, mAllowanceDV;
+        private const int mAllowanceTypeID = 21;
+
+
         public MonthlyAllowance_TienAnCaDem()
         {
             InitializeComponent();
@@ -38,11 +41,15 @@ namespace RauViet.ui
             department_GV.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             department_GV.MultiSelect = false;
 
-            status_lb.Text = "";
+            allowanceGV.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            allowanceGV.MultiSelect = false;
 
             LuuThayDoiBtn.Click += saveBtn_Click;            
             this.KeyDown += MonthlyAllowance_KeyDown;
             this.Load += OvertimeAttendace_Load;
+            print_btn.Click += Print_btn_Click;
+            printPreview_btn.Click += PrintPreview_btn_Click;
+            filter_CB.CheckedChanged += Filter_CB_CheckedChanged;
         }
 
         private void OvertimeAttendace_Load(object sender, EventArgs e)
@@ -70,6 +77,7 @@ namespace RauViet.ui
             try
             {
                 department_GV.SelectionChanged -= this.department_GV_CellClick;
+                allowanceGV.SelectionChanged -= this.allowanceGV_CellClick;
                 monthYearDtp.ValueChanged -= monthYearDtp_ValueChanged;
 
                 int month = monthYearDtp.Value.Month;
@@ -79,23 +87,26 @@ namespace RauViet.ui
                 var departmentTask = SQLStore_QLNS.Instance.GetActiveDepartmentAsync(UserManager.Instance.get_ChamCongTangCa_Departments());
 
                 await Task.WhenAll(monthlyAllowance_AnDemTask);
-                mMonthlyAllowance_dt = monthlyAllowance_AnDemTask.Result;
+                mOvertime_dt = monthlyAllowance_AnDemTask.Result;
                 mDepartment_dt = departmentTask.Result;
 
-                var rows = mMonthlyAllowance_dt.AsEnumerable().GroupBy(r => r.Field<string>("EmployeeCode")).Select(g => g.First());
+                var rows = mOvertime_dt.AsEnumerable().GroupBy(r => r.Field<string>("EmployeeCode")).Select(g => g.First());
                 if (rows.Any())
                     _mAllowance_dt = rows.CopyToDataTable().DefaultView.ToTable(false, "EmployeeCode", "EmployeeName", "DepartmentID");                
                 else                
-                    _mAllowance_dt = mMonthlyAllowance_dt.Clone().DefaultView.ToTable(false, "EmployeeCode", "EmployeeName", "DepartmentID");
+                    _mAllowance_dt = mOvertime_dt.Clone().DefaultView.ToTable(false, "EmployeeCode", "EmployeeName", "DepartmentID");
 
                 _mAllowance_dt.Columns.Add("TotalMealAllowance", typeof(int));
                 _mAllowance_dt.Columns.Add("TotalNoodleAllowance", typeof(int));
+                TinhPhanAn();
 
                 monthYearLabel.Text = $"Tháng {month}/{year}";
 
-                dataGV.DataSource = mMonthlyAllowance_dt;
+                mOvertimeDV = new DataView(mOvertime_dt);
+                mAllowanceDV = new DataView(_mAllowance_dt);
+                dataGV.DataSource = mOvertimeDV;
                 department_GV.DataSource = mDepartment_dt;
-                allowanceGV.DataSource = _mAllowance_dt;
+                allowanceGV.DataSource = mAllowanceDV;
 
                 allowanceGV.Columns["DepartmentID"].Visible = false;
                 allowanceGV.Columns["EmployeeCode"].HeaderText = "Mã NV";
@@ -108,12 +119,12 @@ namespace RauViet.ui
                 allowanceGV.Columns["TotalNoodleAllowance"].Width = 90;
 
                 int count = 0;
-                mMonthlyAllowance_dt.Columns["EmployeeCode"].SetOrdinal(count++);
-                mMonthlyAllowance_dt.Columns["EmployeeName"].SetOrdinal(count++);
-                mMonthlyAllowance_dt.Columns["WorkDate"].SetOrdinal(count++);
-                mMonthlyAllowance_dt.Columns["OvertimeTypeID"].SetOrdinal(count++);
-                mMonthlyAllowance_dt.Columns["HourWork"].SetOrdinal(count++);
-                mMonthlyAllowance_dt.Columns["Note"].SetOrdinal(count++);
+                mOvertime_dt.Columns["EmployeeCode"].SetOrdinal(count++);
+                mOvertime_dt.Columns["EmployeeName"].SetOrdinal(count++);
+                mOvertime_dt.Columns["WorkDate"].SetOrdinal(count++);
+                mOvertime_dt.Columns["OvertimeTypeID"].SetOrdinal(count++);
+                mOvertime_dt.Columns["HourWork"].SetOrdinal(count++);
+                mOvertime_dt.Columns["Note"].SetOrdinal(count++);
 
                 department_GV.Columns["DepartmentID"].Visible = false;
                 department_GV.Columns["Description"].Visible = false;
@@ -132,19 +143,9 @@ namespace RauViet.ui
                 dataGV.Columns["EmployeeName"].Width = 160;
                 dataGV.Columns["WorkDate"].Width = 80;
                 dataGV.Columns["HourWork"].Width = 70;
-                //dataGV.Columns["EmployessName_NoSign"].Visible = false;
-                //dataGV.Columns["EmployeeCode"].Width = 60;
-                //dataGV.Columns["FullName"].Width = 160;
-
-                //allowanceGV.Columns["Amount"].DefaultCellStyle.Format = "N0";
-                //allowanceGV.Columns["EmployeeCode"].Width = 60;
-                //allowanceGV.Columns["EmployeeName"].Width = 160;
-                //allowanceGV.Columns["Date"].Width = 60;
-                //allowanceGV.Columns["AllowanceName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                //allowanceGV.Columns["Amount"].Width = 70;
-                //allowanceGV.Columns["Note"].Width = 120;
 
                 department_GV.SelectionChanged += this.department_GV_CellClick;
+                allowanceGV.SelectionChanged += this.allowanceGV_CellClick;
                 if (dataGV.Rows.Count > 0)
                 {
                     dataGV.ClearSelection();
@@ -156,11 +157,11 @@ namespace RauViet.ui
                 allowanceGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
                 monthYearDtp.ValueChanged += monthYearDtp_ValueChanged;
+
+                department_GV_CellClick(null, null);
             }
             catch
-            {
-                status_lb.Text = "Thất bại.";
-                status_lb.ForeColor = Color.Red;
+            {               
             }
             finally
             {
@@ -169,20 +170,26 @@ namespace RauViet.ui
             }
         }
 
-        private void Tb_KeyPress_OnlyNumber(object sender, KeyPressEventArgs e)
+        private void TinhPhanAn()
         {
-            TextBox tb = sender as TextBox;
-
-            // Chỉ cho nhập số, phím điều khiển hoặc dấu chấm
-            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) && e.KeyChar != '.')
+            foreach(DataRow row in _mAllowance_dt.Rows)
             {
-                e.Handled = true; // chặn ký tự không hợp lệ
-            }
+                string empCode = row["EmployeeCode"].ToString();
+                var rows = mOvertime_dt.AsEnumerable().Where(r => r.Field<string>("EmployeeCode") == empCode);
 
-            // Không cho nhập nhiều dấu chấm
-            if (e.KeyChar == '.' && tb.Text.Contains("."))
-            {
-                e.Handled = true;
+                int noodle = 0;
+                int rice = 0;
+                foreach (DataRow oRow in rows)
+                {
+                    decimal hourWork = Convert.ToDecimal(oRow["HourWork"]);
+                    if (hourWork >= 3.0m)
+                        rice++;
+                    else if (hourWork >= 2.5m)
+                        noodle++;                    
+                }
+
+                row["TotalMealAllowance"] = rice;
+                row["TotalNoodleAllowance"] = noodle;
             }
         }
 
@@ -193,42 +200,72 @@ namespace RauViet.ui
             if (rowIndex < 0)
                 return;
 
+            int departmentID = Convert.ToInt32(department_GV.CurrentRow.Cells["DepartmentID"].Value);
+
+            mAllowanceDV.RowFilter = $"DepartmentID = {departmentID}";
+            if (!filter_CB.Checked || allowanceGV.CurrentRow == null)
+                mOvertimeDV.RowFilter = $"DepartmentID = {departmentID}";
+            else
+            {
+                string employeeCode = allowanceGV.CurrentRow.Cells["EmployeeCode"].Value.ToString();
+                mOvertimeDV.RowFilter = $"EmployeeCode = '{employeeCode}'";
+            }
+
+        }
+
+        private void allowanceGV_CellClick(object sender, EventArgs e)
+        {
+            if (allowanceGV.CurrentRow == null) return;
+            int rowIndex = allowanceGV.CurrentRow.Index;
+            if (rowIndex < 0)
+                return;
+
+            if (filter_CB.Checked && allowanceGV.CurrentRow != null)
+            {
+                string employeeCode = allowanceGV.CurrentRow.Cells["EmployeeCode"].Value.ToString();
+                mOvertimeDV.RowFilter = $"EmployeeCode = '{employeeCode}'";
+            }
+
         }
 
 
         private async void saveBtn_Click(object sender, EventArgs e)
         {
-            //if (allowanceType_cbb.SelectedValue == null || string.IsNullOrEmpty(amount_tb.Text) || 
-            //    dataGV.CurrentRow == null)
-            //{
-            //    MessageBox.Show("Sai Dữ Liệu, Kiểm Tra Lại!", "Thông Báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            //    return;
-            //}
+            MessageBox.Show("tôi chưa làm chỗ này nhà bà thu");
+            return;
 
-            //string employeeCode = Convert.ToString(dataGV.CurrentRow.Cells["EmployeeCode"].Value);
-            //int amount = Convert.ToInt32(amount_tb.Text);
-            //int month = monthYearDtp.Value.Month;
-            //int year = monthYearDtp.Value.Year;
-            //int allowanceTypeID = Convert.ToInt32(allowanceType_cbb.SelectedValue);
-            //string note= note_tb.Text;
+            int month = monthYearDtp.Value.Month;
+            int year = monthYearDtp.Value.Year;
 
-            //if (mCurrentMonth != month || mCurrentYear != year)
-            //{
-            //    MessageBox.Show("Tháng " + month + "/" + year + " có vẫn đề.", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            //    return;
-            //}
+            bool isLock = await SQLStore_QLNS.Instance.IsSalaryLockAsync(month, year);
+            if (isLock)
+            {
+                MessageBox.Show("Tháng " + month + "/" + year + " đã bị khóa.", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
 
-            //bool isLock = await SQLStore_QLNS.Instance.IsSalaryLockAsync(month, year);
-            //if (isLock)
-            //{
-            //    MessageBox.Show("Tháng " + month + "/" + year + " đã bị khóa.", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            //    return;
-            //}
+            DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (dialogResult != DialogResult.Yes)
+                return;
 
-            //if (monthlyAllowanceID_tb.Text.Length != 0)
-            //    updateData(Convert.ToInt32(monthlyAllowanceID_tb.Text), employeeCode, month, year, amount, allowanceTypeID, note);
-            //else
-            //    createNew(employeeCode, month, year, amount, allowanceTypeID, note);
+            int departmentID = Convert.ToInt32(department_GV.CurrentRow.Cells["DepartmentID"].Value);
+            var rows = _mAllowance_dt.AsEnumerable().Where(r => r["DepartmentID"] != DBNull.Value && Convert.ToInt32(r["DepartmentID"]) == departmentID);
+            
+            List<(string emp, int type, int month, int year, int amount, string note)> list = new List<(string, int, int, int, int, string)>();
+            foreach (DataRow row in rows)
+            {
+                int rice = Convert.ToInt32(row["TotalMealAllowance"]);
+                string emp = Convert.ToString(row["EmployeeCode"]);
+                if (rice > 0)
+                {
+                    int amount = rice * 25000;
+                    list.Add((emp, mAllowanceTypeID, month, year, amount, "Auto"));
+                }
+            }
+            
+            bool isSucess = await SQLManager_QLNS.Instance.upsertMonthlyAllowanceBySPAsync(list);
+            string messStr = isSucess == true ? "Thành Công!" : "Thất Bại!";
+            MessageBox.Show(messStr, "Kết Quả", MessageBoxButtons.OK);
 
         }
         
@@ -248,6 +285,46 @@ namespace RauViet.ui
         private async void HandleMonthYearChanged()
         {
             ShowData();
+        }
+
+        private void PrintPreview_btn_Click(object sender, EventArgs e)
+        {
+            Print_PC_AnDem(true);
+        }
+
+        private void Print_btn_Click(object sender, EventArgs e)
+        {
+            Print_PC_AnDem(false);
+        }
+
+        private void Print_PC_AnDem(bool isPreview)
+        {
+            if (department_GV.CurrentRow == null) return;
+
+            int departmentID = Convert.ToInt32(department_GV.CurrentRow.Cells["DepartmentID"].Value);
+            string departmentName = department_GV.CurrentRow.Cells["DepartmentName"].Value.ToString();
+            int month = monthYearDtp.Value.Month;
+            int year = monthYearDtp.Value.Year;
+            var print = new PCTienAnDem_Printer(departmentID, departmentName, _mAllowance_dt, mOvertime_dt, month, year);
+            if (isPreview)
+                print.PrintPreview(this);
+            else
+                print.PrintDirect();
+        }
+
+        private void Filter_CB_CheckedChanged(object sender, EventArgs e)
+        {
+
+            if (!filter_CB.Checked || allowanceGV.CurrentRow == null)
+            {
+                int departmentID = Convert.ToInt32(department_GV.CurrentRow.Cells["DepartmentID"].Value);
+                mOvertimeDV.RowFilter = $"DepartmentID = {departmentID}";
+            }
+            else
+            {
+                string employeeCode = allowanceGV.CurrentRow.Cells["EmployeeCode"].Value.ToString();
+                mOvertimeDV.RowFilter = $"EmployeeCode = '{employeeCode}'";
+            }
         }
     }
 }

@@ -1870,6 +1870,61 @@ namespace RauViet.classes
             }
         }
 
+        public async Task<bool> upsertMonthlyAllowanceBySPAsync(List<(string emp, int type, int month, int year, int amount, string note)> list)
+        {
+            if (list == null || list.Count == 0)
+                return true;
+
+            try
+            {
+                // 1️⃣ Tạo DataTable đúng với TVP dbo.MonthlyAllowanceType
+                DataTable dt = new DataTable();
+                dt.Columns.Add("EmployeeCode", typeof(string));
+                dt.Columns.Add("AllowanceTypeID", typeof(int));
+                dt.Columns.Add("Month", typeof(int));
+                dt.Columns.Add("Year", typeof(int));
+                dt.Columns.Add("Amount", typeof(decimal));
+                dt.Columns.Add("Note", typeof(string));
+
+                // 2️⃣ Đổ dữ liệu từ tuple list vào DataTable
+                foreach (var item in list)
+                {
+                    dt.Rows.Add(
+                        item.emp,
+                        item.type,
+                        item.month,
+                        item.year,
+                        item.amount,
+                        (object)item.note ?? DBNull.Value
+                    );
+                }
+
+                // 3️⃣ Gọi Stored Procedure
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
+                {
+                    await con.OpenAsync();
+
+                    using (SqlCommand cmd = new SqlCommand("sp_UpsertMonthlyAllowance", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        SqlParameter p = cmd.Parameters.AddWithValue("@AllowanceList", dt);
+                        p.SqlDbType = SqlDbType.Structured;
+                        p.TypeName = "dbo.MonthlyAllowanceType";
+
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // nếu cần thì log ex
+                return false;
+            }
+        }
+
         public async Task<bool> deleteMonthlyAllowanceAsync(int monthlyAllowanceID)
         {
             string query = "DELETE FROM MonthlyAllowance WHERE MonthlyAllowanceID=@MonthlyAllowanceID";

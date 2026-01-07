@@ -229,7 +229,7 @@ public class BangChamCong_Printer
 
             DrawCellText(g, (countSTT).ToString(), normalFont, new Rectangle(col1, y, col1Width, lineHeight));
             DrawCellText(g, employeeCode, tableHeaderFont, new Rectangle(col2, y, col2Width, lineHeight));
-            DrawCellText(g, row["FullName"].ToString(), tableHeaderFont, new Rectangle(col3, y, col3Width, lineHeight));
+            DrawCellText(g, row["FullName"].ToString(), tableHeaderFont, new Rectangle(col3, y, col3Width, lineHeight), StringAlignment.Near);
             DrawCellText(g, totalLeaveHours_PT.ToString("F1"), normalFont, new Rectangle(col4, y, col4Width, lineHeight));
             DrawCellText(g, Convert.ToDecimal(row["c_LeaveTypeNL_1"]).ToString("F1"), normalFont, new Rectangle(col5, y, col5Width, lineHeight));
             DrawCellText(g, Convert.ToDecimal(row["c_LeaveTypePN_1"]).ToString("F1"), normalFont, new Rectangle(col6, y, col6Width, lineHeight));
@@ -260,22 +260,5 @@ public class BangChamCong_Printer
 
         e.HasMorePages = false;
 
-        // Tổng cộng và chữ ký (chỉ in ở trang cuối)
-        //y += 5;
-        //string totalLabel = "Tổng cộng (Count):";
-        //string totalValue = $"{totalCount} thùng";
-        //g.DrawString(totalLabel, headerFont, Brushes.Black, col1, y);
-        //Rectangle countCell = new Rectangle(col3, y, col4 - col3, lineHeight);
-        //SizeF textSize = g.MeasureString(totalValue, headerFont);
-        //float x = countCell.X + (countCell.Width - textSize.Width) / 2;
-        //float yy = countCell.Y + (countCell.Height - textSize.Height) / 2;
-        //g.DrawString(totalValue, headerFont, Brushes.Black, x, yy);
-
-        //y += lineHeight1 * 2;
-
-        //g.DrawString("Người giao hàng", normalFont, Brushes.Black, col2, y);
-        //g.DrawString("Người nhận hàng", normalFont, Brushes.Black, col5, y);
-        //g.DrawString("(Ký, ghi rõ họ tên)", normalFont, Brushes.Black, col2, y + lineHeight1);
-        //g.DrawString("(Ký, ghi rõ họ tên)", normalFont, Brushes.Black, col5, y + lineHeight1);
     }
 }

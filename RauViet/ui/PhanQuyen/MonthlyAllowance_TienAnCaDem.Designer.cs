@@ -33,13 +33,15 @@ namespace RauViet.ui
             this.monthYearLabel = new System.Windows.Forms.Label();
             this.panel5 = new System.Windows.Forms.Panel();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.printPreview_btn = new System.Windows.Forms.Button();
+            this.print_btn = new System.Windows.Forms.Button();
             this.monthYearDtp = new System.Windows.Forms.DateTimePicker();
-            this.status_lb = new System.Windows.Forms.Label();
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
             this.dataGV = new System.Windows.Forms.DataGridView();
             this.allowanceGV = new System.Windows.Forms.DataGridView();
             this.department_GV = new System.Windows.Forms.DataGridView();
+            this.filter_CB = new System.Windows.Forms.CheckBox();
             this.panel4.SuspendLayout();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -82,14 +84,38 @@ namespace RauViet.ui
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.filter_CB);
+            this.panel1.Controls.Add(this.printPreview_btn);
+            this.panel1.Controls.Add(this.print_btn);
             this.panel1.Controls.Add(this.monthYearDtp);
-            this.panel1.Controls.Add(this.status_lb);
             this.panel1.Controls.Add(this.LuuThayDoiBtn);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Right;
             this.panel1.Location = new System.Drawing.Point(925, 0);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(339, 669);
             this.panel1.TabIndex = 50;
+            // 
+            // printPreview_btn
+            // 
+            this.printPreview_btn.BackColor = System.Drawing.Color.MediumAquamarine;
+            this.printPreview_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.printPreview_btn.Location = new System.Drawing.Point(167, 318);
+            this.printPreview_btn.Name = "printPreview_btn";
+            this.printPreview_btn.Size = new System.Drawing.Size(113, 47);
+            this.printPreview_btn.TabIndex = 41;
+            this.printPreview_btn.Text = "Xem Bảng In";
+            this.printPreview_btn.UseVisualStyleBackColor = false;
+            // 
+            // print_btn
+            // 
+            this.print_btn.BackColor = System.Drawing.Color.MediumAquamarine;
+            this.print_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.print_btn.Location = new System.Drawing.Point(48, 318);
+            this.print_btn.Name = "print_btn";
+            this.print_btn.Size = new System.Drawing.Size(113, 47);
+            this.print_btn.TabIndex = 40;
+            this.print_btn.Text = "IN";
+            this.print_btn.UseVisualStyleBackColor = false;
             // 
             // monthYearDtp
             // 
@@ -100,22 +126,11 @@ namespace RauViet.ui
             this.monthYearDtp.Size = new System.Drawing.Size(122, 31);
             this.monthYearDtp.TabIndex = 39;
             // 
-            // status_lb
-            // 
-            this.status_lb.AutoSize = true;
-            this.status_lb.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.status_lb.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.status_lb.Location = new System.Drawing.Point(3, 171);
-            this.status_lb.Name = "status_lb";
-            this.status_lb.Size = new System.Drawing.Size(55, 23);
-            this.status_lb.TabIndex = 26;
-            this.status_lb.Text = "Email";
-            // 
             // LuuThayDoiBtn
             // 
             this.LuuThayDoiBtn.BackColor = System.Drawing.SystemColors.Highlight;
             this.LuuThayDoiBtn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LuuThayDoiBtn.Location = new System.Drawing.Point(99, 233);
+            this.LuuThayDoiBtn.Location = new System.Drawing.Point(107, 188);
             this.LuuThayDoiBtn.Name = "LuuThayDoiBtn";
             this.LuuThayDoiBtn.Size = new System.Drawing.Size(113, 47);
             this.LuuThayDoiBtn.TabIndex = 25;
@@ -170,6 +185,16 @@ namespace RauViet.ui
             this.department_GV.Size = new System.Drawing.Size(212, 669);
             this.department_GV.TabIndex = 52;
             // 
+            // filter_CB
+            // 
+            this.filter_CB.AutoSize = true;
+            this.filter_CB.Location = new System.Drawing.Point(42, 74);
+            this.filter_CB.Name = "filter_CB";
+            this.filter_CB.Size = new System.Drawing.Size(139, 17);
+            this.filter_CB.TabIndex = 42;
+            this.filter_CB.Text = "Hiện thị theo Nhân Viên";
+            this.filter_CB.UseVisualStyleBackColor = true;
+            // 
             // MonthlyAllowance_TienAnCaDem
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -197,11 +222,13 @@ namespace RauViet.ui
         private System.Windows.Forms.Label monthYearLabel;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.DateTimePicker monthYearDtp;
-        private System.Windows.Forms.Label status_lb;
         private System.Windows.Forms.Button LuuThayDoiBtn;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.DataGridView department_GV;
         private System.Windows.Forms.DataGridView dataGV;
         private System.Windows.Forms.DataGridView allowanceGV;
+        private System.Windows.Forms.Button print_btn;
+        private System.Windows.Forms.Button printPreview_btn;
+        private System.Windows.Forms.CheckBox filter_CB;
     }
 }

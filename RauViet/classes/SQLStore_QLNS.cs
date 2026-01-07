@@ -1263,7 +1263,10 @@ namespace RauViet.classes
             }
 
             DataTable data = mOvertimeAttendaces[key];
-            var rows = data.AsEnumerable().Where(r => r.Field<string>("OvertimeTypeCode") == "OT_Dem");
+            var rows = data.AsEnumerable().
+                Where(r => r.Field<string>("OvertimeTypeCode") == "OT_Dem"
+                                            && r["HourWork"] != DBNull.Value
+                                            && Convert.ToDouble(r["HourWork"]) >= 2.5);
 
             string[] keepColumns ={"EmployeeCode", "EmployeeName", "WorkDate", "OvertimeTypeID", "HourWork", "Note", "DepartmentID"};
 

@@ -1,12 +1,14 @@
-﻿using System;
+﻿using Org.BouncyCastle.Asn1.X509;
+using System;
 using System.Data;
 using System.Drawing;
 using System.Drawing.Printing;
+using System.Linq;
 using System.Windows.Forms;
 
-public class BangChamTăngCa_Printer
+public class PCTienAnDem_Printer
 {
-    private DataTable employeeData, overtimeData;
+    private DataTable allowanceData, overtimeData;
     private int month, year;
     private int countSTT = 1;
     private int rowIndex = 0; // để phân trang
@@ -14,11 +16,12 @@ public class BangChamTăngCa_Printer
     private int lineHeight = 40;
     private int lineHeight1 = 25;
     private string departmentName;
-
-    public BangChamTăngCa_Printer(string departmentName, DataTable employeeData, DataTable overtimeData, int month, int year)
+    private int departmentID;
+    public PCTienAnDem_Printer(int departmentID, string departmentName, DataTable allowanceData, DataTable overtimeData, int month, int year)
     {
+        this.departmentID = departmentID;
         this.departmentName = departmentName;
-        this.employeeData = employeeData;
+        this.allowanceData = allowanceData;
         this.overtimeData = overtimeData;
         this.month = month;
         this.year = year;
@@ -101,24 +104,32 @@ public class BangChamTăngCa_Printer
         Graphics g = e.Graphics;
         int pageWidth = e.PageBounds.Width;
         int pageHeight = e.PageBounds.Height - 50; // margin dưới
-        int days = DateTime.DaysInMonth(year, month);
+        var workDates = overtimeData.AsEnumerable()
+                                    .Where(r => r["WorkDate"] != DBNull.Value
+                                             && r["DepartmentID"] != DBNull.Value
+                                             && r["HourWork"] != DBNull.Value
+                                             && Convert.ToInt32(r["DepartmentID"]) == departmentID
+                                             && Convert.ToDecimal(r["HourWork"]) >= 2.5m)
+                                    .Select(r => Convert.ToDateTime(r["WorkDate"]).Date)
+                                    .Distinct()
+                                    .OrderBy(d => d)
+                                    .ToList();
         // Cột
-        int col1Width = 29, col2Width = 40, col3Width = 110, col4Width = 40, col5Width = 40, col6Width = 40, col7Width = 40, colDayWidth = 19;
+        int col1Width = 40, col2Width = 80, col3Width = 200, colDayWidth = 60, col4Width = 90, col5Width = 90;
         int col1 = startX;
         int col2 = col1 + col1Width;
-        int col3 = col2 + col2Width;
-        int col4 = col3 + col3Width;
+        int col3 = col2 + col2Width;       
+        int colDay = col3 + col3Width;
+        int col4 = colDay + colDayWidth * workDates.Count;
         int col5 = col4 + col4Width;
-        int col6 = col5 + col5Width;
-        int col7 = col6 + col6Width;
-        int colDay = col7 + col7Width;
-        int colKT = colDay + colDayWidth * days;
+        int colKT = col5 + col5Width; ;
         int colKTWidth = pageWidth - startX - colKT - 50;
 
         Font header1Font = new Font("Times New Roman", 7, FontStyle.Bold);
+        Font normal1Font = new Font("Times New Roman", 7);
         Font headerFont = new Font("Times New Roman", 14, FontStyle.Bold);
-        Font normalFont = new Font("Times New Roman", 7);
-        Font tableHeaderFont = new Font("Times New Roman", 7, FontStyle.Bold);
+        Font normalFont = new Font("Times New Roman", 9);
+        Font tableHeaderFont = new Font("Times New Roman", 9, FontStyle.Bold);
 
         int y = startX;
 
@@ -128,15 +139,15 @@ public class BangChamTăngCa_Printer
         {
             g.DrawString("Công Ty CP Việt Rau", header1Font, Brushes.Black, startX, y);
             y += lineHeight1 / 2;
-            g.DrawString($"MST:   {Utils.getTaxCode()}", normalFont, Brushes.Black, startX, y);
+            g.DrawString($"MST:   {Utils.getTaxCode()}", normal1Font, Brushes.Black, startX, y);
             y += lineHeight1/2;
 
-            g.DrawString($"Địa Chỉ:   {Utils.getCompanyAddress()}", normalFont, Brushes.Black, startX, y);
+            g.DrawString($"Địa Chỉ:   {Utils.getCompanyAddress()}", normal1Font, Brushes.Black, startX, y);
             y += lineHeight1;
 
-            g.DrawString($"Phòng Ban: {departmentName}", headerFont, Brushes.Black, startX, y);
+            g.DrawString($"Phòng: {departmentName}", headerFont, Brushes.Black, startX, y);
 
-            string titleStr = $"BẢNG DÒ TĂNG CA T{month}/{year}";
+            string titleStr = $"PHỤ CẤP TIỀN ĂN ĐÊM T{month}/{year}";
             SizeF codeSize = g.MeasureString(titleStr, headerFont);
             g.DrawString(titleStr, headerFont, Brushes.Black, (pageWidth - codeSize.Width) / 2, y);
             y += lineHeight1;
@@ -148,43 +159,36 @@ public class BangChamTăngCa_Printer
         g.DrawLine(Pens.Gray, col3, y, col3, y + lineHeightHeader);
         g.DrawLine(Pens.Gray, col4, y, col4, y + lineHeightHeader);
         g.DrawLine(Pens.Gray, col5, y, col5, y + lineHeightHeader);
-        g.DrawLine(Pens.Gray, col6, y, col6, y + lineHeightHeader);
-        g.DrawLine(Pens.Gray, col7, y, col7, y + lineHeightHeader);
         g.DrawLine(Pens.Gray, colKT, y, colKT, y + lineHeightHeader);
 
         DrawCellText(g, "STT", tableHeaderFont, new Rectangle(col1, y, col1Width, lineHeightHeader));
         DrawCellText(g, "Mã NV", tableHeaderFont, new Rectangle(col2, y, col2Width, lineHeightHeader));
         DrawCellText(g, "Họ và tên", tableHeaderFont, new Rectangle(col3, y, col3Width, lineHeightHeader));
-        DrawCellText(g, "T.Ca Ngày Thường", tableHeaderFont, new Rectangle(col4, y, col4Width, lineHeightHeader));
-        DrawCellText(g, "T.Ca Ngày Lễ", tableHeaderFont, new Rectangle(col5, y, col5Width, lineHeightHeader));
-        DrawCellText(g, "T.Ca CN", tableHeaderFont, new Rectangle(col6, y, col6Width, lineHeightHeader));
-        DrawCellText(g, "T.Ca Đêm", tableHeaderFont, new Rectangle(col7, y, col7Width, lineHeightHeader));
+        DrawCellText(g, "Tổng Suất Ăn", tableHeaderFont, new Rectangle(col4, y, col4Width, lineHeightHeader));
+        DrawCellText(g, "Tổng Phần Mì", tableHeaderFont, new Rectangle(col5, y, col5Width, lineHeightHeader));
+        DrawCellText(g, "Ký Nhận", tableHeaderFont, new Rectangle(colKT, y, colKTWidth, lineHeightHeader));
 
         SolidBrush bgBrush_LightGreen = new SolidBrush(Color.FromArgb(198, 224, 180));
         SolidBrush bgBrush_TCA_CN = new SolidBrush(Color.Yellow);//T.Ca Ngày Nghỉ
-        SolidBrush bgBrush_TCA_Thuong = new SolidBrush(Color.LightCyan);//T.Ca Thường
-        SolidBrush bgBrush_TCA_NL = new SolidBrush(Color.LightCoral);//T.Ca Thường
-        SolidBrush bgBrush_TCA_Dem = new SolidBrush(Color.LightBlue);//T.Ca Thường
 
-        for (int i = 0; i < days; i++)
+        for (int i = 0; i < workDates.Count; i++)
         {
-            DateTime date = new DateTime(year, month, i + 1);
+            DateTime date = workDates[i];
             
             g.FillRectangle(date.DayOfWeek == DayOfWeek.Sunday ? bgBrush_TCA_CN : bgBrush_LightGreen, new Rectangle(colDay + colDayWidth * i + 1, y + lineHeightHeader / 2 + 1, colDayWidth - 2, lineHeightHeader / 2 - 2));
             g.DrawLine(Pens.Gray, colDay + colDayWidth * i, y, colDay + colDayWidth * i, y + lineHeightHeader);
             
-            DrawCellText(g, (i + 1).ToString(), normalFont, new Rectangle(colDay + colDayWidth*i, y, colDayWidth, lineHeightHeader/2));
+            DrawCellText(g, $"{date.Day}/{date.Month}", normalFont, new Rectangle(colDay + colDayWidth*i, y, colDayWidth, lineHeightHeader/2));
             DrawCellText(g, Utils.GetThu_Viet(date).ToString(), normalFont, new Rectangle(colDay + colDayWidth * i, y + lineHeightHeader/2, colDayWidth, lineHeightHeader/2));
         }
 
-        g.DrawLine(Pens.Gray, colDay, y + lineHeightHeader / 2, colDay + colDayWidth * days, y + lineHeightHeader / 2);
+        g.DrawLine(Pens.Gray, colDay, y + lineHeightHeader / 2, colDay + colDayWidth * workDates.Count, y + lineHeightHeader / 2);
 
-        DrawCellText(g, "Ký Nhận", tableHeaderFont, new Rectangle(colKT, y, colKTWidth, lineHeightHeader));
 
         y += lineHeightHeader;
 
         // Table Data với phân trang
-        while (rowIndex < employeeData.Rows.Count)
+        while (rowIndex < allowanceData.Rows.Count)
         {
             if (y + lineHeight > pageHeight)
             {
@@ -192,83 +196,72 @@ public class BangChamTăngCa_Printer
                 return; // sang trang tiếp theo
             }
 
-            DataRow row = employeeData.Rows[rowIndex];
+            DataRow row = allowanceData.Rows[rowIndex];
 
-            string departmentName = row["DepartmentName"].ToString();
-            if (departmentName.CompareTo(this.departmentName) != 0) 
+            int departmentID = Convert.ToInt32(row["DepartmentID"]);
+            if (departmentID != this.departmentID)
             {
+                rowIndex++;
+                continue;
+            }
+
+            string employeeCode = row["EmployeeCode"].ToString();
+            DataRow[] attendanceRows = overtimeData.Select($"EmployeeCode = '{employeeCode}' AND HourWork >= 2.5");//
+
+            if (attendanceRows.Length <= 0) {
                 rowIndex++;
                 continue; 
             }
 
-            string employeeCode = row["EmployeeCode"].ToString();
-            DataRow[] attendanceRows = overtimeData.Select($"EmployeeCode = '{employeeCode}'");
+            int rice = 0;
+            int nodle = 0;
+            foreach (DataRow attendanceRow in attendanceRows)
+            {
+                DateTime targetDate = Convert.ToDateTime(attendanceRow["WorkDate"]);
+                decimal hourWork = Convert.ToDecimal(attendanceRow["HourWork"]);
+                if (hourWork < 2.5m) continue;
 
-            g.FillRectangle(bgBrush_TCA_Thuong, new Rectangle(col4, y, col4Width, lineHeight));
-            g.FillRectangle(bgBrush_TCA_NL, new Rectangle(col5, y, col5Width, lineHeight));
-            g.FillRectangle(bgBrush_TCA_CN, new Rectangle(col6, y, col6Width, lineHeight));
-            g.FillRectangle(bgBrush_TCA_Dem, new Rectangle(col7, y, col7Width, lineHeight));
+                int index = workDates.FindIndex(d => d.Date == targetDate);
+                var rect = new Rectangle(colDay + colDayWidth * index + 1, y + 1, colDayWidth - 2, lineHeight - 2);                
+                var rect1 = new Rectangle(colDay + colDayWidth * index, y, colDayWidth, lineHeight);
 
+                string text = hourWork.ToString("F1");
+                if (hourWork >= 3.0m)
+                {
+                    rice ++;
+                    text += "\n(Cơm)";
+                }
+                else if (hourWork >= 2.5m)
+                {
+                    nodle ++;
+                    text += "\n(Mì)";
+                }
+                else
+                    text += "\n(ko pc)";
+                DrawCellText(g, text, normalFont, rect1);
+
+
+            }
+
+            for (int i = 0; i < workDates.Count; i++)
+            {
+                g.DrawLine(Pens.Gray, colDay + colDayWidth * i, y, colDay + colDayWidth * i, y + lineHeight);
+            }
+
+            
             g.DrawRectangle(Pens.Gray, col1, y, colKT + colKTWidth - col1, lineHeight);
             g.DrawLine(Pens.Gray, col2, y, col2, y + lineHeight);
             g.DrawLine(Pens.Gray, col3, y, col3, y + lineHeight);
             g.DrawLine(Pens.Gray, col4, y, col4, y + lineHeight);
             g.DrawLine(Pens.Gray, col5, y, col5, y + lineHeight);
-            g.DrawLine(Pens.Gray, col6, y, col6, y + lineHeight);
-            g.DrawLine(Pens.Gray, col7, y, col7, y + lineHeight);
             g.DrawLine(Pens.Gray, colKT, y, colKT, y + lineHeight);
 
             DrawCellText(g, (countSTT).ToString(), normalFont, new Rectangle(col1, y, col1Width, lineHeight));
-            DrawCellText(g, employeeCode, tableHeaderFont, new Rectangle(col2, y, col2Width, lineHeight));
-            DrawCellText(g, row["FullName"].ToString(), tableHeaderFont, new Rectangle(col3, y, col3Width, lineHeight), StringAlignment.Near);
+            DrawCellText(g, employeeCode, normalFont, new Rectangle(col2, y, col2Width, lineHeight));
+            DrawCellText(g, row["EmployeeName"].ToString(), normalFont, new Rectangle(col3, y, col3Width, lineHeight), StringAlignment.Near);
 
-            decimal total_CN = 0;
-            decimal total_Thuong = 0;
-            decimal total_Le = 0;
-            decimal total_Dem = 0;
-            foreach (DataRow attendanceRow in attendanceRows)
-            {                
-                DateTime workDate = Convert.ToDateTime(attendanceRow["WorkDate"]);
-                int overtimeTypeID = Convert.ToInt32(attendanceRow["OvertimeTypeID"]);
-                decimal hourWork = Convert.ToDecimal(attendanceRow["HourWork"]);
-
-                var rect = new Rectangle(colDay + colDayWidth * (workDate.Day - 1) + 1, y + 1, colDayWidth - 2, lineHeight - 2);
-                if (overtimeTypeID == 1)//T.Ca Thường
-                {
-                    total_Thuong += hourWork;
-                    g.FillRectangle(bgBrush_TCA_Thuong, rect);
-                }
-                else if (overtimeTypeID == 2)//T.Ca Ngày Nghỉ
-                {
-                    total_CN += hourWork;
-                    g.FillRectangle(bgBrush_TCA_CN, rect);
-                }
-                else if (overtimeTypeID == 3)//T.Ca Ngày Lễ
-                {
-                    total_Le += hourWork;
-                    g.FillRectangle(bgBrush_TCA_NL, rect);
-                }
-                else if (overtimeTypeID == 4)//T.Ca Đêm
-                {
-                    total_Dem += hourWork;
-                    g.FillRectangle(bgBrush_TCA_Dem, rect);
-                }
-
-                var rect1 = new Rectangle(colDay + colDayWidth * (workDate.Day - 1), y, colDayWidth, lineHeight);
-                DrawCellText(g, hourWork.ToString("F1"), normalFont, rect1);
-                                
-                
-            }
-
-            for (int i = 0; i < days; i++)
-            {
-                g.DrawLine(Pens.Gray, colDay + colDayWidth * i, y, colDay + colDayWidth * i, y + lineHeight);
-            }
-                
-            DrawCellText(g, total_Thuong.ToString("F1"), normalFont, new Rectangle(col4, y, col4Width, lineHeight));
-            DrawCellText(g, total_Le.ToString("F1"), normalFont, new Rectangle(col5, y, col5Width, lineHeight));
-            DrawCellText(g, total_CN.ToString("F1"), normalFont, new Rectangle(col6, y, col6Width, lineHeight));
-            DrawCellText(g, total_Dem.ToString("F1"), normalFont, new Rectangle(col7, y, col7Width, lineHeight));
+            DrawCellText(g, rice.ToString(), normalFont, new Rectangle(col4, y, col4Width, lineHeight));
+            DrawCellText(g, nodle.ToString(), normalFont, new Rectangle(col5, y, col5Width, lineHeight));
 
             y += lineHeight;
             rowIndex++;
@@ -276,6 +269,5 @@ public class BangChamTăngCa_Printer
         }
 
         e.HasMorePages = false;
-
     }
 }

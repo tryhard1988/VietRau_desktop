@@ -107,7 +107,7 @@ namespace RauViet.ui
                         return; // không xử lý Delete
                     }
 
-                    DialogResult dialogResult = MessageBox.Show("Xóa Nha Bà", "Thông Báo", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                    DialogResult dialogResult = MessageBox.Show("Xóa thật không?", "Thông Báo", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
 
                     if (dialogResult != DialogResult.Yes) return;
 
