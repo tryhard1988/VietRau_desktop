@@ -45,7 +45,8 @@ namespace RauViet.ui
                 holiday_mi.Click += Holiday_mi_Click;
                 salaryGrade_mi.Click += SalaryGrade_mi_Click;
                 employeeSalaryInfo_mi.Click += EmployeeSalaryInfo_mi_Click;
-                
+                dutoanluong_mi.Click += dutoanluong_mi_Click;
+
             }
             else
             {
@@ -64,7 +65,11 @@ namespace RauViet.ui
                     productMain_menuitem.Visible = false;
 
                 if (UserManager.Instance.hasRole_SanPhamQuyCach())
+                {
                     productPacking_meniitem.Click += productPacking_btn_Click;
+                    inventoryTransaction_mi.Click += inventoryTransaction_mi_Click;
+                    thongKeTonKho_mi.Click += ThongKeTonKho_mi_Click;
+                }
                 else
                     productPacking_meniitem.Visible = false;
 
@@ -215,7 +220,6 @@ namespace RauViet.ui
             }
         }
 
-
         private async void SwitchChildForm<T>(string title) where T : Form, new()
         {
             // Lưu form hiện tại nếu có
@@ -302,7 +306,10 @@ namespace RauViet.ui
             OrderDomesticDetail,
             ResoncileDomesticDebts_Month,
             ResoncileDomesticDebts_Year,
-            MonthlyAllowance_TienAnCaDem
+            MonthlyAllowance_TienAnCaDem,
+            InventoryTransaction,
+            ThongKeTonKhoHangKho,
+            PhieuDuToanLuong
         }
 
         private void openCurrentForm(EForm status)
@@ -468,9 +475,18 @@ namespace RauViet.ui
                     break;
                 case EForm.ResoncileDomesticDebts_Year:
                     SwitchChildForm<ResoncileDomesticDebts_Year>("Báo Cáo Thống Kê Trong Năm");
-                    break;
+                    break; 
                 case EForm.MonthlyAllowance_TienAnCaDem:
                     SwitchChildForm<MonthlyAllowance_TienAnCaDem>("Phụ Cấp Tiền Ăn Ca Đêm");
+                    break;
+                case EForm.InventoryTransaction:
+                    SwitchChildForm<InventoryTransaction>("Hàng Tồn Kho");
+                    break;
+                case EForm.ThongKeTonKhoHangKho:
+                    SwitchChildForm<ThongKeTonKhoHangKho>("Thống Kê Hàng Tồn Kho");
+                    break;
+                case EForm.PhieuDuToanLuong:
+                    SwitchChildForm<PhieuDuToanLuong>("Dự Toán Lương");
                     break;
             }
             
@@ -517,11 +533,14 @@ namespace RauViet.ui
         private void exportCode_btn_Click(object sender, EventArgs e) { openCurrentForm(EForm.ExportCodes); }
         private void Products_SKU_btn_Click(object sender, EventArgs e)  { openCurrentForm(EForm.ProductSKU);  }
         private void productPacking_btn_Click(object sender, EventArgs e) { openCurrentForm(EForm.ProductList); }
+        private void inventoryTransaction_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.InventoryTransaction); }
+        private void ThongKeTonKho_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.ThongKeTonKhoHangKho); }
         private void ProductDomesticPrices_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.ProductDomesticPrices); }
         private void khachhang_btn_Click(object sender, EventArgs e) { openCurrentForm(EForm.Customers); }
         private void others_btn_Click(object sender, EventArgs e) { openCurrentForm(EForm.OrdersList); }
         private void user_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.User); }
         private void employee_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.Employee); }
+        private void dutoanluong_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.PhieuDuToanLuong); }
         private void department_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.Department); }
         private void position_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.Position); }
         private void DoCBM_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.DoCBM); }

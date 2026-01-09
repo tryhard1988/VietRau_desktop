@@ -55,6 +55,7 @@
             this.allowanceGroup_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.employeeAllowance_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.monthlyAllowance_mi = new System.Windows.Forms.ToolStripMenuItem();
+            this.MonthlyAllowance_TienAnCaDem_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.employeeDeduction_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.deduction_VEG_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.deduction_ADV_mi = new System.Windows.Forms.ToolStripMenuItem();
@@ -102,7 +103,10 @@
             this.aaaaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadExcelOrderReportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.content_panel = new System.Windows.Forms.Panel();
-            this.MonthlyAllowance_TienAnCaDem_mi = new System.Windows.Forms.ToolStripMenuItem();
+            this.tồnKhoHàngKhoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.inventoryTransaction_mi = new System.Windows.Forms.ToolStripMenuItem();
+            this.thongKeTonKho_mi = new System.Windows.Forms.ToolStripMenuItem();
+            this.dutoanluong_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1.SuspendLayout();
             this.LOT_menuitem.SuspendLayout();
             this.SuspendLayout();
@@ -193,7 +197,8 @@
             this.employeeBH_mi,
             this.employeeBank_mi,
             this.employeeWork_mi,
-            this.employeeSalaryInfo_mi});
+            this.employeeSalaryInfo_mi,
+            this.dutoanluong_mi});
             this.sfsdf.Name = "sfsdf";
             this.sfsdf.Size = new System.Drawing.Size(207, 22);
             this.sfsdf.Text = "Danh Sách Nhân Viên";
@@ -329,6 +334,12 @@
             this.monthlyAllowance_mi.Size = new System.Drawing.Size(236, 22);
             this.monthlyAllowance_mi.Text = "P.C Phát Sinh Trong Tháng";
             // 
+            // MonthlyAllowance_TienAnCaDem_mi
+            // 
+            this.MonthlyAllowance_TienAnCaDem_mi.Name = "MonthlyAllowance_TienAnCaDem_mi";
+            this.MonthlyAllowance_TienAnCaDem_mi.Size = new System.Drawing.Size(236, 22);
+            this.MonthlyAllowance_TienAnCaDem_mi.Text = "P.C Tiền Ăn Tăng Ca Đêm";
+            // 
             // employeeDeduction_mi
             // 
             this.employeeDeduction_mi.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -391,7 +402,8 @@
             this.sanpham_group_mi.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.productMain_menuitem,
             this.productPacking_meniitem,
-            this.productDomesticPrices_mi});
+            this.productDomesticPrices_mi,
+            this.tồnKhoHàngKhoToolStripMenuItem});
             this.sanpham_group_mi.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.sanpham_group_mi.ForeColor = System.Drawing.Color.OrangeRed;
             this.sanpham_group_mi.Name = "sanpham_group_mi";
@@ -434,37 +446,37 @@
             // exportCode_menuItem
             // 
             this.exportCode_menuItem.Name = "exportCode_menuItem";
-            this.exportCode_menuItem.Size = new System.Drawing.Size(172, 22);
+            this.exportCode_menuItem.Size = new System.Drawing.Size(180, 22);
             this.exportCode_menuItem.Text = "Mã Xuất Cảng";
             // 
             // order_menuitem
             // 
             this.order_menuitem.Name = "order_menuitem";
-            this.order_menuitem.Size = new System.Drawing.Size(172, 22);
+            this.order_menuitem.Size = new System.Drawing.Size(180, 22);
             this.order_menuitem.Text = "Đơn hàng";
             // 
             // dsDongThung_menuitem
             // 
             this.dsDongThung_menuitem.Name = "dsDongThung_menuitem";
-            this.dsDongThung_menuitem.Size = new System.Drawing.Size(172, 22);
+            this.dsDongThung_menuitem.Size = new System.Drawing.Size(180, 22);
             this.dsDongThung_menuitem.Text = "DS Đóng Thùng";
             // 
             // do417_menuitem
             // 
             this.do417_menuitem.Name = "do417_menuitem";
-            this.do417_menuitem.Size = new System.Drawing.Size(172, 22);
+            this.do417_menuitem.Size = new System.Drawing.Size(180, 22);
             this.do417_menuitem.Text = "Dò 417";
             // 
             // lotCode_menuitem
             // 
             this.lotCode_menuitem.Name = "lotCode_menuitem";
-            this.lotCode_menuitem.Size = new System.Drawing.Size(172, 22);
+            this.lotCode_menuitem.Size = new System.Drawing.Size(180, 22);
             this.lotCode_menuitem.Text = "Nhập Mã LOT";
             // 
             // doCBM_mi
             // 
             this.doCBM_mi.Name = "doCBM_mi";
-            this.doCBM_mi.Size = new System.Drawing.Size(172, 22);
+            this.doCBM_mi.Size = new System.Drawing.Size(180, 22);
             this.doCBM_mi.Text = "Dò CBM";
             // 
             // orderDomestic_group_mi
@@ -677,11 +689,32 @@
             this.content_panel.Size = new System.Drawing.Size(1388, 491);
             this.content_panel.TabIndex = 1;
             // 
-            // MonthlyAllowance_TienAnCaDem_mi
+            // tồnKhoHàngKhoToolStripMenuItem
             // 
-            this.MonthlyAllowance_TienAnCaDem_mi.Name = "MonthlyAllowance_TienAnCaDem_mi";
-            this.MonthlyAllowance_TienAnCaDem_mi.Size = new System.Drawing.Size(236, 22);
-            this.MonthlyAllowance_TienAnCaDem_mi.Text = "P.C Tiền Ăn Tăng Ca Đêm";
+            this.tồnKhoHàngKhoToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.inventoryTransaction_mi,
+            this.thongKeTonKho_mi});
+            this.tồnKhoHàngKhoToolStripMenuItem.Name = "tồnKhoHàngKhoToolStripMenuItem";
+            this.tồnKhoHàngKhoToolStripMenuItem.Size = new System.Drawing.Size(216, 22);
+            this.tồnKhoHàngKhoToolStripMenuItem.Text = "Tồn Kho Hàng Kho";
+            // 
+            // inventoryTransaction_mi
+            // 
+            this.inventoryTransaction_mi.Name = "inventoryTransaction_mi";
+            this.inventoryTransaction_mi.Size = new System.Drawing.Size(189, 22);
+            this.inventoryTransaction_mi.Text = "Nhập Tồn Kho";
+            // 
+            // thongKeTonKho_mi
+            // 
+            this.thongKeTonKho_mi.Name = "thongKeTonKho_mi";
+            this.thongKeTonKho_mi.Size = new System.Drawing.Size(189, 22);
+            this.thongKeTonKho_mi.Text = "Thống Kê Tồn Kho";
+            // 
+            // dutoanluong_mi
+            // 
+            this.dutoanluong_mi.Name = "dutoanluong_mi";
+            this.dutoanluong_mi.Size = new System.Drawing.Size(230, 22);
+            this.dutoanluong_mi.Text = "Dự Toán Lương";
             // 
             // FormManager
             // 
@@ -778,5 +811,9 @@
         private System.Windows.Forms.ToolStripMenuItem ResoncileDomesticDebts_Month_mi;
         private System.Windows.Forms.ToolStripMenuItem resoncileDomesticDebts_Year_mi;
         private System.Windows.Forms.ToolStripMenuItem MonthlyAllowance_TienAnCaDem_mi;
+        private System.Windows.Forms.ToolStripMenuItem tồnKhoHàngKhoToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem inventoryTransaction_mi;
+        private System.Windows.Forms.ToolStripMenuItem thongKeTonKho_mi;
+        private System.Windows.Forms.ToolStripMenuItem dutoanluong_mi;
     }
 }

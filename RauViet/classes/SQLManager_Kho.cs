@@ -2248,7 +2248,7 @@ namespace RauViet.classes
             }
             return dt;
         }
-
+                
         public async Task<bool> updateNewPriceInOrderDomesticDetailAsync(int OrderDomesticCodeID)
         {
             try
@@ -2266,6 +2266,154 @@ namespace RauViet.classes
                 return true;
             }
             catch { return false; }
+        }
+
+        public async Task<DataTable> getInventoryTransactionAsync()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT * FROM InventoryTransaction";
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                {
+                    dt.Load(reader);
+                }
+            }
+            return dt;
+        }
+
+        public async Task<int> insertInventoryTransactionAsync(int SKU, string TransactionType, int Quantity, DateTime TransactionDate, string note)
+        {
+            int newId = -1;
+            string query = @"INSERT INTO InventoryTransaction (SKU, TransactionType, Quantity, TransactionDate, Note)
+                            OUTPUT INSERTED.TransactionID
+                             VALUES (@SKU, @TransactionType, @Quantity, @TransactionDate, @Note)";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@SKU", SKU);
+                        cmd.Parameters.AddWithValue("@TransactionType", TransactionType);
+                        cmd.Parameters.AddWithValue("@Quantity", Quantity);
+                        cmd.Parameters.AddWithValue("@TransactionDate", TransactionDate);
+                        cmd.Parameters.AddWithValue("@Note", note);
+                        object result = await cmd.ExecuteScalarAsync();
+                        if (result != null)
+                            newId = Convert.ToInt32(result);
+                    }
+                }
+                return newId;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("ERROR: " + ex.Message);
+                return -1; 
+            }
+        }
+
+        public async Task<bool> updateInventoryTransactionAsync(int ID, int SKU, string TransactionType, int Quantity, DateTime TransactionDate, string note)
+        {
+            string query = @"UPDATE InventoryTransaction SET
+                                SKU=@SKU, 
+                                TransactionType=@TransactionType, 
+                                Quantity=@Quantity, 
+                                TransactionDate=@TransactionDate, 
+                                Note=@Note                              
+                             WHERE TransactionID=@ID";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@ID", ID);
+                        cmd.Parameters.AddWithValue("@SKU", SKU);
+                        cmd.Parameters.AddWithValue("@TransactionType", TransactionType);
+                        cmd.Parameters.AddWithValue("@Quantity", Quantity);
+                        cmd.Parameters.AddWithValue("@TransactionDate", TransactionDate);
+                        cmd.Parameters.AddWithValue("@Note", note);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("ERROR: " + ex.Message);
+                return false; 
+            }
+        }
+
+        public async Task<bool> deleteInventoryTransactionAsync(int tranID)
+        {
+            string query = "DELETE FROM InventoryTransaction WHERE TransactionID=@TransactionID";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@TransactionID", tranID);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+                return true;
+            }
+            catch { return false; }
+        }
+
+        public async Task<int> insertInventoryTransactionLOGAsync(int SKU, string oldValue, string newValue)
+        {
+            int newId = -1;
+            string query = @"INSERT INTO InventoryTransaction_Log (SKU, OldValue, NewValue, ActionBy)
+                            OUTPUT INSERTED.LogID
+                             VALUES (@SKU, @OldValue, @NewValue, @ActionBy)";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@SKU", SKU);
+                        cmd.Parameters.AddWithValue("@OldValue", oldValue);
+                        cmd.Parameters.AddWithValue("@NewValue", newValue);
+                        cmd.Parameters.AddWithValue("@ActionBy", UserManager.Instance.fullName);
+                        object result = await cmd.ExecuteScalarAsync();
+                        if (result != null)
+                            newId = Convert.ToInt32(result);
+                    }
+                }
+                return newId;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("ERROR: " + ex.Message);
+                return -1;
+            }
+        }
+
+        public async Task<DataTable> getInventoryTransactionLOGAsync()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr()))
+            {
+                await con.OpenAsync();
+                string query = @"select * from InventoryTransaction_Log";
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                {
+                    dt.Load(reader);
+                }
+            }
+            return dt;
         }
     }
 }

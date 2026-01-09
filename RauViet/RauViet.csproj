@@ -383,6 +383,12 @@
     <Compile Include="ui\OrderManager_sub\DonHangTrongNuoc\OrderDomesticCode.Designer.cs">
       <DependentUpon>OrderDomesticCode.cs</DependentUpon>
     </Compile>
+    <Compile Include="ui\OrderManager_sub\ThongKeTonKhoHangKho.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\OrderManager_sub\ThongKeTonKhoHangKho.Designer.cs">
+      <DependentUpon>ThongKeTonKhoHangKho.cs</DependentUpon>
+    </Compile>
     <Compile Include="ui\OrderManager_sub\MonthlyTotalPerYear.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -406,6 +412,12 @@
     </Compile>
     <Compile Include="ui\OrderManager_sub\DonHangTrongNuoc\ResoncileDomesticDebts_Month.Designer.cs">
       <DependentUpon>ResoncileDomesticDebts_Month.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ui\OrderManager_sub\InventoryTransaction .cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\OrderManager_sub\InventoryTransaction .Designer.cs">
+      <DependentUpon>InventoryTransaction .cs</DependentUpon>
     </Compile>
     <Compile Include="ui\OrderManager_sub\YearlyReport.cs">
       <SubType>Form</SubType>
@@ -436,6 +448,12 @@
     </Compile>
     <Compile Include="ui\PhanQuyen\EmployeeDeduction_ATT.Designer.cs">
       <DependentUpon>EmployeeDeduction_ATT.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ui\PhanQuyen\PhieuDuToanLuong.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\PhanQuyen\PhieuDuToanLuong.Designer.cs">
+      <DependentUpon>PhieuDuToanLuong.cs</DependentUpon>
     </Compile>
     <Compile Include="ui\PhanQuyen\Loading.cs">
       <SubType>Form</SubType>
@@ -756,6 +774,9 @@
     <EmbeddedResource Include="ui\OrderManager_sub\DonHangTrongNuoc\OrderDomesticCode.resx">
       <DependentUpon>OrderDomesticCode.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="ui\OrderManager_sub\ThongKeTonKhoHangKho.resx">
+      <DependentUpon>ThongKeTonKhoHangKho.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ui\OrderManager_sub\MonthlyTotalPerYear.resx">
       <DependentUpon>MonthlyTotalPerYear.cs</DependentUpon>
     </EmbeddedResource>
@@ -767,6 +788,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ui\OrderManager_sub\DonHangTrongNuoc\ResoncileDomesticDebts_Month.resx">
       <DependentUpon>ResoncileDomesticDebts_Month.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\OrderManager_sub\InventoryTransaction .resx">
+      <DependentUpon>InventoryTransaction .cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ui\OrderManager_sub\YearlyReport.resx">
       <DependentUpon>YearlyReport.cs</DependentUpon>
@@ -782,6 +806,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ui\PhanQuyen\EmployeeDeduction_ATT.resx">
       <DependentUpon>EmployeeDeduction_ATT.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\PhanQuyen\PhieuDuToanLuong.resx">
+      <DependentUpon>PhieuDuToanLuong.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ui\PhanQuyen\Loading.resx">
       <DependentUpon>Loading.cs</DependentUpon>

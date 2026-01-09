@@ -26,10 +26,12 @@ namespace RauViet.classes
         DataTable mlatestOrders_dt = null;
         DataTable mExportCodeLog_dt = null;
         DataTable mReportCustomerOrderDetail_dt = null;
-                
+        DataTable mInventoryTransaction_dt = null;
+
         DataTable mProductType_dt = null;
         DataTable mOrderDomesticCodeLog_dt = null;
         DataTable mProductDomesticPricesLog_dt = null;
+        DataTable mInventoryTransactionLog_dt = null;
 
         Dictionary<int, DataTable> mOrderLists;
         Dictionary<int, DataTable> mOrderDomesticDetails;
@@ -1917,6 +1919,99 @@ namespace RauViet.classes
             data.Columns["NWReal"].SetOrdinal(count++);
             data.Columns["Price"].SetOrdinal(count++);
             data.Columns["TotalAmount"].SetOrdinal(count++);
+        }
+
+        public void removeInventoryTransaction()
+        {
+            mInventoryTransaction_dt = null;
+        }
+
+        public async Task<DataTable> getInventoryTransactionSync()
+        {
+            if (mInventoryTransaction_dt == null)
+            {
+                try
+                {
+                    mInventoryTransaction_dt = await SQLManager_Kho.Instance.getInventoryTransactionAsync();
+                    editInventoryTransaction();
+                }
+                catch
+                {
+                    Console.WriteLine("error getInventoryTransactionsync SQLStore");
+                    return null;
+                }
+            }
+
+            return mInventoryTransaction_dt;
+        }
+
+        public async Task<DataTable> getThongKeTonKhoHangKhoSync()
+        {
+            await getInventoryTransactionSync();
+
+            return mInventoryTransaction_dt;
+        }
+
+        private void editInventoryTransaction()
+        {
+            mInventoryTransaction_dt.Columns.Add(new DataColumn("Name_VN", typeof(string)));
+            mInventoryTransaction_dt.Columns.Add(new DataColumn("ProductNameVN_NoSign", typeof(string)));
+            mInventoryTransaction_dt.Columns.Add(new DataColumn("TransactionTypeName", typeof(string)));
+            mInventoryTransaction_dt.Columns.Add(new DataColumn("Package", typeof(string)));
+            foreach (DataRow row in mInventoryTransaction_dt.Rows)
+            {
+                int sku = Convert.ToInt32(row["SKU"]);
+                string tranType = Convert.ToString(row["TransactionType"]);
+                DataRow pprow = mProductSKU_dt.Select($"SKU = {sku}").FirstOrDefault();
+
+                if (tranType.CompareTo("IN") == 0)
+                    row["TransactionTypeName"] = "Nhập kho";
+                else if (tranType.CompareTo("OUT") == 0)
+                    row["TransactionTypeName"] = "Xuất kho";
+                else
+                    row["TransactionTypeName"] = "ERROR";
+
+                if (pprow != null)
+                {
+                    row["Name_VN"] = pprow["ProductNameVN"].ToString();
+                    row["Package"] = pprow["Package"].ToString();
+                    row["ProductNameVN_NoSign"] = pprow["ProductNameVN_NoSign"].ToString();
+                }
+                else
+                {
+                    row["Name_VN"] = "";
+                    row["Package"] = "";
+                    row["ProductNameVN_NoSign"] = "";
+                }
+            }
+
+            int count = 0;
+            mInventoryTransaction_dt.Columns["TransactionID"].SetOrdinal(count++);
+            mInventoryTransaction_dt.Columns["TransactionDate"].SetOrdinal(count++);
+            mInventoryTransaction_dt.Columns["TransactionType"].SetOrdinal(count++);
+            mInventoryTransaction_dt.Columns["TransactionTypeName"].SetOrdinal(count++);
+            mInventoryTransaction_dt.Columns["Name_VN"].SetOrdinal(count++);
+            mInventoryTransaction_dt.Columns["Package"].SetOrdinal(count++);            
+            mInventoryTransaction_dt.Columns["Quantity"].SetOrdinal(count++);
+            mInventoryTransaction_dt.Columns["Note"].SetOrdinal(count++);
+        }
+
+        public async Task<DataTable> getInventoryTransactionLogSync()
+        {
+            if (mInventoryTransactionLog_dt == null)
+            {
+                try
+                {
+                    mInventoryTransactionLog_dt = await SQLManager_Kho.Instance.getInventoryTransactionLOGAsync();
+                }
+                catch
+                {
+                    Console.WriteLine("error getInventoryTransactionLogSync SQLStore");
+                    return null;
+                }
+            }
+
+            return mInventoryTransactionLog_dt;
         }
     }
 }
