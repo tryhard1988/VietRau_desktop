@@ -2415,6 +2415,70 @@ namespace RauViet.classes
             }
             return dt;
         }
+
+        public async Task<DataTable> getDomesticLiquidationPriceAsync()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
+            {
+                await con.OpenAsync();
+                string query = @"select * from DomesticLiquidationPrice";
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                {
+                    dt.Load(reader);
+                }
+            }
+            return dt;
+        }
+
+        public async Task<bool> updateDomesticLiquidationPriceAsync(int DomesticLiquidationPriceID, int SKU, int SalePrice)
+        {
+            string query = @"UPDATE DomesticLiquidationPrice SET
+                                SKU=@SKU, 
+                                SalePrice=@SalePrice, 
+                             WHERE DomesticLiquidationPriceID=@DomesticLiquidationPriceID";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@SKU", SKU);
+                        cmd.Parameters.AddWithValue("@SalePrice", SalePrice);
+                        cmd.Parameters.AddWithValue("@DomesticLiquidationPriceID", DomesticLiquidationPriceID);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+                return true;
+            }
+            catch { return false; }
+        }
+        public async Task<int> insertDomesticLiquidationPriceAsync(int SKU, int SalePrice)
+        {
+            int newId = -1;
+            string query = @"INSERT INTO DomesticLiquidationPrice (SKU, SalePrice)
+                            OUTPUT INSERTED.DomesticLiquidationPriceID
+                             VALUES (@SKU, @SalePrice)";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@SKU", SKU);
+                        cmd.Parameters.AddWithValue("@SalePrice", SalePrice);
+                        object result = await cmd.ExecuteScalarAsync();
+                        if (result != null)
+                            newId = Convert.ToInt32(result);
+                    }
+                }
+                return newId;
+            }
+            catch { return -1; }
+        }
     }
 }
 

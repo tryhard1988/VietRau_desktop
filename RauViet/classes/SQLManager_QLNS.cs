@@ -3274,6 +3274,28 @@ namespace RauViet.classes
             }
             return dt;
         }
+
+        public async Task<DataTable> GetEmployeeAllowances_AllAsync()
+        {
+            DataTable dt = new DataTable();
+
+            using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
+            {
+                await con.OpenAsync();
+
+                using (SqlCommand cmd = new SqlCommand("sp_GetEmployeeAllowances_All", con))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+
+            return dt;
+        }
     }
 }
 

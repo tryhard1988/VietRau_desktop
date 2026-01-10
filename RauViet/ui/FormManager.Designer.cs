@@ -41,6 +41,7 @@
             this.employeeBank_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.employeeWork_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.employeeSalaryInfo_mi = new System.Windows.Forms.ToolStripMenuItem();
+            this.dutoanluong_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.department_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.position_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.dữLiệuToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
@@ -68,6 +69,9 @@
             this.productMain_menuitem = new System.Windows.Forms.ToolStripMenuItem();
             this.productPacking_meniitem = new System.Windows.Forms.ToolStripMenuItem();
             this.productDomesticPrices_mi = new System.Windows.Forms.ToolStripMenuItem();
+            this.tồnKhoHàngKhoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.inventoryTransaction_mi = new System.Windows.Forms.ToolStripMenuItem();
+            this.thongKeTonKho_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.donhang_group_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.exportCode_menuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.order_menuitem = new System.Windows.Forms.ToolStripMenuItem();
@@ -103,10 +107,7 @@
             this.aaaaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadExcelOrderReportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.content_panel = new System.Windows.Forms.Panel();
-            this.tồnKhoHàngKhoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.inventoryTransaction_mi = new System.Windows.Forms.ToolStripMenuItem();
-            this.thongKeTonKho_mi = new System.Windows.Forms.ToolStripMenuItem();
-            this.dutoanluong_mi = new System.Windows.Forms.ToolStripMenuItem();
+            this.giaBanThanhLy_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1.SuspendLayout();
             this.LOT_menuitem.SuspendLayout();
             this.SuspendLayout();
@@ -232,6 +233,12 @@
             this.employeeSalaryInfo_mi.Name = "employeeSalaryInfo_mi";
             this.employeeSalaryInfo_mi.Size = new System.Drawing.Size(230, 22);
             this.employeeSalaryInfo_mi.Text = "Lương Cơ Bản";
+            // 
+            // dutoanluong_mi
+            // 
+            this.dutoanluong_mi.Name = "dutoanluong_mi";
+            this.dutoanluong_mi.Size = new System.Drawing.Size(230, 22);
+            this.dutoanluong_mi.Text = "In Phiếu Dự Toán Lương";
             // 
             // department_mi
             // 
@@ -403,6 +410,7 @@
             this.productMain_menuitem,
             this.productPacking_meniitem,
             this.productDomesticPrices_mi,
+            this.giaBanThanhLy_mi,
             this.tồnKhoHàngKhoToolStripMenuItem});
             this.sanpham_group_mi.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.sanpham_group_mi.ForeColor = System.Drawing.Color.OrangeRed;
@@ -428,6 +436,27 @@
             this.productDomesticPrices_mi.Size = new System.Drawing.Size(216, 22);
             this.productDomesticPrices_mi.Text = "Giá Bán SP Trong Nước";
             // 
+            // tồnKhoHàngKhoToolStripMenuItem
+            // 
+            this.tồnKhoHàngKhoToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.inventoryTransaction_mi,
+            this.thongKeTonKho_mi});
+            this.tồnKhoHàngKhoToolStripMenuItem.Name = "tồnKhoHàngKhoToolStripMenuItem";
+            this.tồnKhoHàngKhoToolStripMenuItem.Size = new System.Drawing.Size(216, 22);
+            this.tồnKhoHàngKhoToolStripMenuItem.Text = "Tồn Kho Hàng Kho";
+            // 
+            // inventoryTransaction_mi
+            // 
+            this.inventoryTransaction_mi.Name = "inventoryTransaction_mi";
+            this.inventoryTransaction_mi.Size = new System.Drawing.Size(189, 22);
+            this.inventoryTransaction_mi.Text = "Nhập Tồn Kho";
+            // 
+            // thongKeTonKho_mi
+            // 
+            this.thongKeTonKho_mi.Name = "thongKeTonKho_mi";
+            this.thongKeTonKho_mi.Size = new System.Drawing.Size(189, 22);
+            this.thongKeTonKho_mi.Text = "Thống Kê Tồn Kho";
+            // 
             // donhang_group_mi
             // 
             this.donhang_group_mi.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -446,37 +475,37 @@
             // exportCode_menuItem
             // 
             this.exportCode_menuItem.Name = "exportCode_menuItem";
-            this.exportCode_menuItem.Size = new System.Drawing.Size(180, 22);
+            this.exportCode_menuItem.Size = new System.Drawing.Size(172, 22);
             this.exportCode_menuItem.Text = "Mã Xuất Cảng";
             // 
             // order_menuitem
             // 
             this.order_menuitem.Name = "order_menuitem";
-            this.order_menuitem.Size = new System.Drawing.Size(180, 22);
+            this.order_menuitem.Size = new System.Drawing.Size(172, 22);
             this.order_menuitem.Text = "Đơn hàng";
             // 
             // dsDongThung_menuitem
             // 
             this.dsDongThung_menuitem.Name = "dsDongThung_menuitem";
-            this.dsDongThung_menuitem.Size = new System.Drawing.Size(180, 22);
+            this.dsDongThung_menuitem.Size = new System.Drawing.Size(172, 22);
             this.dsDongThung_menuitem.Text = "DS Đóng Thùng";
             // 
             // do417_menuitem
             // 
             this.do417_menuitem.Name = "do417_menuitem";
-            this.do417_menuitem.Size = new System.Drawing.Size(180, 22);
+            this.do417_menuitem.Size = new System.Drawing.Size(172, 22);
             this.do417_menuitem.Text = "Dò 417";
             // 
             // lotCode_menuitem
             // 
             this.lotCode_menuitem.Name = "lotCode_menuitem";
-            this.lotCode_menuitem.Size = new System.Drawing.Size(180, 22);
+            this.lotCode_menuitem.Size = new System.Drawing.Size(172, 22);
             this.lotCode_menuitem.Text = "Nhập Mã LOT";
             // 
             // doCBM_mi
             // 
             this.doCBM_mi.Name = "doCBM_mi";
-            this.doCBM_mi.Size = new System.Drawing.Size(180, 22);
+            this.doCBM_mi.Size = new System.Drawing.Size(172, 22);
             this.doCBM_mi.Text = "Dò CBM";
             // 
             // orderDomestic_group_mi
@@ -689,32 +718,11 @@
             this.content_panel.Size = new System.Drawing.Size(1388, 491);
             this.content_panel.TabIndex = 1;
             // 
-            // tồnKhoHàngKhoToolStripMenuItem
+            // giaBanThanhLy_mi
             // 
-            this.tồnKhoHàngKhoToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.inventoryTransaction_mi,
-            this.thongKeTonKho_mi});
-            this.tồnKhoHàngKhoToolStripMenuItem.Name = "tồnKhoHàngKhoToolStripMenuItem";
-            this.tồnKhoHàngKhoToolStripMenuItem.Size = new System.Drawing.Size(216, 22);
-            this.tồnKhoHàngKhoToolStripMenuItem.Text = "Tồn Kho Hàng Kho";
-            // 
-            // inventoryTransaction_mi
-            // 
-            this.inventoryTransaction_mi.Name = "inventoryTransaction_mi";
-            this.inventoryTransaction_mi.Size = new System.Drawing.Size(189, 22);
-            this.inventoryTransaction_mi.Text = "Nhập Tồn Kho";
-            // 
-            // thongKeTonKho_mi
-            // 
-            this.thongKeTonKho_mi.Name = "thongKeTonKho_mi";
-            this.thongKeTonKho_mi.Size = new System.Drawing.Size(189, 22);
-            this.thongKeTonKho_mi.Text = "Thống Kê Tồn Kho";
-            // 
-            // dutoanluong_mi
-            // 
-            this.dutoanluong_mi.Name = "dutoanluong_mi";
-            this.dutoanluong_mi.Size = new System.Drawing.Size(230, 22);
-            this.dutoanluong_mi.Text = "Dự Toán Lương";
+            this.giaBanThanhLy_mi.Name = "giaBanThanhLy_mi";
+            this.giaBanThanhLy_mi.Size = new System.Drawing.Size(216, 22);
+            this.giaBanThanhLy_mi.Text = "Giá Bán Thanh Lý";
             // 
             // FormManager
             // 
@@ -815,5 +823,6 @@
         private System.Windows.Forms.ToolStripMenuItem inventoryTransaction_mi;
         private System.Windows.Forms.ToolStripMenuItem thongKeTonKho_mi;
         private System.Windows.Forms.ToolStripMenuItem dutoanluong_mi;
+        private System.Windows.Forms.ToolStripMenuItem giaBanThanhLy_mi;
     }
 }

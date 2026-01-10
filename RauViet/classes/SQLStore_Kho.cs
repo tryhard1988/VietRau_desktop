@@ -18,6 +18,7 @@ namespace RauViet.classes
         DataTable mProductSKU_dt = null;
         DataTable mProductpacking_dt = null;
         DataTable mProductDomesticPrices_dt = null;
+        DataTable mDomesticLiquidationPrice_dt = null;
         DataTable mExportCodes_dt = null;
         DataTable mOrderDomesticCode_dt = null;
         DataTable mEmployeesInDongGoi_dt = null;
@@ -2012,6 +2013,48 @@ namespace RauViet.classes
             }
 
             return mInventoryTransactionLog_dt;
+        }
+
+        public async Task<DataTable> getDomesticLiquidationPriceAsync()
+        {
+            if (mDomesticLiquidationPrice_dt == null)
+            {
+                try
+                {
+                    mDomesticLiquidationPrice_dt = await SQLManager_Kho.Instance.getDomesticLiquidationPriceAsync();
+                    editDomesticLiquidationPrice();
+                }
+                catch
+                {
+                    Console.WriteLine("error getProductDomesticPricesAsync SQLStore");
+                    return null;
+                }
+            }
+
+            return mDomesticLiquidationPrice_dt;
+        }
+
+        private void editDomesticLiquidationPrice()
+        {
+            mDomesticLiquidationPrice_dt.Columns.Add(new DataColumn("Name_VN", typeof(string)));
+            mDomesticLiquidationPrice_dt.Columns.Add(new DataColumn("Package", typeof(string)));
+
+            foreach (DataRow dr in mDomesticLiquidationPrice_dt.Rows)
+            {
+                int sku = Convert.ToInt32(dr["SKU"]);
+                DataRow proRow = mProductSKU_dt.Select($"SKU = '{sku}'")[0];
+                
+                string package = proRow["Package"].ToString();
+                string nameVN = proRow["ProductNameVN"].ToString();
+
+                dr["Name_VN"] = nameVN;
+                dr["Package"] = package;
+            }
+
+            int count = 0;
+            mDomesticLiquidationPrice_dt.Columns["Name_VN"].SetOrdinal(count++);
+            mDomesticLiquidationPrice_dt.Columns["Package"].SetOrdinal(count++);
+            mDomesticLiquidationPrice_dt.Columns["SalePrice"].SetOrdinal(count++);
         }
     }
 }

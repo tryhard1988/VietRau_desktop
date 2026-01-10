@@ -36,6 +36,7 @@ namespace RauViet.classes
         DataTable mEmployeeSalary_Log_dt = null;
         DataTable mMonthlyAllowanceLog_dt = null;
         DataTable mAnnualLeaveBalance_dt = null;
+        DataTable mEmployeeAllowances_dt= null;
 
         Dictionary<int, DataTable> mDeductions;
         Dictionary<string, DataTable> mOvertimeAttendaces;
@@ -1577,6 +1578,16 @@ namespace RauViet.classes
                 mEmployeeSalary_Log_dt = await SQLManager_QLNS.Instance.GetEmployeeSalary_LogAsync();
             }
             return mEmployeeSalary_Log_dt;
+        }
+
+        public void removeEmployeeAllowances_All() { mEmployeeAllowances_dt = null; }
+        public async Task<DataTable> GetEmployeeAllowances_AllAsync()
+        {
+            if (mEmployeeAllowances_dt == null)
+            {
+                mEmployeeAllowances_dt = await SQLManager_QLNS.Instance.GetEmployeeAllowances_AllAsync();
+            }
+            return mEmployeeAllowances_dt;
         }
     }
 }

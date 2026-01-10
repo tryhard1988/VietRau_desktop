@@ -68,10 +68,16 @@ namespace RauViet.ui
                 {
                     productPacking_meniitem.Click += productPacking_btn_Click;
                     inventoryTransaction_mi.Click += inventoryTransaction_mi_Click;
+                    giaBanThanhLy_mi.Click += giaBanThanhLy_mi_Click;
                     thongKeTonKho_mi.Click += ThongKeTonKho_mi_Click;
                 }
                 else
+                {
                     productPacking_meniitem.Visible = false;
+                    inventoryTransaction_mi.Visible = false;
+                    giaBanThanhLy_mi.Visible = false;
+                    thongKeTonKho_mi.Visible = false;
+                }
 
                 if(UserManager.Instance.hasRole_AnGiaSanPham())
                     productDomesticPrices_mi.Visible = false;
@@ -309,7 +315,8 @@ namespace RauViet.ui
             MonthlyAllowance_TienAnCaDem,
             InventoryTransaction,
             ThongKeTonKhoHangKho,
-            PhieuDuToanLuong
+            PhieuDuToanLuong,
+            DomesticLiquidationPrice
         }
 
         private void openCurrentForm(EForm status)
@@ -484,9 +491,12 @@ namespace RauViet.ui
                     break;
                 case EForm.ThongKeTonKhoHangKho:
                     SwitchChildForm<ThongKeTonKhoHangKho>("Thống Kê Hàng Tồn Kho");
-                    break;
+                    break; 
                 case EForm.PhieuDuToanLuong:
                     SwitchChildForm<PhieuDuToanLuong>("Dự Toán Lương");
+                    break;
+                case EForm.DomesticLiquidationPrice:
+                    SwitchChildForm<DomesticLiquidationPrice>("Giá Bán Hàng Thanh Lý");
                     break;
             }
             
@@ -532,8 +542,9 @@ namespace RauViet.ui
         private void orderpackingList_btn_Click(object sender, EventArgs e) { openCurrentForm(EForm.OrderPackingList); }
         private void exportCode_btn_Click(object sender, EventArgs e) { openCurrentForm(EForm.ExportCodes); }
         private void Products_SKU_btn_Click(object sender, EventArgs e)  { openCurrentForm(EForm.ProductSKU);  }
-        private void productPacking_btn_Click(object sender, EventArgs e) { openCurrentForm(EForm.ProductList); }
+        private void productPacking_btn_Click(object sender, EventArgs e) { openCurrentForm(EForm.ProductList); }        
         private void inventoryTransaction_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.InventoryTransaction); }
+        private void giaBanThanhLy_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.DomesticLiquidationPrice); }
         private void ThongKeTonKho_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.ThongKeTonKhoHangKho); }
         private void ProductDomesticPrices_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.ProductDomesticPrices); }
         private void khachhang_btn_Click(object sender, EventArgs e) { openCurrentForm(EForm.Customers); }
