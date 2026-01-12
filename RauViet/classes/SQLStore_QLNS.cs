@@ -299,7 +299,7 @@ namespace RauViet.classes
                 dr["ContractTypeCode"] = contractTypeCode;
                 dr["GradeName"] = gradeName;
                 dr["SalaryGrade"] = salaryGrade; 
-                dr["EmployessName_NoSign"] = Utils.RemoveVietnameseSigns(dr["EmployeeCode"].ToString() + " " + dr["FullName"].ToString());
+                dr["EmployessName_NoSign"] = Utils.RemoveVietnameseSigns(dr["EmployeeCode"].ToString() + " " + dr["FullName"].ToString()).ToLower();
             }
         }
 

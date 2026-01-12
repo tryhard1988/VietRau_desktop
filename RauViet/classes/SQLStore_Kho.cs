@@ -19,6 +19,7 @@ namespace RauViet.classes
         DataTable mProductpacking_dt = null;
         DataTable mProductDomesticPrices_dt = null;
         DataTable mDomesticLiquidationPrice_dt = null;
+        DataTable mDomesticLiquidationImport_dt = null;
         DataTable mExportCodes_dt = null;
         DataTable mOrderDomesticCode_dt = null;
         DataTable mEmployeesInDongGoi_dt = null;
@@ -33,6 +34,8 @@ namespace RauViet.classes
         DataTable mOrderDomesticCodeLog_dt = null;
         DataTable mProductDomesticPricesLog_dt = null;
         DataTable mInventoryTransactionLog_dt = null;
+        DataTable mDomesticLiquidationPriceLog_dt = null;
+        DataTable mDomesticLiquidationImportLog_dt = null;
 
         Dictionary<int, DataTable> mOrderLists;
         Dictionary<int, DataTable> mOrderDomesticDetails;
@@ -2015,6 +2018,7 @@ namespace RauViet.classes
             return mInventoryTransactionLog_dt;
         }
 
+        public void removeDomesticLiquidationPrice() { mDomesticLiquidationPrice_dt = null; }
         public async Task<DataTable> getDomesticLiquidationPriceAsync()
         {
             if (mDomesticLiquidationPrice_dt == null)
@@ -2035,18 +2039,23 @@ namespace RauViet.classes
         }
 
         private void editDomesticLiquidationPrice()
-        {
+        {            
             mDomesticLiquidationPrice_dt.Columns.Add(new DataColumn("Name_VN", typeof(string)));
             mDomesticLiquidationPrice_dt.Columns.Add(new DataColumn("Package", typeof(string)));
+            mDomesticLiquidationPrice_dt.Columns.Add(new DataColumn("ProductNameVN_NoSign", typeof(string)));
 
             foreach (DataRow dr in mDomesticLiquidationPrice_dt.Rows)
             {
                 int sku = Convert.ToInt32(dr["SKU"]);
-                DataRow proRow = mProductSKU_dt.Select($"SKU = '{sku}'")[0];
+                DataRow proRow = mProductSKU_dt.Select($"SKU = {sku}")[0];
                 
                 string package = proRow["Package"].ToString();
                 string nameVN = proRow["ProductNameVN"].ToString();
+                
+                if (package.CompareTo("weight") == 0)
+                    package = "kg";
 
+                dr["ProductNameVN_NoSign"] = Utils.RemoveVietnameseSigns(nameVN + " " + sku.ToString()).ToLower();
                 dr["Name_VN"] = nameVN;
                 dr["Package"] = package;
             }
@@ -2056,5 +2065,96 @@ namespace RauViet.classes
             mDomesticLiquidationPrice_dt.Columns["Package"].SetOrdinal(count++);
             mDomesticLiquidationPrice_dt.Columns["SalePrice"].SetOrdinal(count++);
         }
+
+        public async Task<DataTable> GetDomesticLiquidationPriceLogAsync()
+        {
+            if (mDomesticLiquidationPriceLog_dt == null)
+            {
+                DataTable dt = await SQLManager_Kho.Instance.GetDomesticLiquidationPriceLogAsync();
+                mDomesticLiquidationPriceLog_dt = dt;
+            }
+            return mDomesticLiquidationPriceLog_dt;
+        }
+
+        public void removeDomesticLiquidationImport() { mDomesticLiquidationImport_dt = null; }
+        public async Task<DataTable> getDomesticLiquidationImportAsync()
+        {
+            if (mDomesticLiquidationImport_dt == null)
+            {
+                try
+                {
+                    mDomesticLiquidationImport_dt = await SQLManager_Kho.Instance.getDomesticLiquidationImportAsync();
+                    editDomesticLiquidationImport();
+                }
+                catch
+                {
+                    Console.WriteLine("error getDomesticLiquidationImportAsync SQLStore");
+                    return null;
+                }
+            }
+
+            return mDomesticLiquidationImport_dt;
+        }
+
+        private async Task editDomesticLiquidationImport()
+        {
+            await getDomesticLiquidationPriceAsync();
+
+            DataTable empData = await SQLStore_QLNS.Instance.GetEmployeesAsync();
+
+            mDomesticLiquidationImport_dt.Columns.Add(new DataColumn("Name_VN", typeof(string)));
+            mDomesticLiquidationImport_dt.Columns.Add(new DataColumn("Package", typeof(string)));
+            mDomesticLiquidationImport_dt.Columns.Add(new DataColumn("EmployeeReported", typeof(string)));
+            mDomesticLiquidationImport_dt.Columns.Add(new DataColumn("TotalMoney", typeof(int)));
+
+            foreach (DataRow dr in mDomesticLiquidationImport_dt.Rows)
+            {
+                int domesticLiquidationPriceID = Convert.ToInt32(dr["DomesticLiquidationPriceID"]);
+                int reportedByID = Convert.ToInt32(dr["ReportedByID"]);
+
+                                
+                DataRow[] proRow = mDomesticLiquidationPrice_dt.Select($"DomesticLiquidationPriceID = {domesticLiquidationPriceID}");
+                DataRow[] empRow = empData.Select($"EmployeeID = '{reportedByID}'");
+
+                dr["TotalMoney"] = Convert.ToDecimal(dr["Quantity"]) * Convert.ToInt32(dr["Price"]);
+                if (proRow.Length > 0)
+                {
+                    string package = proRow[0]["Package"].ToString();
+                    string nameVN = proRow[0]["Name_VN"].ToString();
+
+                    if (package.CompareTo("weight") == 0)
+                        package = "kg";
+
+
+
+                    dr["Name_VN"] = nameVN;
+                    dr["Package"] = package;
+                }
+
+                if(empRow.Length > 0)
+                {
+                    dr["EmployeeReported"] = empRow[0]["FullName"];
+                }
+            }
+
+            int count = 0;
+            mDomesticLiquidationImport_dt.Columns["ImportDate"].SetOrdinal(count++);
+            mDomesticLiquidationImport_dt.Columns["Name_VN"].SetOrdinal(count++);
+            mDomesticLiquidationImport_dt.Columns["Package"].SetOrdinal(count++);            
+            mDomesticLiquidationImport_dt.Columns["Quantity"].SetOrdinal(count++);
+            mDomesticLiquidationImport_dt.Columns["Price"].SetOrdinal(count++);
+            mDomesticLiquidationImport_dt.Columns["TotalMoney"].SetOrdinal(count++);
+        }
+
+        public async Task<DataTable> GetDomesticLiquidationImportLogAsync()
+        {
+            if (mDomesticLiquidationImportLog_dt == null)
+            {
+                DataTable dt = await SQLManager_Kho.Instance.GetDomesticLiquidationImportLogAsync();
+                mDomesticLiquidationImportLog_dt = dt;
+            }
+            return mDomesticLiquidationImportLog_dt;
+        }
+
     }
 }

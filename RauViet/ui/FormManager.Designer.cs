@@ -79,9 +79,6 @@
             this.do417_menuitem = new System.Windows.Forms.ToolStripMenuItem();
             this.lotCode_menuitem = new System.Windows.Forms.ToolStripMenuItem();
             this.doCBM_mi = new System.Windows.Forms.ToolStripMenuItem();
-            this.orderDomestic_group_mi = new System.Windows.Forms.ToolStripMenuItem();
-            this.orderDomesticCode_mi = new System.Windows.Forms.ToolStripMenuItem();
-            this.orderDomesticDetail_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.xuatExcelGuiKH_Group_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.dkkd_menuitem = new System.Windows.Forms.ToolStripMenuItem();
             this.phyto_menuitem = new System.Windows.Forms.ToolStripMenuItem();
@@ -89,6 +86,13 @@
             this.invoice_menuitem = new System.Windows.Forms.ToolStripMenuItem();
             this.packingTotal_menuitem = new System.Windows.Forms.ToolStripMenuItem();
             this.customerDetailPacking_mi = new System.Windows.Forms.ToolStripMenuItem();
+            this.orderDomestic_group_mi = new System.Windows.Forms.ToolStripMenuItem();
+            this.orderDomesticCode_mi = new System.Windows.Forms.ToolStripMenuItem();
+            this.orderDomesticDetail_mi = new System.Windows.Forms.ToolStripMenuItem();
+            this.banthanhlychoNV_mi = new System.Windows.Forms.ToolStripMenuItem();
+            this.giaBanThanhLy_mi = new System.Windows.Forms.ToolStripMenuItem();
+            this.domesticLiquidationImport_mi = new System.Windows.Forms.ToolStripMenuItem();
+            this.domesticLiquidationExportmi = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
             this.thongke_main_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.reportSalary_Month_mi = new System.Windows.Forms.ToolStripMenuItem();
@@ -107,7 +111,6 @@
             this.aaaaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadExcelOrderReportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.content_panel = new System.Windows.Forms.Panel();
-            this.giaBanThanhLy_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1.SuspendLayout();
             this.LOT_menuitem.SuspendLayout();
             this.SuspendLayout();
@@ -120,7 +123,7 @@
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1388, 56);
+            this.panel1.Size = new System.Drawing.Size(1477, 56);
             this.panel1.TabIndex = 0;
             // 
             // title_lb
@@ -129,7 +132,7 @@
             this.title_lb.AutoSize = true;
             this.title_lb.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.title_lb.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
-            this.title_lb.Location = new System.Drawing.Point(595, 30);
+            this.title_lb.Location = new System.Drawing.Point(639, 30);
             this.title_lb.Name = "title_lb";
             this.title_lb.Size = new System.Drawing.Size(68, 23);
             this.title_lb.TabIndex = 19;
@@ -149,7 +152,6 @@
             this.sanpham_group_mi,
             this.donhang_group_mi,
             this.orderDomestic_group_mi,
-            this.xuatExcelGuiKH_Group_mi,
             this.toolStripMenuItem3,
             this.thongke_main_mi,
             this.toolStripMenuItem2,
@@ -157,7 +159,7 @@
             this.aaaaToolStripMenuItem});
             this.LOT_menuitem.Location = new System.Drawing.Point(0, 0);
             this.LOT_menuitem.Name = "LOT_menuitem";
-            this.LOT_menuitem.Size = new System.Drawing.Size(1388, 25);
+            this.LOT_menuitem.Size = new System.Drawing.Size(1477, 25);
             this.LOT_menuitem.TabIndex = 18;
             this.LOT_menuitem.Text = "topMenu_ms";
             // 
@@ -410,7 +412,6 @@
             this.productMain_menuitem,
             this.productPacking_meniitem,
             this.productDomesticPrices_mi,
-            this.giaBanThanhLy_mi,
             this.tồnKhoHàngKhoToolStripMenuItem});
             this.sanpham_group_mi.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.sanpham_group_mi.ForeColor = System.Drawing.Color.OrangeRed;
@@ -465,7 +466,8 @@
             this.dsDongThung_menuitem,
             this.do417_menuitem,
             this.lotCode_menuitem,
-            this.doCBM_mi});
+            this.doCBM_mi,
+            this.xuatExcelGuiKH_Group_mi});
             this.donhang_group_mi.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.donhang_group_mi.ForeColor = System.Drawing.Color.OrangeRed;
             this.donhang_group_mi.Name = "donhang_group_mi";
@@ -508,29 +510,6 @@
             this.doCBM_mi.Size = new System.Drawing.Size(172, 22);
             this.doCBM_mi.Text = "Dò CBM";
             // 
-            // orderDomestic_group_mi
-            // 
-            this.orderDomestic_group_mi.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.orderDomesticCode_mi,
-            this.orderDomesticDetail_mi});
-            this.orderDomestic_group_mi.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.orderDomestic_group_mi.ForeColor = System.Drawing.Color.OrangeRed;
-            this.orderDomestic_group_mi.Name = "orderDomestic_group_mi";
-            this.orderDomestic_group_mi.Size = new System.Drawing.Size(157, 21);
-            this.orderDomestic_group_mi.Text = "Đơn Hàng Trong Nước";
-            // 
-            // orderDomesticCode_mi
-            // 
-            this.orderDomesticCode_mi.Name = "orderDomesticCode_mi";
-            this.orderDomesticCode_mi.Size = new System.Drawing.Size(187, 22);
-            this.orderDomesticCode_mi.Text = "Mã Đơn Hàng";
-            // 
-            // orderDomesticDetail_mi
-            // 
-            this.orderDomesticDetail_mi.Name = "orderDomesticDetail_mi";
-            this.orderDomesticDetail_mi.Size = new System.Drawing.Size(187, 22);
-            this.orderDomesticDetail_mi.Text = "Chi Tiết Đơn Hàng";
-            // 
             // xuatExcelGuiKH_Group_mi
             // 
             this.xuatExcelGuiKH_Group_mi.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -543,7 +522,7 @@
             this.xuatExcelGuiKH_Group_mi.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xuatExcelGuiKH_Group_mi.ForeColor = System.Drawing.Color.OrangeRed;
             this.xuatExcelGuiKH_Group_mi.Name = "xuatExcelGuiKH_Group_mi";
-            this.xuatExcelGuiKH_Group_mi.Size = new System.Drawing.Size(82, 21);
+            this.xuatExcelGuiKH_Group_mi.Size = new System.Drawing.Size(172, 22);
             this.xuatExcelGuiKH_Group_mi.Text = "Xuất Excel";
             // 
             // dkkd_menuitem
@@ -581,6 +560,60 @@
             this.customerDetailPacking_mi.Name = "customerDetailPacking_mi";
             this.customerDetailPacking_mi.Size = new System.Drawing.Size(224, 22);
             this.customerDetailPacking_mi.Text = "Customer Detail Packing";
+            // 
+            // orderDomestic_group_mi
+            // 
+            this.orderDomestic_group_mi.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.orderDomesticCode_mi,
+            this.orderDomesticDetail_mi,
+            this.banthanhlychoNV_mi});
+            this.orderDomestic_group_mi.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.orderDomestic_group_mi.ForeColor = System.Drawing.Color.OrangeRed;
+            this.orderDomestic_group_mi.Name = "orderDomestic_group_mi";
+            this.orderDomestic_group_mi.Size = new System.Drawing.Size(157, 21);
+            this.orderDomestic_group_mi.Text = "Đơn Hàng Trong Nước";
+            // 
+            // orderDomesticCode_mi
+            // 
+            this.orderDomesticCode_mi.Name = "orderDomesticCode_mi";
+            this.orderDomesticCode_mi.Size = new System.Drawing.Size(208, 22);
+            this.orderDomesticCode_mi.Text = "Mã Đơn Hàng";
+            // 
+            // orderDomesticDetail_mi
+            // 
+            this.orderDomesticDetail_mi.Name = "orderDomesticDetail_mi";
+            this.orderDomesticDetail_mi.Size = new System.Drawing.Size(208, 22);
+            this.orderDomesticDetail_mi.Text = "Chi Tiết Đơn Hàng";
+            // 
+            // banthanhlychoNV_mi
+            // 
+            this.banthanhlychoNV_mi.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.giaBanThanhLy_mi,
+            this.domesticLiquidationImport_mi,
+            this.domesticLiquidationExportmi});
+            this.banthanhlychoNV_mi.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.banthanhlychoNV_mi.ForeColor = System.Drawing.Color.OrangeRed;
+            this.banthanhlychoNV_mi.Name = "banthanhlychoNV_mi";
+            this.banthanhlychoNV_mi.Size = new System.Drawing.Size(208, 22);
+            this.banthanhlychoNV_mi.Text = "Bán Thanh Lý Cho NV";
+            // 
+            // giaBanThanhLy_mi
+            // 
+            this.giaBanThanhLy_mi.Name = "giaBanThanhLy_mi";
+            this.giaBanThanhLy_mi.Size = new System.Drawing.Size(181, 22);
+            this.giaBanThanhLy_mi.Text = "Giá Bán Thanh Lý";
+            // 
+            // domesticLiquidationImport_mi
+            // 
+            this.domesticLiquidationImport_mi.Name = "domesticLiquidationImport_mi";
+            this.domesticLiquidationImport_mi.Size = new System.Drawing.Size(181, 22);
+            this.domesticLiquidationImport_mi.Text = "Nhập Kho";
+            // 
+            // domesticLiquidationExportmi
+            // 
+            this.domesticLiquidationExportmi.Name = "domesticLiquidationExportmi";
+            this.domesticLiquidationExportmi.Size = new System.Drawing.Size(181, 22);
+            this.domesticLiquidationExportmi.Text = "Bán Cho NV";
             // 
             // toolStripMenuItem3
             // 
@@ -715,21 +748,15 @@
             this.content_panel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.content_panel.Location = new System.Drawing.Point(0, 56);
             this.content_panel.Name = "content_panel";
-            this.content_panel.Size = new System.Drawing.Size(1388, 491);
+            this.content_panel.Size = new System.Drawing.Size(1477, 491);
             this.content_panel.TabIndex = 1;
-            // 
-            // giaBanThanhLy_mi
-            // 
-            this.giaBanThanhLy_mi.Name = "giaBanThanhLy_mi";
-            this.giaBanThanhLy_mi.Size = new System.Drawing.Size(216, 22);
-            this.giaBanThanhLy_mi.Text = "Giá Bán Thanh Lý";
             // 
             // FormManager
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(1388, 547);
+            this.ClientSize = new System.Drawing.Size(1477, 547);
             this.Controls.Add(this.content_panel);
             this.Controls.Add(this.panel1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -824,5 +851,8 @@
         private System.Windows.Forms.ToolStripMenuItem thongKeTonKho_mi;
         private System.Windows.Forms.ToolStripMenuItem dutoanluong_mi;
         private System.Windows.Forms.ToolStripMenuItem giaBanThanhLy_mi;
+        private System.Windows.Forms.ToolStripMenuItem banthanhlychoNV_mi;
+        private System.Windows.Forms.ToolStripMenuItem domesticLiquidationImport_mi;
+        private System.Windows.Forms.ToolStripMenuItem domesticLiquidationExportmi;
     }
 }

@@ -3,6 +3,7 @@ using RauViet.classes;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO.Packaging;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -30,6 +31,7 @@ namespace RauViet.ui
             dataGV.MultiSelect = false;
 
             status_lb.Text = "";
+            salePrice_tb.KeyPress += Tb_KeyPress_OnlyNumber;
 
             newCustomerBtn.Click += newBtn_Click;
             LuuThayDoiBtn.Click += saveBtn_Click;
@@ -47,7 +49,7 @@ namespace RauViet.ui
         {
             if (e.KeyCode == Keys.F5)
             {
-                SQLStore_Kho.Instance.removeProductDomesticPrices();
+                SQLStore_Kho.Instance.removeDomesticLiquidationPrice();
                 ShowData();
             }
             else if (!isNewState && !edit_btn.Visible)
@@ -79,7 +81,7 @@ namespace RauViet.ui
                 var parameters = new Dictionary<string, object> { { "IsActive", true } };
                 mSKU_dt = await SQLStore_Kho.Instance.getProductSKUAsync(parameters);
                 mDomesticLiquidationPrice_dt = await SQLStore_Kho.Instance.getDomesticLiquidationPriceAsync();
-                var logData = await SQLStore_Kho.Instance.GetProductDomesticPricesHistoryAsync();
+                var logData = await SQLStore_Kho.Instance.GetDomesticLiquidationPriceLogAsync();
                 mLogDV = new DataView(logData);
 
                 sku_cbb.DataSource = mSKU_dt;
@@ -91,9 +93,10 @@ namespace RauViet.ui
                 dataGV.DataSource = mDomesticLiquidationPrice_dt;
 
                 log_GV.DataSource = mLogDV;
-
+                
                 dataGV.Columns["DomesticLiquidationPriceID"].Visible = false;
                 dataGV.Columns["SKU"].Visible = false;
+                dataGV.Columns["ProductNameVN_NoSign"].Visible = false;
 
                 dataGV.Columns["Name_VN"].HeaderText = "Tên Sản Phẩm";
                 dataGV.Columns["Package"].HeaderText = "Đ.Vị";
@@ -119,15 +122,15 @@ namespace RauViet.ui
                 loadingOverlay.Hide();
 
 
-                log_GV.Columns["HistoryID"].Visible = false;
+                log_GV.Columns["LogID"].Visible = false;
                 log_GV.Columns["SKU"].Visible = false;
-                log_GV.Columns["OldValue"].HeaderText = "Giá Trị Cũ";
-                log_GV.Columns["NewValue"].HeaderText = "Giá Trị Mới";
+                log_GV.Columns["OldPrice"].HeaderText = "Giá Trị Cũ";
+                log_GV.Columns["NewPrice"].HeaderText = "Giá Trị Mới";
                 log_GV.Columns["ActionBy"].HeaderText = "Người Thực Hiện";
                 log_GV.Columns["CreatedAt"].HeaderText = "Ngày Thực Hiện";
 
-                log_GV.Columns["OldValue"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                log_GV.Columns["NewValue"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                log_GV.Columns["OldPrice"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                log_GV.Columns["NewPrice"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 log_GV.Columns["ActionBy"].Width = 150;
                 log_GV.Columns["CreatedAt"].Width = 120;
 
@@ -209,7 +212,7 @@ namespace RauViet.ui
                     {
                         try
                         {
-                            bool isScussess = await SQLManager_Kho.Instance.updateDomesticLiquidationPriceAsync(domesticLiquidationPriceID, SKU, salePrice);
+                            bool isScussess = await SQLManager_Kho.Instance.updateDomesticLiquidationPriceAsync(domesticLiquidationPriceID, salePrice);
 
                             if (isScussess == true)
                             {
@@ -217,18 +220,15 @@ namespace RauViet.ui
                                 status_lb.ForeColor = Color.Green;
 
                                 row["SalePrice"] = salePrice;
-                                row["Name_VN"] = rows[0]["ProductNameVN"];
-                                row["SKU"] = SKU;
-                                row["Package"] = rows[0]["Package"];
 
-                                _ = SQLManager_Kho.Instance.InsertProductDomesticPricesHistory(SKU, "Update Success: " + oldValue, newValue);
+                                _ = SQLManager_Kho.Instance.InsertDomesticLiquidationPriceLogAsnc(SKU, "Update Success: " + oldValue, newValue);
                             }
                             else
                             {
                                 status_lb.Text = "Thất bại.";
                                 status_lb.ForeColor = Color.Red;
 
-                                _ = SQLManager_Kho.Instance.InsertProductDomesticPricesHistory(SKU, "Update Fail: " + oldValue, newValue);
+                                _ = SQLManager_Kho.Instance.InsertDomesticLiquidationPriceLogAsnc(SKU, "Update Fail: " + oldValue, newValue);
                             }
                         }
                         catch (Exception ex)
@@ -236,7 +236,7 @@ namespace RauViet.ui
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;
 
-                            _ = SQLManager_Kho.Instance.InsertProductDomesticPricesHistory(SKU, "Update Exception: " + ex.Message + oldValue, newValue);
+                            _ = SQLManager_Kho.Instance.InsertDomesticLiquidationPriceLogAsnc(SKU, "Update Exception: " + ex.Message + oldValue, newValue);
                         }
                     }
                     break;
@@ -267,11 +267,17 @@ namespace RauViet.ui
                     {
                         DataRow drToAdd = mDomesticLiquidationPrice_dt.NewRow();
 
-                        drToAdd["PriceID"] = newId;
+                        drToAdd["DomesticLiquidationPriceID"] = newId;
                         drToAdd["SalePrice"] = salePrice;
                         drToAdd["Name_VN"] = rows[0]["ProductNameVN"];
                         drToAdd["SKU"] = SKU;
-                        drToAdd["Package"] = rows[0]["Package"];
+                        drToAdd["ProductNameVN_NoSign"] = Utils.RemoveVietnameseSigns(rows[0]["ProductNameVN"] + " " + SKU.ToString()).ToLower();
+
+                        string package = rows[0]["Package"].ToString();
+                        if (package.CompareTo("weight") == 0)
+                            package = "kg";
+
+                        drToAdd["Package"] = package;
 
                         mDomesticLiquidationPrice_dt.Rows.Add(drToAdd);
                         mDomesticLiquidationPrice_dt.AcceptChanges();
@@ -279,7 +285,7 @@ namespace RauViet.ui
                         status_lb.Text = "Thành công";
                         status_lb.ForeColor = Color.Green;
 
-                        _ = SQLManager_Kho.Instance.InsertProductDomesticPricesHistory(SKU, "Create Success: ", newValue);
+                        _ = SQLManager_Kho.Instance.InsertDomesticLiquidationPriceLogAsnc(SKU, "Create Success: ", newValue);
 
                         newBtn_Click(null, null);
                     }
@@ -287,7 +293,7 @@ namespace RauViet.ui
                     {
                         status_lb.Text = "Thất bại";
                         status_lb.ForeColor = Color.Red;
-                        _ = SQLManager_Kho.Instance.InsertProductDomesticPricesHistory(SKU, "Create Fail: ", newValue);
+                        _ = SQLManager_Kho.Instance.InsertDomesticLiquidationPriceLogAsnc(SKU, "Create Fail: ", newValue);
                     }
                 }
                 catch (Exception ex)
@@ -296,7 +302,7 @@ namespace RauViet.ui
                     status_lb.Text = "Thất bại.";
                     status_lb.ForeColor = Color.Red;
 
-                    _ = SQLManager_Kho.Instance.InsertProductDomesticPricesHistory(SKU, "Create Exception: " + ex.Message, newValue);
+                    _ = SQLManager_Kho.Instance.InsertDomesticLiquidationPriceLogAsnc(SKU, "Create Exception: " + ex.Message, newValue);
                 }
 
             }
@@ -323,16 +329,18 @@ namespace RauViet.ui
 
             foreach (DataRow row in mDomesticLiquidationPrice_dt.Rows)
             {
-                string priceID = row["PriceID"].ToString();
-                if (priceID.CompareTo(id) == 0)
+                string domesticLiquidationPriceID = row["DomesticLiquidationPriceID"].ToString();
+                if (domesticLiquidationPriceID.CompareTo(id) == 0)
                 {
                     DialogResult dialogResult = MessageBox.Show("Xóa Nha, Chắc Chắn Chưa!", "Thông Báo", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
                     if (dialogResult == DialogResult.Yes)
                     {
+                        int SKU = Convert.ToInt32(row["SKU"]);
+                        string oldValue = $"{row["Name_VN"]} - {row["SalePrice"]}";
                         try
                         {
-                            bool isScussess = await SQLManager_Kho.Instance.deleteProductDomesticPriceAsync(Convert.ToInt32(id));
+                            bool isScussess = await SQLManager_Kho.Instance.deletetDomesticLiquidationPriceAsync(Convert.ToInt32(id));
 
                             if (isScussess == true)
                             {
@@ -341,17 +349,21 @@ namespace RauViet.ui
 
                                 mDomesticLiquidationPrice_dt.Rows.Remove(row);
                                 mDomesticLiquidationPrice_dt.AcceptChanges();
+
+                                _ = SQLManager_Kho.Instance.InsertDomesticLiquidationPriceLogAsnc(SKU, "Delete Success: " + oldValue, "");
                             }
                             else
                             {
                                 status_lb.Text = "Thất bại.";
                                 status_lb.ForeColor = Color.Red;
+                                _ = SQLManager_Kho.Instance.InsertDomesticLiquidationPriceLogAsnc(SKU, "Delete Fail: " + oldValue, "");
                             }
                         }
-                        catch
+                        catch (Exception ex)
                         {
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;
+                            _ = SQLManager_Kho.Instance.InsertDomesticLiquidationPriceLogAsnc(SKU, "Delete Fail: " + oldValue, "Exception: " + ex.Message);
                         }
                     }
                     break;
@@ -414,7 +426,6 @@ namespace RauViet.ui
 
         private void updateRightUI()
         {
-            return;
             try
             {
                 if (isNewState) return;
@@ -423,12 +434,9 @@ namespace RauViet.ui
                 {
                     var cells = dataGV.SelectedRows[0].Cells;
 
-                    string ID = cells["PriceID"].Value.ToString();
+                    string ID = cells["DomesticLiquidationPriceID"].Value.ToString();
                     string SKU = cells["SKU"].Value.ToString();
-                    string rawPrice = cells["RawPrice"].Value.ToString();
-                    string refinePrice = cells["RefinedPrice"].Value.ToString();
-                    string packedPrice = cells["PackedPrice"].Value.ToString();
-                    bool isActive = Convert.ToBoolean(cells["IsActive"].Value);
+                    string salePrice = cells["SalePrice"].Value.ToString();
 
                     if (!sku_cbb.Items.Cast<object>().Any(i => ((DataRowView)i)["SKU"].ToString() == SKU))
                     {
@@ -437,7 +445,7 @@ namespace RauViet.ui
                     sku_cbb.SelectedValue = SKU;
 
                     id_tb.Text = ID;
-                    salePrice_tb.Text = rawPrice;
+                    salePrice_tb.Text = salePrice;
 
                     status_lb.Text = "";
 
@@ -477,5 +485,6 @@ namespace RauViet.ui
         private void RightUiEnable(bool enable)
         {
         }
+
     }
 }

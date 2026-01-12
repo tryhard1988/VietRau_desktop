@@ -40,6 +40,10 @@ namespace RauViet.ui
             edit_btn.Click += Edit_btn_Click;
             readOnly_btn.Click += ReadOnly_btn_Click;
             this.KeyDown += ProductList_KeyDown;
+            
+            rawPrice_tb.KeyPress += Tb_KeyPress_OnlyNumber;
+            refinedPrice_tb.KeyPress += Tb_KeyPress_OnlyNumber;
+            packedPrice_tb.KeyPress += Tb_KeyPress_OnlyNumber;
 
         }
 

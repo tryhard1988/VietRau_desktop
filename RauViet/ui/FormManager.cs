@@ -69,6 +69,7 @@ namespace RauViet.ui
                     productPacking_meniitem.Click += productPacking_btn_Click;
                     inventoryTransaction_mi.Click += inventoryTransaction_mi_Click;
                     giaBanThanhLy_mi.Click += giaBanThanhLy_mi_Click;
+                    domesticLiquidationImport_mi.Click += DomesticLiquidationImport_mi_Click;
                     thongKeTonKho_mi.Click += ThongKeTonKho_mi_Click;
                 }
                 else
@@ -316,7 +317,8 @@ namespace RauViet.ui
             InventoryTransaction,
             ThongKeTonKhoHangKho,
             PhieuDuToanLuong,
-            DomesticLiquidationPrice
+            DomesticLiquidationPrice,
+            DomesticLiquidationImport
         }
 
         private void openCurrentForm(EForm status)
@@ -498,6 +500,9 @@ namespace RauViet.ui
                 case EForm.DomesticLiquidationPrice:
                     SwitchChildForm<DomesticLiquidationPrice>("Giá Bán Hàng Thanh Lý");
                     break;
+                case EForm.DomesticLiquidationImport:
+                    SwitchChildForm<DomesticLiquidationImport>("Nhập Kho Hàng Thanh Lý");
+                    break;
             }
             
             Properties.Settings.Default.current_form = status.ToString();
@@ -545,6 +550,7 @@ namespace RauViet.ui
         private void productPacking_btn_Click(object sender, EventArgs e) { openCurrentForm(EForm.ProductList); }        
         private void inventoryTransaction_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.InventoryTransaction); }
         private void giaBanThanhLy_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.DomesticLiquidationPrice); }
+        private void DomesticLiquidationImport_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.DomesticLiquidationImport); }
         private void ThongKeTonKho_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.ThongKeTonKhoHangKho); }
         private void ProductDomesticPrices_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.ProductDomesticPrices); }
         private void khachhang_btn_Click(object sender, EventArgs e) { openCurrentForm(EForm.Customers); }

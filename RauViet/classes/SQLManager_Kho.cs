@@ -2432,11 +2432,10 @@ namespace RauViet.classes
             return dt;
         }
 
-        public async Task<bool> updateDomesticLiquidationPriceAsync(int DomesticLiquidationPriceID, int SKU, int SalePrice)
+        public async Task<bool> updateDomesticLiquidationPriceAsync(int DomesticLiquidationPriceID, int SalePrice)
         {
             string query = @"UPDATE DomesticLiquidationPrice SET
-                                SKU=@SKU, 
-                                SalePrice=@SalePrice, 
+                                SalePrice=@SalePrice
                              WHERE DomesticLiquidationPriceID=@DomesticLiquidationPriceID";
             try
             {
@@ -2445,7 +2444,6 @@ namespace RauViet.classes
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
-                        cmd.Parameters.AddWithValue("@SKU", SKU);
                         cmd.Parameters.AddWithValue("@SalePrice", SalePrice);
                         cmd.Parameters.AddWithValue("@DomesticLiquidationPriceID", DomesticLiquidationPriceID);
                         await cmd.ExecuteNonQueryAsync();
@@ -2478,6 +2476,206 @@ namespace RauViet.classes
                 return newId;
             }
             catch { return -1; }
+        }
+
+        public async Task<bool> deletetDomesticLiquidationPriceAsync(int domesticLiquidationPriceID)
+        {
+            string query = "DELETE FROM DomesticLiquidationPrice WHERE DomesticLiquidationPriceID=@DomesticLiquidationPriceID";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@DomesticLiquidationPriceID", domesticLiquidationPriceID);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+                return true;
+            }
+            catch { return false; }
+        }
+
+        public async Task<DataTable> GetDomesticLiquidationPriceLogAsync()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr()))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT * FROM DomesticLiquidationPriceLog";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
+        }
+
+        public async Task InsertDomesticLiquidationPriceLogAsnc(int SKU, string OldValue, string NewValue)
+        {
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand("sp_InsertDomesticLiquidationPriceLog", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@SKU", SKU);
+                        cmd.Parameters.AddWithValue("@OldValue", (object)OldValue ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@NewValue", (object)NewValue ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@ActionBy", UserManager.Instance.fullName);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error Auto Update ExportCode: {ex.Message}");
+            }
+        }
+
+        public async Task<DataTable> getDomesticLiquidationImportAsync()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
+            {
+                await con.OpenAsync();
+                string query = @"select * from DomesticLiquidationImport";
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                {
+                    dt.Load(reader);
+                }
+            }
+            return dt;
+        }
+
+
+        public async Task<DataTable> GetDomesticLiquidationImportLogAsync()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr()))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT * FROM DomesticLiquidationImportLog";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
+        }
+
+
+        public async Task<int> insertDomesticLiquidationImportAsync(DateTime importDate, int domesticLiquidationPriceID, decimal quantity, int price, int reportedByID)
+        {
+            int newId = -1;
+            string query = @"INSERT INTO DomesticLiquidationImport (ImportDate, DomesticLiquidationPriceID, Quantity, Price, ReportedByID)
+                            OUTPUT INSERTED.ImportID
+                             VALUES (@ImportDate, @DomesticLiquidationPriceID, @Quantity, @Price, @ReportedByID)";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@ImportDate", importDate);
+                        cmd.Parameters.AddWithValue("@DomesticLiquidationPriceID", domesticLiquidationPriceID);
+                        cmd.Parameters.AddWithValue("@Quantity", quantity);
+                        cmd.Parameters.AddWithValue("@Price", price);
+                        cmd.Parameters.AddWithValue("@ReportedByID", reportedByID);
+                        object result = await cmd.ExecuteScalarAsync();
+                        if (result != null)
+                            newId = Convert.ToInt32(result);
+                    }
+                }
+                return newId;
+            }
+            catch { return -1; }
+        }
+
+        public async Task<bool> updateDDomesticLiquidationImportAsync(int importID, DateTime importDate, int domesticLiquidationPriceID, decimal quantity, int price, int reportedByI)
+        {
+            string query = @"UPDATE DomesticLiquidationImport SET
+                                ImportDate=@ImportDate,
+                                DomesticLiquidationPriceID=@DomesticLiquidationPriceID,
+                                Quantity=@Quantity,
+                                Price=@Price,
+                                ReportedByID=@ReportedByID
+                             WHERE ImportID=@ImportID";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@ImportDate", importDate);
+                        cmd.Parameters.AddWithValue("@DomesticLiquidationPriceID", domesticLiquidationPriceID);
+                        cmd.Parameters.AddWithValue("@Quantity", quantity);
+                        cmd.Parameters.AddWithValue("@Price", price);
+                        cmd.Parameters.AddWithValue("@ReportedByID", reportedByI);
+                        cmd.Parameters.AddWithValue("@ImportID", importID);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+                return true;
+            }
+            catch { return false; }
+        }
+
+        public async Task insertDomesticLiquidationImportLogAsync(int domesticLiquidationPriceID, string oldValue, string newValue)
+        {
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand("sp_InsertDomesticLiquidationImportLog", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@DomesticLiquidationPriceID", domesticLiquidationPriceID);
+                        cmd.Parameters.AddWithValue("@OldValue", (object)oldValue ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@NewValue", (object)newValue ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@ActionBy", UserManager.Instance.fullName);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error Auto Update ExportCode: {ex.Message}");
+            }
+        }
+
+        public async Task<bool> deletetDomesticLiquidationImportAsync(int importID)
+        {
+            string query = "DELETE FROM DomesticLiquidationImport WHERE ImportID=@ImportID";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@ImportID", importID);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+                return true;
+            }
+            catch { return false; }
         }
     }
 }
