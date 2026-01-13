@@ -366,6 +366,24 @@
     <Compile Include="ui\OrderManager_sub\ChotPhyto.Designer.cs">
       <DependentUpon>ChotPhyto.cs</DependentUpon>
     </Compile>
+    <Compile Include="ui\OrderManager_sub\DonHangTrongNuoc\TonKhoHangRauThanhLy.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\OrderManager_sub\DonHangTrongNuoc\TonKhoHangRauThanhLy.Designer.cs">
+      <DependentUpon>TonKhoHangRauThanhLy.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ui\OrderManager_sub\DonHangTrongNuoc\TienRauCuaNhanVienTrongThang.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\OrderManager_sub\DonHangTrongNuoc\TienRauCuaNhanVienTrongThang.Designer.cs">
+      <DependentUpon>TienRauCuaNhanVienTrongThang.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ui\OrderManager_sub\DonHangTrongNuoc\DomesticLiquidationExport.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\OrderManager_sub\DonHangTrongNuoc\DomesticLiquidationExport.Designer.cs">
+      <DependentUpon>DomesticLiquidationExport.cs</DependentUpon>
+    </Compile>
     <Compile Include="ui\OrderManager_sub\DonHangTrongNuoc\DomesticLiquidationImport.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -777,6 +795,15 @@
     <EmbeddedResource Include="ui\OrderManager_sub\ChotPhyto.resx">
       <DependentUpon>ChotPhyto.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\OrderManager_sub\DonHangTrongNuoc\TonKhoHangRauThanhLy.resx">
+      <DependentUpon>TonKhoHangRauThanhLy.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\OrderManager_sub\DonHangTrongNuoc\TienRauCuaNhanVienTrongThang.resx">
+      <DependentUpon>TienRauCuaNhanVienTrongThang.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\OrderManager_sub\DonHangTrongNuoc\DomesticLiquidationExport.resx">
+      <DependentUpon>DomesticLiquidationExport.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ui\OrderManager_sub\DonHangTrongNuoc\DomesticLiquidationImport.resx">
       <DependentUpon>DomesticLiquidationImport.cs</DependentUpon>

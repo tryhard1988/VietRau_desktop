@@ -70,6 +70,9 @@ namespace RauViet.ui
                     inventoryTransaction_mi.Click += inventoryTransaction_mi_Click;
                     giaBanThanhLy_mi.Click += giaBanThanhLy_mi_Click;
                     domesticLiquidationImport_mi.Click += DomesticLiquidationImport_mi_Click;
+                    domesticLiquidationExport_mi.Click += DomesticLiquidationExport_mi_Click;
+                    tienMuaRauCuaNV_mi.Click += tienMuaRauCuaNV_mi_Click;
+                    tonKhoHangThanhLy_mi.Click += tonKhoHangRauThanhLy_mi_Click;
                     thongKeTonKho_mi.Click += ThongKeTonKho_mi_Click;
                 }
                 else
@@ -318,7 +321,10 @@ namespace RauViet.ui
             ThongKeTonKhoHangKho,
             PhieuDuToanLuong,
             DomesticLiquidationPrice,
-            DomesticLiquidationImport
+            DomesticLiquidationImport,
+            DomesticLiquidationExport,
+            TienRauCuaNhanVienTrongThang,
+            TonKhoHangRauThanhLy
         }
 
         private void openCurrentForm(EForm status)
@@ -503,6 +509,15 @@ namespace RauViet.ui
                 case EForm.DomesticLiquidationImport:
                     SwitchChildForm<DomesticLiquidationImport>("Nhập Kho Hàng Thanh Lý");
                     break;
+                case EForm.DomesticLiquidationExport:
+                    SwitchChildForm<DomesticLiquidationExport>("Bán Thanh Lý Cho Nhân Viên");
+                    break;
+                case EForm.TienRauCuaNhanVienTrongThang:
+                    SwitchChildForm<TienRauCuaNhanVienTrongThang>("Tổng Hợp Tiền Mua Rau Trong Tháng");
+                    break;
+                case EForm.TonKhoHangRauThanhLy:
+                    SwitchChildForm<TonKhoHangRauThanhLy>("Tồn Kho Hàng Rau Thanh Lý");
+                    break;
             }
             
             Properties.Settings.Default.current_form = status.ToString();
@@ -551,6 +566,9 @@ namespace RauViet.ui
         private void inventoryTransaction_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.InventoryTransaction); }
         private void giaBanThanhLy_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.DomesticLiquidationPrice); }
         private void DomesticLiquidationImport_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.DomesticLiquidationImport); }
+        private void DomesticLiquidationExport_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.DomesticLiquidationExport); }
+        private void tienMuaRauCuaNV_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.TienRauCuaNhanVienTrongThang); }
+        private void tonKhoHangRauThanhLy_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.TonKhoHangRauThanhLy); }
         private void ThongKeTonKho_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.ThongKeTonKhoHangKho); }
         private void ProductDomesticPrices_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.ProductDomesticPrices); }
         private void khachhang_btn_Click(object sender, EventArgs e) { openCurrentForm(EForm.Customers); }

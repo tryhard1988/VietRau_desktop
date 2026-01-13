@@ -2343,9 +2343,9 @@ namespace RauViet.classes
             return newId;
         }
 
-        public async Task<bool> InsertEmployeeDeduction_ListAsync(List<(string employeeCode, string DeductionTypeCode, DateTime deductionDate, int amount, string note)> newData)
+        public async Task<bool> InsertEmployeeDeduction_ListAsync(int month, int year, string DeductionTypeCode, List<(string employeeCode, string DeductionTypeCode, DateTime deductionDate, int amount, string note)> newData)
         {
-            if (newData == null || newData.Count == 0)
+            if (newData == null)
                 return false;
 
             try
@@ -2378,7 +2378,11 @@ namespace RauViet.classes
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
 
+                        cmd.Parameters.AddWithValue("@DeductionMonth", month);
+                        cmd.Parameters.AddWithValue("@DeductionYear", year);
+                        cmd.Parameters.AddWithValue("@DeductionTypeCode", DeductionTypeCode);
                         SqlParameter param = cmd.Parameters.Add("@DeductionList", SqlDbType.Structured);
+
                         param.TypeName = "dbo.EmployeeDeductionType";
                         param.Value = dt;
 
@@ -3295,6 +3299,30 @@ namespace RauViet.classes
             }
 
             return dt;
+        }
+
+        public async Task updateWorkHourAsync(string employeeCode, DateTime day, decimal wh)
+        {
+            string query = @"UPDATE Attendance 
+                                    SET WorkingHours = @WorkingHours
+                                    WHERE EmployeeCode = @EmployeeCode
+                                      AND WorkDate = @WorkDate;
+                                    ";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@EmployeeCode", employeeCode);
+                        cmd.Parameters.AddWithValue("@WorkingHours", wh);
+                        cmd.Parameters.AddWithValue("@WorkDate", day.Date);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+            }
+            catch { }
         }
     }
 }

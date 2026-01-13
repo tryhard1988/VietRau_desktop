@@ -2677,6 +2677,142 @@ namespace RauViet.classes
             }
             catch { return false; }
         }
+
+        public async Task<DataTable> getDomesticLiquidationExportAsync()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
+            {
+                await con.OpenAsync();
+                string query = @"select * from DomesticLiquidationExport";
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                {
+                    dt.Load(reader);
+                }
+            }
+            return dt;
+        }
+
+        public async Task<DataTable> GetDomesticLiquidationExportLogAsync()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr()))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT * FROM DomesticLiquidationExportLog";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
+        }
+
+        public async Task<int> insertDomesticLiquidationExportAsync(DateTime exportDate, int domesticLiquidationPriceID, decimal quantity, int price, int employeeBuyID)
+        {
+            int newId = -1;
+            string query = @"INSERT INTO DomesticLiquidationExport (ExportDate, DomesticLiquidationPriceID, Quantity, Price, EmployeeBuyID)
+                            OUTPUT INSERTED.ExportID
+                             VALUES (@ExportDate, @DomesticLiquidationPriceID, @Quantity, @Price, @EmployeeBuyID)";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@ExportDate", exportDate);
+                        cmd.Parameters.AddWithValue("@DomesticLiquidationPriceID", domesticLiquidationPriceID);
+                        cmd.Parameters.AddWithValue("@Quantity", quantity);
+                        cmd.Parameters.AddWithValue("@Price", price);
+                        cmd.Parameters.AddWithValue("@EmployeeBuyID", employeeBuyID);
+                        object result = await cmd.ExecuteScalarAsync();
+                        if (result != null)
+                            newId = Convert.ToInt32(result);
+                    }
+                }
+                return newId;
+            }
+            catch { return -1; }
+        }
+
+        public async Task<bool> updateDDomesticLiquidationExportAsync(int exportID, DateTime exportDate, int domesticLiquidationPriceID, decimal quantity, int price, int employeeBuyID)
+        {
+            string query = @"UPDATE DomesticLiquidationExport SET
+                                ExportDate=@ExportDate,
+                                DomesticLiquidationPriceID=@DomesticLiquidationPriceID,
+                                Quantity=@Quantity,
+                                Price=@Price,
+                                EmployeeBuyID=@EmployeeBuyID
+                             WHERE ExportID=@ExportID";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@ExportDate", exportDate);
+                        cmd.Parameters.AddWithValue("@DomesticLiquidationPriceID", domesticLiquidationPriceID);
+                        cmd.Parameters.AddWithValue("@Quantity", quantity);
+                        cmd.Parameters.AddWithValue("@Price", price);
+                        cmd.Parameters.AddWithValue("@EmployeeBuyID", employeeBuyID);
+                        cmd.Parameters.AddWithValue("@ExportID", exportID);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+                return true;
+            }
+            catch { return false; }
+        }
+
+        public async Task insertDomesticLiquidationExportLogAsync(int domesticLiquidationPriceID, string oldValue, string newValue)
+        {
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand("sp_InsertDomesticLiquidationExportLog", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@DomesticLiquidationPriceID", domesticLiquidationPriceID);
+                        cmd.Parameters.AddWithValue("@OldValue", (object)oldValue ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@NewValue", (object)newValue ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@ActionBy", UserManager.Instance.fullName);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error Auto Update ExportCode: {ex.Message}");
+            }
+        }
+
+        public async Task<bool> deletetDomesticLiquidationExportAsync(int exportID)
+        {
+            string query = "DELETE FROM DomesticLiquidationExport WHERE ExportID=@ExportID";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@ExportID", exportID);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+                return true;
+            }
+            catch { return false; }
+        }
     }
 }
 

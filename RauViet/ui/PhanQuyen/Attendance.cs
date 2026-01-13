@@ -50,7 +50,6 @@ namespace RauViet.ui
             attendanceGV.CellEndEdit += AttendanceGV_CellEndEdit;
 
             excelAttendance_btn.Click += ExcelAttendance_btn_Click;
-            RonaldMachine_btn.Click += RonaldMachine_btn_Click;
 
             loadAttandance_btn.Click += LoadAttandance_btn_Click;
 
@@ -741,6 +740,48 @@ namespace RauViet.ui
             }
         }
 
+        private async void RonaldMachine_btn_Click_1(object sender, EventArgs e)
+        {
+            using (System.Windows.Forms.OpenFileDialog ofd = new System.Windows.Forms.OpenFileDialog())
+            {
+                ofd.Title = "Chọn file Excel";
+                ofd.Filter = "Excel Files|*.xlsx;*.xls|All Files|*.*";
+                ofd.Multiselect = false; // chỉ cho chọn 1 file
+
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    string filePath = ofd.FileName;
+                    System.Data.DataTable excelData = Utils.LoadExcel_NoHeader(filePath);
+                    try
+                    {
+                        foreach (DataRow edr in excelData.Rows)
+                        {
+                            string empCode = edr["Column1"].ToString();
+                            bool exists = mEmployee_dt.AsEnumerable().Any(r => r.Field<string>("EmployeeCode") == empCode);
+                            if (!exists) continue;
+
+                            for (int i = 1; i <= 31; i++)
+                            {
+
+                                decimal wh = 0;
+                                decimal.TryParse(edr[$"Column{i + 1}"].ToString(), out wh);
+                                
+                                    await SQLManager_QLNS.Instance.updateWorkHourAsync(empCode, new DateTime(2025, 12, i), wh);
+                                
+
+
+                            }
+
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("có lỗi " + ex.Message);
+                    }
+                    MessageBox.Show("xong");
+                }
+            }
+        }
 
         private void AttendanceGV_CellParsing(object sender, DataGridViewCellParsingEventArgs e)
         {
@@ -818,57 +859,6 @@ namespace RauViet.ui
                                     item.ActionBy
                                 )).ToList();
             _ = SQLManager_QLNS.Instance.InsertAttendanceLogListAsync(updatedLogs);
-        }
-
-        private void RonaldMachine_btn_Click(object sender, EventArgs e)
-        {
-            // 1. Kiểm tra trong registry 32-bit (WOW6432Node)
-            //bool existsIn32BitRegistry = false;
-            //using (var key = Registry.ClassesRoot.OpenSubKey(@"WOW6432Node\zkemkeeper.CZKEM"))
-            //{
-            //    existsIn32BitRegistry = key != null;
-            //}
-
-            //Console.WriteLine("Registry 32-bit: " + (existsIn32BitRegistry ? "FOUND" : "NOT FOUND"));
-
-            //// 2. Lấy Type từ ProgID
-            //Type t = Type.GetTypeFromProgID("zkemkeeper.CZKEM");
-            //Console.WriteLine("Type.GetTypeFromProgID: " + (t == null ? "NOT FOUND" : "FOUND"));
-
-            //// 3. Thử tạo instance COM
-            //if (t != null)
-            //{
-            //    try
-            //    {
-            //        dynamic device = Activator.CreateInstance(t);
-            //        Console.WriteLine("COM object created successfully!");
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        Console.WriteLine("Error creating COM object: " + ex.Message);
-            //    }
-            //}
-            //else
-            //{
-            //    Console.WriteLine("Cannot create COM object because Type is null.");
-            //}
-            var t = Type.GetTypeFromProgID("zkemkeeper.CZKEM");
-            Console.WriteLine(t == null ? "NOT FOUND" : "FOUND");
-            zkemkeeper.CZKEM zk = new zkemkeeper.CZKEM();
-            bool connected = zk.Connect_Net("192.168.1.201", 4370);
-
-            if (!connected)
-            {
-                int errorCode = 0;
-                zk.GetLastError(ref errorCode);
-                MessageBox.Show("Kết nối thất bại. ErrorCode = " + errorCode);
-                return;
-            }
-            else
-            {
-                MessageBox.Show("Đã kết nối được máy chấm công");
-                return;
-            }
         }
     }
 }

@@ -17,6 +17,7 @@ namespace RauViet.ui
         private const string DeductionTypeCode = "VEG";
         private string mDeductionName = "";
         bool isNewState = false;
+        private bool _isUpdatingUI = false;
         int currMonth = -1;
         int currYear = -1;
         LoadingOverlay loadingOverlay;
@@ -257,34 +258,36 @@ namespace RauViet.ui
 
         private void allowanceGV_CellClick(object sender, EventArgs e)
         {
-            if (employeeDeductionGV.CurrentRow == null) return;
+            if (employeeDeductionGV.CurrentRow == null || _isUpdatingUI) return;
             int rowIndex = employeeDeductionGV.CurrentRow.Index;
             if (rowIndex < 0)
                 return;
 
+            _isUpdatingUI = true;
             dataGV.ClearSelection();
             Edit_btn_Click(null, null);                   
             UpdateRightUI(rowIndex);
+            _isUpdatingUI = false;
         }
 
         private void dataGV_CellClick(object sender, EventArgs e)
         {
-            if (dataGV.CurrentRow == null) return;
+            if (dataGV.CurrentRow == null || _isUpdatingUI) return;
             int rowIndex = dataGV.CurrentRow.Index;
             if (rowIndex < 0)
                 return;
 
-            employeeDeductionGV.ClearSelection();
+            _isUpdatingUI = true;
             newCustomerBtn_Click(null, null);
             UpdateEmployeeDeductionUI(rowIndex);            
             UpdateRightUI(rowIndex);
-
+            _isUpdatingUI = false;
         }
 
         private void UpdateEmployeeDeductionUI(int index)
         {
             //amount_tb.Text = "0";
-
+            _isUpdatingUI = true;
             employeeDeductionGV.ClearSelection();
 
             var cells = dataGV.Rows[index].Cells;
@@ -295,7 +298,7 @@ namespace RauViet.ui
 
             //employeeDeductionGV.DataSource = dv;
 
-            
+            _isUpdatingUI = false;
         }
         private void UpdateRightUI(int index)
         {
@@ -521,8 +524,6 @@ namespace RauViet.ui
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;
                         }
-
-                        UpdateInfo();
                     }
                     break;
                 }
@@ -626,8 +627,19 @@ namespace RauViet.ui
             await Task.WhenAll(employeeDeductionAsync, EmployeeDeductionLogTask);
             mEmployeeDeduction_dt = employeeDeductionAsync.Result;
             mDeductionLogDV = new DataView(EmployeeDeductionLogTask.Result);
+
+            mEmployeeDeduction_dt.Columns.Add("EmployeeName", typeof(string));
+            foreach (DataRow dr in mEmployeeDeduction_dt.Rows)
+            {
+                string employeeCode = dr["EmployeeCode"].ToString();
+                DataRow[] rows = mEmployee_dt.Select($"EmployeeCode = '{employeeCode}'");
+                if (rows.Length > 0)
+                    dr["EmployeeName"] = rows[0]["FullName"];
+            }
+
             log_GV.DataSource = mDeductionLogDV;
             employeeDeductionGV.DataSource = mEmployeeDeduction_dt;
+
             if (dataGV.CurrentRow != null)
             {
                 int selectedIndex = dataGV.CurrentRow?.Index ?? -1;
@@ -678,6 +690,9 @@ namespace RauViet.ui
 
                     if (ofd.ShowDialog() == DialogResult.OK)
                     {
+                        int month = monthYearDtp.Value.Month;
+                        int year = monthYearDtp.Value.Year;
+
                         string filePath = ofd.FileName;
                         System.Data.DataTable excelData = Utils.LoadExcel_NoHeader(filePath, 2);
                         List<(string employeeCode, string DeductionTypeCode, DateTime deductionDate, int amount, string note)> newData = new List<(string employeeCode, string DeductionTypeCodev, DateTime deductionDate, int amount, string note)>();
@@ -692,13 +707,13 @@ namespace RauViet.ui
                             if (string.IsNullOrWhiteSpace(employeeCode) || !employeeSet.Contains(employeeCode) || amount <= 0)
                                 continue;
 
-                            newData.Add((employeeCode, DeductionTypeCode, updateDate, amount, $"Excel: Tiền mua rau T{monthYearDtp.Value.Month}/{monthYearDtp.Value.Year}"));
+                            newData.Add((employeeCode, DeductionTypeCode, updateDate, amount, $"Excel: Tiền mua rau T{month}/{year}"));
                             logs.Add((employeeCode, DeductionTypeCode, "Tải từ Excel T{monthYearDtp.Value.Month}/{monthYearDtp.Value.Year}", updateDate, amount, ""));
                         }
 
                         try
                         {
-                            bool isSuccess = await SQLManager_QLNS.Instance.InsertEmployeeDeduction_ListAsync(newData);
+                            bool isSuccess = await SQLManager_QLNS.Instance.InsertEmployeeDeduction_ListAsync(month, year, DeductionTypeCode, newData);
                             if (isSuccess)
                             {
                                 var updatedLogs = logs

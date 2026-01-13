@@ -92,7 +92,9 @@
             this.banthanhlychoNV_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.giaBanThanhLy_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.domesticLiquidationImport_mi = new System.Windows.Forms.ToolStripMenuItem();
-            this.domesticLiquidationExportmi = new System.Windows.Forms.ToolStripMenuItem();
+            this.domesticLiquidationExport_mi = new System.Windows.Forms.ToolStripMenuItem();
+            this.tienMuaRauCuaNV_mi = new System.Windows.Forms.ToolStripMenuItem();
+            this.tonKhoHangThanhLy_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
             this.thongke_main_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.reportSalary_Month_mi = new System.Windows.Forms.ToolStripMenuItem();
@@ -590,7 +592,9 @@
             this.banthanhlychoNV_mi.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.giaBanThanhLy_mi,
             this.domesticLiquidationImport_mi,
-            this.domesticLiquidationExportmi});
+            this.domesticLiquidationExport_mi,
+            this.tienMuaRauCuaNV_mi,
+            this.tonKhoHangThanhLy_mi});
             this.banthanhlychoNV_mi.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.banthanhlychoNV_mi.ForeColor = System.Drawing.Color.OrangeRed;
             this.banthanhlychoNV_mi.Name = "banthanhlychoNV_mi";
@@ -600,20 +604,32 @@
             // giaBanThanhLy_mi
             // 
             this.giaBanThanhLy_mi.Name = "giaBanThanhLy_mi";
-            this.giaBanThanhLy_mi.Size = new System.Drawing.Size(181, 22);
+            this.giaBanThanhLy_mi.Size = new System.Drawing.Size(289, 22);
             this.giaBanThanhLy_mi.Text = "Giá Bán Thanh Lý";
             // 
             // domesticLiquidationImport_mi
             // 
             this.domesticLiquidationImport_mi.Name = "domesticLiquidationImport_mi";
-            this.domesticLiquidationImport_mi.Size = new System.Drawing.Size(181, 22);
+            this.domesticLiquidationImport_mi.Size = new System.Drawing.Size(289, 22);
             this.domesticLiquidationImport_mi.Text = "Nhập Kho";
             // 
-            // domesticLiquidationExportmi
+            // domesticLiquidationExport_mi
             // 
-            this.domesticLiquidationExportmi.Name = "domesticLiquidationExportmi";
-            this.domesticLiquidationExportmi.Size = new System.Drawing.Size(181, 22);
-            this.domesticLiquidationExportmi.Text = "Bán Cho NV";
+            this.domesticLiquidationExport_mi.Name = "domesticLiquidationExport_mi";
+            this.domesticLiquidationExport_mi.Size = new System.Drawing.Size(289, 22);
+            this.domesticLiquidationExport_mi.Text = "Bán Cho NV";
+            // 
+            // tienMuaRauCuaNV_mi
+            // 
+            this.tienMuaRauCuaNV_mi.Name = "tienMuaRauCuaNV_mi";
+            this.tienMuaRauCuaNV_mi.Size = new System.Drawing.Size(289, 22);
+            this.tienMuaRauCuaNV_mi.Text = "Tiền Mua Rau Của NV Trong Tháng";
+            // 
+            // tonKhoHangThanhLy_mi
+            // 
+            this.tonKhoHangThanhLy_mi.Name = "tonKhoHangThanhLy_mi";
+            this.tonKhoHangThanhLy_mi.Size = new System.Drawing.Size(289, 22);
+            this.tonKhoHangThanhLy_mi.Text = "Tồn Kho";
             // 
             // toolStripMenuItem3
             // 
@@ -853,6 +869,8 @@
         private System.Windows.Forms.ToolStripMenuItem giaBanThanhLy_mi;
         private System.Windows.Forms.ToolStripMenuItem banthanhlychoNV_mi;
         private System.Windows.Forms.ToolStripMenuItem domesticLiquidationImport_mi;
-        private System.Windows.Forms.ToolStripMenuItem domesticLiquidationExportmi;
+        private System.Windows.Forms.ToolStripMenuItem domesticLiquidationExport_mi;
+        private System.Windows.Forms.ToolStripMenuItem tienMuaRauCuaNV_mi;
+        private System.Windows.Forms.ToolStripMenuItem tonKhoHangThanhLy_mi;
     }
 }

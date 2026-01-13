@@ -107,6 +107,7 @@ namespace RauViet.ui
             this.RonaldMachine_btn.TabIndex = 30;
             this.RonaldMachine_btn.Text = "Máy Chấm Công";
             this.RonaldMachine_btn.UseVisualStyleBackColor = false;
+            this.RonaldMachine_btn.Click += new System.EventHandler(this.RonaldMachine_btn_Click_1);
             // 
             // excelAttendance_btn
             // 
