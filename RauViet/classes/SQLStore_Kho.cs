@@ -30,11 +30,13 @@ namespace RauViet.classes
         DataTable mExportCodeLog_dt = null;
         DataTable mReportCustomerOrderDetail_dt = null;
         DataTable mInventoryTransaction_dt = null;
+        DataTable mVegetableWarehouseTransaction_dt = null;
 
         DataTable mProductType_dt = null;
         DataTable mOrderDomesticCodeLog_dt = null;
         DataTable mProductDomesticPricesLog_dt = null;
         DataTable mInventoryTransactionLog_dt = null;
+        DataTable mVegetableWarehouseTransactionLOG_dt = null;
         DataTable mDomesticLiquidationPriceLog_dt = null;
         DataTable mDomesticLiquidationImportLog_dt = null;
         DataTable mDomesticLiquidationExportLog_dt = null;
@@ -2236,6 +2238,109 @@ namespace RauViet.classes
                 mDomesticLiquidationExportLog_dt = dt;
             }
             return mDomesticLiquidationExportLog_dt;
+        }
+
+        public void removeVegetableWarehouseTransaction()
+        {
+            mVegetableWarehouseTransaction_dt = null;
+        }
+
+        public async Task<DataTable> getVegetableWarehouseTransactionSync()
+        {
+            if (mVegetableWarehouseTransaction_dt == null)
+            {
+                try
+                {
+                    mVegetableWarehouseTransaction_dt = await SQLManager_Kho.Instance.getVegetableWarehouseTransactionSync();
+                    editVegetableWarehouseTransaction();
+                }
+                catch
+                {
+                    Console.WriteLine("error getVegetableWarehouseTransactionSync SQLStore");
+                    return null;
+                }
+            }
+
+            return mVegetableWarehouseTransaction_dt;
+        }
+
+        private void editVegetableWarehouseTransaction()
+        {
+            mVegetableWarehouseTransaction_dt.Columns.Add(new DataColumn("Name_VN", typeof(string)));
+            mVegetableWarehouseTransaction_dt.Columns.Add(new DataColumn("TransactionTypeName", typeof(string)));
+            mVegetableWarehouseTransaction_dt.Columns.Add(new DataColumn("SupplierName", typeof(string)));
+            mVegetableWarehouseTransaction_dt.Columns.Add(new DataColumn("Package", typeof(string)));
+            foreach (DataRow row in mVegetableWarehouseTransaction_dt.Rows)
+            {
+                int sku = Convert.ToInt32(row["SKU"]);
+                string tranType = Convert.ToString(row["TransactionType"]);
+                string supplier = Convert.ToString(row["Supplier"]);
+                DataRow pprow = mProductSKU_dt.Select($"SKU = {sku}").FirstOrDefault();
+
+                if (tranType.CompareTo("N") == 0)
+                    row["TransactionTypeName"] = "Nhập Hàng.";
+                else if (tranType.CompareTo("X") == 0)
+                    row["TransactionTypeName"] = "Xuất Đóng Gói.";
+                else if (tranType.CompareTo("H") == 0)
+                    row["TransactionTypeName"] = "Xuất Hủy.";
+                else if (tranType.CompareTo("P") == 0)
+                    row["TransactionTypeName"] = "Xuất Phơi.";
+                else if (tranType.CompareTo("K") == 0)
+                    row["TransactionTypeName"] = "Khác.";
+                else
+                    row["TransactionTypeName"] = "--ERROR--";
+
+                if (supplier.CompareTo("VR") == 0)
+                    row["SupplierName"] = "Việt Rau.";
+                else if (supplier.CompareTo("BT") == 0)
+                    row["SupplierName"] = "Bình Thuận.";
+                else if (supplier.CompareTo("MN") == 0)
+                    row["SupplierName"] = "Mua Ngoài.";
+                else
+                    row["SupplierName"] = "--ERROR--";
+
+                if (pprow != null)
+                {
+                    row["Name_VN"] = pprow["ProductNameVN"].ToString();
+                    row["Package"] = pprow["Package"].ToString();
+                }
+                else
+                {
+                    row["Name_VN"] = "";
+                    row["Package"] = "";
+                }
+            }
+
+            int count = 0;
+            mVegetableWarehouseTransaction_dt.Columns["TransactionID"].SetOrdinal(count++);
+            mVegetableWarehouseTransaction_dt.Columns["TransactionDate"].SetOrdinal(count++);
+            mVegetableWarehouseTransaction_dt.Columns["TransactionType"].SetOrdinal(count++);
+            mVegetableWarehouseTransaction_dt.Columns["TransactionTypeName"].SetOrdinal(count++);
+            mVegetableWarehouseTransaction_dt.Columns["Name_VN"].SetOrdinal(count++);
+            mVegetableWarehouseTransaction_dt.Columns["Package"].SetOrdinal(count++);
+            mVegetableWarehouseTransaction_dt.Columns["Quantity"].SetOrdinal(count++);                        
+            mVegetableWarehouseTransaction_dt.Columns["Supplier"].SetOrdinal(count++);
+            mVegetableWarehouseTransaction_dt.Columns["SupplierName"].SetOrdinal(count++);;
+            mVegetableWarehouseTransaction_dt.Columns["FarmSourceCode"].SetOrdinal(count++);
+            mVegetableWarehouseTransaction_dt.Columns["Note"].SetOrdinal(count++);
+        }
+
+        public async Task<DataTable> getVegetableWarehouseTransactionLOGAsync()
+        {
+            if (mVegetableWarehouseTransactionLOG_dt == null)
+            {
+                try
+                {
+                    mVegetableWarehouseTransactionLOG_dt = await SQLManager_Kho.Instance.getVegetableWarehouseTransactionLOGAsync();
+                }
+                catch
+                {
+                    Console.WriteLine("error getInventoryTransactionLogSync SQLStore");
+                    return null;
+                }
+            }
+
+            return mVegetableWarehouseTransactionLOG_dt;
         }
     }
 }

@@ -43,7 +43,6 @@ namespace RauViet.ui
                 department_mi.Click += department_mi_Click;
                 position_mi.Click += position_mi_Click;
                 holiday_mi.Click += Holiday_mi_Click;
-                salaryGrade_mi.Click += SalaryGrade_mi_Click;
                 employeeSalaryInfo_mi.Click += EmployeeSalaryInfo_mi_Click;
                 dutoanluong_mi.Click += dutoanluong_mi_Click;
 
@@ -67,28 +66,40 @@ namespace RauViet.ui
                 if (UserManager.Instance.hasRole_SanPhamQuyCach())
                 {
                     productPacking_meniitem.Click += productPacking_btn_Click;
-                    inventoryTransaction_mi.Click += inventoryTransaction_mi_Click;
-                    giaBanThanhLy_mi.Click += giaBanThanhLy_mi_Click;
-                    domesticLiquidationImport_mi.Click += DomesticLiquidationImport_mi_Click;
-                    domesticLiquidationExport_mi.Click += DomesticLiquidationExport_mi_Click;
-                    tienMuaRauCuaNV_mi.Click += tienMuaRauCuaNV_mi_Click;
-                    tonKhoHangThanhLy_mi.Click += tonKhoHangRauThanhLy_mi_Click;
-                    thongKeTonKho_mi.Click += ThongKeTonKho_mi_Click;
+                    
                 }
                 else
                 {
                     productPacking_meniitem.Visible = false;
-                    inventoryTransaction_mi.Visible = false;
                     giaBanThanhLy_mi.Visible = false;
-                    thongKeTonKho_mi.Visible = false;
                 }
 
-                if(UserManager.Instance.hasRole_AnGiaSanPham())
+                if (UserManager.Instance.hasRole_NhapKhoHangKho())
+                {
+                    inventoryTransaction_mi.Click += inventoryTransaction_mi_Click;
+                    thongKeTonKho_mi.Click += ThongKeTonKho_mi_Click;
+                }
+                else
+                {
+                    khoHangKhoGroup_mi.Visible = false;
+                }
+
+                if (UserManager.Instance.hasRole_NhapKhoRauCuQua())
+                {
+                    xuatNhapRauCuQua_mi.Click += XuatNhapRauCuQua_mi_Click;
+                    thongKeTonKhoHangRauCu_mi.Click += ThongKeTonKhoHangRauCu_mi_Click;
+                }
+                else
+                {
+                    khoRauCuQuaGroup_mi.Visible = false;
+                }
+
+                if (UserManager.Instance.hasRole_AnGiaSanPham())
                     productDomesticPrices_mi.Visible = false;
                 else
                     productDomesticPrices_mi.Click += ProductDomesticPrices_mi_Click;
 
-                if (!UserManager.Instance.hasRole_SanPhamChinh() && !UserManager.Instance.hasRole_SanPhamQuyCach())
+                if (!UserManager.Instance.hasRole_SanPhamChinh() && !UserManager.Instance.hasRole_SanPhamQuyCach() && !UserManager.Instance.hasRole_NhapKhoRauCuQua() && !UserManager.Instance.hasRole_NhapKhoHangKho())
                     sanpham_group_mi.Visible = false;
             }
 
@@ -109,11 +120,12 @@ namespace RauViet.ui
                 do417_menuitem.Visible = false;
                 lotCode_menuitem.Visible = false;
                 doCBM_mi.Visible = false;
-            }
+            }            
             else
             {
                 donhang_group_mi.Visible = false;
             }
+
             {
                 if (UserManager.Instance.hasRole_DangKyKiemDich())
                     dkkd_menuitem.Click += dkkd_btn_Click;
@@ -210,16 +222,40 @@ namespace RauViet.ui
                 extension_mi.Visible = false;
             }
 
-            if (UserManager.Instance.hasRole_NhapDonTrongNuoc())
+            if (UserManager.Instance.hasRole_NhapDonTrongNuoc() || UserManager.Instance.hasRole_BanThanhLiChoNV())
             {
-                orderDomesticCode_mi.Click += OrderDomesticCode_mi_Click;
-                orderDomesticDetail_mi.Click += OrderDomesticDetail_mi_Click;
+
+                if (UserManager.Instance.hasRole_NhapDonTrongNuoc())
+                {
+                    orderDomesticCode_mi.Click += OrderDomesticCode_mi_Click;
+                    orderDomesticDetail_mi.Click += OrderDomesticDetail_mi_Click;
+                }
+                else
+                {
+                    orderDomesticCode_mi.Visible = false;
+                    orderDomesticDetail_mi.Visible = false;
+                }
+
+                if (UserManager.Instance.hasRole_BanThanhLiChoNV())
+                {
+                    giaBanThanhLy_mi.Click += giaBanThanhLy_mi_Click;
+                    domesticLiquidationImport_mi.Click += DomesticLiquidationImport_mi_Click;
+                    domesticLiquidationExport_mi.Click += DomesticLiquidationExport_mi_Click;
+                    tienMuaRauCuaNV_mi.Click += tienMuaRauCuaNV_mi_Click;
+                    tonKhoHangThanhLy_mi.Click += tonKhoHangRauThanhLy_mi_Click;
+                }
+                else
+                {
+                    banthanhlychoNV_mi.Visible = false;
+                }
             }
             else
             {
                 orderDomestic_group_mi.Visible = false;
             }
-            
+
+           
+
 
             historyLogin_mi.Click += HistoryLogin_mi_Click;
             
@@ -324,7 +360,9 @@ namespace RauViet.ui
             DomesticLiquidationImport,
             DomesticLiquidationExport,
             TienRauCuaNhanVienTrongThang,
-            TonKhoHangRauThanhLy
+            TonKhoHangRauThanhLy,
+            VegetableWarehouseTransaction,
+            ThongKeTonKhoHangRauCu
         }
 
         private void openCurrentForm(EForm status)
@@ -518,6 +556,12 @@ namespace RauViet.ui
                 case EForm.TonKhoHangRauThanhLy:
                     SwitchChildForm<TonKhoHangRauThanhLy>("Tồn Kho Hàng Rau Thanh Lý");
                     break;
+                case EForm.VegetableWarehouseTransaction:
+                    SwitchChildForm<VegetableWarehouseTransaction>("Xuất/Nhập Kho Rau, Củ, Quả");
+                    break;
+                case EForm.ThongKeTonKhoHangRauCu:
+                    SwitchChildForm<ThongKeTonKhoHangRauCu>("Thống Kê Tồn Kho Rau, Củ, Quả");
+                    break;
             }
             
             Properties.Settings.Default.current_form = status.ToString();
@@ -570,6 +614,8 @@ namespace RauViet.ui
         private void tienMuaRauCuaNV_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.TienRauCuaNhanVienTrongThang); }
         private void tonKhoHangRauThanhLy_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.TonKhoHangRauThanhLy); }
         private void ThongKeTonKho_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.ThongKeTonKhoHangKho); }
+        private void XuatNhapRauCuQua_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.VegetableWarehouseTransaction); }
+        private void ThongKeTonKhoHangRauCu_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.ThongKeTonKhoHangRauCu); }
         private void ProductDomesticPrices_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.ProductDomesticPrices); }
         private void khachhang_btn_Click(object sender, EventArgs e) { openCurrentForm(EForm.Customers); }
         private void others_btn_Click(object sender, EventArgs e) { openCurrentForm(EForm.OrdersList); }

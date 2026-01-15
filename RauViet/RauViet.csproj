@@ -414,6 +414,18 @@
     <Compile Include="ui\OrderManager_sub\DonHangTrongNuoc\OrderDomesticCode.Designer.cs">
       <DependentUpon>OrderDomesticCode.cs</DependentUpon>
     </Compile>
+    <Compile Include="ui\OrderManager_sub\ThongKeTonKhoHangRauCu.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\OrderManager_sub\ThongKeTonKhoHangRauCu.Designer.cs">
+      <DependentUpon>ThongKeTonKhoHangRauCu.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ui\OrderManager_sub\VegetableWarehouseTransaction.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\OrderManager_sub\VegetableWarehouseTransaction.Designer.cs">
+      <DependentUpon>VegetableWarehouseTransaction.cs</DependentUpon>
+    </Compile>
     <Compile Include="ui\OrderManager_sub\ThongKeTonKhoHangKho.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -819,6 +831,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ui\OrderManager_sub\DonHangTrongNuoc\OrderDomesticCode.resx">
       <DependentUpon>OrderDomesticCode.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\OrderManager_sub\ThongKeTonKhoHangRauCu.resx">
+      <DependentUpon>ThongKeTonKhoHangRauCu.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\OrderManager_sub\VegetableWarehouseTransaction.resx">
+      <DependentUpon>VegetableWarehouseTransaction.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ui\OrderManager_sub\ThongKeTonKhoHangKho.resx">
       <DependentUpon>ThongKeTonKhoHangKho.cs</DependentUpon>

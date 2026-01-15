@@ -72,20 +72,20 @@ namespace RauViet.ui
             // 
             this.panel3.Controls.Add(this.phanquyen_gb);
             this.panel3.Controls.Add(this.label1);
-            this.panel3.Dock = System.Windows.Forms.DockStyle.Left;
+            this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel3.Location = new System.Drawing.Point(411, 0);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(399, 742);
+            this.panel3.Size = new System.Drawing.Size(618, 742);
             this.panel3.TabIndex = 37;
             // 
             // phanquyen_gb
             // 
             this.phanquyen_gb.BackColor = System.Drawing.Color.White;
-            this.phanquyen_gb.Dock = System.Windows.Forms.DockStyle.Left;
+            this.phanquyen_gb.Dock = System.Windows.Forms.DockStyle.Fill;
             this.phanquyen_gb.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.phanquyen_gb.Location = new System.Drawing.Point(0, 16);
             this.phanquyen_gb.Name = "phanquyen_gb";
-            this.phanquyen_gb.Size = new System.Drawing.Size(310, 726);
+            this.phanquyen_gb.Size = new System.Drawing.Size(618, 726);
             this.phanquyen_gb.TabIndex = 37;
             this.phanquyen_gb.TabStop = false;
             // 

@@ -1,4 +1,5 @@
-﻿using RauViet.classes;
+﻿using DocumentFormat.OpenXml.Bibliography;
+using RauViet.classes;
 using System;
 using System.Data;
 using System.Linq;
@@ -386,7 +387,7 @@ namespace RauViet.ui
 
             }
         }
-        private void saveBtn_Click(object sender, EventArgs e)
+        private async void saveBtn_Click(object sender, EventArgs e)
         {
             if (domesticLiquidationPrice_cbb.SelectedValue == null) return;
                         
@@ -396,10 +397,14 @@ namespace RauViet.ui
             int domesticLiquidationPriceID = Convert.ToInt32(domesticLiquidationPrice_cbb.SelectedValue);
             int price = Convert.ToInt32(productSKUData["SalePrice"]);
             int reportedB = Convert.ToInt32(employeeBuy_CBB.SelectedValue);
-
             decimal quantity = string.IsNullOrWhiteSpace(quantity_tb.Text) ? 0 : decimal.Parse(quantity_tb.Text);
 
-
+            var isLocked = await SQLStore_QLNS.Instance.IsSalaryLockAsync(exportDate.Month, exportDate.Year);
+            if (isLocked)
+            {
+                MessageBox.Show($"Tháng {exportDate.Month}/{exportDate.Year} Đã Bị Khóa.", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
             if (id_tb.Text.Length != 0)
                 updateItem(Convert.ToInt32(id_tb.Text), exportDate, domesticLiquidationPriceID, quantity, price, reportedB);
             else

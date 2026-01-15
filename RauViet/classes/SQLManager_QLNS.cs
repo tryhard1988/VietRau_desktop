@@ -658,28 +658,23 @@ namespace RauViet.classes
 
         public async Task<bool> insertHolidayAsync(DateTime holidayDate, string holidayName)
         {
-            string query = "sp_InsertHolidayAndAttendance";
+            string query = @"INSERT INTO Holiday (HolidayDate, HolidayName) VALUES (@HolidayDate, @HolidayName);";
 
             try
             {
                 using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
+
+                    // 2️⃣ Insert và lấy ID mới
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
-                        cmd.CommandType = CommandType.StoredProcedure;
-                        cmd.Parameters.AddWithValue("@HolidayDate", holidayDate.Date);
-                        cmd.Parameters.AddWithValue("@HolidayName", holidayName);
+                        cmd.Parameters.Add("@HolidayDate", SqlDbType.Date).Value = holidayDate.Date;
 
-                        // Dùng ReturnValue để nhận giá trị trả về
-                        SqlParameter returnParam = new SqlParameter("@ReturnVal", SqlDbType.Int);
-                        returnParam.Direction = ParameterDirection.ReturnValue;
-                        cmd.Parameters.Add(returnParam);
+                        cmd.Parameters.Add("@HolidayName", SqlDbType.NVarChar, 255).Value = holidayName;
 
-                        await cmd.ExecuteNonQueryAsync();
-
-                        int result = (int)returnParam.Value;
-                        return result == 1;
+                        int rows = await cmd.ExecuteNonQueryAsync();
+                        return rows > 0;
                     }
                 }
             }
@@ -1920,6 +1915,7 @@ namespace RauViet.classes
             }
             catch (Exception ex)
             {
+                Console.WriteLine("ERROR: " + ex.ToString());
                 // nếu cần thì log ex
                 return false;
             }
@@ -3301,28 +3297,72 @@ namespace RauViet.classes
             return dt;
         }
 
-        public async Task updateWorkHourAsync(string employeeCode, DateTime day, decimal wh)
+        //public async Task updateWorkHourAsync(string employeeCode, DateTime day, decimal wh)
+        //{
+        //    string query = @"UPDATE Attendance 
+        //                            SET WorkingHours = @WorkingHours
+        //                            WHERE EmployeeCode = @EmployeeCode
+        //                              AND WorkDate = @WorkDate;
+        //                            ";
+        //    try
+        //    {
+        //        using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
+        //        {
+        //            await con.OpenAsync();
+        //            using (SqlCommand cmd = new SqlCommand(query, con))
+        //            {
+        //                cmd.Parameters.AddWithValue("@EmployeeCode", employeeCode);
+        //                cmd.Parameters.AddWithValue("@WorkingHours", wh);
+        //                cmd.Parameters.AddWithValue("@WorkDate", day.Date);
+        //                await cmd.ExecuteNonQueryAsync();
+        //            }
+        //        }
+        //    }
+        //    catch { }
+        //}
+        //public async Task PhepAsync(string employeeCode, int phep)
+        //{
+        //    string query = @"UPDATE AnnualLeaveBalance 
+        //                            SET RemainingLeaveDays = @RemainingLeaveDays
+        //                            WHERE EmployeeCode = @EmployeeCode
+        //                            ";
+        //    try
+        //    {
+        //        using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
+        //        {
+        //            await con.OpenAsync();
+        //            using (SqlCommand cmd = new SqlCommand(query, con))
+        //            {
+        //                cmd.Parameters.AddWithValue("@EmployeeCode", employeeCode);
+        //                cmd.Parameters.AddWithValue("@RemainingLeaveDays", phep);
+        //                await cmd.ExecuteNonQueryAsync();
+        //            }
+        //        }
+        //    }
+        //    catch { }
+        //}
+
+
+        public async Task InsertHolidayToAttendanceAsync(DateTime holidayDate, string holidayName)
         {
-            string query = @"UPDATE Attendance 
-                                    SET WorkingHours = @WorkingHours
-                                    WHERE EmployeeCode = @EmployeeCode
-                                      AND WorkDate = @WorkDate;
-                                    ";
             try
             {
                 using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
-                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    using (SqlCommand cmd = new SqlCommand("[sp_InsertHolidayToAttendance]", con))
                     {
-                        cmd.Parameters.AddWithValue("@EmployeeCode", employeeCode);
-                        cmd.Parameters.AddWithValue("@WorkingHours", wh);
-                        cmd.Parameters.AddWithValue("@WorkDate", day.Date);
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@HolidayDate", holidayDate);
+                        cmd.Parameters.AddWithValue("@HolidayName", holidayName);
                         await cmd.ExecuteNonQueryAsync();
                     }
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error InsertHolidayToAttendanceAsync: {ex.Message}");
+            }
         }
     }
 }

@@ -33,7 +33,7 @@ namespace RauViet.ui
             this.panel2 = new System.Windows.Forms.Panel();
             this.attendanceGV = new System.Windows.Forms.DataGridView();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.RonaldMachine_btn = new System.Windows.Forms.Button();
+            this.holiday_btn = new System.Windows.Forms.Button();
             this.excelAttendance_btn = new System.Windows.Forms.Button();
             this.info_gb = new System.Windows.Forms.GroupBox();
             this.monthYearDtp = new System.Windows.Forms.DateTimePicker();
@@ -87,7 +87,7 @@ namespace RauViet.ui
             // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.RonaldMachine_btn);
+            this.panel1.Controls.Add(this.holiday_btn);
             this.panel1.Controls.Add(this.excelAttendance_btn);
             this.panel1.Controls.Add(this.info_gb);
             this.panel1.Controls.Add(this.status_lb);
@@ -97,25 +97,24 @@ namespace RauViet.ui
             this.panel1.Size = new System.Drawing.Size(309, 497);
             this.panel1.TabIndex = 81;
             // 
-            // RonaldMachine_btn
+            // holiday_btn
             // 
-            this.RonaldMachine_btn.BackColor = System.Drawing.Color.LightSeaGreen;
-            this.RonaldMachine_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.RonaldMachine_btn.Location = new System.Drawing.Point(87, 69);
-            this.RonaldMachine_btn.Name = "RonaldMachine_btn";
-            this.RonaldMachine_btn.Size = new System.Drawing.Size(192, 40);
-            this.RonaldMachine_btn.TabIndex = 30;
-            this.RonaldMachine_btn.Text = "Máy Chấm Công";
-            this.RonaldMachine_btn.UseVisualStyleBackColor = false;
-            this.RonaldMachine_btn.Click += new System.EventHandler(this.RonaldMachine_btn_Click_1);
+            this.holiday_btn.BackColor = System.Drawing.Color.LightSeaGreen;
+            this.holiday_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.holiday_btn.Location = new System.Drawing.Point(40, 69);
+            this.holiday_btn.Name = "holiday_btn";
+            this.holiday_btn.Size = new System.Drawing.Size(239, 40);
+            this.holiday_btn.TabIndex = 30;
+            this.holiday_btn.Text = "Cập Nhật Ngày Nghỉ Lễ";
+            this.holiday_btn.UseVisualStyleBackColor = false;            
             // 
             // excelAttendance_btn
             // 
             this.excelAttendance_btn.BackColor = System.Drawing.Color.LimeGreen;
             this.excelAttendance_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.excelAttendance_btn.Location = new System.Drawing.Point(87, 115);
+            this.excelAttendance_btn.Location = new System.Drawing.Point(40, 115);
             this.excelAttendance_btn.Name = "excelAttendance_btn";
-            this.excelAttendance_btn.Size = new System.Drawing.Size(192, 40);
+            this.excelAttendance_btn.Size = new System.Drawing.Size(239, 40);
             this.excelAttendance_btn.TabIndex = 29;
             this.excelAttendance_btn.Text = "Excel Chấm Công";
             this.excelAttendance_btn.UseVisualStyleBackColor = false;
@@ -124,7 +123,7 @@ namespace RauViet.ui
             // 
             this.info_gb.Controls.Add(this.monthYearDtp);
             this.info_gb.Controls.Add(this.loadAttandance_btn);
-            this.info_gb.Location = new System.Drawing.Point(87, 161);
+            this.info_gb.Location = new System.Drawing.Point(62, 161);
             this.info_gb.Name = "info_gb";
             this.info_gb.Size = new System.Drawing.Size(192, 52);
             this.info_gb.TabIndex = 28;
@@ -217,6 +216,6 @@ namespace RauViet.ui
         private System.Windows.Forms.DateTimePicker monthYearDtp;
         private System.Windows.Forms.Button loadAttandance_btn;
         private System.Windows.Forms.Label status_lb;
-        private System.Windows.Forms.Button RonaldMachine_btn;
+        private System.Windows.Forms.Button holiday_btn;
     }
 }

@@ -130,6 +130,14 @@ namespace RauViet.ui
             List<(string employeeCode, string DeductionTypeCode, DateTime deductionDate, int amount, string note)> newData = new List<(string employeeCode, string DeductionTypeCodev, DateTime deductionDate, int amount, string note)>();
             int month = monthYear_dtp.Value.Month;
             int year = monthYear_dtp.Value.Year;
+
+            var isLocked = await SQLStore_QLNS.Instance.IsSalaryLockAsync(month, year);
+            if (isLocked)
+            {
+                MessageBox.Show($"Tháng {month}/{year} Đã Bị Khóa.", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
             foreach (DataRow edr in mTongHopBanThanhLy_dt.Rows)
             {
                 string employeeCode = edr["EmployeeCode"].ToString();

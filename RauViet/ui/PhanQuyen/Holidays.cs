@@ -1,4 +1,5 @@
-﻿using RauViet.classes;
+﻿using DocumentFormat.OpenXml.Bibliography;
+using RauViet.classes;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -17,6 +18,15 @@ namespace RauViet.ui
             this.KeyPreview = true;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Dock = DockStyle.Fill;
+
+            Utils.SetTabStopRecursive(this, false);
+            int countTab = 0;
+            holidayDateStart_dtp.TabIndex = countTab++; holidayDateStart_dtp.TabStop = true;
+            linkStartEnd_cb.TabIndex = countTab++; linkStartEnd_cb.TabStop = true;
+            holidayDateEnd_dtp.TabIndex = countTab++; holidayDateEnd_dtp.TabStop = true;
+            holidayName_tb.TabIndex = countTab++; holidayName_tb.TabStop = true;
+            saveBtn.TabIndex = countTab++; saveBtn.TabStop = true;
+
 
             dataGV.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dataGV.MultiSelect = false;
@@ -242,6 +252,9 @@ namespace RauViet.ui
 
                                 int delRowInd = row.Index;
                                 dataGV.Rows.Remove(row);
+
+                                SQLStore_QLNS.Instance.removeLeaveAttendances(holidayDate.Year);
+                                SQLStore_QLNS.Instance.removeAttendamce(holidayDate.Month, holidayDate.Year);
                             }
                             else
                             {
@@ -259,6 +272,7 @@ namespace RauViet.ui
                 }
             }
             dataTable.AcceptChanges();
+           
         }
 
         private async void newCustomerBtn_Click(object sender, EventArgs e)
@@ -288,9 +302,12 @@ namespace RauViet.ui
                 if (holidayDateStart > holidayDateEnd)
                     holidayDateEnd_dtp.Value = holidayDateStart;
             }
-                
-            bool isLock = await SQLStore_QLNS.Instance.IsSalaryLockAsync(holidayDateStart.Month, holidayDateStart.Year);
-            delete_btn.Visible = !isLock;
+
+            if (newBtn.Visible == true)
+            {
+                bool isLock = await SQLStore_QLNS.Instance.IsSalaryLockAsync(holidayDateStart.Month, holidayDateStart.Year);
+                delete_btn.Visible = !isLock;
+            }
         }
 
         private void HolidayDateEnd_dtp_ValueChanged(object sender, EventArgs e)
@@ -309,6 +326,7 @@ namespace RauViet.ui
             delete_btn.Visible = false;
             readOnly_btn.Visible = true;
             saveBtn.Text = "Lưu Mới";
+            saveBtn.Visible = true;
             SetUIReadOnly(false);
         }
 

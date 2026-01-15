@@ -81,9 +81,12 @@ namespace RauViet.classes
         public bool hasRole_KhachHang() { return hasRole("qlkh"); }
         public bool hasRole_SanPhamChinh() { return hasRole("spc"); }
         public bool hasRole_SanPhamQuyCach() { return hasRole("spqc"); }
+        public bool hasRole_NhapKhoRauCuQua() { return hasRole("nk_rcq"); }
+        public bool hasRole_NhapKhoHangKho() { return hasRole("nk_hkho"); }
         public bool hasRole_AnGiaSanPham() { return hasRole("agsp"); }
         public bool hasRole_HoanThanhDonHang() { return hasRole("htdh"); }
         public bool hasRole_NhapDonNuocNgoai() { return hasRole("nldh"); }
+        public bool hasRole_BanThanhLiChoNV() { return hasRole("btlcnv"); }
         public bool hasRole_SuaDonNuocNgoai() { return hasRole("csdnn"); }
         public bool hasRole_DangKyKiemDich() { return hasRole("xuat_dkkd"); }
         public bool hasRole_PHYTO() { return hasRole("xuat_phyto"); }

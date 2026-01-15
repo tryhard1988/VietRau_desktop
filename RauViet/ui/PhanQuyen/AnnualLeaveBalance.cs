@@ -339,5 +339,41 @@ namespace RauViet.ui
                 }
             }
         }
+
+        //private async void button1_Click_1(object sender, EventArgs e)
+        //{
+        //    using (System.Windows.Forms.OpenFileDialog ofd = new System.Windows.Forms.OpenFileDialog())
+        //    {
+        //        ofd.Title = "Chọn file Excel";
+        //        ofd.Filter = "Excel Files|*.xlsx;*.xls|All Files|*.*";
+        //        ofd.Multiselect = false; // chỉ cho chọn 1 file
+
+        //        if (ofd.ShowDialog() == DialogResult.OK)
+        //        {
+        //            string filePath = ofd.FileName;
+        //            System.Data.DataTable excelData = Utils.LoadExcel_NoHeader(filePath);
+        //            try
+        //            {
+        //                foreach (DataRow edr in excelData.Rows)
+        //                {
+        //                    string empCode = edr["Column1"].ToString();
+        //                    bool exists = mEmployee_dt.AsEnumerable().Any(r => r.Field<string>("EmployeeCode") == empCode);
+        //                    if (!exists) continue;
+
+
+        //                    int phep = Convert.ToInt32(edr["Column2"]);
+
+        //                    await SQLManager_QLNS.Instance.PhepAsync(empCode, phep);
+
+        //                }
+        //            }
+        //            catch (Exception ex)
+        //            {
+        //                MessageBox.Show("có lỗi " + ex.Message);
+        //            }
+        //            MessageBox.Show("xong");
+        //        }
+        //    }
+        //}
     }
 }

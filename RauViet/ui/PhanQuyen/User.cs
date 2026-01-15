@@ -130,23 +130,28 @@ namespace RauViet.ui
                 .GroupBy(r => r.Field<string>("RoleGroupName"))
                 .OrderBy(g => g.First().Field<int>("Priority"));
 
-            int yGroup = 10; // vị trí top bắt đầu cho nhóm
-
+            int startY = 20;
+            int xCheck = 50;
+            int yGroup = startY; // vị trí top bắt đầu cho nhóm            
             foreach (var g in groups)
             {
+                if (yGroup > 600)
+                {
+                    yGroup = startY;
+                    xCheck += 300;
+                }
                 // Tạo label làm tiêu đề nhóm
                 Label groupLabel = new Label
                 {
                     Text = g.Key,
                     Font = new Font(phanquyen_gb.Font, FontStyle.Bold),
                     AutoSize = true,
-                    Location = new Point(10, yGroup)
+                    Location = new Point(xCheck - 40, yGroup)
                 };
                 phanquyen_gb.Controls.Add(groupLabel);
 
                 yGroup += groupLabel.Height + 5;
-
-                int xCheck = 50; // vị trí left bắt đầu cho checkbox
+                
                 int yCheck = yGroup;
 
                 foreach (var row in g)

@@ -2813,6 +2813,160 @@ namespace RauViet.classes
             }
             catch { return false; }
         }
+
+        public async Task<DataTable> getVegetableWarehouseTransactionSync()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT * FROM VegetableWarehouseTransaction";
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                {
+                    dt.Load(reader);
+                }
+            }
+            return dt;
+        }
+
+        public async Task<int> insertVegetableWarehouseTransactionAsync(int SKU, string TransactionType,decimal Quantity,string Supplier, string FarmSourceCode, DateTime TransactionDate, string Note)
+        {
+            int newId = -1;
+            string query = @"INSERT INTO VegetableWarehouseTransaction (SKU, TransactionType, Quantity, Supplier, FarmSourceCode, TransactionDate, Note)
+                            OUTPUT INSERTED.TransactionID
+                             VALUES (@SKU, @TransactionType, @Quantity, @Supplier, @FarmSourceCode, @TransactionDate, @Note)";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@SKU", SKU);
+                        cmd.Parameters.AddWithValue("@TransactionType", TransactionType);
+                        cmd.Parameters.AddWithValue("@Quantity", Quantity);
+                        cmd.Parameters.AddWithValue("@Supplier", Supplier);
+                        cmd.Parameters.AddWithValue("@FarmSourceCode", FarmSourceCode);
+                        cmd.Parameters.AddWithValue("@TransactionDate", TransactionDate);
+                        cmd.Parameters.AddWithValue("@Note", Note);
+                        object result = await cmd.ExecuteScalarAsync();
+                        if (result != null)
+                            newId = Convert.ToInt32(result);
+                    }
+                }
+                return newId;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("ERROR: " + ex.Message);
+                return -1;
+            }
+        }
+
+        public async Task<bool> updateVegetableWarehouseTransactionAsync(int ID, int SKU, string TransactionType, decimal Quantity, string Supplier, string FarmSourceCode, DateTime TransactionDate, string Note)
+        {
+            string query = @"UPDATE VegetableWarehouseTransaction SET
+                                SKU=@SKU, 
+                                TransactionType=@TransactionType, 
+                                Quantity=@Quantity, 
+                                Supplier=@Supplier, 
+                                FarmSourceCode=@FarmSourceCode, 
+                                TransactionDate=@TransactionDate, 
+                                Note=@Note                              
+                             WHERE TransactionID=@ID";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@ID", ID);
+                        cmd.Parameters.AddWithValue("@SKU", SKU);
+                        cmd.Parameters.AddWithValue("@TransactionType", TransactionType);
+                        cmd.Parameters.AddWithValue("@Quantity", Quantity);
+                        cmd.Parameters.AddWithValue("@Supplier", Supplier);
+                        cmd.Parameters.AddWithValue("@FarmSourceCode", FarmSourceCode);
+                        cmd.Parameters.AddWithValue("@TransactionDate", TransactionDate);
+                        cmd.Parameters.AddWithValue("@Note", Note);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("ERROR: " + ex.Message);
+                return false;
+            }
+        }
+
+        public async Task<bool> deleteVegetableWarehouseTransactionAsync(int tranID)
+        {
+            string query = "DELETE FROM VegetableWarehouseTransaction WHERE TransactionID=@TransactionID";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@TransactionID", tranID);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+                return true;
+            }
+            catch { return false; }
+        }
+
+        public async Task<int> insertVegetableWarehouseTransactionLOGAsync(int SKU, string oldValue, string newValue)
+        {
+            int newId = -1;
+            string query = @"INSERT INTO VegetableWarehouseTransactionLOG (SKU, OldValue, NewValue, ActionBy)
+                            OUTPUT INSERTED.LogID
+                             VALUES (@SKU, @OldValue, @NewValue, @ActionBy)";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@SKU", SKU);
+                        cmd.Parameters.AddWithValue("@OldValue", oldValue);
+                        cmd.Parameters.AddWithValue("@NewValue", newValue);
+                        cmd.Parameters.AddWithValue("@ActionBy", UserManager.Instance.fullName);
+                        object result = await cmd.ExecuteScalarAsync();
+                        if (result != null)
+                            newId = Convert.ToInt32(result);
+                    }
+                }
+                return newId;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("ERROR: " + ex.Message);
+                return -1;
+            }
+        }
+
+        public async Task<DataTable> getVegetableWarehouseTransactionLOGAsync()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr()))
+            {
+                await con.OpenAsync();
+                string query = @"select * from VegetableWarehouseTransactionLOG";
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                {
+                    dt.Load(reader);
+                }
+            }
+            return dt;
+        }
     }
 }
 

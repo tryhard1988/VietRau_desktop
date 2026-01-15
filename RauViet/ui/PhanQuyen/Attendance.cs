@@ -1,4 +1,5 @@
-﻿using Microsoft.Win32;
+﻿using DocumentFormat.OpenXml.Bibliography;
+using Microsoft.Win32;
 using RauViet.classes;
 using System;
 using System.Collections.Generic;
@@ -40,8 +41,7 @@ namespace RauViet.ui
 
             status_lb.Text = "";
 
-
-            
+            this.holiday_btn.Click += Holiday_btn_Click; ;
 
             attendanceGV.CellFormatting += AttandaceGV_CellFormatting;
             attendanceGV.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.attendanceGV_EditingControlShowing);
@@ -65,7 +65,7 @@ namespace RauViet.ui
             {
                 int month = monthYearDtp.Value.Month;
                 int year = monthYearDtp.Value.Year;
-                SQLStore_QLNS.Instance.removeAttendamce(month, year);
+                SQLStore_QLNS.Instance.removeAttendamce(month, year);                
                 LoadAttandance_btn_Click(null, null);
             }
         }
@@ -740,48 +740,48 @@ namespace RauViet.ui
             }
         }
 
-        private async void RonaldMachine_btn_Click_1(object sender, EventArgs e)
-        {
-            using (System.Windows.Forms.OpenFileDialog ofd = new System.Windows.Forms.OpenFileDialog())
-            {
-                ofd.Title = "Chọn file Excel";
-                ofd.Filter = "Excel Files|*.xlsx;*.xls|All Files|*.*";
-                ofd.Multiselect = false; // chỉ cho chọn 1 file
+        //private async void RonaldMachine_btn_Click_1(object sender, EventArgs e)
+        //{
+        //    using (System.Windows.Forms.OpenFileDialog ofd = new System.Windows.Forms.OpenFileDialog())
+        //    {
+        //        ofd.Title = "Chọn file Excel";
+        //        ofd.Filter = "Excel Files|*.xlsx;*.xls|All Files|*.*";
+        //        ofd.Multiselect = false; // chỉ cho chọn 1 file
 
-                if (ofd.ShowDialog() == DialogResult.OK)
-                {
-                    string filePath = ofd.FileName;
-                    System.Data.DataTable excelData = Utils.LoadExcel_NoHeader(filePath);
-                    try
-                    {
-                        foreach (DataRow edr in excelData.Rows)
-                        {
-                            string empCode = edr["Column1"].ToString();
-                            bool exists = mEmployee_dt.AsEnumerable().Any(r => r.Field<string>("EmployeeCode") == empCode);
-                            if (!exists) continue;
+        //        if (ofd.ShowDialog() == DialogResult.OK)
+        //        {
+        //            string filePath = ofd.FileName;
+        //            System.Data.DataTable excelData = Utils.LoadExcel_NoHeader(filePath);
+        //            try
+        //            {
+        //                foreach (DataRow edr in excelData.Rows)
+        //                {
+        //                    string empCode = edr["Column1"].ToString();
+        //                    bool exists = mEmployee_dt.AsEnumerable().Any(r => r.Field<string>("EmployeeCode") == empCode);
+        //                    if (!exists) continue;
 
-                            for (int i = 1; i <= 31; i++)
-                            {
+        //                    for (int i = 1; i <= 31; i++)
+        //                    {
 
-                                decimal wh = 0;
-                                decimal.TryParse(edr[$"Column{i + 1}"].ToString(), out wh);
+        //                        decimal wh = 0;
+        //                        decimal.TryParse(edr[$"Column{i + 1}"].ToString(), out wh);
                                 
-                                    await SQLManager_QLNS.Instance.updateWorkHourAsync(empCode, new DateTime(2025, 12, i), wh);
+        //                            await SQLManager_QLNS.Instance.updateWorkHourAsync(empCode, new DateTime(2025, 12, i), wh);
                                 
 
 
-                            }
+        //                    }
 
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show("có lỗi " + ex.Message);
-                    }
-                    MessageBox.Show("xong");
-                }
-            }
-        }
+        //                }
+        //            }
+        //            catch (Exception ex)
+        //            {
+        //                MessageBox.Show("có lỗi " + ex.Message);
+        //            }
+        //            MessageBox.Show("xong");
+        //        }
+        //    }
+        //}
 
         private void AttendanceGV_CellParsing(object sender, DataGridViewCellParsingEventArgs e)
         {
@@ -859,6 +859,30 @@ namespace RauViet.ui
                                     item.ActionBy
                                 )).ToList();
             _ = SQLManager_QLNS.Instance.InsertAttendanceLogListAsync(updatedLogs);
+        }
+
+        private async void Holiday_btn_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                foreach (DataRow holidayRow in mHoliday_dt.Rows)
+                {
+                    DateTime dateOff = Convert.ToDateTime(holidayRow["HolidayDate"]);
+                    string holidayName = Convert.ToString(holidayRow["HolidayName"]);
+
+                    await SQLManager_QLNS.Instance.InsertHolidayToAttendanceAsync(dateOff, holidayName);
+                }
+
+                int month = monthYearDtp.Value.Month;
+                int year = monthYearDtp.Value.Year;
+                SQLStore_QLNS.Instance.removeLeaveAttendances(year);                
+                SQLStore_QLNS.Instance.removeAttendamce(month, year);
+                LoadAttandance_btn_Click(null, null);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("ERROR: " + ex.Message);
+            }
         }
     }
 }
