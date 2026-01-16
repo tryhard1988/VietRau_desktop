@@ -68,7 +68,7 @@ namespace RauViet.ui
                 int month = monthYear_dtp.Value.Month;
                 int year = monthYear_dtp.Value.Year;
                 var result = domesticLiquidationExportTask.Result.AsEnumerable()
-                                                        .Where(r => r.Field<DateTime>("ExportDate").Month == month && r.Field<DateTime>("ExportDate").Year == year)
+                                                        .Where(r => r.Field<DateTime>("ExportDate").Month == month && r.Field<DateTime>("ExportDate").Year == year && r.Field<Boolean>("IsCanceled") == false)
                                                         .GroupBy(r => r.Field<int>("EmployeeBuyID"))
                                                         .Select(g => new
                                                         {

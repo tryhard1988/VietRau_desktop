@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -352,7 +353,7 @@ namespace RauViet.ui
             }
 
             int sku = Convert.ToInt32(sku_cbb.SelectedValue);
-            int quantity = Convert.ToInt32(quantity_tb.Text);
+            decimal quantity = string.IsNullOrWhiteSpace(quantity_tb.Text) ? 0 : decimal.Parse(quantity_tb.Text, CultureInfo.InvariantCulture);
             string tranType = transactionType_CB.SelectedValue?.ToString() ?? "";
             string supplier = supplier_CB.SelectedValue?.ToString() ?? "";
             string farmSourceCode = farmSourceCode_tb.Text;
@@ -471,7 +472,7 @@ namespace RauViet.ui
                     int ID = Convert.ToInt32(cells["TransactionID"].Value);
                     int SKU = Convert.ToInt32(cells["SKU"].Value);
                     string tranType = cells["TransactionType"].Value.ToString();
-                    int quantity = Convert.ToInt32(cells["Quantity"].Value);
+                    decimal quantity = Convert.ToDecimal(cells["Quantity"].Value);
                     DateTime tranDate = Convert.ToDateTime(cells["TransactionDate"].Value);
                     string note = cells["Note"].Value.ToString();
                    
@@ -484,7 +485,7 @@ namespace RauViet.ui
                     sku_cbb.SelectedValue = SKU;
                     transactionType_CB.SelectedValue = tranType;
                     transactionDate_dtp.Value = tranDate;
-                    quantity_tb.Text = quantity.ToString();
+                    quantity_tb.Text = quantity.ToString("F1", CultureInfo.InvariantCulture);
                     note_tb.Text = note.ToString();                   
 
                     status_lb.Text = "";

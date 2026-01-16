@@ -48,6 +48,7 @@ namespace RauViet.ui
             this.id_tb = new System.Windows.Forms.TextBox();
             this.status_lb = new System.Windows.Forms.Label();
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
+            this.isCanceled_CB = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.log_GV)).BeginInit();
             this.panel1.SuspendLayout();
@@ -141,6 +142,7 @@ namespace RauViet.ui
             // 
             // info_gb
             // 
+            this.info_gb.Controls.Add(this.isCanceled_CB);
             this.info_gb.Controls.Add(this.employeeBuy_CBB);
             this.info_gb.Controls.Add(this.label2);
             this.info_gb.Controls.Add(this.exportDate_dtp);
@@ -255,6 +257,17 @@ namespace RauViet.ui
             this.LuuThayDoiBtn.Text = "Lưu";
             this.LuuThayDoiBtn.UseVisualStyleBackColor = false;
             // 
+            // isCanceled_CB
+            // 
+            this.isCanceled_CB.AutoSize = true;
+            this.isCanceled_CB.BackColor = System.Drawing.Color.RosyBrown;
+            this.isCanceled_CB.Location = new System.Drawing.Point(131, 166);
+            this.isCanceled_CB.Name = "isCanceled_CB";
+            this.isCanceled_CB.Size = new System.Drawing.Size(75, 20);
+            this.isCanceled_CB.TabIndex = 67;
+            this.isCanceled_CB.Text = "Hủy Mua";
+            this.isCanceled_CB.UseVisualStyleBackColor = false;
+            // 
             // DomesticLiquidationExport
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -297,5 +310,6 @@ namespace RauViet.ui
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.ComboBox employeeBuy_CBB;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.CheckBox isCanceled_CB;
     }
 }

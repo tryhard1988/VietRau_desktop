@@ -2,6 +2,7 @@
 using RauViet.classes;
 using System;
 using System.Data;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -45,7 +46,10 @@ namespace RauViet.ui
             domesticLiquidationPrice_cbb.TextUpdate += sku_cbb_TextUpdate;
             employeeBuy_CBB.TextUpdate += reportedBy_CBB_TextUpdate;
             quantity_tb.KeyPress += Tb_KeyPress_OnlyNumber;
+
+            isCanceled_CB.CheckedChanged += IsCanceled_CB_CheckedChanged;
         }
+               
 
         private void ProductList_KeyDown(object sender, KeyEventArgs e)
         {
@@ -82,7 +86,8 @@ namespace RauViet.ui
             {
                 var domesticLiquidationPriceTask = SQLStore_Kho.Instance.getDomesticLiquidationPriceAsync();
                 var domesticLiquidationExportTask = SQLStore_Kho.Instance.getDomesticLiquidationExportAsync();
-                var empTask = SQLStore_QLNS.Instance.GetEmployeesAsync();
+                string[] keepColumns = { "EmployeeID", "EmployeeCode", "FullName", "EmployessName_NoSign" };
+                var empTask = SQLStore_QLNS.Instance.GetEmployeesAsync(keepColumns);
                 var logDataTask = SQLStore_Kho.Instance.GetDomesticLiquidationExportLogAsync();
                 await Task.WhenAll(domesticLiquidationPriceTask, domesticLiquidationExportTask, empTask, logDataTask);
 
@@ -119,6 +124,7 @@ namespace RauViet.ui
                 dataGV.Columns["ExportDate"].HeaderText = "Ngày Bán";
                 dataGV.Columns["Price"].HeaderText = "Giá";
                 dataGV.Columns["TotalMoney"].HeaderText = "Thành Tiền";
+                dataGV.Columns["IsCanceled"].HeaderText = "Hủy";
 
                 dataGV.Columns["Price"].DefaultCellStyle.Format = "N0";
                 dataGV.Columns["TotalMoney"].DefaultCellStyle.Format = "N0";
@@ -131,6 +137,7 @@ namespace RauViet.ui
                 dataGV.Columns["Price"].Width = 70;
                 dataGV.Columns["TotalMoney"].Width = 70;
                 dataGV.Columns["EmployeeBuy"].Width = 150;
+                dataGV.Columns["IsCanceled"].Width = 50;
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
@@ -143,6 +150,7 @@ namespace RauViet.ui
                 domesticLiquidationPrice_cbb.TabIndex = countTab++; domesticLiquidationPrice_cbb.TabStop = true;
                 quantity_tb.TabIndex = countTab++; quantity_tb.TabStop = true;
                 employeeBuy_CBB.TabIndex = countTab++; employeeBuy_CBB.TabStop = true;
+                isCanceled_CB.TabIndex = countTab++; isCanceled_CB.TabStop = true;
                 LuuThayDoiBtn.TabIndex = countTab++; LuuThayDoiBtn.TabStop = true;
 
                 ReadOnly_btn_Click(null, null);
@@ -265,11 +273,19 @@ namespace RauViet.ui
             updateRightUI();            
         }
 
-        private async void updateItem(int exportID, DateTime exportDate, int domesticLiquidationPriceID, decimal quantity, int price, int employeeBuyID)
+        private async void updateItem(int exportID, DateTime exportDate, int domesticLiquidationPriceID, decimal quantity, int price, int? employeeBuyID, bool isCanceled)
         {
             DataRow[] rows = mDomesticLiquidationPrice_dt.Select($"DomesticLiquidationPriceID = {domesticLiquidationPriceID}");
-            DataRow[] empRows = mEmployee_dt.Select($"EmployeeID = {employeeBuyID}");
-            if (empRows.Length <= 0 || rows.Length <= 0) return;
+            DataRow[] empRows = null;
+            object employeeBuyName = "== Hủy Hàng ==";
+            if (employeeBuyID != null)
+            {
+                empRows = mEmployee_dt.Select($"EmployeeID = {employeeBuyID}");
+
+                if (empRows.Length <= 0 || rows.Length <= 0) return;
+
+                employeeBuyName = empRows[0]["FullName"];
+            }
 
             foreach (DataRow row in mDomesticLiquidationExport_dt.Rows)
             {
@@ -278,13 +294,13 @@ namespace RauViet.ui
                 {
                     DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
-                    string oldValue = $"ngày: {row["ExportDate"]} - số lượng: {row["Quantity"]} - giá: {row["Price"]}, người báo thanh lý: {row["EmployeeBuy"]}";
-                    string newValue = $"ngày: {exportDate} - số lượng: {quantity} - giá: {price}, người báo thanh lý: {empRows[0]["FullName"]}";
+                    string oldValue = $"ngày: {row["ExportDate"]} - số lượng: {row["Quantity"]} - giá: {row["Price"]}, người Mua: {(Convert.ToBoolean(row["IsCanceled"]) ? "Hủy Hàng" : row["EmployeeBuy"])}";
+                    string newValue = $"ngày: {exportDate} - số lượng: {quantity} - giá: {price}, người Mua: {(isCanceled ? "Hủy Hàng" : employeeBuyName)}; ";
                     if (dialogResult == DialogResult.Yes)
                     {
                         try
                         {
-                            bool isScussess = await SQLManager_Kho.Instance.updateDDomesticLiquidationExportAsync(exportID, exportDate, domesticLiquidationPriceID, quantity, price, employeeBuyID);
+                            bool isScussess = await SQLManager_Kho.Instance.updateDDomesticLiquidationExportAsync(exportID, exportDate, domesticLiquidationPriceID, quantity, price, employeeBuyID, isCanceled);
 
                             if (isScussess == true)
                             {
@@ -294,12 +310,13 @@ namespace RauViet.ui
                                 row["DomesticLiquidationPriceID"] = domesticLiquidationPriceID;
                                 row["Quantity"] = quantity;
                                 row["Price"] = price;
-                                row["EmployeeBuyID"] = employeeBuyID;
+                                row["EmployeeBuyID"] = (object)employeeBuyID ?? DBNull.Value;
 
                                 row["Name_VN"] = rows[0]["Name_VN"];
-                                row["EmployeeBuy"] = empRows[0]["FullName"];
+                                row["EmployeeBuy"] = employeeBuyName;
                                 row["TotalMoney"] = Convert.ToInt32(quantity * price);
                                 row["Package"] = package;
+                                row["IsCanceled"] = isCanceled;
 
                                 _ = SQLManager_Kho.Instance.insertDomesticLiquidationExportLogAsync(domesticLiquidationPriceID, "Update Success: " + oldValue, newValue);
 
@@ -327,21 +344,29 @@ namespace RauViet.ui
             }
         }
 
-        private async void createItem(DateTime exportDate, int domesticLiquidationPriceID, decimal quantity, int price, int employeeBuyID)
+        private async void createItem(DateTime exportDate, int domesticLiquidationPriceID, decimal quantity, int price, int? employeeBuyID, bool isCanceled)
         {
             DataRow[] rows = mDomesticLiquidationPrice_dt.Select($"DomesticLiquidationPriceID = {domesticLiquidationPriceID}");
-            DataRow[] empRows = mEmployee_dt.Select($"EmployeeID = {employeeBuyID}");
-            if (empRows.Length <= 0 || rows.Length <= 0) return;
+            DataRow[] empRows = null;
+            object employeeBuyName = "== Hủy Hàng ==";
+            if (employeeBuyID != null)
+            {
+                empRows = mEmployee_dt.Select($"EmployeeID = {employeeBuyID}");
+
+                if (empRows.Length <= 0 || rows.Length <= 0) return;
+
+                employeeBuyName = empRows[0]["FullName"];
+            }
 
             DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
             if (dialogResult == DialogResult.Yes)
             {
 
-                string newValue = $"ngày: {exportDate} - số lượng: {quantity} - giá: {price}, người báo thanh lý: {empRows[0]["FullName"]}";
+                string newValue = $"ngày: {exportDate} - số lượng: {quantity} - giá: {price}, người Mua: {(isCanceled? "Hủy Hàng" : employeeBuyName)}; ";
                 try
                 {
-                    int newId = await SQLManager_Kho.Instance.insertDomesticLiquidationExportAsync(exportDate, domesticLiquidationPriceID, quantity, price, employeeBuyID);
+                    int newId = await SQLManager_Kho.Instance.insertDomesticLiquidationExportAsync(exportDate, domesticLiquidationPriceID, quantity, price, employeeBuyID, isCanceled);
                     if (newId > 0)
                     {
                         DataRow drToAdd = mDomesticLiquidationExport_dt.NewRow();
@@ -352,12 +377,13 @@ namespace RauViet.ui
                         drToAdd["DomesticLiquidationPriceID"] = domesticLiquidationPriceID;
                         drToAdd["Quantity"] = quantity;
                         drToAdd["Price"] = price;
-                        drToAdd["EmployeeBuyID"] = employeeBuyID;
+                        drToAdd["EmployeeBuyID"] = (object)employeeBuyID ?? DBNull.Value;
 
                         drToAdd["Name_VN"] = rows[0]["Name_VN"];
-                        drToAdd["EmployeeBuy"] = empRows[0]["FullName"];
+                        drToAdd["EmployeeBuy"] = employeeBuyName;
                         drToAdd["TotalMoney"] = Convert.ToInt32(quantity * price);
                         drToAdd["Package"] = package;
+                        drToAdd["IsCanceled"] = isCanceled;
 
                         mDomesticLiquidationExport_dt.Rows.Add(drToAdd);
                         mDomesticLiquidationExport_dt.AcceptChanges();
@@ -396,8 +422,11 @@ namespace RauViet.ui
             DateTime exportDate = exportDate_dtp.Value.Date;
             int domesticLiquidationPriceID = Convert.ToInt32(domesticLiquidationPrice_cbb.SelectedValue);
             int price = Convert.ToInt32(productSKUData["SalePrice"]);
-            int reportedB = Convert.ToInt32(employeeBuy_CBB.SelectedValue);
-            decimal quantity = string.IsNullOrWhiteSpace(quantity_tb.Text) ? 0 : decimal.Parse(quantity_tb.Text);
+            int? employeeBuyID = Convert.ToInt32(employeeBuy_CBB.SelectedValue);
+            decimal quantity = string.IsNullOrWhiteSpace(quantity_tb.Text) ? 0 : decimal.Parse(quantity_tb.Text, CultureInfo.InvariantCulture);
+
+            if(isCanceled_CB.Checked)
+                employeeBuyID = null;
 
             var isLocked = await SQLStore_QLNS.Instance.IsSalaryLockAsync(exportDate.Month, exportDate.Year);
             if (isLocked)
@@ -406,9 +435,9 @@ namespace RauViet.ui
                 return;
             }
             if (id_tb.Text.Length != 0)
-                updateItem(Convert.ToInt32(id_tb.Text), exportDate, domesticLiquidationPriceID, quantity, price, reportedB);
+                updateItem(Convert.ToInt32(id_tb.Text), exportDate, domesticLiquidationPriceID, quantity, price, employeeBuyID, isCanceled_CB.Checked);
             else
-                createItem(exportDate,domesticLiquidationPriceID, quantity, price, reportedB);
+                createItem(exportDate,domesticLiquidationPriceID, quantity, price, employeeBuyID, isCanceled_CB.Checked);
 
         }
         private async void deleteProduct()
@@ -477,7 +506,8 @@ namespace RauViet.ui
             employeeBuy_CBB.Enabled = true;
             exportDate_dtp.Enabled = true;
             RightUiReadOnly(false);
-
+            isCanceled_CB.Checked = false;
+            isCanceled_CB.Enabled = true;
             domesticLiquidationPrice_cbb.Focus();
 
             RightUiEnable(true);
@@ -494,6 +524,8 @@ namespace RauViet.ui
             domesticLiquidationPrice_cbb.Enabled = false;
             employeeBuy_CBB.Enabled = false;
             exportDate_dtp.Enabled = false;
+            
+            isCanceled_CB.Enabled = false;
             RightUiReadOnly(true);
             if (dataGV.SelectedRows.Count > 0)
                 updateRightUI();
@@ -513,7 +545,7 @@ namespace RauViet.ui
             info_gb.BackColor = edit_btn.BackColor;
             isNewState = false;
             LuuThayDoiBtn.Text = "Lưu C.Sửa";
-
+            isCanceled_CB.Enabled = true;
             RightUiReadOnly(false);
             RightUiEnable(false);
         }
@@ -530,18 +562,39 @@ namespace RauViet.ui
 
                     string ID = cells["ExportID"].Value.ToString();
                     int domesticLiquidationPriceID = Convert.ToInt32(cells["DomesticLiquidationPriceID"].Value);
-                    int quantity = Convert.ToInt32(cells["Quantity"].Value);
-                    int employeeBuyID = Convert.ToInt32(cells["EmployeeBuyID"].Value);
+                    decimal quantity = Convert.ToDecimal(cells["Quantity"].Value);
+                    int? employeeBuyID =cells["EmployeeBuyID"].Value == null ||
+                                        cells["EmployeeBuyID"].Value == DBNull.Value
+                                            ? (int?)null
+                                            : Convert.ToInt32(cells["EmployeeBuyID"].Value);
+
+                    bool isCanceled = Convert.ToBoolean(cells["IsCanceled"].Value);
+                    DateTime exportDate = Convert.ToDateTime(cells["ExportDate"].Value);
 
                     if (!domesticLiquidationPrice_cbb.Items.Cast<object>().Any(i => ((DataRowView)i)["DomesticLiquidationPriceID"].ToString() == domesticLiquidationPriceID.ToString()))
                     {
                         domesticLiquidationPrice_cbb.DataSource = mDomesticLiquidationPrice_dt;
                     }
+
+                    if (employeeBuyID != null && !employeeBuy_CBB.Items.Cast<object>().Any(i => ((DataRowView)i)["EmployeeID"].ToString() == employeeBuyID.ToString()))
+                    {
+                        employeeBuy_CBB.DataSource = mEmployee_dt;
+                    }
+
                     domesticLiquidationPrice_cbb.SelectedValue = domesticLiquidationPriceID;
 
                     id_tb.Text = ID;
-                    quantity_tb.Text = quantity.ToString("F1");
-                    employeeBuy_CBB.SelectedValue = employeeBuyID;
+                    quantity_tb.Text = quantity.ToString("F1", CultureInfo.InvariantCulture);
+                    if (employeeBuyID.HasValue)
+                    {
+                        employeeBuy_CBB.SelectedValue = employeeBuyID.Value;
+                    }
+                    else
+                    {
+                        employeeBuy_CBB.SelectedIndex = -1; // không chọn gì
+                    }
+                    isCanceled_CB.Checked = isCanceled;
+                    exportDate_dtp.Value = exportDate;
 
                     status_lb.Text = "";
 
@@ -580,6 +633,11 @@ namespace RauViet.ui
 
         private void RightUiEnable(bool enable)
         {
+        }
+
+        private void IsCanceled_CB_CheckedChanged(object sender, EventArgs e)
+        {
+            employeeBuy_CBB.Visible = !isCanceled_CB.Checked;
         }
     }
 }

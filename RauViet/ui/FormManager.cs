@@ -70,8 +70,7 @@ namespace RauViet.ui
                 }
                 else
                 {
-                    productPacking_meniitem.Visible = false;
-                    giaBanThanhLy_mi.Visible = false;
+                    productPacking_meniitem.Visible = false;                    
                 }
 
                 if (UserManager.Instance.hasRole_NhapKhoHangKho())

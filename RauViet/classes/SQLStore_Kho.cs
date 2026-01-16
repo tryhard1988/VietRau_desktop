@@ -2194,11 +2194,20 @@ namespace RauViet.classes
             foreach (DataRow dr in mDomesticLiquidationExport_dt.Rows)
             {
                 int domesticLiquidationPriceID = Convert.ToInt32(dr["DomesticLiquidationPriceID"]);
-                int employeeBuyID = Convert.ToInt32(dr["EmployeeBuyID"]);
+                int? employeeBuyID = dr["EmployeeBuyID"] == DBNull.Value ? (int?)null  : Convert.ToInt32(dr["EmployeeBuyID"]);
 
 
                 DataRow[] proRow = mDomesticLiquidationPrice_dt.Select($"DomesticLiquidationPriceID = {domesticLiquidationPriceID}");
-                DataRow[] empRow = empData.Select($"EmployeeID = '{employeeBuyID}'");
+
+                DataRow[] empRow = null;
+                if (employeeBuyID != null)
+                {
+                    empRow = empData.Select($"EmployeeID = '{employeeBuyID}'");
+
+                    dr["EmployeeBuy"] = empRow[0]["FullName"];
+                }
+                else if (Convert.ToBoolean(dr["IsCanceled"]))
+                    dr["EmployeeBuy"] = "== Hủy Hàng ==";
 
                 dr["TotalMoney"] = Convert.ToDecimal(dr["Quantity"]) * Convert.ToInt32(dr["Price"]);
                 if (proRow.Length > 0)
@@ -2215,10 +2224,6 @@ namespace RauViet.classes
                     dr["Package"] = package;
                 }
 
-                if (empRow.Length > 0)
-                {
-                    dr["EmployeeBuy"] = empRow[0]["FullName"];
-                }
             }
 
             int count = 0;
@@ -2228,6 +2233,7 @@ namespace RauViet.classes
             mDomesticLiquidationExport_dt.Columns["Quantity"].SetOrdinal(count++);
             mDomesticLiquidationExport_dt.Columns["Price"].SetOrdinal(count++);
             mDomesticLiquidationExport_dt.Columns["TotalMoney"].SetOrdinal(count++);
+            mDomesticLiquidationExport_dt.Columns["EmployeeBuy"].SetOrdinal(count++);
         }
 
         public async Task<DataTable> GetDomesticLiquidationExportLogAsync()

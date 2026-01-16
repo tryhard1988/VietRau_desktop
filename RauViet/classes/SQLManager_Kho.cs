@@ -2713,12 +2713,12 @@ namespace RauViet.classes
             return dt;
         }
 
-        public async Task<int> insertDomesticLiquidationExportAsync(DateTime exportDate, int domesticLiquidationPriceID, decimal quantity, int price, int employeeBuyID)
+        public async Task<int> insertDomesticLiquidationExportAsync(DateTime exportDate, int domesticLiquidationPriceID, decimal quantity, int price, int? employeeBuyID, bool isCanceled)
         {
             int newId = -1;
-            string query = @"INSERT INTO DomesticLiquidationExport (ExportDate, DomesticLiquidationPriceID, Quantity, Price, EmployeeBuyID)
+            string query = @"INSERT INTO DomesticLiquidationExport (ExportDate, DomesticLiquidationPriceID, Quantity, Price, EmployeeBuyID, IsCanceled)
                             OUTPUT INSERTED.ExportID
-                             VALUES (@ExportDate, @DomesticLiquidationPriceID, @Quantity, @Price, @EmployeeBuyID)";
+                             VALUES (@ExportDate, @DomesticLiquidationPriceID, @Quantity, @Price, @EmployeeBuyID, @IsCanceled)";
             try
             {
                 using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
@@ -2730,7 +2730,8 @@ namespace RauViet.classes
                         cmd.Parameters.AddWithValue("@DomesticLiquidationPriceID", domesticLiquidationPriceID);
                         cmd.Parameters.AddWithValue("@Quantity", quantity);
                         cmd.Parameters.AddWithValue("@Price", price);
-                        cmd.Parameters.AddWithValue("@EmployeeBuyID", employeeBuyID);
+                        cmd.Parameters.AddWithValue("@EmployeeBuyID", employeeBuyID == null ? (object)DBNull.Value : employeeBuyID);
+                        cmd.Parameters.AddWithValue("@IsCanceled", isCanceled);
                         object result = await cmd.ExecuteScalarAsync();
                         if (result != null)
                             newId = Convert.ToInt32(result);
@@ -2741,14 +2742,15 @@ namespace RauViet.classes
             catch { return -1; }
         }
 
-        public async Task<bool> updateDDomesticLiquidationExportAsync(int exportID, DateTime exportDate, int domesticLiquidationPriceID, decimal quantity, int price, int employeeBuyID)
+        public async Task<bool> updateDDomesticLiquidationExportAsync(int exportID, DateTime exportDate, int domesticLiquidationPriceID, decimal quantity, int price, int? employeeBuyID, bool isCanceled)
         {
             string query = @"UPDATE DomesticLiquidationExport SET
                                 ExportDate=@ExportDate,
                                 DomesticLiquidationPriceID=@DomesticLiquidationPriceID,
                                 Quantity=@Quantity,
                                 Price=@Price,
-                                EmployeeBuyID=@EmployeeBuyID
+                                EmployeeBuyID=@EmployeeBuyID,
+                                IsCanceled=@IsCanceled
                              WHERE ExportID=@ExportID";
             try
             {
@@ -2761,7 +2763,8 @@ namespace RauViet.classes
                         cmd.Parameters.AddWithValue("@DomesticLiquidationPriceID", domesticLiquidationPriceID);
                         cmd.Parameters.AddWithValue("@Quantity", quantity);
                         cmd.Parameters.AddWithValue("@Price", price);
-                        cmd.Parameters.AddWithValue("@EmployeeBuyID", employeeBuyID);
+                        cmd.Parameters.AddWithValue("@EmployeeBuyID", employeeBuyID == null ? (object)DBNull.Value : employeeBuyID);
+                        cmd.Parameters.AddWithValue("@IsCanceled", isCanceled);
                         cmd.Parameters.AddWithValue("@ExportID", exportID);
                         await cmd.ExecuteNonQueryAsync();
                     }

@@ -1,6 +1,7 @@
 ﻿using RauViet.classes;
 using System;
 using System.Data;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -396,7 +397,7 @@ namespace RauViet.ui
             int price = Convert.ToInt32(productSKUData["SalePrice"]);
             int reportedB = Convert.ToInt32(reportedBy_CBB.SelectedValue);
 
-            decimal quantity = string.IsNullOrWhiteSpace(quantity_tb.Text) ? 0 : decimal.Parse(quantity_tb.Text);
+            decimal quantity = string.IsNullOrWhiteSpace(quantity_tb.Text) ? 0 : decimal.Parse(quantity_tb.Text, CultureInfo.InvariantCulture);
 
 
             if (id_tb.Text.Length != 0)
@@ -524,8 +525,9 @@ namespace RauViet.ui
 
                     string ID = cells["ImportID"].Value.ToString();
                     int domesticLiquidationPriceID = Convert.ToInt32(cells["DomesticLiquidationPriceID"].Value);
-                    int quantity = Convert.ToInt32(cells["Quantity"].Value);
+                    decimal quantity = Convert.ToDecimal(cells["Quantity"].Value);
                     int reportedByID = Convert.ToInt32(cells["ReportedByID"].Value);
+                    DateTime importDate = Convert.ToDateTime(cells["ImportDate"].Value);
 
                     if (!domesticLiquidationPrice_cbb.Items.Cast<object>().Any(i => ((DataRowView)i)["DomesticLiquidationPriceID"].ToString() == domesticLiquidationPriceID.ToString()))
                     {
@@ -534,9 +536,9 @@ namespace RauViet.ui
                     domesticLiquidationPrice_cbb.SelectedValue = domesticLiquidationPriceID;
 
                     id_tb.Text = ID;
-                    quantity_tb.Text = quantity.ToString("F1");
+                    quantity_tb.Text = quantity.ToString("F1", CultureInfo.InvariantCulture);
                     reportedBy_CBB.SelectedValue = reportedByID;
-
+                    importDate_dtp.Value = importDate;
                     status_lb.Text = "";
 
                     mLogDV.RowFilter = $"DomesticLiquidationPriceID = {domesticLiquidationPriceID}";
