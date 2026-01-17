@@ -2,6 +2,7 @@
 using DocumentFormat.OpenXml.Wordprocessing;
 using System;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -138,33 +139,7 @@ public static class Utils
         return PCS;
     }
 
-    public static string InputDialog(string prompt, string title, string defaultValue = "")
-    {
-        Form inputForm = new Form()
-        {
-            Width = 400,
-            Height = 150,
-            FormBorderStyle = FormBorderStyle.FixedDialog,
-            Text = title,
-            StartPosition = FormStartPosition.CenterScreen,
-            MinimizeBox = false,
-            MaximizeBox = false
-        };
-
-        Label textLabel = new Label() { Left = 10, Top = 20, Text = prompt, AutoSize = true };
-        TextBox textBox = new TextBox() { Left = 10, Top = 50, Width = 360, Text = defaultValue };
-        Button okButton = new Button() { Text = "OK", Left = 220, Width = 70, Top = 80, DialogResult = DialogResult.OK };
-        Button cancelButton = new Button() { Text = "Cancel", Left = 300, Width = 70, Top = 80, DialogResult = DialogResult.Cancel };
-
-        inputForm.Controls.Add(textLabel);
-        inputForm.Controls.Add(textBox);
-        inputForm.Controls.Add(okButton);
-        inputForm.Controls.Add(cancelButton);
-        inputForm.AcceptButton = okButton;
-        inputForm.CancelButton = cancelButton;
-
-        return inputForm.ShowDialog() == DialogResult.OK ? textBox.Text : null;
-    }
+   
 
     public static DataTable LoadExcel_NoHeader(string filePath, int skipRows = 0)
     {
@@ -296,10 +271,31 @@ public static class Utils
         return "Tổ 1, Ấp 4, X. Phước Thái, T. Đồng Nai, Việt Nam";
     }
 
+    public static string getCompanyAddress_EN()
+    {
+        return "Group 1, Hamlet 4, Phuoc Thai Ward, Dong Nai Province, Vietnam";
+    }
+
     public static string getTaxCode()
     {
         return "0313983703";
     }
+
+    public static string get_SDT_DeBan()
+    {
+        return "0251 2860828";
+    }
+
+    public static string get_SDT_DiDong()
+    {
+        return "0909244916";
+    }
+
+    public static string get_Tele_Fax()
+    {
+        return "+84 251 2860828";
+    }
+
 
     public static string GetThu_Viet(DateTime date)
     {
@@ -322,5 +318,45 @@ public static class Utils
             default:
                 return "";
         }
+    }
+
+    public static string GetCheckVersionPath()
+    {
+        string dir = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+            "Microsoft\\Windows");
+
+        Directory.CreateDirectory(dir); // luôn an toàn
+
+        return Path.Combine(dir, "cache.dat");
+    }
+
+    public static int LoadCheckVersion()
+    {
+        string path = GetCheckVersionPath();
+
+        if (!File.Exists(path))
+            return 0;
+
+        if (int.TryParse(File.ReadAllText(path), out int value))
+            return value;
+
+        return 0;
+    }
+
+    public static void SaveCheckVersion(int value)
+    {
+        string path = GetCheckVersionPath();
+
+        // Nếu file tồn tại → bỏ thuộc tính System/Hidden
+        if (File.Exists(path))
+        {
+            File.SetAttributes(path, FileAttributes.Normal);
+        }
+
+        File.WriteAllText(path, value.ToString());
+
+        // Set lại thuộc tính sau khi ghi
+        File.SetAttributes(path, FileAttributes.Hidden | FileAttributes.System);
     }
 }

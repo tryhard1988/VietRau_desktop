@@ -80,6 +80,7 @@ public class DoiChieuCongNo_Printer
             printDialog.Document = printDoc;
             printDialog.AllowSomePages = true; // cho phép chọn trang
             printDialog.AllowSelection = true;  // cho phép chọn lựa
+            printDialog.UseEXDialog = true;
             if (printDialog.ShowDialog() == DialogResult.OK)
             {
                 printDoc.Print(); // in ra máy in được chọn
@@ -159,15 +160,15 @@ public class DoiChieuCongNo_Printer
             y += rowHeight - 5;
 
             printRect.Y = y;
-            e.Graphics.DrawString("MST : 0313983703", fontContent2, brush1, printRect, sfDataCenter);
+            e.Graphics.DrawString($"MST : {Utils.getTaxCode()}", fontContent2, brush1, printRect, sfDataCenter);
             y += rowHeight - 7;
 
             printRect.Y = y;
-            e.Graphics.DrawString("Địa chỉ: Tổ 1, Ấp 4, Xã Phước Thái, Tỉnh Đồng Nai, Việt Nam", fontContent2, brush1, printRect, sfDataCenter);
+            e.Graphics.DrawString($"Địa chỉ: {Utils.getCompanyAddress()}", fontContent2, brush1, printRect, sfDataCenter);
             y += rowHeight - 7;
 
             printRect.Y = y;
-            e.Graphics.DrawString("Email: Acc@vietrau.com      ĐT: 0251 2860828 / 0909244916", fontContent2, brush1, printRect, sfDataCenter);
+            e.Graphics.DrawString($"Email: Acc@vietrau.com      ĐT: {Utils.get_SDT_DeBan()} / {Utils.get_SDT_DiDong()}", fontContent2, brush1, printRect, sfDataCenter);
             y += (rowHeight*2);
 
             // kẻ line giữa

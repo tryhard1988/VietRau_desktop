@@ -36,7 +36,7 @@ public class OrderListPrinter
             printDialog.Document = printDoc;
             printDialog.AllowSomePages = true;  // cho phép chọn trang
             printDialog.AllowSelection = true;   // cho phép chọn dữ liệu
-
+            printDialog.UseEXDialog = true;
             if (printDialog.ShowDialog() == DialogResult.OK)
             {
                 printDoc.Print(); // in ra máy in được chọn

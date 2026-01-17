@@ -853,7 +853,9 @@ namespace RauViet.ui
                 foreach (var row in grp)
                 {
                     if (row.IsNull("CartonNo")) continue;
-                    int cartonKey = row.Field<int>("CartonNo");
+
+                    if (!int.TryParse(row["CartonNo"]?.ToString(), out int cartonKey))
+                        continue;
 
                     if (!cartonMap.TryGetValue(cartonKey, out var list))
                     {

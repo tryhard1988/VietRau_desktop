@@ -82,6 +82,7 @@ public class PhieuGiaoHangTrongNuoc_Printer
             printDialog.Document = printDoc;
             printDialog.AllowSomePages = true; // cho phép chọn trang
             printDialog.AllowSelection = true;  // cho phép chọn lựa
+            printDialog.UseEXDialog = true;
             if (printDialog.ShowDialog() == DialogResult.OK)
             {
                 printDoc.Print(); // in ra máy in được chọn
@@ -145,9 +146,9 @@ public class PhieuGiaoHangTrongNuoc_Printer
             y -= rowHeight / 2;
             e.Graphics.DrawString("CÔNG TY CỔ PHẦN VIỆT RAU", fontTitle1, brush, e.MarginBounds.Left + (int)(img.Width * 0.15) + 30, y);
             y += (rowHeight + 2);
-            e.Graphics.DrawString("Tổ 1, ấp 4, xã Phước Thái, tỉnh Đồng Nai", fontContent1, brush, e.MarginBounds.Left + (int)(img.Width * 0.15) + 30, y);
+            e.Graphics.DrawString(Utils.getCompanyAddress(), fontContent1, brush, e.MarginBounds.Left + (int)(img.Width * 0.15) + 30, y);
             y += (rowHeight + 10);
-            e.Graphics.DrawString("Tel/Zalo: 0909244916      Email: honggam.tran@vietrau.com", fontContent1, brush, e.MarginBounds.Left + (int)(img.Width * 0.15) + 30, y);
+            e.Graphics.DrawString($"Tel/Zalo: {Utils.get_SDT_DiDong()}      Email: honggam.tran@vietrau.com", fontContent1, brush, e.MarginBounds.Left + (int)(img.Width * 0.15) + 30, y);
             y += rowHeight;
             e.Graphics.DrawLine(new System.Drawing.Pen(System.Drawing.Color.Black, 1), startX, y, e.PageBounds.Width - startX*2, y);
             y += (rowHeight - 10);

@@ -41,7 +41,8 @@ namespace RauViet.ui
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Dock = DockStyle.Fill;
 
-            departmentGV.MultiSelect = false;
+            departmentGV.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            departmentGV.MultiSelect = true;
 
             dataGV.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dataGV.MultiSelect = true;
@@ -320,18 +321,40 @@ namespace RauViet.ui
         {
             if (departmentGV.CurrentRow == null) return;
 
-            int departmentID = Convert.ToInt32(departmentGV.CurrentRow.Cells["DepartmentID"].Value);
+            // int departmentID = Convert.ToInt32(departmentGV.CurrentRow.Cells["DepartmentID"].Value);
 
-            mEmployeeDV.RowFilter = $"DepartmentID = {departmentID}";
+            var selectedDeptIds = departmentGV.SelectedRows.Cast<DataGridViewRow>().Where(r => r.Cells["DepartmentID"].Value != DBNull.Value).Select(r => Convert.ToInt32(r.Cells["DepartmentID"].Value)).Distinct().ToList();
+
+            if (selectedDeptIds.Count > 0)
+            {
+                string deptFilter = string.Join(",", selectedDeptIds);
+                mEmployeeDV.RowFilter = $"DepartmentID IN ({deptFilter})";
+            }
+            else
+            {
+                mEmployeeDV.RowFilter = "1 = 0"; // Không chọn gì thì không hiển thị
+            }
 
             DataView dv = new DataView(mOvertimeAttendamce_dt);
 
             DateTime date = monthYearDtp.Value.Date;
-            string filter = $"DepartmentID = {departmentID}";
+            string filter;
+
+            if (selectedDeptIds.Count > 0)
+            {
+                string deptFilter = string.Join(",", selectedDeptIds);
+                filter = $"DepartmentID IN ({deptFilter})";
+            }
+            else
+            {
+                filter = "1 = 0"; // Không chọn phòng ban nào
+            }
+
             if (!attendanceMonth_CB.Checked)
             {
                 filter += $" AND WorkDate = #{date:MM/dd/yyyy}#";
             }
+
 
             dv.RowFilter = filter;
             attendanceGV.DataSource = dv;
@@ -752,12 +775,14 @@ namespace RauViet.ui
            // int month = monthYearDtp.Value.Month;
            // int year = monthYearDtp.Value.Year;
             DateTime targetDate = monthYearDtp.Value.Date;// new DateTime(year, month, workDate_dtp.Value.Day);
-            int departmentID = Convert.ToInt32(departmentGV.CurrentRow.Cells["DepartmentID"].Value);
-            string departmentName = departmentGV.CurrentRow.Cells["DepartmentName"].Value.ToString();
+            //int departmentID = Convert.ToInt32(departmentGV.CurrentRow.Cells["DepartmentID"].Value);h
+            var selectedDeptIds = departmentGV.SelectedRows.Cast<DataGridViewRow>().Where(r => r.Cells["DepartmentID"].Value != DBNull.Value).Select(r => Convert.ToInt32(r.Cells["DepartmentID"].Value)).Distinct().ToList();
+            var departmentNames = departmentGV.SelectedRows.Cast<DataGridViewRow>().Where(r => r.Cells["DepartmentName"].Value != DBNull.Value).Select(r => r.Cells["DepartmentName"].Value.ToString()).Distinct().ToList();
+            string departmentName = string.Join(", ", departmentNames);
 
             var query = from ot in mOvertimeAttendamce_dt.AsEnumerable()
                 join emp in mEmployee_dt.AsEnumerable() on ot.Field<string>("EmployeeCode") equals emp.Field<string>("EmployeeCode")
-                where departmentID == emp.Field<int>("DepartmentID") && ot.Field<DateTime>("WorkDate").Date == targetDate
+                where selectedDeptIds.Contains(emp.Field<int>("DepartmentID")) && ot.Field<DateTime>("WorkDate").Date == targetDate
                 select new
                 {
                     EmployeeCode = emp.Field<string>("EmployeeCode"),
@@ -788,8 +813,8 @@ namespace RauViet.ui
                 );
             }
 
-            TimeSpan startTime = new TimeSpan(startTime_dtp.Value.Hour, startTime_dtp.Value.Minute, 0);
-            TimeSpan endTime = new TimeSpan(endTime_dtp.Value.Hour, endTime_dtp.Value.Minute, 0);
+            TimeSpan startTime = query.Min(x => x.StartTime);
+            TimeSpan endTime = query.Max(x => x.EndTime);
             int overtimeAttendanceID = Convert.ToInt32(overtimeType_cbb.SelectedValue);
             
 
@@ -801,7 +826,7 @@ namespace RauViet.ui
             if(mode == 1)
                 printer.PrintPreview(this);
             else
-                printer.PrintDirect();
+                printer.PrintDirect(isIn2Mat_CB.Checked);
         }
 
         private void InPreview_btn_Click(object sender, EventArgs e)

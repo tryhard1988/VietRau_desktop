@@ -75,18 +75,26 @@ public class DSTangCa_Printer
         preview.ShowDialog(owner);
     }
 
-    public void PrintDirect()
-    {
-        DialogResult dialogResult = MessageBox.Show($"Chắc chắn Chưa?", "Xác nhận in ấn", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+    public void PrintDirect(bool isIn2Mat)
+    {      
 
-        if (dialogResult == DialogResult.Yes)
+        rowIndex = 0; // reset trước khi in
+        PrintDocument pd = new PrintDocument();
+        pd.PrintPage += Pd_PrintPage;
+        pd.PrinterSettings.Duplex = isIn2Mat ? Duplex.Vertical : Duplex.Simplex;
+
+        PrintDialog printDialog = new PrintDialog();
+        printDialog.Document = pd;
+        printDialog.AllowSomePages = true;
+        printDialog.AllowSelection = true;
+        printDialog.UseEXDialog = true;
+        
+
+        if (printDialog.ShowDialog() == DialogResult.OK)
         {
-            rowIndex = 0; // reset trước khi in
-            PrintDocument pd = new PrintDocument();
-            pd.PrintPage += Pd_PrintPage;
+            // Máy in đã được gán tự động cho pd
             pd.Print();
         }
-        
     }
 
     private void Pd_PrintPage(object sender, PrintPageEventArgs e)

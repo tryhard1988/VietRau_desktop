@@ -330,7 +330,7 @@ namespace RauViet.ui
 
                     // Hàng 2: Địa chỉ
                     ws.Range(2, 1, 2, exportColumns.Count).Merge();
-                    ws.Cell(2, 1).Value = "Group 1, Hamlet 4, Phuoc Thai Ward, Dong Nai Province, Vietnam";
+                    ws.Cell(2, 1).Value = Utils.getCompanyAddress_EN();
                     ws.Cell(2, 1).Style.Font.FontSize = 10;
                     ws.Cell(2, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
@@ -354,7 +354,7 @@ namespace RauViet.ui
 
                     // Hàng 5-6: Shipper
                     ws.Range(5, 1, 6, 4).Merge();
-                    ws.Cell(5, 1).Value = "Shipper:\r\nVIET RAU JOINT STOCK COMPANY\r\nGroup 1, Hamlet 4, Phuoc Thai Ward, Dong Nai Province, Vietnam\r\nTel/Fax: +84 251 2860828\r\nEmail: acc@vietrau.com";
+                    ws.Cell(5, 1).Value = $"Shipper:\r\nVIET RAU JOINT STOCK COMPANY\r\n{Utils.getCompanyAddress_EN()}\r\nTel/Fax: {Utils.get_Tele_Fax()}\r\nEmail: acc@vietrau.com";
                     ws.Cell(5, 1).Style.Font.FontSize = 10;
                     ws.Cell(5, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
                     ws.Cell(5, 1).Style.Alignment.Vertical = XLAlignmentVerticalValues.Top;

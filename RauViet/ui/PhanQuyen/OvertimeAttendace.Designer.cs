@@ -63,6 +63,7 @@ namespace RauViet.ui
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.log_GV = new System.Windows.Forms.DataGridView();
+            this.isIn2Mat_CB = new System.Windows.Forms.CheckBox();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.departmentGV)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
@@ -217,6 +218,7 @@ namespace RauViet.ui
             // 
             // panel3
             // 
+            this.panel3.Controls.Add(this.isIn2Mat_CB);
             this.panel3.Controls.Add(this.inPreview_btn);
             this.panel3.Controls.Add(this.attendanceMonth_CB);
             this.panel3.Controls.Add(this.in_DS_TCa_btn);
@@ -238,7 +240,7 @@ namespace RauViet.ui
             // 
             this.inPreview_btn.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.inPreview_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.inPreview_btn.Location = new System.Drawing.Point(149, 403);
+            this.inPreview_btn.Location = new System.Drawing.Point(149, 433);
             this.inPreview_btn.Name = "inPreview_btn";
             this.inPreview_btn.Size = new System.Drawing.Size(110, 47);
             this.inPreview_btn.TabIndex = 40;
@@ -455,6 +457,16 @@ namespace RauViet.ui
             this.log_GV.Size = new System.Drawing.Size(886, 229);
             this.log_GV.TabIndex = 63;
             // 
+            // isIn2Mat_CB
+            // 
+            this.isIn2Mat_CB.AutoSize = true;
+            this.isIn2Mat_CB.Location = new System.Drawing.Point(168, 403);
+            this.isIn2Mat_CB.Name = "isIn2Mat_CB";
+            this.isIn2Mat_CB.Size = new System.Drawing.Size(65, 17);
+            this.isIn2Mat_CB.TabIndex = 41;
+            this.isIn2Mat_CB.Text = "In 2 Mặt";
+            this.isIn2Mat_CB.UseVisualStyleBackColor = true;
+            // 
             // OvertimeAttendace
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -517,5 +529,6 @@ namespace RauViet.ui
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label count_label;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.CheckBox isIn2Mat_CB;
     }
 }

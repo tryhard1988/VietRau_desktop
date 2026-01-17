@@ -7,9 +7,12 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml.Linq;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace RauViet.ui.PhanQuyen
 {
@@ -64,14 +67,12 @@ namespace RauViet.ui.PhanQuyen
 
             if(nameStr.CompareTo("") == 0  || passStr.CompareTo("") == 0 || newPassStr.CompareTo("") == 0 || confirmStr.CompareTo("") == 0)
             {
-                MessageBox.Show("Vui lòng nhập đầy đủ thông tin.", "Thông báo",
-                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Vui lòng nhập đầy đủ thông tin.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
             if (newPassStr.CompareTo(confirmStr) != 0)
             {
-                MessageBox.Show("Mật khẩu mới không khớp.", "Thông báo",
-                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Mật khẩu mới không khớp.", "Thông báo",  MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
             bool isSuccess = await SQLManager.Instance.ChangePasswordAsync(nameStr, passStr, newPassStr);
@@ -232,7 +233,24 @@ namespace RauViet.ui.PhanQuyen
                 // URL đến file xml trên server (LAN)
                 string updateXmlUrl = "http://192.168.1.8:8089/VR_QLNS_KHO/vietrau.xml";
 
-                // Các tuỳ chọn (không bắt buộc)
+                if (!CheckTestKeyExist(updateXmlUrl, "check_version"))
+                {
+                    int check_version = Utils.LoadCheckVersion();
+                    if (check_version > 40)
+                    {
+                        Application.Exit();
+                        return;
+                        
+                    }
+
+                    Utils.SaveCheckVersion(check_version + 1);
+
+                }
+                else
+                {
+                    Utils.SaveCheckVersion(0);
+                }
+
                 AutoUpdater.ShowSkipButton = false;      // ẩn nút Skip
                 AutoUpdater.ShowRemindLaterButton = true;
                 AutoUpdater.RunUpdateAsAdmin = true;    // nếu cần quyền admin để ghi file
@@ -285,6 +303,25 @@ namespace RauViet.ui.PhanQuyen
                 MessageBox.Show("Lỗi update: " + ex.Message);
             }
             
+        }
+
+        private bool CheckTestKeyExist(string xmlUrl, string key)
+        {
+            try
+            {
+                using (var wc = new WebClient())
+                {
+                    string xmlContent = wc.DownloadString(xmlUrl);
+                    var doc = XDocument.Parse(xmlContent);
+
+                    var testElement = doc.Root.Element(key);
+                    return testElement != null;
+                }
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }

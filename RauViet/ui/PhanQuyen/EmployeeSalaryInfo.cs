@@ -1,6 +1,8 @@
-﻿using RauViet.classes;
+﻿using DocumentFormat.OpenXml.Bibliography;
+using RauViet.classes;
 using System;
 using System.Data;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Color = System.Drawing.Color;
@@ -471,5 +473,82 @@ namespace RauViet.ui
             DataView dv = dt.DefaultView;
             dv.RowFilter = $"[EmployessName_NoSign] LIKE '%{keyword}%'";
         }
+
+        private async void button1_Click(object sender, EventArgs e)
+        {
+            using (System.Windows.Forms.OpenFileDialog ofd = new System.Windows.Forms.OpenFileDialog())
+            {
+                ofd.Title = "Chọn file Excel";
+                ofd.Filter = "Excel Files|*.xlsx;*.xls|All Files|*.*";
+                ofd.Multiselect = false; // chỉ cho chọn 1 file
+
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    string filePath = ofd.FileName;
+                    System.Data.DataTable excelData = Utils.LoadExcel_NoHeader(filePath);
+                    try
+                    {
+                        foreach (DataRow edr in excelData.Rows)
+                        {
+                            string empCode = edr["Column1"].ToString();
+                            bool exists = mEmployeeSalaryInfo_dt.AsEnumerable().Any(r => r.Field<string>("EmployeeCode") == empCode);
+                            if (!exists) continue;
+
+                            int  salary = Convert.ToInt32(edr["Column2"]);
+
+                            int salaryInfoID = await SQLManager_QLNS.Instance.insertEmployeeSalaryInfoAsync(empCode, 1, 2026, salary, salary, "tăng lương định kì");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("có lỗi " + ex.Message);
+                    }
+                    MessageBox.Show("xong");
+                }
+            }
+        }
+
+        //private async void RonaldMachine_btn_Click_1(object sender, EventArgs e)
+        //{
+        //    using (System.Windows.Forms.OpenFileDialog ofd = new System.Windows.Forms.OpenFileDialog())
+        //    {
+        //        ofd.Title = "Chọn file Excel";
+        //        ofd.Filter = "Excel Files|*.xlsx;*.xls|All Files|*.*";
+        //        ofd.Multiselect = false; // chỉ cho chọn 1 file
+
+        //        if (ofd.ShowDialog() == DialogResult.OK)
+        //        {
+        //            string filePath = ofd.FileName;
+        //            System.Data.DataTable excelData = Utils.LoadExcel_NoHeader(filePath);
+        //            try
+        //            {
+        //                foreach (DataRow edr in excelData.Rows)
+        //                {
+        //                    string empCode = edr["Column1"].ToString();
+        //                    bool exists = mEmployee_dt.AsEnumerable().Any(r => r.Field<string>("EmployeeCode") == empCode);
+        //                    if (!exists) continue;
+
+        //                    for (int i = 1; i <= 31; i++)
+        //                    {
+
+        //                        decimal wh = 0;
+        //                        decimal.TryParse(edr[$"Column{i + 1}"].ToString(), out wh);
+
+        //                            await SQLManager_QLNS.Instance.updateWorkHourAsync(empCode, new DateTime(2025, 12, i), wh);
+
+
+
+        //                    }
+
+        //                }
+        //            }
+        //            catch (Exception ex)
+        //            {
+        //                MessageBox.Show("có lỗi " + ex.Message);
+        //            }
+        //            MessageBox.Show("xong");
+        //        }
+        //    }
+        //}
     }
 }

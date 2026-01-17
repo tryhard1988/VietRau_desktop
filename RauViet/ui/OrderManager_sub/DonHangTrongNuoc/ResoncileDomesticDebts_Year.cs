@@ -349,7 +349,7 @@ namespace RauViet.ui
 
                     rowInd++;
                     ws.Range(rowInd, 1, rowInd, totalColumn).Merge();
-                    ws.Cell(rowInd, 1).Value = "MST : 0313983703";
+                    ws.Cell(rowInd, 1).Value = $"MST : {Utils.getTaxCode()}";
                     ws.Cell(rowInd, 1).Style.Font.Bold = true;
                     ws.Cell(rowInd, 1).Style.Font.FontSize = 10;
                     ws.Cell(rowInd, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
@@ -357,7 +357,7 @@ namespace RauViet.ui
 
                     rowInd++;
                     ws.Range(rowInd, 1, rowInd, totalColumn).Merge();
-                    ws.Cell(rowInd, 1).Value = "Địa chỉ: Tổ 1, Ấp 4, Xã Phước Thái, Tỉnh Đông Nai, Việt Nam";
+                    ws.Cell(rowInd, 1).Value = $"Địa chỉ: {Utils.getCompanyAddress()}";
                     ws.Cell(rowInd, 1).Style.Font.FontSize = 10;
                     ws.Cell(rowInd, 1).Style.Font.Italic = true;
                     ws.Cell(rowInd, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
@@ -365,7 +365,7 @@ namespace RauViet.ui
 
                     rowInd++;
                     ws.Range(rowInd, 1, rowInd, totalColumn).Merge();
-                    ws.Cell(rowInd, 1).Value = "Email: Acc@vietrau.com                           ĐT: 0251 2860828/0909244916";
+                    ws.Cell(rowInd, 1).Value = $"Email: Acc@vietrau.com                           ĐT: {Utils.get_SDT_DeBan()}/{Utils.get_SDT_DiDong()}";
                     ws.Cell(rowInd, 1).Style.Font.FontSize = 10;
                     ws.Cell(rowInd, 1).Style.Font.Italic = true;
                     ws.Cell(rowInd, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
