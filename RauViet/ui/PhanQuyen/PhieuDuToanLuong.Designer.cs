@@ -34,9 +34,10 @@ namespace RauViet.ui
             this.search_tb = new System.Windows.Forms.TextBox();
             this.dataGV = new System.Windows.Forms.DataGridView();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.employeeAllowances_GV = new System.Windows.Forms.DataGridView();
             this.preview_btn = new System.Windows.Forms.Button();
             this.Print_btn = new System.Windows.Forms.Button();
+            this.employeeAllowances_GV = new System.Windows.Forms.DataGridView();
+            this.excel_btn = new System.Windows.Forms.Button();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
             this.panel1.SuspendLayout();
@@ -82,11 +83,12 @@ namespace RauViet.ui
             this.dataGV.Location = new System.Drawing.Point(0, 34);
             this.dataGV.Name = "dataGV";
             this.dataGV.ReadOnly = true;
-            this.dataGV.Size = new System.Drawing.Size(946, 690);
+            this.dataGV.Size = new System.Drawing.Size(980, 690);
             this.dataGV.TabIndex = 14;
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.excel_btn);
             this.panel1.Controls.Add(this.preview_btn);
             this.panel1.Controls.Add(this.Print_btn);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Right;
@@ -94,18 +96,6 @@ namespace RauViet.ui
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(222, 690);
             this.panel1.TabIndex = 16;
-            // 
-            // employeeAllowances_GV
-            // 
-            this.employeeAllowances_GV.AllowUserToAddRows = false;
-            this.employeeAllowances_GV.AllowUserToDeleteRows = false;
-            this.employeeAllowances_GV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.employeeAllowances_GV.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.employeeAllowances_GV.Location = new System.Drawing.Point(946, 34);
-            this.employeeAllowances_GV.Name = "employeeAllowances_GV";
-            this.employeeAllowances_GV.ReadOnly = true;
-            this.employeeAllowances_GV.Size = new System.Drawing.Size(284, 690);
-            this.employeeAllowances_GV.TabIndex = 17;
             // 
             // preview_btn
             // 
@@ -128,6 +118,29 @@ namespace RauViet.ui
             this.Print_btn.TabIndex = 39;
             this.Print_btn.Text = "In Phiếu Dự Toán";
             this.Print_btn.UseVisualStyleBackColor = false;
+            // 
+            // employeeAllowances_GV
+            // 
+            this.employeeAllowances_GV.AllowUserToAddRows = false;
+            this.employeeAllowances_GV.AllowUserToDeleteRows = false;
+            this.employeeAllowances_GV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.employeeAllowances_GV.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.employeeAllowances_GV.Location = new System.Drawing.Point(980, 34);
+            this.employeeAllowances_GV.Name = "employeeAllowances_GV";
+            this.employeeAllowances_GV.ReadOnly = true;
+            this.employeeAllowances_GV.Size = new System.Drawing.Size(250, 690);
+            this.employeeAllowances_GV.TabIndex = 17;
+            // 
+            // excel_btn
+            // 
+            this.excel_btn.BackColor = System.Drawing.Color.MediumAquamarine;
+            this.excel_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.excel_btn.Location = new System.Drawing.Point(53, 401);
+            this.excel_btn.Name = "excel_btn";
+            this.excel_btn.Size = new System.Drawing.Size(105, 34);
+            this.excel_btn.TabIndex = 41;
+            this.excel_btn.Text = "Xuất Excel";
+            this.excel_btn.UseVisualStyleBackColor = false;
             // 
             // PhieuDuToanLuong
             // 
@@ -159,5 +172,6 @@ namespace RauViet.ui
         private System.Windows.Forms.DataGridView employeeAllowances_GV;
         private System.Windows.Forms.Button preview_btn;
         private System.Windows.Forms.Button Print_btn;
+        private System.Windows.Forms.Button excel_btn;
     }
 }

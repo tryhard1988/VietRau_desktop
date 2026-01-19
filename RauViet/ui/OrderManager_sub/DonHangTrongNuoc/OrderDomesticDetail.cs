@@ -184,9 +184,10 @@ namespace RauViet.ui
                 dataGV.Columns["CustomerProductTypesCode"].Visible = false;
                 dataGV.Columns["BarCodeEAN13"].Visible = false;
                 dataGV.Columns["Price"].Visible = !UserManager.Instance.hasRole_AnGiaSanPham();
+                dataGV.Columns["ProductSKU"].Visible = false;
 
                 dataGV.ReadOnly = false;
-                dataGV.Columns["PCSReal"].ReadOnly = false;
+                dataGV.Columns["PCSReal"].ReadOnly = false;                
                 dataGV.Columns["NWReal"].ReadOnly = false;
                 dataGV.Columns["PCSOrder"].ReadOnly = true;
                 dataGV.Columns["NWOrder"].ReadOnly = true;
@@ -582,6 +583,7 @@ namespace RauViet.ui
             string productTypeName = productTypeRows.Length > 0 ? productTypeRows[0]["TypeName"].ToString() : "";
             int amount = packingRows.Length > 0 ? Convert.ToInt32(packingRows[0]["Amount"]) : 0;
             int sku = Convert.ToInt32(packingRows[0]["SKU"]);
+            int productSKU = Convert.ToInt32(packingRows[0]["ProductSKU"]);
 
             foreach (DataRow row in mOrderDomesticDetail_dt.Rows)
             {
@@ -616,6 +618,7 @@ namespace RauViet.ui
                             row["packing"] = packing;                               
                             row["ProductNameVN"] = proVN;
                             row["SKU"] = sku;
+                            row["ProductSKU"] = productSKU;
 
                             if (package.CompareTo("weight") == 0 || package.CompareTo("kg") == 0)
                                 row["TotalAmountOrder"] = NWOrder * price;
@@ -656,6 +659,7 @@ namespace RauViet.ui
             string packing = packingRows.Length > 0 ? packingRows[0]["packing"].ToString() : "";
             int amount = packingRows.Length > 0 ? Convert.ToInt32(packingRows[0]["Amount"]) : 0;
             int sku = Convert.ToInt32(packingRows[0]["SKU"]);
+            int productSKU = Convert.ToInt32(packingRows[0]["ProductSKU"]);
             string newValue = $"{proVN} - {productTypeName} - {PCSOrder} - {NWOrder} - {amount} {packing}";
             try
             {
@@ -675,6 +679,7 @@ namespace RauViet.ui
                     drToAdd["packing"] = packing;
                     drToAdd["ProductNameVN"] = proVN;
                     drToAdd["SKU"] = sku;
+                    drToAdd["ProductSKU"] = productSKU;
                     drToAdd["CustomerProductTypesCode"] = productType;
                     drToAdd["ProductTypeName"] = productTypeName;
                     if (package.CompareTo("weight") == 0 || package.CompareTo("kg") == 0)

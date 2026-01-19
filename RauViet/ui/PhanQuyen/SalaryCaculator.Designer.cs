@@ -30,6 +30,12 @@ namespace RauViet.ui
         private void InitializeComponent()
         {
             this.load_gb = new System.Windows.Forms.GroupBox();
+            this.panel8 = new System.Windows.Forms.Panel();
+            this.printPreview_BTC_btn = new System.Windows.Forms.Button();
+            this.print_BTC_btn = new System.Windows.Forms.Button();
+            this.panel7 = new System.Windows.Forms.Panel();
+            this.preview_BCC_btn = new System.Windows.Forms.Button();
+            this.Print_BCC_btn = new System.Windows.Forms.Button();
             this.panel6 = new System.Windows.Forms.Panel();
             this.printPreview_pl_btn = new System.Windows.Forms.Button();
             this.print_pl_btn = new System.Windows.Forms.Button();
@@ -55,13 +61,11 @@ namespace RauViet.ui
             this.allowancePanel = new System.Windows.Forms.Panel();
             this.allowanceGV = new System.Windows.Forms.DataGridView();
             this.label2 = new System.Windows.Forms.Label();
-            this.panel7 = new System.Windows.Forms.Panel();
-            this.preview_BCC_btn = new System.Windows.Forms.Button();
-            this.Print_BCC_btn = new System.Windows.Forms.Button();
-            this.panel8 = new System.Windows.Forms.Panel();
-            this.printPreview_BTC_btn = new System.Windows.Forms.Button();
-            this.print_BTC_btn = new System.Windows.Forms.Button();
+            this.panel9 = new System.Windows.Forms.Panel();
+            this.chiHoLuong_btn = new System.Windows.Forms.Button();
             this.load_gb.SuspendLayout();
+            this.panel8.SuspendLayout();
+            this.panel7.SuspendLayout();
             this.panel6.SuspendLayout();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
@@ -77,12 +81,12 @@ namespace RauViet.ui
             ((System.ComponentModel.ISupportInitialize)(this.leaveGV)).BeginInit();
             this.allowancePanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.allowanceGV)).BeginInit();
-            this.panel7.SuspendLayout();
-            this.panel8.SuspendLayout();
+            this.panel9.SuspendLayout();
             this.SuspendLayout();
             // 
             // load_gb
             // 
+            this.load_gb.Controls.Add(this.panel9);
             this.load_gb.Controls.Add(this.panel8);
             this.load_gb.Controls.Add(this.panel7);
             this.load_gb.Controls.Add(this.panel6);
@@ -96,34 +100,98 @@ namespace RauViet.ui
             this.load_gb.TabIndex = 29;
             this.load_gb.TabStop = false;
             // 
+            // panel8
+            // 
+            this.panel8.Controls.Add(this.printPreview_BTC_btn);
+            this.panel8.Controls.Add(this.print_BTC_btn);
+            this.panel8.Dock = System.Windows.Forms.DockStyle.Right;
+            this.panel8.Location = new System.Drawing.Point(578, 13);
+            this.panel8.Name = "panel8";
+            this.panel8.Size = new System.Drawing.Size(244, 38);
+            this.panel8.TabIndex = 39;
+            // 
+            // printPreview_BTC_btn
+            // 
+            this.printPreview_BTC_btn.BackColor = System.Drawing.Color.ForestGreen;
+            this.printPreview_BTC_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.printPreview_BTC_btn.Location = new System.Drawing.Point(177, 2);
+            this.printPreview_BTC_btn.Name = "printPreview_BTC_btn";
+            this.printPreview_BTC_btn.Size = new System.Drawing.Size(60, 34);
+            this.printPreview_BTC_btn.TabIndex = 38;
+            this.printPreview_BTC_btn.Text = "Xem";
+            this.printPreview_BTC_btn.UseVisualStyleBackColor = false;
+            // 
+            // print_BTC_btn
+            // 
+            this.print_BTC_btn.BackColor = System.Drawing.Color.ForestGreen;
+            this.print_BTC_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.print_BTC_btn.Location = new System.Drawing.Point(14, 2);
+            this.print_BTC_btn.Name = "print_BTC_btn";
+            this.print_BTC_btn.Size = new System.Drawing.Size(158, 34);
+            this.print_BTC_btn.TabIndex = 37;
+            this.print_BTC_btn.Text = "In Bảng Tăng Ca";
+            this.print_BTC_btn.UseVisualStyleBackColor = false;
+            // 
+            // panel7
+            // 
+            this.panel7.Controls.Add(this.preview_BCC_btn);
+            this.panel7.Controls.Add(this.Print_BCC_btn);
+            this.panel7.Dock = System.Windows.Forms.DockStyle.Right;
+            this.panel7.Location = new System.Drawing.Point(822, 13);
+            this.panel7.Name = "panel7";
+            this.panel7.Size = new System.Drawing.Size(262, 38);
+            this.panel7.TabIndex = 38;
+            // 
+            // preview_BCC_btn
+            // 
+            this.preview_BCC_btn.BackColor = System.Drawing.Color.MediumAquamarine;
+            this.preview_BCC_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.preview_BCC_btn.Location = new System.Drawing.Point(197, 2);
+            this.preview_BCC_btn.Name = "preview_BCC_btn";
+            this.preview_BCC_btn.Size = new System.Drawing.Size(59, 34);
+            this.preview_BCC_btn.TabIndex = 38;
+            this.preview_BCC_btn.Text = "Xem";
+            this.preview_BCC_btn.UseVisualStyleBackColor = false;
+            // 
+            // Print_BCC_btn
+            // 
+            this.Print_BCC_btn.BackColor = System.Drawing.Color.MediumAquamarine;
+            this.Print_BCC_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Print_BCC_btn.Location = new System.Drawing.Point(10, 2);
+            this.Print_BCC_btn.Name = "Print_BCC_btn";
+            this.Print_BCC_btn.Size = new System.Drawing.Size(177, 34);
+            this.Print_BCC_btn.TabIndex = 37;
+            this.Print_BCC_btn.Text = "In Bảng Chấm Công";
+            this.Print_BCC_btn.UseVisualStyleBackColor = false;
+            // 
             // panel6
             // 
             this.panel6.Controls.Add(this.printPreview_pl_btn);
             this.panel6.Controls.Add(this.print_pl_btn);
             this.panel6.Controls.Add(this.exportPDF_btn);
             this.panel6.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel6.Location = new System.Drawing.Point(957, 13);
+            this.panel6.Location = new System.Drawing.Point(1084, 13);
             this.panel6.Margin = new System.Windows.Forms.Padding(0);
             this.panel6.Name = "panel6";
-            this.panel6.Size = new System.Drawing.Size(470, 38);
+            this.panel6.Size = new System.Drawing.Size(343, 38);
             this.panel6.TabIndex = 37;
             // 
             // printPreview_pl_btn
             // 
             this.printPreview_pl_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.printPreview_pl_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.printPreview_pl_btn.Location = new System.Drawing.Point(321, 0);
+            this.printPreview_pl_btn.Location = new System.Drawing.Point(270, 2);
             this.printPreview_pl_btn.Name = "printPreview_pl_btn";
-            this.printPreview_pl_btn.Size = new System.Drawing.Size(114, 34);
+            this.printPreview_pl_btn.Size = new System.Drawing.Size(61, 34);
             this.printPreview_pl_btn.TabIndex = 32;
-            this.printPreview_pl_btn.Text = "Xem trước bảng In";
+            this.printPreview_pl_btn.Text = "Xem";
             this.printPreview_pl_btn.UseVisualStyleBackColor = false;
             // 
             // print_pl_btn
             // 
             this.print_pl_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.print_pl_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.print_pl_btn.Location = new System.Drawing.Point(158, -1);
+            this.print_pl_btn.Location = new System.Drawing.Point(120, 2);
             this.print_pl_btn.Name = "print_pl_btn";
             this.print_pl_btn.Size = new System.Drawing.Size(144, 34);
             this.print_pl_btn.TabIndex = 31;
@@ -134,7 +202,7 @@ namespace RauViet.ui
             // 
             this.exportPDF_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.exportPDF_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.exportPDF_btn.Location = new System.Drawing.Point(36, 0);
+            this.exportPDF_btn.Location = new System.Drawing.Point(8, 2);
             this.exportPDF_btn.Name = "exportPDF_btn";
             this.exportPDF_btn.Size = new System.Drawing.Size(106, 34);
             this.exportPDF_btn.TabIndex = 33;
@@ -375,69 +443,25 @@ namespace RauViet.ui
             this.label2.Text = "Phụ Cấp";
             this.label2.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
-            // panel7
+            // panel9
             // 
-            this.panel7.Controls.Add(this.preview_BCC_btn);
-            this.panel7.Controls.Add(this.Print_BCC_btn);
-            this.panel7.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel7.Location = new System.Drawing.Point(624, 13);
-            this.panel7.Name = "panel7";
-            this.panel7.Size = new System.Drawing.Size(333, 38);
-            this.panel7.TabIndex = 38;
+            this.panel9.Controls.Add(this.chiHoLuong_btn);
+            this.panel9.Dock = System.Windows.Forms.DockStyle.Right;
+            this.panel9.Location = new System.Drawing.Point(331, 13);
+            this.panel9.Name = "panel9";
+            this.panel9.Size = new System.Drawing.Size(247, 38);
+            this.panel9.TabIndex = 40;
             // 
-            // preview_BCC_btn
+            // chiHoLuong_btn
             // 
-            this.preview_BCC_btn.BackColor = System.Drawing.Color.MediumAquamarine;
-            this.preview_BCC_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.preview_BCC_btn.Location = new System.Drawing.Point(222, 3);
-            this.preview_BCC_btn.Name = "preview_BCC_btn";
-            this.preview_BCC_btn.Size = new System.Drawing.Size(105, 34);
-            this.preview_BCC_btn.TabIndex = 38;
-            this.preview_BCC_btn.Text = "Xem Trước";
-            this.preview_BCC_btn.UseVisualStyleBackColor = false;
-            // 
-            // Print_BCC_btn
-            // 
-            this.Print_BCC_btn.BackColor = System.Drawing.Color.MediumAquamarine;
-            this.Print_BCC_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Print_BCC_btn.Location = new System.Drawing.Point(27, 4);
-            this.Print_BCC_btn.Name = "Print_BCC_btn";
-            this.Print_BCC_btn.Size = new System.Drawing.Size(189, 34);
-            this.Print_BCC_btn.TabIndex = 37;
-            this.Print_BCC_btn.Text = "In Bảng Chấm Công";
-            this.Print_BCC_btn.UseVisualStyleBackColor = false;
-            // 
-            // panel8
-            // 
-            this.panel8.Controls.Add(this.printPreview_BTC_btn);
-            this.panel8.Controls.Add(this.print_BTC_btn);
-            this.panel8.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel8.Location = new System.Drawing.Point(290, 13);
-            this.panel8.Name = "panel8";
-            this.panel8.Size = new System.Drawing.Size(334, 38);
-            this.panel8.TabIndex = 39;
-            // 
-            // printPreview_BTC_btn
-            // 
-            this.printPreview_BTC_btn.BackColor = System.Drawing.Color.ForestGreen;
-            this.printPreview_BTC_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.printPreview_BTC_btn.Location = new System.Drawing.Point(222, 3);
-            this.printPreview_BTC_btn.Name = "printPreview_BTC_btn";
-            this.printPreview_BTC_btn.Size = new System.Drawing.Size(105, 34);
-            this.printPreview_BTC_btn.TabIndex = 38;
-            this.printPreview_BTC_btn.Text = "Xem Trước";
-            this.printPreview_BTC_btn.UseVisualStyleBackColor = false;
-            // 
-            // print_BTC_btn
-            // 
-            this.print_BTC_btn.BackColor = System.Drawing.Color.ForestGreen;
-            this.print_BTC_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.print_BTC_btn.Location = new System.Drawing.Point(36, 4);
-            this.print_BTC_btn.Name = "print_BTC_btn";
-            this.print_BTC_btn.Size = new System.Drawing.Size(180, 34);
-            this.print_BTC_btn.TabIndex = 37;
-            this.print_BTC_btn.Text = "In Bảng Tăng Ca";
-            this.print_BTC_btn.UseVisualStyleBackColor = false;
+            this.chiHoLuong_btn.BackColor = System.Drawing.Color.DeepSkyBlue;
+            this.chiHoLuong_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.chiHoLuong_btn.Location = new System.Drawing.Point(14, 2);
+            this.chiHoLuong_btn.Name = "chiHoLuong_btn";
+            this.chiHoLuong_btn.Size = new System.Drawing.Size(227, 34);
+            this.chiHoLuong_btn.TabIndex = 37;
+            this.chiHoLuong_btn.Text = "Xuất Excel Chi Hộ Lương";
+            this.chiHoLuong_btn.UseVisualStyleBackColor = false;
             // 
             // SalaryCaculator
             // 
@@ -449,6 +473,8 @@ namespace RauViet.ui
             this.Name = "SalaryCaculator";
             this.Text = "FormTableData";
             this.load_gb.ResumeLayout(false);
+            this.panel8.ResumeLayout(false);
+            this.panel7.ResumeLayout(false);
             this.panel6.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).EndInit();
@@ -464,8 +490,7 @@ namespace RauViet.ui
             ((System.ComponentModel.ISupportInitialize)(this.leaveGV)).EndInit();
             this.allowancePanel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.allowanceGV)).EndInit();
-            this.panel7.ResumeLayout(false);
-            this.panel8.ResumeLayout(false);
+            this.panel9.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -503,5 +528,7 @@ namespace RauViet.ui
         private System.Windows.Forms.Panel panel7;
         private System.Windows.Forms.Button preview_BCC_btn;
         private System.Windows.Forms.Button Print_BCC_btn;
+        private System.Windows.Forms.Panel panel9;
+        private System.Windows.Forms.Button chiHoLuong_btn;
     }
 }

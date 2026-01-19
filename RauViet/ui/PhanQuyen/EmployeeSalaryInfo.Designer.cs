@@ -57,7 +57,6 @@ namespace RauViet.ui
             this.label16 = new System.Windows.Forms.Label();
             this.search_tb = new System.Windows.Forms.TextBox();
             this.status_lb = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.log_GV)).BeginInit();
             this.panel2.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -119,7 +118,6 @@ namespace RauViet.ui
             // 
             // panel3
             // 
-            this.panel3.Controls.Add(this.button1);
             this.panel3.Controls.Add(this.readOnly_btn);
             this.panel3.Controls.Add(this.new_btn);
             this.panel3.Controls.Add(this.info_gb);
@@ -371,18 +369,6 @@ namespace RauViet.ui
             this.status_lb.TabIndex = 26;
             this.status_lb.Text = "Email";
             // 
-            // button1
-            // 
-            this.button1.BackColor = System.Drawing.SystemColors.Highlight;
-            this.button1.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button1.Location = new System.Drawing.Point(97, 35);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(113, 47);
-            this.button1.TabIndex = 43;
-            this.button1.Text = "Lưu";
-            this.button1.UseVisualStyleBackColor = false;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
             // EmployeeSalaryInfo
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -435,6 +421,5 @@ namespace RauViet.ui
         private System.Windows.Forms.Panel panel4;
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.TextBox search_tb;
-        private System.Windows.Forms.Button button1;
     }
 }

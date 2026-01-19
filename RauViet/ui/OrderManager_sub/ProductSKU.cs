@@ -133,6 +133,7 @@ namespace RauViet.ui
                 dataGV.Columns["SKU"].Width = 60;
                 dataGV.Columns["IsActive"].Width = 30;
 
+                dataGV.Columns["ProductSKU"].Visible = false;
                 dataGV.Columns["ProductNameVN_NoSign"].Visible = false;
                 dataGV.Columns["PackingType"].Visible = false;
                 dataGV.Columns["GroupProduct"].Visible = false;
@@ -315,7 +316,8 @@ namespace RauViet.ui
                         drToAdd["PlantingAreaCode"] = plantingareaCode;
                         drToAdd["LOTCodeHeader"] = LOTCodeHeader;
                         drToAdd["isActive"] = true;
-                        drToAdd["ProductNameVN_NoSign"] = Utils.RemoveVietnameseSigns(productNameVN + " " + newId).ToLower(); ;
+                        drToAdd["ProductNameVN_NoSign"] = Utils.RemoveVietnameseSigns(productNameVN + " " + newId).ToLower();
+                        drToAdd["ProductSKU"] = newId;
                         sku_tb.Text = newId.ToString();
 
 

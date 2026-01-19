@@ -112,6 +112,8 @@ namespace RauViet.ui
                 dataGV.Columns["Package"].Visible = false;
                 dataGV.Columns["Amount"].Visible = false;
                 dataGV.Columns["Packing"].Visible = false;
+                dataGV.Columns["ProductSKU"].Visible = false;
+                dataGV.Columns["GroupProduct"].Visible = false;
 
                 dataGV.Columns["Name_VN"].HeaderText = "Tên Tiếng Việt";
                 dataGV.Columns["Name_EN"].HeaderText = "Tên Tiếng Anh";
@@ -221,7 +223,7 @@ namespace RauViet.ui
             updateDataTextBoxFlowSKU();            
         }
 
-        private async void updateProductPacking(int ID, int SKU, string BarCode, string PLU, int? Amount, string packing, string barCodeEAN13, string artNr, string GGN, bool isActive)
+        private async void updateProductPacking(int ID, int SKU, string BarCode, string PLU, int? Amount, string packing, string barCodeEAN13, string artNr, string GGN, bool isActive, int ProductSKU)
         {
             foreach (DataRow row in packing_dt.Rows)
             {
@@ -248,7 +250,7 @@ namespace RauViet.ui
                                 string resultAmount = amount.ToString("0.##");
 
 
-
+                                row["ProductSKU"] = ProductSKU;
                                 row["SKU"] = SKU;
                                 row["BarCode"] = BarCode;
                                 row["PLU"] = PLU;
@@ -293,7 +295,7 @@ namespace RauViet.ui
             }
         }
 
-        private async void createNewProducrpacking(int SKU, string BarCode, string PLU, int? Amount, string packing, string barCodeEAN13, string artNr, string GGN)
+        private async void createNewProducrpacking(int SKU, string BarCode, string PLU, int? Amount, string packing, string barCodeEAN13, string artNr, string GGN, int ProductSKU)
         {
             DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
@@ -313,6 +315,7 @@ namespace RauViet.ui
 
                         drToAdd["ProductPackingID"] = newId;
                         drToAdd["SKU"] = SKU;
+                        drToAdd["ProductSKU"] = ProductSKU;
                         drToAdd["BarCode"] = BarCode;
                         drToAdd["PLU"] = PLU;
                         if (package.CompareTo("kg") == 0 && packing.CompareTo("") != 0 && amount > 0)
@@ -401,12 +404,13 @@ namespace RauViet.ui
             }
 
             int sku = Convert.ToInt32(sku_cbb.SelectedValue);
+            int productSKU = mSKU_dt.AsEnumerable().Where(r => r.Field<int>("SKU") == sku).Select(r => r.Field<int>("ProductSKU")).FirstOrDefault();
             int? amount = string.IsNullOrWhiteSpace(amount_tb.Text)? (int?)null : int.Parse(amount_tb.Text);
 
             if (id_tb.Text.Length != 0)
-                updateProductPacking(int.Parse(id_tb.Text), sku, barCode_tb.Text, PLU_tb.Text, amount, packingStr, barCodeEAN13_tb.Text, artNr_tb.Text, GGN_tb.Text, isActive_cb.Checked);
+                updateProductPacking(int.Parse(id_tb.Text), sku, barCode_tb.Text, PLU_tb.Text, amount, packingStr, barCodeEAN13_tb.Text, artNr_tb.Text, GGN_tb.Text, isActive_cb.Checked, productSKU);
             else
-                createNewProducrpacking(sku, barCode_tb.Text, PLU_tb.Text, amount, packingStr, barCodeEAN13_tb.Text, artNr_tb.Text, GGN_tb.Text);
+                createNewProducrpacking(sku, barCode_tb.Text, PLU_tb.Text, amount, packingStr, barCodeEAN13_tb.Text, artNr_tb.Text, GGN_tb.Text, productSKU);
 
         }
         private async void deletePackingProduct()

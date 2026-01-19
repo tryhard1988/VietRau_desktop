@@ -14,7 +14,7 @@ namespace RauViet.ui
     public partial class ResoncileDomesticDebts_Month : Form
     {
         private LoadingOverlay loadingOverlay;
-        DataTable mDetail_dt, mSummary_dt;
+        DataTable mDetail_dt, mSummary_dt, tomTatTheoPhieu_dt;
         DataView mDetail_DV, mSummary_DV;
         public ResoncileDomesticDebts_Month()
         {
@@ -134,8 +134,31 @@ namespace RauViet.ui
                     }
                 }
 
+                tomTatTheoPhieu_dt = new DataTable();
+                {
+                    var query = mDetail_dt.AsEnumerable().GroupBy(r => new
+                                                            {
+                                                                OrderDomesticIndex = r.Field<int>("OrderDomesticIndex"),
+                                                            })
+                                                            .Select(g => new
+                                                            {
+                                                                CustomerID = g.Key.OrderDomesticIndex,
+                                                                DeliveryDate = g.Select(r => r.Field<DateTime?>("DeliveryDate")).FirstOrDefault(p => p.HasValue),
+                                                                TotalAmount = g.Sum(r => r.Field<int?>("TotalAmount") ?? 0)
+                                                            }).OrderBy(x => x.CustomerID);
+
+                    tomTatTheoPhieu_dt.Columns.Add("OrderDomesticIndex", typeof(int));
+                    tomTatTheoPhieu_dt.Columns.Add("DeliveryDate", typeof(DateTime));
+                    tomTatTheoPhieu_dt.Columns.Add("TotalAmount", typeof(int));
+                    foreach (var item in query)
+                    {
+                        tomTatTheoPhieu_dt.Rows.Add(item.CustomerID, item.DeliveryDate, item.TotalAmount);
+                    }
+                }
+
 
                 dataGV.DataSource = customer_dt;
+                tomTatTheoPhieu_GV.DataSource = tomTatTheoPhieu_dt;
 
                 mDetail_DV = new DataView(mDetail_dt);
                 detailGV.DataSource = mDetail_DV;
@@ -201,7 +224,13 @@ namespace RauViet.ui
                 detailGV.Columns["Price"].DefaultCellStyle.Format = "N0";
                 detailGV.Columns["TotalAmount"].DefaultCellStyle.Format = "N0";
 
-                
+
+                tomTatTheoPhieu_GV.Columns["OrderDomesticIndex"].HeaderText = "Số Phiếu";
+                tomTatTheoPhieu_GV.Columns["DeliveryDate"].HeaderText = "Ngày Giao";
+                tomTatTheoPhieu_GV.Columns["TotalAmount"].HeaderText = "Tổng Tiền";
+                tomTatTheoPhieu_GV.Columns["TotalAmount"].DefaultCellStyle.Format = "N0";
+                tomTatTheoPhieu_GV.Columns["DeliveryDate"].DefaultCellStyle.Format = "dd/MM/yyyy";
+
                 dataGV.CellClick += CustomerGV_CellClick;
 
                 if (dataGV.Rows.Count > 0)
@@ -223,6 +252,11 @@ namespace RauViet.ui
                 CustomerGV_CellClick(null, null);
 
                 status_lb.Visible = false;
+
+                dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                detailGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                sumary_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                tomTatTheoPhieu_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
             catch(Exception ex) 
             {

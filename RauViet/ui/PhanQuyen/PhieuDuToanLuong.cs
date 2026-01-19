@@ -1,4 +1,5 @@
-﻿using DocumentFormat.OpenXml.Bibliography;
+﻿using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Wordprocessing;
 using RauViet.classes;
 using System;
 using System.Data;
@@ -29,6 +30,7 @@ namespace RauViet.ui
 
             preview_btn.Click += Preview_btn_Click;
             Print_btn.Click += Print_btn_Click;
+            excel_btn.Click += Excel_btn_Click;
         }
 
         private async void Employee_POS_DEP_CON_FormClosing(object sender, FormClosingEventArgs e)
@@ -79,6 +81,7 @@ namespace RauViet.ui
                 mEmployees_dt.Columns.Add("InsuranceBaseSalary", typeof(int));
                 mEmployees_dt.Columns.Add("Allowance_Insurance", typeof(int));
                 mEmployees_dt.Columns.Add("Allowance_NonInsurance", typeof(int));
+                mEmployees_dt.Columns.Add("HourSalary", typeof(int));
                 foreach (DataRow row in mEmployees_dt.Rows)
                 {
                     string empCode = row["EmployeeCode"].ToString();
@@ -86,15 +89,15 @@ namespace RauViet.ui
                     DataRow[] empAllowancesRows = mEmployeeAllowances_dt.Select($"EmployeeCode = '{empCode}'");
 
                     DataRow empSalaryInfoRow = empSalaryInfoRows.Length > 0 ? empSalaryInfoRows[0] : null;
-                    if(empSalaryInfoRow != null)
+                    int baseSalary = 0;
+                    if (empSalaryInfoRow != null)
                     {
-                        row["BaseSalary"] = empSalaryInfoRow["BaseSalary"];
-                        row["InsuranceBaseSalary"] = empSalaryInfoRow["InsuranceBaseSalary"];
+                        baseSalary = Convert.ToInt32(empSalaryInfoRow["BaseSalary"]);                       
+                        row["InsuranceBaseSalary"] = empSalaryInfoRow["InsuranceBaseSalary"];                        
                     }
                     else
                     {
-                        row["BaseSalary"] = 0;
-                        row["InsuranceBaseSalary"] = 0;
+                        row["InsuranceBaseSalary"] = 0;                        
                     }
 
                     int allowance_Insurance = 0;
@@ -107,8 +110,14 @@ namespace RauViet.ui
                         else
                             allowance_NonInsurance += Convert.ToInt32(empAllowancesRow["Amount"]);
                     }
+
+                    int employeeInsurancePaid = Convert.ToInt32((allowance_Insurance + baseSalary) * 0.105m);
+                    int thuclanh = baseSalary + allowance_Insurance + allowance_NonInsurance - employeeInsurancePaid;                    
+
+                    row["BaseSalary"] = baseSalary;
                     row["Allowance_Insurance"] = allowance_Insurance;
                     row["Allowance_NonInsurance"] = allowance_NonInsurance;
+                    row["HourSalary"] = thuclanh / (26 * 8);
                 }
 
                 mEmployeeAllowances_dv = new DataView(mEmployeeAllowances_dt);
@@ -128,7 +137,7 @@ namespace RauViet.ui
                 employeeAllowances_GV.Columns["EmployeeCode"].Visible = false;
                 employeeAllowances_GV.Columns["AllowanceName"].Width = 120;
                 employeeAllowances_GV.Columns["IsInsuranceIncluded"].Width = 50;
-                employeeAllowances_GV.Columns["Amount"].DefaultCellStyle.Format = "N0";
+                employeeAllowances_GV.Columns["Amount"].DefaultCellStyle.Format = "N0";                
 
                 employeeAllowances_GV.Columns["AllowanceName"].HeaderText = "Loại Phụ Cấp";
                 employeeAllowances_GV.Columns["IsInsuranceIncluded"].HeaderText = "Đ.Bảo Hiểm";
@@ -144,6 +153,13 @@ namespace RauViet.ui
                 dataGV.Columns["PositionName"].HeaderText = "Chức Vụ";
                 dataGV.Columns["DepartmentName"].HeaderText = "Phòng Ban";
                 dataGV.Columns["ContractTypeName"].HeaderText = "Loại Hợp Đồng";
+                dataGV.Columns["HourSalary"].HeaderText = "Lương Theo Giờ";
+
+                dataGV.Columns["InsuranceBaseSalary"].DefaultCellStyle.Format = "N0";
+                dataGV.Columns["BaseSalary"].DefaultCellStyle.Format = "N0";
+                dataGV.Columns["Allowance_NonInsurance"].DefaultCellStyle.Format = "N0";
+                dataGV.Columns["Allowance_Insurance"].DefaultCellStyle.Format = "N0";
+                dataGV.Columns["HourSalary"].DefaultCellStyle.Format = "N0";
 
                 dataGV.Columns["EmployessName_NoSign"].Visible = false;
                 dataGV.Columns["PositionID"].Visible = false;
@@ -239,5 +255,74 @@ namespace RauViet.ui
                 printer.PrintDirect();
         }
 
+        private void Excel_btn_Click(object sender, EventArgs e)
+        {
+            using (SaveFileDialog sfd = new SaveFileDialog())
+            {
+                sfd.Filter = "Excel Files (*.xlsx)|*.xlsx";
+                sfd.FileName = $"Employees_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx";
+
+                if (sfd.ShowDialog() != DialogResult.OK)
+                    return;
+
+                using (var wb = new XLWorkbook())
+                {
+                    var ws = wb.Worksheets.Add("Employees");
+
+                    int colIndex = 1;
+
+                    // 1️⃣ Header (chỉ cột Visible)
+                    foreach (DataGridViewColumn col in dataGV.Columns)
+                    {
+                        if (!col.Visible) continue;
+
+                        ws.Cell(1, colIndex).Value = col.HeaderText;
+                        ws.Cell(1, colIndex).Style.Font.Bold = true;
+                        colIndex++;
+                    }
+
+                    // 2️⃣ Data
+                    int rowIndex = 2;
+                    foreach (DataGridViewRow row in dataGV.Rows)
+                    {
+                        if (row.IsNewRow) continue; // bỏ dòng trống cuối
+
+                        colIndex = 1;
+                        foreach (DataGridViewColumn col in dataGV.Columns)
+                        {
+                            if (!col.Visible) continue;
+
+                            var cellValue = row.Cells[col.Name].Value;
+
+                            if (cellValue is int || cellValue is decimal || cellValue is double)
+                            {
+                                ws.Cell(rowIndex, colIndex).Value = Convert.ToDouble(cellValue);
+                            }
+                            else if (cellValue is DateTime dt)
+                            {
+                                ws.Cell(rowIndex, colIndex).Value = dt;
+                                ws.Cell(rowIndex, colIndex).Style.DateFormat.Format = "dd/MM/yyyy";
+                            }
+                            else
+                            {
+                                ws.Cell(rowIndex, colIndex).Value = cellValue?.ToString() ?? "";
+                            }
+
+                            colIndex++;
+                        }
+                        rowIndex++;
+                    }
+
+                    // Auto fit
+                    ws.Columns().AdjustToContents();
+
+                    // Save
+                    wb.SaveAs(sfd.FileName);
+                }
+
+                MessageBox.Show("Xuất Excel thành công!",
+                    "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
     }
 }

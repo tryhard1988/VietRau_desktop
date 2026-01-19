@@ -291,6 +291,7 @@ namespace RauViet.classes
 
         private void editProductpacking()
         {
+            mProductpacking_dt.Columns.Add(new DataColumn("ProductSKU", typeof(int)));
             mProductpacking_dt.Columns.Add(new DataColumn("IsActive_SKU", typeof(bool)));
             mProductpacking_dt.Columns.Add(new DataColumn("PackingName", typeof(string)));
             mProductpacking_dt.Columns.Add("ProductNameVN_NoSign", typeof(string));
@@ -323,6 +324,7 @@ namespace RauViet.classes
                 dr["ProductNameVN_NoSign"] = Utils.RemoveVietnameseSigns(nameVN + " " + sku).ToLower();
                 dr["Priority"] = priority;                
                 dr["Amount"] = resultAmount;
+                dr["ProductSKU"] = Convert.ToInt32(proRow["ProductSKU"]); ;
                 dr["Package"] = package;
                 dr["IsActive_SKU"] = isActive_SKU;
                 dr["GroupProduct"] = groupProduct;
@@ -1656,6 +1658,7 @@ namespace RauViet.classes
 
         private void editOrderDomesticDetail(DataTable data)
         {
+            data.Columns.Add(new DataColumn("ProductSKU", typeof(int)));
             data.Columns.Add(new DataColumn("SKU", typeof(int)));
             data.Columns.Add(new DataColumn("BarCodeEAN13", typeof(string)));
             data.Columns.Add(new DataColumn("ProductNameVN", typeof(string)));
@@ -1682,6 +1685,7 @@ namespace RauViet.classes
                 dr["BarCodeEAN13"] = packingRows.Length > 0 ? Convert.ToString(packingRows[0]["BarCodeEAN13"]) : "";
                 dr["packing"] = packingRows.Length > 0 ? packingRows[0]["packing"].ToString() : "";
                 dr["SKU"] = packingRows.Length > 0 ? Convert.ToInt32(packingRows[0]["SKU"]) : 0;
+                dr["ProductSKU"] = packingRows.Length > 0 ? Convert.ToInt32(packingRows[0]["ProductSKU"]) : 0;
                 string package = packingRows.Length > 0 ? packingRows[0]["Package"].ToString() : "";
                 dr["Package"] = package;
                 if (package.CompareTo("weight") == 0)

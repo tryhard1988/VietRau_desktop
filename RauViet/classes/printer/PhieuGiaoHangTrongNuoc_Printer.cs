@@ -227,7 +227,7 @@ public class PhieuGiaoHangTrongNuoc_Printer
             x = startX;
 
             // ProductPackingName
-            string SKU = row["SKU"].ToString();
+            string SKU = row["ProductSKU"].ToString();
             string name = row["ProductNameVN"].ToString();
             string barCodeEAN13 = row["BarCodeEAN13"].ToString();
             string packing = row["packing"].ToString();

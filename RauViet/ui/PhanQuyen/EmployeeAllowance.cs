@@ -1,6 +1,7 @@
 ﻿using RauViet.classes;
 using System;
 using System.Data;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Color = System.Drawing.Color;
@@ -9,7 +10,7 @@ namespace RauViet.ui
 {    
     public partial class EmployeeAllowance : Form
     {
-        private DataTable mEmployeeAllowance_dt, mAllowanceType_dt;
+        private DataTable mEmployeeAllowance_dt, mAllowanceType_dt, _employee_dt;
         private DataView mLogDV;
         bool isNewState = false;
         public EmployeeAllowance()
@@ -73,7 +74,7 @@ namespace RauViet.ui
                 var EmployeeAllowanceLogTask = SQLStore_QLNS.Instance.GetEmployeeAllowanceLogAsync();
 
                 await Task.WhenAll(employeesTask, employeeAllowanceAsync, allowanceTypeAsync, EmployeeAllowanceLogTask);
-                DataTable employee_dt = employeesTask.Result;
+                _employee_dt = employeesTask.Result;
                 mEmployeeAllowance_dt = employeeAllowanceAsync.Result;
                 mAllowanceType_dt = allowanceTypeAsync.Result;
                 mLogDV = new DataView(EmployeeAllowanceLogTask.Result);
@@ -97,7 +98,7 @@ namespace RauViet.ui
                 allowanceGV.DataSource = mEmployeeAllowance_dt;
 
                 dataGV.AutoGenerateColumns = true;
-                dataGV.DataSource = employee_dt;
+                dataGV.DataSource = _employee_dt;
                 log_GV.DataSource = mLogDV;
 
                 dataGV.Columns["EmployessName_NoSign"].Visible = false;
@@ -451,6 +452,49 @@ namespace RauViet.ui
             amount_tb.ReadOnly = isReadOnly;
             note_tb.ReadOnly = isReadOnly;
         }
+
+        //private async void button1_Click(object sender, EventArgs e)
+        //{
+        //    using (System.Windows.Forms.OpenFileDialog ofd = new System.Windows.Forms.OpenFileDialog())
+        //    {
+        //        ofd.Title = "Chọn file Excel";
+        //        ofd.Filter = "Excel Files|*.xlsx;*.xls|All Files|*.*";
+        //        ofd.Multiselect = false; // chỉ cho chọn 1 file
+
+        //        if (ofd.ShowDialog() == DialogResult.OK)
+        //        {
+        //            string filePath = ofd.FileName;
+        //            System.Data.DataTable excelData = Utils.LoadExcel_NoHeader(filePath);
+        //            try
+        //            {
+        //                foreach (DataRow edr in excelData.Rows)
+        //                {
+        //                    string empCode = edr["Column1"].ToString();
+        //                    bool exists = _employee_dt.AsEnumerable().Any(r => r.Field<string>("EmployeeCode") == empCode);
+        //                    if (!exists) continue;
+
+        //                    int money = Convert.ToInt32(edr["Column2"]);
+
+        //                    int employeeAllowanceID = mEmployeeAllowance_dt.AsEnumerable().Where(r => r.Field<string>("EmployeeCode") == empCode && r.Field<int>("AllowanceTypeID") == 3).Select(r => r.Field<int?>("EmployeeAllowanceID")).FirstOrDefault() ?? -1;
+
+        //                    if (employeeAllowanceID > 0)
+        //                    {
+        //                        await SQLManager_QLNS.Instance.updateEmployeeAllowanceAsync(employeeAllowanceID, empCode, money, 3, "từ Excel");
+        //                    }
+        //                    else
+        //                    {
+        //                        await SQLManager_QLNS.Instance.insertEmployeeAllowanceAsync(empCode, money, 3, "từ Excel");
+        //                    }
+        //                }
+        //            }
+        //            catch (Exception ex)
+        //            {
+        //                MessageBox.Show("có lỗi " + ex.Message);
+        //            }
+        //            MessageBox.Show("xong");
+        //        }
+        //    }
+        //}
 
         private void Search_tb_TextChanged(object sender, EventArgs e)
         {

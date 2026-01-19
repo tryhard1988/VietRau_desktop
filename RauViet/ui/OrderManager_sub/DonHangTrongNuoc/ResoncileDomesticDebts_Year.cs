@@ -14,7 +14,7 @@ namespace RauViet.ui
     public partial class ResoncileDomesticDebts_Year : Form
     {
         private LoadingOverlay loadingOverlay;
-        DataTable mDetail_dt, mSummary_dt;
+        DataTable mDetail_dt, mSummary_dt, mTomTatCacThang_dt;
         DataView mDetail_DV, mSummary_DV;
         public ResoncileDomesticDebts_Year()
         {
@@ -132,7 +132,37 @@ namespace RauViet.ui
                     }
                 }
 
+                mTomTatCacThang_dt = new DataTable();
+                {
+                    var query = mDetail_dt.AsEnumerable().GroupBy(r => new
+                    {
+                        Year = r.Field<DateTime>("DeliveryDate").Year,
+                        Month = r.Field<DateTime>("DeliveryDate").Month
+                    })
+                                                            .Select(g => new
+                                                            {
+                                                                Year = g.Key.Year,
+                                                                Month = g.Key.Month,
+                                                                OrderDomesticIndexes = string.Join(", ",
+                                                                    g.Select(r => r.Field<int>("OrderDomesticIndex"))
+                                                                     .Distinct()
+                                                                     .OrderBy(x => x)
+                                                                ),
+                                                                TotalAmount = g.Sum(r => r.Field<int?>("TotalAmount") ?? 0)
+                                                            }).OrderBy(x => x.Year).ThenBy(x => x.Month);
 
+                    mTomTatCacThang_dt.Columns.Add("monthYear", typeof(string));
+                    mTomTatCacThang_dt.Columns.Add("OrderDomesticIndexs", typeof(string));
+                    mTomTatCacThang_dt.Columns.Add("TotalAmount", typeof(decimal));
+
+                    foreach (var item in query)
+                    {
+                        mTomTatCacThang_dt.Rows.Add($"{item.Month.ToString("D2")}/{item.Year.ToString("D2")}", item.OrderDomesticIndexes, item.TotalAmount);
+                    }
+                }
+
+
+                tomTatCacThang_GV.DataSource = mTomTatCacThang_dt;
                 dataGV.DataSource = customer_dt;
 
                 mDetail_DV = new DataView(mDetail_dt);
@@ -199,7 +229,14 @@ namespace RauViet.ui
                 detailGV.Columns["Price"].DefaultCellStyle.Format = "N0";
                 detailGV.Columns["TotalAmount"].DefaultCellStyle.Format = "N0";
 
-                
+                tomTatCacThang_GV.Columns["monthYear"].HeaderText = "Ngày Giao";
+                tomTatCacThang_GV.Columns["OrderDomesticIndexs"].HeaderText = "Các Phiếu";
+                tomTatCacThang_GV.Columns["TotalAmount"].HeaderText = "Tổng Tiền";
+
+                tomTatCacThang_GV.Columns["monthYear"].Width = 100;
+                tomTatCacThang_GV.Columns["TotalAmount"].Width = 100;
+                tomTatCacThang_GV.Columns["OrderDomesticIndexs"].Width = 300;
+
                 dataGV.CellClick += CustomerGV_CellClick;
 
                 if (dataGV.Rows.Count > 0)
@@ -221,6 +258,11 @@ namespace RauViet.ui
                 CustomerGV_CellClick(null, null);
 
                 status_lb.Visible = false;
+
+                dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                detailGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                sumary_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                tomTatCacThang_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
             catch(Exception ex) 
             {

@@ -62,9 +62,10 @@ namespace RauViet.ui
             this.Load += OvertimeAttendace_Load;
             Print_BCC_btn.Click += Print_BCC_btn_Click;
             preview_BCC_btn.Click += Preview_BCC_btn_Click;
-            print_BTC_btn.Click += Print_BTC_btn_Click; ;
-            printPreview_BTC_btn.Click += PrintPreview_BTC_btn_Click; ;
-        }
+            print_BTC_btn.Click += Print_BTC_btn_Click;
+            printPreview_BTC_btn.Click += PrintPreview_BTC_btn_Click;
+            chiHoLuong_btn.Click += ChiHoLuong_btn_Click;
+        }   
 
         private void OvertimeAttendace_Load(object sender, EventArgs e)
         {
@@ -1252,5 +1253,8 @@ namespace RauViet.ui
                 printer.PrintPreview(this);
         }
 
+        private void ChiHoLuong_btn_Click(object sender, EventArgs e)
+        {
+        }
     }
 }
