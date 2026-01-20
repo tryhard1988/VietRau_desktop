@@ -159,16 +159,9 @@ namespace RauViet.ui
                 dataGV.DataSource = mEmployee_dt;
                 log_GV.DataSource = mlog_DV;
 
-                allowanceGV.Columns["Month"].Visible = false;
-                allowanceGV.Columns["Year"].Visible = false;
-                //allowanceGV.Columns["EmployeeCode"].Visible = false;
-                allowanceGV.Columns["AllowanceTypeID"].Visible = false;
-                allowanceGV.Columns["MonthlyAllowanceID"].Visible = false;
 
-                log_GV.Columns["LogID"].Visible = false;
-                log_GV.Columns["EmployeeCode"].Visible = false;
-                log_GV.Columns["Month"].Visible = false;
-                log_GV.Columns["Year"].Visible = false;
+                Utils.HideColumns(allowanceGV, new[] { "Month", "Year", "AllowanceTypeID", "MonthlyAllowanceID" });
+                Utils.HideColumns(log_GV, new[] { "LogID", "EmployeeCode", "Month", "Year" });
 
                 int count = 0;
                 mMonthlyAllowance_dt.Columns["EmployeeCode"].SetOrdinal(count++);

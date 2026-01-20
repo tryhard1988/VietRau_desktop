@@ -119,9 +119,6 @@ namespace RauViet.ui
                 dataGV.Columns["ContractTypeName"].HeaderText = "Loại H.Đồng";
                 dataGV.Columns["PositionName"].HeaderText = "Chức Vụ";
 
-                dataGV.Columns["PositionCode"].Visible = false;
-                dataGV.Columns["ContractTypeCode"].Visible = false;
-
                 dataGV.Columns["EmployeeCode"].Width = 50;
                 dataGV.Columns["FullName"].Width = 160;
                 dataGV.Columns["TotalWorkingHour"].Width = 50;
@@ -141,11 +138,6 @@ namespace RauViet.ui
                 Attendamce(month, year);
                 attendanceGV.DataSource = mAttendamce_dt;
 
-                log_GV.Columns["LogID"].Visible = false;
-                log_GV.Columns["EmployeeCode"].Visible = false;
-
-                attendanceGV.Columns["EmployeeCode"].Visible = false;
-                attendanceGV.Columns["LeaveHours"].Visible = false;
                 attendanceGV.Columns["WorkDate"].DefaultCellStyle.Format = "dd/MM/yyyy";
                 attendanceGV.Columns["WorkingHours"].DefaultCellStyle.Format = "0.##";
 
@@ -193,6 +185,11 @@ namespace RauViet.ui
                 log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
                 dataGV.SelectionChanged += this.dataGV_CellClick;
+
+
+                Utils.HideColumns(dataGV, new[] { "PositionCode", "ContractTypeCode" });
+                Utils.HideColumns(attendanceGV, new[] { "EmployeeCode", "LeaveHours" });
+                Utils.HideColumns(log_GV, new[] { "LogID", "EmployeeCode" });
 
             }
             catch (Exception ex)

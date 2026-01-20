@@ -172,16 +172,10 @@ namespace RauViet.ui
                 dataGV.Columns["FullName"].Width = 160;
                 dataGV.Columns["ContractTypeName"].Width = 70;
                 dataGV.Columns["PositionName"].Width = 70;
-
-                log_GV.Columns["EmployeeCode"].Visible = false;
-                log_GV.Columns["LogID"].Visible = false;
-                departmentGV.Columns["DepartmentID"].Visible = false;
-                departmentGV.Columns["Description"].Visible = false;
-                departmentGV.Columns["IsActive"].Visible = false;
-                departmentGV.Columns["CreatedAt"].Visible = false;
-                dataGV.Columns["DepartmentID"].Visible = false;
-                dataGV.Columns["PositionName"].Visible = false;
-                dataGV.Columns["ContractTypeName"].Visible = false;
+                                
+                Utils.HideColumns(departmentGV, new[] { "DepartmentID", "Description", "IsActive", "CreatedAt" });
+                Utils.HideColumns(dataGV, new[] { "DepartmentID", "PositionName", "ContractTypeName"});
+                Utils.HideColumns(log_GV, new[] { "EmployeeCode", "LogID"});
 
                 departmentGV.Columns["DepartmentName"].HeaderText = "Bộ Phận";
                 departmentGV.Columns["DepartmentName"].Width = 120;
@@ -255,11 +249,17 @@ namespace RauViet.ui
             attendanceGV.SelectionChanged -= this.attendanceGV_CellClick;
 
             attendanceGV.DataSource = mOvertimeAttendamce_dt;
-            attendanceGV.Columns["DepartmentID"].Visible = false;
-            attendanceGV.Columns["OvertimeAttendanceID"].Visible = false;
-            attendanceGV.Columns["OvertimeTypeID"].Visible = false;
-            attendanceGV.Columns["SalaryFactor"].Visible = false;
-           // attendanceGV.Columns["HourWork"].Visible = false;
+            string[] hiddenColumns ={"DepartmentID", "OvertimeAttendanceID", "OvertimeTypeID", "SalaryFactor", "OvertimeTypeCode", "OvertimeAttendanceSalary"};
+            foreach (string colName in hiddenColumns)
+            {
+                if (attendanceGV.Columns.Contains(colName))
+                {
+                    attendanceGV.Columns[colName].Visible = false;
+                }
+            }
+
+
+            // attendanceGV.Columns["HourWork"].Visible = false;
 
             attendanceGV.Columns["WorkDate"].DefaultCellStyle.Format = "dd/MM/yyyy";
             attendanceGV.Columns["HourWork"].DefaultCellStyle.Format = "0.##";

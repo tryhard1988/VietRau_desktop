@@ -128,37 +128,9 @@ namespace RauViet.ui
                 dataGV.Columns["HireDate"].DefaultCellStyle.Format = "dd/MM/yyyy";
                 dataGV.Columns["IssueDate"].DefaultCellStyle.Format = "dd/MM/yyyy";
 
-                dataGV.Columns["EmployessName_NoSign"].Visible = false;
-                log_GV.Columns["LogID"].Visible = false;
-                log_GV.Columns["EmployeeCode"].Visible = false;
-                dataGV.Columns["NoteResign"].Visible = false;
-                dataGV.Columns["PositionID"].Visible = false;
-                dataGV.Columns["DepartmentID"].Visible = false;
-                dataGV.Columns["ContractTypeID"].Visible = false;
-                dataGV.Columns["CreatedAt"].Visible = false;
-                dataGV.Columns["SalaryGradeID"].Visible = false;
-                dataGV.Columns["SalaryGrade"].Visible = false;
-                dataGV.Columns["BankName"].Visible = false;
-                dataGV.Columns["BankBranch"].Visible = false;
-                dataGV.Columns["BankAccountNumber"].Visible = false;
-                dataGV.Columns["BankAccountHolder"].Visible = false;
-                dataGV.Columns["SocialInsuranceNumber"].Visible = false;
-                dataGV.Columns["HealthInsuranceNumber"].Visible = false;
-
-                dataGV.Columns["PositionCode"].Visible = false;
-                dataGV.Columns["PositionName"].Visible = false;
-                dataGV.Columns["DepartmentName"].Visible = false;
-                dataGV.Columns["ContractTypeCode"].Visible = false;
-                dataGV.Columns["ContractTypeName"].Visible = false;
-
-                dataGV.Columns["Gender"].Visible = false;
-                dataGV.Columns["EmployeeID"].Visible = false;                
-                //dataGV.Columns["canCreateUserName"].Visible = false;
-                dataGV.Columns["Address"].Visible = false;
-                dataGV.Columns["Hometown"].Visible = false;
-             //   dataGV.Columns["CitizenID"].Visible = false;
-                dataGV.Columns["IssueDate"].Visible = false;
-                dataGV.Columns["IssuePlace"].Visible = false;
+                Utils.HideColumns(dataGV, new[] { "IssuePlace", "IssueDate", "Hometown", "Address", "EmployeeID", "Gender", "ContractTypeName", "ContractTypeCode", "DepartmentName", "PositionName", "PositionCode", "HealthInsuranceNumber", "SocialInsuranceNumber",
+                                                    "BankAccountHolder","BankAccountNumber","BankBranch","BankName","SalaryGrade","SalaryGradeID", "CreatedAt", "ContractTypeID", "DepartmentID", "PositionID", "NoteResign", "EmployessName_NoSign"});
+                Utils.HideColumns(log_GV, new[] { "LogID", "EmployeeCode" });
 
                 dataGV.Columns["canCreateUserName"].Width = 50;
                 dataGV.Columns["IsInsuranceRefund"].Width = 50;

@@ -109,13 +109,8 @@ namespace RauViet.ui
                 dataGV.Columns["DepartmentName"].HeaderText = "Phòng Ban";
                 dataGV.Columns["ContractTypeName"].HeaderText = "Loại Hợp Đồng";
 
-                dataGV.Columns["EmployessName_NoSign"].Visible = false;
-                dataGV.Columns["PositionID"].Visible = false;
-                dataGV.Columns["DepartmentID"].Visible = false;
-                dataGV.Columns["ContractTypeID"].Visible = false;
-
-                log_GV.Columns["LogID"].Visible = false;
-                log_GV.Columns["EmployeeCode"].Visible = false;
+                Utils.HideColumns(dataGV, new[] { "EmployessName_NoSign", "PositionID", "DepartmentID", "ContractTypeID" });
+                Utils.HideColumns(log_GV, new[] { "LogID", "EmployeeCode"});
 
                 dataGV.Columns["EmployeeCode"].Width = 50;
                 dataGV.Columns["FullName"].Width = 160;

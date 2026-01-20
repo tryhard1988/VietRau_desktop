@@ -62,6 +62,17 @@ public static class Utils
         return diff == 0;
     }
 
+    public static void HideColumns(DataGridView gv, string[] columnNames)
+    {
+        foreach (string col in columnNames)
+        {
+            if (gv.Columns.Contains(col))
+            {
+                gv.Columns[col].Visible = false;
+            }
+        }
+    }
+
     public static string RemoveVietnameseSigns(string text)
     {
         if (string.IsNullOrEmpty(text)) return text;

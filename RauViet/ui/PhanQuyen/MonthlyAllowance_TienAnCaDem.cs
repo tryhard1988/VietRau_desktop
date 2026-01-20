@@ -126,15 +126,12 @@ namespace RauViet.ui
                 mOvertime_dt.Columns["HourWork"].SetOrdinal(count++);
                 mOvertime_dt.Columns["Note"].SetOrdinal(count++);
 
-                department_GV.Columns["DepartmentID"].Visible = false;
-                department_GV.Columns["Description"].Visible = false;
-                department_GV.Columns["IsActive"].Visible = false;
-                department_GV.Columns["CreatedAt"].Visible = false;
+                Utils.HideColumns(department_GV, new[] { "DepartmentID", "Description", "IsActive", "CreatedAt" });
+                Utils.HideColumns(dataGV, new[] { "OvertimeTypeID", "DepartmentID" });
+
                 department_GV.Columns["DepartmentName"].HeaderText = "Tên Phòng Ban";
                 department_GV.Columns["DepartmentName"].Width = 200;
 
-                dataGV.Columns["OvertimeTypeID"].Visible = false;
-                dataGV.Columns["DepartmentID"].Visible = false;
                 dataGV.Columns["EmployeeName"].HeaderText = "Tên Nhân Viên";
                 dataGV.Columns["EmployeeCode"].HeaderText = "Mã NV";
                 dataGV.Columns["WorkDate"].HeaderText = "Ngày Làm";

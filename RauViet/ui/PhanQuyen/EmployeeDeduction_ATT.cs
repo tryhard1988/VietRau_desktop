@@ -131,9 +131,7 @@ namespace RauViet.ui
                 mEmployeeLeave_dt.Columns["LeaveHours"].SetOrdinal(count++);
                 mEmployeeLeave_dt.Columns["Note"].SetOrdinal(count++);
 
-                log_GV.Columns["LogID"].Visible = false;
-                log_GV.Columns["EmployeeCode"].Visible = false;
-                log_GV.Columns["DeductionTypeCode"].Visible = false;
+                Utils.HideColumns(log_GV, new[] { "LogID", "EmployeeCode", "DeductionTypeCode" });
 
                 employeeDeductionGV.Columns["DateOff"].HeaderText = "Ngày Nghỉ";
                 employeeDeductionGV.Columns["LeaveTypeName"].HeaderText = "Loại Nghỉ Phép";

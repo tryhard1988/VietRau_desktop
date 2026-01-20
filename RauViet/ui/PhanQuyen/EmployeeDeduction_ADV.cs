@@ -150,9 +150,11 @@ namespace RauViet.ui
                 log_GV.Columns["DeductionTypeCode"].Visible = false;
 
                 employeeDeductionGV.Columns["EmployeeDeductionID"].Visible = false;
-               // employeeDeductionGV.Columns["EmployeeCode"].Visible = false;
                 employeeDeductionGV.Columns["DeductionTypeCode"].Visible = false;
                 employeeDeductionGV.Columns["DeductionTypeName"].Visible = false;
+
+                Utils.HideColumns(employeeDeductionGV, new[] { "EmployeeDeductionID", "DeductionTypeCode", "DeductionTypeName" });
+                Utils.HideColumns(log_GV, new[] { "LogID", "EmployeeCode", "DeductionTypeCode"});
 
                 int count = 0;
                 mEmployeeDeduction_dt.Columns["EmployeeCode"].SetOrdinal(count++);

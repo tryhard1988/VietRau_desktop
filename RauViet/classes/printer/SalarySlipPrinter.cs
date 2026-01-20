@@ -344,7 +344,7 @@ public class SalarySlipPrinter
         x = tableLeft;
 
         tongthunhap = Math.Truncate(tongthunhap / 1000) * 1000;
-        string[] ttnCells = { $"I. Tổng thu nhập (1)->({countCa})", tongthunhap .ToString()};
+        string[] ttnCells = { $"I. Tổng thu nhập (1)->({countCa})", tongthunhap .ToString("N0")};
         for (int i = 0; i < ttnCells.Length; i++)
         {
             Rectangle cell = new Rectangle(x, y, leftColWidths1_Allowance[i], rowHeight*2);
@@ -365,7 +365,7 @@ public class SalarySlipPrinter
             y += rowHeight;
             x = tableLeft;
             string deductionCol = "DeductionType" + ddr["DeductionTypeCode"].ToString();
-            string[] deductionCells = { $"{ddr["DeductionTypeName"]} ({countCa++})", row.Cells[deductionCol].Value.ToString() };
+            string[] deductionCells = { $"{ddr["DeductionTypeName"]} ({countCa++})", Convert.ToInt32(row.Cells[deductionCol].Value).ToString("N0") };
             for (int i = 0; i < deductionCells.Length; i++)
             {
                 Rectangle cell = new Rectangle(x, y, leftColWidths1_Allowance[i], rowHeight);
@@ -382,7 +382,7 @@ public class SalarySlipPrinter
 
         tongtru = Math.Truncate(tongtru / 1000) * 1000;
 
-        string[] cktCells = { $"II. Cộng Khoản Trừ (1)->({countCa})", tongtru.ToString() };
+        string[] cktCells = { $"II. Cộng Khoản Trừ (1)->({countCa})", tongtru.ToString("N0") };
         for (int i = 0; i < cktCells.Length; i++)
         {
             Rectangle cell = new Rectangle(x, y, leftColWidths1_Allowance[i], rowHeight*2);
@@ -421,7 +421,7 @@ public class SalarySlipPrinter
             if (scopeCode.CompareTo("ONCE") != 0)
             {
                 x = tableRight;
-                string[] cells = { dr["AllowanceName"].ToString(), dr["Amount"].ToString() };
+                string[] cells = { dr["AllowanceName"].ToString(), Convert.ToInt32(dr["Amount"]).ToString("N0") };
 
                 // 1) Tính chiều cao cần thiết cho từng ô (với giới hạn chiều rộng tương ứng)
                 float maxCellHeight = 0f;

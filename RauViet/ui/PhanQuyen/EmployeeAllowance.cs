@@ -101,11 +101,8 @@ namespace RauViet.ui
                 dataGV.DataSource = _employee_dt;
                 log_GV.DataSource = mLogDV;
 
-                dataGV.Columns["EmployessName_NoSign"].Visible = false;
-
-                allowanceGV.Columns["EmployeeAllowanceID"].Visible = false;
-                allowanceGV.Columns["EmployeeCode"].Visible = false;
-                allowanceGV.Columns["AllowanceTypeID"].Visible = false;
+                Utils.HideColumns(dataGV, new[] { "EmployessName_NoSign"});
+                Utils.HideColumns(allowanceGV, new[] { "AllowanceTypeID", "EmployeeCode", "EmployeeAllowanceID" });
 
                 int count = 0;
                 mEmployeeAllowance_dt.Columns["AllowanceName"].SetOrdinal(count++);
