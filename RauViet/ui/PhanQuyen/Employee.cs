@@ -109,6 +109,9 @@ namespace RauViet.ui
 
                 dataGV.DataSource = mEmployees_dt;
                 log_GV.DataSource = mLogDV;
+                Utils.HideColumns(dataGV, new[] { "IssuePlace", "IssueDate", "Hometown", "Address", "EmployeeID", "Gender", "ContractTypeName", "ContractTypeCode", "DepartmentName", "PositionName", "PositionCode", "HealthInsuranceNumber", "SocialInsuranceNumber",
+                                                    "BankAccountHolder","BankAccountNumber","BankBranch","BankName","SalaryGrade","SalaryGradeID", "CreatedAt", "ContractTypeID", "DepartmentID", "PositionID", "NoteResign", "EmployessName_NoSign"});
+                Utils.HideColumns(log_GV, new[] { "LogID", "EmployeeCode" });
 
                 dataGV.Columns["EmployeeCode"].HeaderText = "Mã NV";
                 dataGV.Columns["FullName"].HeaderText = "Họ Và Tên";
@@ -127,10 +130,6 @@ namespace RauViet.ui
                 dataGV.Columns["BirthDate"].DefaultCellStyle.Format = "dd/MM/yyyy";
                 dataGV.Columns["HireDate"].DefaultCellStyle.Format = "dd/MM/yyyy";
                 dataGV.Columns["IssueDate"].DefaultCellStyle.Format = "dd/MM/yyyy";
-
-                Utils.HideColumns(dataGV, new[] { "IssuePlace", "IssueDate", "Hometown", "Address", "EmployeeID", "Gender", "ContractTypeName", "ContractTypeCode", "DepartmentName", "PositionName", "PositionCode", "HealthInsuranceNumber", "SocialInsuranceNumber",
-                                                    "BankAccountHolder","BankAccountNumber","BankBranch","BankName","SalaryGrade","SalaryGradeID", "CreatedAt", "ContractTypeID", "DepartmentID", "PositionID", "NoteResign", "EmployessName_NoSign"});
-                Utils.HideColumns(log_GV, new[] { "LogID", "EmployeeCode" });
 
                 dataGV.Columns["canCreateUserName"].Width = 50;
                 dataGV.Columns["IsInsuranceRefund"].Width = 50;

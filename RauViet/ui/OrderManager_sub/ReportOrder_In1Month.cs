@@ -177,10 +177,10 @@ namespace RauViet.ui
                 CustomerGV.DataSource = customerOrderHistoryByYear_dt;
                 CustomerDetail_GV.DataSource = mCustomerDetail_DV;
 
-                dataGV.Columns["ExportHistoryID"].Visible = false;
-                CustomerDetail_GV.Columns["CustomerName"].Visible = false;
-                CustomerDetail_GV.Columns["ProductName_EN"].Visible = false;
-                CustomerDetail_GV.Columns["Priority"].Visible = false;
+                Utils.HideColumns(product_GV, new[] { "ProductName_EN" });
+                Utils.HideColumns(dataGV, new[] { "ExportHistoryID" });
+                Utils.HideColumns(CustomerDetail_GV, new[] { "CustomerName", "ProductName_EN", "Priority" });
+
                 CustomerDetail_GV.Columns["ProductName_VN"].HeaderText = "Tên Sản Phẩm";
                 CustomerDetail_GV.Columns["TotalNetWeight"].HeaderText = "Net Weight";
                 CustomerDetail_GV.Columns["TotalAmountCHF"].HeaderText = "Thành Tiền";
@@ -201,7 +201,6 @@ namespace RauViet.ui
                 dataGV.Columns["NumberCarton"].Width = sizeWidth;
                 dataGV.Columns["FreightCharge"].Width = sizeWidth;
 
-                product_GV.Columns["ProductName_EN"].Visible = false;
                 product_GV.Columns["ProductName_VN"].HeaderText = "Tên Sản Phẩm";
                 product_GV.Columns["ProductName_EN"].HeaderText = "Product Name";
                 product_GV.Columns["TotalNetWeight"].HeaderText = "Net Weight";

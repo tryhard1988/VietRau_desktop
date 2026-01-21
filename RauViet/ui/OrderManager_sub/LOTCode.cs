@@ -88,12 +88,8 @@ namespace RauViet.ui
                 dv.RowFilter = $"ExportCodeID = {mCurrentExportID}";
                 dataGV.DataSource = dv;
 
-                dataGV.Columns["SKU"].Visible = false;
-                dataGV.Columns["ExportCode"].Visible = false;
-                dataGV.Columns["ExportCodeID"].Visible = false;
-                logGV.Columns["LogID"].Visible = false;
-                logGV.Columns["ExportCodeID"].Visible = false;
-                logGV.Columns["SKU"].Visible = false;
+                Utils.HideColumns(dataGV, new[] { "SKU", "ExportCode", "ExportCodeID" });
+                Utils.HideColumns(logGV, new[] { "LogID", "ExportCodeID", "SKU" });
 
                 dataGV.ReadOnly = false;
                 dataGV.Columns["LotCode"].ReadOnly = false;
@@ -102,11 +98,13 @@ namespace RauViet.ui
                 dataGV.Columns["LOTCodeComplete"].ReadOnly = false;
                 dataGV.Columns["Priority"].ReadOnly = true;
 
-                dataGV.Columns["ProductNameVN"].HeaderText = "Tên Sản Phẩm";
-                dataGV.Columns["LOTCodeComplete"].HeaderText = "LOT Code Hoàn Chỉnh";
-                dataGV.Columns["LotCode"].HeaderText = "Phần Sau LOT Code";
-                dataGV.Columns["LOTCodeHeader"].HeaderText = "Phần Đầu LOT Code";
-                dataGV.Columns["Priority"].HeaderText = "Ưu Tiên";
+                Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"ProductNameVN", "Tên Sản Phẩm" },
+                    {"LOTCodeComplete", "LOT Code Hoàn Chỉnh" },
+                    {"LotCode", "Phần Sau LOT Code" },
+                    {"LOTCodeHeader", "Phần Đầu LOT Code" },
+                    {"Priority", "Ưu Tiên" }
+                });
 
                 dataGV.Columns["Priority"].Width = 50;
                 dataGV.Columns["LOTCodeComplete"].Width = 120;
@@ -127,12 +125,14 @@ namespace RauViet.ui
                 exportCode_cbb.SelectedValue = mCurrentExportID;
                 exportCode_cbb.SelectedIndexChanged += exportCode_search_cbb_SelectedIndexChanged;
 
-                logGV.Columns["Description"].HeaderText = "Hành động";
-                logGV.Columns["LotCode"].HeaderText = "Phần sau LOTCode";
-                logGV.Columns["LotCodeHeader"].HeaderText = "Phần đầu LOTCode";
-                logGV.Columns["LotCodeComplete"].HeaderText = "LOTCode hoàn chỉnh";
-                logGV.Columns["ActionBy"].HeaderText = "Người thay đổi";
-                logGV.Columns["CreatedAt"].HeaderText = "Ngày thay đổi";
+                Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"Description", "Hành động" },
+                    {"LotCode", "Phần sau LOTCode" },
+                    {"LotCodeHeader", "Phần đầu LOTCode" },
+                    {"LotCodeComplete", "LOTCode hoàn chỉnh" },
+                    {"ActionBy", "Người thay đổi" },
+                    {"CreatedAt", "Ngày thay đổi" }
+                });
 
                 logGV.Columns["Description"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 logGV.Columns["LotCode"].Width = 100;
@@ -141,7 +141,6 @@ namespace RauViet.ui
                 logGV.Columns["ActionBy"].Width = 150;
                 logGV.Columns["CreatedAt"].Width = 110;
                 logGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-
             }
             catch
             {

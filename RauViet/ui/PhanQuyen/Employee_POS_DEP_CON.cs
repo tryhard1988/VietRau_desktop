@@ -79,6 +79,7 @@ namespace RauViet.ui
                 mLogDV = new DataView(employee_POS_DEP_CON_LogTask.Result);
 
                 log_GV.DataSource = mLogDV;
+                Utils.HideColumns(log_GV, new[] { "LogID", "EmployeeCode" });
                 department_cbb.DataSource = mDepartment_dt;
                 department_cbb.DisplayMember = "DepartmentName";
                 department_cbb.ValueMember = "DepartmentID";
@@ -101,6 +102,7 @@ namespace RauViet.ui
                 
 
                 dataGV.DataSource = mEmployees_dt;
+                Utils.HideColumns(dataGV, new[] { "EmployessName_NoSign", "PositionID", "DepartmentID", "ContractTypeID" });
 
                 dataGV.Columns["EmployeeCode"].HeaderText = "Mã NV";
                 dataGV.Columns["FullName"].HeaderText = "Họ Và Tên";
@@ -108,9 +110,6 @@ namespace RauViet.ui
                 dataGV.Columns["PositionName"].HeaderText = "Chức Vụ";
                 dataGV.Columns["DepartmentName"].HeaderText = "Phòng Ban";
                 dataGV.Columns["ContractTypeName"].HeaderText = "Loại Hợp Đồng";
-
-                Utils.HideColumns(dataGV, new[] { "EmployessName_NoSign", "PositionID", "DepartmentID", "ContractTypeID" });
-                Utils.HideColumns(log_GV, new[] { "LogID", "EmployeeCode"});
 
                 dataGV.Columns["EmployeeCode"].Width = 50;
                 dataGV.Columns["FullName"].Width = 160;

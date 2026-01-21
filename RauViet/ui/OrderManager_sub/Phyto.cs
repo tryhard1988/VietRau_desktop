@@ -74,7 +74,7 @@ namespace RauViet.ui
                 DataView dv = new DataView(mOrdersTotal_dt);
                 dataGV.DataSource = dv;
 
-                dataGV.Columns["ExportCodeID"].Visible = false;
+                Utils.HideColumns(dataGV, new[] { "ExportCodeID"});
 
                 dataGV.Columns["ProductNameEN"].HeaderText = "Common name";
                 dataGV.Columns["ProductNameVN"].HeaderText = "Vietnamese";

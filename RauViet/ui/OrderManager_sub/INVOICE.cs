@@ -90,9 +90,6 @@ namespace RauViet.ui
                 exportCode_cbb.SelectedValue = mCurrentExportID;
                 exportCode_cbb.SelectedIndexChanged += exportCode_search_cbb_SelectedIndexChanged;
 
-
-
-
                 UpdateBotttomUI();
             }
             catch
@@ -132,22 +129,22 @@ namespace RauViet.ui
         {
             DataView dv = new DataView(mOrdersTotal_dt);
             dataGV.DataSource = dv;
+            Utils.HideColumns(dataGV, new[] { "ExportCodeID" });
 
-            dataGV.Columns["ExportCodeID"].Visible = false;
-
-            dataGV.Columns["No"].HeaderText = "No";
-            dataGV.Columns["ProductNameEN"].HeaderText = "English name";
-            dataGV.Columns["ProductNameVN"].HeaderText = "Vietnamese name";
-            dataGV.Columns["Package"].HeaderText = "Unit";
-            dataGV.Columns["NWReal"].HeaderText = "N.W(kg)";
-            dataGV.Columns["PCSReal"].HeaderText = "PCS";
-            dataGV.Columns["OrderPackingPriceCNF"].HeaderText = "Price (CHF)";
-            dataGV.Columns["AmountCHF"].HeaderText = "Amount (CHF)";
+            Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"No", "No" },
+                    {"ProductNameEN", "English Name" },
+                    {"ProductNameVN", "Vietnamese Name" },
+                    {"Package", "Unit" },
+                    {"NWReal", "N.W(kg)" },
+                    {"PCSReal", "PCS" },
+                    {"OrderPackingPriceCNF", "Price (CHF)" },
+                    {"AmountCHF", "Amount (CHF)" },
+                    {"Priority", "Ưu\nTiên" }
+                });
 
             dataGV.Columns["AmountCHF"].DefaultCellStyle.Format = "N3";
             dataGV.Columns["Quantity"].DefaultCellStyle.Format = "N3";
-
-            dataGV.Columns["Priority"].HeaderText = "Ưu\nTiên";
 
             dataGV.Columns["Priority"].Width = 50;
             dataGV.Columns["No"].Width = 50;
@@ -171,12 +168,13 @@ namespace RauViet.ui
         {
             DataView dv = new DataView(mCustomerOrdersTotal_dt);
             cusOrderGV.DataSource = dv;
+            Utils.HideColumns(cusOrderGV, new[] { "Home", "ExportCodeID" });
 
-            cusOrderGV.Columns["Home"].Visible = false;
-            cusOrderGV.Columns["ExportCodeID"].Visible = false;
-            cusOrderGV.Columns["FullName"].HeaderText = "MARK";
-            cusOrderGV.Columns["NWReal"].HeaderText = "N.W";
-            cusOrderGV.Columns["AmountCHF"].HeaderText = "Amount\nCHF";
+            Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"FullName", "MARK" },
+                    {"NWReal", "N.W" },
+                    {"AmountCHF", "Amount\nCHF" }
+                });
 
             cusOrderGV.Columns["No"].Width = 30;
             cusOrderGV.Columns["CNTS"].Width = 40;
@@ -239,12 +237,14 @@ namespace RauViet.ui
 
         private void showCartonOrderGV()
         {
-
             DataView dv = new DataView(mCartonOrdersTotal_dt);
             cartonSizeGV.DataSource = dv;
-            cartonSizeGV.Columns["ExportCodeID"].Visible = false;
-            cartonSizeGV.Columns["CartonSize"].HeaderText = "Carton Size";
-            cartonSizeGV.Columns["CountCarton"].HeaderText = "Quantity";
+            Utils.HideColumns(cartonSizeGV, new[] { "ExportCodeID" });
+
+            Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"CartonSize", "Carton Size" },
+                    {"CountCarton", "Quantity" }
+                });
 
             cartonSizeGV.Columns["No"].Width = 30;
             cartonSizeGV.Columns["Weight"].Width = 60;
@@ -627,7 +627,7 @@ namespace RauViet.ui
                     ws.Cell(totalRow, nwOtherColIndex).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
                     ws.Cell(totalRow, nwOtherColIndex).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
 
-                    ws.Cell(totalRow, nwAmountColIndex).Value = Math.Round(totalAmount, 2);
+                    ws.Cell(totalRow, nwAmountColIndex).Value = totalAmount;
                     ws.Cell(totalRow, nwAmountColIndex).Style.NumberFormat.Format = "#,##0.00";
                     ws.Cell(totalRow, nwAmountColIndex).Style.Font.Bold = true;
                     ws.Cell(totalRow, nwAmountColIndex).Style.Font.FontSize = 10;
@@ -643,7 +643,7 @@ namespace RauViet.ui
                     ws.Range(totalRow, 1, totalRow, 3).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
 
                     ws.Range(totalRow, 4, totalRow, exportColumns.Count).Merge();
-                    ws.Cell(totalRow, 4).Value = Math.Round(totalAmount - totalFreightCharge, 2);
+                    ws.Cell(totalRow, 4).Value = totalAmount - totalFreightCharge;
                     ws.Cell(totalRow, 4).Style.NumberFormat.Format = "#,##0.00 \"CHF\"";
                     ws.Cell(totalRow, 4).Style.Font.Bold = true;
                     ws.Cell(totalRow, 4).Style.Font.FontSize = 10;
@@ -660,7 +660,7 @@ namespace RauViet.ui
 
                     ws.Range(totalRow, 4, totalRow, exportColumns.Count).Merge();
                     ws.Cell(totalRow, 4).Style.NumberFormat.Format = "#,##0.00 \"CHF\"";
-                    ws.Cell(totalRow, 4).Value = Math.Round(totalFreightCharge, 2);
+                    ws.Cell(totalRow, 4).Value = totalFreightCharge;
                     ws.Cell(totalRow, 4).Style.Font.Bold = true;
                     ws.Cell(totalRow, 4).Style.Font.FontSize = 10;
                     ws.Cell(totalRow, 4).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
@@ -676,7 +676,7 @@ namespace RauViet.ui
 
                     ws.Range(totalRow, 4, totalRow, exportColumns.Count).Merge();
                     ws.Cell(totalRow, 4).Style.NumberFormat.Format = "#,##0.00 \"CHF\"";
-                    ws.Cell(totalRow, 4).Value = Math.Round(totalAmount, 2);
+                    ws.Cell(totalRow, 4).Value = totalAmount;
                     ws.Cell(totalRow, 4).Style.Font.Bold = true;
                     ws.Cell(totalRow, 4).Style.Font.FontSize = 10;
                     ws.Cell(totalRow, 4).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
@@ -692,7 +692,7 @@ namespace RauViet.ui
 
                     ws.Range(totalRow, 4, totalRow, exportColumns.Count).Merge();
                     ws.Cell(totalRow, 4).Style.NumberFormat.Format = "#,##0.00 \"kg\"";
-                    ws.Cell(totalRow, 4).Value = Math.Round(totalNWReal, 2);
+                    ws.Cell(totalRow, 4).Value = totalNWReal;
                     ws.Cell(totalRow, 4).Style.Font.Bold = true;
                     ws.Cell(totalRow, 4).Style.Font.FontSize = 10;
                     ws.Cell(totalRow, 4).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
@@ -856,7 +856,7 @@ namespace RauViet.ui
                     ws.Cell(totalRow1, nwColIndex).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
                     ws.Cell(totalRow1, nwColIndex).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
 
-                    ws.Cell(totalRow1, amountColIndex).Value = Math.Round(totalAmount1, 2);
+                    ws.Cell(totalRow1, amountColIndex).Value = totalAmount1;
                     ws.Cell(totalRow1, amountColIndex).Style.NumberFormat.Format = "#,##0.00";
                     ws.Cell(totalRow1, amountColIndex).Style.Font.Bold = true;
                     ws.Cell(totalRow1, amountColIndex).Style.Font.FontSize = 10;

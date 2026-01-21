@@ -159,9 +159,7 @@ namespace RauViet.ui
                 dataGV.DataSource = mEmployee_dt;
                 log_GV.DataSource = mlog_DV;
 
-
-                Utils.HideColumns(allowanceGV, new[] { "Month", "Year", "AllowanceTypeID", "MonthlyAllowanceID" });
-                Utils.HideColumns(log_GV, new[] { "LogID", "EmployeeCode", "Month", "Year" });
+                Utils.HideColumns(dataGV, new[] { "EmployessName_NoSign"});
 
                 int count = 0;
                 mMonthlyAllowance_dt.Columns["EmployeeCode"].SetOrdinal(count++);
@@ -186,7 +184,6 @@ namespace RauViet.ui
                 dataGV.Columns["ContractTypeName"].HeaderText = "Loại Hợp Đồng";
                 dataGV.Columns["DepartmentName"].HeaderText = "Phòng Ban";
 
-                dataGV.Columns["EmployessName_NoSign"].Visible = false;
                 dataGV.Columns["EmployeeCode"].Width = 60;
                 dataGV.Columns["FullName"].Width = 160;
 

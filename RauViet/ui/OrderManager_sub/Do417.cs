@@ -86,16 +86,8 @@ namespace RauViet.ui
                 dv.RowFilter = $"ExportCodeID = {mCurrentExportID}";
                 dataGV.DataSource = dv;
 
-                dataGV.Columns["ProductPackingID"].Visible = false;
-                dataGV.Columns["ExportCodeID"].Visible = false;
-                dataGV.Columns["Package"].Visible = false;
-                dataGV.Columns["Amount"].Visible = false;
-                dataGV.Columns["packing"].Visible = false;
-                dataGV.Columns["ExportCode"].Visible = false;
-                dataGV.Columns["SKU"].Visible = false;
-                logGV.Columns["LogID"].Visible = false;
-                logGV.Columns["ExportCodeID"].Visible = false;
-                logGV.Columns["ProductPackingID"].Visible = false;
+                Utils.HideColumns(dataGV, new[] { "ProductPackingID", "ExportCodeID", "Package", "Amount", "packing", "ExportCode", "SKU" });
+                Utils.HideColumns(logGV, new[] { "LogID", "ExportCodeID", "ProductPackingID" });
 
                 dataGV.ReadOnly = false;
                 dataGV.Columns["NetWeightFinal"].ReadOnly = false;
@@ -105,15 +97,16 @@ namespace RauViet.ui
                 dataGV.Columns["ProductPackingID"].ReadOnly = true;
                 dataGV.Columns["Priority"].ReadOnly = true;
                 dataGV.Columns["NWDifference"].ReadOnly = true;
-                
 
-                dataGV.Columns["ProductNameVN"].HeaderText = "Tên Sản Phẩm";
-                dataGV.Columns["NWRegistration"].HeaderText = "N.W\nđkkd";
-                dataGV.Columns["TotalNWOther"].HeaderText = "N.W\nđặt hàng";
-                dataGV.Columns["NetWeightFinal"].HeaderText = "N.W\nchốt";
-                dataGV.Columns["TotalNWReal"].HeaderText = "N.W\nđóng thùng";
-                dataGV.Columns["NWDifference"].HeaderText = "Ch.lệch Phyto và đ.thùng";
-                dataGV.Columns["Priority"].HeaderText = "Ưu Tiên";
+                Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"ProductNameVN", "Tên Sản Phẩm" },
+                    {"NWRegistration", "N.W\nđkkd" },
+                    {"TotalNWOther", "N.W\nđặt hàng" },
+                    {"NetWeightFinal", "N.W\nchốt" },
+                    {"TotalNWReal", "N.W\nđóng thùng" },
+                    {"NWDifference", "Ch.lệch Phyto và đ.thùng" },
+                    {"Priority", "Ưu Tiên" }
+                });
 
                 dataGV.Columns["Priority"].Width = 30;
                 dataGV.Columns["STT"].Width = 30;
@@ -141,12 +134,14 @@ namespace RauViet.ui
                 exportCode_cbb.SelectedValue = mCurrentExportID;
                 exportCode_cbb.SelectedIndexChanged += exportCode_search_cbb_SelectedIndexChanged;
 
-                logGV.Columns["Description"].HeaderText = "Hành động";
-                logGV.Columns["NWOder"].HeaderText = "N.W\nđặt hàng";
-                logGV.Columns["NWReal"].HeaderText = "N.W\nthực tế";
-                logGV.Columns["NetWeightFinal"].HeaderText = "N.W\nchốt";
-                logGV.Columns["ActionBy"].HeaderText = "Người thay đổi";
-                logGV.Columns["CreateAt"].HeaderText = "Ngày thay đổi";
+                Utils.SetGridHeaders(logGV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"Description", "Hành động" },
+                    {"NWOder", "N.W\nđặt hàng" },
+                    {"NWReal", "N.W\nthực tế" },
+                    {"NetWeightFinal", "N.W\nchốt" },
+                    {"ActionBy", "Người thay đổi" },
+                    {"CreateAt", "Ngày thay đổi" }
+                });
 
                 logGV.Columns["Description"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 logGV.Columns["NWOder"].Width = 100;

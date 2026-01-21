@@ -72,19 +72,18 @@ namespace RauViet.ui
                 mOrdersTotal_dt = await SQLStore_Kho.Instance.getOrdersDKKDAsync(mCurrentExportID);
                 DataView dv = new DataView(mOrdersTotal_dt);
                 dataGV_DK.DataSource = dv;
+                Utils.HideColumns(dataGV_DK, new[] { "ExportCodeID", "PlantingAreaCode" });
 
-                dataGV_DK.Columns["ExportCodeID"].Visible = false;
-                dataGV_DK.Columns["PlantingAreaCode"].Visible = false;
-
-                dataGV_DK.Columns["ProductNameEN"].HeaderText = "English name";
-                dataGV_DK.Columns["ProductNameVN"].HeaderText = "Vietnamese name";
-                dataGV_DK.Columns["BotanicalName"].HeaderText = "Botanical name";
-                dataGV_DK.Columns["NWOther"].HeaderText = "N.W(kg)";
-                dataGV_DK.Columns["PriceCHF"].HeaderText = "Price (CHF)";
-                dataGV_DK.Columns["AmountCHF"].HeaderText = "Amount (CHF)";
-                dataGV_DK.Columns["No"].HeaderText = "No";
-
-                dataGV_DK.Columns["Priority"].HeaderText = "Ưu\nTiên";
+                Utils.SetGridHeaders(dataGV_DK, new System.Collections.Generic.Dictionary<string, string> {
+                    {"ProductNameEN", "English Name" },
+                    {"ProductNameVN", "Vietnamese Name" },
+                    {"BotanicalName", "Botanical Name" },
+                    {"NWOther", "N.W(kg)" },
+                    {"PriceCHF", "Price (CHF)" },
+                    {"AmountCHF", "Amount (CHF)" },
+                    {"No", "No" },
+                    {"Priority", "Ưu\nTiên" }
+                });
 
                 dataGV_DK.Columns["Priority"].Width = 50;
                 dataGV_DK.Columns["No"].Width = 50;
@@ -109,7 +108,6 @@ namespace RauViet.ui
                 exportCode_cbb.ValueMember = "ExportCodeID";
                 exportCode_cbb.SelectedValue = mCurrentExportID;
                 exportCode_cbb.SelectedIndexChanged += exportCode_search_cbb_SelectedIndexChanged;
-                
             }
             catch
             {

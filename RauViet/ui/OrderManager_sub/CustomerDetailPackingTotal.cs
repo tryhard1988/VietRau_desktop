@@ -76,19 +76,18 @@ namespace RauViet.ui
                 DataView dv = new DataView(mOrdersTotal_dt);
                 dataGV.DataSource = dv;
                 dataGV.DataSource = mOrdersTotal_dt;
+                Utils.HideColumns(dataGV, new[] { "ExportCodeID", "Amount", "packing" });
 
-                dataGV.Columns["ExportCodeID"].Visible = false;
-                dataGV.Columns["Amount"].Visible = false;
-                dataGV.Columns["packing"].Visible = false;
-
-                dataGV.Columns["CartonNo"].HeaderText = "Carton No";
-                dataGV.Columns["ProductNameEN"].HeaderText = "English name";
-                dataGV.Columns["ProductNameVN"].HeaderText = "Vietnamese name";
-                dataGV.Columns["Package"].HeaderText = "Unit";
-                dataGV.Columns["NWReal"].HeaderText = "N.W";
-                dataGV.Columns["PCSReal"].HeaderText = "PCS";
-                dataGV.Columns["AmountPacking"].HeaderText = "Packing";
-                dataGV.Columns["CustomerCarton"].HeaderText = "Note";
+                Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"CartonNo", "Carton No" },
+                    {"ProductNameEN", "English Name" },
+                    {"ProductNameVN", "Vietnamese Name" },
+                    {"Package", "Unit" },
+                    {"NWReal", "N.W" },
+                    {"PCSReal", "PCS" },
+                    {"AmountPacking", "Packing" },
+                    {"CustomerCarton", "Note" }
+                });
 
 
                 dataGV.Columns["No"].Width = 30;
@@ -114,7 +113,6 @@ namespace RauViet.ui
 
                 dataGV.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
                 dataGV.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
-
             }
             catch
             {

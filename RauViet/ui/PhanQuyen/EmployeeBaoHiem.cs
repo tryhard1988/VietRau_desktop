@@ -62,6 +62,8 @@ namespace RauViet.ui
                 mLogDV = new DataView(employeeInsuranceLogTask.Result);
                 dataGV.DataSource = employee_dt;
                 log_GV.DataSource = mLogDV;
+                Utils.HideColumns(log_GV, new[] { "LogID", "EmployeeCode" });
+                Utils.HideColumns(dataGV, new[] { "EmployessName_NoSign" });
 
                 dataGV.Columns["EmployeeCode"].HeaderText = "Mã NV";
                 dataGV.Columns["FullName"].HeaderText = "Tên NV";
@@ -73,10 +75,6 @@ namespace RauViet.ui
                 dataGV.Columns["SocialInsuranceNumber"].Width = 160;
                 dataGV.Columns["HealthInsuranceNumber"].Width = 160;
 
-                dataGV.Columns["EmployessName_NoSign"].Visible = false;
-
-                log_GV.Columns["LogID"].Visible = false;
-                log_GV.Columns["EmployeeCode"].Visible = false;
                 log_GV.Columns["CreatedAt"].Width = 120;
                 log_GV.Columns["ACtionBy"].Width = 150;
                 log_GV.Columns["OldValue"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;

@@ -108,6 +108,7 @@ namespace RauViet.ui
                 }
    
                 product_GV.DataSource = mProductOrderHistory_dt;
+                Utils.HideColumns(product_GV, new[] { "Month" });
 
                 product_GV.EnableHeadersVisualStyles = false;
 
@@ -139,11 +140,9 @@ namespace RauViet.ui
                     amountcol.HeaderText = "Total Amount";
                 }
 
-
-                product_GV.Columns["Month"].Visible = false;
                 product_GV.Columns["MonthStr"].HeaderText = "";
                 product_GV.Columns["MonthStr"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                product_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;                
+                product_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
             catch
             {

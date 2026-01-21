@@ -503,30 +503,11 @@ namespace RauViet.ui
         // 🧩 Gọn hơn bằng cách tách nhỏ thành 2 hàm con
         private void HideUnnecessaryColumns()
         {
-            string[] hideAllowCols = { "EmployeeCode", "AllowanceTypeID", "ScopeCode" };
-            foreach (string col in hideAllowCols)
-                if (allowanceGV.Columns.Contains(col))
-                    allowanceGV.Columns[col].Visible = false;
-
-            string[] hideOverCols = { "EmployeeCode", "SalaryFactor", "OvertimeTypeID", "OvertimeAttendanceID", "StartTime", "EndTime", "Note", "UpdatedHistory", "EmployeeName", "DepartmentID", "OvertimeTypeCode" };
-            foreach (string col in hideOverCols)
-                if (overtimeAttendanceGV.Columns.Contains(col))
-                    overtimeAttendanceGV.Columns[col].Visible = false;
-
-            string[] hideLeaveCols = { "EmployeeCode", "LeaveTypeCode" };
-            foreach (string col in hideLeaveCols)
-                if (leaveGV.Columns.Contains(col))
-                    leaveGV.Columns[col].Visible = false;
-
-            string[] hideDedCols = { "EmployeeCode", "DeductionTypeCode", "EmployeeDeductionID", "Note", "updateHistory" };
-            foreach (string col in hideDedCols)
-                if (deductionGV.Columns.Contains(col))
-                    deductionGV.Columns[col].Visible = false;
-
-            string[] hideEmpCols = { "IsInsuranceRefund", "HireDate", "RemainingLeave", "BankAccountNumber", "BankName", "BankAccountHolder" };
-            foreach (string col in hideEmpCols)
-                if (dataGV.Columns.Contains(col))
-                    dataGV.Columns[col].Visible = false;
+            Utils.HideColumns(allowanceGV, new[] { "EmployeeCode", "AllowanceTypeID", "ScopeCode" });
+            Utils.HideColumns(overtimeAttendanceGV, new[] { "EmployeeCode", "SalaryFactor", "OvertimeTypeID", "OvertimeAttendanceID", "StartTime", "EndTime", "Note", "UpdatedHistory", "EmployeeName", "DepartmentID", "OvertimeTypeCode" });
+            Utils.HideColumns(leaveGV, new[] { "EmployeeCode", "LeaveTypeCode" });
+            Utils.HideColumns(deductionGV, new[] { "EmployeeCode", "DeductionTypeCode", "EmployeeDeductionID", "Note", "updateHistory" });
+            Utils.HideColumns(dataGV, new[] { "IsInsuranceRefund", "HireDate", "RemainingLeave", "BankAccountNumber", "BankName", "BankAccountHolder" });
         }
 
         public async Task SetupGridThemesAsync()

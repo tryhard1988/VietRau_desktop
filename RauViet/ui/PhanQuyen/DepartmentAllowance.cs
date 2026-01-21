@@ -93,13 +93,9 @@ namespace RauViet.ui
                 allowanceType_cbb.ValueMember = "AllowanceTypeID";
 
                 allowanceGV.DataSource = mDepartmentAllowance_dt;
-
                 dataGV.DataSource = department_dt;
-
-                dataGV.Columns["DepartmentID"].Visible = false;
-                allowanceGV.Columns["DepartmentAllowanceID"].Visible = false;
-                allowanceGV.Columns["DepartmentID"].Visible = false;
-                allowanceGV.Columns["AllowanceTypeID"].Visible = false;
+                Utils.HideColumns(dataGV, new[] { "DepartmentID" });
+                Utils.HideColumns(allowanceGV, new[] { "DepartmentAllowanceID", "DepartmentID", "AllowanceTypeID" });
 
                 int count = 0;
                 mDepartmentAllowance_dt.Columns["AllowanceName"].SetOrdinal(count++);

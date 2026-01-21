@@ -179,6 +179,7 @@ namespace RauViet.ui
                 }
    
                 product_GV.DataSource = mProductOrderHistory_dt;
+                Utils.HideColumns(product_GV, new[] { "ProductName_EN" });
 
                 for (int i = 1; i <= 12; i++)
                 {
@@ -188,11 +189,13 @@ namespace RauViet.ui
                     product_GV.Columns[key].Width = 70;
                 }
 
-                product_GV.Columns["ProductName_EN"].Visible = false;
-                product_GV.Columns["ProductName_VN"].HeaderText = "Tên Sản Phẩm";
-                product_GV.Columns["ProductName_EN"].HeaderText = "Product Name";
-                product_GV.Columns["TotalQuanitity"].HeaderText = "Quanitity";
-                product_GV.Columns["TotalAmountCHF"].HeaderText = "Thành Tiền";
+                Utils.SetGridHeaders(product_GV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"ProductName_VN", "Tên Sản Phẩm" },
+                    {"ProductName_EN", "Product Name" },
+                    {"TotalQuanitity", "Quanitity" },
+                    {"TotalAmountCHF", "Thành Tiền" }
+                });
+
                 product_GV.Columns["ProductName_VN"].Width = 150;
                 product_GV.Columns["ProductName_EN"].Width = 130;
                 product_GV.Columns["TotalQuanitity"].Width = 70;
@@ -205,6 +208,8 @@ namespace RauViet.ui
 
                 product_GV.Columns["TotalQuanitity"].DefaultCellStyle.Format = "N2";
                 product_GV.Columns["TotalAmountCHF"].DefaultCellStyle.Format = "N2";
+
+                
             }
             catch
             {

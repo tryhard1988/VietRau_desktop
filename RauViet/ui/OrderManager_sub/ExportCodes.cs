@@ -154,25 +154,22 @@ namespace RauViet.ui
                 exportCode_dv.Sort = "ExportCodeID DESC";
                 dataGV.DataSource = exportCode_dv;
 
-                dataGV.Columns["ExportCode"].HeaderText = "Mã Xuất Cảng";
-                dataGV.Columns["ExportDate"].HeaderText = "Ngày Xuất Cảng";                
-                dataGV.Columns["Complete"].HeaderText = "Hoàn Thành";
-                dataGV.Columns["InputByName"].HeaderText = "NV Nhập S.Liệu";
-                dataGV.Columns["PackingByName"].HeaderText = "NV Đóng Gói";
+                Utils.HideColumns(dataGV, new[] { "InputByName_NoSign", "ExportCodeID", "ExportCodeIndex", "InputBy", "PackingBy" });
+                Utils.HideColumns(log_GV, new[] { "LogID", "ExportCode" });
+
+                Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"ExportCode", "Mã Xuất Cảng" },
+                    { "ExportDate", "Ngày Xuất Cảng"},
+                    { "Complete", "Hoàn Thành"},
+                    { "InputByName", "NV Nhập S.Liệu"},
+                    { "PackingByName", "NV Đóng Gói"}
+                });
 
                 dataGV.Columns["ExportCode"].Width = 120;
                 dataGV.Columns["ExportDate"].Width = 100;
                 dataGV.Columns["Complete"].Width = 90;
                 dataGV.Columns["InputByName"].Width = 150;
                 dataGV.Columns["PackingByName"].Width = 150;
-
-                dataGV.Columns["InputByName_NoSign"].Visible = false;
-                dataGV.Columns["ExportCodeID"].Visible = false;
-                dataGV.Columns["ExportCodeIndex"].Visible = false;
-                dataGV.Columns["InputBy"].Visible = false;
-                dataGV.Columns["PackingBy"].Visible = false;
-                log_GV.Columns["ExportCode"].Visible = false;
-                log_GV.Columns["LogID"].Visible = false;
 
                 inputBy_cbb.DataSource = _employeesInDongGoi_dt;
                 inputBy_cbb.DisplayMember = "FullName";  // hiển thị tên
@@ -185,15 +182,17 @@ namespace RauViet.ui
 
                 ReadOnly_btn_Click(null, null);
 
-                log_GV.Columns["Description"].HeaderText = "Hành động";
-                log_GV.Columns["ExportDate"].HeaderText = "Ngày xuất cảng";
-                log_GV.Columns["ExRate"].HeaderText = "Tỉ giá";
-                log_GV.Columns["ShippingCost"].HeaderText = "Phí Vận Chuyển";
-                log_GV.Columns["InputBy"].HeaderText = "Nhập liệu";
-                log_GV.Columns["PackingBy"].HeaderText = "Đóng gói";
-                log_GV.Columns["Complete"].HeaderText = "Hoàn thành";
-                log_GV.Columns["CreatedBy"].HeaderText = "Người thay đổi";
-                log_GV.Columns["CreatedDate"].HeaderText = "Ngày thay đổi";
+                Utils.SetGridHeaders(log_GV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"Description", "Hành động" },
+                    {"ExportDate", "Ngày xuất cảng" },
+                    {"ExRate", "Tỉ giá" },
+                    {"ShippingCost", "Phí Vận Chuyển" },
+                    {"InputBy", "Nhập liệu" },
+                    {"PackingBy", "Đóng gói" },
+                    {"Complete", "Hoàn thành" },
+                    {"CreatedBy", "Người thay đổi" },
+                    {"CreatedDate", "Ngày thay đổi" }
+                });
 
                 log_GV.Columns["Description"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 log_GV.Columns["ExportDate"].Width = 70;

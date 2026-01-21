@@ -114,18 +114,17 @@ namespace RauViet.ui
                 mDomesticLiquidation_dt.Columns["TonCuoiKi"].SetOrdinal(count++);
 
                 dataGV.DataSource = mDomesticLiquidation_dt;
-                
-                dataGV.Columns["DomesticLiquidationPriceID"].Visible = false;
-                dataGV.Columns["ProductNameVN_NoSign"].Visible = false;
-                dataGV.Columns["SKU"].Visible = false;
+                Utils.HideColumns(dataGV, new[] { "DomesticLiquidationPriceID", "ProductNameVN_NoSign", "SKU" });
 
-                dataGV.Columns["Name_VN"].HeaderText = "Tên Sản Phẩm";
-                dataGV.Columns["Package"].HeaderText = "Đ.Vị";
-                dataGV.Columns["TonDauKi"].HeaderText = "Tồn Đầu Kỳ";
-                dataGV.Columns["NhapTrongKy"].HeaderText = "Nhập Trong Kỳ";
-                dataGV.Columns["XuatTrongKy"].HeaderText = "Xuất Trong Kỳ";
-                dataGV.Columns["TonCuoiKi"].HeaderText = "Tồn Cuối Kỳ";
-                dataGV.Columns["SalePrice"].HeaderText = "Giá Thanh Lí";
+                Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"Name_VN", "Tên Sản Phẩm" },
+                    {"Package", "Đ.Vị" },
+                    {"TonDauKi", "Tồn Đầu Kỳ" },
+                    {"NhapTrongKy", "Nhập Trong Kỳ" },
+                    {"XuatTrongKy", "Xuất Trong Kỳ" },
+                    {"TonCuoiKi", "Tồn Cuối Kỳ" },
+                    {"SalePrice", "Giá Thanh Lí" }
+                });
 
                 dataGV.Columns["SalePrice"].DefaultCellStyle.Format = "N0";
                 dataGV.Columns["TonDauKi"].DefaultCellStyle.Format = "N1";
@@ -142,9 +141,6 @@ namespace RauViet.ui
                 dataGV.Columns["SalePrice"].Width = 80;
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-
-                await Task.Delay(100);
-                loadingOverlay.Hide();
             }
             catch
             {

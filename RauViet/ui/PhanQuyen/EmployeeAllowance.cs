@@ -100,7 +100,7 @@ namespace RauViet.ui
                 dataGV.AutoGenerateColumns = true;
                 dataGV.DataSource = _employee_dt;
                 log_GV.DataSource = mLogDV;
-
+                Utils.HideColumns(log_GV, new[] { "LogID", "EmployeeCode" });
                 Utils.HideColumns(dataGV, new[] { "EmployessName_NoSign"});
                 Utils.HideColumns(allowanceGV, new[] { "AllowanceTypeID", "EmployeeCode", "EmployeeAllowanceID" });
 
@@ -124,11 +124,7 @@ namespace RauViet.ui
                 allowanceGV.Columns["AllowanceName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
                 allowanceGV.Columns["Amount"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
                 allowanceGV.Columns["Note"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-
-                log_GV.Columns["LogID"].Visible = false;
-                log_GV.Columns["EmployeeCode"].Visible = false;
-
-                
+                                
                 allowanceGV.SelectionChanged += this.allowanceGV_CellClick;
 
                 if (dataGV.Rows.Count > 0)

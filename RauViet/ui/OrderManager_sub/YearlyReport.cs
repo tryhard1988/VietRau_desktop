@@ -142,7 +142,7 @@ namespace RauViet.ui
                 }
 
                 product_GV.DataSource = mProductOrderHistory_dt;
-
+                Utils.HideColumns(product_GV, new[] { "ProductName_EN", "Priority" });
                 product_GV.EnableHeadersVisualStyles = false;
 
                 Color[] monthColors = new Color[]
@@ -178,8 +178,6 @@ namespace RauViet.ui
                     col.HeaderCell.Style.ForeColor = Color.White;
                 }
 
-                product_GV.Columns["ProductName_EN"].Visible = false;
-                product_GV.Columns["Priority"].Visible = false;
                 product_GV.Columns["ProductName_VN"].HeaderText = "Tên Sản Phẩm";
                 product_GV.Columns["ProductName_VN"].Width = 180;
                 product_GV.Columns["ProductName_VN"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;

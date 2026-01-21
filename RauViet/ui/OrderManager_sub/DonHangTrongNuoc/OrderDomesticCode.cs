@@ -158,14 +158,18 @@ namespace RauViet.ui
 
                 dataGV.DataSource = mOrderDomesticCode_dt;
                 log_GV.DataSource = mLogDV;
+                Utils.HideColumns(dataGV, new[] { "InputByName_NoSign", "OrderDomesticCodeID", "InputBy", "PackingBy", "CustomerID", "CustomerCode", "Address", "CustomerName", "DeliveryYear" });
+                Utils.HideColumns(log_GV, new[] { "LogID", "OrderDomesticIndex" });
 
-                dataGV.Columns["OrderDomesticIndex"].HeaderText = "Mã Đơn Hàng";
-                dataGV.Columns["DeliveryDate"].HeaderText = "Ngày Giao";                
-                dataGV.Columns["Complete"].HeaderText = "Hoàn Thành";
-                dataGV.Columns["InputByName"].HeaderText = "NV Nhập S.Liệu";
-                dataGV.Columns["PackingByName"].HeaderText = "NV Đóng Gói";
-                dataGV.Columns["CustomerName"].HeaderText = "Khách Hàng";
-                dataGV.Columns["Company"].HeaderText = "Khách Hàng";
+                Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"OrderDomesticIndex", "Mã Đơn Hàng" },
+                    {"DeliveryDate", "Ngày Giao" },
+                    {"Complete", "Hoàn Thành" },
+                    {"InputByName", "NV Nhập S.Liệu" },
+                    {"PackingByName", "NV Đóng Gói" },
+                    {"CustomerName", "Khách Hàng" },
+                    {"Company", "Khách Hàng" }
+                });
 
                 dataGV.Columns["OrderDomesticIndex"].Width = 70;
                 dataGV.Columns["DeliveryDate"].Width = 70;
@@ -173,17 +177,7 @@ namespace RauViet.ui
                 dataGV.Columns["InputByName"].Width = 140;
                 dataGV.Columns["PackingByName"].Width = 140;
                 dataGV.Columns["CustomerName"].Width = 100;
-                dataGV.Columns["Company"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-
-                dataGV.Columns["InputByName_NoSign"].Visible = false;
-                dataGV.Columns["OrderDomesticCodeID"].Visible = false;
-                dataGV.Columns["InputBy"].Visible = false;
-                dataGV.Columns["PackingBy"].Visible = false;
-                dataGV.Columns["CustomerID"].Visible = false;
-                dataGV.Columns["CustomerCode"].Visible = false;
-                dataGV.Columns["Address"].Visible = false;
-                dataGV.Columns["CustomerName"].Visible = false;
-                dataGV.Columns["DeliveryYear"].Visible = false;
+                dataGV.Columns["Company"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;                              
 
                 inputBy_cbb.DataSource = _employeesInDongGoi_dt;
                 inputBy_cbb.DisplayMember = "FullName";  // hiển thị tên
@@ -207,12 +201,12 @@ namespace RauViet.ui
                 customer_cb.DisplayMember = "Company";  // hiển thị tên
                 customer_cb.ValueMember = "CustomerID";
 
-                log_GV.Columns["LogID"].Visible = false;
-                log_GV.Columns["OrderDomesticIndex"].Visible = false;
-                log_GV.Columns["OldValue"].HeaderText = "Giá Trị Cũ";
-                log_GV.Columns["NewValue"].HeaderText = "Giá Trị Mới";
-                log_GV.Columns["ActionBy"].HeaderText = "Người Thực Hiện";
-                log_GV.Columns["CreatedAt"].HeaderText = "Ngày Thực Hiện";
+                Utils.SetGridHeaders(log_GV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"OldValue", "Giá Trị Cũ" },
+                    {"NewValue", "Giá Trị Mới" },
+                    {"ActionBy", "Người Thực Hiện" },
+                    {"CreatedAt", "Ngày Thực Hiện" }
+                });
 
                 log_GV.Columns["OldValue"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 log_GV.Columns["NewValue"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
@@ -220,7 +214,6 @@ namespace RauViet.ui
                 log_GV.Columns["CreatedAt"].Width = 120;
 
                 ReadOnly_btn_Click(null, null);
-
             }
             catch
             {

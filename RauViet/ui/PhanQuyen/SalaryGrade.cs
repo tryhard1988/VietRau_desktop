@@ -72,14 +72,13 @@ namespace RauViet.ui
                 dataGV.DataSource = salaryGrade_dt;
                 log_GV.DataSource = mLogDV;
 
+                Utils.HideColumns(dataGV, new[] { "SalaryGradeID" });
+                Utils.HideColumns(log_GV, new[] { "LogID", "GradeID" });
+
                 dataGV.Columns["GradeName"].HeaderText = "Tên bậc lương";
                 dataGV.Columns["Salary"].HeaderText = "Mức lương";
                 dataGV.Columns["Note"].HeaderText = "Diễn Giải";
                 dataGV.Columns["IsActive"].HeaderText = "Đang Hoạt Động";
-
-                dataGV.Columns["SalaryGradeID"].Visible = false;
-                log_GV.Columns["LogID"].Visible = false;
-                log_GV.Columns["GradeID"].Visible = false;
 
                 dataGV.Columns["GradeName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
                 dataGV.Columns["Salary"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;

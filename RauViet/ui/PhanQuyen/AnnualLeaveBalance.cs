@@ -88,13 +88,12 @@ namespace RauViet.ui
             mEmployee_dt.Columns["RemainingLeaveDays"].ReadOnly = false;
 
             dataGV.DataSource = mEmployee_dt;
+            Utils.HideColumns(dataGV, new[] { "RemainingLeaveDays_1", "EmployessName_NoSign", "RemainingLeaveDays", "LeaveCount" });
 
             foreach (DataGridViewColumn col in dataGV.Columns)
             {
                 col.ReadOnly = true;
             }
-
-            Utils.HideColumns(dataGV, new[] { "RemainingLeaveDays_1", "EmployessName_NoSign", "RemainingLeaveDays", "LeaveCount" });
 
             dataGV.Columns["EmployeeCode"].HeaderText = "Mã NV";
             dataGV.Columns["FullName"].HeaderText = "Tên Nhân Viên";

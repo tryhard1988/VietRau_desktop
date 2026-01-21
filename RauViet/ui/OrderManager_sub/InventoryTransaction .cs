@@ -100,18 +100,17 @@ namespace RauViet.ui
                                 
 
                 dataGV.DataSource = mInventoryTransaction_dt;
+                Utils.HideColumns(dataGV, new[] { "SKU", "TransactionType", "ProductNameVN_NoSign" });
 
-                dataGV.Columns["SKU"].Visible = false;
-                dataGV.Columns["TransactionType"].Visible = false;
-                dataGV.Columns["ProductNameVN_NoSign"].Visible = false;
-
-                dataGV.Columns["TransactionID"].HeaderText = "ID";
-                dataGV.Columns["Name_VN"].HeaderText = "Tên Tiếng Việt";
-                dataGV.Columns["Package"].HeaderText = "Đ.Vị";
-                dataGV.Columns["TransactionTypeName"].HeaderText = "Loại";
-                dataGV.Columns["Quantity"].HeaderText = "Số Lượng";
-                dataGV.Columns["TransactionDate"].HeaderText = "Ngày";
-                dataGV.Columns["Note"].HeaderText = "Ghi Chú";
+                Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"TransactionID", "ID" },
+                    {"Name_VN", "Tên Tiếng Việt" },
+                    {"Package", "Đ.Vị" },
+                    {"TransactionTypeName", "Loại" },
+                    {"Quantity", "Số Lượng" },
+                    {"TransactionDate", "Ngày" },
+                    {"Note", "Ghi Chú" }
+                });
 
                 dataGV.Columns["TransactionID"].Width = 70;
                 dataGV.Columns["Name_VN"].Width = 250;

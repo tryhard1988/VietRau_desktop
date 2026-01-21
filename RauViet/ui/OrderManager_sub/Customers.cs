@@ -46,12 +46,14 @@ namespace RauViet.ui
                 DataTable dt = await SQLStore_Kho.Instance.getCustomersAsync();
                 dataGV.DataSource = dt;
 
-                dataGV.Columns["CustomerID"].HeaderText = "Mã KH";
-                dataGV.Columns["FullName"].HeaderText = "Tên Khách Hàng";
-                dataGV.Columns["CustomerCode"].HeaderText = "Tên In Trên Thùng";
-                dataGV.Columns["Home"].HeaderText = "Nhóm";
-                dataGV.Columns["Company"].HeaderText = "Công Ty";
-                dataGV.Columns["Address"].HeaderText = "Địa Chỉ";
+                Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"CustomerID", "Mã KH" },
+                    {"FullName", "Tên Khách Hàng" },
+                    {"CustomerCode", "Tên In Trên Thùng" },
+                    {"Home", "Nhóm" },
+                    {"Company", "Công Ty" },
+                    {"Address", "Địa Chỉ" }
+                });
 
                 dataGV.Columns["Home"].Width = 50;
                 dataGV.Columns["Priority"].Width = 50;

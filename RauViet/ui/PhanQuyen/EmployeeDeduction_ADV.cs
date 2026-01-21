@@ -144,18 +144,10 @@ namespace RauViet.ui
                 dataGV.AutoGenerateColumns = true;
                 dataGV.DataSource = mEmployee_dt;
                 log_GV.DataSource = mDeductionLogDV;
-
-                log_GV.Columns["LogID"].Visible = false;
-                log_GV.Columns["EmployeeCode"].Visible = false;
-                log_GV.Columns["DeductionTypeCode"].Visible = false;
-
-                employeeDeductionGV.Columns["EmployeeDeductionID"].Visible = false;
-                employeeDeductionGV.Columns["DeductionTypeCode"].Visible = false;
-                employeeDeductionGV.Columns["DeductionTypeName"].Visible = false;
-
+                Utils.HideColumns(dataGV, new[] { "EmployessName_NoSign"});
                 Utils.HideColumns(employeeDeductionGV, new[] { "EmployeeDeductionID", "DeductionTypeCode", "DeductionTypeName" });
-                Utils.HideColumns(log_GV, new[] { "LogID", "EmployeeCode", "DeductionTypeCode"});
-
+                Utils.HideColumns(log_GV, new[] { "LogID", "EmployeeCode", "DeductionTypeCode" });
+                     
                 int count = 0;
                 mEmployeeDeduction_dt.Columns["EmployeeCode"].SetOrdinal(count++);
                 mEmployeeDeduction_dt.Columns["EmployeeName"].SetOrdinal(count++);
@@ -174,7 +166,6 @@ namespace RauViet.ui
                 dataGV.Columns["EmployeeCode"].HeaderText = "Mã NV";
                 dataGV.Columns["PositionName"].HeaderText = "Chức Vụ";
                 dataGV.Columns["ContractTypeName"].HeaderText = "Loại Hợp Đồng";
-                dataGV.Columns["EmployessName_NoSign"].Visible = false;
                 dataGV.Columns["EmployeeCode"].Width = 60;
                 dataGV.Columns["FullName"].Width = 160;
 

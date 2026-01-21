@@ -91,16 +91,15 @@ namespace RauViet.ui
                 sku_cbb.TextUpdate += sku_cbb_TextUpdate;
 
                 dataGV.DataSource = mDomesticLiquidationPrice_dt;
-
                 log_GV.DataSource = mLogDV;
-                
-                dataGV.Columns["DomesticLiquidationPriceID"].Visible = false;
-                dataGV.Columns["SKU"].Visible = false;
-                dataGV.Columns["ProductNameVN_NoSign"].Visible = false;
+                Utils.HideColumns(dataGV, new[] { "DomesticLiquidationPriceID", "SKU", "ProductNameVN_NoSign" });
+                Utils.HideColumns(log_GV, new[] { "LogID", "SKU" });
 
-                dataGV.Columns["Name_VN"].HeaderText = "Tên Sản Phẩm";
-                dataGV.Columns["Package"].HeaderText = "Đ.Vị";
-                dataGV.Columns["SalePrice"].HeaderText = "Giá";
+                Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"Name_VN", "Tên Sản Phẩm" },
+                    {"Package", "Đ.Vị" },
+                    {"SalePrice", "Giá" }
+                });
 
                 dataGV.Columns["SalePrice"].DefaultCellStyle.Format = "N0";
 
@@ -121,19 +120,17 @@ namespace RauViet.ui
                 await Task.Delay(100);
                 loadingOverlay.Hide();
 
-
-                log_GV.Columns["LogID"].Visible = false;
-                log_GV.Columns["SKU"].Visible = false;
-                log_GV.Columns["OldPrice"].HeaderText = "Giá Trị Cũ";
-                log_GV.Columns["NewPrice"].HeaderText = "Giá Trị Mới";
-                log_GV.Columns["ActionBy"].HeaderText = "Người Thực Hiện";
-                log_GV.Columns["CreatedAt"].HeaderText = "Ngày Thực Hiện";
+                Utils.SetGridHeaders(log_GV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"OldPrice", "Giá Trị Cũ" },
+                    {"NewPrice", "Giá Trị Mới" },
+                    {"ActionBy", "Người Thực Hiện" },
+                    {"CreatedAt", "Ngày Thực Hiện" }
+                });
 
                 log_GV.Columns["OldPrice"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 log_GV.Columns["NewPrice"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 log_GV.Columns["ActionBy"].Width = 150;
-                log_GV.Columns["CreatedAt"].Width = 120;
-
+                log_GV.Columns["CreatedAt"].Width = 120;                
             }
             catch
             {

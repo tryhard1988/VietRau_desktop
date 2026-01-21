@@ -91,23 +91,22 @@ namespace RauViet.ui
                 sku_cbb.ValueMember = "SKU";
                 sku_cbb.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
                 sku_cbb.TextUpdate += sku_cbb_TextUpdate;
-
+                
                 dataGV.DataSource = mProductDomesticPrices_dt;
+                log_GV.DataSource = mLogDV;
+                Utils.HideColumns(dataGV, new[] { "PriceID", "ProductNameVN_NoSign", "Package", "Priority" });
+                Utils.HideColumns(log_GV, new[] { "HistoryID", "SKU" });
+
                 DataView dv = mProductDomesticPrices_dt.DefaultView;
                 dv.RowFilter = $"IsActive = true";
 
-                log_GV.DataSource = mLogDV;
-
-                dataGV.Columns["PriceID"].Visible = false;
-                dataGV.Columns["ProductNameVN_NoSign"].Visible = false;
-                dataGV.Columns["Package"].Visible = false;
-                dataGV.Columns["Priority"].Visible = false;
-
-                dataGV.Columns["ProductName_VN"].HeaderText = "Tên Sản Phẩm";
-                dataGV.Columns["RawPrice"].HeaderText = "Giá Hàng Xá";
-                dataGV.Columns["RefinedPrice"].HeaderText = "Giá Hàng Tinh";
-                dataGV.Columns["PackedPrice"].HeaderText = "Giá Hàng Đóng Gói";
-                dataGV.Columns["IsActive"].HeaderText = "Active";
+                Utils.SetGridHeaders(log_GV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"ProductName_VN", "Tên Sản Phẩm" },
+                    {"RawPrice", "Giá Hàng Xá" },
+                    {"RefinedPrice", "Giá Hàng Tinh" },
+                    {"PackedPrice", "Giá Hàng Đóng Gói" },
+                    {"IsActive", "Active" },
+                });
 
                 dataGV.Columns["RawPrice"].DefaultCellStyle.Format = "N0";
                 dataGV.Columns["RefinedPrice"].DefaultCellStyle.Format = "N0";
@@ -136,13 +135,12 @@ namespace RauViet.ui
                 dataGV.Columns["RefinedPrice"].DefaultCellStyle.Format = "N0";
                 dataGV.Columns["PackedPrice"].DefaultCellStyle.Format = "N0";
 
-
-                log_GV.Columns["HistoryID"].Visible = false;
-                log_GV.Columns["SKU"].Visible = false;
-                log_GV.Columns["OldValue"].HeaderText = "Giá Trị Cũ";
-                log_GV.Columns["NewValue"].HeaderText = "Giá Trị Mới";
-                log_GV.Columns["ActionBy"].HeaderText = "Người Thực Hiện";
-                log_GV.Columns["CreatedAt"].HeaderText = "Ngày Thực Hiện";
+                Utils.SetGridHeaders(log_GV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"OldValue", "Giá Trị Cũ" },
+                    {"NewValue", "Giá Trị Mới" },
+                    {"ActionBy", "Người Thực Hiện" },
+                    {"CreatedAt", "Ngày Thực Hiện" }
+                });
 
                 log_GV.Columns["OldValue"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 log_GV.Columns["NewValue"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;

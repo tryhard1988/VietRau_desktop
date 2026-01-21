@@ -159,33 +159,33 @@ namespace RauViet.ui
                 foreach (DataColumn col in mOrderDomesticDetail_dt.Columns)
                     col.ReadOnly = false;
 
-                // Gán testData cho DataGridView tạm để test
-                dataGV.DataSource = mOrderDomesticDetail_dt;
                 mLogDV = new DataView(orderLogTask.Result);
+
+                dataGV.DataSource = mOrderDomesticDetail_dt;                
                 log_GV.DataSource = mLogDV;
+                Utils.HideColumns(dataGV, new[] { "TotalAmountOrder", "TotalAmountReal", "packing", "Package", "SKU", "ProductPackingID", "OrderDomesticCodeID", "Amount", "CustomerProductTypesCode", "BarCodeEAN13", "ProductSKU" });
+                Utils.HideColumns(log_GV, new[] { "LogID", "OrderDomesticDetailID", "OrderDomesticCodeID" });
 
-                dataGV.Columns["Price"].HeaderText = "Giá";
-                dataGV.Columns["ProductNameVN"].HeaderText = "Tên Sản Phẩm";
-                dataGV.Columns["PCSOrder"].HeaderText = "PCS\nĐặt Hàng";
-                dataGV.Columns["NWOrder"].HeaderText = "NW\nĐặt Hàng";
-                dataGV.Columns["PCSReal"].HeaderText = "PCS\nGiao Hàng";
-                dataGV.Columns["NWReal"].HeaderText = "NW\nGiao Hàng";
-                dataGV.Columns["OrderDomesticDetailID"].HeaderText = "ID";
-                dataGV.Columns["ProductTypeName"].HeaderText = "Loại Hàng";
+                Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"Price", "Giá" },
+                    {"ProductNameVN", "Tên Sản Phẩm" },
+                    {"PCSOrder", "PCS\nĐặt Hàng" },
+                    {"NWOrder", "NW\nĐặt Hàng" },
+                    {"PCSReal", "PCS\nGiao Hàng" },
+                    {"NWReal", "NW\nGiao Hàng" },
+                    {"OrderDomesticDetailID", "ID" },
+                    {"ProductTypeName", "Loại Hàng" },
+                });
 
-                dataGV.Columns["TotalAmountOrder"].Visible = false;
-                dataGV.Columns["TotalAmountReal"].Visible = false;
-                dataGV.Columns["packing"].Visible = false;
-                dataGV.Columns["Package"].Visible = false;
-                dataGV.Columns["SKU"].Visible = false;
-                dataGV.Columns["ProductPackingID"].Visible = false;
-                dataGV.Columns["OrderDomesticCodeID"].Visible = false;
-                dataGV.Columns["Amount"].Visible = false;
-                dataGV.Columns["CustomerProductTypesCode"].Visible = false;
-                dataGV.Columns["BarCodeEAN13"].Visible = false;
+                Utils.SetGridHeaders(log_GV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"OldValue", "Giá Trị Cũ" },
+                    {"NewValue", "Giá Trị Mới" },
+                    {"ActionBy", "Người Thực Hiện" },
+                    {"CreatedAt", "Ngày Thực Hiện" }
+                });
+
                 dataGV.Columns["Price"].Visible = !UserManager.Instance.hasRole_AnGiaSanPham();
-                dataGV.Columns["ProductSKU"].Visible = false;
-
+                
                 dataGV.ReadOnly = false;
                 dataGV.Columns["PCSReal"].ReadOnly = false;                
                 dataGV.Columns["NWReal"].ReadOnly = false;
@@ -227,14 +227,7 @@ namespace RauViet.ui
                 await Task.Delay(500);
                 ReadOnly_btn_Click(null, null);
 
-                log_GV.Columns["LogID"].Visible = false;
-                log_GV.Columns["OrderDomesticDetailID"].Visible = false;
-                log_GV.Columns["OrderDomesticCodeID"].Visible = false;
-
-                log_GV.Columns["OldValue"].HeaderText = "Giá Trị Cũ";
-                log_GV.Columns["NewValue"].HeaderText = "Giá Trị Mới";
-                log_GV.Columns["ActionBy"].HeaderText = "Người Thực Hiện";
-                log_GV.Columns["CreatedAt"].HeaderText = "Ngày Thực Hiện";
+                
 
                 log_GV.Columns["OldValue"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 log_GV.Columns["NewValue"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;

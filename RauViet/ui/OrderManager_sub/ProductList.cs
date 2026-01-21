@@ -100,20 +100,7 @@ namespace RauViet.ui
                 dataGV.DataSource = packing_dt;
                 DataView dv = packing_dt.DefaultView;
                 dv.RowFilter = $"IsActive_SKU = true";
-
-                dataGV.Columns["ProductPackingID"].Visible = false;
-                dataGV.Columns["IsActive_SKU"].Visible = false;
-                // dataGV.Columns["Amount"].Visible = false;
-                // dataGV.Columns["Packing"].Visible = false;
-                dataGV.Columns["PriceCNF"].Visible = false;
-                dataGV.Columns["SKU"].Visible = false; 
-                dataGV.Columns["ProductNameVN_NoSign"].Visible = false;
-                dataGV.Columns["PackingName"].Visible = false;
-                dataGV.Columns["Package"].Visible = false;
-                dataGV.Columns["Amount"].Visible = false;
-                dataGV.Columns["Packing"].Visible = false;
-                dataGV.Columns["ProductSKU"].Visible = false;
-                dataGV.Columns["GroupProduct"].Visible = false;
+                Utils.HideColumns(dataGV, new[] { "GroupProduct", "ProductSKU", "Packing", "Amount", "Package", "PackingName", "ProductNameVN_NoSign", "SKU", "PriceCNF", "IsActive_SKU", "ProductPackingID" });
 
                 dataGV.Columns["Name_VN"].HeaderText = "Tên Tiếng Việt";
                 dataGV.Columns["Name_EN"].HeaderText = "Tên Tiếng Anh";
@@ -698,9 +685,9 @@ namespace RauViet.ui
 
         private void RightUiEnable(bool enable)
         {
-            PLU_tb.Enabled = enable;
-            packing_panel.Enabled = enable;
-            amount_tb.Enabled = enable;
+           // PLU_tb.Enabled = enable;
+           // packing_panel.Enabled = enable;
+           // amount_tb.Enabled = enable;
         }
     }
 }

@@ -95,36 +95,34 @@ namespace RauViet.ui
                 mDomesticLiquidationExport_dt = domesticLiquidationExportTask.Result;
                 mEmployee_dt = empTask.Result;
                 mLogDV = new DataView(logDataTask.Result);
-                
+
 
                 domesticLiquidationPrice_cbb.DataSource = mDomesticLiquidationPrice_dt;
                 domesticLiquidationPrice_cbb.DisplayMember = "Name_VN";  // hiển thị tên
                 domesticLiquidationPrice_cbb.ValueMember = "DomesticLiquidationPriceID";
                 domesticLiquidationPrice_cbb.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
-               
+
                 employeeBuy_CBB.DataSource = mEmployee_dt;
                 employeeBuy_CBB.DisplayMember = "FullName";  // hiển thị tên
                 employeeBuy_CBB.ValueMember = "EmployeeID";
                 employeeBuy_CBB.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
-                
+
 
                 dataGV.DataSource = mDomesticLiquidationExport_dt;
-
                 log_GV.DataSource = mLogDV;
+                Utils.HideColumns(dataGV, new[] { "DomesticLiquidationPriceID", "ExportID", "EmployeeBuyID" });
+                Utils.HideColumns(log_GV, new[] { "LogID", "DomesticLiquidationPriceID" });
 
-                dataGV.Columns["DomesticLiquidationPriceID"].Visible = false;
-                dataGV.Columns["ExportID"].Visible = false;
-                dataGV.Columns["EmployeeBuyID"].Visible = false;
-
-
-                dataGV.Columns["Name_VN"].HeaderText = "Tên Sản Phẩm";
-                dataGV.Columns["Package"].HeaderText = "Đ.Vị";
-                dataGV.Columns["Quantity"].HeaderText = "S.Lượng";
-                dataGV.Columns["EmployeeBuy"].HeaderText = "Người Mua";
-                dataGV.Columns["ExportDate"].HeaderText = "Ngày Bán";
-                dataGV.Columns["Price"].HeaderText = "Giá";
-                dataGV.Columns["TotalMoney"].HeaderText = "Thành Tiền";
-                dataGV.Columns["IsCanceled"].HeaderText = "Hủy";
+                Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"Name_VN", "Tên Sản Phẩm" },
+                    {"Package", "Đ.Vị" },
+                    {"Quantity", "S.Lượng" },
+                    {"EmployeeBuy", "Người Mua" },
+                    {"ExportDate", "Ngày Bán" },
+                    {"Price", "Giá" },
+                    {"TotalMoney", "Thành Tiền" },
+                    {"IsCanceled", "Hủy" }
+                });
 
                 dataGV.Columns["Price"].DefaultCellStyle.Format = "N0";
                 dataGV.Columns["TotalMoney"].DefaultCellStyle.Format = "N0";
@@ -159,19 +157,16 @@ namespace RauViet.ui
                 await Task.Delay(100);
                 loadingOverlay.Hide();
 
-
-                log_GV.Columns["LogID"].Visible = false;
-                log_GV.Columns["DomesticLiquidationPriceID"].Visible = false;
-                log_GV.Columns["OldValue"].HeaderText = "Giá Trị Cũ";
-                log_GV.Columns["NewValue"].HeaderText = "Giá Trị Mới";
-                log_GV.Columns["ActionBy"].HeaderText = "Người Thực Hiện";
-                log_GV.Columns["CreatedAt"].HeaderText = "Ngày Thực Hiện";
-
+                Utils.SetGridHeaders(log_GV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"OldValue", "Giá Trị Cũ" },
+                    {"NewValue", "Giá Trị Mới" },
+                    {"ActionBy", "Người Thực Hiện" },
+                    {"CreatedAt", "Ngày Thực Hiện" }
+                });
                 log_GV.Columns["OldValue"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 log_GV.Columns["NewValue"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 log_GV.Columns["ActionBy"].Width = 150;
                 log_GV.Columns["CreatedAt"].Width = 120;
-
             }
             catch
             {

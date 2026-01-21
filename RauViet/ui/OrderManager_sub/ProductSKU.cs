@@ -105,8 +105,11 @@ namespace RauViet.ui
                 mProductSKU_dt.Columns["PlantingAreaCode"].SetOrdinal(count++);
                 mProductSKU_dt.Columns["LOTCodeHeader"].SetOrdinal(count++);
                 mProductSKU_dt.Columns["Priority"].SetOrdinal(count++);
+
                 priceCNFHisGV.DataSource = mPoductSKUHistory_dt;
-                dataGV.DataSource = mProductSKU_dt;                
+                dataGV.DataSource = mProductSKU_dt;
+                Utils.HideColumns(dataGV, new[] { "ProductSKU", "ProductNameVN_NoSign", "PackingType", "GroupProduct" });
+                Utils.HideColumns(priceCNFHisGV, new[] { "id", "SKU" });
 
                 dataGV.Columns["ProductNameVN"].HeaderText = "Tên Sản Phẩm (VN)";
                 dataGV.Columns["ProductNameEN"].HeaderText = "Tên Sản Phẩm (EN)";
@@ -133,16 +136,8 @@ namespace RauViet.ui
                 dataGV.Columns["SKU"].Width = 60;
                 dataGV.Columns["IsActive"].Width = 30;
 
-                dataGV.Columns["ProductSKU"].Visible = false;
-                dataGV.Columns["ProductNameVN_NoSign"].Visible = false;
-                dataGV.Columns["PackingType"].Visible = false;
-                dataGV.Columns["GroupProduct"].Visible = false;
                 dataGV.Columns["PriceCNF"].Visible = !UserManager.Instance.hasRole_AnGiaSanPham();
-                priceCNFHisGV.Columns["id"].Visible = false;
-                priceCNFHisGV.Columns["SKU"].Visible = false;
                 priceCNFHisGV.Visible = !UserManager.Instance.hasRole_AnGiaSanPham();
-
-                // dataGV.Columns["SKU"].Visible = false;
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 dataGV.Columns["PriceCNF"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
@@ -151,7 +146,6 @@ namespace RauViet.ui
                 dataGV.Columns["Priority"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 dataGV.Columns["PackingList"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 dataGV.Columns["SKU"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                //dataGV.AutoResizeColumns();
 
                 search_txt_TextChanged(null, null);
 

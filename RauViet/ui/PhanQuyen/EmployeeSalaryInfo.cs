@@ -98,14 +98,9 @@ namespace RauViet.ui
                 dataGV.DataSource = employee_dt;
                 log_GV.DataSource = mLogDV;
 
-                log_GV.Columns["LogID"].Visible = false;
-                log_GV.Columns["EmployeeCode"].Visible = false;
-                dataGV.Columns["EmployessName_NoSign"].Visible = false;
-                dataGV.Columns["SalaryGrade"].Visible = false;
-                salaryInfoGV.Columns["Month"].Visible = false;
-                salaryInfoGV.Columns["Year"].Visible = false;
-                salaryInfoGV.Columns["EmployeeCode"].Visible = false;
-                salaryInfoGV.Columns["SalaryInfoID"].Visible = false;
+                Utils.HideColumns(log_GV, new[] { "LogID", "EmployeeCode" });
+                Utils.HideColumns(dataGV, new[] { "EmployessName_NoSign", "SalaryGrade" });
+                Utils.HideColumns(salaryInfoGV, new[] { "Month", "Year", "EmployeeCode", "SalaryInfoID" });
 
                 
                 salaryInfoGV.Columns["Date"].HeaderText = "Tháng/Năm";

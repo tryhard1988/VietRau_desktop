@@ -38,6 +38,14 @@ namespace RauViet.ui
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.panel5 = new System.Windows.Forms.Panel();
+            this.TotalAmount_label = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
+            this.CNTSTotal_label = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.NWTotal_label = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
+            this.PCSTotal_label = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
             this.panel4 = new System.Windows.Forms.Panel();
             this.cartonSizeGV = new System.Windows.Forms.DataGridView();
@@ -46,14 +54,6 @@ namespace RauViet.ui
             this.cusOrderGV = new System.Windows.Forms.DataGridView();
             this.label1 = new System.Windows.Forms.Label();
             this.dataGV = new System.Windows.Forms.DataGridView();
-            this.NWTotal_label = new System.Windows.Forms.Label();
-            this.label11 = new System.Windows.Forms.Label();
-            this.PCSTotal_label = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.CNTSTotal_label = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.TotalAmount_label = new System.Windows.Forms.Label();
-            this.label12 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.panel5.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -152,6 +152,102 @@ namespace RauViet.ui
             this.panel5.Size = new System.Drawing.Size(1084, 22);
             this.panel5.TabIndex = 16;
             // 
+            // TotalAmount_label
+            // 
+            this.TotalAmount_label.AutoSize = true;
+            this.TotalAmount_label.Dock = System.Windows.Forms.DockStyle.Left;
+            this.TotalAmount_label.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.TotalAmount_label.ForeColor = System.Drawing.Color.MediumPurple;
+            this.TotalAmount_label.Location = new System.Drawing.Point(434, 0);
+            this.TotalAmount_label.Name = "TotalAmount_label";
+            this.TotalAmount_label.Size = new System.Drawing.Size(35, 16);
+            this.TotalAmount_label.TabIndex = 96;
+            this.TotalAmount_label.Text = "PCS:";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Dock = System.Windows.Forms.DockStyle.Left;
+            this.label12.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label12.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.label12.Location = new System.Drawing.Point(322, 0);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(112, 16);
+            this.label12.TabIndex = 95;
+            this.label12.Text = "Tổng Tiền (CHF):";
+            // 
+            // CNTSTotal_label
+            // 
+            this.CNTSTotal_label.AutoSize = true;
+            this.CNTSTotal_label.Dock = System.Windows.Forms.DockStyle.Left;
+            this.CNTSTotal_label.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.CNTSTotal_label.ForeColor = System.Drawing.Color.MediumPurple;
+            this.CNTSTotal_label.Location = new System.Drawing.Point(287, 0);
+            this.CNTSTotal_label.Name = "CNTSTotal_label";
+            this.CNTSTotal_label.Size = new System.Drawing.Size(35, 16);
+            this.CNTSTotal_label.TabIndex = 94;
+            this.CNTSTotal_label.Text = "PCS:";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Dock = System.Windows.Forms.DockStyle.Left;
+            this.label6.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label6.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.label6.Location = new System.Drawing.Point(209, 0);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(78, 16);
+            this.label6.TabIndex = 93;
+            this.label6.Text = "Tổng CNTS:";
+            // 
+            // NWTotal_label
+            // 
+            this.NWTotal_label.AutoSize = true;
+            this.NWTotal_label.Dock = System.Windows.Forms.DockStyle.Left;
+            this.NWTotal_label.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.NWTotal_label.ForeColor = System.Drawing.Color.Brown;
+            this.NWTotal_label.Location = new System.Drawing.Point(174, 0);
+            this.NWTotal_label.Name = "NWTotal_label";
+            this.NWTotal_label.Size = new System.Drawing.Size(35, 16);
+            this.NWTotal_label.TabIndex = 88;
+            this.NWTotal_label.Text = "PCS:";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Dock = System.Windows.Forms.DockStyle.Left;
+            this.label11.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label11.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.label11.Location = new System.Drawing.Point(106, 0);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(68, 16);
+            this.label11.TabIndex = 87;
+            this.label11.Text = "Tổng NW:";
+            // 
+            // PCSTotal_label
+            // 
+            this.PCSTotal_label.AutoSize = true;
+            this.PCSTotal_label.Dock = System.Windows.Forms.DockStyle.Left;
+            this.PCSTotal_label.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.PCSTotal_label.ForeColor = System.Drawing.SystemColors.Highlight;
+            this.PCSTotal_label.Location = new System.Drawing.Point(71, 0);
+            this.PCSTotal_label.Name = "PCSTotal_label";
+            this.PCSTotal_label.Size = new System.Drawing.Size(35, 16);
+            this.PCSTotal_label.TabIndex = 86;
+            this.PCSTotal_label.Text = "PCS:";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Dock = System.Windows.Forms.DockStyle.Left;
+            this.label4.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label4.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.label4.Location = new System.Drawing.Point(0, 0);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(71, 16);
+            this.label4.TabIndex = 85;
+            this.label4.Text = "Tổng PCS:";
+            // 
             // panel2
             // 
             this.panel2.Controls.Add(this.panel4);
@@ -241,102 +337,6 @@ namespace RauViet.ui
             this.dataGV.ReadOnly = true;
             this.dataGV.Size = new System.Drawing.Size(677, 659);
             this.dataGV.TabIndex = 19;
-            // 
-            // NWTotal_label
-            // 
-            this.NWTotal_label.AutoSize = true;
-            this.NWTotal_label.Dock = System.Windows.Forms.DockStyle.Left;
-            this.NWTotal_label.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.NWTotal_label.ForeColor = System.Drawing.Color.Brown;
-            this.NWTotal_label.Location = new System.Drawing.Point(174, 0);
-            this.NWTotal_label.Name = "NWTotal_label";
-            this.NWTotal_label.Size = new System.Drawing.Size(35, 16);
-            this.NWTotal_label.TabIndex = 88;
-            this.NWTotal_label.Text = "PCS:";
-            // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Dock = System.Windows.Forms.DockStyle.Left;
-            this.label11.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label11.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.label11.Location = new System.Drawing.Point(106, 0);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(68, 16);
-            this.label11.TabIndex = 87;
-            this.label11.Text = "Tổng NW:";
-            // 
-            // PCSTotal_label
-            // 
-            this.PCSTotal_label.AutoSize = true;
-            this.PCSTotal_label.Dock = System.Windows.Forms.DockStyle.Left;
-            this.PCSTotal_label.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.PCSTotal_label.ForeColor = System.Drawing.SystemColors.Highlight;
-            this.PCSTotal_label.Location = new System.Drawing.Point(71, 0);
-            this.PCSTotal_label.Name = "PCSTotal_label";
-            this.PCSTotal_label.Size = new System.Drawing.Size(35, 16);
-            this.PCSTotal_label.TabIndex = 86;
-            this.PCSTotal_label.Text = "PCS:";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Dock = System.Windows.Forms.DockStyle.Left;
-            this.label4.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.label4.Location = new System.Drawing.Point(0, 0);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(71, 16);
-            this.label4.TabIndex = 85;
-            this.label4.Text = "Tổng PCS:";
-            // 
-            // CNTSTotal_label
-            // 
-            this.CNTSTotal_label.AutoSize = true;
-            this.CNTSTotal_label.Dock = System.Windows.Forms.DockStyle.Left;
-            this.CNTSTotal_label.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.CNTSTotal_label.ForeColor = System.Drawing.Color.MediumPurple;
-            this.CNTSTotal_label.Location = new System.Drawing.Point(287, 0);
-            this.CNTSTotal_label.Name = "CNTSTotal_label";
-            this.CNTSTotal_label.Size = new System.Drawing.Size(35, 16);
-            this.CNTSTotal_label.TabIndex = 94;
-            this.CNTSTotal_label.Text = "PCS:";
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Dock = System.Windows.Forms.DockStyle.Left;
-            this.label6.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label6.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.label6.Location = new System.Drawing.Point(209, 0);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(78, 16);
-            this.label6.TabIndex = 93;
-            this.label6.Text = "Tổng CNTS:";
-            // 
-            // TotalAmount_label
-            // 
-            this.TotalAmount_label.AutoSize = true;
-            this.TotalAmount_label.Dock = System.Windows.Forms.DockStyle.Left;
-            this.TotalAmount_label.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.TotalAmount_label.ForeColor = System.Drawing.Color.MediumPurple;
-            this.TotalAmount_label.Location = new System.Drawing.Point(434, 0);
-            this.TotalAmount_label.Name = "TotalAmount_label";
-            this.TotalAmount_label.Size = new System.Drawing.Size(35, 16);
-            this.TotalAmount_label.TabIndex = 96;
-            this.TotalAmount_label.Text = "PCS:";
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Dock = System.Windows.Forms.DockStyle.Left;
-            this.label12.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label12.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.label12.Location = new System.Drawing.Point(322, 0);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(112, 16);
-            this.label12.TabIndex = 95;
-            this.label12.Text = "Tổng Tiền (CHF):";
             // 
             // INVOICE
             // 

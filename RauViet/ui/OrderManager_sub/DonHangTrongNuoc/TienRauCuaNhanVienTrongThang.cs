@@ -6,6 +6,7 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
 using Color = System.Drawing.Color;
 
 namespace RauViet.ui
@@ -93,11 +94,15 @@ namespace RauViet.ui
                 }
 
                 dataGV.DataSource = mTongHopBanThanhLy_dt;
+                Utils.HideColumns(dataGV, new[] { "EmployeeID" });
 
-                dataGV.Columns["EmployeeID"].Visible = false;
-                dataGV.Columns["EmployeeCode"].HeaderText = "Mã NV";
-                dataGV.Columns["EmployeeName"].HeaderText = "Tên Nhân Viên";
-                dataGV.Columns["TotalMoney"].HeaderText = "Số Tiền";
+                Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"ExportDate", "Ngày Mua" },
+                    {"EmployeeCode", "Mã NV" },
+                    {"EmployeeName", "Tên Nhân Viên" },
+                    {"TotalMoney", "Số Tiền" },
+                });
+
                 dataGV.Columns["TotalMoney"].DefaultCellStyle.Format = "N0";
                 dataGV.Columns["ExportDate"].DefaultCellStyle.Format = "MM/yyyy";
 

@@ -1,6 +1,7 @@
 ﻿using ClosedXML.Excel;
 using DocumentFormat.OpenXml.Wordprocessing;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
@@ -70,6 +71,15 @@ public static class Utils
             {
                 gv.Columns[col].Visible = false;
             }
+        }
+    }
+
+    public static void SetGridHeaders(DataGridView dataGV, Dictionary<string, string> headers)
+    {
+        foreach (var h in headers)
+        {
+            if (dataGV.Columns.Contains(h.Key))
+                dataGV.Columns[h.Key].HeaderText = h.Value;
         }
     }
 

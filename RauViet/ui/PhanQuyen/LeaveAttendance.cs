@@ -137,6 +137,9 @@ namespace RauViet.ui
                 dv.RowFilter = "";
 
                 dataGV.DataSource = mEmployee_dt;
+                Utils.HideColumns(dataGV, new[] { "Month", "RemainingLeaveDays", "LeaveCount", "EmployessName_NoSign" });
+
+
                 dataGV.Columns["EmployeeCode"].HeaderText = "Mã NV";
                 dataGV.Columns["FullName"].HeaderText = "Tên Nhân Viên";
               //  dataGV.Columns["ContractTypeName"].HeaderText = "Loại H.Đồng";
@@ -144,10 +147,6 @@ namespace RauViet.ui
                 dataGV.Columns["RemainingLeaveDays_1"].HeaderText = "Phép Năm Còn";
 
                 mEmployee_dt.Columns["LeaveCount"].ReadOnly = false;
-                dataGV.Columns["Month"].Visible = false;
-                dataGV.Columns["RemainingLeaveDays"].Visible = false;
-                dataGV.Columns["LeaveCount"].Visible = false;
-                dataGV.Columns["EmployessName_NoSign"].Visible = false;
 
 
                 dataGV.Columns["EmployeeCode"].Width = 50;
@@ -165,10 +164,8 @@ namespace RauViet.ui
 
 
                 log_GV.DataSource = mLogDV;
+                Utils.HideColumns(log_GV, new[] { "LogID", "EmployeeCode" });
                 loadLeaveAttendance();
-
-                log_GV.Columns["LogID"].Visible = false;
-                log_GV.Columns["EmployeeCode"].Visible = false;
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 

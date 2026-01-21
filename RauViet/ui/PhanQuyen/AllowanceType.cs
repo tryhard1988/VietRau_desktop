@@ -84,15 +84,13 @@ namespace RauViet.ui
                
                                 
                 dataGV.DataSource = allowanceType_dt;
+                Utils.HideColumns(dataGV, new[] { "AllowanceTypeID", "ApplyScopeID" });
 
                 dataGV.Columns["AllowanceName"].HeaderText = "Loại Phụ Cấp";
                 dataGV.Columns["ScopeName"].HeaderText = "Nhóm Áp dụng";
                 dataGV.Columns["IsInsuranceIncluded"].HeaderText = "Đóng Bảo Hiểm Không";
                 dataGV.Columns["IsActive"].HeaderText = "Đang Hoạt Động";
                 dataGV.Columns["AllowanceCode"].HeaderText = "Mã Phụ Cấp";
-
-                dataGV.Columns["AllowanceTypeID"].Visible = false;
-                dataGV.Columns["ApplyScopeID"].Visible = false;
 
                 dataGV.Columns["AllowanceName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
                 dataGV.Columns["ScopeName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;

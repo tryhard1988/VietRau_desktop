@@ -51,6 +51,18 @@ namespace RauViet.ui
             dataGV.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dataGV.MultiSelect = false;
 
+            Utils.SetTabStopRecursive(this, false);
+
+            int countTab = 0;
+            transactionDate_dtp.TabIndex = countTab++; transactionDate_dtp.TabStop = true;
+            transactionType_CB.TabIndex = countTab++; transactionType_CB.TabStop = true;
+            supplier_CB.TabIndex = countTab++; supplier_CB.TabStop = true;
+            sku_cbb.TabIndex = countTab++; sku_cbb.TabStop = true;
+            quantity_tb.TabIndex = countTab++; quantity_tb.TabStop = true;
+            farmSourceCode_tb.TabIndex = countTab++; farmSourceCode_tb.TabStop = true;
+            note_tb.TabIndex = countTab++; note_tb.TabStop = true;
+            LuuThayDoiBtn.TabIndex = countTab++; LuuThayDoiBtn.TabStop = true;
+
             status_lb.Text = "";
 
             newCustomerBtn.Click += newBtn_Click;
@@ -111,13 +123,8 @@ namespace RauViet.ui
                 sku_cbb.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
                 sku_cbb.TextUpdate += sku_cbb_TextUpdate;
                                 
-
                 dataGV.DataSource = mInventoryTransaction_dt;
-
-                dataGV.Columns["SKU"].Visible = false;
-                dataGV.Columns["TransactionType"].Visible = false;
-                dataGV.Columns["Supplier"].Visible = false;
-                dataGV.Columns["TransactionID"].Visible = false;
+                Utils.HideColumns(dataGV, new[] { "SKU", "TransactionType", "Supplier", "TransactionID" });
 
                 dataGV.Columns["Name_VN"].HeaderText = "Tên Tiếng Việt";
                 dataGV.Columns["Package"].HeaderText = "Đ.Vị";
@@ -138,19 +145,7 @@ namespace RauViet.ui
                 //    dataGV.Columns["Packing"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
                 updateRightUI();
-
-                Utils.SetTabStopRecursive(this, false);
-
-                int countTab = 0;
-                transactionDate_dtp.TabIndex = countTab++; transactionDate_dtp.TabStop = true;
-                transactionType_CB.TabIndex = countTab++; transactionType_CB.TabStop = true;
-                supplier_CB.TabIndex = countTab++; supplier_CB.TabStop = true;
-                sku_cbb.TabIndex = countTab++; sku_cbb.TabStop = true;
-                quantity_tb.TabIndex = countTab++; quantity_tb.TabStop = true;
-                farmSourceCode_tb.TabIndex = countTab++; farmSourceCode_tb.TabStop = true;
-                note_tb.TabIndex = countTab++; note_tb.TabStop = true;
-                LuuThayDoiBtn.TabIndex = countTab++; LuuThayDoiBtn.TabStop = true;
-
+                        
                 ReadOnly_btn_Click(null, null);
             }
             catch

@@ -68,21 +68,20 @@ namespace RauViet.ui
                 mOrdersTotal_dt = await SQLStore_Kho.Instance.GetDetailPackingTotalAsync(mCurrentExportID);
                 DataView dv = new DataView(mOrdersTotal_dt);
                 dataGV.DataSource = dv;
+                Utils.HideColumns(dataGV, new[] { "ExportCodeID" });
 
-                dataGV.Columns["ExportCodeID"].Visible = false;
-
-
-                dataGV.Columns["CartonNo"].HeaderText = "Carton No";
-                dataGV.Columns["ProductNameEN"].HeaderText = "English name";
-                dataGV.Columns["ProductNameVN"].HeaderText = "Vietnamese name";
-                dataGV.Columns["LOTCodeComplete"].HeaderText = "LOT";
-                dataGV.Columns["Package"].HeaderText = "Unit";
-                dataGV.Columns["NWReal"].HeaderText = "N.W";
-                dataGV.Columns["PCSReal"].HeaderText = "PCS";
-                dataGV.Columns["packing"].HeaderText = "Packing";
-                dataGV.Columns["CustomerCarton"].HeaderText = "Mask No";
-
-                dataGV.Columns["Priority"].HeaderText = "Ưu\nTiên";
+                Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"CartonNo", "Carton No" },
+                    {"ProductNameEN", "English name" },
+                    {"ProductNameVN", "Vietnamese name" },
+                    {"LOTCodeComplete", "LOT" },
+                    {"Package", "Unit" },
+                    {"NWReal", "N.W" },
+                    {"PCSReal", "PCS" },
+                    {"packing", "Packing" },
+                    {"CustomerCarton", "Mask No" },
+                    {"Priority", "Ưu\nTiên" }
+                });
 
                 dataGV.Columns["Priority"].Width = 30;
                 dataGV.Columns["No"].Width = 30;

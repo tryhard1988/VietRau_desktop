@@ -63,9 +63,8 @@ namespace RauViet.ui
                 dataGV.DataSource = employee_dt;
                 log_GV.DataSource = mLogDV;
 
-                log_GV.Columns["LogID"].Visible = false;
-                log_GV.Columns["EmployeeCode"].Visible = false;
-                dataGV.Columns["EmployessName_NoSign"].Visible = false;
+                Utils.HideColumns(log_GV, new[] { "LogID", "EmployeeCode" });
+                Utils.HideColumns(dataGV, new[] { "EmployessName_NoSign" });
 
                 dataGV.Columns["EmployeeCode"].HeaderText = "Mã NV";
                 dataGV.Columns["FullName"].HeaderText = "Tên NV";

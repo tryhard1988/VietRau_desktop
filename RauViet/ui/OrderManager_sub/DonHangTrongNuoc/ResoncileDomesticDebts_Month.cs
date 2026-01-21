@@ -166,13 +166,25 @@ namespace RauViet.ui
                 mSummary_DV = new DataView(mSummary_dt);
                 sumary_GV.DataSource = mSummary_DV;
 
+                Utils.HideColumns(detailGV, new[] { "ProductPackingID", "CustomerProductTypesCode", "SKU", "Company", "CustomerID", "Amount", "packing" });
+                Utils.HideColumns(sumary_GV, new[] { "CustomerID" });
+                Utils.HideColumns(dataGV, new[] { "CustomerID" });
 
-
-                dataGV.Columns["CustomerID"].Visible = false;
                 dataGV.Columns["Company"].HeaderText = "Khách Hàng";
                 dataGV.Columns["Company"].Width = 160;
 
-                sumary_GV.Columns["CustomerID"].Visible = false;
+                Utils.SetGridHeaders(sumary_GV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"ProductNameVN", "Tên Sản Phẩm" },
+                    {"ProductTypeName", "Loại Hàng" },
+                    {"PCSReal", "PCS" },
+                    {"NWReal", "N.W" },
+                    {"Price", "Giá" },
+                    {"TotalAmount", "Thành Tiền" },
+                    {"Package", "Đ.Vị" },
+                    {"", "" },
+                    {"", "" },
+                });
+
                 sumary_GV.Columns["ProductNameVN"].Width = 110;
                 sumary_GV.Columns["ProductTypeName"].Width = 85;
                 sumary_GV.Columns["PCSReal"].Width = 50;
@@ -180,13 +192,7 @@ namespace RauViet.ui
                 sumary_GV.Columns["Price"].Width = 60;
                 sumary_GV.Columns["TotalAmount"].Width = 80;
                 sumary_GV.Columns["Package"].Width = 50;
-                sumary_GV.Columns["ProductNameVN"].HeaderText = "Tên Sản Phẩm";
-                sumary_GV.Columns["ProductTypeName"].HeaderText = "Loại Hàng";
-                sumary_GV.Columns["PCSReal"].HeaderText = "PCS";
-                sumary_GV.Columns["NWReal"].HeaderText = "N.W";
-                sumary_GV.Columns["Price"].HeaderText = "Giá";
-                sumary_GV.Columns["TotalAmount"].HeaderText = "Thành Tiền";
-                sumary_GV.Columns["Package"].HeaderText = "Đ.Vị";
+
                 sumary_GV.Columns["Price"].DefaultCellStyle.Format = "N0";
                 sumary_GV.Columns["TotalAmount"].DefaultCellStyle.Format = "N0";
                 sumary_GV.Columns["PCSReal"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
@@ -194,23 +200,19 @@ namespace RauViet.ui
                 sumary_GV.Columns["Price"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
                 sumary_GV.Columns["TotalAmount"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
 
-                detailGV.Columns["ProductPackingID"].Visible = false;
-                detailGV.Columns["CustomerProductTypesCode"].Visible = false;
-                detailGV.Columns["SKU"].Visible = false;
-                detailGV.Columns["Company"].Visible = false;
-                detailGV.Columns["CustomerID"].Visible = false;
-                detailGV.Columns["Amount"].Visible = false;
-                detailGV.Columns["packing"].Visible = false;
-                detailGV.Columns["ProductNameVN"].HeaderText = "Tên Sản Phẩm";
-                detailGV.Columns["ProductTypeName"].HeaderText = "Loại Hàng";
-                detailGV.Columns["Package"].HeaderText = "Đ.Vị";
-                detailGV.Columns["Price"].HeaderText = "Giá";
-                detailGV.Columns["PCSReal"].HeaderText = "PCS";
-                detailGV.Columns["NWReal"].HeaderText = "N.W";
-                detailGV.Columns["OrderDomesticIndex"].HeaderText = "Số Phiếu";
-                detailGV.Columns["DeliveryDate"].HeaderText = "Ngày Giao";
-                detailGV.Columns["AmountPacking"].HeaderText = "Quy Cách";
-                detailGV.Columns["TotalAmount"].HeaderText = "Thành Tiền";
+                Utils.SetGridHeaders(detailGV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"ProductNameVN", "Tên Sản Phẩm" },
+                    {"ProductTypeName", "Loại Hàng" },
+                    {"Package", "Đ.Vị" },
+                    {"Price", "Giá" },
+                    {"PCSReal", "PCS" },
+                    {"NWReal", "N.W" },
+                    {"OrderDomesticIndex", "Số Phiếu" },
+                    {"DeliveryDate", "Ngày Giao" },
+                    {"AmountPacking", "Quy Cách" },
+                    {"TotalAmount", "Thành Tiền" }
+                });
+
                 detailGV.Columns["PCSReal"].Width = 50;
                 detailGV.Columns["NWReal"].Width = 50;
                 detailGV.Columns["Price"].Width = 50;
@@ -224,10 +226,12 @@ namespace RauViet.ui
                 detailGV.Columns["Price"].DefaultCellStyle.Format = "N0";
                 detailGV.Columns["TotalAmount"].DefaultCellStyle.Format = "N0";
 
+                Utils.SetGridHeaders(tomTatTheoPhieu_GV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"OrderDomesticIndex", "Số Phiếu" },
+                    {"DeliveryDate", "Ngày Giao" },
+                    {"TotalAmount", "Tổng Tiền" }
+                });
 
-                tomTatTheoPhieu_GV.Columns["OrderDomesticIndex"].HeaderText = "Số Phiếu";
-                tomTatTheoPhieu_GV.Columns["DeliveryDate"].HeaderText = "Ngày Giao";
-                tomTatTheoPhieu_GV.Columns["TotalAmount"].HeaderText = "Tổng Tiền";
                 tomTatTheoPhieu_GV.Columns["TotalAmount"].DefaultCellStyle.Format = "N0";
                 tomTatTheoPhieu_GV.Columns["DeliveryDate"].DefaultCellStyle.Format = "dd/MM/yyyy";
 

@@ -185,14 +185,8 @@ namespace RauViet.ui
                 mlatestOrders_dt = latestOrdersTask.Result;
 
                 cusProduct_GV.DataSource = mlatestOrders_dt;
-                cusProduct_GV.Columns["CustomerID"].Visible = false;
-                cusProduct_GV.Columns["ProductPackingID"].Visible = false;
-                cusProduct_GV.Columns["Package"].Visible = false;
-                cusProduct_GV.Columns["OrderPackingPriceCNF"].Visible = false;
-                cusProduct_GV.Columns["packing"].Visible = false;
-                cusProduct_GV.Columns["Amount"].Visible = false;
-                
-
+                Utils.HideColumns(cusProduct_GV, new[] { "CustomerID", "ProductPackingID", "Package", "OrderPackingPriceCNF", "packing", "Amount" });                
+                Utils.HideColumns(logGV, new[] { "LogID", "ExportCodeID", "OrderID" });
 
                 cusProduct_GV.Columns["ProductNameVN"].HeaderText = "Tên Sản Phẩm";
                 cusProduct_GV.Columns["PCSOther"].HeaderText = "PCS\nĐặt Hàng";
@@ -227,52 +221,32 @@ namespace RauViet.ui
                     col.ReadOnly = false;
 
                 // Gán testData cho DataGridView tạm để test
-                dataGV.DataSource = mOrders_dt;                
+                dataGV.DataSource = mOrders_dt;
+                Utils.HideColumns(dataGV, new[] { "Priority", "GroupProduct", "SKU", "CustomerID", "Search_NoSign", "ProductPackingID", "ExportCodeID", "NWReal", "CartonSize", "CustomerCarton", "LOTCode", "LOTCodeComplete", "CustomerCode", "ProductNameEN",
+                                                    "Package", "packing", "Amount", "ExportDate", "ExportCode", "PCSReal", "CartonNo"});
 
-                dataGV.Columns["OrderPackingPriceCNF"].HeaderText = "Giá CNF";
-                dataGV.Columns["ExportCode"].HeaderText = "mã Xuất Cảng";
-                dataGV.Columns["CustomerName"].HeaderText = "Khách Hàng";
-                dataGV.Columns["ProductNameVN"].HeaderText = "Tên Sản Phẩm";
-                dataGV.Columns["PCSOther"].HeaderText = "PCS\nĐặt Hàng";
-                dataGV.Columns["NWOther"].HeaderText = "NW\nĐặt Hàng";
-                dataGV.Columns["Priority"].HeaderText = "ưu tiên";
-                dataGV.Columns["OrderId"].HeaderText = "ID";
+                Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"OrderPackingPriceCNF", "Giá CNF" },
+                    {"ExportCode", "mã Xuất Cảng" },
+                    {"CustomerName", "Khách Hàng" },
+                    {"ProductNameVN", "Tên Sản Phẩm" },
+                    {"PCSOther", "PCS\nĐặt Hàng" },
+                    {"NWOther", "NW\nĐặt Hàng" },
+                    {"Priority", "ưu tiên" },
+                    {"OrderId", "ID" }
+                });
 
-                //dataGV.Columns["OrderId"].Visible = false;
-                dataGV.Columns["Priority"].Visible = false;
-                dataGV.Columns["GroupProduct"].Visible = false;
-                dataGV.Columns["SKU"].Visible = false;
-                dataGV.Columns["CustomerID"].Visible = false;
-                dataGV.Columns["Search_NoSign"].Visible = false;
-                dataGV.Columns["ProductPackingID"].Visible = false;
-                dataGV.Columns["ExportCodeID"].Visible = false;
-                dataGV.Columns["NWReal"].Visible = false;              
-                dataGV.Columns["CartonSize"].Visible = false;
-                dataGV.Columns["CustomerCarton"].Visible = false;
-                dataGV.Columns["LOTCode"].Visible = false;
-                dataGV.Columns["LOTCodeComplete"].Visible = false;
-                dataGV.Columns["CustomerCode"].Visible = false;
-                dataGV.Columns["ProductNameEN"].Visible = false;
-                dataGV.Columns["Package"].Visible = false;
-                dataGV.Columns["packing"].Visible = false;
-                dataGV.Columns["Amount"].Visible = false;
-                dataGV.Columns["ExportDate"].Visible = false;
-                dataGV.Columns["ExportCode"].Visible = false;
-                dataGV.Columns["PCSReal"].Visible = false;
-                dataGV.Columns["CartonNo"].Visible = false;
                 dataGV.Columns["OrderPackingPriceCNF"].Visible = !UserManager.Instance.hasRole_AnGiaSanPham();
 
-                logGV.Columns["LogID"].Visible = false;
-                logGV.Columns["ExportCodeID"].Visible = false;
-                logGV.Columns["OrderID"].Visible = false;
-
-                logGV.Columns["Description"].HeaderText = "Hành động";
-                logGV.Columns["Customer"].HeaderText = "Khách hàng";
-                logGV.Columns["ProductName"].HeaderText = "Sản phẩm";
-                logGV.Columns["OrderPCS"].HeaderText = "PCS";
-                logGV.Columns["OrderNW"].HeaderText = "N.W";
-                logGV.Columns["ActionBy"].HeaderText = "Người thay đổi";
-                logGV.Columns["CreateAt"].HeaderText = "Ngày thay đổi";
+                Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"Description", "Hành động" },
+                    {"Customer", "Khách hàng" },
+                    {"ProductName", "Sản phẩm" },
+                    {"OrderPCS", "PCS" },
+                    {"OrderNW", "N.W" },
+                    {"ActionBy", "Người thay đổi" },
+                    {"CreateAt", "Ngày thay đổi" }
+                });
 
                 logGV.Columns["Description"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 logGV.Columns["Customer"].Width = 100;
@@ -305,9 +279,7 @@ namespace RauViet.ui
                 exportCode_search_cbb.SelectedIndexChanged += exportCode_search_cbb_SelectedIndexChanged;
                 exportCode_search_cbb.SelectedValue = mCurrentExportID;
 
-                
-
-                await Task.Delay(500);
+                await Task.Delay(200);
                 ReadOnly_btn_Click(null, null);
             }
             catch (Exception ex)

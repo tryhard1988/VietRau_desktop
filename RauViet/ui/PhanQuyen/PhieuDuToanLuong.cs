@@ -134,7 +134,9 @@ namespace RauViet.ui
                 dataGV.DataSource = mEmployees_dt;
                 employeeAllowances_GV.DataSource = mEmployeeAllowances_dv;
 
-                employeeAllowances_GV.Columns["EmployeeCode"].Visible = false;
+                Utils.HideColumns(dataGV, new[] { "EmployessName_NoSign", "PositionID", "DepartmentID", "ContractTypeID" });
+                Utils.HideColumns(employeeAllowances_GV, new[] { "EmployeeCode"});
+
                 employeeAllowances_GV.Columns["AllowanceName"].Width = 120;
                 employeeAllowances_GV.Columns["IsInsuranceIncluded"].Width = 50;
                 employeeAllowances_GV.Columns["Amount"].DefaultCellStyle.Format = "N0";                
@@ -161,10 +163,7 @@ namespace RauViet.ui
                 dataGV.Columns["Allowance_Insurance"].DefaultCellStyle.Format = "N0";
                 dataGV.Columns["HourSalary"].DefaultCellStyle.Format = "N0";
 
-                dataGV.Columns["EmployessName_NoSign"].Visible = false;
-                dataGV.Columns["PositionID"].Visible = false;
-                dataGV.Columns["DepartmentID"].Visible = false;
-                dataGV.Columns["ContractTypeID"].Visible = false;
+                
 
                 dataGV.Columns["BaseSalary"].Width = 70;
                 dataGV.Columns["InsuranceBaseSalary"].Width = 70;

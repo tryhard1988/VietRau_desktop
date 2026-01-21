@@ -73,31 +73,34 @@ namespace RauViet.ui
                 dv2.RowFilter = $"ExportCodeID = '{mCurrentExportID}'";
                 cusGroupGV.DataSource = dv2;
 
-                cartonSizeGroupGV.Columns["ExportCodeID"].Visible = false;
-                cusGroupGV.Columns["ExportCodeID"].Visible = false;
+                Utils.HideColumns(cartonSizeGroupGV, new[] { "ExportCodeID" });
+                Utils.HideColumns(cusGroupGV, new[] { "ExportCodeID" });
 
                 exportCode_cbb.SelectedIndexChanged -= exportCode_search_cbb_SelectedIndexChanged;
                 exportCode_cbb.DataSource = mExportCode_dt;
                 exportCode_cbb.DisplayMember = "ExportCode";  // hiển thị tên
                 exportCode_cbb.ValueMember = "ExportCodeID";
 
-
-                cartonSizeGroupGV.Columns["CartonSize"].HeaderText = "Carton Size";
-                cartonSizeGroupGV.Columns["CountCarton"].HeaderText = "Số Thùng";
-                cartonSizeGroupGV.Columns["ChargeWeight"].HeaderText = "Charge Weight";
-                cartonSizeGroupGV.Columns["GrossWeight"].HeaderText = "Gross Weight";
-                cartonSizeGroupGV.Columns["FreightCharge"].HeaderText = "Freight Charge";
+                Utils.SetGridHeaders(cartonSizeGroupGV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"CartonSize", "Carton Size" },
+                    {"CountCarton", "Số Thùng" },
+                    {"ChargeWeight", "Charge Weight" },
+                    {"GrossWeight", "Gross Weight" },
+                    {"FreightCharge", "Freight Charge" }
+                });
 
                 cartonSizeGroupGV.Columns["FreightCharge"].DefaultCellStyle.Format = "#,##0.00";
                 cartonSizeGroupGV.Columns["GrossWeight"].DefaultCellStyle.Format = "#,##0.00";
                 cartonSizeGroupGV.Columns["ChargeWeight"].DefaultCellStyle.Format = "#,##0.00";
                 cartonSizeGroupGV.Columns["CBM"].DefaultCellStyle.Format = "#,##0";
 
-                cusGroupGV.Columns["CustomerName"].HeaderText = "Khách Hàng";
-                cusGroupGV.Columns["CountCarton"].HeaderText = "Số Thùng";
-                cusGroupGV.Columns["ChargeWeight"].HeaderText = "Charge Weight";
-                cusGroupGV.Columns["GrossWeight"].HeaderText = "Gross Weight";
-                cusGroupGV.Columns["FreightCharge"].HeaderText = "Freight Charge";
+                Utils.SetGridHeaders(cusGroupGV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"CustomerName", "Khách Hàng" },
+                    {"CountCarton", "Số Thùng" },
+                    {"ChargeWeight", "Charge Weight" },
+                    {"GrossWeight", "Gross Weight" },
+                    {"FreightCharge", "Freight Charge" }
+                });
 
                 cusGroupGV.Columns["FreightCharge"].DefaultCellStyle.Format = "#,##0.00";
                 cusGroupGV.Columns["GrossWeight"].DefaultCellStyle.Format = "#,##0.00";
@@ -120,7 +123,6 @@ namespace RauViet.ui
                 
                 exportCode_cbb.SelectedValue = mCurrentExportID;                
                 exportCode_cbb.SelectedIndexChanged += exportCode_search_cbb_SelectedIndexChanged;
-
 
                 UpdateRightUI();
             }

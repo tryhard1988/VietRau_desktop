@@ -169,10 +169,9 @@ namespace RauViet.ui
                 CustomerGV.DataSource = customerOrderHistoryByYear_dt;
                 CustomerDetail_GV.DataSource = mCustomerDetail_DV;
 
-                dataGV.Columns["ExportHistoryID"].Visible = false;
-                CustomerDetail_GV.Columns["CustomerName"].Visible = false;
-                CustomerDetail_GV.Columns["ProductName_EN"].Visible = false;
-                CustomerDetail_GV.Columns["Priority"].Visible = false;
+                Utils.HideColumns(dataGV, new[] { "ExportHistoryID" });
+                Utils.HideColumns(CustomerDetail_GV, new[] { "CustomerName", "ProductName_EN", "Priority" });
+
                 CustomerDetail_GV.Columns["ProductName_VN"].HeaderText = "Tên Sản Phẩm";
                 CustomerDetail_GV.Columns["ProductName_EN"].HeaderText = "Product Name";
                 CustomerDetail_GV.Columns["TotalNetWeight"].HeaderText = "Net Weight";
