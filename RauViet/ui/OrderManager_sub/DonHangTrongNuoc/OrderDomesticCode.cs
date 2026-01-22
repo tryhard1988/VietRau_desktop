@@ -171,12 +171,16 @@ namespace RauViet.ui
                     {"Company", "Khách Hàng" }
                 });
 
-                dataGV.Columns["OrderDomesticIndex"].Width = 70;
-                dataGV.Columns["DeliveryDate"].Width = 70;
-                dataGV.Columns["Complete"].Width = 60;
-                dataGV.Columns["InputByName"].Width = 140;
-                dataGV.Columns["PackingByName"].Width = 140;
-                dataGV.Columns["CustomerName"].Width = 100;
+                Utils.SetGridWidths(dataGV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"OrderDomesticIndex", 70},
+                    {"DeliveryDate", 70},
+                    {"Complete", 60},
+                    {"InputByName", 140},
+                    {"PackingByName", 140},
+                    {"CustomerName", 100},
+
+                });
+
                 dataGV.Columns["Company"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;                              
 
                 inputBy_cbb.DataSource = _employeesInDongGoi_dt;
@@ -207,11 +211,12 @@ namespace RauViet.ui
                     {"ActionBy", "Người Thực Hiện" },
                     {"CreatedAt", "Ngày Thực Hiện" }
                 });
-
+                Utils.SetGridWidths(log_GV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"ActionBy", 150},
+                    {"CreatedAt", 120}
+                });
                 log_GV.Columns["OldValue"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 log_GV.Columns["NewValue"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                log_GV.Columns["ActionBy"].Width = 150;
-                log_GV.Columns["CreatedAt"].Width = 120;
 
                 ReadOnly_btn_Click(null, null);
             }

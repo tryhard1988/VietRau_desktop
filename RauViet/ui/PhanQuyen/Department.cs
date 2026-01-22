@@ -72,10 +72,12 @@ namespace RauViet.ui
 
                 dataGV.DataSource = mDepartment_dt;
 
-                dataGV.Columns["DepartmentID"].HeaderText = "Mã Phòng Ban";
-                dataGV.Columns["DepartmentName"].HeaderText = "Tên Phòng Ban";
-                dataGV.Columns["Description"].HeaderText = "Diễn Giải";
-                dataGV.Columns["IsActive"].HeaderText = "Còn Hoạt Động";
+                Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"DepartmentID", "Mã Phòng Ban" },
+                    {"DepartmentName", "Tên Phòng Ban" },
+                    {"Description", "Diễn Giải" },
+                    {"IsActive", "Còn Hoạt Động" }
+                });
 
                 dataGV.Columns["DepartmentID"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
                 dataGV.Columns["DepartmentName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;

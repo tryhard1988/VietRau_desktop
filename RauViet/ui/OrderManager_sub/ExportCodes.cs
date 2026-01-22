@@ -165,11 +165,13 @@ namespace RauViet.ui
                     { "PackingByName", "NV Đóng Gói"}
                 });
 
-                dataGV.Columns["ExportCode"].Width = 120;
-                dataGV.Columns["ExportDate"].Width = 100;
-                dataGV.Columns["Complete"].Width = 90;
-                dataGV.Columns["InputByName"].Width = 150;
-                dataGV.Columns["PackingByName"].Width = 150;
+                Utils.SetGridWidths(dataGV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"ExportCode", 120},
+                    {"ExportDate", 100},
+                    {"Complete", 90},
+                    {"InputByName", 150},
+                    {"PackingByName", 150}
+                });
 
                 inputBy_cbb.DataSource = _employeesInDongGoi_dt;
                 inputBy_cbb.DisplayMember = "FullName";  // hiển thị tên
@@ -194,15 +196,18 @@ namespace RauViet.ui
                     {"CreatedDate", "Ngày thay đổi" }
                 });
 
+                Utils.SetGridWidths(log_GV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"ExportDate", 70},
+                    {"ExRate", 50},
+                    {"ShippingCost", 60},
+                    {"InputBy", 140},
+                    {"PackingBy", 140},
+                    {"Complete", 50},
+                    {"CreatedBy", 140},
+                    {"CreatedDate", 110}
+                });
+
                 log_GV.Columns["Description"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                log_GV.Columns["ExportDate"].Width = 70;
-                log_GV.Columns["ExRate"].Width = 50;
-                log_GV.Columns["ShippingCost"].Width = 60;
-                log_GV.Columns["InputBy"].Width = 140;
-                log_GV.Columns["PackingBy"].Width = 140;
-                log_GV.Columns["Complete"].Width = 50;
-                log_GV.Columns["CreatedBy"].Width = 140;
-                log_GV.Columns["CreatedDate"].Width = 110;
                 log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
             catch

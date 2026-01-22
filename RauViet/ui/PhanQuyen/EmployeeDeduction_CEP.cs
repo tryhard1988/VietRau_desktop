@@ -145,6 +145,29 @@ namespace RauViet.ui
                 Utils.HideColumns(employeeDeductionGV, new[] { "EmployeeDeductionID", "DeductionTypeCode", "DeductionTypeName" });
                 Utils.HideColumns(dataGV, new[] { "EmployessName_NoSign"});
 
+                Utils.SetGridHeaders(employeeDeductionGV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"EmployeeCode", "Mã NV" },
+                    {"EmployeeName", "Tên NV" },
+                    {"DeductionDate", "Ngày Chi" },
+                    {"Amount", "Số Tiền" },
+                    {"Note", "Ghi Chú" }
+                });
+
+                Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"FullName", "Tên Nhân Viên" },
+                    {"EmployeeCode", "Mã NV" },
+                    {"PositionName", "Chức Vụ" },
+                    {"ContractTypeName", "Loại Hợp Đồng" }
+                });
+
+                Utils.SetGridHeaders(log_GV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"CreateAt", "Ngày thay đổi" },
+                    {"ACtionBy", "Người thay đổi" },
+                    {"Description", "Hành động" },
+                    {"DeductionDate", "Ngày" },
+                    {"Amount", "Số Tiền" }
+                });
+
                 int count = 0;
                 mEmployeeDeduction_dt.Columns["EmployeeCode"].SetOrdinal(count++);
                 mEmployeeDeduction_dt.Columns["EmployeeName"].SetOrdinal(count++);
@@ -152,16 +175,6 @@ namespace RauViet.ui
                 mEmployeeDeduction_dt.Columns["Amount"].SetOrdinal(count++);
                 mEmployeeDeduction_dt.Columns["Note"].SetOrdinal(count++);
 
-                employeeDeductionGV.Columns["EmployeeCode"].HeaderText = "Mã NV";
-                employeeDeductionGV.Columns["EmployeeName"].HeaderText = "Tên NV";
-                employeeDeductionGV.Columns["DeductionDate"].HeaderText = "Ngày Chi";
-                employeeDeductionGV.Columns["Amount"].HeaderText = "Số Tiền";
-                employeeDeductionGV.Columns["Note"].HeaderText = "Ghi Chú";
-
-                dataGV.Columns["FullName"].HeaderText = "Tên Nhân Viên";
-                dataGV.Columns["EmployeeCode"].HeaderText = "Mã NV";
-                dataGV.Columns["PositionName"].HeaderText = "Chức Vụ";
-                dataGV.Columns["ContractTypeName"].HeaderText = "Loại Hợp Đồng";
                 dataGV.Columns["EmployeeCode"].Width = 60;
                 dataGV.Columns["FullName"].Width = 160;
 
@@ -187,11 +200,6 @@ namespace RauViet.ui
                 log_GV.Columns["Description"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 log_GV.Columns["DeductionDate"].Width = 80;
                 log_GV.Columns["Amount"].Width = 80;
-                log_GV.Columns["CreateAt"].HeaderText = "Thời điểm thay đổi";
-                log_GV.Columns["ACtionBy"].HeaderText = "Người thay đổi";
-                log_GV.Columns["Description"].HeaderText = "Hành động";
-                log_GV.Columns["DeductionDate"].HeaderText = "Ngày";
-                log_GV.Columns["Amount"].HeaderText = "Số Tiền";
 
                 log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 

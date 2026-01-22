@@ -248,21 +248,28 @@ namespace RauViet.ui
                     {"CreateAt", "Ngày thay đổi" }
                 });
 
-                logGV.Columns["Description"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                logGV.Columns["Customer"].Width = 100;
-                logGV.Columns["ProductName"].Width = 200;
-                logGV.Columns["OrderPCS"].Width = 60;
-                logGV.Columns["OrderNW"].Width = 60;
-                logGV.Columns["ActionBy"].Width = 140;
-                logGV.Columns["CreateAt"].Width = 110;
+                Utils.SetGridWidths(logGV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"Customer", 100},
+                    {"ProductName", 200},
+                    {"OrderPCS", 60},
+                    {"OrderNW", 60},
+                    {"ActionBy", 140},
+                    {"CreateAt", 110}
+                });
 
-                dataGV.Columns["OrderId"].Width = 60;
-                dataGV.Columns["CustomerName"].Width = 120;
-                dataGV.Columns["ProductNameVN"].Width = 150;
-                dataGV.Columns["PCSOther"].Width = 80;
-                dataGV.Columns["NWOther"].Width = 80;
-                dataGV.Columns["OrderPackingPriceCNF"].Width = 80;
-                dataGV.Columns["Priority"].Width = 50;
+                Utils.SetGridWidths(dataGV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"OrderId", 60},
+                    {"CustomerName", 120},
+                    {"ProductNameVN", 150},
+                    {"PCSOther", 80},
+                    {"NWOther", 80},
+                    {"OrderPackingPriceCNF", 80},
+                    {"Priority", 50}
+                });
+
+
+                logGV.Columns["Description"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+
                 logGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
                 dataGV.Columns["PCSOther"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;

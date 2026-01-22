@@ -102,25 +102,30 @@ namespace RauViet.ui
                     {"FreightCharge", "Freight Charge" }
                 });
 
+                Utils.SetGridWidths(cartonSizeGroupGV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"CartonSize", 80},
+                    {"CountCarton", 50},
+                    {"CBM", 80},
+                    {"ChargeWeight", 80},
+                    {"GrossWeight", 80},
+                    {"FreightCharge", 80}
+                });
+
+                Utils.SetGridWidths(cusGroupGV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"CustomerName", 120},
+                    {"CountCarton", 50},
+                    {"CBM", 80},
+                    {"ChargeWeight", 80},
+                    {"GrossWeight", 80},
+                    {"FreightCharge", 80}
+                });
+
                 cusGroupGV.Columns["FreightCharge"].DefaultCellStyle.Format = "#,##0.00";
                 cusGroupGV.Columns["GrossWeight"].DefaultCellStyle.Format = "#,##0.00";
                 cusGroupGV.Columns["ChargeWeight"].DefaultCellStyle.Format = "#,##0.00";
                 cusGroupGV.Columns["CBM"].DefaultCellStyle.Format = "#,##0";
 
-                cartonSizeGroupGV.Columns["CartonSize"].Width = 80;
-                cartonSizeGroupGV.Columns["CountCarton"].Width = 50;
-                cartonSizeGroupGV.Columns["CBM"].Width = 80;
-                cartonSizeGroupGV.Columns["ChargeWeight"].Width = 80;
-                cartonSizeGroupGV.Columns["GrossWeight"].Width = 80;
-                cartonSizeGroupGV.Columns["FreightCharge"].Width = 80;
-
-                cusGroupGV.Columns["CustomerName"].Width = 120;
-                cusGroupGV.Columns["CountCarton"].Width = 50;
-                cusGroupGV.Columns["CBM"].Width = 80;
-                cusGroupGV.Columns["ChargeWeight"].Width = 80;
-                cusGroupGV.Columns["GrossWeight"].Width = 80;
-                cusGroupGV.Columns["FreightCharge"].Width = 80;
-                
+                                
                 exportCode_cbb.SelectedValue = mCurrentExportID;                
                 exportCode_cbb.SelectedIndexChanged += exportCode_search_cbb_SelectedIndexChanged;
 

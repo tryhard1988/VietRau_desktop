@@ -95,30 +95,27 @@ namespace RauViet.ui
                 allowanceType_cbb.ValueMember = "AllowanceTypeID";
 
                 allowanceGV.DataSource = mPositionAllowance_dt;
-
                 dataGV.DataSource = position_dt;
 
-                dataGV.Columns["PositionID"].Visible = false;
-                allowanceGV.Columns["PositionAllowanceID"].Visible = false;
-                allowanceGV.Columns["PositionID"].Visible = false;
-                allowanceGV.Columns["AllowanceTypeID"].Visible = false;
+                Utils.SetGridHeaders(allowanceGV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"AllowanceName", "Loại Phụ Cấp" },
+                    {"Amount", "Số Tiền" },
+                    {"Note", "Ghi Chú" }
+                });
+
+                Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"PositionName", "Tên Chức Vụ" },
+                    {"Description", "Diễn Giải" }
+                });
+
+                Utils.HideColumns(dataGV, new[] { "PositionID"});
+                Utils.HideColumns(allowanceGV, new[] { "PositionAllowanceID", "PositionID", "AllowanceTypeID" });
 
                 int count = 0;
                 mPositionAllowance_dt.Columns["AllowanceName"].SetOrdinal(count++);
                 mPositionAllowance_dt.Columns["Amount"].SetOrdinal(count++);
                 mPositionAllowance_dt.Columns["Note"].SetOrdinal(count++);
 
-
-                allowanceGV.Columns["AllowanceName"].HeaderText = "Loại Phụ Cấp";
-                allowanceGV.Columns["Amount"].HeaderText = "Số Tiền";
-                allowanceGV.Columns["Note"].HeaderText = "Ghi Chú";
-
-                dataGV.Columns["PositionName"].HeaderText = "Tên Chức Vụ";
-                dataGV.Columns["Description"].HeaderText = "Diễn Giải";
-                //dataGV.Columns["IsActive"].HeaderText = "Đang Hoạt Động";
-
-                //dataGV.Columns["AllowanceTypeID"].Visible = false;
-                //dataGV.Columns["ApplyScopeID"].Visible = false;
 
                 dataGV.Columns["PositionName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
                 dataGV.Columns["Description"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;

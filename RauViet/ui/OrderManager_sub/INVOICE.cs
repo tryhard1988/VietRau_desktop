@@ -143,21 +143,23 @@ namespace RauViet.ui
                     {"Priority", "Ưu\nTiên" }
                 });
 
+            Utils.SetGridWidths(dataGV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"Priority", 50},
+                    {"No", 50},
+                    {"PLU", 50},
+                    {"ProductNameEN", 130},
+                    {"ProductNameVN", 160},
+                    {"Package", 50},
+                    {"Quantity", 60},
+                    {"NWReal", 50},
+                    {"Packing", 50},
+                    {"PCSReal", 50},
+                    {"OrderPackingPriceCNF", 50},
+                    {"AmountCHF", 70}
+                });
+
             dataGV.Columns["AmountCHF"].DefaultCellStyle.Format = "N3";
             dataGV.Columns["Quantity"].DefaultCellStyle.Format = "N3";
-
-            dataGV.Columns["Priority"].Width = 50;
-            dataGV.Columns["No"].Width = 50;
-            dataGV.Columns["PLU"].Width = 50;
-            dataGV.Columns["ProductNameEN"].Width = 130;
-            dataGV.Columns["ProductNameVN"].Width = 160;
-            dataGV.Columns["Package"].Width = 50;
-            dataGV.Columns["Quantity"].Width = 60;
-            dataGV.Columns["NWReal"].Width = 50;
-            dataGV.Columns["Packing"].Width = 50;
-            dataGV.Columns["PCSReal"].Width = 50;
-            dataGV.Columns["OrderPackingPriceCNF"].Width = 50;
-            dataGV.Columns["AmountCHF"].Width = 70;
 
             dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
@@ -176,11 +178,13 @@ namespace RauViet.ui
                     {"AmountCHF", "Amount\nCHF" }
                 });
 
-            cusOrderGV.Columns["No"].Width = 30;
-            cusOrderGV.Columns["CNTS"].Width = 40;
-            cusOrderGV.Columns["NWReal"].Width = 70;
-            cusOrderGV.Columns["AmountCHF"].Width = 70;
-            cusOrderGV.Columns["FullName"].Width = 100;
+            Utils.SetGridWidths(cusOrderGV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"No", 30},
+                    {"CNTS", 40},
+                    {"NWReal", 70},
+                    {"AmountCHF", 70},
+                    {"FullName", 100}
+                });
 
             cusOrderGV.Columns["AmountCHF"].DefaultCellStyle.Format = "N3";
             
@@ -246,10 +250,13 @@ namespace RauViet.ui
                     {"CountCarton", "Quantity" }
                 });
 
-            cartonSizeGV.Columns["No"].Width = 30;
-            cartonSizeGV.Columns["Weight"].Width = 60;
-            cartonSizeGV.Columns["CountCarton"].Width = 50;
-            cartonSizeGV.Columns["CartonSize"].Width = 120;
+
+            Utils.SetGridWidths(cartonSizeGV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"No", 30},
+                    {"Weight", 60},
+                    {"CountCarton", 50},
+                    {"CartonSize", 120}
+                });
         }
 
         private async void exportCode_search_cbb_SelectedIndexChanged(object sender, EventArgs e)

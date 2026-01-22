@@ -106,10 +106,12 @@ namespace RauViet.ui
                     {"Priority", "Ưu Tiên" }
                 });
 
-                dataGV.Columns["Priority"].Width = 50;
-                dataGV.Columns["LOTCodeComplete"].Width = 120;
-                dataGV.Columns["ProductNameVN"].Width = 150; ;
-                dataGV.Columns["LotCode"].Width = 100;
+                Utils.SetGridWidths(dataGV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"Priority", 50},
+                    {"LOTCodeComplete", 120},
+                    {"ProductNameVN", 150},
+                    {"LotCode", 100},
+                });
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
@@ -134,12 +136,15 @@ namespace RauViet.ui
                     {"CreatedAt", "Ngày thay đổi" }
                 });
 
+                Utils.SetGridWidths(logGV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"LotCode", 100},
+                    {"LotCodeHeader", 100},
+                    {"LotCodeComplete", 110},
+                    {"ActionBy", 150},
+                    {"CreatedAt", 110}
+                });
+
                 logGV.Columns["Description"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                logGV.Columns["LotCode"].Width = 100;
-                logGV.Columns["LotCodeHeader"].Width = 100;
-                logGV.Columns["LotCodeComplete"].Width = 110;
-                logGV.Columns["ActionBy"].Width = 150;
-                logGV.Columns["CreatedAt"].Width = 110;
                 logGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
             catch

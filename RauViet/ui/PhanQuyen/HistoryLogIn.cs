@@ -33,24 +33,16 @@ namespace RauViet.ui
 
 
                 dataGV.DataSource = postion_dt;
-
-                dataGV.Columns["Id"].HeaderText = "Tên Vị Trí";
-                dataGV.Columns["UserName"].HeaderText = "Diễn Giải";
-                dataGV.Columns["MachineInfo"].HeaderText = "Máy Đăng Nhập";
-                dataGV.Columns["LoginTime"].HeaderText = "Thời điểm đăng nhập";
+                Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"Id", "ID" },
+                    {"UserName", "Tên Đăng Nhập" },
+                    {"MachineInfo", "Máy Đăng Nhập" },
+                    {"LoginTime", "Ngày Login" }
+                });
 
                 dataGV.Columns["UserName"].Width = 100;
                 dataGV.Columns["MachineInfo"].Width = 300;
                 dataGV.Columns["LoginTime"].Width = 150;
-
-                //dataGV.Columns["PositionID"].Visible = false;
-                //dataGV.Columns.Remove("CreatedAt");
-
-                //dataGV.Columns["PositionCode"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                //dataGV.Columns["PositionName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                //dataGV.Columns["Description"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                //dataGV.Columns["IsActive"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }

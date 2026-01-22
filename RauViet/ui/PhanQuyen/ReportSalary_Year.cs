@@ -48,6 +48,19 @@ namespace RauViet.ui
                 dataGV.AutoGenerateColumns = true;
                 dataGV.DataSource = salarySummaryByYear_dt;
 
+                Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"MonthYear", "Tháng/Năm" },
+                    {"TotalBaseSalary", "Tổng Lương Cơ Bản" },
+                    {"TotalNetSalary", "Tổng Lương Thực Lãnh" },
+                    {"TotalNetInsuranceSalary", "Tổng Lương C.S Đóng BH" },
+                    {"TotalInsuranceAllowance", "Tổng PC Có Đóng BH" },
+                    {"TotalNonInsuranceAllowance", "Tổng PC K.Đóng BH" },
+                    {"TotalOvertimeSalary", "Tổng Chi Lương Tăng Ca" },
+                    {"TotalLeaveSalary", "Tổng Lương Ngày Nghỉ" },
+                    {"TotalDeductionAmount", "Tổng Khoảng Trừ" },
+                    {"TotalEmployees", "Tổng NV Làm Việc" }
+                });
+
 
                 dataGV.Columns["Month"].Visible = false;
                 dataGV.Columns["Year"].Visible = false;
@@ -63,17 +76,6 @@ namespace RauViet.ui
                 salarySummaryByYear_dt.Columns["TotalOvertimeSalary"].SetOrdinal(count++);
                 salarySummaryByYear_dt.Columns["TotalLeaveSalary"].SetOrdinal(count++);
                 salarySummaryByYear_dt.Columns["TotalDeductionAmount"].SetOrdinal(count++);
-
-                dataGV.Columns["MonthYear"].HeaderText = "Tháng/Năm";
-                dataGV.Columns["TotalBaseSalary"].HeaderText = "Tổng Lương Cơ Bản";
-                dataGV.Columns["TotalNetSalary"].HeaderText = "Tổng Lương Thực Lãnh";
-                dataGV.Columns["TotalNetInsuranceSalary"].HeaderText = "Tổng Lương C.S Đóng BH";
-                dataGV.Columns["TotalInsuranceAllowance"].HeaderText = "Tổng PC Có Đóng BH";
-                dataGV.Columns["TotalNonInsuranceAllowance"].HeaderText = "Tổng PC K.Đóng BH";
-                dataGV.Columns["TotalOvertimeSalary"].HeaderText = "Tổng Chi Lương Tăng Ca";
-                dataGV.Columns["TotalLeaveSalary"].HeaderText = "Tổng Lương Ngày Nghỉ";
-                dataGV.Columns["TotalDeductionAmount"].HeaderText = "Tổng Khoảng Trừ";
-                dataGV.Columns["TotalEmployees"].HeaderText = "Tổng NV Làm Việc";
 
                 int sizeWidth = 90;
                 dataGV.Columns["MonthYear"].Width = 70;

@@ -153,13 +153,38 @@ namespace RauViet.ui
                 allowanceType_cbb.DisplayMember = "AllowanceName";
                 allowanceType_cbb.ValueMember = "AllowanceTypeID";
 
-                allowanceGV.DataSource = mMonthlyAllowance_dt;
-
                 dataGV.AutoGenerateColumns = true;
                 dataGV.DataSource = mEmployee_dt;
+                allowanceGV.DataSource = mMonthlyAllowance_dt;
                 log_GV.DataSource = mlog_DV;
 
                 Utils.HideColumns(dataGV, new[] { "EmployessName_NoSign"});
+
+                Utils.SetGridHeaders(allowanceGV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"MonthlyAllowanceID", "ID" },
+                    {"Date", "Tháng P.C" },
+                    {"AllowanceName", "Loại Phụ Cấp" },
+                    {"Amount", "Số Tiền" },
+                    {"Note", "Ghi Chú" },
+                    {"EmployeeCode", "Mã NV" },
+                    {"EmployeeName", "Tên NV" }
+                });
+
+                Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"FullName", "Tên Nhân Viên" },
+                    {"EmployeeCode", "Mã NV" },
+                    {"PositionName", "Chức Vụ" },
+                    {"ContractTypeName", "Loại Hợp Đồng" },
+                    {"DepartmentName", "Phòng Ban" }
+                 });
+
+                Utils.SetGridHeaders(log_GV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"CreatedAt", "Ngày thay đổi" },
+                    {"ACtionBy", "Người thay đổi" },
+                    {"AllowanceName", "Loại Phụ Cấp" },
+                    {"Description", "Hành động" },
+                    {"Amount", "Số Tiền" }
+                });
 
                 int count = 0;
                 mMonthlyAllowance_dt.Columns["EmployeeCode"].SetOrdinal(count++);
@@ -168,21 +193,6 @@ namespace RauViet.ui
                 mMonthlyAllowance_dt.Columns["AllowanceName"].SetOrdinal(count++);
                 mMonthlyAllowance_dt.Columns["Amount"].SetOrdinal(count++);
                 mMonthlyAllowance_dt.Columns["Note"].SetOrdinal(count++);
-
-                allowanceGV.Columns["MonthlyAllowanceID"].HeaderText = "ID";
-                allowanceGV.Columns["Date"].HeaderText = "Tháng P.C";
-                allowanceGV.Columns["AllowanceName"].HeaderText = "Loại Phụ Cấp";
-                allowanceGV.Columns["Amount"].HeaderText = "Số Tiền";
-                allowanceGV.Columns["Note"].HeaderText = "Ghi Chú";
-                allowanceGV.Columns["EmployeeCode"].HeaderText = "Mã NV";
-                allowanceGV.Columns["EmployeeName"].HeaderText = "Tên NV";
-
-
-                dataGV.Columns["FullName"].HeaderText = "Tên Nhân Viên";
-                dataGV.Columns["EmployeeCode"].HeaderText = "Mã NV";
-                dataGV.Columns["PositionName"].HeaderText = "Chức Vụ";
-                dataGV.Columns["ContractTypeName"].HeaderText = "Loại Hợp Đồng";
-                dataGV.Columns["DepartmentName"].HeaderText = "Phòng Ban";
 
                 dataGV.Columns["EmployeeCode"].Width = 60;
                 dataGV.Columns["FullName"].Width = 160;
@@ -213,11 +223,6 @@ namespace RauViet.ui
                 log_GV.Columns["AllowanceName"].Width = 100;
                 log_GV.Columns["Description"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 log_GV.Columns["Amount"].Width = 80;
-                log_GV.Columns["CreatedAt"].HeaderText = "Thời điểm thay đổi";
-                log_GV.Columns["ACtionBy"].HeaderText = "Người thay đổi";
-                log_GV.Columns["AllowanceName"].HeaderText = "Loại Phụ Cấp";
-                log_GV.Columns["Description"].HeaderText = "Hành động";
-                log_GV.Columns["Amount"].HeaderText = "Số Tiền";
 
                 log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 monthYearDtp.ValueChanged += monthYearDtp_ValueChanged;

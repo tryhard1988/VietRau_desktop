@@ -88,18 +88,24 @@ namespace RauViet.ui
             mEmployee_dt.Columns["RemainingLeaveDays"].ReadOnly = false;
 
             dataGV.DataSource = mEmployee_dt;
-            Utils.HideColumns(dataGV, new[] { "RemainingLeaveDays_1", "EmployessName_NoSign", "RemainingLeaveDays", "LeaveCount" });
+            Utils.HideColumns(dataGV, new[] { "EmployessName_NoSign", "RemainingLeaveDays", "LeaveCount" });
 
             foreach (DataGridViewColumn col in dataGV.Columns)
             {
-                col.ReadOnly = true;
+                if(col.Name == "RemainingLeaveDays_1")
+                    col.ReadOnly = false;
+                else
+                    col.ReadOnly = true;
             }
 
-            dataGV.Columns["EmployeeCode"].HeaderText = "Mã NV";
-            dataGV.Columns["FullName"].HeaderText = "Tên Nhân Viên";
-            dataGV.Columns["PositionName"].HeaderText = "Chức Vụ";
-            dataGV.Columns["Month"].HeaderText = "Tháng Có phép";
-            dataGV.Columns["RemainingLeaveDays_1"].HeaderText = "Còn Lại";
+            Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"EmployeeCode", "Mã NV" },
+                    {"FullName", "Tên Nhân Viên" },
+                    {"PositionName", "Chức Vụ" },
+                    {"Month", "Tháng Có phép" },
+                    {"RemainingLeaveDays_1", "Còn Lại" }
+                });
+
 
             dataGV.Columns["EmployeeCode"].Width = 70;
             dataGV.Columns["FullName"].Width = 200;
@@ -283,61 +289,7 @@ namespace RauViet.ui
             }
         }
 
-        private async void button1_Click(object sender, EventArgs e)
-        {
-            using (System.Windows.Forms.OpenFileDialog ofd = new System.Windows.Forms.OpenFileDialog())
-            {
-                ofd.Title = "Chọn file Excel";
-                ofd.Filter = "Excel Files|*.xlsx;*.xls|All Files|*.*";
-                ofd.Multiselect = false; // chỉ cho chọn 1 file
-
-                if (ofd.ShowDialog() == DialogResult.OK)
-                {
-                    string filePath = ofd.FileName;
-                    System.Data.DataTable excelData = Utils.LoadExcel_NoHeader(filePath);
-
-                    List<(string EmployeeCode, int RemainingLeaveDays)> albData = new List<(string, int)>();
-
-                    foreach (DataRow dr in excelData.Rows)
-                    {
-                        string employeeCode = Convert.ToString(dr["Column1"]);
-                        int remainingLeaveDays = 0;
-
-                        if (dr["Column2"] != DBNull.Value && int.TryParse(dr["Column2"].ToString().Trim(), out int value))
-                        {
-                            remainingLeaveDays = value;
-                        }
-
-                        albData.Add((employeeCode, remainingLeaveDays));
-
-                    }
-
-                    try
-                    {
-                        int prevMonth = DateTime.Now.AddMonths(-1).Month;
-
-                        Boolean iSuccess = await SQLManager_QLNS.Instance.UpsertAnnualLeaveBalanceBatchAsync(albData, false, prevMonth, 2025);
-                        if (iSuccess)
-                        {
-                            status_lb.Text = "Thành Công.";
-                            status_lb.ForeColor = Color.Green;                            
-                        }
-                        else
-                        {
-                            status_lb.Text = "";
-                            MessageBox.Show("Thất Bại", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        }
-                    }
-                    catch
-                    {
-                        status_lb.Text = "";
-                        MessageBox.Show("Thất Bại", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                }
-            }
-        }
-
-        //private async void button1_Click_1(object sender, EventArgs e)
+        //private async void button1_Click(object sender, EventArgs e)
         //{
         //    using (System.Windows.Forms.OpenFileDialog ofd = new System.Windows.Forms.OpenFileDialog())
         //    {
@@ -349,28 +301,47 @@ namespace RauViet.ui
         //        {
         //            string filePath = ofd.FileName;
         //            System.Data.DataTable excelData = Utils.LoadExcel_NoHeader(filePath);
+
+        //            List<(string EmployeeCode, int RemainingLeaveDays)> albData = new List<(string, int)>();
+
+        //            foreach (DataRow dr in excelData.Rows)
+        //            {
+        //                string employeeCode = Convert.ToString(dr["Column1"]);
+        //                int remainingLeaveDays = 0;
+
+        //                if (dr["Column2"] != DBNull.Value && int.TryParse(dr["Column2"].ToString().Trim(), out int value))
+        //                {
+        //                    remainingLeaveDays = value;
+        //                }
+
+        //                albData.Add((employeeCode, remainingLeaveDays));
+
+        //            }
+
         //            try
         //            {
-        //                foreach (DataRow edr in excelData.Rows)
+        //                int prevMonth = DateTime.Now.AddMonths(-1).Month;
+
+        //                Boolean iSuccess = await SQLManager_QLNS.Instance.UpsertAnnualLeaveBalanceBatchAsync(albData, false, prevMonth, 2025);
+        //                if (iSuccess)
         //                {
-        //                    string empCode = edr["Column1"].ToString();
-        //                    bool exists = mEmployee_dt.AsEnumerable().Any(r => r.Field<string>("EmployeeCode") == empCode);
-        //                    if (!exists) continue;
-
-
-        //                    int phep = Convert.ToInt32(edr["Column2"]);
-
-        //                    await SQLManager_QLNS.Instance.PhepAsync(empCode, phep);
-
+        //                    status_lb.Text = "Thành Công.";
+        //                    status_lb.ForeColor = Color.Green;                            
+        //                }
+        //                else
+        //                {
+        //                    status_lb.Text = "";
+        //                    MessageBox.Show("Thất Bại", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
         //                }
         //            }
-        //            catch (Exception ex)
+        //            catch
         //            {
-        //                MessageBox.Show("có lỗi " + ex.Message);
+        //                status_lb.Text = "";
+        //                MessageBox.Show("Thất Bại", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
         //            }
-        //            MessageBox.Show("xong");
         //        }
         //    }
         //}
+
     }
 }

@@ -170,35 +170,35 @@ namespace RauViet.ui
                 log_GV.DataSource = mLogDV;
                 dataGV.DataSource = dtResult;
 
-                dataGV.Columns["SKU"].Width = 50;
-                dataGV.Columns["Tên Sản Phẩm"].Width = 120;
-                dataGV.Columns["Đ.Vị"].Width = 60;
-                dataGV.Columns["Tồn\nđầu năm"].Width = 80;
-                dataGV.Columns["Nhập\n(Việt Rau)"].Width = 80;
-                dataGV.Columns["Nhập\n(Bình Thuận)"].Width = 95;
-                dataGV.Columns["Nhập\n(Mua Ngoài)"].Width = 90;
+                Utils.SetGridWidths(dataGV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"SKU", 50},
+                    {"Tên Sản Phẩm", 120},
+                    {"Đ.Vị", 60},
+                    {"Tồn\nđầu năm", 80},
+                    {"Nhập\n(Việt Rau)", 80},
+                    {"Nhập\n(Bình Thuận)", 95},
+                    {"Nhập\n(Mua Ngoài)", 90},
+                    {"X.Đóng Gói\n(Việt Rau)", 85},
+                    {"X.Đóng Gói\n(Bình Thuận)", 95},
+                    {"X.Đóng Gói\n(Mua Ngoài)", 90},
+                    {"X.Hủy\n(Việt Rau)", 80},
+                    {"X.Hủy\n(Bình Thuận)", 95},
+                    {"X.Hủy\n(Mua Ngoài)", 90},
+                    {"X.Phơi\n(Việt Rau)", 80},
+                    {"X.Phơi\n(Bình Thuận)", 95},
+                    {"X.Phơi\n(Mua Ngoài)", 90},
+                    {"X.Khác\n(Việt Rau)", 80},
+                    {"X.Khác\n(Bình Thuận)", 95},
+                    {"X.Khác\n(Mua Ngoài)", 90}
+                });
 
-                dataGV.Columns["X.Đóng Gói\n(Việt Rau)"].Width = 85;
-                dataGV.Columns["X.Đóng Gói\n(Bình Thuận)"].Width = 95;
-                dataGV.Columns["X.Đóng Gói\n(Mua Ngoài)"].Width = 90;
-
-                dataGV.Columns["X.Hủy\n(Việt Rau)"].Width = 80;
-                dataGV.Columns["X.Hủy\n(Bình Thuận)"].Width = 95;
-                dataGV.Columns["X.Hủy\n(Mua Ngoài)"].Width = 90;
-
-                dataGV.Columns["X.Phơi\n(Việt Rau)"].Width = 80;
-                dataGV.Columns["X.Phơi\n(Bình Thuận)"].Width = 95;
-                dataGV.Columns["X.Phơi\n(Mua Ngoài)"].Width = 90;
-
-                dataGV.Columns["X.Khác\n(Việt Rau)"].Width = 80;
-                dataGV.Columns["X.Khác\n(Bình Thuận)"].Width = 95;
-                dataGV.Columns["X.Khác\n(Mua Ngoài)"].Width = 90;
-
+                Utils.SetGridWidths(log_GV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"LogID", 80},
+                    {"ActionBy", 170},
+                    {"CreateedAt", 130}
+                });
 
                 log_GV.Columns["SKU"].Visible = false;
-                log_GV.Columns["LogID"].Width = 80;
-                log_GV.Columns["ActionBy"].Width = 170;
-                log_GV.Columns["CreateedAt"].Width = 130;
                 log_GV.Columns["OldValue"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 log_GV.Columns["NewValue"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
 

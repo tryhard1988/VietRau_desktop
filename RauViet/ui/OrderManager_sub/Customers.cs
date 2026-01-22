@@ -55,9 +55,12 @@ namespace RauViet.ui
                     {"Address", "Địa Chỉ" }
                 });
 
-                dataGV.Columns["Home"].Width = 50;
-                dataGV.Columns["Priority"].Width = 50;
-                dataGV.Columns["Address"].Width = 150;
+                Utils.SetGridWidths(dataGV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"Home", 50},
+                    {"Priority", 50},
+                    {"Address", 150},
+                });
+
                 dataGV.Columns["CustomerID"].Visible = false;
                 dataGV.Columns["FullName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 dataGV.Columns["CustomerCode"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;

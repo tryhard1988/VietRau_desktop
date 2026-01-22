@@ -102,18 +102,20 @@ namespace RauViet.ui
                 Utils.HideColumns(dataGV, new[] { "EmployessName_NoSign", "SalaryGrade" });
                 Utils.HideColumns(salaryInfoGV, new[] { "Month", "Year", "EmployeeCode", "SalaryInfoID" });
 
-                
-                salaryInfoGV.Columns["Date"].HeaderText = "Tháng/Năm";
-                salaryInfoGV.Columns["BaseSalary"].HeaderText = "Lương CB";
-                salaryInfoGV.Columns["Note"].HeaderText = "Ghi Chú";
-                salaryInfoGV.Columns["CreatedAt"].HeaderText = "Ngày Tạo";
-                salaryInfoGV.Columns["InsuranceBaseSalary"].HeaderText = "Lương CS Đóng BHXH";
+                Utils.SetGridHeaders(salaryInfoGV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"Date", "Tháng/Năm" },
+                    {"BaseSalary", "Lương CB" },
+                    {"Note", "Ghi Chú" },
+                    {"CreatedAt", "Ngày Tạo" },
+                    {"InsuranceBaseSalary", "Lương CS Đóng BHXH" }
+                });
 
-                dataGV.Columns["FullName"].HeaderText = "Tên Nhân Viên";
-                dataGV.Columns["EmployeeCode"].HeaderText = "Mã NV";
-                dataGV.Columns["PositionName"].HeaderText = "Chức Vụ";
-                dataGV.Columns["ContractTypeName"].HeaderText = "Loại Hợp Đồng";
-                dataGV.Columns["GradeName"].HeaderText = "Bậc Lương";
+                Utils.SetGridHeaders(log_GV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"CreatedAt", "Ngày thay đổi" },
+                    {"ACtionBy", "Người thay đổi" },
+                    {"Descrition", "Hành Động" }
+                });
+
 
                 dataGV.Columns["FullName"].Width = 150;
                 dataGV.Columns["EmployeeCode"].Width = 60;
@@ -130,9 +132,6 @@ namespace RauViet.ui
                 log_GV.Columns["CreatedAt"].Width = 120;
                 log_GV.Columns["ACtionBy"].Width = 150;
                 log_GV.Columns["Descrition"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                log_GV.Columns["CreatedAt"].HeaderText = "Thời điểm thay đổi";
-                log_GV.Columns["ACtionBy"].HeaderText = "Người thay đổi";
-                log_GV.Columns["Descrition"].HeaderText = "Hành Động";
                 log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
                 if (dataGV.Rows.Count > 0)

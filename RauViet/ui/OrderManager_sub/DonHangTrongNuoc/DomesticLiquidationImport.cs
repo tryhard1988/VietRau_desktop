@@ -118,17 +118,20 @@ namespace RauViet.ui
                     {"TotalMoney", "Thành Tiền" }
                 });
 
+                Utils.SetGridWidths(dataGV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"ImportDate", 70},
+                    {"Name_VN", 150},
+                    {"Package",60},
+                    {"Quantity", 70},
+                    {"Price", 70},
+                    {"TotalMoney", 70},
+                    {"EmployeeReported", 150}
+                });
+
+
                 dataGV.Columns["Price"].DefaultCellStyle.Format = "N0";
                 dataGV.Columns["TotalMoney"].DefaultCellStyle.Format = "N0";
                 dataGV.Columns["Quantity"].DefaultCellStyle.Format = "F1";
-
-                dataGV.Columns["ImportDate"].Width = 70;
-                dataGV.Columns["Name_VN"].Width = 150;
-                dataGV.Columns["Package"].Width = 60;
-                dataGV.Columns["Quantity"].Width = 70;
-                dataGV.Columns["Price"].Width = 70;
-                dataGV.Columns["TotalMoney"].Width = 70;
-                dataGV.Columns["EmployeeReported"].Width = 150;
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
@@ -155,11 +158,12 @@ namespace RauViet.ui
                     {"ActionBy", "Người Thực Hiện" },
                     {"CreatedAt", "Ngày Thực Hiện" }
                 });
-
+                Utils.SetGridWidths(log_GV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"ActionBy", 150},
+                    {"CreatedAt", 120}
+                });
                 log_GV.Columns["OldValue"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 log_GV.Columns["NewValue"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                log_GV.Columns["ActionBy"].Width = 150;
-                log_GV.Columns["CreatedAt"].Width = 120;
             }
             catch
             {

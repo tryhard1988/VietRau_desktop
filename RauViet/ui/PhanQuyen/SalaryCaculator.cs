@@ -542,9 +542,12 @@ namespace RauViet.ui
             {
                 this.Invoke(new Action(() =>
                 {
-                    allowanceGV.Columns["AllowanceName"].HeaderText = "Phụ Cấp";
-                    allowanceGV.Columns["Amount"].HeaderText = "Số Tiền";
-                    allowanceGV.Columns["IsInsuranceIncluded"].HeaderText = "BHXH";
+                    Utils.SetGridHeaders(allowanceGV, new System.Collections.Generic.Dictionary<string, string> {
+                        {"AllowanceName", "Phụ Cấp" },
+                        {"Amount", "Số Tiền" },
+                        {"IsInsuranceIncluded", "BHXH" }
+                    });
+
                     allowanceGV.Columns["AllowanceName"].Width = 120;
                     allowanceGV.Columns["Amount"].Width = 70;
                     allowanceGV.Columns["IsInsuranceIncluded"].Width = 40;
@@ -556,9 +559,11 @@ namespace RauViet.ui
             {
                 this.Invoke(new Action(() =>
                 {
-                    deductionGV.Columns["DeductionDate"].HeaderText = "Ngày Trừ";
-                    deductionGV.Columns["DeductionTypeName"].HeaderText = "Loại Tiền";
-                    deductionGV.Columns["Amount"].HeaderText = "Số Tiền";
+                    Utils.SetGridHeaders(deductionGV, new System.Collections.Generic.Dictionary<string, string> {
+                        {"DeductionDate", "Ngày Trừ" },
+                        {"DeductionTypeName", "Loại Tiền" },
+                        {"Amount", "Số Tiền" }
+                    });
                     deductionGV.Columns["DeductionDate"].Width = 70;
                     deductionGV.Columns["DeductionTypeName"].Width = 80;
                     deductionGV.Columns["Amount"].Width = 60;
@@ -570,9 +575,12 @@ namespace RauViet.ui
             {
                 this.Invoke(new Action(() =>
                 {
-                    attendamceGV.Columns["DayOfWeek"].HeaderText = "Thứ";
-                    attendamceGV.Columns["WorkDate"].HeaderText = "Ngày Làm";
-                    attendamceGV.Columns["WorkingHours"].HeaderText = "S.Giờ";
+                    Utils.SetGridHeaders(attendamceGV, new System.Collections.Generic.Dictionary<string, string> {
+                        {"DayOfWeek", "Thứ" },
+                        {"WorkDate", "Ngày Làm" },
+                        {"WorkingHours", "S.Giờ" }
+                    });
+
                     attendamceGV.Columns["DayOfWeek"].Width = 40;
                     attendamceGV.Columns["WorkDate"].Width = 80;
                     attendamceGV.Columns["WorkingHours"].Width = 50;
@@ -584,11 +592,18 @@ namespace RauViet.ui
             {
                 this.Invoke(new Action(() =>
                 {
-                    overtimeAttendanceGV.Columns["WorkDate"].HeaderText = "Ngày T.Ca";
-                    overtimeAttendanceGV.Columns["OvertimeName"].HeaderText = "Loại T.Ca";
-                    overtimeAttendanceGV.Columns["HourWork"].HeaderText = "S.Giờ";
-                    overtimeAttendanceGV.Columns["OvertimeAttendanceSalary"].HeaderText = "T.Công";
-                    overtimeAttendanceGV.Columns["DayOfWeek"].HeaderText = "Thứ";
+                    Utils.SetGridHeaders(overtimeAttendanceGV, new System.Collections.Generic.Dictionary<string, string> {
+                        {"WorkDate", "Ngày T.Ca" },
+                        {"OvertimeName", "Loại T.Ca" },
+                        {"HourWork", "S.Giờ" },
+                        {"OvertimeAttendanceSalary", "T.Công" },
+                        {"DayOfWeek", "Thứ" }
+                    });
+                    overtimeAttendanceGV.Columns[""].HeaderText = "";
+                    overtimeAttendanceGV.Columns[""].HeaderText = "";
+                    overtimeAttendanceGV.Columns[""].HeaderText = "";
+                    overtimeAttendanceGV.Columns[""].HeaderText = "";
+                    overtimeAttendanceGV.Columns[""].HeaderText = "";
                     overtimeAttendanceGV.Columns["WorkDate"].Width = 70;
                     overtimeAttendanceGV.Columns["OvertimeName"].Width = 70;
                     overtimeAttendanceGV.Columns["HourWork"].Width = 40;
@@ -604,9 +619,12 @@ namespace RauViet.ui
             {
                 this.Invoke(new Action(() =>
                 {
-                    leaveGV.Columns["LeaveTypeName"].HeaderText = "Loại Ngày Nghỉ";
-                    leaveGV.Columns["DateOff"].HeaderText = "Ngày Nghỉ";
-                    leaveGV.Columns["LeaveHours"].HeaderText = "S.Giờ";
+                    Utils.SetGridHeaders(leaveGV, new System.Collections.Generic.Dictionary<string, string> {
+                        {"LeaveTypeName", "Loại Ngày Nghỉ" },
+                        {"DateOff", "Ngày Nghỉ" },
+                        {"LeaveHours", "S.Giờ" }
+                    });
+
                     leaveGV.Columns["DateOff"].Width = 80;
                     leaveGV.Columns["LeaveHours"].Width = 50;
                     leaveGV.Columns["LeaveTypeName"].Width = 130;
@@ -618,22 +636,23 @@ namespace RauViet.ui
             {
                 this.Invoke(new Action(() =>
                 {
-                    dataGV.Columns["EmployeeCode"].HeaderText = "Mã NV";
-                    dataGV.Columns["FullName"].HeaderText = "Tên Nhân Viên";
-                    dataGV.Columns["DepartmentName"].HeaderText = "Phòng Ban";
-                    dataGV.Columns["ContractTypeName"].HeaderText = "Hợp Đồng";
-                    dataGV.Columns["NetSalary"].HeaderText = "Thực Lãnh";
-                    dataGV.Columns["BaseSalary"].HeaderText = "Lương CB";
-                    dataGV.Columns["InsuranceBaseSalary"].HeaderText = "Lương C.S Đóng BHXH";
-                    dataGV.Columns["TotalInsuranceSalary"].HeaderText = "Lương Tính Đóng BHXH";
-                    dataGV.Columns["TotalSalaryHourWork"].HeaderText = "T.Lương Theo Giờ";
-                    dataGV.Columns["TotalHourWork"].HeaderText = "Giờ Công Làm";
-                    dataGV.Columns["HourSalary"].HeaderText = "Tiền 1 Giờ Làm";
-                    dataGV.Columns["EmployeeInsurancePaid"].HeaderText = "Tiền NV Nộp BHXH";
-                    dataGV.Columns["InsuranceRefund"].HeaderText = "Hoàn Trả BHXH";
-
-                    dataGV.Columns["TotalIncludedInsurance"].HeaderText = "PC Đóng BHXH";
-                    dataGV.Columns["TotalExcludedInsurance"].HeaderText = "PC K.Đóng BHXH";
+                    Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
+                        {"EmployeeCode", "Mã NV" },
+                        {"FullName", "Tên Nhân Viên" },
+                        {"DepartmentName", "Phòng Ban" },
+                        {"ContractTypeName", "Hợp Đồng" },
+                        {"NetSalary", "Thực Lãnh" },
+                        {"BaseSalary", "Lương CB" },
+                        {"InsuranceBaseSalary", "Lương C.S Đóng BHXH" },
+                        {"TotalInsuranceSalary", "Lương Tính Đóng BHXH" },
+                        {"TotalSalaryHourWork", "T.Lương Theo Giờ" },
+                        {"TotalHourWork", "Giờ Công Làm" },
+                        {"HourSalary", "Tiền 1 Giờ Làm" },
+                        {"EmployeeInsurancePaid", "Tiền NV Nộp BHXH" },
+                        {"InsuranceRefund", "Hoàn Trả BHXH" },
+                        {"TotalIncludedInsurance", "PC Đóng BHXH" },
+                        {"TotalExcludedInsurance", "PC K.Đóng BHXH" },
+                    });
 
                     dataGV.Columns["EmployeeCode"].Frozen = true;
                     dataGV.Columns["FullName"].Frozen = true;

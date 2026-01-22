@@ -181,43 +181,58 @@ namespace RauViet.ui
                 Utils.HideColumns(dataGV, new[] { "ExportHistoryID" });
                 Utils.HideColumns(CustomerDetail_GV, new[] { "CustomerName", "ProductName_EN", "Priority" });
 
-                CustomerDetail_GV.Columns["ProductName_VN"].HeaderText = "Tên Sản Phẩm";
-                CustomerDetail_GV.Columns["TotalNetWeight"].HeaderText = "Net Weight";
-                CustomerDetail_GV.Columns["TotalAmountCHF"].HeaderText = "Thành Tiền";
-                CustomerDetail_GV.Columns["TotalPCS"].HeaderText = "PCS";
+                Utils.SetGridHeaders(CustomerDetail_GV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"ProductName_VN", "Tên Sản Phẩm" },
+                    {"TotalNetWeight", "Net Weight" },
+                    {"TotalAmountCHF", "Thành Tiền" },
+                    {"TotalPCS", "PCS" }
+                });
 
-                dataGV.Columns["ExportCode"].HeaderText = "Mã Xuất Cảng";
-                dataGV.Columns["ExportDate"].HeaderText = "Ngày Xuất Cảng";
-                dataGV.Columns["TotalMoney"].HeaderText = "Tổng Tiền Hàng";
-                dataGV.Columns["TotalNW"].HeaderText = "Tổng Trọng Lượng";
-                dataGV.Columns["NumberCarton"].HeaderText = "Tổng Số Thùng";
-                dataGV.Columns["FreightCharge"].HeaderText = "Phí Vận Chuyển";
+                Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"ExportCode", "Mã Xuất Cảng" },
+                    {"ExportDate", "Ngày Xuất Cảng" },
+                    {"TotalMoney", "Tổng Tiền Hàng" },
+                    {"TotalNW", "Tổng Trọng Lượng" },
+                    {"NumberCarton", "Tổng Số Thùng" },
+                    {"FreightCharge", "Phí Vận Chuyển" }
+                });
 
-                int sizeWidth = 70;
-                dataGV.Columns["ExportCode"].Width = 110;
-                dataGV.Columns["ExportDate"].Width = sizeWidth;
-                dataGV.Columns["TotalMoney"].Width = sizeWidth;
-                dataGV.Columns["TotalNW"].Width = sizeWidth;
-                dataGV.Columns["NumberCarton"].Width = sizeWidth;
-                dataGV.Columns["FreightCharge"].Width = sizeWidth;
+                Utils.SetGridHeaders(product_GV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"ProductName_VN", "Tên Sản Phẩm" },
+                    {"ProductName_EN", "Product Name" },
+                    {"TotalNetWeight", "Net Weight" },
+                    {"TotalAmountCHF", "Thành Tiền" },
+                    {"TotalPCS", "PCS" }
+                });
 
-                product_GV.Columns["ProductName_VN"].HeaderText = "Tên Sản Phẩm";
-                product_GV.Columns["ProductName_EN"].HeaderText = "Product Name";
-                product_GV.Columns["TotalNetWeight"].HeaderText = "Net Weight";
-                product_GV.Columns["TotalAmountCHF"].HeaderText = "Thành Tiền";
-                product_GV.Columns["TotalPCS"].HeaderText = "PCS";
-                product_GV.Columns["ProductName_VN"].Width = 150;
-                product_GV.Columns["ProductName_EN"].Width = 130;
-                product_GV.Columns["TotalNetWeight"].Width = 70;
-                product_GV.Columns["TotalAmountCHF"].Width = 70;
+                Utils.SetGridHeaders(CustomerGV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"CustomerName", "Tên Sản Phẩm" },
+                    {"TotalNetWeight", "Net Weight" },
+                    {"TotalAmountCHF", "Thành Tiền" },
+                    {"TotalPCS", "PCS" }
+                });
 
-                CustomerGV.Columns["CustomerName"].HeaderText = "Tên Sản Phẩm";
-                CustomerGV.Columns["TotalNetWeight"].HeaderText = "Net Weight";
-                CustomerGV.Columns["TotalAmountCHF"].HeaderText = "Thành Tiền";
-                CustomerGV.Columns["TotalPCS"].HeaderText = "PCS";
-                CustomerGV.Columns["CustomerName"].Width = 100;
-                CustomerGV.Columns["TotalNetWeight"].Width = 80;
-                CustomerGV.Columns["TotalAmountCHF"].Width = 80;
+                Utils.SetGridWidths(dataGV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"ExportCode", 110},
+                    {"ExportDate", 70},
+                    {"TotalMoney", 70},
+                    {"TotalNW", 70},
+                    {"NumberCarton", 70},
+                    {"FreightCharge", 70}
+                });
+
+                Utils.SetGridWidths(product_GV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"ProductName_VN", 150},
+                    {"ProductName_EN", 130},
+                    {"TotalNetWeight", 70},
+                    {"TotalAmountCHF", 70},
+                });
+
+                Utils.SetGridWidths(CustomerGV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"CustomerName", 100},
+                    {"TotalNetWeight", 80},
+                    {"TotalAmountCHF", 80}
+                });
 
                 decimal totalmoney = exportHistoryByYear_dt.AsEnumerable().Sum(r => r.Field<decimal>("TotalMoney"));
                 decimal totalNW = exportHistoryByYear_dt.AsEnumerable().Sum(r => r.Field<decimal>("TotalNW"));

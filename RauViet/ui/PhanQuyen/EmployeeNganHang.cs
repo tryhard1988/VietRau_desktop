@@ -66,12 +66,21 @@ namespace RauViet.ui
                 Utils.HideColumns(log_GV, new[] { "LogID", "EmployeeCode" });
                 Utils.HideColumns(dataGV, new[] { "EmployessName_NoSign" });
 
-                dataGV.Columns["EmployeeCode"].HeaderText = "Mã NV";
-                dataGV.Columns["FullName"].HeaderText = "Tên NV";
-                dataGV.Columns["BankName"].HeaderText = "Tên Ngân Hàng";
-                dataGV.Columns["BankBranch"].HeaderText = "Chi Nhánh";
-                dataGV.Columns["BankAccountNumber"].HeaderText = "Số Tài Khoản";
-                dataGV.Columns["BankAccountHolder"].HeaderText = "Chủ Tài Khoản";
+                Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"EmployeeCode", "Mã NV" },
+                    {"FullName", "Tên NV" },
+                    {"BankName", "Tên Ngân Hàng" },
+                    {"BankBranch", "Chi Nhánh" },
+                    {"BankAccountNumber", "Số Tài Khoản" },
+                    {"BankAccountHolder", "Chủ Tài Khoản" }
+                });
+
+                Utils.SetGridHeaders(log_GV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"CreatedAt", "Ngày thay đổi" },
+                    {"ACtionBy", "Người thay đổi" },
+                    {"OldValue", "Giá trị cũ" },
+                    {"NewValue", "Giá trị mới" }
+                });
 
                 dataGV.Columns["EmployeeCode"].Width = 60;
                 dataGV.Columns["FullName"].Width = 160;
@@ -87,10 +96,6 @@ namespace RauViet.ui
                 log_GV.Columns["ACtionBy"].Width = 150;
                 log_GV.Columns["OldValue"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 log_GV.Columns["NewValue"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                log_GV.Columns["CreatedAt"].HeaderText = "Thời điểm thay đổi";
-                log_GV.Columns["ACtionBy"].HeaderText = "Người thay đổi";
-                log_GV.Columns["OldValue"].HeaderText = "Giá trị cũ";
-                log_GV.Columns["NewValue"].HeaderText = "Giá trị mới";
                 log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
                 if (dataGV.Rows.Count > 0)

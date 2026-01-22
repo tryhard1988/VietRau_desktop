@@ -76,20 +76,22 @@ namespace RauViet.ui
 
                 Utils.HideColumns(dataGV, new[] { "ExportCodeID"});
 
-                dataGV.Columns["ProductNameEN"].HeaderText = "Common name";
-                dataGV.Columns["ProductNameVN"].HeaderText = "Vietnamese";
-                dataGV.Columns["BotanicalName"].HeaderText = "Botanical Name";
-                dataGV.Columns["NetWeightFinal"].HeaderText = "Quantity N.W\r\n(kgs)";
+                Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"ProductNameEN", "Common name" },
+                    {"ProductNameVN", "Vietnamese"},
+                    {"BotanicalName", "Botanical Name"},
+                    {"NetWeightFinal", "Quantity N.W\r\n(kgs)"},
+                    {"Priority", "Ưu\nTiên"}
+                });
 
-                dataGV.Columns["Priority"].HeaderText = "Ưu\nTiên";
-
-                dataGV.Columns["Priority"].Width = 50;
-                dataGV.Columns["No"].Width = 50;
-                // dataGV.Columns["STT"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["ProductNameEN"].Width = 180;
-                dataGV.Columns["ProductNameVN"].Width = 180;
-                dataGV.Columns["BotanicalName"].Width = 150;
-                dataGV.Columns["NetWeightFinal"].Width = 80;
+                Utils.SetGridWidths(dataGV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"Priority", 50},
+                    {"No", 50},
+                    {"ProductNameEN", 180},
+                    {"ProductNameVN", 180},
+                    {"BotanicalName", 150},
+                    {"NetWeightFinal", 80}
+                });
 
                 dataGV.Columns["Priority"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
                 dataGV.Columns["NetWeightFinal"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;

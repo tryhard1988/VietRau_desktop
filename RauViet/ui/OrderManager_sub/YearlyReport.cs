@@ -1,8 +1,4 @@
 ﻿using ClosedXML.Excel;
-using DocumentFormat.OpenXml.Bibliography;
-using DocumentFormat.OpenXml.Vml;
-using DocumentFormat.OpenXml.Wordprocessing;
-using MySqlX.XDevAPI.Common;
 using RauViet.classes;
 using System;
 using System.Collections.Generic;

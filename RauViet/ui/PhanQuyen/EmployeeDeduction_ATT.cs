@@ -115,12 +115,38 @@ namespace RauViet.ui
                     row.Delete();
                 employee_dt.AcceptChanges();
 
-                employeeDeductionGV.DataSource = mEmployeeLeave_dt;
+                       
 
                 employee_dt.Columns["DeductionAmount"].ReadOnly = false;
                 dataGV.AutoGenerateColumns = true;
+                employeeDeductionGV.DataSource = mEmployeeLeave_dt;
                 dataGV.DataSource = employee_dt;
                 log_GV.DataSource = mDeductionLogDV;
+
+                Utils.SetGridHeaders(employeeDeductionGV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"DateOff", "Ngày Nghỉ" },
+                    {"LeaveTypeName", "Loại Nghỉ Phép" },
+                    {"LeaveHours", "Số Giờ Vắng" },
+                    {"Note", "Ghi Chú" }
+                });
+
+                Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"FullName", "Tên NV" },
+                    {"EmployeeCode", "Mã NV" },
+                    {"PositionName", "Chức Vụ" },
+                    {"ContractTypeName", "Loại Hợp Đồng" },
+                    {"AllowanceAmount", "PC Chuyên Cần" },
+                    {"DeductionAmount", "Trừ Chuyên Cần" },
+                    {"TotalOffDay", "Số Ngày Nghỉ" }
+                });
+
+                Utils.SetGridHeaders(log_GV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"CreateAt", "Ngày thay đổi" },
+                    {"ACtionBy", "Người thay đổi" },
+                    {"Description", "Hành động" },
+                    {"DeductionDate", "Ngày" },
+                    {"Amount", "Số Tiền" },
+                });
 
                 employeeDeductionGV.Columns["EmployeeCode"].Visible = false;
                 dataGV.Columns["EmployessName_NoSign"].Visible = false;
@@ -133,10 +159,6 @@ namespace RauViet.ui
 
                 Utils.HideColumns(log_GV, new[] { "LogID", "EmployeeCode", "DeductionTypeCode" });
 
-                employeeDeductionGV.Columns["DateOff"].HeaderText = "Ngày Nghỉ";
-                employeeDeductionGV.Columns["LeaveTypeName"].HeaderText = "Loại Nghỉ Phép";
-                employeeDeductionGV.Columns["LeaveHours"].HeaderText = "Số Giờ Vắng";
-                employeeDeductionGV.Columns["Note"].HeaderText = "Ghi Chú";
 
                 bool isLock = await SQLStore_QLNS.Instance.IsSalaryLockAsync(month, year);
                 dataGV.ReadOnly = isLock;
@@ -147,14 +169,6 @@ namespace RauViet.ui
                 dataGV.Columns["AllowanceAmount"].ReadOnly = true;
                 dataGV.Columns["DeductionAmount"].ReadOnly = isLock;
                 dataGV.Columns["TotalOffDay"].ReadOnly = true;
-
-                dataGV.Columns["FullName"].HeaderText = "Tên Nhân Viên";
-                dataGV.Columns["EmployeeCode"].HeaderText = "Mã NV";
-                dataGV.Columns["PositionName"].HeaderText = "Chức Vụ";
-                dataGV.Columns["ContractTypeName"].HeaderText = "Loại Hợp Đồng";
-                dataGV.Columns["AllowanceAmount"].HeaderText = "PC Chuyên Cần";
-                dataGV.Columns["DeductionAmount"].HeaderText = "Trừ Chuyên Cần";
-                dataGV.Columns["TotalOffDay"].HeaderText = "Số Ngày Nghỉ";
 
                 dataGV.Columns["EmployeeCode"].Width = 50;
                 dataGV.Columns["FullName"].Width = 150;
@@ -184,11 +198,6 @@ namespace RauViet.ui
                 log_GV.Columns["Description"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 log_GV.Columns["DeductionDate"].Width = 80;
                 log_GV.Columns["Amount"].Width = 80;
-                log_GV.Columns["CreateAt"].HeaderText = "Thời điểm thay đổi";
-                log_GV.Columns["ACtionBy"].HeaderText = "Người thay đổi";
-                log_GV.Columns["Description"].HeaderText = "Hành động";
-                log_GV.Columns["DeductionDate"].HeaderText = "Ngày";
-                log_GV.Columns["Amount"].HeaderText = "Số Tiền";
 
                 log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 

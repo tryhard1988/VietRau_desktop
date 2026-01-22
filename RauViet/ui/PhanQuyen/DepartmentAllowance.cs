@@ -102,17 +102,17 @@ namespace RauViet.ui
                 mDepartmentAllowance_dt.Columns["Amount"].SetOrdinal(count++);
                 mDepartmentAllowance_dt.Columns["Note"].SetOrdinal(count++);
 
+                Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"DepartmentName", "Tên Phòng Ban" },
+                    {"Description", "Diễn Giải" }
+                });
 
-                allowanceGV.Columns["AllowanceName"].HeaderText = "Loại Phụ Cấp";
-                allowanceGV.Columns["Amount"].HeaderText = "Số Tiền";
-                allowanceGV.Columns["Note"].HeaderText = "Ghi Chú";
+                Utils.SetGridHeaders(allowanceGV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"AllowanceName", "Loại Phụ Cấp" },
+                    {"Amount", "Số Tiền" },
+                    {"Note", "Ghi Chú" }
+                });
 
-                dataGV.Columns["DepartmentName"].HeaderText = "Tên Phòng Ban";
-                dataGV.Columns["Description"].HeaderText = "Diễn Giải";
-                //dataGV.Columns["IsActive"].HeaderText = "Đang Hoạt Động";
-
-                //dataGV.Columns["AllowanceTypeID"].Visible = false;
-                //dataGV.Columns["ApplyScopeID"].Visible = false;
 
                 dataGV.Columns["DepartmentName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
                 dataGV.Columns["Description"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;

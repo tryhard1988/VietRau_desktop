@@ -137,25 +137,30 @@ namespace RauViet.ui
                 Utils.HideColumns(dataGV, new[] { "EmployessName_NoSign", "PositionID", "DepartmentID", "ContractTypeID" });
                 Utils.HideColumns(employeeAllowances_GV, new[] { "EmployeeCode"});
 
+                Utils.SetGridHeaders(employeeAllowances_GV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"AllowanceName", "Loại Phụ Cấp" },
+                    {"IsInsuranceIncluded", "Đ.Bảo Hiểm" },
+                    {"Amount", "Số Tiền" }
+                });
+
+                Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"BaseSalary", "Lương Cơ Bản" },
+                    {"InsuranceBaseSalary", "Lương CS Đóng BH" },
+                    {"Allowance_Insurance", "PC Đóng BH" },
+                    {"Allowance_NonInsurance", "PC không Đóng BH" },
+                    {"EmployeeCode", "Mã NV" },
+                    {"FullName", "Họ Và Tên" },
+                    {"HireDate", "Ngày Vào Làm" },
+                    {"PositionName", "Chức Vụ" },
+                    {"DepartmentName", "Phòng Ban" },
+                    {"ContractTypeName", "Loại Hợp Đồng" },
+                    {"HourSalary", "Lương Theo Giờ" }
+                });
+
                 employeeAllowances_GV.Columns["AllowanceName"].Width = 120;
                 employeeAllowances_GV.Columns["IsInsuranceIncluded"].Width = 50;
                 employeeAllowances_GV.Columns["Amount"].DefaultCellStyle.Format = "N0";                
 
-                employeeAllowances_GV.Columns["AllowanceName"].HeaderText = "Loại Phụ Cấp";
-                employeeAllowances_GV.Columns["IsInsuranceIncluded"].HeaderText = "Đ.Bảo Hiểm";
-                employeeAllowances_GV.Columns["Amount"].HeaderText = "Số Tiền";
-
-                dataGV.Columns["BaseSalary"].HeaderText = "Lương Cơ Bản";
-                dataGV.Columns["InsuranceBaseSalary"].HeaderText = "Lương CS Đóng BH";
-                dataGV.Columns["Allowance_Insurance"].HeaderText = "PC Đóng BH";
-                dataGV.Columns["Allowance_NonInsurance"].HeaderText = "PC không Đóng BH";
-                dataGV.Columns["EmployeeCode"].HeaderText = "Mã NV";
-                dataGV.Columns["FullName"].HeaderText = "Họ Và Tên";
-                dataGV.Columns["HireDate"].HeaderText = "Ngày Vào Làm";
-                dataGV.Columns["PositionName"].HeaderText = "Chức Vụ";
-                dataGV.Columns["DepartmentName"].HeaderText = "Phòng Ban";
-                dataGV.Columns["ContractTypeName"].HeaderText = "Loại Hợp Đồng";
-                dataGV.Columns["HourSalary"].HeaderText = "Lương Theo Giờ";
 
                 dataGV.Columns["InsuranceBaseSalary"].DefaultCellStyle.Format = "N0";
                 dataGV.Columns["BaseSalary"].DefaultCellStyle.Format = "N0";

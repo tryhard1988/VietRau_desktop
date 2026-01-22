@@ -143,12 +143,15 @@ namespace RauViet.ui
                     {"CreateAt", "Ngày thay đổi" }
                 });
 
+                Utils.SetGridWidths(logGV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"NWOder", 100},
+                    {"NWReal", 100},
+                    {"NetWeightFinal", 100},
+                    {"ActionBy", 140},
+                    {"CreateAt", 110}
+                });
+
                 logGV.Columns["Description"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                logGV.Columns["NWOder"].Width = 100;
-                logGV.Columns["NWReal"].Width = 100;
-                logGV.Columns["NetWeightFinal"].Width = 100;
-                logGV.Columns["ActionBy"].Width = 140;
-                logGV.Columns["CreateAt"].Width = 110;
                 logGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
                 calvalueRightUI();

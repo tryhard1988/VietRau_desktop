@@ -146,19 +146,40 @@ namespace RauViet.ui
                     {"CustomerCarton", "Mã Thùng" }
                 });
 
+                Utils.SetGridHeaders(logGV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"Description", "Hành động" },
+                    {"PCSReal", "PCS T.T" },
+                    {"NWReal", "N.W T.T" },
+                    {"CartonNo", "Carton No" },
+                    {"CartonSize", "Kích thước thùng" },
+                    {"ActionBy", "Người thay đổi" },
+                    {"CreateAt", "Ngày thay đổi" },
+                    {"CustomCarton", "Mã Thùng" }
+                });
 
-                dataGV.Columns["OrderId"].Width = 50;
-                dataGV.Columns["Priority"].Width = 40;
-                dataGV.Columns["PCSReal"].Width = 50;
-                dataGV.Columns["NWReal"].Width = 50;
-                dataGV.Columns["PCSOther"].Width = 50;
-                dataGV.Columns["NWOther"].Width = 50;
-                dataGV.Columns["CartonNo"].Width = 60;
-                dataGV.Columns["CartonSize"].Width = 80;
-                dataGV.Columns["CustomerCarton"].Width = 80;
-                //   dataGV.Columns["Priority"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["CustomerName"].Width = 80;
-                dataGV.Columns["ProductNameVN"].Width = 220;
+                Utils.SetGridWidths(dataGV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"OrderId", 50},
+                    {"Priority", 40},
+                    {"PCSReal", 50},
+                    {"NWReal", 50},
+                    {"PCSOther", 50},
+                    {"NWOther", 50},
+                    {"CartonNo", 60},
+                    {"CartonSize", 80},
+                    {"CustomerCarton", 80},
+                    {"CustomerName", 80},
+                    {"ProductNameVN", 220}
+                });
+
+                Utils.SetGridWidths(dataGV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"PCSReal", 50},
+                    {"NWReal", 50},
+                    {"CartonNo", 60},
+                    {"CartonSize", 120},
+                    {"ActionBy", 140},
+                    {"CreateAt", 110},
+                    {"CustomCarton", 80}
+                });
 
                 dataGV.Columns["CartonNo"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 dataGV.Columns["PCSReal"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
@@ -182,23 +203,7 @@ namespace RauViet.ui
                 exportCode_cbb.SelectedIndexChanged += exportCode_search_cbb_SelectedIndexChanged;
                 exportCode_cbb.SelectedValue = mCurrentExportID;
 
-                logGV.Columns["Description"].HeaderText = "Hành động";
-                logGV.Columns["PCSReal"].HeaderText = "PCS T.T";
-                logGV.Columns["NWReal"].HeaderText = "N.W T.T";
-                logGV.Columns["CartonNo"].HeaderText = "Carton No";
-                logGV.Columns["CartonSize"].HeaderText = "Kích thước thùng";
-                logGV.Columns["ActionBy"].HeaderText = "Người thay đổi";
-                logGV.Columns["CreateAt"].HeaderText = "Ngày thay đổi";
-                logGV.Columns["CustomCarton"].HeaderText = "Mã Thùng";
-
                 logGV.Columns["Description"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                logGV.Columns["PCSReal"].Width = 50;
-                logGV.Columns["NWReal"].Width = 50;
-                logGV.Columns["CartonNo"].Width = 60;
-                logGV.Columns["CartonSize"].Width = 120;
-                logGV.Columns["ActionBy"].Width = 140;
-                logGV.Columns["CreateAt"].Width = 110;
-                logGV.Columns["CustomCarton"].Width = 80;
                 logGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
                 cartonSize_cbb.DataSource = mCartonSize_dt;

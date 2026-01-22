@@ -111,30 +111,33 @@ namespace RauViet.ui
                 Utils.HideColumns(dataGV, new[] { "ProductSKU", "ProductNameVN_NoSign", "PackingType", "GroupProduct" });
                 Utils.HideColumns(priceCNFHisGV, new[] { "id", "SKU" });
 
-                dataGV.Columns["ProductNameVN"].HeaderText = "Tên Sản Phẩm (VN)";
-                dataGV.Columns["ProductNameEN"].HeaderText = "Tên Sản Phẩm (EN)";
-                dataGV.Columns["BotanicalName"].HeaderText = "Botanical Name";
-                dataGV.Columns["PriceCNF"].HeaderText = "Giá CNF\n(CHF/Kg)";
-                dataGV.Columns["Priority"].HeaderText = "Ưu\nTiên";
-                dataGV.Columns["PackingList"].HeaderText = "Packing\nList";
-                dataGV.Columns["PackingType"].HeaderText = "Packing\nType";
-                dataGV.Columns["PlantingAreaCode"].HeaderText = "Mã\nVùng Trồng";
-                dataGV.Columns["LOTCodeHeader"].HeaderText = "Mã LOT\n3 số đầu";
-                dataGV.Columns["IsActive"].HeaderText = "";
+                Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"ProductNameVN", "Tên Sản Phẩm (VN)" },
+                    {"ProductNameEN", "Tên Sản Phẩm (EN)" },
+                    {"BotanicalName", "Botanical Name" },
+                    {"PriceCNF", "Giá CNF\n(CHF/Kg)" },
+                    {"Priority", "Ưu\nTiên" },
+                    {"PackingList", "Packing\nList" },
+                    {"PackingType", "Packing\nType" },
+                    {"PlantingAreaCode", "Mã\nVùng Trồng" },
+                    {"LOTCodeHeader", "Mã LOT\n3 số đầu" },
+                    {"IsActive", "H.Động" }
+                });
 
-                dataGV.Columns["ProductNameVN"].Width = 170;
-                dataGV.Columns["ProductNameEN"].Width = 140;
-
-                dataGV.Columns["BotanicalName"].Width = 100;
-                dataGV.Columns["PlantingAreaCode"].Width = 50;
-                dataGV.Columns["LOTCodeHeader"].Width = 50;
-                dataGV.Columns["PriceCNF"].Width = 60;
-                dataGV.Columns["Priority"].Width = 35;
-                dataGV.Columns["package"].Width = 60;
-                dataGV.Columns["PackingType"].Width = 60;
-                dataGV.Columns["PackingList"].Width = 60;
-                dataGV.Columns["SKU"].Width = 60;
-                dataGV.Columns["IsActive"].Width = 30;
+                Utils.SetGridWidths(dataGV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"ProductNameVN", 170},
+                    {"ProductNameEN", 140},
+                    {"BotanicalName", 100},
+                    {"PlantingAreaCode", 50},
+                    {"LOTCodeHeader", 50},
+                    {"PriceCNF", 60},
+                    {"Priority", 35},
+                    {"package", 60},
+                    {"PackingType", 60},
+                    {"PackingList", 60},
+                    {"SKU", 60},
+                    {"IsActive", 30}
+                });
 
                 dataGV.Columns["PriceCNF"].Visible = !UserManager.Instance.hasRole_AnGiaSanPham();
                 priceCNFHisGV.Visible = !UserManager.Instance.hasRole_AnGiaSanPham();

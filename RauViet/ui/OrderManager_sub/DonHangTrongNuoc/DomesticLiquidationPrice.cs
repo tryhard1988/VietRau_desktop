@@ -127,10 +127,12 @@ namespace RauViet.ui
                     {"CreatedAt", "Ngày Thực Hiện" }
                 });
 
+                Utils.SetGridWidths(log_GV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"ActionBy", 150},
+                    {"CreatedAt", 120}
+                });
                 log_GV.Columns["OldPrice"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                log_GV.Columns["NewPrice"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                log_GV.Columns["ActionBy"].Width = 150;
-                log_GV.Columns["CreatedAt"].Width = 120;                
+                log_GV.Columns["NewPrice"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;              
             }
             catch
             {

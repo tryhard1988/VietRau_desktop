@@ -112,14 +112,14 @@ namespace RauViet.ui
                     {"Note", "Ghi Chú" }
                 });
 
-                dataGV.Columns["TransactionID"].Width = 70;
-                dataGV.Columns["Name_VN"].Width = 250;
-                dataGV.Columns["Note"].Width = 300;
+                Utils.SetGridWidths(dataGV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"TransactionID", 70},
+                    {"Name_VN", 250},
+                    {"Note", 300},
+                });
 
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-
-                //    dataGV.Columns["Packing"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
                 updateRightUI();
 

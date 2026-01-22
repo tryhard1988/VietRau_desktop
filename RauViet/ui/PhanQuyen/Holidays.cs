@@ -80,9 +80,10 @@ namespace RauViet.ui
                 DataTable holiday_dt = holidayAsync.Result;
 
                 dataGV.DataSource = holiday_dt;
-
-                dataGV.Columns["HolidayDate"].HeaderText = "Ngày Nghỉ Lễ";
-                dataGV.Columns["HolidayName"].HeaderText = "Diễn Giải";
+                Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"HolidayDate", "Ngày Nghỉ Lễ" },
+                    {"HolidayName", "Diễn Giải" }
+                });
 
                 dataGV.Columns["HolidayDate"].DefaultCellStyle.Format = "dd/MM/yyyy";
 

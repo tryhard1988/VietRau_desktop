@@ -75,10 +75,19 @@ namespace RauViet.ui
                 Utils.HideColumns(dataGV, new[] { "SalaryGradeID" });
                 Utils.HideColumns(log_GV, new[] { "LogID", "GradeID" });
 
-                dataGV.Columns["GradeName"].HeaderText = "Tên bậc lương";
-                dataGV.Columns["Salary"].HeaderText = "Mức lương";
-                dataGV.Columns["Note"].HeaderText = "Diễn Giải";
-                dataGV.Columns["IsActive"].HeaderText = "Đang Hoạt Động";
+                Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
+                        {"GradeName", "Tên bậc lương" },
+                        {"Salary", "Mức lương" },
+                        {"Note", "Diễn Giải" },
+                        {"IsActive", "Đang Hoạt Động" },
+                    });
+
+                Utils.SetGridHeaders(log_GV, new System.Collections.Generic.Dictionary<string, string> {
+                        {"CreatedAt", "Ngày thay đổi" },
+                        {"ActionBy", "Người thay đổi" },
+                        {"OldValue", "Giá trị cũ" },
+                        {"NewValue", "Giá trị mới" }
+                    });
 
                 dataGV.Columns["GradeName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
                 dataGV.Columns["Salary"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
@@ -101,10 +110,6 @@ namespace RauViet.ui
                 log_GV.Columns["ActionBy"].Width = 150;
                 log_GV.Columns["OldValue"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 log_GV.Columns["NewValue"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                log_GV.Columns["CreatedAt"].HeaderText = "Thời điểm thay đổi";
-                log_GV.Columns["ActionBy"].HeaderText = "Người thay đổi";
-                log_GV.Columns["OldValue"].HeaderText = "Giá trị cũ";
-                log_GV.Columns["NewValue"].HeaderText = "Giá trị mới";
                 log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
             catch

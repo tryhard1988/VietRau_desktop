@@ -185,13 +185,15 @@ namespace RauViet.ui
                     {"", "" },
                 });
 
-                sumary_GV.Columns["ProductNameVN"].Width = 110;
-                sumary_GV.Columns["ProductTypeName"].Width = 85;
-                sumary_GV.Columns["PCSReal"].Width = 50;
-                sumary_GV.Columns["NWReal"].Width = 50;
-                sumary_GV.Columns["Price"].Width = 60;
-                sumary_GV.Columns["TotalAmount"].Width = 80;
-                sumary_GV.Columns["Package"].Width = 50;
+                Utils.SetGridWidths(sumary_GV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"ProductNameVN", 110},
+                    {"ProductTypeName", 85},
+                    {"PCSReal", 50},
+                    {"NWReal", 50},
+                    {"Price", 60},
+                    {"TotalAmount", 80},
+                    {"Package", 50}
+                });
 
                 sumary_GV.Columns["Price"].DefaultCellStyle.Format = "N0";
                 sumary_GV.Columns["TotalAmount"].DefaultCellStyle.Format = "N0";
@@ -213,15 +215,17 @@ namespace RauViet.ui
                     {"TotalAmount", "Thành Tiền" }
                 });
 
-                detailGV.Columns["PCSReal"].Width = 50;
-                detailGV.Columns["NWReal"].Width = 50;
-                detailGV.Columns["Price"].Width = 50;
-                detailGV.Columns["Package"].Width = 45;
-                detailGV.Columns["OrderDomesticIndex"].Width = 50;
-                detailGV.Columns["DeliveryDate"].Width = 80;
-                detailGV.Columns["TotalAmount"].Width = 80;
-                detailGV.Columns["AmountPacking"].Width = 50;
-                detailGV.Columns["ProductTypeName"].Width = 80;
+                Utils.SetGridWidths(detailGV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"PCSReal", 50},
+                    {"NWReal", 50},
+                    {"Price", 50},
+                    {"Package", 45},
+                    {"OrderDomesticIndex", 50},
+                    {"DeliveryDate", 80},
+                    {"TotalAmount", 80},
+                    {"AmountPacking", 50},
+                    {"ProductTypeName", 80}
+                });
 
                 detailGV.Columns["Price"].DefaultCellStyle.Format = "N0";
                 detailGV.Columns["TotalAmount"].DefaultCellStyle.Format = "N0";

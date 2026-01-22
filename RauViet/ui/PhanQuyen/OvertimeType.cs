@@ -75,10 +75,11 @@ namespace RauViet.ui
                 mOvertimeType_dt.Columns["IsActive"].SetOrdinal(count++);
 
                 dataGV.DataSource = mOvertimeType_dt;
-
-                dataGV.Columns["OvertimeName"].HeaderText = "Tên Loại Tăng Ca";
-                dataGV.Columns["SalaryFactor"].HeaderText = "Hệ Số Nhân";
-                dataGV.Columns["IsActive"].HeaderText = "Còn Hoạt Động";
+                Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"OvertimeName", "Tên Loại Tăng Ca" },
+                    {"SalaryFactor", "Hệ Số Nhân" },
+                    {"IsActive", "Còn Hoạt Động" }
+                });
 
                 dataGV.Columns["OvertimeTypeID"].Visible = false;
 

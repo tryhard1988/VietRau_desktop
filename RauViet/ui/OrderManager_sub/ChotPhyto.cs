@@ -79,17 +79,18 @@ namespace RauViet.ui
                     {"Priority", "Ưu\nTiên" }
                 });
 
-                dataGV_DK.Columns["Priority"].Width = 50;
-                dataGV_DK.Columns["No"].Width = 50;
-                // dataGV.Columns["STT"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV_DK.Columns["ProductNameEN"].Width = 150;
-                dataGV_DK.Columns["ProductNameVN"].Width = 150;
-                dataGV_DK.Columns["BotanicalName"].Width = 130;
-                dataGV_DK.Columns["TotalNetWeight"].Width = 100;
-                dataGV_DK.Columns["Packing"].Width = 80;
-                dataGV_DK.Columns["PCS"].Width = 60;
-                dataGV_DK.Columns["PriceCHF"].Width = 80;
-                dataGV_DK.Columns["AmountCHF"].Width = 80;
+                Utils.SetGridWidths(dataGV_DK, new System.Collections.Generic.Dictionary<string, int> {
+                    {"Priority", 50},
+                    {"No", 50},
+                    {"ProductNameEN", 150},
+                    {"ProductNameVN", 150},
+                    {"BotanicalName", 130},
+                    {"TotalNetWeight", 100},
+                    {"Packing", 80},
+                    {"PCS", 60},
+                    {"PriceCHF", 80},
+                    {"AmountCHF", 80}
+                });
 
                 dataGV_DK.Columns["Priority"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
                 dataGV_DK.Columns["TotalNetWeight"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;

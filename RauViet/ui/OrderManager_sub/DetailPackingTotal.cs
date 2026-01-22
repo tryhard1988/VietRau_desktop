@@ -83,18 +83,20 @@ namespace RauViet.ui
                     {"Priority", "Ưu\nTiên" }
                 });
 
-                dataGV.Columns["Priority"].Width = 30;
-                dataGV.Columns["No"].Width = 30;
-                dataGV.Columns["CustomerCarton"].Width = 200;
-                dataGV.Columns["CartonNo"].Width = 120;
-                dataGV.Columns["ProductNameEN"].Width = 120; ;
-                dataGV.Columns["ProductNameVN"].Width = 150;
-                dataGV.Columns["LOTCodeComplete"].Width = 80;
-                dataGV.Columns["PLU"].Width = 50;
-                dataGV.Columns["Package"].Width = 50;
-                dataGV.Columns["NWReal"].Width = 60;
-                dataGV.Columns["packing"].Width = 70;
-                dataGV.Columns["PCSReal"].Width = 50;
+                Utils.SetGridWidths(dataGV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"Priority", 30},
+                    {"No", 30},
+                    {"CustomerCarton", 200},
+                    {"CartonNo", 120},
+                    {"ProductNameEN", 120},
+                    {"ProductNameVN", 150},
+                    {"LOTCodeComplete", 80},
+                    {"PLU", 50},
+                    {"Package", 50},
+                    {"NWReal", 60},
+                    {"packing", 70},
+                    {"PCSReal", 50}
+                });
 
                 dataGV.Columns["Priority"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
 

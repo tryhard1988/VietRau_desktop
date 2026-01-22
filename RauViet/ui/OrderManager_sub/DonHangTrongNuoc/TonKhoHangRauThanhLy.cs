@@ -126,19 +126,22 @@ namespace RauViet.ui
                     {"SalePrice", "Giá Thanh Lí" }
                 });
 
+                Utils.SetGridWidths(dataGV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"Name_VN", 180},
+                    {"Package", 60},
+                    {"TonDauKi", 80},
+                    {"NhapTrongKy", 80},
+                    {"XuatTrongKy", 80},
+                    {"TonCuoiKi", 80},
+                    {"SalePrice", 80},
+                });
+
                 dataGV.Columns["SalePrice"].DefaultCellStyle.Format = "N0";
                 dataGV.Columns["TonDauKi"].DefaultCellStyle.Format = "N1";
                 dataGV.Columns["NhapTrongKy"].DefaultCellStyle.Format = "N1";
                 dataGV.Columns["XuatTrongKy"].DefaultCellStyle.Format = "N1";
                 dataGV.Columns["TonCuoiKi"].DefaultCellStyle.Format = "N1";
 
-                dataGV.Columns["Name_VN"].Width = 180;
-                dataGV.Columns["Package"].Width = 60;
-                dataGV.Columns["TonDauKi"].Width = 80;
-                dataGV.Columns["NhapTrongKy"].Width = 80;
-                dataGV.Columns["XuatTrongKy"].Width = 80;
-                dataGV.Columns["TonCuoiKi"].Width = 80;
-                dataGV.Columns["SalePrice"].Width = 80;
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }

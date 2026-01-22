@@ -108,11 +108,29 @@ namespace RauViet.ui
                 department_GV.DataSource = mDepartment_dt;
                 allowanceGV.DataSource = mAllowanceDV;
 
+                Utils.HideColumns(department_GV, new[] { "DepartmentID", "Description", "IsActive", "CreatedAt" });
+                Utils.HideColumns(dataGV, new[] { "OvertimeTypeID", "DepartmentID" });
+
+                Utils.SetGridHeaders(allowanceGV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"EmployeeCode", "Mã NV" },
+                    {"EmployeeName", "Tên NV" },
+                    {"TotalMealAllowance", "Tổng P.Cơm" },
+                    {"TotalNoodleAllowance", "Tổng P.Mì" }
+                });
+
+                Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"EmployeeName", "Tên Nhân Viên" },
+                    {"EmployeeCode", "Mã NV" },
+                    {"WorkDate", "Ngày Làm" },
+                    {"HourWork", "Số Giờ" }
+                });
+
+                Utils.SetGridHeaders(department_GV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"DepartmentName", "Tên Phòng Ban" }
+                });
+
+
                 allowanceGV.Columns["DepartmentID"].Visible = false;
-                allowanceGV.Columns["EmployeeCode"].HeaderText = "Mã NV";
-                allowanceGV.Columns["EmployeeName"].HeaderText = "Tên NV";
-                allowanceGV.Columns["TotalMealAllowance"].HeaderText = "Tổng P.Cơm";
-                allowanceGV.Columns["TotalNoodleAllowance"].HeaderText = "Tổng P.Mì";
                 allowanceGV.Columns["EmployeeCode"].Width = 70;
                 allowanceGV.Columns["EmployeeName"].Width = 160;
                 allowanceGV.Columns["TotalMealAllowance"].Width = 90;
@@ -125,17 +143,9 @@ namespace RauViet.ui
                 mOvertime_dt.Columns["OvertimeTypeID"].SetOrdinal(count++);
                 mOvertime_dt.Columns["HourWork"].SetOrdinal(count++);
                 mOvertime_dt.Columns["Note"].SetOrdinal(count++);
-
-                Utils.HideColumns(department_GV, new[] { "DepartmentID", "Description", "IsActive", "CreatedAt" });
-                Utils.HideColumns(dataGV, new[] { "OvertimeTypeID", "DepartmentID" });
-
-                department_GV.Columns["DepartmentName"].HeaderText = "Tên Phòng Ban";
+                                
                 department_GV.Columns["DepartmentName"].Width = 200;
 
-                dataGV.Columns["EmployeeName"].HeaderText = "Tên Nhân Viên";
-                dataGV.Columns["EmployeeCode"].HeaderText = "Mã NV";
-                dataGV.Columns["WorkDate"].HeaderText = "Ngày Làm";
-                dataGV.Columns["HourWork"].HeaderText = "Số Giờ";
                 dataGV.Columns["EmployeeCode"].Width = 70;
                 dataGV.Columns["EmployeeName"].Width = 160;
                 dataGV.Columns["WorkDate"].Width = 80;

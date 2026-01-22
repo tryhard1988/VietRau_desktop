@@ -113,13 +113,15 @@ namespace RauViet.ui
 
                 dataGV.DataSource = mEmployee_dt;
                 Utils.HideColumns(dataGV, new[] { "PositionCode", "ContractTypeCode" });
-                
-                dataGV.Columns["EmployeeCode"].HeaderText = "Mã Nhân Viên";
-                dataGV.Columns["FullName"].HeaderText = "Tên Nhân Viên";
-                dataGV.Columns["TotalWorkingHour"].HeaderText = "Tổng G.Làm";
-                dataGV.Columns["TotalWorkingDay"].HeaderText = "Tổng N.Làm";
-                dataGV.Columns["ContractTypeName"].HeaderText = "Loại H.Đồng";
-                dataGV.Columns["PositionName"].HeaderText = "Chức Vụ";
+
+                Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"EmployeeCode", "Mã Nhân Viên" },
+                    {"FullName", "Tên Nhân Viên" },
+                    {"TotalWorkingHour", "Tổng G.Làm" },
+                    {"TotalWorkingDay", "Tổng N.Làm" },
+                    {"ContractTypeName", "Loại H.Đồng" },
+                    {"PositionName", "Chức Vụ" }
+                });
 
                 dataGV.Columns["EmployeeCode"].Width = 50;
                 dataGV.Columns["FullName"].Width = 160;
@@ -141,17 +143,27 @@ namespace RauViet.ui
                 Attendamce(month, year);
                 attendanceGV.DataSource = mAttendamce_dt;
                 Utils.HideColumns(attendanceGV, new[] { "EmployeeCode", "LeaveHours" });
+                Utils.SetGridHeaders(attendanceGV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"WorkDate", "Ngày Làm" },
+                    {"WorkingHours", "Số G.Làm" },
+                    {"DayOfWeek", "Thứ" },
+                    {"AttendanceLog", "Ra/Vào Cổng" },
+                    {"LeaveTypeName", "Nghỉ(Nếu Có)" },
+                    {"OvertimeName", "Tăng Ca" },
+                    {"Note", "Ghi Chú" }
+                });
+
+                Utils.SetGridHeaders(log_GV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"CreatedAt", "Ngày thay đổi" },
+                    {"ActionBy", "Người thay đổi" },
+                    {"Description", "Hành động" },
+                    {"WorkDate", "Ngày Làm" },
+                    {"WorkingHours", "Giờ Làm" }
+                });
+
 
                 attendanceGV.Columns["WorkDate"].DefaultCellStyle.Format = "dd/MM/yyyy";
                 attendanceGV.Columns["WorkingHours"].DefaultCellStyle.Format = "0.##";
-
-                attendanceGV.Columns["WorkDate"].HeaderText = "Ngày Làm";
-                attendanceGV.Columns["WorkingHours"].HeaderText = "Số G.Làm";
-                attendanceGV.Columns["DayOfWeek"].HeaderText = "Thứ";
-                attendanceGV.Columns["AttendanceLog"].HeaderText = "Ra/Vào Cổng";
-                attendanceGV.Columns["LeaveTypeName"].HeaderText = "Nghỉ(Nếu Có)";
-                attendanceGV.Columns["OvertimeName"].HeaderText = "Tăng Ca";
-                attendanceGV.Columns["Note"].HeaderText = "Ghi Chú";
 
                 attendanceGV.Columns["DayOfWeek"].Width = 40;
                 attendanceGV.Columns["WorkDate"].Width = 70;
@@ -181,11 +193,6 @@ namespace RauViet.ui
                 log_GV.Columns["WorkDate"].Width = 100;
                 log_GV.Columns["WorkingHours"].Width = 100;
                 log_GV.Columns["Description"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                log_GV.Columns["CreatedAt"].HeaderText = "Thời điểm thay đổi";
-                log_GV.Columns["ActionBy"].HeaderText = "Người thay đổi";
-                log_GV.Columns["Description"].HeaderText = "Hành động";
-                log_GV.Columns["WorkDate"].HeaderText = "Ngày Làm";
-                log_GV.Columns["WorkingHours"].HeaderText = "Giờ Làm";
                 log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
                 dataGV.SelectionChanged += this.dataGV_CellClick;                

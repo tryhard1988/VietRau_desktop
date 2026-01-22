@@ -83,6 +83,15 @@ public static class Utils
         }
     }
 
+    public static void SetGridWidths(DataGridView dataGV, Dictionary<string, int> widths)
+    {
+        foreach (var h in widths)
+        {
+            if (dataGV.Columns.Contains(h.Key))
+                dataGV.Columns[h.Key].Width = h.Value;
+        }
+    }
+
     public static string RemoveVietnameseSigns(string text)
     {
         if (string.IsNullOrEmpty(text)) return text;

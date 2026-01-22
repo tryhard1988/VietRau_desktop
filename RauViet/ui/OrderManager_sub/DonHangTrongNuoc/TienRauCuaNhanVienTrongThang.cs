@@ -103,12 +103,15 @@ namespace RauViet.ui
                     {"TotalMoney", "Số Tiền" },
                 });
 
+                Utils.SetGridWidths(dataGV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"EmployeeCode", 70},
+                    {"EmployeeName", 110},
+                    {"TotalMoney", 60},
+                });
+
                 dataGV.Columns["TotalMoney"].DefaultCellStyle.Format = "N0";
                 dataGV.Columns["ExportDate"].DefaultCellStyle.Format = "MM/yyyy";
 
-                dataGV.Columns["EmployeeCode"].Width = 70;
-                dataGV.Columns["EmployeeName"].Width = 150;
-                dataGV.Columns["TotalMoney"].Width = 60;
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
                 monthYear_dtp.ValueChanged += monthYearDtp_ValueChanged;

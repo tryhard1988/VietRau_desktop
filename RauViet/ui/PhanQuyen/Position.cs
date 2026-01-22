@@ -76,11 +76,12 @@ namespace RauViet.ui
                 postion_dt.Columns["IsActive"].SetOrdinal(count++);
 
                 dataGV.DataSource = postion_dt;
-
-                dataGV.Columns["PositionName"].HeaderText = "Tên Vị Trí";
-                dataGV.Columns["Description"].HeaderText = "Diễn Giải";
-                dataGV.Columns["IsActive"].HeaderText = "Còn Hoạt Động";
-                dataGV.Columns["PositionCode"].HeaderText = "Mã Chức Vụ";
+                Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"PositionName", "Tên Vị Trí" },
+                    {"Description", "Diễn Giải" },
+                    {"IsActive", "Còn Hoạt Động" },
+                    {"PositionCode", "Mã Chức Vụ" }
+                });
 
                 dataGV.Columns["PositionID"].Visible = false;
                 dataGV.Columns.Remove("CreatedAt");

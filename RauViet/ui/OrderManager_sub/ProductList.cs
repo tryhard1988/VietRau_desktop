@@ -102,25 +102,27 @@ namespace RauViet.ui
                 dv.RowFilter = $"IsActive_SKU = true";
                 Utils.HideColumns(dataGV, new[] { "GroupProduct", "ProductSKU", "Packing", "Amount", "Package", "PackingName", "ProductNameVN_NoSign", "SKU", "PriceCNF", "IsActive_SKU", "ProductPackingID" });
 
-                dataGV.Columns["Name_VN"].HeaderText = "Tên Tiếng Việt";
-                dataGV.Columns["Name_EN"].HeaderText = "Tên Tiếng Anh";
-                dataGV.Columns["PriceCNF"].HeaderText = "Giá CNF (CHF/Kg)";
-                dataGV.Columns["BarCodeEAN13"].HeaderText = "Bar code EAN13";
-                dataGV.Columns["ArtNr"].HeaderText = "Art.Nr";
-                dataGV.Columns["Priority"].HeaderText = "Ưu Tiên";
-                dataGV.Columns["IsActive"].HeaderText = "";
+                Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"Name_VN", "Tên Tiếng Việt" },
+                    {"Name_EN", "Tên Tiếng Anh" },
+                    {"PriceCNF", "Giá CNF (CHF/Kg)" },
+                    {"BarCodeEAN13", "Bar code EAN13" },
+                    {"ArtNr", "Art.Nr" },
+                    {"Priority", "Ưu Tiên" },
+                    {"IsActive", "H.Động" },
+                });
 
-
-                dataGV.Columns["PLU"].Width = 50;
-                dataGV.Columns["BarCode"].Width = 90;
-                dataGV.Columns["BarCodeEAN13"].Width = 90;
-                dataGV.Columns["ArtNr"].Width = 50;
-                dataGV.Columns["GGN"].Width = 90;
-                dataGV.Columns["Name_VN"].Width = 200;
-                dataGV.Columns["Name_EN"].Width = 200;
-                dataGV.Columns["Priority"].Width = 50;
-                dataGV.Columns["IsActive"].Width = 30;
-
+                Utils.SetGridWidths(dataGV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"PLU", 50},
+                    {"BarCode", 90},
+                    {"BarCodeEAN13", 90},
+                    {"ArtNr", 50},
+                    {"GGN", 90},
+                    {"Name_VN", 200},
+                    {"Name_EN", 200},
+                    {"Priority", 50},
+                    {"IsActive", 30},
+                });
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 

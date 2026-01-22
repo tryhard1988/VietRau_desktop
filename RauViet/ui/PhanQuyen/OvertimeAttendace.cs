@@ -163,19 +163,33 @@ namespace RauViet.ui
 
                 mEmployeeDV = new DataView(mEmployee_dt);
                 dataGV.DataSource = mEmployeeDV;
-                dataGV.Columns["EmployeeCode"].HeaderText = "Mã Nhân Viên";
-                dataGV.Columns["FullName"].HeaderText = "Tên Nhân Viên";
-                dataGV.Columns["ContractTypeName"].HeaderText = "Loại H.Đồng";
-                dataGV.Columns["PositionName"].HeaderText = "Chức Vụ";
+
+                Utils.HideColumns(departmentGV, new[] { "DepartmentID", "Description", "IsActive", "CreatedAt" });
+                Utils.HideColumns(dataGV, new[] { "DepartmentID", "PositionName", "ContractTypeName" });
+                Utils.HideColumns(log_GV, new[] { "EmployeeCode", "LogID" });
+
+                Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"EmployeeCode", "Mã Nhân Viên" },
+                    {"FullName", "Tên Nhân Viên" },
+                    {"ContractTypeName", "Loại H.Đồng" },
+                    {"PositionName", "Chức Vụ" }
+                });
+
+                Utils.SetGridHeaders(log_GV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"CreatedAt", "Ngày thay đổi" },
+                    {"ActionBy", "Người thay đổi" },
+                    {"OvertimeTypeName", "Loại tăng ca" },
+                    {"Description", "Hành động" },
+                    {"WorkDate", "Ngày làm" },
+                    {"StartTime", "Giờ bắt đầu" },
+                    {"EndTime", "Giờ kết thúc" }
+                });
 
                 dataGV.Columns["EmployeeCode"].Width = 50;
                 dataGV.Columns["FullName"].Width = 160;
                 dataGV.Columns["ContractTypeName"].Width = 70;
                 dataGV.Columns["PositionName"].Width = 70;
-                                
-                Utils.HideColumns(departmentGV, new[] { "DepartmentID", "Description", "IsActive", "CreatedAt" });
-                Utils.HideColumns(dataGV, new[] { "DepartmentID", "PositionName", "ContractTypeName"});
-                Utils.HideColumns(log_GV, new[] { "EmployeeCode", "LogID"});
+                
 
                 departmentGV.Columns["DepartmentName"].HeaderText = "Bộ Phận";
                 departmentGV.Columns["DepartmentName"].Width = 120;
@@ -189,19 +203,9 @@ namespace RauViet.ui
                 log_GV.Columns["StartTime"].Width = 100;
                 log_GV.Columns["EndTime"].Width = 100;
 
-
-                log_GV.Columns["CreatedAt"].HeaderText = "Thời điểm thay đổi";
-                log_GV.Columns["ActionBy"].HeaderText = "Người thay đổi";
-                log_GV.Columns["OvertimeTypeName"].HeaderText = "Loại tăng ca";
-                log_GV.Columns["Description"].HeaderText = "Hành động";
-                log_GV.Columns["WorkDate"].HeaderText = "Ngày làm";
-                log_GV.Columns["StartTime"].HeaderText = "Giờ bắt đầu";
-                log_GV.Columns["EndTime"].HeaderText = "Giờ kết thúc";
                 log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
                 Attendamce();
-
-                
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
@@ -214,10 +218,7 @@ namespace RauViet.ui
                 
                 dataGV.SelectionChanged += this.dataGV_CellClick;
 
-                
                 monthYearDtp.ValueChanged += monthYearDtp_ValueChanged;
-
-
 
                 if (departmentGV.Rows.Count > 0)
                 {                    

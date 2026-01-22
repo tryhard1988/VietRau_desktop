@@ -139,19 +139,17 @@ namespace RauViet.ui
                 dataGV.DataSource = mEmployee_dt;
                 Utils.HideColumns(dataGV, new[] { "Month", "RemainingLeaveDays", "LeaveCount", "EmployessName_NoSign" });
 
-
-                dataGV.Columns["EmployeeCode"].HeaderText = "Mã NV";
-                dataGV.Columns["FullName"].HeaderText = "Tên Nhân Viên";
-              //  dataGV.Columns["ContractTypeName"].HeaderText = "Loại H.Đồng";
-                dataGV.Columns["PositionName"].HeaderText = "Chức Vụ";
-                dataGV.Columns["RemainingLeaveDays_1"].HeaderText = "Phép Năm Còn";
+                Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"EmployeeCode", "Mã NV" },
+                    {"FullName", "Tên Nhân Viên" },
+                    {"PositionName", "Chức Vụ" },
+                    {"RemainingLeaveDays_1", "Phép Năm Còn" }
+                });
 
                 mEmployee_dt.Columns["LeaveCount"].ReadOnly = false;
 
-
                 dataGV.Columns["EmployeeCode"].Width = 50;
                 dataGV.Columns["FullName"].Width = 160;
-              //  dataGV.Columns["ContractTypeName"].Width = 70;
                 dataGV.Columns["PositionName"].Width = 70;
 
                 dataGV.Width = 500;
@@ -165,6 +163,15 @@ namespace RauViet.ui
 
                 log_GV.DataSource = mLogDV;
                 Utils.HideColumns(log_GV, new[] { "LogID", "EmployeeCode" });
+                Utils.SetGridHeaders(log_GV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"CreatedAt", "Ngày thay đổi" },
+                    {"ACtionBy", "Người thay đổi" },
+                    {"LeaveName", "Loại nghỉ phép" },
+                    {"Description", "Hành động" },
+                    {"DateOff", "Ngày Nghỉ" },
+                    {"LeaveHour", "Số giờ nghỉ" }
+                });
+
                 loadLeaveAttendance();
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
@@ -175,12 +182,6 @@ namespace RauViet.ui
                 log_GV.Columns["Description"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 log_GV.Columns["DateOff"].Width = 80;
                 log_GV.Columns["LeaveHour"].Width = 60;
-                log_GV.Columns["CreatedAt"].HeaderText = "Thời điểm thay đổi";
-                log_GV.Columns["ACtionBy"].HeaderText = "Người thay đổi";
-                log_GV.Columns["LeaveName"].HeaderText = "Loại nghỉ phép";
-                log_GV.Columns["Description"].HeaderText = "Hành động";
-                log_GV.Columns["DateOff"].HeaderText = "Ngày Nghỉ";
-                log_GV.Columns["LeaveHour"].HeaderText = "Số giờ nghỉ";
 
                 log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 year_tb.TextChanged += monthYearDtp_ValueChanged;

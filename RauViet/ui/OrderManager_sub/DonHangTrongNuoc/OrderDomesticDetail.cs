@@ -195,15 +195,16 @@ namespace RauViet.ui
                 dataGV.Columns["ProductTypeName"].ReadOnly = true;
                 dataGV.Columns["ProductNameVN"].ReadOnly = true;
                 dataGV.Columns["OrderDomesticDetailID"].ReadOnly = true;
-               
 
-                dataGV.Columns["OrderDomesticDetailID"].Width = 50;
-                dataGV.Columns["ProductNameVN"].Width = 130;
-                dataGV.Columns["PCSOrder"].Width = 70;
-                dataGV.Columns["NWOrder"].Width = 70;
-                dataGV.Columns["PCSReal"].Width = 70;
-                dataGV.Columns["NWReal"].Width = 70;
-                dataGV.Columns["Price"].Width = 70;
+                Utils.SetGridWidths(dataGV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"OrderDomesticDetailID", 50},
+                    {"ProductNameVN", 130},
+                    {"PCSOrder", 70},
+                    {"NWOrder", 70},
+                    {"PCSReal", 70},
+                    {"NWReal", 70},
+                    {"Price", 70},
+                });
 
                 dataGV.Columns["Price"].DefaultCellStyle.Format = "N0";
 
@@ -226,13 +227,12 @@ namespace RauViet.ui
 
                 await Task.Delay(500);
                 ReadOnly_btn_Click(null, null);
-
-                
-
+                Utils.SetGridWidths(log_GV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"ActionBy", 150},
+                    {"CreatedAt", 120}
+                });
                 log_GV.Columns["OldValue"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 log_GV.Columns["NewValue"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                log_GV.Columns["ActionBy"].Width = 140;
-                log_GV.Columns["CreatedAt"].Width = 110;
 
                 UpdateBottomUI();
             }

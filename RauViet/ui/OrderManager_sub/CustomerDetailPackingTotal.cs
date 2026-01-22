@@ -89,17 +89,19 @@ namespace RauViet.ui
                     {"CustomerCarton", "Note" }
                 });
 
+                Utils.SetGridWidths(dataGV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"No", 30},
+                    {"ProductNameEN", 120},
+                    {"ProductNameVN", 160},
+                    {"CustomerCarton", 200},
+                    {"CartonNo", 100},
+                    {"PLU", 50},
+                    {"Package", 50},
+                    {"NWReal", 50},
+                    {"AmountPacking", 50},
+                    {"PCSReal", 50},
+                });
 
-                dataGV.Columns["No"].Width = 30;
-                dataGV.Columns["ProductNameEN"].Width = 120;
-                dataGV.Columns["ProductNameVN"].Width = 160;
-                dataGV.Columns["CustomerCarton"].Width = 200;
-                dataGV.Columns["CartonNo"].Width = 100;
-                dataGV.Columns["PLU"].Width = 50;
-                dataGV.Columns["Package"].Width = 50;
-                dataGV.Columns["NWReal"].Width = 50;
-                dataGV.Columns["AmountPacking"].Width = 50;
-                dataGV.Columns["PCSReal"].Width = 50;
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 

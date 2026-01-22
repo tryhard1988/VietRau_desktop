@@ -196,10 +196,12 @@ namespace RauViet.ui
                     {"TotalAmountCHF", "Thành Tiền" }
                 });
 
-                product_GV.Columns["ProductName_VN"].Width = 150;
-                product_GV.Columns["ProductName_EN"].Width = 130;
-                product_GV.Columns["TotalQuanitity"].Width = 70;
-                product_GV.Columns["TotalAmountCHF"].Width = 70;
+                Utils.SetGridWidths(product_GV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"ProductName_VN", 150},
+                    {"ProductName_EN", 130},
+                    {"TotalQuanitity", 70},
+                    {"TotalAmountCHF", 70}
+                });
 
                 product_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 

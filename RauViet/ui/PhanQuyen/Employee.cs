@@ -113,19 +113,28 @@ namespace RauViet.ui
                                                     "BankAccountHolder","BankAccountNumber","BankBranch","BankName","SalaryGrade","SalaryGradeID", "CreatedAt", "ContractTypeID", "DepartmentID", "PositionID", "NoteResign", "EmployessName_NoSign"});
                 Utils.HideColumns(log_GV, new[] { "LogID", "EmployeeCode" });
 
-                dataGV.Columns["EmployeeCode"].HeaderText = "Mã NV";
-                dataGV.Columns["FullName"].HeaderText = "Họ Và Tên";
-                dataGV.Columns["BirthDate"].HeaderText = "Ngày Sinh";
-                dataGV.Columns["HireDate"].HeaderText = "Ngày Vào Làm";
-                dataGV.Columns["GenderName"].HeaderText = "G.Tính";
-                dataGV.Columns["IsActive"].HeaderText = "Đang Làm";
-                dataGV.Columns["CitizenID"].HeaderText = "CCCD/CMND";
-                dataGV.Columns["PhoneNumber"].HeaderText = "Số Điện Thoại";
-                dataGV.Columns["NoteResign"].HeaderText = "Ra/Vào Công Ty";
-                dataGV.Columns["canCreateUserName"].HeaderText = "Cấp Quyền";
-                dataGV.Columns["IsInsuranceRefund"].HeaderText = "Hoàn BH";
-                dataGV.Columns["NoteResign"].HeaderText = "Ra/Vào Công Ty";
-                dataGV.Columns["Gradename"].HeaderText = "Bậc\nLương";
+                Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"EmployeeCode", "Mã NV" },
+                    {"FullName", "Họ Và Tên" },
+                    {"BirthDate", "Ngày Sinh" },
+                    {"HireDate", "Ngày Vào Làm" },
+                    {"GenderName", "G.Tính" },
+                    {"IsActive", "Đang Làm" },
+                    {"CitizenID", "CCCD/CMND" },
+                    {"PhoneNumber", "Số Điện Thoại" },
+                    {"NoteResign", "Ra/Vào Công Ty" },
+                    {"canCreateUserName", "Cấp Quyền" },
+                    {"IsInsuranceRefund", "Hoàn BH" },
+                    {"NoteResign", "Ra/Vào Công Ty" },
+                    {"Gradename", "Bậc\nLương" }
+                });
+
+                Utils.SetGridHeaders(log_GV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"CreatedAt", "Thời điểm thay đổi" },
+                    {"ACtionBy", "Người thay đổi" },
+                    {"OldValue", "Giá trị cũ" },
+                    {"NewValue", "Giá trị mới" }
+                });
 
                 dataGV.Columns["BirthDate"].DefaultCellStyle.Format = "dd/MM/yyyy";
                 dataGV.Columns["HireDate"].DefaultCellStyle.Format = "dd/MM/yyyy";
@@ -152,10 +161,6 @@ namespace RauViet.ui
                 log_GV.Columns["ACtionBy"].Width = 150;
                 log_GV.Columns["OldValue"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 log_GV.Columns["NewValue"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                log_GV.Columns["CreatedAt"].HeaderText = "Thời điểm thay đổi";
-                log_GV.Columns["ACtionBy"].HeaderText = "Người thay đổi";
-                log_GV.Columns["OldValue"].HeaderText = "Giá trị cũ";
-                log_GV.Columns["NewValue"].HeaderText = "Giá trị mới";
                 log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
                 if (dataGV.Rows.Count > 0)

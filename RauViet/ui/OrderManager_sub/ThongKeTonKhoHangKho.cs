@@ -121,13 +121,18 @@ namespace RauViet.ui
                 log_GV.DataSource = mLogDV;
                 dataGV.DataSource = dtResult;
 
-                dataGV.Columns["SKU"].Width = 70;
-                dataGV.Columns["Tên Sản Phẩm"].Width = 250;
+                Utils.SetGridWidths(dataGV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"SKU", 70},
+                    {"Tên Sản Phẩm", 250}
+                });
+
+                Utils.SetGridWidths(log_GV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"LogID", 80},
+                    {"ActionBy", 170},
+                    {"CreateedAt", 130}
+                });
                                 
                 log_GV.Columns["SKU"].Visible = false;
-                log_GV.Columns["LogID"].Width = 80;
-                log_GV.Columns["ActionBy"].Width = 170;
-                log_GV.Columns["CreateedAt"].Width = 130;
                 log_GV.Columns["OldValue"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 log_GV.Columns["NewValue"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
 
