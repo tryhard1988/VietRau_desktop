@@ -82,18 +82,23 @@ namespace RauViet.ui
                     {"NewValue", "Giá trị mới" }
                 });
 
-                dataGV.Columns["EmployeeCode"].Width = 60;
-                dataGV.Columns["FullName"].Width = 160;
-                dataGV.Columns["BankName"].Width = 130;
-                dataGV.Columns["BankBranch"].Width = 200;
-                dataGV.Columns["BankAccountNumber"].Width = 100;
-                dataGV.Columns["BankAccountHolder"].Width = 160;
+                Utils.SetGridWidths(dataGV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"EmployeeCode", 60},
+                    {"FullName", 160},
+                    {"BankName", 130},
+                    {"BankBranch", 200},
+                    {"BankAccountNumber", 100},
+                    {"BankAccountHolder", 160}
+                });
+
+                Utils.SetGridWidths(log_GV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"CreatedAt", 120},
+                    {"ACtionBy", 150}
+                });
 
                 dataGV.Columns["BankName"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 dataGV.Columns["BankAccountNumber"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
-                log_GV.Columns["CreatedAt"].Width = 120;
-                log_GV.Columns["ACtionBy"].Width = 150;
                 log_GV.Columns["OldValue"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 log_GV.Columns["NewValue"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;

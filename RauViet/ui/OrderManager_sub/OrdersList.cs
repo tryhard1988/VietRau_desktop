@@ -1,5 +1,5 @@
 ﻿using ClosedXML.Excel;
-
+using PdfSharp.Pdf.Filters;
 using RauViet.classes;
 using System;
 using System.Collections.Generic;
@@ -188,19 +188,29 @@ namespace RauViet.ui
                 Utils.HideColumns(cusProduct_GV, new[] { "CustomerID", "ProductPackingID", "Package", "OrderPackingPriceCNF", "packing", "Amount" });                
                 Utils.HideColumns(logGV, new[] { "LogID", "ExportCodeID", "OrderID" });
 
-                cusProduct_GV.Columns["ProductNameVN"].HeaderText = "Tên Sản Phẩm";
-                cusProduct_GV.Columns["PCSOther"].HeaderText = "PCS\nĐặt Hàng";
-                cusProduct_GV.Columns["NWOther"].HeaderText = "NW\nĐặt Hàng";
-                cusProduct_GV.Columns["ProductNameVN"].Width = 150;
-                cusProduct_GV.Columns["PCSOther"].Width = 80;
-                cusProduct_GV.Columns["NWOther"].Width = 80;
-                cusProduct_GV.Columns["PCSOther"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                cusProduct_GV.Columns["NWOther"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                Utils.SetGridHeaders(cusProduct_GV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"ProductNameVN", "Tên Sản Phẩm" },
+                    {"PCSOther", "PCS\nĐặt Hàng" },
+                    {"NWOther", "NW\nĐặt Hàng" },
+                });
+
+                Utils.SetGridWidths(cusProduct_GV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"ProductNameVN", 150},
+                    {"PCSOther", 80},
+                    {"NWOther", 80},
+                });
+
+                Utils.SetGridFormat_Alignment(cusProduct_GV, "PCSOther", DataGridViewContentAlignment.MiddleCenter);
+                Utils.SetGridFormat_Alignment(cusProduct_GV, "NWOther", DataGridViewContentAlignment.MiddleCenter);
+
                 cusProduct_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 cusProduct_GV.ReadOnly = false;
-                cusProduct_GV.Columns["PCSOther"].ReadOnly = false;
-                cusProduct_GV.Columns["NWOther"].ReadOnly = false;
-                cusProduct_GV.Columns["ProductNameVN"].ReadOnly = true;
+                Utils.SetGridReadOnly(cusProduct_GV, new System.Collections.Generic.Dictionary<string, bool> {
+                    {"PCSOther", false },
+                    { "NWOther", false },
+                    { "ProductNameVN", true }
+                });
+               
 
                 customer_ccb.DataSource = mCustomers_dt;
                 customer_ccb.DisplayMember = "FullName";  // hiển thị tên
@@ -271,11 +281,10 @@ namespace RauViet.ui
                 logGV.Columns["Description"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
 
                 logGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-
-                dataGV.Columns["PCSOther"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                dataGV.Columns["NWOther"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                dataGV.Columns["Priority"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                dataGV.Columns["OrderId"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                Utils.SetGridFormat_Alignment(dataGV, "PCSOther", DataGridViewContentAlignment.MiddleCenter);
+                Utils.SetGridFormat_Alignment(dataGV, "NWOther", DataGridViewContentAlignment.MiddleCenter);
+                Utils.SetGridFormat_Alignment(dataGV, "Priority", DataGridViewContentAlignment.MiddleCenter);
+                Utils.SetGridFormat_Alignment(dataGV, "OrderId", DataGridViewContentAlignment.MiddleCenter);
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 

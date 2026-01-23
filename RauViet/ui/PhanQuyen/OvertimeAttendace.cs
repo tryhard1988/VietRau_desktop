@@ -185,24 +185,27 @@ namespace RauViet.ui
                     {"EndTime", "Giờ kết thúc" }
                 });
 
-                dataGV.Columns["EmployeeCode"].Width = 50;
-                dataGV.Columns["FullName"].Width = 160;
-                dataGV.Columns["ContractTypeName"].Width = 70;
-                dataGV.Columns["PositionName"].Width = 70;
-                
+                Utils.SetGridWidths(dataGV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"EmployeeCode", 50},
+                    {"FullName", 160},
+                    {"ContractTypeName", 70},
+                    {"PositionName", 70}
+                });
+
+                Utils.SetGridWidths(log_GV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"CreatedAt", 120},
+                    {"ActionBy", 130},
+                    {"OvertimeTypeName", 100},
+                    {"WorkDate", 100},
+                    {"StartTime", 100},
+                    {"EndTime", 100}
+                });
 
                 departmentGV.Columns["DepartmentName"].HeaderText = "Bộ Phận";
                 departmentGV.Columns["DepartmentName"].Width = 120;
                 departmentGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
-                log_GV.Columns["CreatedAt"].Width = 120;
-                log_GV.Columns["ActionBy"].Width = 130;
-                log_GV.Columns["OvertimeTypeName"].Width = 100;
                 log_GV.Columns["Description"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                log_GV.Columns["WorkDate"].Width = 100;
-                log_GV.Columns["StartTime"].Width = 100;
-                log_GV.Columns["EndTime"].Width = 100;
-
                 log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
                 Attendamce();

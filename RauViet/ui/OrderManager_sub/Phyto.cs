@@ -63,8 +63,7 @@ namespace RauViet.ui
 
                 if (mCurrentExportID <= 0 && mExportCode_dt.Rows.Count > 0)
                 {
-                    mCurrentExportID = Convert.ToInt32(mExportCode_dt.AsEnumerable()
-                                   .Max(r => r.Field<int>("ExportCodeID")));
+                    mCurrentExportID = Convert.ToInt32(mExportCode_dt.AsEnumerable().Max(r => r.Field<int>("ExportCodeID")));
                 }
 
                 mOrdersTotal_dt = await SQLStore_Kho.Instance.getOrdersPhytoAsync(mCurrentExportID);
@@ -93,8 +92,8 @@ namespace RauViet.ui
                     {"NetWeightFinal", 80}
                 });
 
-                dataGV.Columns["Priority"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
-                dataGV.Columns["NetWeightFinal"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                Utils.SetGridFormat_Alignment(dataGV, "Priority", DataGridViewContentAlignment.MiddleRight);
+                Utils.SetGridFormat_Alignment(dataGV, "NetWeightFinal", DataGridViewContentAlignment.MiddleCenter);
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 

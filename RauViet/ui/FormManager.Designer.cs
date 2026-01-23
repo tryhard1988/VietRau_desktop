@@ -43,8 +43,6 @@
             this.employeeSalaryInfo_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.dutoanluong_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.holiday_mi = new System.Windows.Forms.ToolStripMenuItem();
-            this.department_mi = new System.Windows.Forms.ToolStripMenuItem();
-            this.position_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.annualLeaveBalance_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.chamcong_pmi = new System.Windows.Forms.ToolStripMenuItem();
             this.salaryCaculator_mi = new System.Windows.Forms.ToolStripMenuItem();
@@ -188,8 +186,6 @@
             this.nhansu_group_mi.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.sfsdf,
             this.holiday_mi,
-            this.department_mi,
-            this.position_mi,
             this.annualLeaveBalance_mi});
             this.nhansu_group_mi.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.nhansu_group_mi.ForeColor = System.Drawing.Color.SeaGreen;
@@ -251,18 +247,6 @@
             this.holiday_mi.Name = "holiday_mi";
             this.holiday_mi.Size = new System.Drawing.Size(207, 22);
             this.holiday_mi.Text = "Lập Ngày Nghỉ Lễ";
-            // 
-            // department_mi
-            // 
-            this.department_mi.Name = "department_mi";
-            this.department_mi.Size = new System.Drawing.Size(207, 22);
-            this.department_mi.Text = "Phòng Ban";
-            // 
-            // position_mi
-            // 
-            this.position_mi.Name = "position_mi";
-            this.position_mi.Size = new System.Drawing.Size(207, 22);
-            this.position_mi.Text = "Chức Vụ";
             // 
             // annualLeaveBalance_mi
             // 
@@ -803,8 +787,6 @@
         private System.Windows.Forms.ToolStripMenuItem user_mi;
         private System.Windows.Forms.ToolStripMenuItem nhansu_group_mi;
         private System.Windows.Forms.ToolStripMenuItem sfsdf;
-        private System.Windows.Forms.ToolStripMenuItem department_mi;
-        private System.Windows.Forms.ToolStripMenuItem position_mi;
         private System.Windows.Forms.ToolStripMenuItem chamcong_pmi;
         private System.Windows.Forms.ToolStripMenuItem attendanceHC_mi;
         private System.Windows.Forms.ToolStripMenuItem overtimeAttendace_mi;

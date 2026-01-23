@@ -102,6 +102,14 @@ namespace RauViet.ui
                 Utils.HideColumns(dataGV, new[] { "EmployessName_NoSign", "SalaryGrade" });
                 Utils.HideColumns(salaryInfoGV, new[] { "Month", "Year", "EmployeeCode", "SalaryInfoID" });
 
+                Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"FullName", "Họ Và Tên"},
+                    {"EmployeeCode", "Mã NV"},
+                    {"PositionName", "Chức Vụ"},
+                    {"ContractTypeName", "Hợp Đồng"},
+                    {"GradeName", "Bậc Lương"}
+                });
+
                 Utils.SetGridHeaders(salaryInfoGV, new System.Collections.Generic.Dictionary<string, string> {
                     {"Date", "Tháng/Năm" },
                     {"BaseSalary", "Lương CB" },
@@ -116,21 +124,27 @@ namespace RauViet.ui
                     {"Descrition", "Hành Động" }
                 });
 
+                Utils.SetGridWidths(dataGV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"FullName", 150},
+                    {"EmployeeCode", 60},
+                    {"PositionName", 80},
+                    {"ContractTypeName", 80},
+                    {"GradeName", 70}
+                });
 
-                dataGV.Columns["FullName"].Width = 150;
-                dataGV.Columns["EmployeeCode"].Width = 60;
-                dataGV.Columns["PositionName"].Width = 80;
-                dataGV.Columns["ContractTypeName"].Width = 80;
-                dataGV.Columns["GradeName"].Width = 70;
+                Utils.SetGridWidths(salaryInfoGV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"Date", 80},
+                    {"BaseSalary", 80},
+                    {"InsuranceBaseSalary", 80},
+                    {"Note", 80},
+                    {"CreatedAt", 80}
+                });
 
-                salaryInfoGV.Columns["Date"].Width = 80;
-                salaryInfoGV.Columns["BaseSalary"].Width = 80;
-                salaryInfoGV.Columns["InsuranceBaseSalary"].Width = 80;
-                salaryInfoGV.Columns["Note"].Width = 80;
-                salaryInfoGV.Columns["CreatedAt"].Width = 80;
+                Utils.SetGridWidths(log_GV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"CreatedAt", 120},
+                    {"ACtionBy", 150}
+                });
 
-                log_GV.Columns["CreatedAt"].Width = 120;
-                log_GV.Columns["ACtionBy"].Width = 150;
                 log_GV.Columns["Descrition"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 

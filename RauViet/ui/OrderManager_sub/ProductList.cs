@@ -118,15 +118,15 @@ namespace RauViet.ui
                     {"BarCodeEAN13", 90},
                     {"ArtNr", 50},
                     {"GGN", 90},
-                    {"Name_VN", 200},
-                    {"Name_EN", 200},
+                    {"Name_VN", 350},
+                    {"Name_EN", 300},
                     {"Priority", 50},
                     {"IsActive", 30},
                 });
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
-                dataGV.Columns["Packing"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                Utils.SetGridFormat_Alignment(dataGV, "Packing", DataGridViewContentAlignment.MiddleCenter);
 
                 updateDataTextBoxFlowSKU();
 

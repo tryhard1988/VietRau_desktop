@@ -128,10 +128,9 @@ namespace RauViet.ui
                     {"EmployeeReported", 150}
                 });
 
-
-                dataGV.Columns["Price"].DefaultCellStyle.Format = "N0";
-                dataGV.Columns["TotalMoney"].DefaultCellStyle.Format = "N0";
-                dataGV.Columns["Quantity"].DefaultCellStyle.Format = "F1";
+                Utils.SetGridFormat_NO(dataGV, "Price");
+                Utils.SetGridFormat_NO(dataGV, "TotalMoney");
+                Utils.SetGridFormat_N1(dataGV, "Quantity");
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
@@ -162,8 +161,8 @@ namespace RauViet.ui
                     {"ActionBy", 150},
                     {"CreatedAt", 120}
                 });
-                log_GV.Columns["OldValue"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                log_GV.Columns["NewValue"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                Utils.SetGridWidth(log_GV, "OldValue", DataGridViewAutoSizeColumnMode.Fill);
+                Utils.SetGridWidth(log_GV, "NewValue", DataGridViewAutoSizeColumnMode.Fill);
             }
             catch
             {

@@ -90,13 +90,15 @@ namespace RauViet.ui
                 Utils.HideColumns(logGV, new[] { "LogID", "ExportCodeID", "ProductPackingID" });
 
                 dataGV.ReadOnly = false;
-                dataGV.Columns["NetWeightFinal"].ReadOnly = false;
 
-                dataGV.Columns["NWRegistration"].ReadOnly = true;
-                dataGV.Columns["ProductNameVN"].ReadOnly = true;
-                dataGV.Columns["ProductPackingID"].ReadOnly = true;
-                dataGV.Columns["Priority"].ReadOnly = true;
-                dataGV.Columns["NWDifference"].ReadOnly = true;
+                Utils.SetGridReadOnly(dataGV, new System.Collections.Generic.Dictionary<string, bool> {
+                    {"NetWeightFinal", false },
+                    {"NWRegistration", true },
+                    {"ProductNameVN", true },
+                    {"ProductPackingID", true },
+                    {"Priority", true },
+                    {"NWDifference", true }
+                });
 
                 Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
                     {"ProductNameVN", "Tên Sản Phẩm" },
@@ -110,20 +112,20 @@ namespace RauViet.ui
 
                 dataGV.Columns["Priority"].Width = 30;
                 dataGV.Columns["STT"].Width = 30;
-                // dataGV.Columns["STT"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["NWRegistration"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["TotalNWOther"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["NetWeightFinal"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["TotalNWReal"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["NWDifference"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["ProductNameVN"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
 
-                dataGV.Columns["Priority"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
-                dataGV.Columns["TotalNWOther"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                dataGV.Columns["NetWeightFinal"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                dataGV.Columns["TotalNWReal"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                dataGV.Columns["NWDifference"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                dataGV.Columns["NWRegistration"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                Utils.SetGridWidth(dataGV, "NWRegistration", DataGridViewAutoSizeColumnMode.AllCells);
+                Utils.SetGridWidth(dataGV, "TotalNWOther", DataGridViewAutoSizeColumnMode.AllCells);
+                Utils.SetGridWidth(dataGV, "NetWeightFinal", DataGridViewAutoSizeColumnMode.AllCells);
+                Utils.SetGridWidth(dataGV, "TotalNWReal", DataGridViewAutoSizeColumnMode.AllCells);
+                Utils.SetGridWidth(dataGV, "NWDifference", DataGridViewAutoSizeColumnMode.AllCells);
+                Utils.SetGridWidth(dataGV, "ProductNameVN", DataGridViewAutoSizeColumnMode.Fill);
+
+                Utils.SetGridFormat_Alignment(dataGV, "Priority", DataGridViewContentAlignment.MiddleRight);
+                Utils.SetGridFormat_Alignment(dataGV, "TotalNWOther", DataGridViewContentAlignment.MiddleCenter);
+                Utils.SetGridFormat_Alignment(dataGV, "NetWeightFinal", DataGridViewContentAlignment.MiddleCenter);
+                Utils.SetGridFormat_Alignment(dataGV, "TotalNWReal", DataGridViewContentAlignment.MiddleCenter);
+                Utils.SetGridFormat_Alignment(dataGV, "NWDifference", DataGridViewContentAlignment.MiddleCenter);
+                Utils.SetGridFormat_Alignment(dataGV, "NWRegistration", DataGridViewContentAlignment.MiddleCenter);
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 

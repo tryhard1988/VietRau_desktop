@@ -92,6 +92,86 @@ public static class Utils
         }
     }
 
+    public static void SetGridWidth(DataGridView dataGV, string columnName, DataGridViewAutoSizeColumnMode mode)
+    {
+        if (dataGV.Columns.Contains(columnName))
+            dataGV.Columns[columnName].AutoSizeMode = mode;
+    }
+
+    public static void SetGridOrdinal(DataTable data, string[] columnNames)
+    {
+        int count = 0;
+        foreach (string col in columnNames)
+        {
+            if (data.Columns.Contains(col))
+            {
+                data.Columns[col].SetOrdinal(count++);
+            }
+        }
+    }
+
+    public static void SetGridColors(DataGridView dataGV, Dictionary<string, System.Drawing.Color> colors)
+    {
+        dataGV.EnableHeadersVisualStyles = false;
+
+        foreach (var h in colors)
+        {
+            if (dataGV.Columns.Contains(h.Key))
+                dataGV.Columns[h.Key].HeaderCell.Style.BackColor = h.Value;
+        }
+    }
+
+    public static void SetGridFormat_Alignment(DataGridView dataGV, string columnName, DataGridViewContentAlignment alignment)
+    {
+        if (dataGV.Columns.Contains(columnName))
+            dataGV.Columns[columnName].DefaultCellStyle.Alignment = alignment;
+    }
+
+    public static void SetGridFormat_NO(DataGridView dataGV, string columnName)
+    {
+        if (dataGV.Columns.Contains(columnName))
+            dataGV.Columns[columnName].DefaultCellStyle.Format = "N0";
+    }
+
+    public static void SetGridFormat_N1(DataGridView dataGV, string columnName)
+    {
+        if (dataGV.Columns.Contains(columnName))
+            dataGV.Columns[columnName].DefaultCellStyle.Format = "N1";
+    }
+
+    public static void SetGridFormat_N2(DataGridView dataGV, string columnName)
+    {
+        if (dataGV.Columns.Contains(columnName))
+            dataGV.Columns[columnName].DefaultCellStyle.Format = "N2";
+    }
+
+    public static void SetGridFormat_N3(DataGridView dataGV, string columnName)
+    {
+        if (dataGV.Columns.Contains(columnName))
+            dataGV.Columns[columnName].DefaultCellStyle.Format = "N3";
+    }
+
+    public static void SetGridFormat_F1(DataGridView dataGV, string columnName)
+    {
+        if (dataGV.Columns.Contains(columnName))
+            dataGV.Columns[columnName].DefaultCellStyle.Format = "F1";
+    }
+
+    public static void SetGridFormat(DataGridView dataGV, string columnName, string formatStr)
+    {
+        if (dataGV.Columns.Contains(columnName))
+            dataGV.Columns[columnName].DefaultCellStyle.Format = formatStr;
+    }
+
+    public static void SetGridReadOnly(DataGridView dataGV, Dictionary<string, bool> coloumns)
+    {
+        foreach (var h in coloumns)
+        {
+            if (dataGV.Columns.Contains(h.Key))
+                dataGV.Columns[h.Key].ReadOnly = h.Value;
+        }
+    }
+
     public static string RemoveVietnameseSigns(string text)
     {
         if (string.IsNullOrEmpty(text)) return text;

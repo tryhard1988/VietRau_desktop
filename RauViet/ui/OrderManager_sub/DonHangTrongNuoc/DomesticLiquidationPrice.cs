@@ -101,7 +101,7 @@ namespace RauViet.ui
                     {"SalePrice", "Giá" }
                 });
 
-                dataGV.Columns["SalePrice"].DefaultCellStyle.Format = "N0";
+                Utils.SetGridFormat_NO(dataGV, "SalePrice");
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
@@ -131,8 +131,9 @@ namespace RauViet.ui
                     {"ActionBy", 150},
                     {"CreatedAt", 120}
                 });
-                log_GV.Columns["OldPrice"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                log_GV.Columns["NewPrice"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;              
+
+                Utils.SetGridWidth(log_GV, "OldPrice", DataGridViewAutoSizeColumnMode.Fill);
+                Utils.SetGridWidth(log_GV, "NewPrice", DataGridViewAutoSizeColumnMode.Fill);
             }
             catch
             {

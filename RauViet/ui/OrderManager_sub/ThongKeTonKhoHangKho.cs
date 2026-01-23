@@ -64,25 +64,15 @@ namespace RauViet.ui
                                 var firstRow = g.First();
                                 // Tồn đầu năm
                                 var tonDauNam =
-                                    g.Where(r => r.Field<string>("TransactionType") == "IN"
-                                              && r.Field<DateTime>("TransactionDate").Year < currentYear)
-                                     .Sum(r => r.Field<int>("Quantity"))
+                                    g.Where(r => r.Field<string>("TransactionType") == "IN" && r.Field<DateTime>("TransactionDate").Year < currentYear).Sum(r => r.Field<int>("Quantity"))
                                   -
-                                    g.Where(r => r.Field<string>("TransactionType") == "OUT"
-                                              && r.Field<DateTime>("TransactionDate").Year < currentYear)
-                                     .Sum(r => r.Field<int>("Quantity"));
+                                    g.Where(r => r.Field<string>("TransactionType") == "OUT" && r.Field<DateTime>("TransactionDate").Year < currentYear).Sum(r => r.Field<int>("Quantity"));
 
                                 // Nhập hàng năm hiện tại
-                                var nhapHang = g
-                                    .Where(r => r.Field<string>("TransactionType") == "IN"
-                                             && r.Field<DateTime>("TransactionDate").Year == currentYear)
-                                    .Sum(r => r.Field<int>("Quantity"));
+                                var nhapHang = g.Where(r => r.Field<string>("TransactionType") == "IN" && r.Field<DateTime>("TransactionDate").Year == currentYear).Sum(r => r.Field<int>("Quantity"));
 
                                 // Xuất hàng năm hiện tại
-                                var xuatHang = g
-                                    .Where(r => r.Field<string>("TransactionType") == "OUT"
-                                             && r.Field<DateTime>("TransactionDate").Year == currentYear)
-                                    .Sum(r => r.Field<int>("Quantity"));
+                                var xuatHang = g.Where(r => r.Field<string>("TransactionType") == "OUT" && r.Field<DateTime>("TransactionDate").Year == currentYear).Sum(r => r.Field<int>("Quantity"));
 
                                 return new
                                 {
@@ -133,8 +123,8 @@ namespace RauViet.ui
                 });
                                 
                 log_GV.Columns["SKU"].Visible = false;
-                log_GV.Columns["OldValue"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                log_GV.Columns["NewValue"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                Utils.SetGridWidth(log_GV, "OldValue", DataGridViewAutoSizeColumnMode.Fill);
+                Utils.SetGridWidth(log_GV, "NewValue", DataGridViewAutoSizeColumnMode.Fill);
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;

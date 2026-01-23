@@ -170,18 +170,30 @@ namespace RauViet.ui
                 dataGV.Columns["DeductionAmount"].ReadOnly = isLock;
                 dataGV.Columns["TotalOffDay"].ReadOnly = true;
 
-                dataGV.Columns["EmployeeCode"].Width = 50;
-                dataGV.Columns["FullName"].Width = 150;
-                dataGV.Columns["PositionName"].Width = 100;
-                dataGV.Columns["ContractTypeName"].Width = 80;
-                dataGV.Columns["AllowanceAmount"].Width = 70;
-                dataGV.Columns["DeductionAmount"].Width = 70;
-                dataGV.Columns["TotalOffDay"].Width = 50;
+                Utils.SetGridWidths(dataGV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"EmployeeCode", 50},
+                    {"FullName", 150},
+                    {"PositionName", 100},
+                    {"ContractTypeName", 80},
+                    {"AllowanceAmount", 70},
+                    {"DeductionAmount", 70},
+                    {"TotalOffDay", 50}
+                });
 
-                employeeDeductionGV.Columns["DateOff"].Width = 70;
-                employeeDeductionGV.Columns["LeaveTypeName"].Width = 100;
-                employeeDeductionGV.Columns["LeaveHours"].Width = 60;
-                employeeDeductionGV.Columns["Note"].Width = 150;
+                Utils.SetGridWidths(employeeDeductionGV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"DateOff", 70},
+                    {"LeaveTypeName", 100},
+                    {"LeaveHours", 60},
+                    {"Note", 150}
+                });
+
+                Utils.SetGridWidths(log_GV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"CreateAt", 120},
+                    {"ActionBy", 150},
+                    {"DeductionDate", 80},
+                    {"Amount", 80},
+                });
+
 
                 if (dataGV.Rows.Count > 0)
                 {
@@ -193,11 +205,7 @@ namespace RauViet.ui
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 employeeDeductionGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
-                log_GV.Columns["CreateAt"].Width = 120;
-                log_GV.Columns["ActionBy"].Width = 150;
                 log_GV.Columns["Description"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                log_GV.Columns["DeductionDate"].Width = 80;
-                log_GV.Columns["Amount"].Width = 80;
 
                 log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 

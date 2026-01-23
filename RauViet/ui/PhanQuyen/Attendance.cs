@@ -165,13 +165,15 @@ namespace RauViet.ui
                 attendanceGV.Columns["WorkDate"].DefaultCellStyle.Format = "dd/MM/yyyy";
                 attendanceGV.Columns["WorkingHours"].DefaultCellStyle.Format = "0.##";
 
-                attendanceGV.Columns["DayOfWeek"].Width = 40;
-                attendanceGV.Columns["WorkDate"].Width = 70;
-                attendanceGV.Columns["LeaveTypeName"].Width = 100;
-                attendanceGV.Columns["OvertimeName"].Width = 120;
-                attendanceGV.Columns["WorkingHours"].Width = 50;
-                attendanceGV.Columns["AttendanceLog"].Width = 250;
-                attendanceGV.Columns["Note"].Width = 150;
+                Utils.SetGridWidths(attendanceGV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"DayOfWeek", 40},
+                    {"WorkDate", 70},
+                    {"LeaveTypeName", 100},
+                    {"OvertimeName", 120},
+                    {"WorkingHours", 50},
+                    {"AttendanceLog", 250},
+                    {"Note", 150},
+                });
 
                 attendanceGV.Columns["AttendanceLog"].DefaultCellStyle.WrapMode = DataGridViewTriState.True;
                 attendanceGV.Columns["OvertimeName"].DefaultCellStyle.WrapMode = DataGridViewTriState.True;

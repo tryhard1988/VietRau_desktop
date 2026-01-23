@@ -136,12 +136,11 @@ namespace RauViet.ui
                     {"SalePrice", 80},
                 });
 
-                dataGV.Columns["SalePrice"].DefaultCellStyle.Format = "N0";
-                dataGV.Columns["TonDauKi"].DefaultCellStyle.Format = "N1";
-                dataGV.Columns["NhapTrongKy"].DefaultCellStyle.Format = "N1";
-                dataGV.Columns["XuatTrongKy"].DefaultCellStyle.Format = "N1";
-                dataGV.Columns["TonCuoiKi"].DefaultCellStyle.Format = "N1";
-
+                Utils.SetGridFormat_NO(dataGV, "SalePrice");
+                Utils.SetGridFormat_N1(dataGV, "TonDauKi");
+                Utils.SetGridFormat_N1(dataGV, "NhapTrongKy");
+                Utils.SetGridFormat_N1(dataGV, "XuatTrongKy");
+                Utils.SetGridFormat_N1(dataGV, "TonCuoiKi");
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }

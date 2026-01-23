@@ -100,7 +100,7 @@ namespace RauViet.ui
                 DataView dv = mProductDomesticPrices_dt.DefaultView;
                 dv.RowFilter = $"IsActive = true";
 
-                Utils.SetGridHeaders(log_GV, new System.Collections.Generic.Dictionary<string, string> {
+                Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
                     {"ProductName_VN", "Tên Sản Phẩm" },
                     {"RawPrice", "Giá Hàng Xá" },
                     {"RefinedPrice", "Giá Hàng Tinh" },
@@ -108,9 +108,9 @@ namespace RauViet.ui
                     {"IsActive", "Active" },
                 });
 
-                dataGV.Columns["RawPrice"].DefaultCellStyle.Format = "N0";
-                dataGV.Columns["RefinedPrice"].DefaultCellStyle.Format = "N0";
-                dataGV.Columns["PackedPrice"].DefaultCellStyle.Format = "N0";
+                Utils.SetGridFormat_NO(dataGV, "RawPrice");
+                Utils.SetGridFormat_NO(dataGV, "RefinedPrice");
+                Utils.SetGridFormat_NO(dataGV, "PackedPrice");
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
@@ -130,10 +130,6 @@ namespace RauViet.ui
 
                 await Task.Delay(100);
                 loadingOverlay.Hide();
-
-                dataGV.Columns["RawPrice"].DefaultCellStyle.Format = "N0";
-                dataGV.Columns["RefinedPrice"].DefaultCellStyle.Format = "N0";
-                dataGV.Columns["PackedPrice"].DefaultCellStyle.Format = "N0";
 
                 Utils.SetGridHeaders(log_GV, new System.Collections.Generic.Dictionary<string, string> {
                     {"OldValue", "Giá Trị Cũ" },
@@ -467,7 +463,7 @@ namespace RauViet.ui
                     status_lb.Text = "";
 
                     mLogDV.RowFilter = $"SKU = {SKU}";
-                    mLogDV.Sort = "LogID DESC";
+                    mLogDV.Sort = "HistoryID DESC";
                 }
             }
             catch (Exception ex)

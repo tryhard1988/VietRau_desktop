@@ -187,14 +187,16 @@ namespace RauViet.ui
                 dataGV.Columns["Price"].Visible = !UserManager.Instance.hasRole_AnGiaSanPham();
                 
                 dataGV.ReadOnly = false;
-                dataGV.Columns["PCSReal"].ReadOnly = false;                
-                dataGV.Columns["NWReal"].ReadOnly = false;
-                dataGV.Columns["PCSOrder"].ReadOnly = true;
-                dataGV.Columns["NWOrder"].ReadOnly = true;
-                dataGV.Columns["Price"].ReadOnly = true;
-                dataGV.Columns["ProductTypeName"].ReadOnly = true;
-                dataGV.Columns["ProductNameVN"].ReadOnly = true;
-                dataGV.Columns["OrderDomesticDetailID"].ReadOnly = true;
+                Utils.SetGridReadOnly(dataGV, new System.Collections.Generic.Dictionary<string, bool> {
+                    {"PCSReal", false },
+                    {"NWReal", false },
+                    {"PCSOrder", true },
+                    {"NWOrder", true },
+                    {"Price", true },
+                    {"ProductTypeName", true },
+                    {"ProductNameVN", true },
+                    {"OrderDomesticDetailID", true }
+                });
 
                 Utils.SetGridWidths(dataGV, new System.Collections.Generic.Dictionary<string, int> {
                     {"OrderDomesticDetailID", 50},
@@ -206,14 +208,14 @@ namespace RauViet.ui
                     {"Price", 70},
                 });
 
-                dataGV.Columns["Price"].DefaultCellStyle.Format = "N0";
+                Utils.SetGridFormat_NO(dataGV, "Price");
 
-                dataGV.Columns["PCSOrder"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                dataGV.Columns["NWOrder"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                dataGV.Columns["PCSReal"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                dataGV.Columns["NWReal"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                dataGV.Columns["Price"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                dataGV.Columns["OrderDomesticDetailID"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                Utils.SetGridFormat_Alignment(dataGV, "PCSOrder", DataGridViewContentAlignment.MiddleCenter);
+                Utils.SetGridFormat_Alignment(dataGV, "NWOrder", DataGridViewContentAlignment.MiddleCenter);
+                Utils.SetGridFormat_Alignment(dataGV, "PCSReal", DataGridViewContentAlignment.MiddleCenter);
+                Utils.SetGridFormat_Alignment(dataGV, "NWReal", DataGridViewContentAlignment.MiddleCenter);
+                Utils.SetGridFormat_Alignment(dataGV, "Price", DataGridViewContentAlignment.MiddleCenter);
+                Utils.SetGridFormat_Alignment(dataGV, "OrderDomesticDetailID", DataGridViewContentAlignment.MiddleCenter);
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
@@ -231,8 +233,9 @@ namespace RauViet.ui
                     {"ActionBy", 150},
                     {"CreatedAt", 120}
                 });
-                log_GV.Columns["OldValue"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                log_GV.Columns["NewValue"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+
+                Utils.SetGridWidth(log_GV, "OldValue", DataGridViewAutoSizeColumnMode.Fill);
+                Utils.SetGridWidth(log_GV, "NewValue", DataGridViewAutoSizeColumnMode.Fill);
 
                 UpdateBottomUI();
             }

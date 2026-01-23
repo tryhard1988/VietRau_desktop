@@ -135,9 +135,9 @@ namespace RauViet.ui
                     {"IsCanceled", 50},
                 });
 
-                dataGV.Columns["Price"].DefaultCellStyle.Format = "N0";
-                dataGV.Columns["TotalMoney"].DefaultCellStyle.Format = "N0";
-                dataGV.Columns["Quantity"].DefaultCellStyle.Format = "F1";
+                Utils.SetGridFormat_NO(dataGV, "Price");
+                Utils.SetGridFormat_NO(dataGV, "TotalMoney");
+                Utils.SetGridFormat_F1(dataGV, "Quantity");
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 

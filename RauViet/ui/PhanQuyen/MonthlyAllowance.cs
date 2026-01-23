@@ -159,6 +159,7 @@ namespace RauViet.ui
                 log_GV.DataSource = mlog_DV;
 
                 Utils.HideColumns(dataGV, new[] { "EmployessName_NoSign"});
+                Utils.HideColumns(allowanceGV, new[] { "MonthlyAllowanceID", "AllowanceTypeID", "Month", "Year" });
 
                 Utils.SetGridHeaders(allowanceGV, new System.Collections.Generic.Dictionary<string, string> {
                     {"MonthlyAllowanceID", "ID" },
@@ -194,16 +195,29 @@ namespace RauViet.ui
                 mMonthlyAllowance_dt.Columns["Amount"].SetOrdinal(count++);
                 mMonthlyAllowance_dt.Columns["Note"].SetOrdinal(count++);
 
-                dataGV.Columns["EmployeeCode"].Width = 60;
-                dataGV.Columns["FullName"].Width = 160;
+                Utils.SetGridWidths(dataGV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"EmployeeCode", 60},
+                    {"FullName", 160}
+                });
 
-                allowanceGV.Columns["Amount"].DefaultCellStyle.Format = "N0";
-                allowanceGV.Columns["EmployeeCode"].Width = 60;
-                allowanceGV.Columns["EmployeeName"].Width = 160;
-                allowanceGV.Columns["Date"].Width = 60;
+                Utils.SetGridWidths(allowanceGV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"EmployeeCode", 60},
+                    {"EmployeeName", 160},
+                    {"Date", 60},
+                    {"Amount", 70},
+                    {"Note", 120}
+                });
+
+                Utils.SetGridWidths(log_GV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"CreatedAt", 120},
+                    {"ActionBy", 150},
+                    {"AllowanceName", 100},
+                    {"Amount", 80}
+                });
+
+                Utils.SetGridFormat_NO(allowanceGV, "Amount");
+
                 allowanceGV.Columns["AllowanceName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                allowanceGV.Columns["Amount"].Width = 70;
-                allowanceGV.Columns["Note"].Width = 120;
                                 
                 dataGV.SelectionChanged += this.dataGV_CellClick;
                 allowanceGV.SelectionChanged += this.allowanceGV_CellClick;
@@ -218,11 +232,7 @@ namespace RauViet.ui
 
                 MonthYearDtp_ValueChanged(null, null);
 
-                log_GV.Columns["CreatedAt"].Width = 120;
-                log_GV.Columns["ActionBy"].Width = 150;
-                log_GV.Columns["AllowanceName"].Width = 100;
                 log_GV.Columns["Description"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                log_GV.Columns["Amount"].Width = 80;
 
                 log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 monthYearDtp.ValueChanged += monthYearDtp_ValueChanged;

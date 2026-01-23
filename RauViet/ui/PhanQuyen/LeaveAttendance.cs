@@ -148,9 +148,12 @@ namespace RauViet.ui
 
                 mEmployee_dt.Columns["LeaveCount"].ReadOnly = false;
 
-                dataGV.Columns["EmployeeCode"].Width = 50;
-                dataGV.Columns["FullName"].Width = 160;
-                dataGV.Columns["PositionName"].Width = 70;
+
+                Utils.SetGridWidths(dataGV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"EmployeeCode", 50},
+                    {"FullName", 160},
+                    {"PositionName", 70}
+                });
 
                 dataGV.Width = 500;
 
@@ -172,16 +175,19 @@ namespace RauViet.ui
                     {"LeaveHour", "Số giờ nghỉ" }
                 });
 
+                Utils.SetGridWidths(log_GV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"CreatedAt", 120},
+                    {"ACtionBy", 150},
+                    {"LeaveName", 100},
+                    {"DateOff", 80},
+                    {"LeaveHour", 60}
+                });
+
                 loadLeaveAttendance();
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
-                log_GV.Columns["CreatedAt"].Width = 120;
-                log_GV.Columns["ActionBy"].Width = 150;
-                log_GV.Columns["LeaveName"].Width = 100;
                 log_GV.Columns["Description"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                log_GV.Columns["DateOff"].Width = 80;
-                log_GV.Columns["LeaveHour"].Width = 60;
 
                 log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 year_tb.TextChanged += monthYearDtp_ValueChanged;

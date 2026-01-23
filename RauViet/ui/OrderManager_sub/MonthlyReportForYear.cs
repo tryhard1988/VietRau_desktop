@@ -205,13 +205,11 @@ namespace RauViet.ui
 
                 product_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
-                product_GV.Columns["TotalAmountCHF"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                product_GV.Columns["TotalQuanitity"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                Utils.SetGridFormat_Alignment(product_GV, "TotalAmountCHF", DataGridViewContentAlignment.MiddleCenter);
+                Utils.SetGridFormat_Alignment(product_GV, "TotalQuanitity", DataGridViewContentAlignment.MiddleCenter);
 
-                product_GV.Columns["TotalQuanitity"].DefaultCellStyle.Format = "N2";
-                product_GV.Columns["TotalAmountCHF"].DefaultCellStyle.Format = "N2";
-
-                
+                Utils.SetGridFormat_N2(product_GV, "TotalQuanitity");
+                Utils.SetGridFormat_N2(product_GV, "TotalAmountCHF");                
             }
             catch
             {

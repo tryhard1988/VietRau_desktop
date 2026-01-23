@@ -40,8 +40,8 @@ namespace RauViet.ui
                 employeeBH_mi.Click += EmployeeBH_mi_Click;
                 employeeBank_mi.Click += EmployeeBank_mi_Click;
                 employeeWork_mi.Click += EmployeeWork_mi_Click;
-                department_mi.Click += department_mi_Click;
-                position_mi.Click += position_mi_Click;
+               // department_mi.Click += department_mi_Click;
+               // position_mi.Click += position_mi_Click;
                 holiday_mi.Click += Holiday_mi_Click;
                 employeeSalaryInfo_mi.Click += EmployeeSalaryInfo_mi_Click;
                 dutoanluong_mi.Click += dutoanluong_mi_Click;

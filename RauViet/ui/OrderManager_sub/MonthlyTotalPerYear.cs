@@ -141,7 +141,7 @@ namespace RauViet.ui
                 }
 
                 product_GV.Columns["MonthStr"].HeaderText = "";
-                product_GV.Columns["MonthStr"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                Utils.SetGridFormat_Alignment(product_GV, "MonthStr", DataGridViewContentAlignment.MiddleCenter);
                 product_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
             catch

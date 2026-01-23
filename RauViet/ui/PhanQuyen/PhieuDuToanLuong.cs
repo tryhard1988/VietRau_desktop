@@ -157,29 +157,31 @@ namespace RauViet.ui
                     {"HourSalary", "Lương Theo Giờ" }
                 });
 
-                employeeAllowances_GV.Columns["AllowanceName"].Width = 120;
-                employeeAllowances_GV.Columns["IsInsuranceIncluded"].Width = 50;
-                employeeAllowances_GV.Columns["Amount"].DefaultCellStyle.Format = "N0";                
+                Utils.SetGridWidths(employeeAllowances_GV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"AllowanceName", 120},
+                    {"IsInsuranceIncluded", 50}
+                });
 
+                Utils.SetGridWidths(dataGV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"BaseSalary", 70},
+                    {"InsuranceBaseSalary", 70},
+                    {"Allowance_Insurance", 70},
+                    {"Allowance_NonInsurance", 70},
+                    {"EmployeeCode", 50},
+                    {"FullName", 160},
+                    {"HireDate", 70},
+                    {"PositionName", 100},
+                    {"DepartmentName", 120},
+                    {"ContractTypeName", 90}
+                });
 
-                dataGV.Columns["InsuranceBaseSalary"].DefaultCellStyle.Format = "N0";
-                dataGV.Columns["BaseSalary"].DefaultCellStyle.Format = "N0";
-                dataGV.Columns["Allowance_NonInsurance"].DefaultCellStyle.Format = "N0";
-                dataGV.Columns["Allowance_Insurance"].DefaultCellStyle.Format = "N0";
-                dataGV.Columns["HourSalary"].DefaultCellStyle.Format = "N0";
+                Utils.SetGridFormat_NO(employeeAllowances_GV, "Amount");
 
-                
-
-                dataGV.Columns["BaseSalary"].Width = 70;
-                dataGV.Columns["InsuranceBaseSalary"].Width = 70;
-                dataGV.Columns["Allowance_Insurance"].Width = 70;
-                dataGV.Columns["Allowance_NonInsurance"].Width = 70;
-                dataGV.Columns["EmployeeCode"].Width = 50;
-                dataGV.Columns["FullName"].Width = 160;
-                dataGV.Columns["HireDate"].Width = 70;
-                dataGV.Columns["PositionName"].Width = 100;
-                dataGV.Columns["DepartmentName"].Width = 120;
-                dataGV.Columns["ContractTypeName"].Width = 90;
+                Utils.SetGridFormat_NO(dataGV, "InsuranceBaseSalary");
+                Utils.SetGridFormat_NO(dataGV, "BaseSalary");
+                Utils.SetGridFormat_NO(dataGV, "Allowance_NonInsurance");
+                Utils.SetGridFormat_NO(dataGV, "Allowance_Insurance");
+                Utils.SetGridFormat_NO(dataGV, "HourSalary");
 
                 if (dataGV.Rows.Count > 0)
                 {

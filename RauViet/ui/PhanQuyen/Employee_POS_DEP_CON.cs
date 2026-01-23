@@ -120,12 +120,20 @@ namespace RauViet.ui
                     {"NewValue", "Giá trị mới" }
                 });
 
-                dataGV.Columns["EmployeeCode"].Width = 50;
-                dataGV.Columns["FullName"].Width = 160;
-                dataGV.Columns["HireDate"].Width = 70;
-                dataGV.Columns["PositionName"].Width = 100;
-                dataGV.Columns["DepartmentName"].Width = 120;
-                dataGV.Columns["ContractTypeName"].Width = 90;
+                Utils.SetGridWidths(dataGV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"EmployeeCode", 50},
+                    {"FullName", 160},
+                    {"HireDate", 70},
+                    {"PositionName", 100},
+                    {"DepartmentName", 120},
+                    {"ContractTypeName", 90}
+                });
+
+                Utils.SetGridWidths(log_GV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"CreatedAt", 120},
+                    {"ACtionBy", 150},
+                });
+
 
                 log_GV.Columns["CreatedAt"].Width = 120;
                 log_GV.Columns["ACtionBy"].Width = 150;

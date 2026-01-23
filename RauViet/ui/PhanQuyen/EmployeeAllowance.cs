@@ -126,12 +126,20 @@ namespace RauViet.ui
                     {"Amount", "Số Tiền" }
                 });
 
+                Utils.SetGridWidths(log_GV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"CreatedAt", 120},
+                    {"ACtionBy", 150},
+                    {"AllowanceName", 100},
+                    {"Amount", 80},
+                });
+
+
                 int count = 0;
                 mEmployeeAllowance_dt.Columns["AllowanceName"].SetOrdinal(count++);
                 mEmployeeAllowance_dt.Columns["Amount"].SetOrdinal(count++);
                 mEmployeeAllowance_dt.Columns["Note"].SetOrdinal(count++);
 
-                allowanceGV.Columns["Amount"].DefaultCellStyle.Format = "N0";
+                Utils.SetGridFormat_NO(allowanceGV, "Amount");
 
                 allowanceGV.Columns["AllowanceName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
                 allowanceGV.Columns["Amount"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
@@ -149,11 +157,7 @@ namespace RauViet.ui
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 allowanceGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
-                log_GV.Columns["CreatedAt"].Width = 120;
-                log_GV.Columns["ActionBy"].Width = 150;
-                log_GV.Columns["AllowanceName"].Width = 100;
                 log_GV.Columns["Description"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                log_GV.Columns["Amount"].Width = 80;
 
                 log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }

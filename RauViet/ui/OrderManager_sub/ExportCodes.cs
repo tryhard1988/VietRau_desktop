@@ -207,7 +207,7 @@ namespace RauViet.ui
                     {"CreatedDate", 110}
                 });
 
-                log_GV.Columns["Description"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                Utils.SetGridWidth(log_GV, "Description", DataGridViewAutoSizeColumnMode.Fill);
                 log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
             catch

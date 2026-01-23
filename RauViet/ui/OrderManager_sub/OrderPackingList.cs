@@ -123,15 +123,17 @@ namespace RauViet.ui
                 Utils.HideColumns(logGV, new[] { "LogID", "ExportCodeID", "OrderID" });
 
                 dataGV.ReadOnly = false;
-                dataGV.Columns["CartonNo"].ReadOnly = false;
-                dataGV.Columns["PCSReal"].ReadOnly = false;
-                dataGV.Columns["CartonSize"].ReadOnly = false;
-                dataGV.Columns["NWReal"].ReadOnly = true;
-                dataGV.Columns["Priority"].ReadOnly = true;
-                dataGV.Columns["CustomerName"].ReadOnly = true;
-                dataGV.Columns["ProductNameVN"].ReadOnly = true;
-                dataGV.Columns["CustomerCarton"].ReadOnly = false;
 
+                Utils.SetGridReadOnly(dataGV, new System.Collections.Generic.Dictionary<string, bool> {
+                    {"CartonNo", false },
+                    {"PCSReal", false },
+                    {"CartonSize", false },
+                    {"NWReal", true },
+                    {"Priority", true },
+                    {"CustomerName", true },
+                    {"ProductNameVN", true },
+                    {"CustomerCarton", false }
+                });
 
                 Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
                     {"OrderId", "ID" },
@@ -181,13 +183,13 @@ namespace RauViet.ui
                     {"CustomCarton", 80}
                 });
 
-                dataGV.Columns["CartonNo"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                dataGV.Columns["PCSReal"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                dataGV.Columns["NWReal"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                dataGV.Columns["Priority"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                dataGV.Columns["OrderId"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                dataGV.Columns["PCSOther"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                dataGV.Columns["NWOther"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                Utils.SetGridFormat_Alignment(dataGV, "CartonNo", DataGridViewContentAlignment.MiddleCenter);
+                Utils.SetGridFormat_Alignment(dataGV, "PCSReal", DataGridViewContentAlignment.MiddleCenter);
+                Utils.SetGridFormat_Alignment(dataGV, "NWReal", DataGridViewContentAlignment.MiddleCenter);
+                Utils.SetGridFormat_Alignment(dataGV, "Priority", DataGridViewContentAlignment.MiddleCenter);
+                Utils.SetGridFormat_Alignment(dataGV, "OrderId", DataGridViewContentAlignment.MiddleCenter);
+                Utils.SetGridFormat_Alignment(dataGV, "PCSOther", DataGridViewContentAlignment.MiddleCenter);
+                Utils.SetGridFormat_Alignment(dataGV, "NWOther", DataGridViewContentAlignment.MiddleCenter);
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
@@ -203,7 +205,7 @@ namespace RauViet.ui
                 exportCode_cbb.SelectedIndexChanged += exportCode_search_cbb_SelectedIndexChanged;
                 exportCode_cbb.SelectedValue = mCurrentExportID;
 
-                logGV.Columns["Description"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                Utils.SetGridWidth(logGV, "Description", DataGridViewAutoSizeColumnMode.Fill);
                 logGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
                 cartonSize_cbb.DataSource = mCartonSize_dt;

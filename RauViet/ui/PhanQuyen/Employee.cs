@@ -125,7 +125,6 @@ namespace RauViet.ui
                     {"NoteResign", "Ra/Vào Công Ty" },
                     {"canCreateUserName", "Cấp Quyền" },
                     {"IsInsuranceRefund", "Hoàn BH" },
-                    {"NoteResign", "Ra/Vào Công Ty" },
                     {"Gradename", "Bậc\nLương" }
                 });
 
@@ -140,25 +139,30 @@ namespace RauViet.ui
                 dataGV.Columns["HireDate"].DefaultCellStyle.Format = "dd/MM/yyyy";
                 dataGV.Columns["IssueDate"].DefaultCellStyle.Format = "dd/MM/yyyy";
 
-                dataGV.Columns["canCreateUserName"].Width = 50;
-                dataGV.Columns["IsInsuranceRefund"].Width = 50;
-                dataGV.Columns["EmployeeCode"].Width = 50;
-                dataGV.Columns["FullName"].Width = 160;
-                dataGV.Columns["BirthDate"].Width = 70;
-                dataGV.Columns["HireDate"].Width = 70;
-                dataGV.Columns["GenderName"].Width = 60;
-                dataGV.Columns["IsActive"].Width = 50;
-                dataGV.Columns["CitizenID"].Width = 90;
-                dataGV.Columns["NoteResign"].Width = 90;
-                dataGV.Columns["Gradename"].Width = 70;
-                dataGV.Columns["PhoneNumber"].Width = 70;
+                Utils.SetGridWidths(dataGV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"canCreateUserName", 50},
+                    {"IsInsuranceRefund", 50},
+                    {"EmployeeCode", 50},
+                    {"FullName", 160},
+                    {"BirthDate", 70},
+                    {"HireDate", 70},
+                    {"GenderName", 60},
+                    {"IsActive", 50},
+                    {"CitizenID", 90},
+                    {"NoteResign", 90},
+                    {"Gradename", 70},
+                    {"PhoneNumber", 70}
+                });
+
+                Utils.SetGridWidths(log_GV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"CreatedAt", 120},
+                    {"ACtionBy", 150},
+                });
 
                 dataGV.Columns["PhoneNumber"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 dataGV.Columns["Gradename"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
-                log_GV.Columns["CreatedAt"].Width = 120;
-                log_GV.Columns["ACtionBy"].Width = 150;
                 log_GV.Columns["OldValue"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 log_GV.Columns["NewValue"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;

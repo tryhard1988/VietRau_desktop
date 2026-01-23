@@ -94,18 +94,9 @@ namespace RauViet.ui
                 mPoductSKUHistory_dt = productSKUHistoryTask.Result;
 
                 int count = 0;
-                mProductSKU_dt.Columns["SKU"].SetOrdinal(count++);
-                mProductSKU_dt.Columns["ProductNameVN"].SetOrdinal(count++);
-                mProductSKU_dt.Columns["ProductNameEN"].SetOrdinal(count++);
-                mProductSKU_dt.Columns["PackingType"].SetOrdinal(count++);
-                mProductSKU_dt.Columns["Package"].SetOrdinal(count++);
-                mProductSKU_dt.Columns["PackingList"].SetOrdinal(count++);
-                mProductSKU_dt.Columns["BotanicalName"].SetOrdinal(count++);
-                mProductSKU_dt.Columns["PriceCNF"].SetOrdinal(count++);
-                mProductSKU_dt.Columns["PlantingAreaCode"].SetOrdinal(count++);
-                mProductSKU_dt.Columns["LOTCodeHeader"].SetOrdinal(count++);
-                mProductSKU_dt.Columns["Priority"].SetOrdinal(count++);
 
+                Utils.SetGridOrdinal(mProductSKU_dt, new[] { "SKU", "ProductNameVN", "ProductNameEN", "PackingType", "Package", "PackingList", "BotanicalName", "PriceCNF", "PlantingAreaCode", "LOTCodeHeader", "Priority" });
+               
                 priceCNFHisGV.DataSource = mPoductSKUHistory_dt;
                 dataGV.DataSource = mProductSKU_dt;
                 Utils.HideColumns(dataGV, new[] { "ProductSKU", "ProductNameVN_NoSign", "PackingType", "GroupProduct" });
@@ -125,8 +116,8 @@ namespace RauViet.ui
                 });
 
                 Utils.SetGridWidths(dataGV, new System.Collections.Generic.Dictionary<string, int> {
-                    {"ProductNameVN", 170},
-                    {"ProductNameEN", 140},
+                    {"ProductNameVN", 270},
+                    {"ProductNameEN", 250},
                     {"BotanicalName", 100},
                     {"PlantingAreaCode", 50},
                     {"LOTCodeHeader", 50},
@@ -143,12 +134,13 @@ namespace RauViet.ui
                 priceCNFHisGV.Visible = !UserManager.Instance.hasRole_AnGiaSanPham();
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                dataGV.Columns["PriceCNF"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                dataGV.Columns["package"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                dataGV.Columns["PackingType"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                dataGV.Columns["Priority"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                dataGV.Columns["PackingList"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                dataGV.Columns["SKU"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+
+                Utils.SetGridFormat_Alignment(dataGV, "PriceCNF", DataGridViewContentAlignment.MiddleCenter);
+                Utils.SetGridFormat_Alignment(dataGV, "package", DataGridViewContentAlignment.MiddleCenter);
+                Utils.SetGridFormat_Alignment(dataGV, "PackingType", DataGridViewContentAlignment.MiddleCenter);
+                Utils.SetGridFormat_Alignment(dataGV, "Priority", DataGridViewContentAlignment.MiddleCenter);
+                Utils.SetGridFormat_Alignment(dataGV, "PackingList", DataGridViewContentAlignment.MiddleCenter);
+                Utils.SetGridFormat_Alignment(dataGV, "SKU", DataGridViewContentAlignment.MiddleCenter);
 
                 search_txt_TextChanged(null, null);
 

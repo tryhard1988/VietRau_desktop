@@ -180,9 +180,7 @@ namespace RauViet.ui
                     {"NWReal", "N.W" },
                     {"Price", "Giá" },
                     {"TotalAmount", "Thành Tiền" },
-                    {"Package", "Đ.Vị" },
-                    {"", "" },
-                    {"", "" },
+                    {"Package", "Đ.Vị" }
                 });
 
                 Utils.SetGridWidths(sumary_GV, new System.Collections.Generic.Dictionary<string, int> {
@@ -195,12 +193,12 @@ namespace RauViet.ui
                     {"Package", 50}
                 });
 
-                sumary_GV.Columns["Price"].DefaultCellStyle.Format = "N0";
-                sumary_GV.Columns["TotalAmount"].DefaultCellStyle.Format = "N0";
-                sumary_GV.Columns["PCSReal"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                sumary_GV.Columns["NWReal"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                sumary_GV.Columns["Price"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
-                sumary_GV.Columns["TotalAmount"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
+                Utils.SetGridFormat_NO(sumary_GV, "Price");
+                Utils.SetGridFormat_NO(sumary_GV, "TotalAmount");
+                Utils.SetGridFormat_Alignment(sumary_GV, "PCSReal", DataGridViewContentAlignment.MiddleCenter);
+                Utils.SetGridFormat_Alignment(sumary_GV, "NWReal", DataGridViewContentAlignment.MiddleCenter);
+                Utils.SetGridFormat_Alignment(sumary_GV, "Price", DataGridViewContentAlignment.MiddleRight);
+                Utils.SetGridFormat_Alignment(sumary_GV, "TotalAmount", DataGridViewContentAlignment.MiddleRight);
 
                 Utils.SetGridHeaders(detailGV, new System.Collections.Generic.Dictionary<string, string> {
                     {"ProductNameVN", "Tên Sản Phẩm" },
@@ -227,8 +225,8 @@ namespace RauViet.ui
                     {"ProductTypeName", 80}
                 });
 
-                detailGV.Columns["Price"].DefaultCellStyle.Format = "N0";
-                detailGV.Columns["TotalAmount"].DefaultCellStyle.Format = "N0";
+                Utils.SetGridFormat_NO(detailGV, "Price");
+                Utils.SetGridFormat_NO(detailGV, "TotalAmount");
 
                 Utils.SetGridHeaders(tomTatTheoPhieu_GV, new System.Collections.Generic.Dictionary<string, string> {
                     {"OrderDomesticIndex", "Số Phiếu" },
@@ -236,8 +234,8 @@ namespace RauViet.ui
                     {"TotalAmount", "Tổng Tiền" }
                 });
 
-                tomTatTheoPhieu_GV.Columns["TotalAmount"].DefaultCellStyle.Format = "N0";
-                tomTatTheoPhieu_GV.Columns["DeliveryDate"].DefaultCellStyle.Format = "dd/MM/yyyy";
+                Utils.SetGridFormat_NO(tomTatTheoPhieu_GV, "TotalAmount");
+                Utils.SetGridFormat(tomTatTheoPhieu_GV, "DeliveryDate", "dd/MM/yyyy");
 
                 dataGV.CellClick += CustomerGV_CellClick;
 

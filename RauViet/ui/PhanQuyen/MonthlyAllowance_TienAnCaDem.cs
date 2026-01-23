@@ -129,13 +129,21 @@ namespace RauViet.ui
                     {"DepartmentName", "Tên Phòng Ban" }
                 });
 
+                Utils.SetGridWidths(allowanceGV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"EmployeeCode", 70},
+                    {"EmployeeName", 160},
+                    {"TotalMealAllowance", 90},
+                    {"TotalNoodleAllowance", 90}
+                });
+
+                Utils.SetGridWidths(dataGV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"EmployeeCode", 70},
+                    {"EmployeeName", 160},
+                    {"WorkDate", 80},
+                    {"HourWork", 70}
+                });
 
                 allowanceGV.Columns["DepartmentID"].Visible = false;
-                allowanceGV.Columns["EmployeeCode"].Width = 70;
-                allowanceGV.Columns["EmployeeName"].Width = 160;
-                allowanceGV.Columns["TotalMealAllowance"].Width = 90;
-                allowanceGV.Columns["TotalNoodleAllowance"].Width = 90;
-
                 int count = 0;
                 mOvertime_dt.Columns["EmployeeCode"].SetOrdinal(count++);
                 mOvertime_dt.Columns["EmployeeName"].SetOrdinal(count++);
@@ -145,11 +153,6 @@ namespace RauViet.ui
                 mOvertime_dt.Columns["Note"].SetOrdinal(count++);
                                 
                 department_GV.Columns["DepartmentName"].Width = 200;
-
-                dataGV.Columns["EmployeeCode"].Width = 70;
-                dataGV.Columns["EmployeeName"].Width = 160;
-                dataGV.Columns["WorkDate"].Width = 80;
-                dataGV.Columns["HourWork"].Width = 70;
 
                 department_GV.SelectionChanged += this.department_GV_CellClick;
                 allowanceGV.SelectionChanged += this.allowanceGV_CellClick;

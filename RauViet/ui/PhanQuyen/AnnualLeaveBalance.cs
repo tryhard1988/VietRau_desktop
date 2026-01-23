@@ -106,12 +106,13 @@ namespace RauViet.ui
                     {"RemainingLeaveDays_1", "Còn Lại" }
                 });
 
-
-            dataGV.Columns["EmployeeCode"].Width = 70;
-            dataGV.Columns["FullName"].Width = 200;
-            dataGV.Columns["Month"].Width = 200;
-            dataGV.Columns["PositionName"].Width = 90;
-            dataGV.Columns["RemainingLeaveDays_1"].Width = 70;
+            Utils.SetGridWidths(dataGV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"EmployeeCode", 70},
+                    {"FullName", 200},
+                    {"Month", 200},
+                    {"PositionName", 90},
+                    {"RemainingLeaveDays_1", 70}
+                });
 
             if (dataGV.Rows.Count > 0)
             {

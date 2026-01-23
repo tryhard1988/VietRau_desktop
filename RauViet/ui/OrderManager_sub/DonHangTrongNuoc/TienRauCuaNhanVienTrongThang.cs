@@ -108,8 +108,7 @@ namespace RauViet.ui
                     {"EmployeeName", 110},
                     {"TotalMoney", 60},
                 });
-
-                dataGV.Columns["TotalMoney"].DefaultCellStyle.Format = "N0";
+                                
                 dataGV.Columns["ExportDate"].DefaultCellStyle.Format = "MM/yyyy";
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;

@@ -248,24 +248,28 @@ namespace RauViet.ui
                 CustomerGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 CustomerDetail_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
-                product_GV.Columns["TotalAmountCHF"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                product_GV.Columns["TotalNetWeight"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                product_GV.Columns["TotalPCS"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                CustomerGV.Columns["TotalAmountCHF"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                CustomerGV.Columns["TotalNetWeight"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                CustomerGV.Columns["TotalPCS"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                CustomerDetail_GV.Columns["TotalAmountCHF"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                CustomerDetail_GV.Columns["TotalNetWeight"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                CustomerDetail_GV.Columns["TotalPCS"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                dataGV.Columns["NumberCarton"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                Utils.SetGridFormat_Alignment(product_GV, "TotalAmountCHF", DataGridViewContentAlignment.MiddleCenter);
+                Utils.SetGridFormat_Alignment(product_GV, "TotalNetWeight", DataGridViewContentAlignment.MiddleCenter);
+                Utils.SetGridFormat_Alignment(product_GV, "TotalPCS", DataGridViewContentAlignment.MiddleCenter);
+                Utils.SetGridFormat_Alignment(product_GV, "TotalAmountCHF", DataGridViewContentAlignment.MiddleCenter);
+                Utils.SetGridFormat_Alignment(product_GV, "TotalNetWeight", DataGridViewContentAlignment.MiddleCenter);
+                Utils.SetGridFormat_Alignment(product_GV, "TotalPCS", DataGridViewContentAlignment.MiddleCenter);
 
-                dataGV.Columns["TotalMoney"].DefaultCellStyle.Format = "N2";
-                dataGV.Columns["TotalNW"].DefaultCellStyle.Format = "N2";
-                dataGV.Columns["FreightCharge"].DefaultCellStyle.Format = "N2";
-                product_GV.Columns["TotalNetWeight"].DefaultCellStyle.Format = "N2";
-                product_GV.Columns["TotalAmountCHF"].DefaultCellStyle.Format = "N2";
-                CustomerGV.Columns["TotalNetWeight"].DefaultCellStyle.Format = "N2";
-                CustomerGV.Columns["TotalAmountCHF"].DefaultCellStyle.Format = "N2";
+                Utils.SetGridFormat_Alignment(CustomerDetail_GV, "TotalAmountCHF", DataGridViewContentAlignment.MiddleCenter);
+                Utils.SetGridFormat_Alignment(CustomerDetail_GV, "TotalNetWeight", DataGridViewContentAlignment.MiddleCenter);
+                Utils.SetGridFormat_Alignment(CustomerDetail_GV, "TotalPCS", DataGridViewContentAlignment.MiddleCenter);
+
+                Utils.SetGridFormat_Alignment(dataGV, "NumberCarton", DataGridViewContentAlignment.MiddleCenter);
+
+                Utils.SetGridFormat_N2(dataGV, "TotalMoney");
+                Utils.SetGridFormat_N2(dataGV, "TotalNW");
+                Utils.SetGridFormat_N2(dataGV, "FreightCharge");
+
+                Utils.SetGridFormat_N2(product_GV, "TotalNetWeight");
+                Utils.SetGridFormat_N2(product_GV, "TotalAmountCHF");
+
+                Utils.SetGridFormat_N2(CustomerGV, "TotalNetWeight");
+                Utils.SetGridFormat_N2(CustomerGV, "TotalAmountCHF");
 
                 CustomerGV.CellClick -= CustomerGV_CellClick;
                 CustomerGV.CellClick += CustomerGV_CellClick;

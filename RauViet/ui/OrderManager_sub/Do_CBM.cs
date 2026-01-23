@@ -89,10 +89,10 @@ namespace RauViet.ui
                     {"FreightCharge", "Freight Charge" }
                 });
 
-                cartonSizeGroupGV.Columns["FreightCharge"].DefaultCellStyle.Format = "#,##0.00";
-                cartonSizeGroupGV.Columns["GrossWeight"].DefaultCellStyle.Format = "#,##0.00";
-                cartonSizeGroupGV.Columns["ChargeWeight"].DefaultCellStyle.Format = "#,##0.00";
-                cartonSizeGroupGV.Columns["CBM"].DefaultCellStyle.Format = "#,##0";
+                Utils.SetGridFormat(cartonSizeGroupGV, "FreightCharge", "#,##0.00");
+                Utils.SetGridFormat(cartonSizeGroupGV, "GrossWeight", "#,##0.00");
+                Utils.SetGridFormat(cartonSizeGroupGV, "ChargeWeight", "#,##0.00");
+                Utils.SetGridFormat(cartonSizeGroupGV, "CBM", "#,##0");
 
                 Utils.SetGridHeaders(cusGroupGV, new System.Collections.Generic.Dictionary<string, string> {
                     {"CustomerName", "Khách Hàng" },
@@ -120,10 +120,10 @@ namespace RauViet.ui
                     {"FreightCharge", 80}
                 });
 
-                cusGroupGV.Columns["FreightCharge"].DefaultCellStyle.Format = "#,##0.00";
-                cusGroupGV.Columns["GrossWeight"].DefaultCellStyle.Format = "#,##0.00";
-                cusGroupGV.Columns["ChargeWeight"].DefaultCellStyle.Format = "#,##0.00";
-                cusGroupGV.Columns["CBM"].DefaultCellStyle.Format = "#,##0";
+                Utils.SetGridFormat(cusGroupGV, "FreightCharge", "#,##0.00");
+                Utils.SetGridFormat(cusGroupGV, "GrossWeight", "#,##0.00");
+                Utils.SetGridFormat(cusGroupGV, "ChargeWeight", "#,##0.00");
+                Utils.SetGridFormat(cusGroupGV, "CBM", "#,##0");
 
                                 
                 exportCode_cbb.SelectedValue = mCurrentExportID;                

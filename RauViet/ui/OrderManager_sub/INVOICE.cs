@@ -158,8 +158,9 @@ namespace RauViet.ui
                     {"AmountCHF", 70}
                 });
 
-            dataGV.Columns["AmountCHF"].DefaultCellStyle.Format = "N3";
-            dataGV.Columns["Quantity"].DefaultCellStyle.Format = "N3";
+            Utils.SetGridFormat_N3(dataGV, "AmountCHF");
+            Utils.SetGridFormat_N3(dataGV, "Quantity");
+
 
             dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
@@ -172,7 +173,7 @@ namespace RauViet.ui
             cusOrderGV.DataSource = dv;
             Utils.HideColumns(cusOrderGV, new[] { "Home", "ExportCodeID" });
 
-            Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
+            Utils.SetGridHeaders(cusOrderGV, new System.Collections.Generic.Dictionary<string, string> {
                     {"FullName", "MARK" },
                     {"NWReal", "N.W" },
                     {"AmountCHF", "Amount\nCHF" }
@@ -186,7 +187,7 @@ namespace RauViet.ui
                     {"FullName", 100}
                 });
 
-            cusOrderGV.Columns["AmountCHF"].DefaultCellStyle.Format = "N3";
+            Utils.SetGridFormat_N3(cusOrderGV, "AmountCHF");
             
         }
         private void CheckWarning()
@@ -245,7 +246,7 @@ namespace RauViet.ui
             cartonSizeGV.DataSource = dv;
             Utils.HideColumns(cartonSizeGV, new[] { "ExportCodeID" });
 
-            Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
+            Utils.SetGridHeaders(cartonSizeGV, new System.Collections.Generic.Dictionary<string, string> {
                     {"CartonSize", "Carton Size" },
                     {"CountCarton", "Quantity" }
                 });

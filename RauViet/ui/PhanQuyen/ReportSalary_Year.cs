@@ -78,16 +78,18 @@ namespace RauViet.ui
                 salarySummaryByYear_dt.Columns["TotalDeductionAmount"].SetOrdinal(count++);
 
                 int sizeWidth = 90;
-                dataGV.Columns["MonthYear"].Width = 70;
-                dataGV.Columns["TotalBaseSalary"].Width = sizeWidth;
-                dataGV.Columns["TotalNetSalary"].Width = sizeWidth;
-                dataGV.Columns["TotalNetInsuranceSalary"].Width = sizeWidth;
-                dataGV.Columns["TotalInsuranceAllowance"].Width = sizeWidth;
-                dataGV.Columns["TotalNonInsuranceAllowance"].Width = sizeWidth;
-                dataGV.Columns["TotalOvertimeSalary"].Width = sizeWidth;
-                dataGV.Columns["TotalLeaveSalary"].Width = sizeWidth;
-                dataGV.Columns["TotalDeductionAmount"].Width = sizeWidth;
-                dataGV.Columns["TotalEmployees"].Width = sizeWidth;
+                Utils.SetGridWidths(dataGV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"MonthYear", 70},
+                    {"TotalBaseSalary", sizeWidth},
+                    {"TotalNetSalary", sizeWidth},
+                    {"TotalNetInsuranceSalary", sizeWidth},
+                    {"TotalInsuranceAllowance", sizeWidth},
+                    {"TotalNonInsuranceAllowance", sizeWidth},
+                    {"TotalOvertimeSalary", sizeWidth},
+                    {"TotalLeaveSalary", sizeWidth},
+                    {"TotalDeductionAmount", sizeWidth},
+                    {"TotalEmployees", sizeWidth}
+                });
 
                 decimal totalNetSalary = salarySummaryByYear_dt.AsEnumerable().Sum(r => r.Field<decimal>("TotalNetSalary"));
                 decimal totalNetInsuranceSalary = salarySummaryByYear_dt.AsEnumerable().Sum(r => r.Field<decimal>("TotalNetInsuranceSalary"));

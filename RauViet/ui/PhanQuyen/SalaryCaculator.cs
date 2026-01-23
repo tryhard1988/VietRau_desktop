@@ -548,9 +548,12 @@ namespace RauViet.ui
                         {"IsInsuranceIncluded", "BHXH" }
                     });
 
-                    allowanceGV.Columns["AllowanceName"].Width = 120;
-                    allowanceGV.Columns["Amount"].Width = 70;
-                    allowanceGV.Columns["IsInsuranceIncluded"].Width = 40;
+                    Utils.SetGridWidths(allowanceGV, new System.Collections.Generic.Dictionary<string, int> {
+                        {"AllowanceName", 120},
+                        {"Amount", 70},
+                        {"IsInsuranceIncluded", 40}
+                    });
+
                 }));
             }));
 
@@ -564,9 +567,13 @@ namespace RauViet.ui
                         {"DeductionTypeName", "Loại Tiền" },
                         {"Amount", "Số Tiền" }
                     });
-                    deductionGV.Columns["DeductionDate"].Width = 70;
-                    deductionGV.Columns["DeductionTypeName"].Width = 80;
-                    deductionGV.Columns["Amount"].Width = 60;
+
+                    Utils.SetGridWidths(deductionGV, new System.Collections.Generic.Dictionary<string, int> {
+                        {"DeductionDate", 70},
+                        {"DeductionTypeName", 80},
+                        {"Amount", 60}
+                    });
+
                 }));
             }));
 
@@ -581,9 +588,11 @@ namespace RauViet.ui
                         {"WorkingHours", "S.Giờ" }
                     });
 
-                    attendamceGV.Columns["DayOfWeek"].Width = 40;
-                    attendamceGV.Columns["WorkDate"].Width = 80;
-                    attendamceGV.Columns["WorkingHours"].Width = 50;
+                    Utils.SetGridWidths(attendamceGV, new System.Collections.Generic.Dictionary<string, int> {
+                        {"DayOfWeek", 40},
+                        {"WorkDate", 80},
+                        {"WorkingHours", 50}
+                    });
                 }));
             }));
 
@@ -599,18 +608,16 @@ namespace RauViet.ui
                         {"OvertimeAttendanceSalary", "T.Công" },
                         {"DayOfWeek", "Thứ" }
                     });
-                    overtimeAttendanceGV.Columns[""].HeaderText = "";
-                    overtimeAttendanceGV.Columns[""].HeaderText = "";
-                    overtimeAttendanceGV.Columns[""].HeaderText = "";
-                    overtimeAttendanceGV.Columns[""].HeaderText = "";
-                    overtimeAttendanceGV.Columns[""].HeaderText = "";
-                    overtimeAttendanceGV.Columns["WorkDate"].Width = 70;
-                    overtimeAttendanceGV.Columns["OvertimeName"].Width = 70;
-                    overtimeAttendanceGV.Columns["HourWork"].Width = 40;
-                    overtimeAttendanceGV.Columns["OvertimeAttendanceSalary"].Width = 60;
-                    overtimeAttendanceGV.Columns["DayOfWeek"].Width = 40;
 
-                    overtimeAttendanceGV.Columns["OvertimeAttendanceSalary"].DefaultCellStyle.Format = "N0";
+                    Utils.SetGridWidths(overtimeAttendanceGV, new System.Collections.Generic.Dictionary<string, int> {
+                        {"WorkDate", 70},
+                        {"OvertimeName", 70},
+                        {"HourWork", 40},
+                        {"OvertimeAttendanceSalary", 60},
+                        {"DayOfWeek", 40}
+                    });
+
+                    Utils.SetGridFormat_NO(overtimeAttendanceGV, "OvertimeAttendanceSalary");
                 }));
             }));
 
@@ -625,9 +632,11 @@ namespace RauViet.ui
                         {"LeaveHours", "S.Giờ" }
                     });
 
-                    leaveGV.Columns["DateOff"].Width = 80;
-                    leaveGV.Columns["LeaveHours"].Width = 50;
-                    leaveGV.Columns["LeaveTypeName"].Width = 130;
+                    Utils.SetGridWidths(leaveGV, new System.Collections.Generic.Dictionary<string, int> {
+                        {"DateOff", 80},
+                        {"LeaveHours", 50},
+                        {"LeaveTypeName", 130}
+                    });
                 }));
             }));
 
@@ -658,51 +667,56 @@ namespace RauViet.ui
                     dataGV.Columns["FullName"].Frozen = true;
                     dataGV.Columns["NetSalary"].Frozen = true;
 
-                    dataGV.Columns["NetSalary"].DefaultCellStyle.Format = "N0";
-                    dataGV.Columns["BaseSalary"].DefaultCellStyle.Format = "N0";
-                    dataGV.Columns["HourSalary"].DefaultCellStyle.Format = "N0";
-                    dataGV.Columns["TotalSalaryHourWork"].DefaultCellStyle.Format = "N0";
-                    dataGV.Columns["InsuranceBaseSalary"].DefaultCellStyle.Format = "N0";
-                    dataGV.Columns["TotalInsuranceSalary"].DefaultCellStyle.Format = "N0";
-                    dataGV.Columns["EmployeeInsurancePaid"].DefaultCellStyle.Format = "N0";
-                    dataGV.Columns["TotalIncludedInsurance"].DefaultCellStyle.Format = "N0";
-                    dataGV.Columns["TotalExcludedInsurance"].DefaultCellStyle.Format = "N0";
-                    dataGV.Columns["InsuranceRefund"].DefaultCellStyle.Format = "N0";
+                    Utils.SetGridFormat_NO(overtimeAttendanceGV, "NetSalary");
+                    Utils.SetGridFormat_NO(overtimeAttendanceGV, "HourSalary");
+                    Utils.SetGridFormat_NO(overtimeAttendanceGV, "BaseSalary");
+                    Utils.SetGridFormat_NO(overtimeAttendanceGV, "TotalSalaryHourWork");
+                    Utils.SetGridFormat_NO(overtimeAttendanceGV, "InsuranceBaseSalary");
+                    Utils.SetGridFormat_NO(overtimeAttendanceGV, "TotalInsuranceSalary");
+                    Utils.SetGridFormat_NO(overtimeAttendanceGV, "EmployeeInsurancePaid");
+                    Utils.SetGridFormat_NO(overtimeAttendanceGV, "TotalIncludedInsurance");
+                    Utils.SetGridFormat_NO(overtimeAttendanceGV, "TotalExcludedInsurance");
+                    Utils.SetGridFormat_NO(overtimeAttendanceGV, "InsuranceRefund");    
 
                     foreach (DataRow otdr in mOvertimeType_dt.Rows)
                     {
                         int overtimeTypeID = Convert.ToInt32(otdr["OvertimeTypeID"]);
-                        dataGV.Columns["OvertimeType" + overtimeTypeID.ToString()].DefaultCellStyle.Format = "N0";
+                        Utils.SetGridFormat_NO(dataGV, "OvertimeType" + overtimeTypeID.ToString());
                     }
 
                     foreach (DataRow ltdr in mLeaveType_dt.Rows)
                     {
                         string leaveTypeCode = Convert.ToString(ltdr["LeaveTypeCode"]);
-                        dataGV.Columns["LeaveType" + leaveTypeCode.ToString()].DefaultCellStyle.Format = "N0";
+                        Utils.SetGridFormat_NO(dataGV, "LeaveType" + leaveTypeCode.ToString());
                     }
 
-                    dataGV.Columns["EmployeeCode"].Width = 50;
-                    dataGV.Columns["FullName"].Width = 120;
-                    dataGV.Columns["NetSalary"].Width = 70;
-                    dataGV.Columns["BaseSalary"].Width = 70;
-                    dataGV.Columns["TotalSalaryHourWork"].Width = 70;
-                    dataGV.Columns["TotalHourWork"].Width = 50;
-                    dataGV.Columns["HourSalary"].Width = 50;
-                    dataGV.Columns["InsuranceBaseSalary"].Width = 70;
-                    dataGV.Columns["TotalInsuranceSalary"].Width = 70;
-                    dataGV.Columns["EmployeeInsurancePaid"].Width = 50;
-                    dataGV.Columns["InsuranceRefund"].Width = 50;
-                    dataGV.Columns["TotalIncludedInsurance"].Width = 50;
-                    dataGV.Columns["TotalExcludedInsurance"].Width = 50;
 
-                    // 🎨 Màu
-                    dataGV.Columns["NetSalary"].HeaderCell.Style.BackColor = Color.BurlyWood;
-                    dataGV.Columns["InsuranceBaseSalary"].HeaderCell.Style.BackColor = Color.Coral;
-                    dataGV.Columns["TotalInsuranceSalary"].HeaderCell.Style.BackColor = Color.Coral;
-                    dataGV.Columns["EmployeeInsurancePaid"].HeaderCell.Style.BackColor = Color.Coral;
-                    dataGV.Columns["InsuranceRefund"].HeaderCell.Style.BackColor = Color.Coral;
-                    dataGV.Columns["TotalIncludedInsurance"].HeaderCell.Style.BackColor = Color.Coral;
-                    dataGV.Columns["TotalExcludedInsurance"].HeaderCell.Style.BackColor = Color.Coral;
+                    Utils.SetGridWidths(dataGV, new System.Collections.Generic.Dictionary<string, int> {
+                        {"EmployeeCode", 50},
+                        {"FullName", 120},
+                        {"NetSalary", 70},
+                        {"BaseSalary", 70},
+                        {"TotalSalaryHourWork", 70},
+                        {"TotalHourWork", 50},
+                        {"HourSalary", 50},
+                        {"InsuranceBaseSalary", 70},
+                        {"TotalInsuranceSalary", 70},
+                        {"EmployeeInsurancePaid", 50},
+                        {"InsuranceRefund", 50},
+                        {"TotalIncludedInsurance", 50},
+                        {"TotalExcludedInsurance", 50}
+                    });
+
+                    Utils.SetGridColors(dataGV, new System.Collections.Generic.Dictionary<string, System.Drawing.Color> {
+                        {"NetSalary", Color.BurlyWood},
+                        {"InsuranceBaseSalary", Color.Coral},
+                        {"TotalInsuranceSalary", Color.Coral},
+                        {"EmployeeInsurancePaid", Color.Coral},
+                        {"InsuranceRefund", Color.Coral},
+                        {"TotalIncludedInsurance", Color.Coral},
+                        {"TotalExcludedInsurance", Color.Coral}
+                    });
+
                 }));
             }));
 

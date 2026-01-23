@@ -79,13 +79,18 @@ namespace RauViet.ui
                     {"NewValue", "Giá trị mới" }
                 });
 
-                dataGV.Columns["EmployeeCode"].Width = 60;
-                dataGV.Columns["FullName"].Width = 160;
-                dataGV.Columns["SocialInsuranceNumber"].Width = 160;
-                dataGV.Columns["HealthInsuranceNumber"].Width = 160;
+                Utils.SetGridWidths(dataGV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"EmployeeCode", 60},
+                    {"FullName", 160},
+                    {"SocialInsuranceNumber", 160},
+                    {"HealthInsuranceNumber", 160},
+                });
 
-                log_GV.Columns["CreatedAt"].Width = 120;
-                log_GV.Columns["ACtionBy"].Width = 150;
+                Utils.SetGridWidths(log_GV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"CreatedAt", 120},
+                    {"ACtionBy", 150}
+                });
+
                 log_GV.Columns["OldValue"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 log_GV.Columns["NewValue"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;

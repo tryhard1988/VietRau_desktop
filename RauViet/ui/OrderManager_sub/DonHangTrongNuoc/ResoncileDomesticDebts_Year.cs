@@ -195,8 +195,11 @@ namespace RauViet.ui
                 sumary_GV.Columns["Price"].Width = 60;
                 sumary_GV.Columns["TotalAmount"].Width = 80;
                 sumary_GV.Columns["Package"].Width = 50;
-                sumary_GV.Columns["Price"].DefaultCellStyle.Format = "N0";
-                sumary_GV.Columns["TotalAmount"].DefaultCellStyle.Format = "N0";
+                
+                Utils.SetGridFormat_NO(sumary_GV, "Price");
+                Utils.SetGridFormat_NO(sumary_GV, "TotalAmount");
+                Utils.SetGridFormat_NO(tomTatCacThang_GV, "TotalAmount");
+
                 sumary_GV.Columns["PCSReal"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 sumary_GV.Columns["NWReal"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 sumary_GV.Columns["Price"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
@@ -227,8 +230,8 @@ namespace RauViet.ui
                     {"ProductTypeName", 80}
                 });
 
-                detailGV.Columns["Price"].DefaultCellStyle.Format = "N0";
-                detailGV.Columns["TotalAmount"].DefaultCellStyle.Format = "N0";
+                Utils.SetGridFormat_NO(detailGV, "Price");
+                Utils.SetGridFormat_NO(detailGV, "TotalAmount");
 
                 Utils.SetGridHeaders(tomTatCacThang_GV, new System.Collections.Generic.Dictionary<string, string> {
                     {"monthYear", "Ngày Giao" },
@@ -241,10 +244,6 @@ namespace RauViet.ui
                     {"TotalAmount", 100},
                     {"OrderDomesticIndexs", 300}
                 });
-
-                tomTatCacThang_GV.Columns[""].Width = 100;
-                tomTatCacThang_GV.Columns[""].Width = 100;
-                tomTatCacThang_GV.Columns[""].Width = 300;
 
                 dataGV.CellClick += CustomerGV_CellClick;
 
