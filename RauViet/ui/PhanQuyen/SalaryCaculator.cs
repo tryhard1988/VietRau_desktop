@@ -169,27 +169,27 @@ namespace RauViet.ui
 
 
 
-            AddColumnIfNotExists(mEmployee_dt, "EmployeeCode", typeof(string));
-            AddColumnIfNotExists(mEmployee_dt, "FullName", typeof(string));
-            AddColumnIfNotExists(mEmployee_dt, "HireDate", typeof(DateTime));
-            AddColumnIfNotExists(mEmployee_dt, "IsInsuranceRefund", typeof(bool));
-            AddColumnIfNotExists(mEmployee_dt, "ContractTypeName", typeof(string));
-            AddColumnIfNotExists(mEmployee_dt, "DepartmentName", typeof(string));
-            AddColumnIfNotExists(mEmployee_dt, "RemainingLeave", typeof(int));
-            AddColumnIfNotExists(mEmployee_dt, "TotalIncludedInsurance", typeof(int));
-            AddColumnIfNotExists(mEmployee_dt, "TotalExcludedInsurance", typeof(int));
-            AddColumnIfNotExists(mEmployee_dt, "TotalInsuranceSalary", typeof(int));
-            AddColumnIfNotExists(mEmployee_dt, "EmployeeInsurancePaid", typeof(int));
-            AddColumnIfNotExists(mEmployee_dt, "HourSalary", typeof(decimal));
-            AddColumnIfNotExists(mEmployee_dt, "TotalHourWork", typeof(decimal));
-            AddColumnIfNotExists(mEmployee_dt, "TotalSalaryHourWork", typeof(decimal));
-            AddColumnIfNotExists(mEmployee_dt, "InsuranceRefund", typeof(decimal));
-            AddColumnIfNotExists(mEmployee_dt, "NetSalary", typeof(decimal));
-            AddColumnIfNotExists(mEmployee_dt, "BankAccountNumber", typeof(string));
-            AddColumnIfNotExists(mEmployee_dt, "BankName", typeof(string));
-            AddColumnIfNotExists(mEmployee_dt, "BankAccountHolder", typeof(string));
+            Utils.AddColumnIfNotExists(mEmployee_dt, "EmployeeCode", typeof(string));
+            Utils.AddColumnIfNotExists(mEmployee_dt, "FullName", typeof(string));
+            Utils.AddColumnIfNotExists(mEmployee_dt, "HireDate", typeof(DateTime));
+            Utils.AddColumnIfNotExists(mEmployee_dt, "IsInsuranceRefund", typeof(bool));
+            Utils.AddColumnIfNotExists(mEmployee_dt, "ContractTypeName", typeof(string));
+            Utils.AddColumnIfNotExists(mEmployee_dt, "DepartmentName", typeof(string));
+            Utils.AddColumnIfNotExists(mEmployee_dt, "RemainingLeave", typeof(int));
+            Utils.AddColumnIfNotExists(mEmployee_dt, "TotalIncludedInsurance", typeof(int));
+            Utils.AddColumnIfNotExists(mEmployee_dt, "TotalExcludedInsurance", typeof(int));
+            Utils.AddColumnIfNotExists(mEmployee_dt, "TotalInsuranceSalary", typeof(int));
+            Utils.AddColumnIfNotExists(mEmployee_dt, "EmployeeInsurancePaid", typeof(int));
+            Utils.AddColumnIfNotExists(mEmployee_dt, "HourSalary", typeof(decimal));
+            Utils.AddColumnIfNotExists(mEmployee_dt, "TotalHourWork", typeof(decimal));
+            Utils.AddColumnIfNotExists(mEmployee_dt, "TotalSalaryHourWork", typeof(decimal));
+            Utils.AddColumnIfNotExists(mEmployee_dt, "InsuranceRefund", typeof(decimal));
+            Utils.AddColumnIfNotExists(mEmployee_dt, "NetSalary", typeof(decimal));
+            Utils.AddColumnIfNotExists(mEmployee_dt, "BankAccountNumber", typeof(string));
+            Utils.AddColumnIfNotExists(mEmployee_dt, "BankName", typeof(string));
+            Utils.AddColumnIfNotExists(mEmployee_dt, "BankAccountHolder", typeof(string));
 
-            AddColumnIfNotExists(mAttendamce_dt, "DayOfWeek", typeof(string));
+            Utils.AddColumnIfNotExists(mAttendamce_dt, "DayOfWeek", typeof(string));
             
 
             await AddDynamicColumnsAsync();
@@ -323,7 +323,7 @@ namespace RauViet.ui
             }
 
             // ====== 4️⃣ Tính tiền tăng ca ======
-            AddColumnIfNotExists(mOvertimeAttendance_dt, "OvertimeAttendanceSalary", typeof(decimal));
+            Utils.AddColumnIfNotExists(mOvertimeAttendance_dt, "OvertimeAttendanceSalary", typeof(decimal));
 
             foreach (DataRow dr in mOvertimeAttendance_dt.Rows)
             {
@@ -430,37 +430,18 @@ namespace RauViet.ui
             // 🔹 Task 1️⃣: Sắp xếp cột Employee
             var t1 = Task.Run(() =>
             {
-                int countE = 0;
-                mEmployee_dt.Columns["EmployeeCode"].SetOrdinal(countE++);
-                mEmployee_dt.Columns["FullName"].SetOrdinal(countE++);
-                mEmployee_dt.Columns["DepartmentName"].SetOrdinal(countE++);
-                mEmployee_dt.Columns["ContractTypeName"].SetOrdinal(countE++);
-                mEmployee_dt.Columns["NetSalary"].SetOrdinal(countE++);
-                mEmployee_dt.Columns["BaseSalary"].SetOrdinal(countE++);
-                mEmployee_dt.Columns["TotalSalaryHourWork"].SetOrdinal(countE++);
-                mEmployee_dt.Columns["TotalHourWork"].SetOrdinal(countE++);
-                mEmployee_dt.Columns["HourSalary"].SetOrdinal(countE++);
-                mEmployee_dt.Columns["InsuranceBaseSalary"].SetOrdinal(countE++);
-                mEmployee_dt.Columns["TotalInsuranceSalary"].SetOrdinal(countE++);
-                mEmployee_dt.Columns["EmployeeInsurancePaid"].SetOrdinal(countE++);
-                mEmployee_dt.Columns["InsuranceRefund"].SetOrdinal(countE++);
+                Utils.SetGridOrdinal(mEmployee_dt, new[] { "EmployeeCode", "FullName", "DepartmentName", "ContractTypeName", "NetSalary", "BaseSalary", "TotalSalaryHourWork", "TotalHourWork", "HourSalary", "InsuranceBaseSalary", "TotalInsuranceSalary", "EmployeeInsurancePaid", "InsuranceRefund" });
             });
 
             // 🔹 Task 2️⃣: Sắp xếp cột Leave
             var t2 = Task.Run(() =>
             {
-                int countL = 0;
-                mLeaveAttendance_dt.Columns["DateOff"].SetOrdinal(countL++);
-                mLeaveAttendance_dt.Columns["LeaveTypeName"].SetOrdinal(countL++);
-                mLeaveAttendance_dt.Columns["LeaveHours"].SetOrdinal(countL++);
+                Utils.SetGridOrdinal(mLeaveAttendance_dt, new[] { "DateOff", "LeaveTypeName", "LeaveHours"});
             });
 
             var t3 = Task.Run(() =>
             {
-                int countAttendamce = 0;
-                mAttendamce_dt.Columns["DayOfWeek"].SetOrdinal(countAttendamce++);
-                mAttendamce_dt.Columns["WorkDate"].SetOrdinal(countAttendamce++);
-                mAttendamce_dt.Columns["WorkingHours"].SetOrdinal(countAttendamce++);
+                Utils.SetGridOrdinal(mAttendamce_dt, new[] { "DayOfWeek", "WorkDate", "WorkingHours"});
             });
 
             // 🔹 Chờ 2 task nền xong
@@ -521,19 +502,6 @@ namespace RauViet.ui
                 this.Invoke(new Action(() =>
                 {
                     attendamceGV.Columns["EmployeeCode"].Visible = false;
-                   // allowanceGV.Columns["EmployeeCode"].Visible = false;
-                  //  allowanceGV.Columns["AllowanceTypeID"].Visible = false;
-                  //  allowanceGV.Columns["ScopeCode"].Visible = false;
-                  //  overtimeAttendanceGV.Columns["EmployeeCode"].Visible = false;
-                  //  overtimeAttendanceGV.Columns["SalaryFactor"].Visible = false;
-                  //  overtimeAttendanceGV.Columns["OvertimeTypeID"].Visible = false;
-                    //leaveGV.Columns["EmployeeCode"].Visible = false;
-                    //leaveGV.Columns["LeaveTypeCode"].Visible = false;
-                   // deductionGV.Columns["EmployeeCode"].Visible = false;
-                   // deductionGV.Columns["DeductionTypeCode"].Visible = false;
-                   // dataGV.Columns["IsInsuranceRefund"].Visible = false;
-                   // dataGV.Columns["HireDate"].Visible = false;
-                   // dataGV.Columns["RemainingLeave"].Visible = false;
                 }));
             }));
 
@@ -886,12 +854,6 @@ namespace RauViet.ui
             Task.WhenAll(allowanceTask, overtimeTask, leaveTask, deductionTask);
         }
 
-
-        void AddColumnIfNotExists(DataTable dt, string name, Type type)
-        {
-            if (!dt.Columns.Contains(name))
-                dt.Columns.Add(new DataColumn(name, type));
-        }
         public async Task AddDynamicColumnsAsync()
         {
             // 🔹 1️⃣ Chạy song song các tác vụ để gom danh sách cột
@@ -958,7 +920,7 @@ namespace RauViet.ui
             // 🔹 4️⃣ Thêm cột vào DataTable (chỉ 1 thread thực hiện)
             foreach (var col in allCols)
             {
-                AddColumnIfNotExists(mEmployee_dt, col, typeof(decimal));
+                Utils.AddColumnIfNotExists(mEmployee_dt, col, typeof(decimal));
             }
         }
                 private void dataGV_CellClick(object sender, EventArgs e)

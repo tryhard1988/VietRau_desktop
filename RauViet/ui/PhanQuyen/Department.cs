@@ -79,12 +79,10 @@ namespace RauViet.ui
                     {"IsActive", "Còn Hoạt Động" }
                 });
 
-                dataGV.Columns["DepartmentID"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["DepartmentName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["Description"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["IsActive"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-
-               // dataGV.Columns["UserID"].Visible = false;
+                Utils.SetGridWidth(dataGV, "DepartmentID", DataGridViewAutoSizeColumnMode.AllCells);
+                Utils.SetGridWidth(dataGV, "DepartmentName", DataGridViewAutoSizeColumnMode.AllCells);
+                Utils.SetGridWidth(dataGV, "Description", DataGridViewAutoSizeColumnMode.AllCells);
+                Utils.SetGridWidth(dataGV, "IsActive", DataGridViewAutoSizeColumnMode.AllCells);
 
                 if (dataGV.Rows.Count > 0)
                 {

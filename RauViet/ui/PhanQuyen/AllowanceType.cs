@@ -74,14 +74,8 @@ namespace RauViet.ui
                 ScopeName_cbb.DisplayMember = "ScopeName";
                 ScopeName_cbb.ValueMember = "ApplyScopeID";
 
-                
 
-                int count = 0;
-                allowanceType_dt.Columns["AllowanceName"].SetOrdinal(count++);
-                allowanceType_dt.Columns["ScopeName"].SetOrdinal(count++);
-                allowanceType_dt.Columns["IsInsuranceIncluded"].SetOrdinal(count++);
-                allowanceType_dt.Columns["IsActive"].SetOrdinal(count++);
-               
+                Utils.SetGridOrdinal(allowanceType_dt, new[] { "AllowanceName", "ScopeName", "IsInsuranceIncluded", "IsActive" });               
                                 
                 dataGV.DataSource = allowanceType_dt;
                 Utils.HideColumns(dataGV, new[] { "AllowanceTypeID", "ApplyScopeID" });
@@ -94,11 +88,11 @@ namespace RauViet.ui
                     {"AllowanceCode", "Mã Phụ Cấp" }
                 });
 
-                dataGV.Columns["AllowanceName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["ScopeName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["IsInsuranceIncluded"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["IsActive"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-
+                Utils.SetGridWidth(dataGV, "AllowanceName", DataGridViewAutoSizeColumnMode.AllCells);
+                Utils.SetGridWidth(dataGV, "ScopeName", DataGridViewAutoSizeColumnMode.AllCells);
+                Utils.SetGridWidth(dataGV, "IsInsuranceIncluded", DataGridViewAutoSizeColumnMode.AllCells);
+                Utils.SetGridWidth(dataGV, "IsActive", DataGridViewAutoSizeColumnMode.AllCells);
+                
                 if (dataGV.Rows.Count > 0)
                 {
                     dataGV.ClearSelection();

@@ -191,13 +191,7 @@ namespace RauViet.ui
                     {"Amount", 80},
                 });
 
-                int count = 0;
-                mEmployeeDeduction_dt.Columns["EmployeeCode"].SetOrdinal(count++);
-                mEmployeeDeduction_dt.Columns["EmployeeName"].SetOrdinal(count++);
-                mEmployeeDeduction_dt.Columns["DeductionDate"].SetOrdinal(count++);
-                mEmployeeDeduction_dt.Columns["Amount"].SetOrdinal(count++);
-                mEmployeeDeduction_dt.Columns["Note"].SetOrdinal(count++);
-
+                Utils.SetGridOrdinal(mEmployeeDeduction_dt, new[] { "EmployeeCode", "EmployeeName", "DeductionDate", "Amount", "Note"});
                 Utils.SetGridFormat_NO(employeeDeductionGV, "Amount");
 
                 if (dataGV.Rows.Count > 0)

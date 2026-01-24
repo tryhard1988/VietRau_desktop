@@ -64,18 +64,7 @@ namespace RauViet.ui
 
                 dataGV.Columns["Month"].Visible = false;
                 dataGV.Columns["Year"].Visible = false;
-
-                int count = 0;
-                salarySummaryByYear_dt.Columns["MonthYear"].SetOrdinal(count++);
-                salarySummaryByYear_dt.Columns["TotalEmployees"].SetOrdinal(count++);
-                salarySummaryByYear_dt.Columns["TotalBaseSalary"].SetOrdinal(count++);
-                salarySummaryByYear_dt.Columns["TotalNetSalary"].SetOrdinal(count++);
-                salarySummaryByYear_dt.Columns["TotalNetInsuranceSalary"].SetOrdinal(count++);
-                salarySummaryByYear_dt.Columns["TotalInsuranceAllowance"].SetOrdinal(count++);
-                salarySummaryByYear_dt.Columns["TotalNonInsuranceAllowance"].SetOrdinal(count++);
-                salarySummaryByYear_dt.Columns["TotalOvertimeSalary"].SetOrdinal(count++);
-                salarySummaryByYear_dt.Columns["TotalLeaveSalary"].SetOrdinal(count++);
-                salarySummaryByYear_dt.Columns["TotalDeductionAmount"].SetOrdinal(count++);
+                Utils.SetGridOrdinal(salarySummaryByYear_dt, new[] { "MonthYear", "TotalEmployees", "TotalBaseSalary", "TotalNetSalary", "TotalNetInsuranceSalary", "TotalInsuranceAllowance", "TotalNonInsuranceAllowance", "TotalOvertimeSalary", "TotalLeaveSalary", "TotalDeductionAmount"});
 
                 int sizeWidth = 90;
                 Utils.SetGridWidths(dataGV, new System.Collections.Generic.Dictionary<string, int> {

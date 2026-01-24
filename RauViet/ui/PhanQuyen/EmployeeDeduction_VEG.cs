@@ -179,12 +179,7 @@ namespace RauViet.ui
                     {"Amount", "Số Tiền" }
                 });
 
-                int count = 0;
-                mEmployeeDeduction_dt.Columns["EmployeeCode"].SetOrdinal(count++);
-                mEmployeeDeduction_dt.Columns["EmployeeName"].SetOrdinal(count++);
-                mEmployeeDeduction_dt.Columns["DeductionDate"].SetOrdinal(count++);
-                mEmployeeDeduction_dt.Columns["Amount"].SetOrdinal(count++);
-                mEmployeeDeduction_dt.Columns["Note"].SetOrdinal(count++);
+                Utils.SetGridOrdinal(mEmployeeDeduction_dt, new[] { "EmployeeCode", "EmployeeName", "DeductionDate", "Amount", "Note" });
 
                 Utils.SetGridWidths(dataGV, new System.Collections.Generic.Dictionary<string, int> {
                     {"EmployeeCode", 60},
@@ -207,6 +202,7 @@ namespace RauViet.ui
                 });
 
                 Utils.SetGridFormat_NO(employeeDeductionGV, "Amount");
+                Utils.SetGridWidth(log_GV, "Description", DataGridViewAutoSizeColumnMode.Fill);
 
                 if (dataGV.Rows.Count > 0)
                 {
@@ -221,7 +217,6 @@ namespace RauViet.ui
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 employeeDeductionGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
-                log_GV.Columns["Description"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
                 ReadOnly_btn_Click(null, null);

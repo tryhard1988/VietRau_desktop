@@ -142,18 +142,10 @@ namespace RauViet.ui
                     {"WorkDate", 80},
                     {"HourWork", 70}
                 });
-
-                allowanceGV.Columns["DepartmentID"].Visible = false;
-                int count = 0;
-                mOvertime_dt.Columns["EmployeeCode"].SetOrdinal(count++);
-                mOvertime_dt.Columns["EmployeeName"].SetOrdinal(count++);
-                mOvertime_dt.Columns["WorkDate"].SetOrdinal(count++);
-                mOvertime_dt.Columns["OvertimeTypeID"].SetOrdinal(count++);
-                mOvertime_dt.Columns["HourWork"].SetOrdinal(count++);
-                mOvertime_dt.Columns["Note"].SetOrdinal(count++);
+                Utils.SetGridOrdinal(mOvertime_dt, new[] { "EmployeeCode", "EmployeeName", "WorkDate", "OvertimeTypeID", "HourWork", "Note"});
+                Utils.HideColumns(allowanceGV, new[] { "DepartmentID" });
+                Utils.SetGridWidths(department_GV, new Dictionary<string, int> { { "DepartmentName", 200 } });
                                 
-                department_GV.Columns["DepartmentName"].Width = 200;
-
                 department_GV.SelectionChanged += this.department_GV_CellClick;
                 allowanceGV.SelectionChanged += this.allowanceGV_CellClick;
                 if (dataGV.Rows.Count > 0)

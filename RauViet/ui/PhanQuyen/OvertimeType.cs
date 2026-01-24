@@ -69,10 +69,7 @@ namespace RauViet.ui
                 await Task.WhenAll(overtimeTypeTask);
                 mOvertimeType_dt = overtimeTypeTask.Result;
 
-                int count = 0;
-                mOvertimeType_dt.Columns["OvertimeName"].SetOrdinal(count++);
-                mOvertimeType_dt.Columns["SalaryFactor"].SetOrdinal(count++);
-                mOvertimeType_dt.Columns["IsActive"].SetOrdinal(count++);
+                Utils.SetGridOrdinal(mOvertimeType_dt, new[] { "OvertimeName", "SalaryFactor", "IsActive"});
 
                 dataGV.DataSource = mOvertimeType_dt;
                 Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
@@ -81,13 +78,10 @@ namespace RauViet.ui
                     {"IsActive", "Còn Hoạt Động" }
                 });
 
-                dataGV.Columns["OvertimeTypeID"].Visible = false;
-
-                dataGV.Columns["OvertimeName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["SalaryFactor"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["IsActive"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-
-               // dataGV.Columns["UserID"].Visible = false;
+                Utils.HideColumns(dataGV, new[] { "OvertimeTypeID" });
+                Utils.SetGridWidth(dataGV, "OvertimeName", DataGridViewAutoSizeColumnMode.AllCells);
+                Utils.SetGridWidth(dataGV, "SalaryFactor", DataGridViewAutoSizeColumnMode.AllCells);
+                Utils.SetGridWidth(dataGV, "IsActive", DataGridViewAutoSizeColumnMode.AllCells);
 
                 if (dataGV.Rows.Count > 0)
                 {

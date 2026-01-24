@@ -148,28 +148,23 @@ namespace RauViet.ui
                     {"Amount", "Số Tiền" },
                 });
 
-                employeeDeductionGV.Columns["EmployeeCode"].Visible = false;
-                dataGV.Columns["EmployessName_NoSign"].Visible = false;
-
-                int count = 0;
-                mEmployeeLeave_dt.Columns["DateOff"].SetOrdinal(count++);
-                mEmployeeLeave_dt.Columns["LeaveTypeName"].SetOrdinal(count++);
-                mEmployeeLeave_dt.Columns["LeaveHours"].SetOrdinal(count++);
-                mEmployeeLeave_dt.Columns["Note"].SetOrdinal(count++);
-
+                Utils.HideColumns(employeeDeductionGV, new[] { "EmployeeCode" });
+                Utils.HideColumns(dataGV, new[] { "EmployessName_NoSign" });
+                Utils.SetGridOrdinal(mEmployeeLeave_dt, new[] { "DateOff", "LeaveTypeName", "LeaveHours", "Note"});
                 Utils.HideColumns(log_GV, new[] { "LogID", "EmployeeCode", "DeductionTypeCode" });
-
 
                 bool isLock = await SQLStore_QLNS.Instance.IsSalaryLockAsync(month, year);
                 dataGV.ReadOnly = isLock;
-                dataGV.Columns["FullName"].ReadOnly = true;
-                dataGV.Columns["EmployeeCode"].ReadOnly = true;
-                dataGV.Columns["PositionName"].ReadOnly = true;
-                dataGV.Columns["ContractTypeName"].ReadOnly = true;
-                dataGV.Columns["AllowanceAmount"].ReadOnly = true;
-                dataGV.Columns["DeductionAmount"].ReadOnly = isLock;
-                dataGV.Columns["TotalOffDay"].ReadOnly = true;
-
+                Utils.SetGridReadOnly(dataGV, new Dictionary<string, bool> {
+                    {"FullName", true },
+                    {"EmployeeCode", true },
+                    {"PositionName", true },
+                    {"ContractTypeName", true },
+                    {"AllowanceAmount", true },
+                    {"DeductionAmount", isLock },
+                    {"TotalOffDay", true }
+                });
+                
                 Utils.SetGridWidths(dataGV, new System.Collections.Generic.Dictionary<string, int> {
                     {"EmployeeCode", 50},
                     {"FullName", 150},
@@ -201,11 +196,10 @@ namespace RauViet.ui
                     dataGV.Rows[0].Selected = true;
                 }
 
+                Utils.SetGridWidth(log_GV, "Description", DataGridViewAutoSizeColumnMode.Fill);
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 employeeDeductionGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-
-                log_GV.Columns["Description"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
 
                 log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 

@@ -90,18 +90,7 @@ namespace RauViet.ui
                 issueDate_dtp.Format = DateTimePickerFormat.Custom;
                 issueDate_dtp.CustomFormat = "dd/MM/yyyy";
 
-                int count = 0;
-                mEmployees_dt.Columns["EmployeeCode"].SetOrdinal(count++);
-                mEmployees_dt.Columns["FullName"].SetOrdinal(count++);
-                mEmployees_dt.Columns["GenderName"].SetOrdinal(count++);
-                mEmployees_dt.Columns["BirthDate"].SetOrdinal(count++);
-                mEmployees_dt.Columns["HireDate"].SetOrdinal(count++);                
-                mEmployees_dt.Columns["IsActive"].SetOrdinal(count++);
-                mEmployees_dt.Columns["CitizenID"].SetOrdinal(count++);
-                mEmployees_dt.Columns["Address"].SetOrdinal(count++);
-                mEmployees_dt.Columns["PhoneNumber"].SetOrdinal(count++);
-                mEmployees_dt.Columns["NoteResign"].SetOrdinal(count++);
-                mEmployees_dt.Columns["GradeName"].SetOrdinal(count++);
+                Utils.SetGridOrdinal(mEmployees_dt, new[] { "EmployeeCode", "FullName", "GenderName", "BirthDate", "HireDate", "IsActive", "CitizenID", "Address", "PhoneNumber", "NoteResign", "GradeName" });
 
                 salaryGrade_ccb.DataSource = mSalaryGrade_dt;
                 salaryGrade_ccb.DisplayMember = "GradeName";
@@ -135,9 +124,9 @@ namespace RauViet.ui
                     {"NewValue", "Giá trị mới" }
                 });
 
-                dataGV.Columns["BirthDate"].DefaultCellStyle.Format = "dd/MM/yyyy";
-                dataGV.Columns["HireDate"].DefaultCellStyle.Format = "dd/MM/yyyy";
-                dataGV.Columns["IssueDate"].DefaultCellStyle.Format = "dd/MM/yyyy";
+                Utils.SetGridFormat(dataGV, "BirthDate", "dd/MM/yyyy");
+                Utils.SetGridFormat(dataGV, "HireDate", "dd/MM/yyyy");
+                Utils.SetGridFormat(dataGV, "IssueDate", "dd/MM/yyyy");
 
                 Utils.SetGridWidths(dataGV, new System.Collections.Generic.Dictionary<string, int> {
                     {"canCreateUserName", 50},
@@ -159,12 +148,12 @@ namespace RauViet.ui
                     {"ACtionBy", 150},
                 });
 
-                dataGV.Columns["PhoneNumber"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                dataGV.Columns["Gradename"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                Utils.SetGridFormat_Alignment(dataGV, "PhoneNumber", DataGridViewContentAlignment.MiddleCenter);
+                Utils.SetGridFormat_Alignment(dataGV, "Gradename", DataGridViewContentAlignment.MiddleCenter);
+                Utils.SetGridWidth(log_GV, "OldValue", DataGridViewAutoSizeColumnMode.Fill);
+                Utils.SetGridWidth(log_GV, "NewValue", DataGridViewAutoSizeColumnMode.Fill);
 
-                log_GV.Columns["OldValue"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                log_GV.Columns["NewValue"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
                 if (dataGV.Rows.Count > 0)

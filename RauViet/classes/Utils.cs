@@ -157,6 +157,11 @@ public static class Utils
             dataGV.Columns[columnName].DefaultCellStyle.Format = "F1";
     }
 
+    public static void AddColumnIfNotExists(DataTable dt, string name, Type type)
+    {
+        if (!dt.Columns.Contains(name))
+            dt.Columns.Add(new DataColumn(name, type));
+    }
     public static void SetGridFormat(DataGridView dataGV, string columnName, string formatStr)
     {
         if (dataGV.Columns.Contains(columnName))

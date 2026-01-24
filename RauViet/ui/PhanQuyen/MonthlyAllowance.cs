@@ -187,13 +187,7 @@ namespace RauViet.ui
                     {"Amount", "Số Tiền" }
                 });
 
-                int count = 0;
-                mMonthlyAllowance_dt.Columns["EmployeeCode"].SetOrdinal(count++);
-                mMonthlyAllowance_dt.Columns["EmployeeName"].SetOrdinal(count++);
-                mMonthlyAllowance_dt.Columns["Date"].SetOrdinal(count++);
-                mMonthlyAllowance_dt.Columns["AllowanceName"].SetOrdinal(count++);
-                mMonthlyAllowance_dt.Columns["Amount"].SetOrdinal(count++);
-                mMonthlyAllowance_dt.Columns["Note"].SetOrdinal(count++);
+                Utils.SetGridOrdinal(mMonthlyAllowance_dt, new[] { "EmployeeCode", "EmployeeName", "Date", "AllowanceName", "Amount", "Note"});
 
                 Utils.SetGridWidths(dataGV, new System.Collections.Generic.Dictionary<string, int> {
                     {"EmployeeCode", 60},
@@ -216,9 +210,9 @@ namespace RauViet.ui
                 });
 
                 Utils.SetGridFormat_NO(allowanceGV, "Amount");
+                Utils.SetGridWidth(allowanceGV, "AllowanceName", DataGridViewAutoSizeColumnMode.AllCells);
+                Utils.SetGridWidth(log_GV, "Description", DataGridViewAutoSizeColumnMode.Fill);
 
-                allowanceGV.Columns["AllowanceName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                                
                 dataGV.SelectionChanged += this.dataGV_CellClick;
                 allowanceGV.SelectionChanged += this.allowanceGV_CellClick;
                 if (dataGV.Rows.Count > 0)
@@ -231,8 +225,6 @@ namespace RauViet.ui
                 allowanceGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
                 MonthYearDtp_ValueChanged(null, null);
-
-                log_GV.Columns["Description"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
 
                 log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 monthYearDtp.ValueChanged += monthYearDtp_ValueChanged;

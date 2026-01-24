@@ -79,10 +79,7 @@ namespace RauViet.ui
         private void DefineEmployeeGV()
         {
             int count = 0;
-            mEmployee_dt.Columns["EmployeeCode"].SetOrdinal(count++);
-            mEmployee_dt.Columns["FullName"].SetOrdinal(count++);
-            mEmployee_dt.Columns["PositionName"].SetOrdinal(count++);
-
+            Utils.SetGridOrdinal(mEmployee_dt, new[] { "EmployeeCode", "FullName", "PositionName", });
             dataGV.ReadOnly = false;
 
             mEmployee_dt.Columns["RemainingLeaveDays"].ReadOnly = false;

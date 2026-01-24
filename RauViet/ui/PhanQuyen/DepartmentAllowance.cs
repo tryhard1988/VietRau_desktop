@@ -96,11 +96,7 @@ namespace RauViet.ui
                 dataGV.DataSource = department_dt;
                 Utils.HideColumns(dataGV, new[] { "DepartmentID" });
                 Utils.HideColumns(allowanceGV, new[] { "DepartmentAllowanceID", "DepartmentID", "AllowanceTypeID" });
-
-                int count = 0;
-                mDepartmentAllowance_dt.Columns["AllowanceName"].SetOrdinal(count++);
-                mDepartmentAllowance_dt.Columns["Amount"].SetOrdinal(count++);
-                mDepartmentAllowance_dt.Columns["Note"].SetOrdinal(count++);
+                Utils.SetGridOrdinal(mDepartmentAllowance_dt, new[] { "AllowanceName", "Amount", "Note" });
 
                 Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
                     {"DepartmentName", "Tên Phòng Ban" },
@@ -113,13 +109,12 @@ namespace RauViet.ui
                     {"Note", "Ghi Chú" }
                 });
 
-
-                dataGV.Columns["DepartmentName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["Description"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                allowanceGV.Columns["AllowanceName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                allowanceGV.Columns["Amount"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                allowanceGV.Columns["Note"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-
+                Utils.SetGridWidth(dataGV, "DepartmentName", DataGridViewAutoSizeColumnMode.AllCells);
+                Utils.SetGridWidth(dataGV, "Description", DataGridViewAutoSizeColumnMode.AllCells);
+                Utils.SetGridWidth(allowanceGV, "AllowanceName", DataGridViewAutoSizeColumnMode.AllCells);
+                Utils.SetGridWidth(allowanceGV, "Amount", DataGridViewAutoSizeColumnMode.AllCells);
+                Utils.SetGridWidth(allowanceGV, "Note", DataGridViewAutoSizeColumnMode.AllCells);
+               
                 if (dataGV.Rows.Count > 0)
                 {
                     dataGV.ClearSelection();

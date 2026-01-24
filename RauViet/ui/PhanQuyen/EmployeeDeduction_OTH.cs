@@ -189,13 +189,8 @@ namespace RauViet.ui
                     {"Amount", 80},
                 });
 
-                int count = 0;
-                mEmployeeDeduction_dt.Columns["EmployeeCode"].SetOrdinal(count++);
-                mEmployeeDeduction_dt.Columns["EmployeeName"].SetOrdinal(count++);
-                mEmployeeDeduction_dt.Columns["DeductionDate"].SetOrdinal(count++);
-                mEmployeeDeduction_dt.Columns["Amount"].SetOrdinal(count++);
-                mEmployeeDeduction_dt.Columns["Note"].SetOrdinal(count++);
-
+                Utils.SetGridOrdinal(mEmployeeDeduction_dt, new[] { "EmployeeCode", "EmployeeName", "DeductionDate", "Amount", "Note"});
+                Utils.SetGridWidth(log_GV, "Description", DataGridViewAutoSizeColumnMode.Fill);
                 if (dataGV.Rows.Count > 0)
                 {
                     dataGV.ClearSelection();
@@ -212,8 +207,6 @@ namespace RauViet.ui
                 bool isLock = await SQLStore_QLNS.Instance.IsSalaryLockAsync(month, year);
                 newCustomerBtn.Visible = !isLock;
                 edit_btn.Visible = !isLock;
-
-                log_GV.Columns["Description"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
 
                 log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 

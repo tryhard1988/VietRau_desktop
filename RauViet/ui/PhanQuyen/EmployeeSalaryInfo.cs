@@ -145,7 +145,8 @@ namespace RauViet.ui
                     {"ACtionBy", 150}
                 });
 
-                log_GV.Columns["Descrition"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                Utils.SetGridWidth(log_GV, "Descrition", DataGridViewAutoSizeColumnMode.Fill);
+
                 log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
                 if (dataGV.Rows.Count > 0)

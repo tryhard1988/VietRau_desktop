@@ -185,6 +185,10 @@ namespace RauViet.ui
                     {"EndTime", "Giờ kết thúc" }
                 });
 
+                Utils.SetGridHeaders(departmentGV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"DepartmentName", "Bộ Phận" }
+                });
+
                 Utils.SetGridWidths(dataGV, new System.Collections.Generic.Dictionary<string, int> {
                     {"EmployeeCode", 50},
                     {"FullName", 160},
@@ -201,11 +205,10 @@ namespace RauViet.ui
                     {"EndTime", 100}
                 });
 
-                departmentGV.Columns["DepartmentName"].HeaderText = "Bộ Phận";
-                departmentGV.Columns["DepartmentName"].Width = 120;
-                departmentGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                Utils.SetGridWidths(departmentGV, new Dictionary<string, int> { { "DepartmentName", 120 } });
+                Utils.SetGridWidth(log_GV, "Description", DataGridViewAutoSizeColumnMode.Fill);
 
-                log_GV.Columns["Description"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                departmentGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
                 Attendamce();

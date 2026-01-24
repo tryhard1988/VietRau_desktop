@@ -123,12 +123,14 @@ namespace RauViet.ui
                     {"PositionName", "Chức Vụ" }
                 });
 
-                dataGV.Columns["EmployeeCode"].Width = 50;
-                dataGV.Columns["FullName"].Width = 160;
-                dataGV.Columns["TotalWorkingHour"].Width = 50;
-                dataGV.Columns["TotalWorkingDay"].Width = 50;
-                dataGV.Columns["ContractTypeName"].Width = 70;
-                dataGV.Columns["PositionName"].Width = 70;
+                Utils.SetGridWidths(dataGV, new Dictionary<string, int> {
+                    {"EmployeeCode",  50},
+                    {"FullName",  160},
+                    {"TotalWorkingHour",  50},
+                    {"TotalWorkingDay",  50},
+                    {"ContractTypeName",  70},
+                    {"PositionName",  70}
+                });
 
                 dataGV.Width = 500;
 
@@ -182,19 +184,24 @@ namespace RauViet.ui
 
                 bool isLock = await SQLStore_QLNS.Instance.IsSalaryLockAsync(month, year);
                 attendanceGV.ReadOnly = isLock;
-                attendanceGV.Columns["WorkingHours"].ReadOnly = false;
-                attendanceGV.Columns["Note"].ReadOnly = false;
-                attendanceGV.Columns["DayOfWeek"].ReadOnly = true;
-                attendanceGV.Columns["WorkDate"].ReadOnly = true;
-                attendanceGV.Columns["AttendanceLog"].ReadOnly = true;
+                Utils.SetGridReadOnly(attendanceGV, new Dictionary<string, bool> {
+                    {"WorkingHours", false },
+                    {"Note", false },
+                    {"DayOfWeek", true },
+                    {"WorkDate", true },
+                    {"AttendanceLog", true }
+                });
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
-                log_GV.Columns["CreatedAt"].Width = 120;
-                log_GV.Columns["ActionBy"].Width = 150;
-                log_GV.Columns["WorkDate"].Width = 100;
-                log_GV.Columns["WorkingHours"].Width = 100;
-                log_GV.Columns["Description"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                Utils.SetGridWidths(log_GV, new Dictionary<string, int> { 
+                    {"CreatedAt", 120},
+                    {"ActionBy", 150},
+                    {"WorkDate", 100},
+                    {"WorkingHours", 100}
+                });
+                Utils.SetGridWidth(log_GV, "Description", DataGridViewAutoSizeColumnMode.Fill);
+
                 log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
                 dataGV.SelectionChanged += this.dataGV_CellClick;                

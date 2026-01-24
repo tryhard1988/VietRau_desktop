@@ -133,17 +133,11 @@ namespace RauViet.ui
                     {"Amount", 80},
                 });
 
-
-                int count = 0;
-                mEmployeeAllowance_dt.Columns["AllowanceName"].SetOrdinal(count++);
-                mEmployeeAllowance_dt.Columns["Amount"].SetOrdinal(count++);
-                mEmployeeAllowance_dt.Columns["Note"].SetOrdinal(count++);
-
+                Utils.SetGridOrdinal(mEmployeeAllowance_dt, new[] { "AllowanceName", "Amount", "Note"});
                 Utils.SetGridFormat_NO(allowanceGV, "Amount");
-
-                allowanceGV.Columns["AllowanceName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                allowanceGV.Columns["Amount"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                allowanceGV.Columns["Note"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+                Utils.SetGridWidth(allowanceGV, "AllowanceName", DataGridViewAutoSizeColumnMode.AllCells);
+                Utils.SetGridWidth(allowanceGV, "Amount", DataGridViewAutoSizeColumnMode.AllCells);
+                Utils.SetGridWidth(allowanceGV, "Note", DataGridViewAutoSizeColumnMode.AllCells);
                                 
                 allowanceGV.SelectionChanged += this.allowanceGV_CellClick;
 

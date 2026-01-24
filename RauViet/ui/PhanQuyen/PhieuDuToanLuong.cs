@@ -121,14 +121,7 @@ namespace RauViet.ui
                 }
 
                 mEmployeeAllowances_dv = new DataView(mEmployeeAllowances_dt);
-
-                int count = 0;
-                mEmployees_dt.Columns["EmployeeCode"].SetOrdinal(count++);
-                mEmployees_dt.Columns["FullName"].SetOrdinal(count++);                
-                mEmployees_dt.Columns["HireDate"].SetOrdinal(count++);
-                mEmployees_dt.Columns["DepartmentName"].SetOrdinal(count++);
-                mEmployees_dt.Columns["PositionName"].SetOrdinal(count++);
-                mEmployees_dt.Columns["ContractTypeName"].SetOrdinal(count++);        
+                Utils.SetGridOrdinal(mEmployees_dt, new[] { "EmployeeCode", "FullName", "HireDate", "DepartmentName", "PositionName", "ContractTypeName"});       
                 
 
                 dataGV.DataSource = mEmployees_dt;

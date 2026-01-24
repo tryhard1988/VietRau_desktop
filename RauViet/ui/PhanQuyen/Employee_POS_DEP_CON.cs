@@ -92,14 +92,7 @@ namespace RauViet.ui
                 contractType_cbb.DisplayMember = "ContractTypeName";
                 contractType_cbb.ValueMember = "ContractTypeID";
 
-                int count = 0;
-                mEmployees_dt.Columns["EmployeeCode"].SetOrdinal(count++);
-                mEmployees_dt.Columns["FullName"].SetOrdinal(count++);                
-                mEmployees_dt.Columns["HireDate"].SetOrdinal(count++);
-                mEmployees_dt.Columns["DepartmentName"].SetOrdinal(count++);
-                mEmployees_dt.Columns["PositionName"].SetOrdinal(count++);
-                mEmployees_dt.Columns["ContractTypeName"].SetOrdinal(count++);        
-                
+                Utils.SetGridOrdinal(mEmployees_dt, new[] { "EmployeeCode", "FullName", "HireDate", "DepartmentName", "PositionName", "ContractTypeName"});
 
                 dataGV.DataSource = mEmployees_dt;
                 Utils.HideColumns(dataGV, new[] { "EmployessName_NoSign", "PositionID", "DepartmentID", "ContractTypeID" });
@@ -134,11 +127,8 @@ namespace RauViet.ui
                     {"ACtionBy", 150},
                 });
 
-
-                log_GV.Columns["CreatedAt"].Width = 120;
-                log_GV.Columns["ACtionBy"].Width = 150;
-                log_GV.Columns["OldValue"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                log_GV.Columns["NewValue"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                Utils.SetGridWidth(log_GV, "OldValue", DataGridViewAutoSizeColumnMode.Fill);
+                Utils.SetGridWidth(log_GV, "NewValue", DataGridViewAutoSizeColumnMode.Fill);
                 log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
                 if (dataGV.Rows.Count > 0)

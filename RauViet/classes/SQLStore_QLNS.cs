@@ -1,5 +1,8 @@
 ﻿using DocumentFormat.OpenXml.Drawing.Charts;
+using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 using DocumentFormat.OpenXml.Wordprocessing;
+using MySqlX.XDevAPI.Common;
+using PdfSharp.Pdf.Content.Objects;
 using RauViet.ui;
 using System;
 using System.Collections.Generic;
@@ -214,15 +217,15 @@ namespace RauViet.classes
 
         private void editEmployee()
         {
-            mEmployee_dt.Columns.Add(new DataColumn("GenderName", typeof(string)));
-            mEmployee_dt.Columns.Add(new DataColumn("PositionCode", typeof(string)));
-            mEmployee_dt.Columns.Add(new DataColumn("PositionName", typeof(string)));
-            mEmployee_dt.Columns.Add(new DataColumn("DepartmentName", typeof(string)));
-            mEmployee_dt.Columns.Add(new DataColumn("ContractTypeName", typeof(string)));
-            mEmployee_dt.Columns.Add(new DataColumn("ContractTypeCode", typeof(string)));
-            mEmployee_dt.Columns.Add(new DataColumn("GradeName", typeof(string)));
-            mEmployee_dt.Columns.Add(new DataColumn("SalaryGrade", typeof(int)));
-            mEmployee_dt.Columns.Add(new DataColumn("EmployessName_NoSign", typeof(string)));
+            Utils.AddColumnIfNotExists(mEmployee_dt, "GenderName", typeof(string));
+            Utils.AddColumnIfNotExists(mEmployee_dt, "PositionCode", typeof(string));
+            Utils.AddColumnIfNotExists(mEmployee_dt, "PositionName", typeof(string));
+            Utils.AddColumnIfNotExists(mEmployee_dt, "DepartmentName", typeof(string));
+            Utils.AddColumnIfNotExists(mEmployee_dt, "ContractTypeName", typeof(string));
+            Utils.AddColumnIfNotExists(mEmployee_dt, "ContractTypeCode", typeof(string));
+            Utils.AddColumnIfNotExists(mEmployee_dt, "GradeName", typeof(string));
+            Utils.AddColumnIfNotExists(mEmployee_dt, "SalaryGrade", typeof(int));
+            Utils.AddColumnIfNotExists(mEmployee_dt, "EmployessName_NoSign", typeof(string));
 
             foreach (DataRow dr in mEmployee_dt.Rows)
             {
@@ -382,8 +385,8 @@ namespace RauViet.classes
 
         public void editLeaveAttendances(DataTable data)
         {
-            data.Columns.Add(new DataColumn("LeaveTypeName", typeof(string)));
-            data.Columns.Add(new DataColumn("DayOfWeek", typeof(string)));
+            Utils.AddColumnIfNotExists(data, "LeaveTypeName", typeof(string));
+            Utils.AddColumnIfNotExists(data, "DayOfWeek", typeof(string));
 
             string[] vietDays = { "CN", "T.2", "T.3", "T.4", "T.5", "T.6", "T.7" };
             foreach (DataRow row in data.Rows)
@@ -398,11 +401,7 @@ namespace RauViet.classes
                 }
             }
 
-            int count = 0;
-            data.Columns["DayOfWeek"].SetOrdinal(count++);
-            data.Columns["DateOff"].SetOrdinal(count++);
-            data.Columns["LeaveTypeName"].SetOrdinal(count++);
-            data.Columns["Note"].SetOrdinal(count++);
+            Utils.SetGridOrdinal(data, new[] { "DayOfWeek", "DateOff", "LeaveTypeName", "Note" });
         }
 
         public void removeHoliday() { mHoliday_dt = null; }
@@ -607,7 +606,7 @@ namespace RauViet.classes
 
                 if (colNames.Contains("InsuranceBaseSalary") && !result.Columns.Contains("InsuranceBaseSalary"))
                 {
-                    result.Columns.Add("InsuranceBaseSalary", typeof(int));
+                    Utils.AddColumnIfNotExists(result, "InsuranceBaseSalary", typeof(int));
                 }
 
                 foreach (DataRow row in data.Rows)
@@ -634,18 +633,13 @@ namespace RauViet.classes
 
         public void editEmployeeSalaryInfo()
         {
-            mEmployeeSalaryInfo_dt.Columns.Add(new DataColumn("Date", typeof(string)));
+            Utils.AddColumnIfNotExists(mEmployeeSalaryInfo_dt, "Date", typeof(string));
             foreach (DataRow dr in mEmployeeSalaryInfo_dt.Rows)
             {
                 dr["Date"] = dr["Month"] + "/" + dr["Year"];
             }
 
-            int count = 0;
-            mEmployeeSalaryInfo_dt.Columns["Date"].SetOrdinal(count++);
-            mEmployeeSalaryInfo_dt.Columns["BaseSalary"].SetOrdinal(count++);
-            mEmployeeSalaryInfo_dt.Columns["InsuranceBaseSalary"].SetOrdinal(count++);
-            mEmployeeSalaryInfo_dt.Columns["Note"].SetOrdinal(count++);
-            mEmployeeSalaryInfo_dt.Columns["CreatedAt"].SetOrdinal(count++);
+            Utils.SetGridOrdinal(mEmployeeSalaryInfo_dt, new[] { "Date", "BaseSalary", "InsuranceBaseSalary", "Note", "CreatedAt" });
         }
 
         public void removeEmployees() { mEmployee_dt = null; }
@@ -681,7 +675,7 @@ namespace RauViet.classes
             foreach (string colName in keepColumns)
             {
                 if (mEmployee_dt.Columns.Contains(colName))
-                    activeEmployees.Columns.Add(colName, mEmployee_dt.Columns[colName].DataType);
+                    Utils.AddColumnIfNotExists(activeEmployees, colName, mEmployee_dt.Columns[colName].DataType);
             }
 
             // Lọc và copy dữ liệu IsActive = true
@@ -803,8 +797,8 @@ namespace RauViet.classes
             await GetLeaveTypeAsync();
 
             DataTable activeLeaveType = new DataTable();
-            activeLeaveType.Columns.Add("LeaveTypeCode", typeof(string));
-            activeLeaveType.Columns.Add("LeaveTypeName", typeof(string));
+            Utils.AddColumnIfNotExists(activeLeaveType, "LeaveTypeCode", typeof(string));
+            Utils.AddColumnIfNotExists(activeLeaveType, "LeaveTypeName", typeof(string));
 
             // Lọc các dòng IsPaid = true
             foreach (DataRow row in mLeaveType_dt.Select("IsPaid = true"))
@@ -823,8 +817,8 @@ namespace RauViet.classes
             await GetLeaveTypeAsync();
 
             DataTable activeLeaveType = new DataTable();
-            activeLeaveType.Columns.Add("LeaveTypeCode", typeof(string));
-            activeLeaveType.Columns.Add("LeaveTypeName", typeof(string));
+            Utils.AddColumnIfNotExists(activeLeaveType, "LeaveTypeCode", typeof(string));
+            Utils.AddColumnIfNotExists(activeLeaveType, "LeaveTypeName", typeof(string));
 
             // Lọc các dòng IsPaid = true
             foreach (DataRow row in mLeaveType_dt.Rows)
@@ -961,7 +955,7 @@ namespace RauViet.classes
         }
         private void editAllowanceType()
         {
-            mAllowance_dt.Columns.Add(new DataColumn("ScopeName", typeof(string)));
+            Utils.AddColumnIfNotExists(mAllowance_dt, "ScopeName", typeof(string));
             foreach (DataRow dr in mAllowance_dt.Rows)
             {
                 int applyScopeID = Convert.ToInt32(dr["ApplyScopeID"]);
@@ -1085,10 +1079,10 @@ namespace RauViet.classes
 
         private void editAnnualLeaveBalance(DataTable employeeALB_dt)
         {
-            employeeALB_dt.Columns.Add(new DataColumn("FullName", typeof(string)));
-            employeeALB_dt.Columns.Add(new DataColumn("PositionName", typeof(string)));
-            employeeALB_dt.Columns.Add(new DataColumn("RemainingLeaveDays_1", typeof(int)));
-            employeeALB_dt.Columns.Add(new DataColumn("EmployessName_NoSign", typeof(string)));
+            Utils.AddColumnIfNotExists(employeeALB_dt, "FullName", typeof(string));
+            Utils.AddColumnIfNotExists(employeeALB_dt, "PositionName", typeof(string));
+            Utils.AddColumnIfNotExists(employeeALB_dt, "RemainingLeaveDays_1", typeof(int));
+            Utils.AddColumnIfNotExists(employeeALB_dt, "EmployessName_NoSign", typeof(string));
 
             var employeeLookup = mEmployee_dt.AsEnumerable().ToDictionary(r => r.Field<string>("EmployeeCode"));
             foreach (DataRow dr in employeeALB_dt.Rows)
@@ -1286,12 +1280,12 @@ namespace RauViet.classes
 
         public void editOvertimeAttendamce(DataTable data)
         {
-            data.Columns.Add("DayOfWeek", typeof(string));
-            data.Columns.Add("OvertimeName", typeof(string));
-            data.Columns.Add("OvertimeTypeCode", typeof(string));
-            data.Columns.Add("SalaryFactor", typeof(decimal));
-            data.Columns.Add("EmployeeName", typeof(string));
-            data.Columns.Add("DepartmentID", typeof(string));
+            Utils.AddColumnIfNotExists(data, "DayOfWeek", typeof(string));
+            Utils.AddColumnIfNotExists(data, "OvertimeName", typeof(string));
+            Utils.AddColumnIfNotExists(data, "OvertimeTypeCode", typeof(string));
+            Utils.AddColumnIfNotExists(data, "SalaryFactor", typeof(decimal));
+            Utils.AddColumnIfNotExists(data, "EmployeeName", typeof(string));
+            Utils.AddColumnIfNotExists(data, "DepartmentID", typeof(string));
 
             data.Columns["HourWork"].ReadOnly = false;
 
@@ -1324,17 +1318,7 @@ namespace RauViet.classes
                 TimeSpan duration = endTime - startTime;
             }
 
-            int count = 0;
-            data.Columns["EmployeeCode"].SetOrdinal(count++);
-            data.Columns["EmployeeName"].SetOrdinal(count++);
-            data.Columns["WorkDate"].SetOrdinal(count++);
-            data.Columns["DayOfWeek"].SetOrdinal(count++);
-            data.Columns["WorkDate"].SetOrdinal(count++);
-            data.Columns["OvertimeName"].SetOrdinal(count++);
-            data.Columns["StartTime"].SetOrdinal(count++);
-            data.Columns["EndTime"].SetOrdinal(count++);
-            data.Columns["HourWork"].SetOrdinal(count++);
-            data.Columns["Note"].SetOrdinal(count++);
+            Utils.SetGridOrdinal(data, new[] { "EmployeeCode", "EmployeeName", "WorkDate", "DayOfWeek", "WorkDate", "OvertimeName", "StartTime", "EndTime", "HourWork", "Note" });
         }
 
         public async Task<DataTable> GetAttendamceAsync(int month, int year)
@@ -1383,7 +1367,7 @@ namespace RauViet.classes
             {
                 cloned = new DataTable();
                 foreach (string col in colnames)
-                    cloned.Columns.Add(col, data.Columns[col].DataType);
+                    Utils.AddColumnIfNotExists(cloned, col, data.Columns[col].DataType);
             }
             else
             {
@@ -1396,7 +1380,7 @@ namespace RauViet.classes
 
         private void editAttendamce(DataTable data)
         {
-            data.Columns.Add("DayOfWeek", typeof(string));
+            Utils.AddColumnIfNotExists(data, "DayOfWeek", typeof(string));
 
             foreach (DataRow row in data.Rows)
             {
@@ -1405,14 +1389,7 @@ namespace RauViet.classes
                 row["DayOfWeek"] = vietDays[(int)dt.DayOfWeek];
             }
 
-            int count = 0;
-            data.Columns["DayOfWeek"].SetOrdinal(count++);
-            data.Columns["WorkDate"].SetOrdinal(count++);
-            data.Columns["WorkingHours"].SetOrdinal(count++);
-            data.Columns["AttendanceLog"].SetOrdinal(count++);
-            data.Columns["LeaveTypeName"].SetOrdinal(count++);
-            data.Columns["OvertimeName"].SetOrdinal(count++);
-            data.Columns["Note"].SetOrdinal(count);
+            Utils.SetGridOrdinal(data, new[] { "DayOfWeek", "WorkDate", "WorkingHours", "AttendanceLog", "LeaveTypeName", "OvertimeName", "Note" });
         }
 
         public void removeAttendamce(int month, int year)
@@ -1442,7 +1419,7 @@ namespace RauViet.classes
 
         private void editSalarySummaryByYear(DataTable data)
         {
-            data.Columns.Add("MonthYear", typeof(string));
+            Utils.AddColumnIfNotExists(data, "MonthYear", typeof(string));
             foreach (DataRow row in data.Rows)
             {
                 row["MonthYear"] = row["Month"] + "/" + row["Year"];

@@ -95,12 +95,12 @@ namespace RauViet.ui
                     {"CreatedAt", 120},
                     {"ACtionBy", 150}
                 });
+                Utils.SetGridFormat_Alignment(dataGV, "BankName", DataGridViewContentAlignment.MiddleCenter);
+                Utils.SetGridFormat_Alignment(dataGV, "BankAccountNumber", DataGridViewContentAlignment.MiddleCenter);
 
-                dataGV.Columns["BankName"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                dataGV.Columns["BankAccountNumber"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                Utils.SetGridFormat_Alignment(log_GV, "OldValue", DataGridViewContentAlignment.MiddleCenter);
+                Utils.SetGridFormat_Alignment(log_GV, "NewValue", DataGridViewContentAlignment.MiddleCenter);
 
-                log_GV.Columns["OldValue"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                log_GV.Columns["NewValue"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
                 if (dataGV.Rows.Count > 0)

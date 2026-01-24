@@ -68,12 +68,7 @@ namespace RauViet.ui
 
                 await Task.WhenAll(postionTask);
                 DataTable postion_dt = postionTask.Result;
-
-                int count = 0;
-                postion_dt.Columns["PositionCode"].SetOrdinal(count++);
-                postion_dt.Columns["PositionName"].SetOrdinal(count++);
-                postion_dt.Columns["Description"].SetOrdinal(count++);
-                postion_dt.Columns["IsActive"].SetOrdinal(count++);
+                Utils.SetGridOrdinal(postion_dt, new[] { "PositionCode", "PositionName", "Description", "IsActive" });
 
                 dataGV.DataSource = postion_dt;
                 Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
@@ -85,11 +80,10 @@ namespace RauViet.ui
 
                 dataGV.Columns["PositionID"].Visible = false;
                 dataGV.Columns.Remove("CreatedAt");
-
-                dataGV.Columns["PositionCode"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["PositionName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["Description"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                dataGV.Columns["IsActive"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+                Utils.SetGridWidth(dataGV, "PositionCode", DataGridViewAutoSizeColumnMode.AllCells);
+                Utils.SetGridWidth(dataGV, "PositionName", DataGridViewAutoSizeColumnMode.AllCells);
+                Utils.SetGridWidth(dataGV, "Description", DataGridViewAutoSizeColumnMode.AllCells);
+                Utils.SetGridWidth(dataGV, "IsActive", DataGridViewAutoSizeColumnMode.AllCells);
 
                // dataGV.Columns["UserID"].Visible = false;
 

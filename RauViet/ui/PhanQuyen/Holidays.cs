@@ -85,10 +85,9 @@ namespace RauViet.ui
                     {"HolidayName", "Diễn Giải" }
                 });
 
-                dataGV.Columns["HolidayDate"].DefaultCellStyle.Format = "dd/MM/yyyy";
-
-                dataGV.Columns["HolidayDate"].Width = 150;
-                dataGV.Columns["HolidayName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                Utils.SetGridFormat(dataGV, "HolidayDate", "dd/MM/yyyy");
+                Utils.SetGridWidth(dataGV, "HolidayName", DataGridViewAutoSizeColumnMode.Fill);
+                Utils.SetGridWidths(dataGV, new Dictionary<string, int> { { "HolidayDate", 150} });
 
                 if (dataGV.Rows.Count > 0)
                 {
