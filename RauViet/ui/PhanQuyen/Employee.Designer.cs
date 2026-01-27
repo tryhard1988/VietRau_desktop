@@ -32,7 +32,7 @@ namespace RauViet.ui
             this.panel2 = new System.Windows.Forms.Panel();
             this.label16 = new System.Windows.Forms.Label();
             this.search_tb = new System.Windows.Forms.TextBox();
-            this.dataGV = new System.Windows.Forms.DataGridView();
+            this.panel3 = new System.Windows.Forms.Panel();
             this.panel1 = new System.Windows.Forms.Panel();
             this.label5 = new System.Windows.Forms.Label();
             this.log_GV = new System.Windows.Forms.DataGridView();
@@ -73,11 +73,22 @@ namespace RauViet.ui
             this.status_lb = new System.Windows.Forms.Label();
             this.newCustomerBtn = new System.Windows.Forms.Button();
             this.employeeID_tb = new System.Windows.Forms.TextBox();
+            this.panel4 = new System.Windows.Forms.Panel();
+            this.dataGV = new System.Windows.Forms.DataGridView();
+            this.label15 = new System.Windows.Forms.Label();
+            this.NVDangLamViec_lb = new System.Windows.Forms.Label();
+            this.label23 = new System.Windows.Forms.Label();
+            this.namNu_lb = new System.Windows.Forms.Label();
+            this.NVNghiLam_lb = new System.Windows.Forms.Label();
+            this.label19 = new System.Windows.Forms.Label();
+            this.label22 = new System.Windows.Forms.Label();
             this.panel2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
+            this.panel3.SuspendLayout();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.log_GV)).BeginInit();
             this.info_gb.SuspendLayout();
+            this.panel4.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
             this.SuspendLayout();
             // 
             // panel2
@@ -110,17 +121,15 @@ namespace RauViet.ui
             this.search_tb.Size = new System.Drawing.Size(287, 23);
             this.search_tb.TabIndex = 19;
             // 
-            // dataGV
+            // panel3
             // 
-            this.dataGV.AllowUserToAddRows = false;
-            this.dataGV.AllowUserToDeleteRows = false;
-            this.dataGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGV.Dock = System.Windows.Forms.DockStyle.Left;
-            this.dataGV.Location = new System.Drawing.Point(0, 34);
-            this.dataGV.Name = "dataGV";
-            this.dataGV.ReadOnly = true;
-            this.dataGV.Size = new System.Drawing.Size(866, 859);
-            this.dataGV.TabIndex = 13;
+            this.panel3.Controls.Add(this.dataGV);
+            this.panel3.Controls.Add(this.panel4);
+            this.panel3.Dock = System.Windows.Forms.DockStyle.Left;
+            this.panel3.Location = new System.Drawing.Point(0, 34);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(866, 859);
+            this.panel3.TabIndex = 15;
             // 
             // panel1
             // 
@@ -138,7 +147,7 @@ namespace RauViet.ui
             this.panel1.Location = new System.Drawing.Point(866, 34);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(509, 859);
-            this.panel1.TabIndex = 14;
+            this.panel1.TabIndex = 16;
             // 
             // label5
             // 
@@ -544,24 +553,134 @@ namespace RauViet.ui
             this.employeeID_tb.TabIndex = 16;
             this.employeeID_tb.Visible = false;
             // 
+            // panel4
+            // 
+            this.panel4.Controls.Add(this.NVNghiLam_lb);
+            this.panel4.Controls.Add(this.label19);
+            this.panel4.Controls.Add(this.label22);
+            this.panel4.Controls.Add(this.namNu_lb);
+            this.panel4.Controls.Add(this.label23);
+            this.panel4.Controls.Add(this.NVDangLamViec_lb);
+            this.panel4.Controls.Add(this.label15);
+            this.panel4.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.panel4.Location = new System.Drawing.Point(0, 838);
+            this.panel4.Name = "panel4";
+            this.panel4.Size = new System.Drawing.Size(866, 21);
+            this.panel4.TabIndex = 0;
+            // 
+            // dataGV
+            // 
+            this.dataGV.AllowUserToAddRows = false;
+            this.dataGV.AllowUserToDeleteRows = false;
+            this.dataGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGV.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dataGV.Location = new System.Drawing.Point(0, 0);
+            this.dataGV.Name = "dataGV";
+            this.dataGV.ReadOnly = true;
+            this.dataGV.Size = new System.Drawing.Size(866, 838);
+            this.dataGV.TabIndex = 15;
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Dock = System.Windows.Forms.DockStyle.Left;
+            this.label15.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label15.Location = new System.Drawing.Point(0, 0);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(97, 16);
+            this.label15.TabIndex = 37;
+            this.label15.Text = "NV Đang Làm:";
+            // 
+            // NVDangLamViec_lb
+            // 
+            this.NVDangLamViec_lb.AutoSize = true;
+            this.NVDangLamViec_lb.Dock = System.Windows.Forms.DockStyle.Left;
+            this.NVDangLamViec_lb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.NVDangLamViec_lb.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.NVDangLamViec_lb.Location = new System.Drawing.Point(97, 0);
+            this.NVDangLamViec_lb.Name = "NVDangLamViec_lb";
+            this.NVDangLamViec_lb.Size = new System.Drawing.Size(39, 16);
+            this.NVDangLamViec_lb.TabIndex = 38;
+            this.NVDangLamViec_lb.Text = "1000";
+            // 
+            // label23
+            // 
+            this.label23.AutoSize = true;
+            this.label23.Dock = System.Windows.Forms.DockStyle.Left;
+            this.label23.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label23.Location = new System.Drawing.Point(136, 0);
+            this.label23.Name = "label23";
+            this.label23.Size = new System.Drawing.Size(26, 16);
+            this.label23.TabIndex = 48;
+            this.label23.Text = " | (";
+            // 
+            // namNu_lb
+            // 
+            this.namNu_lb.AutoSize = true;
+            this.namNu_lb.Dock = System.Windows.Forms.DockStyle.Left;
+            this.namNu_lb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.namNu_lb.ForeColor = System.Drawing.Color.Navy;
+            this.namNu_lb.Location = new System.Drawing.Point(162, 0);
+            this.namNu_lb.Name = "namNu_lb";
+            this.namNu_lb.Size = new System.Drawing.Size(39, 16);
+            this.namNu_lb.TabIndex = 49;
+            this.namNu_lb.Text = "1000";
+            // 
+            // NVNghiLam_lb
+            // 
+            this.NVNghiLam_lb.AutoSize = true;
+            this.NVNghiLam_lb.Dock = System.Windows.Forms.DockStyle.Left;
+            this.NVNghiLam_lb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.NVNghiLam_lb.ForeColor = System.Drawing.Color.Green;
+            this.NVNghiLam_lb.Location = new System.Drawing.Point(317, 0);
+            this.NVNghiLam_lb.Name = "NVNghiLam_lb";
+            this.NVNghiLam_lb.Size = new System.Drawing.Size(39, 16);
+            this.NVNghiLam_lb.TabIndex = 52;
+            this.NVNghiLam_lb.Text = "1000";
+            // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Dock = System.Windows.Forms.DockStyle.Left;
+            this.label19.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label19.Location = new System.Drawing.Point(227, 0);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(90, 16);
+            this.label19.TabIndex = 51;
+            this.label19.Text = "NV Nghỉ Làm:";
+            // 
+            // label22
+            // 
+            this.label22.AutoSize = true;
+            this.label22.Dock = System.Windows.Forms.DockStyle.Left;
+            this.label22.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label22.Location = new System.Drawing.Point(201, 0);
+            this.label22.Name = "label22";
+            this.label22.Size = new System.Drawing.Size(26, 16);
+            this.label22.TabIndex = 50;
+            this.label22.Text = ") | ";
+            // 
             // Employee
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1375, 893);
             this.Controls.Add(this.panel1);
-            this.Controls.Add(this.dataGV);
+            this.Controls.Add(this.panel3);
             this.Controls.Add(this.panel2);
             this.Name = "Employee";
             this.Text = "FormTableData";
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGV)).EndInit();
+            this.panel3.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.log_GV)).EndInit();
             this.info_gb.ResumeLayout(false);
             this.info_gb.PerformLayout();
+            this.panel4.ResumeLayout(false);
+            this.panel4.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGV)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -570,7 +689,11 @@ namespace RauViet.ui
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.TextBox search_tb;
+        private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.DataGridView dataGV;
+        private System.Windows.Forms.Panel panel4;
+        private System.Windows.Forms.Label NVDangLamViec_lb;
+        private System.Windows.Forms.Label label15;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.DataGridView log_GV;
@@ -611,5 +734,10 @@ namespace RauViet.ui
         private System.Windows.Forms.Label status_lb;
         private System.Windows.Forms.Button newCustomerBtn;
         private System.Windows.Forms.TextBox employeeID_tb;
+        private System.Windows.Forms.Label label23;
+        private System.Windows.Forms.Label NVNghiLam_lb;
+        private System.Windows.Forms.Label label19;
+        private System.Windows.Forms.Label label22;
+        private System.Windows.Forms.Label namNu_lb;
     }
 }

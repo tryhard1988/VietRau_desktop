@@ -204,6 +204,7 @@ namespace RauViet.classes
 
         public async Task<DataTable> getProductSKUAsync(Dictionary<string, object> parameters)
         {
+            await getProductSKUAsync();
             var result = mProductSKU_dt.Clone();
             IEnumerable<DataRow> filteredRows = mProductSKU_dt.AsEnumerable();
 
@@ -279,9 +280,9 @@ namespace RauViet.classes
                     mProductDomesticPrices_dt = await SQLManager_Kho.Instance.getProductDomesticPricesAsync();
                     editProductDomesticPrices();
                 }
-                catch
+                catch(Exception ex)
                 {
-                    Console.WriteLine("error getProductDomesticPricesAsync SQLStore");
+                    Console.WriteLine("error getProductDomesticPricesAsync SQLStore ERROR:" + ex.Message);
                     return null;
                 }
             }

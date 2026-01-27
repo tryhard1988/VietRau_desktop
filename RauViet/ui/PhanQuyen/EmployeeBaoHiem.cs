@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using RauViet.classes;
@@ -57,11 +58,22 @@ namespace RauViet.ui
                 string[] keepColumns = { "EmployeeCode", "FullName", "SocialInsuranceNumber", "HealthInsuranceNumber", "EmployessName_NoSign" };
                 var employeesTask = SQLStore_QLNS.Instance.GetEmployeesAsync(keepColumns);
                 var employeeInsuranceLogTask = SQLStore_QLNS.Instance.GetEmployeeInsuranceLogAsync();
-                await Task.WhenAll(employeesTask, employeeInsuranceLogTask);
+                var employeeSalaryInfoAsync = SQLStore_QLNS.Instance.GetEmployeeSalaryInfoAsync();
+                var employeeAllowanceAsync = SQLManager_QLNS.Instance.GetEmployeeAllowanceAsybc();
+                var allowanceTypeTask = SQLStore_QLNS.Instance.GetAllowanceTypeAsync();
+
+                await Task.WhenAll(employeesTask, employeeInsuranceLogTask, employeeSalaryInfoAsync, employeeAllowanceAsync, allowanceTypeTask);
                 DataTable employee_dt = employeesTask.Result;
                 mLogDV = new DataView(employeeInsuranceLogTask.Result);
                 dataGV.DataSource = employee_dt;
                 log_GV.DataSource = mLogDV;
+
+
+                CalInsuranceSalary(employee_dt, employeeSalaryInfoAsync.Result, employeeAllowanceAsync.Result, allowanceTypeTask.Result);
+
+
+
+                Utils.SetGridFormat_NO(dataGV, "InsuranceBaseSalary");
                 Utils.HideColumns(log_GV, new[] { "LogID", "EmployeeCode" });
                 Utils.HideColumns(dataGV, new[] { "EmployessName_NoSign" });
 
@@ -69,7 +81,8 @@ namespace RauViet.ui
                     {"EmployeeCode", "Mã NV" },
                     {"FullName", "Tên NV" },
                     {"SocialInsuranceNumber", "BHXH" },
-                    {"HealthInsuranceNumber", "BHYT" }
+                    {"HealthInsuranceNumber", "BHYT" },
+                    {"InsuranceBaseSalary", "Lương CS.Đóng BH" }
                 });
 
                 Utils.SetGridHeaders(log_GV, new System.Collections.Generic.Dictionary<string, string> {
@@ -240,6 +253,34 @@ namespace RauViet.ui
 
             DataView dv = dt.DefaultView;
             dv.RowFilter = $"[EmployessName_NoSign] LIKE '%{keyword}%'";
+        }
+
+        void CalInsuranceSalary(DataTable employee_dt, DataTable SalaryInfo_dt, DataTable employeeAllowance_dt, DataTable allowanceType_dt)
+        {
+            var filteredTable = SalaryInfo_dt.AsEnumerable().GroupBy(r => r.Field<string>("EmployeeCode"))
+                                                                .Select(g =>
+                                                                    g.OrderByDescending(r => r.Field<int>("Year"))
+                                                                     .ThenByDescending(r => r.Field<int>("Month"))
+                                                                     .First()
+                                                                ).CopyToDataTable();
+
+            Utils.AddColumnIfNotExists(employee_dt, "InsuranceBaseSalary", typeof(int));
+
+            foreach (DataRow row in employee_dt.Rows)
+            {
+                string employeeCode = row["EmployeeCode"].ToString();
+
+                DataRow salaryRow = filteredTable.AsEnumerable().FirstOrDefault(r => r.Field<string>("EmployeeCode") == employeeCode);
+
+                if (salaryRow != null)
+                {
+                    row["InsuranceBaseSalary"] = Convert.ToInt32(salaryRow["InsuranceBaseSalary"]);
+                }
+                else
+                {
+                    row["InsuranceBaseSalary"] = 0;
+                }
+            }
         }
     }
 }

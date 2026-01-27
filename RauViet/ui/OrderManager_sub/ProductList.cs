@@ -79,7 +79,7 @@ namespace RauViet.ui
             {
                 var parameters = new Dictionary<string, object> { { "IsActive", true } };
                 mSKU_dt = await SQLStore_Kho.Instance.getProductSKUAsync(parameters);
-                 packing_dt = await SQLStore_Kho.Instance.getProductpackingAsync();
+                packing_dt = await SQLStore_Kho.Instance.getProductpackingAsync();
 
                 foreach (DataColumn col in packing_dt.Columns)
                     col.ReadOnly = false;

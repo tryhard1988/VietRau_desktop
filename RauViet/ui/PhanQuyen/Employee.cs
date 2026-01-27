@@ -162,6 +162,8 @@ namespace RauViet.ui
                     dataGV.Rows[0].Selected = true;
                     UpdateRightUI(0);
                 }
+
+                DemNV();
             }
             catch
             {
@@ -636,6 +638,39 @@ namespace RauViet.ui
 
             DataView dv = dt.DefaultView;
             dv.RowFilter = $"[EmployessName_NoSign] LIKE '%{keyword}%'";
+        }
+
+        void DemNV()
+        {
+            int count_NV_Nghi_lam = 0;
+            int count_NV_Dang_lam = 0;
+            int count_NV_Nam_Dang_lam = 0;
+            int count_NV_Nu_Dang_lam = 0;
+
+            foreach (DataRow dr in mEmployees_dt.Rows)
+            {
+                bool IsActive = Convert.ToBoolean(dr["IsActive"]);
+                if (IsActive)
+                {
+                    bool Gender = Convert.ToBoolean(dr["Gender"]);
+                    
+                    count_NV_Dang_lam++;
+
+                    if (Gender)
+                        count_NV_Nam_Dang_lam++;
+                    else
+                        count_NV_Nu_Dang_lam++;
+                }
+                else
+                {
+                    count_NV_Nghi_lam++;
+                }
+                
+            }
+
+            NVDangLamViec_lb.Text = $"{count_NV_Dang_lam}";
+            namNu_lb.Text = $"{count_NV_Nam_Dang_lam} Nam, {count_NV_Nu_Dang_lam} Nữ";
+            NVNghiLam_lb.Text = count_NV_Nghi_lam.ToString() ;
         }
     }
 }
