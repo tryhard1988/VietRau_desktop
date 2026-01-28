@@ -276,6 +276,7 @@
     <Compile Include="classes\printer\OrderSummaryPrinter.cs" />
     <Compile Include="classes\printer\DeliveryPrinter.cs" />
     <Compile Include="classes\printer\PackingListPrinter.cs" />
+    <Compile Include="classes\SQLManager_KhoVatTu.cs" />
     <Compile Include="classes\SQLManager_Kho.cs" />
     <Compile Include="classes\SQLManager_QLNS.cs" />
     <Compile Include="classes\SQLStore_QLNS.cs" />
@@ -1062,6 +1063,9 @@
       <Isolated>False</Isolated>
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ui\KhoVatTu\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Microsoft.Web.WebView2.1.0.2592.51\build\Microsoft.Web.WebView2.targets" Condition="Exists('..\packages\Microsoft.Web.WebView2.1.0.2592.51\build\Microsoft.Web.WebView2.targets')" />

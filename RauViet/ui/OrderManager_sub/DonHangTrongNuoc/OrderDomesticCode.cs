@@ -271,7 +271,7 @@ namespace RauViet.ui
 
             complete_cb.Checked = complete;
 
-            if (readOnly_btn.Visible == true)
+        //    if (readOnly_btn.Visible == true)
             {
              //   complete_cb.AutoCheck = !complete;
                 updatePrice_btn.Enabled = !complete;

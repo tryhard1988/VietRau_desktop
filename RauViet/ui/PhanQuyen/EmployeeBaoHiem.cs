@@ -72,17 +72,27 @@ namespace RauViet.ui
                 CalInsuranceSalary(employee_dt, employeeSalaryInfoAsync.Result, employeeAllowanceAsync.Result, allowanceTypeTask.Result);
 
 
-
-                Utils.SetGridFormat_NO(dataGV, "InsuranceBaseSalary");
+                Utils.SetGridFormat_NO(dataGV, "NLD_InsuranceContribution");
+                Utils.SetGridFormat_NO(dataGV, "CTY_InsuranceContribution");
+                Utils.SetGridFormat_NO(dataGV, "Tong_InsuranceContribution");
+                Utils.SetGridFormat_NO(dataGV, "InsuranceSalary");
                 Utils.HideColumns(log_GV, new[] { "LogID", "EmployeeCode" });
                 Utils.HideColumns(dataGV, new[] { "EmployessName_NoSign" });
+
+                Utils.SetGridFormat_Alignment(dataGV, "InsuranceSalary", DataGridViewContentAlignment.MiddleRight);
+                Utils.SetGridFormat_Alignment(dataGV, "NLD_InsuranceContribution", DataGridViewContentAlignment.MiddleRight);
+                Utils.SetGridFormat_Alignment(dataGV, "CTY_InsuranceContribution", DataGridViewContentAlignment.MiddleRight);
+                Utils.SetGridFormat_Alignment(dataGV, "Tong_InsuranceContribution", DataGridViewContentAlignment.MiddleRight);
 
                 Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
                     {"EmployeeCode", "Mã NV" },
                     {"FullName", "Tên NV" },
                     {"SocialInsuranceNumber", "BHXH" },
                     {"HealthInsuranceNumber", "BHYT" },
-                    {"InsuranceBaseSalary", "Lương CS.Đóng BH" }
+                    {"InsuranceSalary", "Lương Đóng BH" },
+                    {"Tong_InsuranceContribution", "Tiền Nộp BH\n(32% Lương)" },
+                    {"NLD_InsuranceContribution", "NLĐ Nộp BH\n(10.5% Lương)" },
+                    {"CTY_InsuranceContribution", "Cty Nộp BH\n(21.5% Lương)" }
                 });
 
                 Utils.SetGridHeaders(log_GV, new System.Collections.Generic.Dictionary<string, string> {
@@ -117,8 +127,10 @@ namespace RauViet.ui
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
-            catch
+            catch(Exception ex)
             {
+                Console.WriteLine("ERROR: " + ex.Message);
+
                 status_lb.Text = "Thất bại.";
                 status_lb.ForeColor = Color.Red;
             }
@@ -257,30 +269,72 @@ namespace RauViet.ui
 
         void CalInsuranceSalary(DataTable employee_dt, DataTable SalaryInfo_dt, DataTable employeeAllowance_dt, DataTable allowanceType_dt)
         {
-            var filteredTable = SalaryInfo_dt.AsEnumerable().GroupBy(r => r.Field<string>("EmployeeCode"))
-                                                                .Select(g =>
-                                                                    g.OrderByDescending(r => r.Field<int>("Year"))
-                                                                     .ThenByDescending(r => r.Field<int>("Month"))
-                                                                     .First()
-                                                                ).CopyToDataTable();
+            // 1. Add IsInsuranceIncluded
+            Utils.AddColumnIfNotExists(employeeAllowance_dt, "IsInsuranceIncluded", typeof(bool));
 
-            Utils.AddColumnIfNotExists(employee_dt, "InsuranceBaseSalary", typeof(int));
+            var allowanceTypeDict = allowanceType_dt.AsEnumerable()
+                .ToDictionary(
+                    r => r.Field<int>("AllowanceTypeID"),
+                    r => r.Field<bool>("IsInsuranceIncluded")
+                );
 
+            foreach (DataRow row in employeeAllowance_dt.Rows)
+            {
+                int allowanceTypeID = row.Field<int>("AllowanceTypeID");
+                row["IsInsuranceIncluded"] = allowanceTypeDict.ContainsKey(allowanceTypeID)? allowanceTypeDict[allowanceTypeID]: false;
+            }
+
+            // 2. Lấy lương mới nhất theo EmployeeCode
+            var latestSalaryDict = SalaryInfo_dt.AsEnumerable().GroupBy(r => r.Field<string>("EmployeeCode"))
+                                                .Select(g => g.OrderByDescending(r => r.Field<int>("Year"))
+                                                .ThenByDescending(r => r.Field<int>("Month"))
+                                                .First())
+                                                .ToDictionary(
+                                                    r => r.Field<string>("EmployeeCode"),
+                                                    r => r.Field<int>("InsuranceBaseSalary")
+                                                );
+
+            // 3. Sum phụ cấp được tính BH theo EmployeeCode
+            var allowanceSumDict = employeeAllowance_dt.AsEnumerable()
+                                                        .Where(r => r.Field<bool>("IsInsuranceIncluded") == true)
+                                                        .GroupBy(r => r.Field<string>("EmployeeCode"))
+                                                        .ToDictionary(
+                                                            g => g.Key,
+                                                            g => g.Sum(r => r.Field<decimal>("Amount"))
+                                                        );
+
+            // 4. Add cột InsuranceSalary
+            Utils.AddColumnIfNotExists(employee_dt, "InsuranceSalary", typeof(int));
+            Utils.AddColumnIfNotExists(employee_dt, "Tong_InsuranceContribution", typeof(int));
+            Utils.AddColumnIfNotExists(employee_dt, "NLD_InsuranceContribution", typeof(int));
+            Utils.AddColumnIfNotExists(employee_dt, "CTY_InsuranceContribution", typeof(int));
+
+            int totalLuong = 0;
+            int totalNop = 0;
+            int NLDNop = 0;
+            int CtyNop = 0;
             foreach (DataRow row in employee_dt.Rows)
             {
-                string employeeCode = row["EmployeeCode"].ToString();
+                string employeeCode = row.Field<string>("EmployeeCode");
 
-                DataRow salaryRow = filteredTable.AsEnumerable().FirstOrDefault(r => r.Field<string>("EmployeeCode") == employeeCode);
+                int baseSalary = latestSalaryDict.ContainsKey(employeeCode)? latestSalaryDict[employeeCode]: 0;
+                int allowanceSum = Convert.ToInt32(allowanceSumDict.ContainsKey(employeeCode)? allowanceSumDict[employeeCode]: 0);
 
-                if (salaryRow != null)
-                {
-                    row["InsuranceBaseSalary"] = Convert.ToInt32(salaryRow["InsuranceBaseSalary"]);
-                }
-                else
-                {
-                    row["InsuranceBaseSalary"] = 0;
-                }
+                row["InsuranceSalary"] = baseSalary + allowanceSum;
+                row["Tong_InsuranceContribution"] = (baseSalary + allowanceSum) * 0.32m;
+                row["NLD_InsuranceContribution"] = (baseSalary + allowanceSum) * 0.105m;
+                row["CTY_InsuranceContribution"] = (baseSalary + allowanceSum) * 0.215m;
+
+                totalLuong += (baseSalary + allowanceSum);
+                totalNop += Convert.ToInt32((baseSalary + allowanceSum) * 0.32m);
+                NLDNop += Convert.ToInt32((baseSalary + allowanceSum) * 0.105m);
+                CtyNop += Convert.ToInt32((baseSalary + allowanceSum) * 0.215m);
             }
+
+            tongLuong_lb.Text = totalLuong.ToString("N0");
+            tongNop_lb.Text = totalNop.ToString("N0");
+            nld_lb.Text = NLDNop.ToString("N0");
+            cty_lb.Text = CtyNop.ToString("N0");
         }
     }
 }

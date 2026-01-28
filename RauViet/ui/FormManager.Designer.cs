@@ -471,37 +471,37 @@
             // exportCode_menuItem
             // 
             this.exportCode_menuItem.Name = "exportCode_menuItem";
-            this.exportCode_menuItem.Size = new System.Drawing.Size(172, 22);
+            this.exportCode_menuItem.Size = new System.Drawing.Size(180, 22);
             this.exportCode_menuItem.Text = "Mã Xuất Cảng";
             // 
             // order_menuitem
             // 
             this.order_menuitem.Name = "order_menuitem";
-            this.order_menuitem.Size = new System.Drawing.Size(172, 22);
+            this.order_menuitem.Size = new System.Drawing.Size(180, 22);
             this.order_menuitem.Text = "Đơn hàng";
             // 
             // dsDongThung_menuitem
             // 
             this.dsDongThung_menuitem.Name = "dsDongThung_menuitem";
-            this.dsDongThung_menuitem.Size = new System.Drawing.Size(172, 22);
+            this.dsDongThung_menuitem.Size = new System.Drawing.Size(180, 22);
             this.dsDongThung_menuitem.Text = "DS Đóng Thùng";
             // 
             // do417_menuitem
             // 
             this.do417_menuitem.Name = "do417_menuitem";
-            this.do417_menuitem.Size = new System.Drawing.Size(172, 22);
+            this.do417_menuitem.Size = new System.Drawing.Size(180, 22);
             this.do417_menuitem.Text = "Dò 417";
             // 
             // lotCode_menuitem
             // 
             this.lotCode_menuitem.Name = "lotCode_menuitem";
-            this.lotCode_menuitem.Size = new System.Drawing.Size(172, 22);
+            this.lotCode_menuitem.Size = new System.Drawing.Size(180, 22);
             this.lotCode_menuitem.Text = "Nhập Mã LOT";
             // 
             // doCBM_mi
             // 
             this.doCBM_mi.Name = "doCBM_mi";
-            this.doCBM_mi.Size = new System.Drawing.Size(172, 22);
+            this.doCBM_mi.Size = new System.Drawing.Size(180, 22);
             this.doCBM_mi.Text = "Dò CBM";
             // 
             // xuatExcelGuiKH_Group_mi
@@ -516,7 +516,7 @@
             this.xuatExcelGuiKH_Group_mi.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xuatExcelGuiKH_Group_mi.ForeColor = System.Drawing.Color.OrangeRed;
             this.xuatExcelGuiKH_Group_mi.Name = "xuatExcelGuiKH_Group_mi";
-            this.xuatExcelGuiKH_Group_mi.Size = new System.Drawing.Size(172, 22);
+            this.xuatExcelGuiKH_Group_mi.Size = new System.Drawing.Size(180, 22);
             this.xuatExcelGuiKH_Group_mi.Text = "Xuất Excel";
             // 
             // dkkd_menuitem
