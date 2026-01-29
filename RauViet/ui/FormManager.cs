@@ -253,7 +253,10 @@ namespace RauViet.ui
                 orderDomestic_group_mi.Visible = false;
             }
 
-           
+
+            khoVaTu_mi.Click += khoVaTu_mi_Click;
+
+
 
 
             historyLogin_mi.Click += HistoryLogin_mi_Click;
@@ -361,7 +364,8 @@ namespace RauViet.ui
             TienRauCuaNhanVienTrongThang,
             TonKhoHangRauThanhLy,
             VegetableWarehouseTransaction,
-            ThongKeTonKhoHangRauCu
+            ThongKeTonKhoHangRauCu,
+            Kho_Materials
         }
 
         private void openCurrentForm(EForm status)
@@ -557,9 +561,12 @@ namespace RauViet.ui
                     break;
                 case EForm.VegetableWarehouseTransaction:
                     SwitchChildForm<VegetableWarehouseTransaction>("Xuất/Nhập Kho Rau, Củ, Quả");
-                    break;
+                    break; 
                 case EForm.ThongKeTonKhoHangRauCu:
                     SwitchChildForm<ThongKeTonKhoHangRauCu>("Thống Kê Tồn Kho Rau, Củ, Quả");
+                    break;
+                case EForm.Kho_Materials:
+                    SwitchChildForm<Kho_Materials>("Kho Vật Tư");
                     break;
             }
             
@@ -632,6 +639,7 @@ namespace RauViet.ui
         private void OrderDomesticDetail_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.OrderDomesticDetail); }
         private void ResoncileDomesticDebts_Month_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.ResoncileDomesticDebts_Month); }
         private void ResoncileDomesticDebts_Year_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.ResoncileDomesticDebts_Year); }
+        private void khoVaTu_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.Kho_Materials); }
         private async void checkLoginTimer_Tick(object sender, EventArgs e)
         {
             var isHave = await SQLManager.Instance.HaveOtherComputerLoginAsync();

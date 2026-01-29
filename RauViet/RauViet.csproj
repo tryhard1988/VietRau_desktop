@@ -279,6 +279,7 @@
     <Compile Include="classes\SQLManager_KhoVatTu.cs" />
     <Compile Include="classes\SQLManager_Kho.cs" />
     <Compile Include="classes\SQLManager_QLNS.cs" />
+    <Compile Include="classes\SQLStore_KhoVatTu.cs" />
     <Compile Include="classes\SQLStore_QLNS.cs" />
     <Compile Include="classes\SQLStore_Kho.cs" />
     <Compile Include="classes\LoadingOverlay.cs" />
@@ -366,6 +367,12 @@
     </Compile>
     <Compile Include="ui\OrderManager_sub\ChotPhyto.Designer.cs">
       <DependentUpon>ChotPhyto.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ui\KhoVatTu\Kho_Materials.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\KhoVatTu\Kho_Materials.Designer.cs">
+      <DependentUpon>Kho_Materials.cs</DependentUpon>
     </Compile>
     <Compile Include="ui\OrderManager_sub\DonHangTrongNuoc\TonKhoHangRauThanhLy.cs">
       <SubType>Form</SubType>
@@ -809,6 +816,9 @@
       <DependentUpon>ChotPhyto.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="ui\KhoVatTu\Kho_Materials.resx">
+      <DependentUpon>Kho_Materials.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ui\OrderManager_sub\DonHangTrongNuoc\TonKhoHangRauThanhLy.resx">
       <DependentUpon>TonKhoHangRauThanhLy.cs</DependentUpon>
     </EmbeddedResource>
@@ -1064,9 +1074,7 @@
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </COMReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="ui\KhoVatTu\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Microsoft.Web.WebView2.1.0.2592.51\build\Microsoft.Web.WebView2.targets" Condition="Exists('..\packages\Microsoft.Web.WebView2.1.0.2592.51\build\Microsoft.Web.WebView2.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

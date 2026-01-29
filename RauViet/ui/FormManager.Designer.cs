@@ -112,6 +112,9 @@
             this.aaaaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadExcelOrderReportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.content_panel = new System.Windows.Forms.Panel();
+            this.khoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.khoVaTu_mi = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1.SuspendLayout();
             this.LOT_menuitem.SuspendLayout();
             this.SuspendLayout();
@@ -155,6 +158,8 @@
             this.orderDomestic_group_mi,
             this.toolStripMenuItem3,
             this.thongke_main_mi,
+            this.toolStripMenuItem4,
+            this.khoToolStripMenuItem,
             this.toolStripMenuItem2,
             this.extension_mi,
             this.aaaaToolStripMenuItem});
@@ -168,8 +173,8 @@
             // 
             this.historyLogin_mi.BackColor = System.Drawing.Color.IndianRed;
             this.historyLogin_mi.Name = "historyLogin_mi";
-            this.historyLogin_mi.Size = new System.Drawing.Size(115, 21);
-            this.historyLogin_mi.Text = "Lịch Sử Vào App";
+            this.historyLogin_mi.Size = new System.Drawing.Size(97, 21);
+            this.historyLogin_mi.Text = "Lịch Sử Login";
             // 
             // user_mi
             // 
@@ -389,8 +394,8 @@
             this.sanpham_group_mi.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.sanpham_group_mi.ForeColor = System.Drawing.Color.OrangeRed;
             this.sanpham_group_mi.Name = "sanpham_group_mi";
-            this.sanpham_group_mi.Size = new System.Drawing.Size(149, 21);
-            this.sanpham_group_mi.Text = "Danh Sách Sản Phẩm";
+            this.sanpham_group_mi.Size = new System.Drawing.Size(103, 21);
+            this.sanpham_group_mi.Text = "Danh Sách SP";
             // 
             // productMain_menuitem
             // 
@@ -732,7 +737,7 @@
             // 
             this.QR_mi.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.QR_mi.Name = "QR_mi";
-            this.QR_mi.Size = new System.Drawing.Size(120, 22);
+            this.QR_mi.Size = new System.Drawing.Size(180, 22);
             this.QR_mi.Text = "Tạo QR";
             // 
             // aaaaToolStripMenuItem
@@ -758,6 +763,29 @@
             this.content_panel.Name = "content_panel";
             this.content_panel.Size = new System.Drawing.Size(1477, 491);
             this.content_panel.TabIndex = 1;
+            // 
+            // khoToolStripMenuItem
+            // 
+            this.khoToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.khoVaTu_mi});
+            this.khoToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.khoToolStripMenuItem.ForeColor = System.Drawing.Color.MediumBlue;
+            this.khoToolStripMenuItem.Name = "khoToolStripMenuItem";
+            this.khoToolStripMenuItem.Size = new System.Drawing.Size(44, 21);
+            this.khoToolStripMenuItem.Text = "Kho";
+            // 
+            // khoVaTu_mi
+            // 
+            this.khoVaTu_mi.Name = "khoVaTu_mi";
+            this.khoVaTu_mi.Size = new System.Drawing.Size(180, 22);
+            this.khoVaTu_mi.Text = "Kho Vật Tư";
+            // 
+            // toolStripMenuItem4
+            // 
+            this.toolStripMenuItem4.BackColor = System.Drawing.Color.Bisque;
+            this.toolStripMenuItem4.ForeColor = System.Drawing.Color.Transparent;
+            this.toolStripMenuItem4.Name = "toolStripMenuItem4";
+            this.toolStripMenuItem4.Size = new System.Drawing.Size(12, 21);
             // 
             // FormManager
             // 
@@ -863,5 +891,8 @@
         private System.Windows.Forms.ToolStripMenuItem khoRauCuQuaGroup_mi;
         private System.Windows.Forms.ToolStripMenuItem xuatNhapRauCuQua_mi;
         private System.Windows.Forms.ToolStripMenuItem thongKeTonKhoHangRauCu_mi;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem4;
+        private System.Windows.Forms.ToolStripMenuItem khoToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem khoVaTu_mi;
     }
 }

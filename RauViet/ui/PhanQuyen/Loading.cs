@@ -39,6 +39,7 @@ namespace RauViet.ui.PhanQuyen
 
             await SQLStore_QLNS.Instance.preload();
             await SQLStore_Kho.Instance.preload();
+            await SQLStore_KhoVatTu.Instance.preload();
             await Task.Delay(200);
             try
             {

@@ -474,4 +474,17 @@ public static class Utils
         // Set lại thuộc tính sau khi ghi
         File.SetAttributes(path, FileAttributes.Hidden | FileAttributes.System);
     }
+
+    public static string ToAcronym(string input)
+    {
+        if (string.IsNullOrWhiteSpace(input))
+            return "";
+
+        return string.Concat(
+            input
+                .Trim()
+                .Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(word => char.ToUpper(word[0]))
+        );
+    }
 }
