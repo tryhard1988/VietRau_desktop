@@ -1,7 +1,7 @@
 ﻿
 namespace RauViet.ui
 {
-    partial class Kho_Materials
+    partial class KhoKhoVatTu_Materials
     {
         /// <summary>
         /// Required designer variable.

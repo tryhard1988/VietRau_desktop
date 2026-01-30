@@ -255,7 +255,7 @@ namespace RauViet.ui
 
 
             khoVaTu_mi.Click += khoVaTu_mi_Click;
-
+            plantingManagement_mi.Click += plantingManagement_mi_Click;
 
 
 
@@ -365,7 +365,8 @@ namespace RauViet.ui
             TonKhoHangRauThanhLy,
             VegetableWarehouseTransaction,
             ThongKeTonKhoHangRauCu,
-            Kho_Materials
+            KhoVatTu_Materials,
+            KhoVatTu_PlantingManagement
         }
 
         private void openCurrentForm(EForm status)
@@ -565,8 +566,11 @@ namespace RauViet.ui
                 case EForm.ThongKeTonKhoHangRauCu:
                     SwitchChildForm<ThongKeTonKhoHangRauCu>("Thống Kê Tồn Kho Rau, Củ, Quả");
                     break;
-                case EForm.Kho_Materials:
-                    SwitchChildForm<Kho_Materials>("Kho Vật Tư");
+                case EForm.KhoVatTu_Materials:
+                    SwitchChildForm<KhoKhoVatTu_Materials>("Kho Vật Tư");
+                    break;
+                case EForm.KhoVatTu_PlantingManagement:
+                    SwitchChildForm<KhoVatTu_PlantingManagement>("Lịch Ươm - Trồng ");
                     break;
             }
             
@@ -639,7 +643,8 @@ namespace RauViet.ui
         private void OrderDomesticDetail_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.OrderDomesticDetail); }
         private void ResoncileDomesticDebts_Month_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.ResoncileDomesticDebts_Month); }
         private void ResoncileDomesticDebts_Year_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.ResoncileDomesticDebts_Year); }
-        private void khoVaTu_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.Kho_Materials); }
+        private void khoVaTu_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.KhoVatTu_Materials); }
+        private void plantingManagement_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.KhoVatTu_PlantingManagement); }
         private async void checkLoginTimer_Tick(object sender, EventArgs e)
         {
             var isHave = await SQLManager.Instance.HaveOtherComputerLoginAsync();

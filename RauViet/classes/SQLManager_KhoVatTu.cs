@@ -303,6 +303,109 @@ namespace RauViet.classes
             }
             return dt;
         }
+
+        public async Task<DataTable> getPlantingManagementAsync()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT * FROM PlantingManagement";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
+        }
+
+        public async Task<int> insertPlantingManagementAsync(string ProductionOrder, int SKU, decimal Area, int Quantity, DateTime NurseryDate, DateTime PlantingDate, DateTime HarvestDate, int Department, string Supervisor, string Note)
+        {
+            int newId = -1;
+
+            string insertQuery = @"INSERT INTO PlantingManagement (ProductionOrder, SKU, Area, Quantity, NurseryDate, PlantingDate, HarvestDate, Department, Supervisor, Note)
+                                    OUTPUT INSERTED.PlantingID
+                                    VALUES (@ProductionOrder, @SKU, @Area, @Quantity, @NurseryDate, @PlantingDate, @HarvestDate, @Department, @Supervisor, @Note)";
+
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
+                {
+                    await con.OpenAsync();
+
+                    // 2️⃣ Insert và lấy ID mới
+                    using (SqlCommand cmd = new SqlCommand(insertQuery, con))
+                    {
+                        cmd.Parameters.AddWithValue("@ProductionOrder", ProductionOrder);
+                        cmd.Parameters.AddWithValue("@SKU", SKU);
+                        cmd.Parameters.AddWithValue("@Area", Area);
+                        cmd.Parameters.AddWithValue("@Quantity", Quantity);
+                        cmd.Parameters.AddWithValue("@NurseryDate", NurseryDate);
+                        cmd.Parameters.AddWithValue("@PlantingDate", PlantingDate);
+                        cmd.Parameters.AddWithValue("@HarvestDate", HarvestDate);
+                        cmd.Parameters.AddWithValue("@Department", Department);
+                        cmd.Parameters.AddWithValue("@Supervisor", Supervisor);
+                        cmd.Parameters.AddWithValue("@Note", Note);
+
+                        object result = await cmd.ExecuteScalarAsync();
+                        if (result != null)
+                            newId = Convert.ToInt32(result);
+                    }
+                }
+
+                return newId;
+            }
+            catch
+            {
+                return -1;
+            }
+        }
+
+        public async Task<bool> updatePlantingManagementAsync(int PlantingID, string ProductionOrder, int SKU, decimal Area, int Quantity, DateTime NurseryDate, DateTime PlantingDate, DateTime HarvestDate, int Department, string Supervisor, string Note,  bool IsCompleted)
+        {
+            string query = @"UPDATE PlantingManagement SET
+                                ProductionOrder=@ProductionOrder,
+                                SKU=@SKU,
+                                Area=@Area,
+                                Quantity=@Quantity,
+                                NurseryDate=@NurseryDate,
+                                PlantingDate=@PlantingDate,
+                                HarvestDate=@HarvestDate,
+                                Department=@Department,
+                                Supervisor=@Supervisor,
+                                Note=@Note,
+                                IsCompleted=@IsCompleted
+                             WHERE PlantingID=@PlantingID";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@PlantingID", PlantingID);
+                        cmd.Parameters.AddWithValue("@ProductionOrder", ProductionOrder);
+                        cmd.Parameters.AddWithValue("@SKU", SKU);
+                        cmd.Parameters.AddWithValue("@Area", Area);
+                        cmd.Parameters.AddWithValue("@Quantity", Quantity);
+                        cmd.Parameters.AddWithValue("@NurseryDate", NurseryDate);
+                        cmd.Parameters.AddWithValue("@PlantingDate", PlantingDate);
+                        cmd.Parameters.AddWithValue("@HarvestDate", HarvestDate);
+                        cmd.Parameters.AddWithValue("@Department", Department);
+                        cmd.Parameters.AddWithValue("@Supervisor", Supervisor);
+                        cmd.Parameters.AddWithValue("@Note", Note);
+                        cmd.Parameters.AddWithValue("@IsCompleted", IsCompleted);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+                return true;
+            }
+            catch { return false; }
+        }
     }
 }
 

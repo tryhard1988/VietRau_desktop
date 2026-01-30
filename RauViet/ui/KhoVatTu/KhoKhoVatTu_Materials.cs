@@ -8,7 +8,7 @@ using Color = System.Drawing.Color;
 
 namespace RauViet.ui
 {
-    public partial class Kho_Materials : Form
+    public partial class KhoKhoVatTu_Materials : Form
     {
         System.Data.DataTable mMaterial_dt, mUnit_dt, mCatelory_dt;
         private DataView mLogDV;
@@ -16,7 +16,7 @@ namespace RauViet.ui
         private Timer UnitDebounceTimer = new Timer { Interval = 300 };
         bool isNewState = false;
         private LoadingOverlay loadingOverlay;
-        public Kho_Materials()
+        public KhoKhoVatTu_Materials()
         {
             InitializeComponent();
             this.KeyPreview = true;
@@ -46,7 +46,7 @@ namespace RauViet.ui
         {
             if (e.KeyCode == Keys.F5)
             {
-                SQLStore_Kho.Instance.removeDomesticLiquidationImport();
+                SQLStore_KhoVatTu.Instance.removeMaterial();
                 ShowData();
             }
             else if (!isNewState && !edit_btn.Visible)
@@ -121,42 +121,21 @@ namespace RauViet.ui
                         {"CategoryName", 150},
                         {"UnitName",60}
                     });
-
-                //    Utils.SetGridFormat_NO(dataGV, "Price");
-                //    Utils.SetGridFormat_NO(dataGV, "TotalMoney");
-                //    Utils.SetGridFormat_N1(dataGV, "Quantity");
-                                    
+                                                    
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
                 //    updateRightUI();
 
-                //    Utils.SetTabStopRecursive(this, false);
+                Utils.SetTabStopRecursive(this, false);
+                int countTab = 0;
+                materialName_tb.TabIndex = countTab++; materialName_tb.TabStop = true;
+                catelory_CB.TabIndex = countTab++; catelory_CB.TabStop = true;
+                unit_CBB.TabIndex = countTab++; unit_CBB.TabStop = true;
+                LuuThayDoiBtn.TabIndex = countTab++; LuuThayDoiBtn.TabStop = true;
 
-                //    int countTab = 0;
-                //    importDate_dtp.TabIndex = countTab++; importDate_dtp.TabStop = true;
-                //    domesticLiquidationPrice_cbb.TabIndex = countTab++; domesticLiquidationPrice_cbb.TabStop = true;
-                //    quantity_tb.TabIndex = countTab++; quantity_tb.TabStop = true;
-                //    reportedBy_CBB.TabIndex = countTab++; reportedBy_CBB.TabStop = true;
-                //    LuuThayDoiBtn.TabIndex = countTab++; LuuThayDoiBtn.TabStop = true;
+                ReadOnly_btn_Click(null, null);
+                dataGV.SelectionChanged += this.dataGV_CellClick;
 
-                    ReadOnly_btn_Click(null, null);
-                    dataGV.SelectionChanged += this.dataGV_CellClick;
-
-                //    await Task.Delay(100);
-                //    loadingOverlay.Hide();
-
-                //    Utils.SetGridHeaders(log_GV, new System.Collections.Generic.Dictionary<string, string> {
-                //        {"OldValue", "Giá Trị Cũ" },
-                //        {"NewValue", "Giá Trị Mới" },
-                //        {"ActionBy", "Người Thực Hiện" },
-                //        {"CreatedAt", "Ngày Thực Hiện" }
-                //    });
-                //    Utils.SetGridWidths(log_GV, new System.Collections.Generic.Dictionary<string, int> {
-                //        {"ActionBy", 150},
-                //        {"CreatedAt", 120}
-                //    });
-                //    Utils.SetGridWidth(log_GV, "OldValue", DataGridViewAutoSizeColumnMode.Fill);
-                //    Utils.SetGridWidth(log_GV, "NewValue", DataGridViewAutoSizeColumnMode.Fill);
             }
                 catch
             {

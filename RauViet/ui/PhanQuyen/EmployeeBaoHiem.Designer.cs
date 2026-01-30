@@ -46,27 +46,33 @@ namespace RauViet.ui
             this.status_lb = new System.Windows.Forms.Label();
             this.employeeCode_tb = new System.Windows.Forms.TextBox();
             this.panel3 = new System.Windows.Forms.Panel();
-            this.panel4 = new System.Windows.Forms.Panel();
             this.dataGV = new System.Windows.Forms.DataGridView();
+            this.panel4 = new System.Windows.Forms.Panel();
+            this.soNguoiNopBH_lb = new System.Windows.Forms.Label();
+            this.label20 = new System.Windows.Forms.Label();
+            this.label21 = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
+            this.cty_lb = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this.nld_lb = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
             this.tongNop_lb = new System.Windows.Forms.Label();
             this.label19 = new System.Windows.Forms.Label();
             this.label22 = new System.Windows.Forms.Label();
             this.tongLuong_lb = new System.Windows.Forms.Label();
             this.label15 = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
-            this.nld_lb = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.label7 = new System.Windows.Forms.Label();
-            this.cty_lb = new System.Windows.Forms.Label();
-            this.label9 = new System.Windows.Forms.Label();
-            this.label10 = new System.Windows.Forms.Label();
+            this.soNguoiKhongNopBH_lb = new System.Windows.Forms.Label();
+            this.label30 = new System.Windows.Forms.Label();
+            this.label31 = new System.Windows.Forms.Label();
             this.panel2.SuspendLayout();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.log_GV)).BeginInit();
             this.info_gb.SuspendLayout();
             this.panel3.SuspendLayout();
-            this.panel4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
+            this.panel4.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel2
@@ -77,7 +83,7 @@ namespace RauViet.ui
             this.panel2.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel2.Location = new System.Drawing.Point(0, 0);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(1147, 34);
+            this.panel2.Size = new System.Drawing.Size(1686, 34);
             this.panel2.TabIndex = 13;
             // 
             // label16
@@ -110,7 +116,7 @@ namespace RauViet.ui
             this.panel1.Controls.Add(this.status_lb);
             this.panel1.Controls.Add(this.employeeCode_tb);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel1.Location = new System.Drawing.Point(601, 34);
+            this.panel1.Location = new System.Drawing.Point(1140, 34);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(546, 647);
             this.panel1.TabIndex = 15;
@@ -248,12 +254,30 @@ namespace RauViet.ui
             this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel3.Location = new System.Drawing.Point(0, 34);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(601, 647);
+            this.panel3.Size = new System.Drawing.Size(1140, 647);
             this.panel3.TabIndex = 16;
+            // 
+            // dataGV
+            // 
+            this.dataGV.AllowUserToAddRows = false;
+            this.dataGV.AllowUserToDeleteRows = false;
+            this.dataGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGV.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dataGV.Location = new System.Drawing.Point(0, 0);
+            this.dataGV.Name = "dataGV";
+            this.dataGV.ReadOnly = true;
+            this.dataGV.Size = new System.Drawing.Size(1140, 623);
+            this.dataGV.TabIndex = 15;
             // 
             // panel4
             // 
             this.panel4.BackColor = System.Drawing.Color.PeachPuff;
+            this.panel4.Controls.Add(this.soNguoiKhongNopBH_lb);
+            this.panel4.Controls.Add(this.label30);
+            this.panel4.Controls.Add(this.label31);
+            this.panel4.Controls.Add(this.soNguoiNopBH_lb);
+            this.panel4.Controls.Add(this.label20);
+            this.panel4.Controls.Add(this.label21);
             this.panel4.Controls.Add(this.label10);
             this.panel4.Controls.Add(this.cty_lb);
             this.panel4.Controls.Add(this.label9);
@@ -269,20 +293,122 @@ namespace RauViet.ui
             this.panel4.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panel4.Location = new System.Drawing.Point(0, 623);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(601, 24);
+            this.panel4.Size = new System.Drawing.Size(1140, 24);
             this.panel4.TabIndex = 0;
             // 
-            // dataGV
+            // soNguoiNopBH_lb
             // 
-            this.dataGV.AllowUserToAddRows = false;
-            this.dataGV.AllowUserToDeleteRows = false;
-            this.dataGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGV.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dataGV.Location = new System.Drawing.Point(0, 0);
-            this.dataGV.Name = "dataGV";
-            this.dataGV.ReadOnly = true;
-            this.dataGV.Size = new System.Drawing.Size(601, 623);
-            this.dataGV.TabIndex = 15;
+            this.soNguoiNopBH_lb.AutoSize = true;
+            this.soNguoiNopBH_lb.Dock = System.Windows.Forms.DockStyle.Left;
+            this.soNguoiNopBH_lb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.soNguoiNopBH_lb.ForeColor = System.Drawing.Color.DarkCyan;
+            this.soNguoiNopBH_lb.Location = new System.Drawing.Point(659, 0);
+            this.soNguoiNopBH_lb.Name = "soNguoiNopBH_lb";
+            this.soNguoiNopBH_lb.Size = new System.Drawing.Size(39, 16);
+            this.soNguoiNopBH_lb.TabIndex = 69;
+            this.soNguoiNopBH_lb.Text = "1000";
+            // 
+            // label20
+            // 
+            this.label20.AutoSize = true;
+            this.label20.Dock = System.Windows.Forms.DockStyle.Left;
+            this.label20.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label20.Location = new System.Drawing.Point(542, 0);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(117, 16);
+            this.label20.TabIndex = 68;
+            this.label20.Text = "Số Người Nộp BH:";
+            // 
+            // label21
+            // 
+            this.label21.AutoSize = true;
+            this.label21.BackColor = System.Drawing.Color.Sienna;
+            this.label21.Dock = System.Windows.Forms.DockStyle.Left;
+            this.label21.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label21.Location = new System.Drawing.Point(521, 0);
+            this.label21.Name = "label21";
+            this.label21.Size = new System.Drawing.Size(21, 16);
+            this.label21.TabIndex = 67;
+            this.label21.Text = " | ";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Dock = System.Windows.Forms.DockStyle.Left;
+            this.label10.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label10.Location = new System.Drawing.Point(509, 0);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(12, 16);
+            this.label10.TabIndex = 66;
+            this.label10.Text = ")";
+            // 
+            // cty_lb
+            // 
+            this.cty_lb.AutoSize = true;
+            this.cty_lb.Dock = System.Windows.Forms.DockStyle.Left;
+            this.cty_lb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cty_lb.ForeColor = System.Drawing.Color.Green;
+            this.cty_lb.Location = new System.Drawing.Point(470, 0);
+            this.cty_lb.Name = "cty_lb";
+            this.cty_lb.Size = new System.Drawing.Size(39, 16);
+            this.cty_lb.TabIndex = 65;
+            this.cty_lb.Text = "1000";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Dock = System.Windows.Forms.DockStyle.Left;
+            this.label9.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label9.Location = new System.Drawing.Point(436, 0);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(34, 16);
+            this.label9.TabIndex = 64;
+            this.label9.Text = "Cty:";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Dock = System.Windows.Forms.DockStyle.Left;
+            this.label7.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label7.Location = new System.Drawing.Point(425, 0);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(11, 16);
+            this.label7.TabIndex = 63;
+            this.label7.Text = ",";
+            // 
+            // nld_lb
+            // 
+            this.nld_lb.AutoSize = true;
+            this.nld_lb.Dock = System.Windows.Forms.DockStyle.Left;
+            this.nld_lb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.nld_lb.ForeColor = System.Drawing.Color.Green;
+            this.nld_lb.Location = new System.Drawing.Point(386, 0);
+            this.nld_lb.Name = "nld_lb";
+            this.nld_lb.Size = new System.Drawing.Size(39, 16);
+            this.nld_lb.TabIndex = 62;
+            this.nld_lb.Text = "1000";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Dock = System.Windows.Forms.DockStyle.Left;
+            this.label6.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label6.Location = new System.Drawing.Point(349, 0);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(37, 16);
+            this.label6.TabIndex = 61;
+            this.label6.Text = "NLĐ:";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Dock = System.Windows.Forms.DockStyle.Left;
+            this.label1.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Location = new System.Drawing.Point(337, 0);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(12, 16);
+            this.label1.TabIndex = 60;
+            this.label1.Text = "(";
             // 
             // tongNop_lb
             // 
@@ -310,6 +436,7 @@ namespace RauViet.ui
             // label22
             // 
             this.label22.AutoSize = true;
+            this.label22.BackColor = System.Drawing.Color.SaddleBrown;
             this.label22.Dock = System.Windows.Forms.DockStyle.Left;
             this.label22.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label22.Location = new System.Drawing.Point(185, 0);
@@ -341,90 +468,46 @@ namespace RauViet.ui
             this.label15.TabIndex = 53;
             this.label15.Text = "Tổng Lương Đóng BH:";
             // 
-            // label1
+            // soNguoiKhongNopBH_lb
             // 
-            this.label1.AutoSize = true;
-            this.label1.Dock = System.Windows.Forms.DockStyle.Left;
-            this.label1.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(337, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(12, 16);
-            this.label1.TabIndex = 60;
-            this.label1.Text = "(";
+            this.soNguoiKhongNopBH_lb.AutoSize = true;
+            this.soNguoiKhongNopBH_lb.Dock = System.Windows.Forms.DockStyle.Left;
+            this.soNguoiKhongNopBH_lb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.soNguoiKhongNopBH_lb.ForeColor = System.Drawing.Color.RoyalBlue;
+            this.soNguoiKhongNopBH_lb.Location = new System.Drawing.Point(848, 0);
+            this.soNguoiKhongNopBH_lb.Name = "soNguoiKhongNopBH_lb";
+            this.soNguoiKhongNopBH_lb.Size = new System.Drawing.Size(39, 16);
+            this.soNguoiKhongNopBH_lb.TabIndex = 79;
+            this.soNguoiKhongNopBH_lb.Text = "1000";
             // 
-            // nld_lb
+            // label30
             // 
-            this.nld_lb.AutoSize = true;
-            this.nld_lb.Dock = System.Windows.Forms.DockStyle.Left;
-            this.nld_lb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.nld_lb.ForeColor = System.Drawing.Color.Green;
-            this.nld_lb.Location = new System.Drawing.Point(386, 0);
-            this.nld_lb.Name = "nld_lb";
-            this.nld_lb.Size = new System.Drawing.Size(39, 16);
-            this.nld_lb.TabIndex = 62;
-            this.nld_lb.Text = "1000";
+            this.label30.AutoSize = true;
+            this.label30.Dock = System.Windows.Forms.DockStyle.Left;
+            this.label30.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label30.Location = new System.Drawing.Point(719, 0);
+            this.label30.Name = "label30";
+            this.label30.Size = new System.Drawing.Size(129, 16);
+            this.label30.TabIndex = 78;
+            this.label30.Text = "Số Người K.Nộp BH:";
             // 
-            // label6
+            // label31
             // 
-            this.label6.AutoSize = true;
-            this.label6.Dock = System.Windows.Forms.DockStyle.Left;
-            this.label6.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label6.Location = new System.Drawing.Point(349, 0);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(37, 16);
-            this.label6.TabIndex = 61;
-            this.label6.Text = "NLĐ:";
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Dock = System.Windows.Forms.DockStyle.Left;
-            this.label7.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label7.Location = new System.Drawing.Point(425, 0);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(11, 16);
-            this.label7.TabIndex = 63;
-            this.label7.Text = ",";
-            // 
-            // cty_lb
-            // 
-            this.cty_lb.AutoSize = true;
-            this.cty_lb.Dock = System.Windows.Forms.DockStyle.Left;
-            this.cty_lb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.cty_lb.ForeColor = System.Drawing.Color.Green;
-            this.cty_lb.Location = new System.Drawing.Point(470, 0);
-            this.cty_lb.Name = "cty_lb";
-            this.cty_lb.Size = new System.Drawing.Size(39, 16);
-            this.cty_lb.TabIndex = 65;
-            this.cty_lb.Text = "1000";
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Dock = System.Windows.Forms.DockStyle.Left;
-            this.label9.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label9.Location = new System.Drawing.Point(436, 0);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(34, 16);
-            this.label9.TabIndex = 64;
-            this.label9.Text = "Cty:";
-            // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Dock = System.Windows.Forms.DockStyle.Left;
-            this.label10.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label10.Location = new System.Drawing.Point(509, 0);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(12, 16);
-            this.label10.TabIndex = 66;
-            this.label10.Text = ")";
+            this.label31.AutoSize = true;
+            this.label31.BackColor = System.Drawing.Color.Sienna;
+            this.label31.Dock = System.Windows.Forms.DockStyle.Left;
+            this.label31.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label31.Location = new System.Drawing.Point(698, 0);
+            this.label31.Name = "label31";
+            this.label31.Size = new System.Drawing.Size(21, 16);
+            this.label31.TabIndex = 77;
+            this.label31.Text = " | ";
             // 
             // EmployeeBaoHiem
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1147, 681);
+            this.ClientSize = new System.Drawing.Size(1686, 681);
             this.Controls.Add(this.panel3);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.panel2);
@@ -438,9 +521,9 @@ namespace RauViet.ui
             this.info_gb.ResumeLayout(false);
             this.info_gb.PerformLayout();
             this.panel3.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dataGV)).EndInit();
             this.panel4.ResumeLayout(false);
             this.panel4.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGV)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -478,5 +561,11 @@ namespace RauViet.ui
         private System.Windows.Forms.Label nld_lb;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label soNguoiNopBH_lb;
+        private System.Windows.Forms.Label label20;
+        private System.Windows.Forms.Label label21;
+        private System.Windows.Forms.Label soNguoiKhongNopBH_lb;
+        private System.Windows.Forms.Label label30;
+        private System.Windows.Forms.Label label31;
     }
 }

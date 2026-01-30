@@ -313,6 +313,8 @@ namespace RauViet.ui
             int totalNop = 0;
             int NLDNop = 0;
             int CtyNop = 0;
+            int soNguoiNop = 0;
+            int soNguoiKhongNop = 0;
             foreach (DataRow row in employee_dt.Rows)
             {
                 string employeeCode = row.Field<string>("EmployeeCode");
@@ -325,6 +327,11 @@ namespace RauViet.ui
                 row["NLD_InsuranceContribution"] = (baseSalary + allowanceSum) * 0.105m;
                 row["CTY_InsuranceContribution"] = (baseSalary + allowanceSum) * 0.215m;
 
+                if (baseSalary + allowanceSum < 1)
+                    soNguoiKhongNop++;
+                else
+                    soNguoiNop++;
+                
                 totalLuong += (baseSalary + allowanceSum);
                 totalNop += Convert.ToInt32((baseSalary + allowanceSum) * 0.32m);
                 NLDNop += Convert.ToInt32((baseSalary + allowanceSum) * 0.105m);
@@ -335,6 +342,9 @@ namespace RauViet.ui
             tongNop_lb.Text = totalNop.ToString("N0");
             nld_lb.Text = NLDNop.ToString("N0");
             cty_lb.Text = CtyNop.ToString("N0");
+            soNguoiKhongNopBH_lb.Text = soNguoiKhongNop.ToString();
+            soNguoiNopBH_lb.Text = soNguoiNop.ToString();
         }
+
     }
 }

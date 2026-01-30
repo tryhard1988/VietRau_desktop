@@ -106,15 +106,16 @@
             this.báoCáoĐơnHàngTrongNướcToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ResoncileDomesticDebts_Month_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.resoncileDomesticDebts_Year_mi = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripMenuItem();
+            this.khoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.khoVaTu_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.extension_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.QR_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.aaaaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadExcelOrderReportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.content_panel = new System.Windows.Forms.Panel();
-            this.khoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.khoVaTu_mi = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripMenuItem();
+            this.plantingManagement_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1.SuspendLayout();
             this.LOT_menuitem.SuspendLayout();
             this.SuspendLayout();
@@ -476,37 +477,37 @@
             // exportCode_menuItem
             // 
             this.exportCode_menuItem.Name = "exportCode_menuItem";
-            this.exportCode_menuItem.Size = new System.Drawing.Size(180, 22);
+            this.exportCode_menuItem.Size = new System.Drawing.Size(172, 22);
             this.exportCode_menuItem.Text = "Mã Xuất Cảng";
             // 
             // order_menuitem
             // 
             this.order_menuitem.Name = "order_menuitem";
-            this.order_menuitem.Size = new System.Drawing.Size(180, 22);
+            this.order_menuitem.Size = new System.Drawing.Size(172, 22);
             this.order_menuitem.Text = "Đơn hàng";
             // 
             // dsDongThung_menuitem
             // 
             this.dsDongThung_menuitem.Name = "dsDongThung_menuitem";
-            this.dsDongThung_menuitem.Size = new System.Drawing.Size(180, 22);
+            this.dsDongThung_menuitem.Size = new System.Drawing.Size(172, 22);
             this.dsDongThung_menuitem.Text = "DS Đóng Thùng";
             // 
             // do417_menuitem
             // 
             this.do417_menuitem.Name = "do417_menuitem";
-            this.do417_menuitem.Size = new System.Drawing.Size(180, 22);
+            this.do417_menuitem.Size = new System.Drawing.Size(172, 22);
             this.do417_menuitem.Text = "Dò 417";
             // 
             // lotCode_menuitem
             // 
             this.lotCode_menuitem.Name = "lotCode_menuitem";
-            this.lotCode_menuitem.Size = new System.Drawing.Size(180, 22);
+            this.lotCode_menuitem.Size = new System.Drawing.Size(172, 22);
             this.lotCode_menuitem.Text = "Nhập Mã LOT";
             // 
             // doCBM_mi
             // 
             this.doCBM_mi.Name = "doCBM_mi";
-            this.doCBM_mi.Size = new System.Drawing.Size(180, 22);
+            this.doCBM_mi.Size = new System.Drawing.Size(172, 22);
             this.doCBM_mi.Text = "Dò CBM";
             // 
             // xuatExcelGuiKH_Group_mi
@@ -521,7 +522,7 @@
             this.xuatExcelGuiKH_Group_mi.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xuatExcelGuiKH_Group_mi.ForeColor = System.Drawing.Color.OrangeRed;
             this.xuatExcelGuiKH_Group_mi.Name = "xuatExcelGuiKH_Group_mi";
-            this.xuatExcelGuiKH_Group_mi.Size = new System.Drawing.Size(180, 22);
+            this.xuatExcelGuiKH_Group_mi.Size = new System.Drawing.Size(172, 22);
             this.xuatExcelGuiKH_Group_mi.Text = "Xuất Excel";
             // 
             // dkkd_menuitem
@@ -716,6 +717,30 @@
             this.resoncileDomesticDebts_Year_mi.Size = new System.Drawing.Size(273, 22);
             this.resoncileDomesticDebts_Year_mi.Text = "Thống Kê Trong Năm";
             // 
+            // toolStripMenuItem4
+            // 
+            this.toolStripMenuItem4.BackColor = System.Drawing.Color.Bisque;
+            this.toolStripMenuItem4.ForeColor = System.Drawing.Color.Transparent;
+            this.toolStripMenuItem4.Name = "toolStripMenuItem4";
+            this.toolStripMenuItem4.Size = new System.Drawing.Size(12, 21);
+            // 
+            // khoToolStripMenuItem
+            // 
+            this.khoToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.khoVaTu_mi,
+            this.plantingManagement_mi});
+            this.khoToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.khoToolStripMenuItem.ForeColor = System.Drawing.Color.MediumBlue;
+            this.khoToolStripMenuItem.Name = "khoToolStripMenuItem";
+            this.khoToolStripMenuItem.Size = new System.Drawing.Size(81, 21);
+            this.khoToolStripMenuItem.Text = "Cây Trồng";
+            // 
+            // khoVaTu_mi
+            // 
+            this.khoVaTu_mi.Name = "khoVaTu_mi";
+            this.khoVaTu_mi.Size = new System.Drawing.Size(181, 22);
+            this.khoVaTu_mi.Text = "Kho Vật Tư";
+            // 
             // toolStripMenuItem2
             // 
             this.toolStripMenuItem2.BackColor = System.Drawing.Color.Bisque;
@@ -737,7 +762,7 @@
             // 
             this.QR_mi.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.QR_mi.Name = "QR_mi";
-            this.QR_mi.Size = new System.Drawing.Size(180, 22);
+            this.QR_mi.Size = new System.Drawing.Size(120, 22);
             this.QR_mi.Text = "Tạo QR";
             // 
             // aaaaToolStripMenuItem
@@ -764,28 +789,11 @@
             this.content_panel.Size = new System.Drawing.Size(1477, 491);
             this.content_panel.TabIndex = 1;
             // 
-            // khoToolStripMenuItem
+            // plantingManagement_mi
             // 
-            this.khoToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.khoVaTu_mi});
-            this.khoToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.khoToolStripMenuItem.ForeColor = System.Drawing.Color.MediumBlue;
-            this.khoToolStripMenuItem.Name = "khoToolStripMenuItem";
-            this.khoToolStripMenuItem.Size = new System.Drawing.Size(44, 21);
-            this.khoToolStripMenuItem.Text = "Kho";
-            // 
-            // khoVaTu_mi
-            // 
-            this.khoVaTu_mi.Name = "khoVaTu_mi";
-            this.khoVaTu_mi.Size = new System.Drawing.Size(180, 22);
-            this.khoVaTu_mi.Text = "Kho Vật Tư";
-            // 
-            // toolStripMenuItem4
-            // 
-            this.toolStripMenuItem4.BackColor = System.Drawing.Color.Bisque;
-            this.toolStripMenuItem4.ForeColor = System.Drawing.Color.Transparent;
-            this.toolStripMenuItem4.Name = "toolStripMenuItem4";
-            this.toolStripMenuItem4.Size = new System.Drawing.Size(12, 21);
+            this.plantingManagement_mi.Name = "plantingManagement_mi";
+            this.plantingManagement_mi.Size = new System.Drawing.Size(181, 22);
+            this.plantingManagement_mi.Text = "Lịch Ươm - Trồng";
             // 
             // FormManager
             // 
@@ -894,5 +902,6 @@
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem4;
         private System.Windows.Forms.ToolStripMenuItem khoToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem khoVaTu_mi;
+        private System.Windows.Forms.ToolStripMenuItem plantingManagement_mi;
     }
 }
