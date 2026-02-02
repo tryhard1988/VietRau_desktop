@@ -8,7 +8,7 @@ using Color = System.Drawing.Color;
 
 namespace RauViet.ui
 {
-    public partial class KhoKhoVatTu_Materials : Form
+    public partial class KhoVatTu_Materials : Form
     {
         System.Data.DataTable mMaterial_dt, mUnit_dt, mCatelory_dt;
         private DataView mLogDV;
@@ -16,7 +16,7 @@ namespace RauViet.ui
         private Timer UnitDebounceTimer = new Timer { Interval = 300 };
         bool isNewState = false;
         private LoadingOverlay loadingOverlay;
-        public KhoKhoVatTu_Materials()
+        public KhoVatTu_Materials()
         {
             InitializeComponent();
             this.KeyPreview = true;

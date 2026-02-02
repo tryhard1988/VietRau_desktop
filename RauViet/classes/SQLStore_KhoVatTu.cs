@@ -17,7 +17,8 @@ namespace RauViet.classes
         DataTable mUnit_dt = null;
         DataTable mMaterialCategory_dt = null;
         DataTable mMaterial_dt = null;
-        DataTable mPlantingManagement_dt = null;
+
+        Dictionary<int, DataTable> mPlantingManagements = null;
 
         private SQLStore_KhoVatTu() { }
 
@@ -38,6 +39,7 @@ namespace RauViet.classes
         {
             try
             {
+                mPlantingManagements = new Dictionary<int, DataTable>();
 
                 var unitTask = SQLManager_KhoVatTu.Instance.GetUnitAsync();
                 var MaterialCategoryTask = SQLManager_KhoVatTu.Instance.GetMaterialCategoryAsync();
@@ -160,14 +162,15 @@ namespace RauViet.classes
                 row["CategoryName_nosign"] = Utils.RemoveVietnameseSigns(row["CategoryName"].ToString());
         }
 
-        public async Task<DataTable> getPlantingManagementAsync()
+        public async Task<DataTable> getPlantingManagementAsync(int year)
         {
-            if (mPlantingManagement_dt == null)
+            if (mPlantingManagements.ContainsKey(year) == false)
             {
                 try
                 {
-                    mPlantingManagement_dt = await SQLManager_KhoVatTu.Instance.getPlantingManagementAsync();
-                    editPlantingManagement(mPlantingManagement_dt);
+                    DataTable data = await SQLManager_KhoVatTu.Instance.getPlantingManagementAsync(year);
+                    editPlantingManagement(data);
+                    mPlantingManagements[year] = data;
                 }
                 catch
                 {
@@ -176,7 +179,7 @@ namespace RauViet.classes
                 }
             }
 
-            return mPlantingManagement_dt;
+            return mPlantingManagements[year];
         }
 
         private async void editPlantingManagement(DataTable data)
@@ -191,7 +194,7 @@ namespace RauViet.classes
             foreach (DataRow row in data.Rows)
             {
                 int sku = Convert.ToInt32(row["SKU"]);
-                int department = Convert.ToInt32(row["Department"]);
+                int? department = row.Field<int?>("Department");
                 string Supervisor = row["Supervisor"].ToString();
                 
                 DataRow productRow = product_dt.AsEnumerable().FirstOrDefault(r => r.Field<int>("SKU") == sku);

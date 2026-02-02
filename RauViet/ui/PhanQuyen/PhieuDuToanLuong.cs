@@ -3,6 +3,7 @@ using DocumentFormat.OpenXml.Wordprocessing;
 using RauViet.classes;
 using System;
 using System.Data;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -20,26 +21,16 @@ namespace RauViet.ui
             this.Dock = DockStyle.Fill;
 
             dataGV.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dataGV.MultiSelect = false;
+            dataGV.MultiSelect = true;
 
             dataGV.SelectionChanged += this.dataGV_CellClick;
 
             this.KeyDown += Employee_POS_DEP_CON_KeyDown;
-            this.FormClosing += Employee_POS_DEP_CON_FormClosing;
             search_tb.TextChanged += Search_tb_TextChanged;
 
             preview_btn.Click += Preview_btn_Click;
             Print_btn.Click += Print_btn_Click;
             excel_btn.Click += Excel_btn_Click;
-        }
-
-        private async void Employee_POS_DEP_CON_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            SQLStore_QLNS.Instance.removeAnnualLeaveBalance();
-            await Task.WhenAll(
-                    SQLManager_QLNS.Instance.AutoUpsertAnnualLeaveMonthListAsync(),
-                    SQLManager_QLNS.Instance.GetAnnualLeaveBalanceAsync()
-                );
         }
 
         private void Employee_POS_DEP_CON_KeyDown(object sender, KeyEventArgs e)
@@ -238,16 +229,13 @@ namespace RauViet.ui
             if (rowIndex < 0)
                 return;
 
-            string empCode = dataGV.CurrentRow.Cells["EmployeeCode"].Value.ToString();
-            DataRow firstRow = null;
+            DataRow[] selectedEmpRows =dataGV.SelectedRows.Cast<DataGridViewRow>().Where(r => !r.IsNewRow).Select(r => ((DataRowView)r.DataBoundItem).Row).ToArray();
 
-            DataRow[] rows = mEmployees_dt.Select($"EmployeeCode = '{empCode}'");
-
-            if (rows.Length > 0)
-                firstRow = rows[0];
+            if (selectedEmpRows.Length <= 0) return;
+           //     firstRow = rows[0];
 
 
-            PhieuDuToanLuong_Printer printer = new PhieuDuToanLuong_Printer(firstRow, mEmployeeAllowances_dt);
+            PhieuDuToanLuong_Printer printer = new PhieuDuToanLuong_Printer(selectedEmpRows, mEmployeeAllowances_dt);
             if (isPreview)
                 printer.PrintPreview(this);
             else

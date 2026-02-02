@@ -567,7 +567,7 @@ namespace RauViet.ui
                     SwitchChildForm<ThongKeTonKhoHangRauCu>("Thống Kê Tồn Kho Rau, Củ, Quả");
                     break;
                 case EForm.KhoVatTu_Materials:
-                    SwitchChildForm<KhoKhoVatTu_Materials>("Kho Vật Tư");
+                    SwitchChildForm<KhoVatTu_Materials>("Kho Vật Tư");
                     break;
                 case EForm.KhoVatTu_PlantingManagement:
                     SwitchChildForm<KhoVatTu_PlantingManagement>("Lịch Ươm - Trồng ");

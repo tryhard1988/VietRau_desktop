@@ -9,16 +9,18 @@ using System.Windows.Forms;
 
 public class PhieuDuToanLuong_Printer
 {
-    private DataRow empInfo;
+    private DataRow[] _employees;
     private DataTable allowanceData;
     private int rowIndex = 0; // để phân trang
     private int startX = 0;
     private int lineHeight = 27;
+    private int _currentEmployeeIndex = 0;
 
-    public PhieuDuToanLuong_Printer(DataRow empInfo, DataTable allowanceData)
+    public PhieuDuToanLuong_Printer(DataRow[] _employees, DataTable allowanceData)
     {
-        this.empInfo = empInfo;
+        this._employees = _employees;
         this.allowanceData = allowanceData;
+        _currentEmployeeIndex = 0;
     }
 
     private void DrawCellText(Graphics g, string text, Font font, Rectangle rect, StringAlignment alignment = StringAlignment.Center)
@@ -105,6 +107,8 @@ public class PhieuDuToanLuong_Printer
         Font header2Font = new Font("Times New Roman", 16, FontStyle.Bold);
 
         SolidBrush bgBrush_gray = new SolidBrush(Color.LightGray);
+
+        DataRow empInfo = _employees[_currentEmployeeIndex];
 
         string empCode = empInfo["EmployeeCode"].ToString();
         DataRow[] empAllowancesRows = allowanceData.Select($"EmployeeCode = '{empCode}'");
@@ -204,7 +208,10 @@ public class PhieuDuToanLuong_Printer
         y += lineHeight;
 
 
-        e.HasMorePages = false;
+        _currentEmployeeIndex++;
+
+        // 👉 Nếu còn employee thì in tiếp trang mới
+        e.HasMorePages = _currentEmployeeIndex < _employees.Length;
 
     }
 }

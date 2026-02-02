@@ -897,7 +897,7 @@ namespace RauViet.classes
             }
 
             return mDepartment_dt;
-        }
+        }        
 
         public async Task<DataTable> GetActiveDepartmentAsync()
         {
@@ -1258,12 +1258,17 @@ namespace RauViet.classes
             }
 
             DataTable data = mOvertimeAttendaces[key];
-            var rows = data.AsEnumerable().
-                Where(r => r.Field<string>("OvertimeTypeCode") == "OT_Dem"
-                                            && r["HourWork"] != DBNull.Value
-                                            && Convert.ToDouble(r["HourWork"]) >= 2.5);
+            var rows = data.AsEnumerable().Where(r =>
+            {
+                int deptId = Convert.ToInt32(r["DepartmentID"]);
+                double hour = Convert.ToDouble(r["HourWork"]);
+                TimeSpan? startTime = r.Field<TimeSpan?>("StartTime");
 
-            string[] keepColumns ={"EmployeeCode", "EmployeeName", "WorkDate", "OvertimeTypeID", "HourWork", "Note", "DepartmentID"};
+                return (deptId == 26 || deptId == 28 || deptId == 29)
+                    && hour >= 2.5
+                    && startTime.Value >= new TimeSpan(17, 0, 0);
+            });
+            string[] keepColumns ={"EmployeeCode", "EmployeeName", "WorkDate", "OvertimeTypeID", "HourWork", "Note", "DepartmentID", "StartTime", "EndTime"};
 
             DataTable dtOTDem;
 

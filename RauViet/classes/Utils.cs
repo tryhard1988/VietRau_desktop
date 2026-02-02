@@ -3,6 +3,7 @@ using DocumentFormat.OpenXml.Wordprocessing;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -485,6 +486,41 @@ public static class Utils
                 .Trim()
                 .Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
                 .Select(word => char.ToUpper(word[0]))
+        );
+    }
+
+    public static decimal ParseDecimalSmart(string input)
+    {
+        if (string.IsNullOrWhiteSpace(input))
+            throw new FormatException("Empty input");
+
+        input = input.Trim();
+
+        int lastDot = input.LastIndexOf('.');
+        int lastComma = input.LastIndexOf(',');
+
+        // Xác định dấu thập phân
+        char decimalSeparator =
+            lastDot > lastComma ? '.' :
+            lastComma > lastDot ? ',' :
+            '\0';
+
+        if (decimalSeparator != '\0')
+        {
+            char thousandSeparator = decimalSeparator == '.' ? ',' : '.';
+
+            // Xoá thousand separator
+            input = input.Replace(thousandSeparator.ToString(), "");
+
+            // Chuẩn hoá về dấu .
+            if (decimalSeparator == ',')
+                input = input.Replace(',', '.');
+        }
+
+        return decimal.Parse(
+            input,
+            NumberStyles.AllowDecimalPoint,
+            CultureInfo.InvariantCulture
         );
     }
 }

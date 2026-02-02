@@ -304,16 +304,17 @@ namespace RauViet.classes
             return dt;
         }
 
-        public async Task<DataTable> getPlantingManagementAsync()
+        public async Task<DataTable> getPlantingManagementAsync(int year)
         {
             DataTable dt = new DataTable();
             using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
             {
                 await con.OpenAsync();
-                string query = @"SELECT * FROM PlantingManagement";
+                string query = @"SELECT * FROM PlantingManagement WHERE YEAR(NurseryDate) = @Year;";
 
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 {
+                    cmd.Parameters.Add("@Year", SqlDbType.Int).Value = year;
                     using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                     {
                         dt.Load(reader);
@@ -323,7 +324,7 @@ namespace RauViet.classes
             return dt;
         }
 
-        public async Task<int> insertPlantingManagementAsync(string ProductionOrder, int SKU, decimal Area, int Quantity, DateTime NurseryDate, DateTime PlantingDate, DateTime HarvestDate, int Department, string Supervisor, string Note)
+        public async Task<int> insertPlantingManagementAsync(string ProductionOrder, int SKU, decimal Area, int Quantity, DateTime NurseryDate, DateTime PlantingDate, DateTime HarvestDate, int? Department, string Supervisor, string Note)
         {
             int newId = -1;
 
@@ -340,16 +341,17 @@ namespace RauViet.classes
                     // 2️⃣ Insert và lấy ID mới
                     using (SqlCommand cmd = new SqlCommand(insertQuery, con))
                     {
-                        cmd.Parameters.AddWithValue("@ProductionOrder", ProductionOrder);
-                        cmd.Parameters.AddWithValue("@SKU", SKU);
-                        cmd.Parameters.AddWithValue("@Area", Area);
-                        cmd.Parameters.AddWithValue("@Quantity", Quantity);
-                        cmd.Parameters.AddWithValue("@NurseryDate", NurseryDate);
-                        cmd.Parameters.AddWithValue("@PlantingDate", PlantingDate);
-                        cmd.Parameters.AddWithValue("@HarvestDate", HarvestDate);
-                        cmd.Parameters.AddWithValue("@Department", Department);
-                        cmd.Parameters.AddWithValue("@Supervisor", Supervisor);
-                        cmd.Parameters.AddWithValue("@Note", Note);
+                        cmd.Parameters.Add("@ProductionOrder", SqlDbType.NVarChar).Value = ProductionOrder;
+                        cmd.Parameters.Add("@SKU", SqlDbType.Int).Value = SKU;
+                        cmd.Parameters.Add("@Area", SqlDbType.Decimal).Value = Area;
+                        cmd.Parameters.Add("@Quantity", SqlDbType.Int).Value = Quantity;
+                        cmd.Parameters.Add("@NurseryDate", SqlDbType.Date).Value = NurseryDate;
+                        cmd.Parameters.Add("@PlantingDate", SqlDbType.Date).Value = PlantingDate;
+                        cmd.Parameters.Add("@HarvestDate", SqlDbType.Date).Value = HarvestDate;
+                        cmd.Parameters.Add("@Department", SqlDbType.Int).Value = Department.HasValue ? (object)Department.Value : DBNull.Value;
+                        cmd.Parameters.Add("@Supervisor", SqlDbType.NVarChar).Value = string.IsNullOrWhiteSpace(Supervisor) ? DBNull.Value : (object)Supervisor;
+                        cmd.Parameters.Add("@Note", SqlDbType.NVarChar).Value = Note;
+
 
                         object result = await cmd.ExecuteScalarAsync();
                         if (result != null)
