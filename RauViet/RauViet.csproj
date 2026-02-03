@@ -356,6 +356,12 @@
     <Compile Include="ui\FormManager.Designer.cs">
       <DependentUpon>FormManager.cs</DependentUpon>
     </Compile>
+    <Compile Include="ui\KhoVatTu\KhoVatTu_MaterialExport.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\KhoVatTu\KhoVatTu_MaterialExport.Designer.cs">
+      <DependentUpon>KhoVatTu_MaterialExport.cs</DependentUpon>
+    </Compile>
     <Compile Include="ui\KhoVatTu\KhoVatTu_PlantingManagement.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -813,6 +819,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ui\FormManager.resx">
       <DependentUpon>FormManager.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\KhoVatTu\KhoVatTu_MaterialExport.resx">
+      <DependentUpon>KhoVatTu_MaterialExport.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ui\KhoVatTu\KhoVatTu_PlantingManagement.resx">
       <DependentUpon>KhoVatTu_PlantingManagement.cs</DependentUpon>

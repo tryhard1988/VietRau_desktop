@@ -14,6 +14,7 @@ namespace RauViet.classes
         private static readonly object padlock = new object();
 
         //suong
+        DataTable mWorkType_dt = null;
         DataTable mUnit_dt = null;
         DataTable mMaterialCategory_dt = null;
         DataTable mMaterial_dt = null;
@@ -44,12 +45,14 @@ namespace RauViet.classes
                 var unitTask = SQLManager_KhoVatTu.Instance.GetUnitAsync();
                 var MaterialCategoryTask = SQLManager_KhoVatTu.Instance.GetMaterialCategoryAsync();
                 var MaterialTask = SQLManager_KhoVatTu.Instance.GetMaterialAsync();
+                var WorkTypeTask = SQLManager_KhoVatTu.Instance.GetWorkTypeAsync();
 
-                await Task.WhenAll(unitTask, MaterialCategoryTask, MaterialTask);
+                await Task.WhenAll(unitTask, MaterialCategoryTask, MaterialTask, WorkTypeTask);
 
                 if (unitTask.Status == TaskStatus.RanToCompletion && unitTask.Result != null) mUnit_dt = unitTask.Result;
                 if (MaterialCategoryTask.Status == TaskStatus.RanToCompletion && MaterialCategoryTask.Result != null) mMaterialCategory_dt = MaterialCategoryTask.Result;
                 if (MaterialTask.Status == TaskStatus.RanToCompletion && MaterialTask.Result != null) mMaterial_dt = MaterialTask.Result;
+                if (WorkTypeTask.Status == TaskStatus.RanToCompletion && WorkTypeTask.Result != null) mWorkType_dt = WorkTypeTask.Result;
 
                 editMaterial(mMaterial_dt);
                 editCategory(mMaterialCategory_dt);
@@ -187,6 +190,7 @@ namespace RauViet.classes
             data.Columns.Add("DepartmentName", typeof(string));
             data.Columns.Add("PlantName", typeof(string));
             data.Columns.Add("SupervisorName", typeof(string));
+            data.Columns.Add("search_nosign", typeof(string));
 
             DataTable employee_dt = await SQLStore_QLNS.Instance.GetEmployeesAsync();
             DataTable department_dt = await SQLStore_QLNS.Instance.GetDepartmentAsync();
@@ -208,7 +212,27 @@ namespace RauViet.classes
                 DataRow departmentRow = department_dt.AsEnumerable().FirstOrDefault(r => r.Field<int>("DepartmentID") == department);
                 if (departmentRow != null)
                     row["DepartmentName"] = departmentRow["DepartmentName"];
+
+                row["search_nosign"] = Utils.RemoveVietnameseSigns( $"{row["ProductionOrder"]} {row["PlantName"]}");
             }
+        }
+
+        public async Task<DataTable> GetWorkTypeAsync()
+        {
+            if (mWorkType_dt == null)
+            {
+                try
+                {
+                    mWorkType_dt = await SQLManager_KhoVatTu.Instance.GetWorkTypeAsync();
+                }
+                catch
+                {
+                    Console.WriteLine("error GetWorkTypeAsync SQLStore");
+                    return null;
+                }
+            }
+
+            return mWorkType_dt;
         }
     }
     

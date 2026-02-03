@@ -47,7 +47,7 @@ namespace RauViet.ui
 
                 var domesticLiquidationPriceTask = SQLStore_Kho.Instance.getDomesticLiquidationPriceAsync();
                 var domesticLiquidationImportTask = SQLStore_Kho.Instance.getDomesticLiquidationImportAsync();
-                var domesticLiquidationExportTask = SQLStore_Kho.Instance.getDomesticLiquidationExportAsync();
+                var domesticLiquidationExportTask = SQLManager_Kho.Instance.getDomesticLiquidationExportAsync();
                 
                 await Task.WhenAll(domesticLiquidationImportTask, domesticLiquidationExportTask, domesticLiquidationPriceTask);
 

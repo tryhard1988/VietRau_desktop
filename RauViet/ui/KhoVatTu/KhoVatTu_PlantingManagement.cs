@@ -47,7 +47,8 @@ namespace RauViet.ui
             newCustomerBtn.Click += newBtn_Click;
             LuuThayDoiBtn.Click += saveBtn_Click;
             edit_btn.Click += Edit_btn_Click;
-            readOnly_btn.Click += ReadOnly_btn_Click; 
+            readOnly_btn.Click += ReadOnly_btn_Click;
+            caytrong_CB.SelectedIndexChanged += Caytrong_CB_SelectedIndexChanged;
             this.KeyDown += Kho_Materials_KeyDown;
             productSKUDebounceTimer.Tick += productSKUDebounceTimer_Tick;
             employeeDebounceTimer.Tick += employeeDebounceTimer_Tick;
@@ -60,6 +61,8 @@ namespace RauViet.ui
             dientich_tb.KeyPress += Tb_KeyPress_OnlyNumber_decimal;
             soLuong_tb.KeyPress += Tb_KeyPress_OnlyNumber_int;
             dataGV.CellFormatting += dataGV_CellFormatting;
+
+            search_tb.TextChanged += Search_tb_TextChanged;
         }
 
         private void Kho_Materials_KeyDown(object sender, KeyEventArgs e)
@@ -116,7 +119,7 @@ namespace RauViet.ui
 
                 caytrong_CB.DataSource = mProductSKU_dt;
                 caytrong_CB.DisplayMember = "ProductNameVN";  // hiển thị tên
-                caytrong_CB.ValueMember = "SKU";
+                caytrong_CB.ValueMember = "ProductSKU";
                 caytrong_CB.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
 
                 nguoiPhuTrach_CB.DataSource = mEmployee_dt;
@@ -126,7 +129,7 @@ namespace RauViet.ui
 
                 dataGV.DataSource = mPlantingManagement_dt;
                 //    log_GV.DataSource = mLogDV;
-                Utils.HideColumns(dataGV, new[] { "PlantingID", "SKU", "Department", "Department", "Supervisor", "CreatedAt" });
+                Utils.HideColumns(dataGV, new[] { "PlantingID", "SKU", "Department", "Department", "Supervisor", "CreatedAt", "search_nosign" });
                 Utils.SetGridOrdinal(mPlantingManagement_dt, new[] { "ProductionOrder", "PlantName", "Quantity", "NurseryDate", "PlantingDate", "Area", "HarvestDate", "DepartmentName", "SupervisorName", "Note", "IsCompleted" });
                 Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
                         {"ProductionOrder", "Lệnh\nSản Xuất" },
@@ -206,7 +209,7 @@ namespace RauViet.ui
                 // Gán lại DataSource
                 caytrong_CB.DataSource = temp;
                 caytrong_CB.DisplayMember = "ProductNameVN";  // hiển thị tên
-                caytrong_CB.ValueMember = "SKU";
+                caytrong_CB.ValueMember = "ProductSKU";
 
                 // Giữ lại text người đang gõ
                 caytrong_CB.DroppedDown = true;
@@ -339,6 +342,7 @@ namespace RauViet.ui
                                 row["PlantName"] = productRows[0]["ProductNameVN"].ToString();
                                 row["SupervisorName"] = employeeRows[0]["FullName"].ToString();
                                 row["IsCompleted"] = IsCompleted;
+                                row["search_nosign"] = Utils.RemoveVietnameseSigns( $"{ProductionOrder} {productRows[0]["ProductNameVN"].ToString()}");
 
                                 status_lb.Text = "Thành công.";
                                 status_lb.ForeColor = Color.Green;
@@ -392,8 +396,9 @@ namespace RauViet.ui
                         drToAdd["PlantName"] = productRows[0]["ProductNameVN"].ToString();
                         drToAdd["SupervisorName"] = employeeRows[0]["FullName"].ToString();
                         drToAdd["IsCompleted"] = false;
+                        drToAdd["IsCompleted"] = false;
 
-                        drToAdd["CreatedAt"] = DateTime.Now;
+                        drToAdd["search_nosign"] = Utils.RemoveVietnameseSigns( $"{ProductionOrder} {productRows[0]["ProductNameVN"].ToString()}");
 
                         mPlantingManagement_dt.Rows.Add(drToAdd);
                         mPlantingManagement_dt.AcceptChanges();
@@ -424,7 +429,7 @@ namespace RauViet.ui
             if (deparment_CBB.SelectedValue == null || caytrong_CB.SelectedValue == null || string.IsNullOrEmpty(lenhSX_tb.Text.Trim()) || string.IsNullOrEmpty(dientich_tb.Text.Trim()) || string.IsNullOrEmpty(soLuong_tb.Text.Trim())) return;
 
             string productionOrder = lenhSX_tb.Text;
-            int sku = Convert.ToInt32(caytrong_CB.SelectedValue);
+            int productSKU = Convert.ToInt32(caytrong_CB.SelectedValue);
             decimal area = Utils.ParseDecimalSmart(dientich_tb.Text);
             int quantity = Convert.ToInt32(soLuong_tb.Text);
             DateTime nurseryDate = ngayUom_dtp.Value.Date;
@@ -434,9 +439,9 @@ namespace RauViet.ui
             string empCode = Convert.ToString(nguoiPhuTrach_CB.SelectedValue);
             string note = note_tb.Text;
             if (id_tb.Text.Length != 0)
-                updateItem(Convert.ToInt32(id_tb.Text), productionOrder, sku, area, quantity, nurseryDate, plantingDate, harvestDate, dep, empCode, note, complete_cb.Checked);
+                updateItem(Convert.ToInt32(id_tb.Text), productionOrder, productSKU, area, quantity, nurseryDate, plantingDate, harvestDate, dep, empCode, note, complete_cb.Checked);
             else
-                createItem(productionOrder, sku, area, quantity, nurseryDate, plantingDate, harvestDate, dep, empCode, note);
+                createItem(productionOrder, productSKU, area, quantity, nurseryDate, plantingDate, harvestDate, dep, empCode, note);
 
         }
         private async void deleteProduct()
@@ -445,8 +450,8 @@ namespace RauViet.ui
 
             foreach (DataRow row in mPlantingManagement_dt.Rows)
             {
-                string materialID = row["MaterialID"].ToString();
-                if (materialID.CompareTo(id) == 0)
+                string plantingID = row["PlantingID"].ToString();
+                if (plantingID.CompareTo(id) == 0)
                 {
                     DialogResult dialogResult = MessageBox.Show("Xóa Nha, Chắc Chắn Chưa!", "Thông Báo", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
@@ -454,7 +459,7 @@ namespace RauViet.ui
                     {
                         try
                         {
-                            bool isScussess = await SQLManager_KhoVatTu.Instance.deletetMaterialsAsync(Convert.ToInt32(id));
+                            bool isScussess = await SQLManager_KhoVatTu.Instance.deletetPlantingManagementAsync(Convert.ToInt32(id));
 
                             if (isScussess == true)
                             {
@@ -494,7 +499,7 @@ namespace RauViet.ui
             LuuThayDoiBtn.Visible = true;
             isNewState = true;
             LuuThayDoiBtn.Text = "Lưu Mới";
-            lenhSX_tb.Enabled = true;
+            lenhSX_tb.Enabled = false;
             deparment_CBB.Enabled = true;
             caytrong_CB.Enabled = true;
             complete_cb.Visible = false;
@@ -505,7 +510,8 @@ namespace RauViet.ui
             note_tb.Enabled = true;
             soLuong_tb.Enabled = true;
             nguoiPhuTrach_CB.Enabled = true;
-            lenhSX_tb.Focus();
+            caytrong_CB.Focus();
+            Caytrong_CB_SelectedIndexChanged(null, null);
         }
 
         private void ReadOnly_btn_Click(object sender, EventArgs e)
@@ -661,6 +667,50 @@ namespace RauViet.ui
             ShowData();
         }
 
+        private void Search_tb_TextChanged(object sender, EventArgs e)
+        {
+            string keyword = Utils.RemoveVietnameseSigns(search_tb.Text.Trim().ToLower())
+                     .Replace("'", "''"); // tránh lỗi cú pháp '
+
+            DataTable dt = dataGV.DataSource as DataTable;
+            if (dt == null) return;
+
+            DataView dv = dt.DefaultView;
+            dv.RowFilter = $"[search_nosign] LIKE '%{keyword}%'";
+        }
+
+        private void Caytrong_CB_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (!isNewState)
+                return;
+            int productSKU = Convert.ToInt32(caytrong_CB.SelectedValue);
+            int maxCount = GetMaxProductionOrderIndex(mPlantingManagement_dt, productSKU);
+            lenhSX_tb.Text = $"{productSKU.ToString()}{DateTime.Now.ToString("yy")}{(maxCount + 1).ToString("D3")}";
+        }
+
+        int GetMaxProductionOrderIndex(DataTable dt, int sku)
+        {
+            if (dt == null || dt.Rows.Count == 0)
+                return 0;
+
+            var numbers = dt.AsEnumerable()
+                .Where(r =>
+                    !r.IsNull("SKU") &&
+                    r.Field<int>("SKU") == sku &&
+                    !r.IsNull("ProductionOrder"))
+                .Select(r =>
+                {
+                    string po = r.Field<string>("ProductionOrder")?.Trim();
+                    if (string.IsNullOrEmpty(po) || po.Length < 3)
+                        return -1;
+
+                    string last3 = po.Substring(po.Length - 3);
+                    return int.TryParse(last3, out int n) ? n : -1;
+                })
+                .Where(n => n >= 0);
+
+            return numbers.Any() ? numbers.Max() : 0;
+        }
 
         //System.Data.DataTable excelData;
         //private async void button1_Click(object sender, EventArgs e)

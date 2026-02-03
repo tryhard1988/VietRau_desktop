@@ -1,4 +1,5 @@
 ﻿
+using RauViet.ui;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -2686,9 +2687,32 @@ namespace RauViet.classes
                 await con.OpenAsync();
                 string query = @"select * from DomesticLiquidationExport";
                 using (SqlCommand cmd = new SqlCommand(query, con))
-                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                 {
-                    dt.Load(reader);
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
+        }
+
+        public async Task<DataTable> getDomesticLiquidationExportAsync(int month, int year)
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
+            {
+                await con.OpenAsync();
+                string query = @"select * from DomesticLiquidationExport WHERE MONTH(ExportDate) = @Month AND YEAR(ExportDate) = @Year";
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    cmd.Parameters.Add("@Month", SqlDbType.Int).Value = month;
+                    cmd.Parameters.Add("@Year", SqlDbType.Int).Value = year;
+
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
                 }
             }
             return dt;

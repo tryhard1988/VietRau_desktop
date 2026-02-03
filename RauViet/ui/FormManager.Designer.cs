@@ -109,13 +109,15 @@
             this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripMenuItem();
             this.khoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.khoVaTu_mi = new System.Windows.Forms.ToolStripMenuItem();
+            this.plantingManagement_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.extension_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.QR_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.aaaaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadExcelOrderReportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.content_panel = new System.Windows.Forms.Panel();
-            this.plantingManagement_mi = new System.Windows.Forms.ToolStripMenuItem();
+            this.materialExport_mi = new System.Windows.Forms.ToolStripMenuItem();
+            this.materialImport_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1.SuspendLayout();
             this.LOT_menuitem.SuspendLayout();
             this.SuspendLayout();
@@ -728,7 +730,9 @@
             // 
             this.khoToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.khoVaTu_mi,
-            this.plantingManagement_mi});
+            this.plantingManagement_mi,
+            this.materialExport_mi,
+            this.materialImport_mi});
             this.khoToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.khoToolStripMenuItem.ForeColor = System.Drawing.Color.MediumBlue;
             this.khoToolStripMenuItem.Name = "khoToolStripMenuItem";
@@ -740,6 +744,12 @@
             this.khoVaTu_mi.Name = "khoVaTu_mi";
             this.khoVaTu_mi.Size = new System.Drawing.Size(181, 22);
             this.khoVaTu_mi.Text = "Kho Vật Tư";
+            // 
+            // plantingManagement_mi
+            // 
+            this.plantingManagement_mi.Name = "plantingManagement_mi";
+            this.plantingManagement_mi.Size = new System.Drawing.Size(181, 22);
+            this.plantingManagement_mi.Text = "Lịch Ươm - Trồng";
             // 
             // toolStripMenuItem2
             // 
@@ -789,11 +799,17 @@
             this.content_panel.Size = new System.Drawing.Size(1477, 491);
             this.content_panel.TabIndex = 1;
             // 
-            // plantingManagement_mi
+            // materialExport_mi
             // 
-            this.plantingManagement_mi.Name = "plantingManagement_mi";
-            this.plantingManagement_mi.Size = new System.Drawing.Size(181, 22);
-            this.plantingManagement_mi.Text = "Lịch Ươm - Trồng";
+            this.materialExport_mi.Name = "materialExport_mi";
+            this.materialExport_mi.Size = new System.Drawing.Size(181, 22);
+            this.materialExport_mi.Text = "Xuất Kho Vật Tư";
+            // 
+            // materialImport_mi
+            // 
+            this.materialImport_mi.Name = "materialImport_mi";
+            this.materialImport_mi.Size = new System.Drawing.Size(181, 22);
+            this.materialImport_mi.Text = "Nhập Kho Vật Tư";
             // 
             // FormManager
             // 
@@ -903,5 +919,7 @@
         private System.Windows.Forms.ToolStripMenuItem khoToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem khoVaTu_mi;
         private System.Windows.Forms.ToolStripMenuItem plantingManagement_mi;
+        private System.Windows.Forms.ToolStripMenuItem materialExport_mi;
+        private System.Windows.Forms.ToolStripMenuItem materialImport_mi;
     }
 }

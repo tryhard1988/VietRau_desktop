@@ -817,6 +817,7 @@ namespace RauViet.ui
         {
             DataRowView dR = (DataRowView)leaveType_cbb.SelectedItem;
 
+            if(dR == null) return;
             string leaveTypeCode = dR["LeaveTypeCode"].ToString();
             if (SQLStore_QLNS.Instance.IsDeductAnnualLeave(leaveTypeCode))
             {

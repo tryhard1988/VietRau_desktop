@@ -1,22 +1,24 @@
-﻿using RauViet.classes;
+﻿using DocumentFormat.OpenXml.Drawing;
+using RauViet.classes;
 using System;
 using System.Data;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Color = System.Drawing.Color;
 
 namespace RauViet.ui
 {
-    public partial class KhoVatTu_Materials : Form
+    public partial class KhoVatTu_MaterialExport : Form
     {
-        System.Data.DataTable mMaterial_dt, mUnit_dt, mCatelory_dt;
+        System.Data.DataTable mMaterial_dt, mEmployee_dt, mWorkType_dt, mPlantingManagement_dt, mCatelory_dt;
         private DataView mLogDV;
         private Timer CateloryDebounceTimer = new Timer { Interval = 300 };
-        private Timer UnitDebounceTimer = new Timer { Interval = 300 };
+        private Timer PlantingManagementDebounceTimer = new Timer { Interval = 300 };
         bool isNewState = false;
         private LoadingOverlay loadingOverlay;
-        public KhoVatTu_Materials()
+        public KhoVatTu_MaterialExport()
         {
             InitializeComponent();
             this.KeyPreview = true;
@@ -36,9 +38,9 @@ namespace RauViet.ui
             readOnly_btn.Click += ReadOnly_btn_Click; 
             this.KeyDown += Kho_Materials_KeyDown;
             CateloryDebounceTimer.Tick += cateloryDebounceTimer_Tick;
-            UnitDebounceTimer.Tick += unitDebounceTimer_Tick;
+            PlantingManagementDebounceTimer.Tick += plantingManagementDebounceTimer_Tick;
             catelory_CB.TextUpdate += catelory_cbb_TextUpdate;
-            unit_CBB.TextUpdate += unit_CBB_TextUpdate;
+            plantingManagement_CBB.TextUpdate += plantingManagement_CBB_TextUpdate;
             //quantity_tb.KeyPress += Tb_KeyPress_OnlyNumber;
         }
 
@@ -75,66 +77,74 @@ namespace RauViet.ui
 
             try
             {
-                var unitTask = SQLStore_KhoVatTu.Instance.GetUnitAsync();
+                string[] empKeepColumns = { "EmployeeCode", "FullName", "EmployessName_NoSign" };
+
+                
                 var cateloryTask = SQLStore_KhoVatTu.Instance.GetMaterialCategoryAsync();
+
+                var plantingManagementTask = SQLManager_KhoVatTu.Instance.getPlantingManagementAsync(false);
                 var materialTask = SQLStore_KhoVatTu.Instance.getMaterialAsync();
+                var workTypeTask = SQLStore_KhoVatTu.Instance.GetWorkTypeAsync();
+                var employeeTask = SQLStore_QLNS.Instance.GetEmployeesAsync(empKeepColumns);
                 //    var domesticLiquidationImportTask = SQLStore_Kho.Instance.getDomesticLiquidationImportAsync();
                 //    var empTask = SQLStore_QLNS.Instance.GetEmployeesAsync();
                 //    var logDataTask = SQLStore_Kho.Instance.GetDomesticLiquidationImportLogAsync();
-                await Task.WhenAll(unitTask, cateloryTask, materialTask);
+                await Task.WhenAll(plantingManagementTask, cateloryTask, materialTask, employeeTask, workTypeTask);
 
                 //    mDomesticLiquidationPrice_dt = domesticLiquidationPriceTask.Result;
                 //    mDomesticLiquidationImport_dt = domesticLiquidationImportTask.Result;
-                mUnit_dt = unitTask.Result;
+                mPlantingManagement_dt = plantingManagementTask.Result;
                 mCatelory_dt = cateloryTask.Result;
                 mMaterial_dt = materialTask.Result;
-                //    mLogDV = new DataView(logDataTask.Result);
+                mEmployee_dt = employeeTask.Result;
+                mWorkType_dt = workTypeTask.Result;
+                ////    mLogDV = new DataView(logDataTask.Result);
 
 
-                //    domesticLiquidationPrice_cbb.DataSource = mDomesticLiquidationPrice_dt;
-                //    domesticLiquidationPrice_cbb.DisplayMember = "Name_VN";  // hiển thị tên
-                //    domesticLiquidationPrice_cbb.ValueMember = "DomesticLiquidationPriceID";
-                //    domesticLiquidationPrice_cbb.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+                ////    domesticLiquidationPrice_cbb.DataSource = mDomesticLiquidationPrice_dt;
+                ////    domesticLiquidationPrice_cbb.DisplayMember = "Name_VN";  // hiển thị tên
+                ////    domesticLiquidationPrice_cbb.ValueMember = "DomesticLiquidationPriceID";
+                ////    domesticLiquidationPrice_cbb.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
 
-                unit_CBB.DataSource = mUnit_dt;
-                unit_CBB.DisplayMember = "UnitName";  // hiển thị tên
-                unit_CBB.ValueMember = "UnitID";
-                unit_CBB.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+                //unit_CBB.DataSource = mUnit_dt;
+                //unit_CBB.DisplayMember = "UnitName";  // hiển thị tên
+                //unit_CBB.ValueMember = "UnitID";
+                //unit_CBB.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
 
-                catelory_CB.DataSource = mCatelory_dt;
-                catelory_CB.DisplayMember = "CategoryName";  // hiển thị tên
-                catelory_CB.ValueMember = "CategoryID";
-                catelory_CB.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+                //catelory_CB.DataSource = mCatelory_dt;
+                //catelory_CB.DisplayMember = "CategoryName";  // hiển thị tên
+                //catelory_CB.ValueMember = "CategoryID";
+                //catelory_CB.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
 
-                dataGV.DataSource = mMaterial_dt;
-                //    log_GV.DataSource = mLogDV;
-                Utils.HideColumns(dataGV, new[] { "UnitID", "CategoryID", "MaterialID" });
-                Utils.SetGridOrdinal(mMaterial_dt, new[] { "MaterialName", "CategoryName", "UnitName" });
-                Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
-                        {"MaterialName", "Tên Vật Tư" },
-                        {"CategoryName", "Phân Loại" },
-                        {"UnitName", "Đ.Vị" }
-                    });
+                //dataGV.DataSource = mMaterial_dt;
+                ////    log_GV.DataSource = mLogDV;
+                //Utils.HideColumns(dataGV, new[] { "UnitID", "CategoryID", "MaterialID" });
+                //Utils.SetGridOrdinal(mMaterial_dt, new[] { "MaterialName", "CategoryName", "UnitName" });
+                //Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
+                //        {"MaterialName", "Tên Vật Tư" },
+                //        {"CategoryName", "Phân Loại" },
+                //        {"UnitName", "Đ.Vị" }
+                //    });
 
-                Utils.SetGridWidths(dataGV, new System.Collections.Generic.Dictionary<string, int> {
-                        {"MaterialName", 300},
-                        {"CategoryName", 150},
-                        {"UnitName",60}
-                    });
-                                                    
-                dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                //Utils.SetGridWidths(dataGV, new System.Collections.Generic.Dictionary<string, int> {
+                //        {"MaterialName", 300},
+                //        {"CategoryName", 150},
+                //        {"UnitName",60}
+                //    });
 
-                //    updateRightUI();
+                //dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
-                Utils.SetTabStopRecursive(this, false);
-                int countTab = 0;
-                materialName_tb.TabIndex = countTab++; materialName_tb.TabStop = true;
-                catelory_CB.TabIndex = countTab++; catelory_CB.TabStop = true;
-                unit_CBB.TabIndex = countTab++; unit_CBB.TabStop = true;
-                LuuThayDoiBtn.TabIndex = countTab++; LuuThayDoiBtn.TabStop = true;
+                ////    updateRightUI();
 
-                ReadOnly_btn_Click(null, null);
-                dataGV.SelectionChanged += this.dataGV_CellClick;
+                //Utils.SetTabStopRecursive(this, false);
+                //int countTab = 0;
+                //materialName_tb.TabIndex = countTab++; materialName_tb.TabStop = true;
+                //catelory_CB.TabIndex = countTab++; catelory_CB.TabStop = true;
+                //unit_CBB.TabIndex = countTab++; unit_CBB.TabStop = true;
+                //LuuThayDoiBtn.TabIndex = countTab++; LuuThayDoiBtn.TabStop = true;
+
+                //ReadOnly_btn_Click(null, null);
+                //dataGV.SelectionChanged += this.dataGV_CellClick;
 
             }
                 catch
@@ -192,23 +202,23 @@ namespace RauViet.ui
             catch { }
         }
 
-        private void unit_CBB_TextUpdate(object sender, EventArgs e)
+        private void plantingManagement_CBB_TextUpdate(object sender, EventArgs e)
         {
             // Restart timer mỗi khi gõ
-            UnitDebounceTimer.Stop();
-            UnitDebounceTimer.Start();
+            PlantingManagementDebounceTimer.Stop();
+            PlantingManagementDebounceTimer.Start();
         }
-        private void unitDebounceTimer_Tick(object sender, EventArgs e)
+        private void plantingManagementDebounceTimer_Tick(object sender, EventArgs e)
         {
             try
             {
-                UnitDebounceTimer.Stop();
+                PlantingManagementDebounceTimer.Stop();
 
-                string typed = unit_CBB.Text ?? "";
+                string typed = plantingManagement_CBB.Text ?? "";
                 string plain = Utils.RemoveVietnameseSigns(typed).ToLower();
 
                 // Filter bằng LINQ
-                var filtered = mUnit_dt.AsEnumerable()
+                var filtered = mPlantingManagement_dt.AsEnumerable()
                     .Where(r => r["UnitName_nosign"].ToString().ToLower()
                     .Contains(plain));
 
@@ -216,18 +226,18 @@ namespace RauViet.ui
                 if (filtered.Any())
                     temp = filtered.CopyToDataTable();
                 else
-                    temp = mUnit_dt.Clone(); // nếu không có kết quả thì trả về table rỗng
+                    temp = mPlantingManagement_dt.Clone(); // nếu không có kết quả thì trả về table rỗng
 
                 // Gán lại DataSource
-                unit_CBB.DataSource = temp;
-                unit_CBB.DisplayMember = "UnitName";
-                unit_CBB.ValueMember = "UnitID";
+                plantingManagement_CBB.DataSource = temp;
+                plantingManagement_CBB.DisplayMember = "UnitName";
+                plantingManagement_CBB.ValueMember = "UnitID";
 
                 // Giữ lại text người đang gõ
-                unit_CBB.DroppedDown = true;
-                unit_CBB.Text = typed;
-                unit_CBB.SelectionStart = typed.Length;
-                unit_CBB.SelectionLength = 0;
+                plantingManagement_CBB.DroppedDown = true;
+                plantingManagement_CBB.Text = typed;
+                plantingManagement_CBB.SelectionStart = typed.Length;
+                plantingManagement_CBB.SelectionLength = 0;
             }
             catch { }
         }
@@ -239,7 +249,7 @@ namespace RauViet.ui
 
         private async void updateItem(int materialID, string name, int unitID, int cateloryID)
         {
-            DataRow[] unitRows = mUnit_dt.Select($"UnitID = {unitID}");
+            DataRow[] unitRows = mPlantingManagement_dt.Select($"UnitID = {unitID}");
             DataRow[] cateloryRows = mCatelory_dt.Select($"CategoryID = {cateloryID}");
             if (unitRows.Length <= 0 || cateloryRows.Length <= 0) return;
 
@@ -289,7 +299,7 @@ namespace RauViet.ui
 
         private async void createItem(string name, int unitID, int cateloryID)
         {
-            DataRow[] unitRows = mUnit_dt.Select($"UnitID = {unitID}");
+            DataRow[] unitRows = mPlantingManagement_dt.Select($"UnitID = {unitID}");
             DataRow[] cateloryRows = mCatelory_dt.Select($"CategoryID = {cateloryID}");
             if (unitRows.Length <= 0 || cateloryRows.Length <= 0) return;
 
@@ -338,10 +348,10 @@ namespace RauViet.ui
         }
         private void saveBtn_Click(object sender, EventArgs e)
         {
-            if (unit_CBB.SelectedValue == null || catelory_CB.SelectedValue == null || string.IsNullOrEmpty(materialName_tb.Text.Trim())) return;
+            if (plantingManagement_CBB.SelectedValue == null || catelory_CB.SelectedValue == null || string.IsNullOrEmpty(materialName_tb.Text.Trim())) return;
 
             string name = materialName_tb.Text;
-            int unitID = Convert.ToInt32(unit_CBB.SelectedValue);
+            int unitID = Convert.ToInt32(plantingManagement_CBB.SelectedValue);
             int cateloryID = Convert.ToInt32(catelory_CB.SelectedValue);
 
             if (id_tb.Text.Length != 0)
@@ -406,7 +416,7 @@ namespace RauViet.ui
             isNewState = true;
             LuuThayDoiBtn.Text = "Lưu Mới";
             materialName_tb.Enabled = true;
-            unit_CBB.Enabled = true;
+            plantingManagement_CBB.Enabled = true;
             catelory_CB.Enabled = true;
 
             materialName_tb.Focus();
@@ -421,7 +431,7 @@ namespace RauViet.ui
             info_gb.BackColor = Color.DarkGray;
             isNewState = false;
             materialName_tb.Enabled = false;
-            unit_CBB.Enabled = false;
+            plantingManagement_CBB.Enabled = false;
             catelory_CB.Enabled = false;
             
             if (dataGV.SelectedRows.Count > 0)
@@ -431,7 +441,7 @@ namespace RauViet.ui
         private void Edit_btn_Click(object sender, EventArgs e)
         {
             materialName_tb.Enabled = true;
-            unit_CBB.Enabled = true;
+            plantingManagement_CBB.Enabled = true;
             catelory_CB.Enabled = true;
             edit_btn.Visible = false;
             newCustomerBtn.Visible = false;
@@ -456,9 +466,9 @@ namespace RauViet.ui
                     int CategoryID = Convert.ToInt32(cells["CategoryID"].Value);
                     string materialName = cells["MaterialName"].Value.ToString();
 
-                    if (!unit_CBB.Items.Cast<object>().Any(i => ((DataRowView)i)["UnitID"].ToString() == UnitID.ToString()))
+                    if (!plantingManagement_CBB.Items.Cast<object>().Any(i => ((DataRowView)i)["UnitID"].ToString() == UnitID.ToString()))
                     {
-                        unit_CBB.DataSource = mUnit_dt;
+                        plantingManagement_CBB.DataSource = mPlantingManagement_dt;
                     }                    
 
                     if (!catelory_CB.Items.Cast<object>().Any(i => ((DataRowView)i)["CategoryID"].ToString() == CategoryID.ToString()))
@@ -467,7 +477,7 @@ namespace RauViet.ui
                     }
 
                     id_tb.Text = cells["MaterialID"].Value.ToString();
-                    unit_CBB.SelectedValue = UnitID;
+                    plantingManagement_CBB.SelectedValue = UnitID;
                     catelory_CB.SelectedValue = CategoryID;
                     materialName_tb.Text = materialName;
 
@@ -499,54 +509,87 @@ namespace RauViet.ui
             }
         }
 
-        //private async void button1_Click(object sender, EventArgs e)
-        //{
+        private async void button1_Click(object sender, EventArgs e)
+        {
 
-        //    var unit_dt = await SQLManager_KhoVatTu.Instance.GetUnitAsync();
-        //    var materialCategory_dt = await SQLManager_KhoVatTu.Instance.GetMaterialCategoryAsync();
+            var unit_dt = await SQLManager_KhoVatTu.Instance.GetUnitAsync();
+            var materialCategory_dt = await SQLManager_KhoVatTu.Instance.GetMaterialCategoryAsync();
 
-        //    using (System.Windows.Forms.OpenFileDialog ofd = new System.Windows.Forms.OpenFileDialog())
-        //    {
-        //        ofd.Title = "Chọn file Excel";
-        //        ofd.Filter = "Excel Files|*.xlsx;*.xls|All Files|*.*";
-        //        ofd.Multiselect = false; // chỉ cho chọn 1 file
+            using (System.Windows.Forms.OpenFileDialog ofd = new System.Windows.Forms.OpenFileDialog())
+            {
+                ofd.Title = "Chọn file Excel";
+                ofd.Filter = "Excel Files|*.xlsx;*.xls|All Files|*.*";
+                ofd.Multiselect = false; // chỉ cho chọn 1 file
 
-        //        if (ofd.ShowDialog() == DialogResult.OK)
-        //        {
-        //            string filePath = ofd.FileName;
-        //            System.Data.DataTable excelData = Utils.LoadExcel_NoHeader(filePath);
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    string filePath = ofd.FileName;
+                    System.Data.DataTable excelData = Utils.LoadExcel_NoHeader(filePath);
 
-        //            excelData = excelData.AsEnumerable()
-        //                                .Where(r => !string.IsNullOrWhiteSpace(r["Column1"]?.ToString()))
-        //                                .Select(r => r["Column1"].ToString().Trim())   // chuẩn hoá
-        //                                .Distinct(StringComparer.OrdinalIgnoreCase)    // bỏ trùng, ignore case
-        //                                .OrderBy(x => x)                               // sort A-Z
-        //                                .Select(x =>
-        //                                {
-        //                                    var row = excelData.NewRow();
-        //                                    row["Column1"] = x;
-        //                                    return row;
-        //                                })
-        //                                .CopyToDataTable();
-        //            try
-        //            {
+                    Utils.AddColumnIfNotExists(excelData, "WorkTypeID", typeof(int));
+                    Utils.AddColumnIfNotExists(excelData, "MaterialID", typeof(int));
+                    Utils.AddColumnIfNotExists(excelData, "EmployeeCode", typeof(string));
+                    foreach (DataRow row in excelData.Rows)
+                    {
+                        string raw = Utils.RemoveVietnameseSigns(row["Column2"].ToString());
 
-        //                foreach (DataRow edr in excelData.Rows)
-        //                {
-        //                    string name = edr["Column1"].ToString();
-        //                    if (string.IsNullOrWhiteSpace(name.Trim())) continue;
+                        if(raw.CompareTo(Utils.RemoveVietnameseSigns("Magnesium sulphate (Green mag)")) == 0)
+                            raw = Utils.RemoveVietnameseSigns("BitterMag (MgSO4)");
+                        else if (raw.CompareTo(Utils.RemoveVietnameseSigns("YaraMila Winner")) == 0)
+                            raw = Utils.RemoveVietnameseSigns("YaraMila Winner (15-9-20)");
+                        else if (raw.CompareTo(Utils.RemoveVietnameseSigns("Solu-K 0-0-51")) == 0)
+                            raw = Utils.RemoveVietnameseSigns("Solu-K (K2SO4 Hàn Quốc)");
 
-        //                    int salaryInfoID = await SQLManager_KhoVatTu.Instance.insertCropAsync(name);
-        //                }
-        //            }
-        //            catch (Exception ex)
-        //            {
-        //                MessageBox.Show("có lỗi " + ex.Message);
-        //            }
-        //            MessageBox.Show("xong");
-        //        }
-        //    }
-        //}
+                        DataRow material = mMaterial_dt.AsEnumerable().FirstOrDefault(r => Utils.RemoveVietnameseSigns(r.Field<string>("MaterialName")).Trim().ToLower().Equals(raw.Trim().ToLower(), StringComparison.OrdinalIgnoreCase));
+                        if(material != null)
+                            row["MaterialID"] = material["MaterialID"];
+
+                        raw = Utils.RemoveVietnameseSigns(row["Column6"].ToString());
+                        DataRow employee = mEmployee_dt.AsEnumerable().FirstOrDefault(r => Utils.RemoveVietnameseSigns(r.Field<string>("FullName")).Trim().ToLower().Equals(raw.Trim().ToLower(), StringComparison.OrdinalIgnoreCase));
+                        if (employee != null)
+                            row["EmployeeCode"] = employee["EmployeeCode"];
+
+                        raw = Utils.RemoveVietnameseSigns(row["Column5"].ToString());
+                        DataRow workType = mWorkType_dt.AsEnumerable().FirstOrDefault(r => Utils.RemoveVietnameseSigns(r.Field<string>("WorkTypeName")).Trim().ToLower().Equals(raw.Trim().ToLower(), StringComparison.OrdinalIgnoreCase));
+                        if (workType != null)
+                            row["WorkTypeID"] = workType["WorkTypeID"];
+                    }
+                    
+                    dataGV.DataSource = excelData;
+                    dataGV.Columns["Column2"].Visible = false;
+                    dataGV.Columns["Column6"].Visible = false;
+                    dataGV.Columns["Column5"].Visible = false;
+                    //excelData = excelData.AsEnumerable()
+                    //                    .Where(r => !string.IsNullOrWhiteSpace(r["Column1"]?.ToString()))
+                    //                    .Select(r => r["Column1"].ToString().Trim())   // chuẩn hoá
+                    //                    .Distinct(StringComparer.OrdinalIgnoreCase)    // bỏ trùng, ignore case
+                    //                    .OrderBy(x => x)                               // sort A-Z
+                    //                    .Select(x =>
+                    //                    {
+                    //                        var row = excelData.NewRow();
+                    //                        row["Column1"] = x;
+                    //                        return row;
+                    //                    })
+                    //                    .CopyToDataTable();
+                    //try
+                    //{
+
+                    //    foreach (DataRow edr in excelData.Rows)
+                    //    {
+                    //        string name = edr["Column1"].ToString();
+                    //        if (string.IsNullOrWhiteSpace(name.Trim())) continue;
+
+                    //        int salaryInfoID = await SQLManager_KhoVatTu.Instance.insertCropAsync(name);
+                    //    }
+                    //}
+                    //catch (Exception ex)
+                    //{
+                    //    MessageBox.Show("có lỗi " + ex.Message);
+                    //}
+                    //MessageBox.Show("xong");
+                }
+            }
+        }
 
     }
 }

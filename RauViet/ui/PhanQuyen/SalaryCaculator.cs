@@ -1366,7 +1366,7 @@ namespace RauViet.ui
                     {
                         decimal value = 0;
                         decimal.TryParse(cellValue?.ToString(), out value);
-                        int result = Convert.ToInt32(value >= 1000 ? Math.Floor(value / 1000) * 1000 : value);
+                        int result = Convert.ToInt32(value >= 1000 ? Math.Floor(Math.Round(value) / 1000) * 1000 : value);
                         cell.Value = result;
                         totalMoney += result;
 
@@ -1492,7 +1492,7 @@ namespace RauViet.ui
                     {
                         decimal value = 0;
                         decimal.TryParse(cellValue?.ToString(), out value);
-                        int result = Convert.ToInt32(value >= 1000 ? Math.Floor(value / 1000) * 1000 : value);
+                        int result = Convert.ToInt32(value >= 1000 ? Math.Floor(Math.Round(value) / 1000) * 1000 : value);
                         cell.Value = result;
                         totalMoney += result;
 

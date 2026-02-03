@@ -13,9 +13,10 @@ namespace RauViet.ui
     public partial class DomesticLiquidationExport : Form
     {
         System.Data.DataTable mDomesticLiquidationPrice_dt, mDomesticLiquidationExport_dt, mEmployee_dt;
-        private DataView mLogDV;
+        private DataView mLogDV, mDomesticLiquidationExportDV;
         private Timer debounceTimer = new Timer { Interval = 300 };
         private Timer empDebounceTimer = new Timer { Interval = 300 };
+        private Timer _monthYearDebounceTimer = new Timer { Interval = 500 };
         bool isNewState = false;
         private LoadingOverlay loadingOverlay;
         public DomesticLiquidationExport()
@@ -25,10 +26,16 @@ namespace RauViet.ui
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Dock = DockStyle.Fill;
 
-            
+            monthYear_dtp.Format = DateTimePickerFormat.Custom;
+            monthYear_dtp.CustomFormat = "MM/yyyy";
+            monthYear_dtp.ShowUpDown = true;
+            monthYear_dtp.Value = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+            _monthYearDebounceTimer.Tick += MonthYearDebounceTimer_Tick;
 
             dataGV.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dataGV.MultiSelect = false;
+            Date_GV.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            Date_GV.MultiSelect = false;
 
             status_lb.Text = "";
 
@@ -55,7 +62,9 @@ namespace RauViet.ui
         {
             if (e.KeyCode == Keys.F5)
             {
-                SQLStore_Kho.Instance.removeDomesticLiquidationExport();
+                int month = monthYear_dtp.Value.Month;
+                int year = monthYear_dtp.Value.Year;
+                SQLStore_Kho.Instance.removeDomesticLiquidationExport(month, year);
                 ShowData();
             }
             else if (!isNewState && !edit_btn.Visible)
@@ -78,18 +87,26 @@ namespace RauViet.ui
         public async void ShowData()
         {
             dataGV.SelectionChanged -= this.dataGV_CellClick;
+            Date_GV.SelectionChanged -= this.Date_GV_CellClick;
             await Task.Delay(50);
             loadingOverlay = new LoadingOverlay(this);
             loadingOverlay.Show();
-
+            monthYear_dtp.ValueChanged -= monthYearDtp_ValueChanged;
             try
             {
+                int month = monthYear_dtp.Value.Month;
+                int year = monthYear_dtp.Value.Year;
                 var domesticLiquidationPriceTask = SQLStore_Kho.Instance.getDomesticLiquidationPriceAsync();
-                var domesticLiquidationExportTask = SQLStore_Kho.Instance.getDomesticLiquidationExportAsync();
+                var domesticLiquidationExportTask = SQLStore_Kho.Instance.getDomesticLiquidationExportAsync(month, year);
                 string[] keepColumns = { "EmployeeID", "EmployeeCode", "FullName", "EmployessName_NoSign" };
                 var empTask = SQLStore_QLNS.Instance.GetEmployeesAsync(keepColumns);
                 var logDataTask = SQLStore_Kho.Instance.GetDomesticLiquidationExportLogAsync();
                 await Task.WhenAll(domesticLiquidationPriceTask, domesticLiquidationExportTask, empTask, logDataTask);
+
+                Date_GV.DataSource = Utils.CreateDateTable(month, year);
+                Date_GV.Columns["Date"].HeaderText = "Ngày";
+                Date_GV.Columns["Date"].DefaultCellStyle.Format = "dd/MM/yyyy";
+
 
                 mDomesticLiquidationPrice_dt = domesticLiquidationPriceTask.Result;
                 mDomesticLiquidationExport_dt = domesticLiquidationExportTask.Result;
@@ -107,8 +124,8 @@ namespace RauViet.ui
                 employeeBuy_CBB.ValueMember = "EmployeeID";
                 employeeBuy_CBB.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
 
-
-                dataGV.DataSource = mDomesticLiquidationExport_dt;
+                mDomesticLiquidationExportDV = new DataView(mDomesticLiquidationExport_dt);
+                dataGV.DataSource = mDomesticLiquidationExportDV;
                 log_GV.DataSource = mLogDV;
                 Utils.HideColumns(dataGV, new[] { "DomesticLiquidationPriceID", "ExportID", "EmployeeBuyID" });
                 Utils.HideColumns(log_GV, new[] { "LogID", "DomesticLiquidationPriceID" });
@@ -155,7 +172,8 @@ namespace RauViet.ui
 
                 ReadOnly_btn_Click(null, null);
                 dataGV.SelectionChanged += this.dataGV_CellClick;
-
+                Date_GV.SelectionChanged += this.Date_GV_CellClick;
+                monthYear_dtp.ValueChanged += monthYearDtp_ValueChanged;
                 await Task.Delay(100);
                 loadingOverlay.Hide();
 
@@ -265,6 +283,15 @@ namespace RauViet.ui
                 employeeBuy_CBB.SelectionLength = 0;
             }
             catch { }
+        }
+
+        private void Date_GV_CellClick(object sender, EventArgs e)
+        {
+            DateTime date = Convert.ToDateTime(Date_GV.CurrentRow.Cells["Date"].Value);
+
+            string filterDate = date.ToString("MM/dd/yyyy");
+
+            mDomesticLiquidationExportDV.RowFilter =$"ExportDate = #{filterDate}#";
         }
 
         private void dataGV_CellClick(object sender, EventArgs e)
@@ -490,10 +517,12 @@ namespace RauViet.ui
 
         private void newBtn_Click(object sender, EventArgs e)
         {
+            DateTime date = Convert.ToDateTime(Date_GV.CurrentRow.Cells["Date"].Value);
+
             id_tb.Text = "";
             status_lb.Text = "";
-            quantity_tb.Text = "";        
-
+            quantity_tb.Text = "";
+            exportDate_dtp.Value = date;
             info_gb.BackColor = newCustomerBtn.BackColor;
             edit_btn.Visible = false;
             newCustomerBtn.Visible = false;
@@ -637,6 +666,19 @@ namespace RauViet.ui
         private void IsCanceled_CB_CheckedChanged(object sender, EventArgs e)
         {
             employeeBuy_CBB.Visible = !isCanceled_CB.Checked;
+        }
+
+        private void monthYearDtp_ValueChanged(object sender, EventArgs e)
+        {
+            // Mỗi lần thay đổi thì reset timer
+            _monthYearDebounceTimer.Stop();
+            _monthYearDebounceTimer.Start();
+        }
+
+        private void MonthYearDebounceTimer_Tick(object sender, EventArgs e)
+        {
+            _monthYearDebounceTimer.Stop();
+            ShowData();
         }
     }
 }

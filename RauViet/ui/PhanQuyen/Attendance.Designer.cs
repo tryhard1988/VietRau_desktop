@@ -41,6 +41,7 @@ namespace RauViet.ui
             this.status_lb = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.log_GV = new System.Windows.Forms.DataGridView();
+            this.themCacNgayTrongThang_btn = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.attendanceGV)).BeginInit();
@@ -87,6 +88,7 @@ namespace RauViet.ui
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.themCacNgayTrongThang_btn);
             this.panel1.Controls.Add(this.holiday_btn);
             this.panel1.Controls.Add(this.excelAttendance_btn);
             this.panel1.Controls.Add(this.info_gb);
@@ -106,7 +108,7 @@ namespace RauViet.ui
             this.holiday_btn.Size = new System.Drawing.Size(239, 40);
             this.holiday_btn.TabIndex = 30;
             this.holiday_btn.Text = "Cập Nhật Ngày Nghỉ Lễ";
-            this.holiday_btn.UseVisualStyleBackColor = false;            
+            this.holiday_btn.UseVisualStyleBackColor = false;
             // 
             // excelAttendance_btn
             // 
@@ -184,6 +186,18 @@ namespace RauViet.ui
             this.log_GV.Size = new System.Drawing.Size(901, 161);
             this.log_GV.TabIndex = 78;
             // 
+            // themCacNgayTrongThang_btn
+            // 
+            this.themCacNgayTrongThang_btn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(192)))));
+            this.themCacNgayTrongThang_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.themCacNgayTrongThang_btn.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.themCacNgayTrongThang_btn.Location = new System.Drawing.Point(6, 268);
+            this.themCacNgayTrongThang_btn.Name = "themCacNgayTrongThang_btn";
+            this.themCacNgayTrongThang_btn.Size = new System.Drawing.Size(291, 40);
+            this.themCacNgayTrongThang_btn.TabIndex = 31;
+            this.themCacNgayTrongThang_btn.Text = "Thêm Các Ngày Trong Tháng";
+            this.themCacNgayTrongThang_btn.UseVisualStyleBackColor = false;
+            // 
             // Attendance
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -217,5 +231,6 @@ namespace RauViet.ui
         private System.Windows.Forms.Button loadAttandance_btn;
         private System.Windows.Forms.Label status_lb;
         private System.Windows.Forms.Button holiday_btn;
+        private System.Windows.Forms.Button themCacNgayTrongThang_btn;
     }
 }

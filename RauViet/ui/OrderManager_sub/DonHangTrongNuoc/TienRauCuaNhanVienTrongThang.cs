@@ -47,7 +47,11 @@ namespace RauViet.ui
         {
             if (e.KeyCode == Keys.F5)
             {
-                SQLStore_Kho.Instance.removeDomesticLiquidationExport();
+                monthYear_dtp.ValueChanged -= monthYearDtp_ValueChanged;
+                int month = monthYear_dtp.Value.Month;
+                int year = monthYear_dtp.Value.Year;
+
+                SQLStore_Kho.Instance.removeDomesticLiquidationExport(month, year);
                 ShowData();
             }           
         }
@@ -61,13 +65,13 @@ namespace RauViet.ui
             try
             {
                 monthYear_dtp.ValueChanged -= monthYearDtp_ValueChanged;
-
-                var domesticLiquidationExportTask = SQLStore_Kho.Instance.getDomesticLiquidationExportAsync();
-                var empTask = SQLStore_QLNS.Instance.GetEmployeesAsync();
-                await Task.WhenAll(domesticLiquidationExportTask, empTask);
-
                 int month = monthYear_dtp.Value.Month;
                 int year = monthYear_dtp.Value.Year;
+
+                var domesticLiquidationExportTask = SQLStore_Kho.Instance.getDomesticLiquidationExportAsync(month, year);
+                var empTask = SQLStore_QLNS.Instance.GetEmployeesAsync();
+                await Task.WhenAll(domesticLiquidationExportTask, empTask);
+                
                 var result = domesticLiquidationExportTask.Result.AsEnumerable()
                                                         .Where(r => r.Field<DateTime>("ExportDate").Month == month && r.Field<DateTime>("ExportDate").Year == year && r.Field<Boolean>("IsCanceled") == false)
                                                         .GroupBy(r => r.Field<int>("EmployeeBuyID"))
@@ -86,16 +90,23 @@ namespace RauViet.ui
                 mTongHopBanThanhLy_dt.Columns.Add("EmployeeName", typeof(string));                
                 mTongHopBanThanhLy_dt.Columns.Add("TotalMoney", typeof(int));
 
+                int totalAmount = 0;
                 foreach (var row in result)
                 {
                     DataRow empRow = empTask.Result.AsEnumerable().FirstOrDefault(r => r.Field<int>("EmployeeID") == row.EmployeeBuyID);
-                    if(empRow != null)
+                    if (empRow != null)
+                    {
                         mTongHopBanThanhLy_dt.Rows.Add(row.EmployeeBuyID, row.ExportDate, empRow["EmployeeCode"].ToString(), row.EmployeeBuy, row.TotalMoney);
+                        totalAmount += row.TotalMoney;
+                    }
                 }
+
+                totalAmount_label.Text = totalAmount.ToString("N0");
 
                 dataGV.DataSource = mTongHopBanThanhLy_dt;
                 Utils.HideColumns(dataGV, new[] { "EmployeeID" });
-
+                Utils.SetGridFormat_NO(dataGV, "TotalMoney");
+                Utils.SetGridFormat_Alignment(dataGV, "TotalMoney", DataGridViewContentAlignment.MiddleRight);
                 Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
                     {"ExportDate", "Ngày Mua" },
                     {"EmployeeCode", "Mã NV" },
@@ -105,13 +116,16 @@ namespace RauViet.ui
 
                 Utils.SetGridWidths(dataGV, new System.Collections.Generic.Dictionary<string, int> {
                     {"EmployeeCode", 70},
-                    {"EmployeeName", 110},
-                    {"TotalMoney", 60},
+                    {"EmployeeName", 200},
+                    {"TotalMoney", 100},
                 });
                                 
                 dataGV.Columns["ExportDate"].DefaultCellStyle.Format = "MM/yyyy";
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+
+                var isLock = await SQLStore_QLNS.Instance.IsSalaryLockAsync(month, year);
+                LuuThayDoiBtn.Visible = !isLock;
 
                 monthYear_dtp.ValueChanged += monthYearDtp_ValueChanged;
                 await Task.Delay(100);

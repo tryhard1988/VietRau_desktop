@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RauViet.ui;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -20,7 +21,7 @@ namespace RauViet.classes
         DataTable mProductDomesticPrices_dt = null;
         DataTable mDomesticLiquidationPrice_dt = null;
         DataTable mDomesticLiquidationImport_dt = null;
-        DataTable mDomesticLiquidationExport_dt = null;
+       // DataTable mDomesticLiquidationExport_dt = null;
         DataTable mExportCodes_dt = null;
         DataTable mOrderDomesticCode_dt = null;
         DataTable mEmployeesInDongGoi_dt = null;
@@ -59,8 +60,9 @@ namespace RauViet.classes
         Dictionary<int, DataTable> mOrderPackingLogs;
         Dictionary<int, DataTable> mDo47Logs;
         Dictionary<int, DataTable> mLotCodeLogs;
-        Dictionary<int, DataTable> mOrderDomesticDetailLogs;
+        Dictionary<int, DataTable> mOrderDomesticDetailLogs; 
         Dictionary<int, Dictionary<int, DataTable>> mtOrderDomestics;
+        Dictionary<string, DataTable> mDomesticLiquidationExports;
 
         private SQLStore_Kho() { }
 
@@ -101,6 +103,7 @@ namespace RauViet.classes
                 mLotCodeLogs = new Dictionary<int, DataTable>();
                 mOrderDomesticDetailLogs = new Dictionary<int, DataTable>();
                 mtOrderDomestics = new Dictionary<int, Dictionary<int, DataTable>>();
+                mDomesticLiquidationExports = new Dictionary<string, DataTable>();
 
                 var productSKUTask = SQLManager_Kho.Instance.getProductSKUAsync();
                 var productPackingTask = SQLManager_Kho.Instance.getProductpackingAsync();
@@ -2165,15 +2168,22 @@ namespace RauViet.classes
             return mDomesticLiquidationImportLog_dt;
         }
 
-        public void removeDomesticLiquidationExport() { mDomesticLiquidationExport_dt = null; }
-        public async Task<DataTable> getDomesticLiquidationExportAsync()
+        public void removeDomesticLiquidationExport(int month, int year)
         {
-            if (mDomesticLiquidationExport_dt == null)
+            string key = $"{month}_{year}";
+            if (mDomesticLiquidationExports.ContainsKey(key) == true)
+                mDomesticLiquidationExports.Remove(key);
+        }
+        public async Task<DataTable> getDomesticLiquidationExportAsync(int month, int year)
+        {
+            string key = $"{month}_{year}";
+            if (!mDomesticLiquidationExports.ContainsKey(key))
             {
                 try
                 {
-                    mDomesticLiquidationExport_dt = await SQLManager_Kho.Instance.getDomesticLiquidationExportAsync();
-                    await editDomesticLiquidationExport();
+                    var data = await SQLManager_Kho.Instance.getDomesticLiquidationExportAsync(month, year);
+                    await editDomesticLiquidationExport(data);
+                    mDomesticLiquidationExports[key] = data;
                 }
                 catch
                 {
@@ -2182,21 +2192,21 @@ namespace RauViet.classes
                 }
             }
 
-            return mDomesticLiquidationExport_dt;
+            return mDomesticLiquidationExports[key];
         }
 
-        private async Task editDomesticLiquidationExport()
+        private async Task editDomesticLiquidationExport(DataTable data)
         {
             await getDomesticLiquidationPriceAsync();
 
             DataTable empData = await SQLStore_QLNS.Instance.GetEmployeesAsync();
 
-            mDomesticLiquidationExport_dt.Columns.Add(new DataColumn("Name_VN", typeof(string)));
-            mDomesticLiquidationExport_dt.Columns.Add(new DataColumn("Package", typeof(string)));
-            mDomesticLiquidationExport_dt.Columns.Add(new DataColumn("EmployeeBuy", typeof(string)));
-            mDomesticLiquidationExport_dt.Columns.Add(new DataColumn("TotalMoney", typeof(int)));
+            data.Columns.Add(new DataColumn("Name_VN", typeof(string)));
+            data.Columns.Add(new DataColumn("Package", typeof(string)));
+            data.Columns.Add(new DataColumn("EmployeeBuy", typeof(string)));
+            data.Columns.Add(new DataColumn("TotalMoney", typeof(int)));
 
-            foreach (DataRow dr in mDomesticLiquidationExport_dt.Rows)
+            foreach (DataRow dr in data.Rows)
             {
                 int domesticLiquidationPriceID = Convert.ToInt32(dr["DomesticLiquidationPriceID"]);
                 int? employeeBuyID = dr["EmployeeBuyID"] == DBNull.Value ? (int?)null  : Convert.ToInt32(dr["EmployeeBuyID"]);
@@ -2232,13 +2242,13 @@ namespace RauViet.classes
             }
 
             int count = 0;
-            mDomesticLiquidationExport_dt.Columns["ExportDate"].SetOrdinal(count++);
-            mDomesticLiquidationExport_dt.Columns["Name_VN"].SetOrdinal(count++);
-            mDomesticLiquidationExport_dt.Columns["Package"].SetOrdinal(count++);
-            mDomesticLiquidationExport_dt.Columns["Quantity"].SetOrdinal(count++);
-            mDomesticLiquidationExport_dt.Columns["Price"].SetOrdinal(count++);
-            mDomesticLiquidationExport_dt.Columns["TotalMoney"].SetOrdinal(count++);
-            mDomesticLiquidationExport_dt.Columns["EmployeeBuy"].SetOrdinal(count++);
+            data.Columns["ExportDate"].SetOrdinal(count++);
+            data.Columns["Name_VN"].SetOrdinal(count++);
+            data.Columns["Package"].SetOrdinal(count++);
+            data.Columns["Quantity"].SetOrdinal(count++);
+            data.Columns["Price"].SetOrdinal(count++);
+            data.Columns["TotalMoney"].SetOrdinal(count++);
+            data.Columns["EmployeeBuy"].SetOrdinal(count++);
         }
 
         public async Task<DataTable> GetDomesticLiquidationExportLogAsync()

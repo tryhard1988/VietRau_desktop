@@ -284,6 +284,24 @@ namespace RauViet.classes
             }
             return dt;
         }
+        public async Task<DataTable> GetWorkTypeAsync()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT * FROM WorkType";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
+        }
 
         public async Task<DataTable> GetMaterialCategoryAsync()
         {
@@ -315,6 +333,26 @@ namespace RauViet.classes
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 {
                     cmd.Parameters.Add("@Year", SqlDbType.Int).Value = year;
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
+        }
+
+        public async Task<DataTable> getPlantingManagementAsync(bool isComplete)
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT * FROM PlantingManagement WHERE IsCompleted = @IsCompleted;";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    cmd.Parameters.Add("@IsCompleted", SqlDbType.Bit).Value = isComplete;
                     using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                     {
                         dt.Load(reader);
@@ -401,6 +439,25 @@ namespace RauViet.classes
                         cmd.Parameters.AddWithValue("@Supervisor", Supervisor);
                         cmd.Parameters.AddWithValue("@Note", Note);
                         cmd.Parameters.AddWithValue("@IsCompleted", IsCompleted);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+                return true;
+            }
+            catch { return false; }
+        }
+
+        public async Task<bool> deletetPlantingManagementAsync(int PlantingID)
+        {
+            string query = "DELETE FROM PlantingManagement WHERE PlantingID=@PlantingID";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@PlantingID", PlantingID);
                         await cmd.ExecuteNonQueryAsync();
                     }
                 }

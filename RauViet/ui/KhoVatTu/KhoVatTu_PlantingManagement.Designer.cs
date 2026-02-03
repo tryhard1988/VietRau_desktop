@@ -32,6 +32,8 @@ namespace RauViet.ui
             this.panel1 = new System.Windows.Forms.Panel();
             this.label4 = new System.Windows.Forms.Label();
             this.log_GV = new System.Windows.Forms.DataGridView();
+            this.monthYear_dtp = new System.Windows.Forms.DateTimePicker();
+            this.label12 = new System.Windows.Forms.Label();
             this.readOnly_btn = new System.Windows.Forms.Button();
             this.edit_btn = new System.Windows.Forms.Button();
             this.newCustomerBtn = new System.Windows.Forms.Button();
@@ -62,22 +64,23 @@ namespace RauViet.ui
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
             this.dataGV = new System.Windows.Forms.DataGridView();
+            this.panel4 = new System.Windows.Forms.Panel();
+            this.search_tb = new System.Windows.Forms.TextBox();
             this.panel3 = new System.Windows.Forms.Panel();
-            this.monthYear_dtp = new System.Windows.Forms.DateTimePicker();
-            this.label12 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.log_GV)).BeginInit();
             this.info_gb.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
+            this.panel4.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.monthYear_dtp);
-            this.panel1.Controls.Add(this.label12);
             this.panel1.Controls.Add(this.label4);
             this.panel1.Controls.Add(this.log_GV);
+            this.panel1.Controls.Add(this.monthYear_dtp);
+            this.panel1.Controls.Add(this.label12);
             this.panel1.Controls.Add(this.readOnly_btn);
             this.panel1.Controls.Add(this.edit_btn);
             this.panel1.Controls.Add(this.newCustomerBtn);
@@ -100,7 +103,7 @@ namespace RauViet.ui
             this.label4.Location = new System.Drawing.Point(0, 578);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(533, 23);
-            this.label4.TabIndex = 70;
+            this.label4.TabIndex = 74;
             this.label4.Text = "Lịch sử thay đổi";
             this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
@@ -114,7 +117,25 @@ namespace RauViet.ui
             this.log_GV.Name = "log_GV";
             this.log_GV.ReadOnly = true;
             this.log_GV.Size = new System.Drawing.Size(533, 140);
-            this.log_GV.TabIndex = 69;
+            this.log_GV.TabIndex = 73;
+            // 
+            // monthYear_dtp
+            // 
+            this.monthYear_dtp.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.monthYear_dtp.Location = new System.Drawing.Point(246, 39);
+            this.monthYear_dtp.Name = "monthYear_dtp";
+            this.monthYear_dtp.Size = new System.Drawing.Size(72, 26);
+            this.monthYear_dtp.TabIndex = 72;
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label12.Location = new System.Drawing.Point(196, 41);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(46, 20);
+            this.label12.TabIndex = 71;
+            this.label12.Text = "Năm:";
             // 
             // readOnly_btn
             // 
@@ -308,7 +329,7 @@ namespace RauViet.ui
             // 
             this.lenhSX_tb.Location = new System.Drawing.Point(182, 17);
             this.lenhSX_tb.Name = "lenhSX_tb";
-            this.lenhSX_tb.Size = new System.Drawing.Size(164, 23);
+            this.lenhSX_tb.Size = new System.Drawing.Size(139, 23);
             this.lenhSX_tb.TabIndex = 68;
             // 
             // caytrong_CB
@@ -389,6 +410,7 @@ namespace RauViet.ui
             // panel2
             // 
             this.panel2.Controls.Add(this.dataGV);
+            this.panel2.Controls.Add(this.panel4);
             this.panel2.Controls.Add(this.panel3);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel2.Location = new System.Drawing.Point(0, 0);
@@ -402,11 +424,28 @@ namespace RauViet.ui
             this.dataGV.AllowUserToDeleteRows = false;
             this.dataGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGV.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dataGV.Location = new System.Drawing.Point(0, 0);
+            this.dataGV.Location = new System.Drawing.Point(0, 30);
             this.dataGV.Name = "dataGV";
             this.dataGV.ReadOnly = true;
-            this.dataGV.Size = new System.Drawing.Size(911, 713);
-            this.dataGV.TabIndex = 71;
+            this.dataGV.Size = new System.Drawing.Size(911, 683);
+            this.dataGV.TabIndex = 73;
+            // 
+            // panel4
+            // 
+            this.panel4.Controls.Add(this.search_tb);
+            this.panel4.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel4.Location = new System.Drawing.Point(0, 0);
+            this.panel4.Name = "panel4";
+            this.panel4.Size = new System.Drawing.Size(911, 30);
+            this.panel4.TabIndex = 1;
+            // 
+            // search_tb
+            // 
+            this.search_tb.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.search_tb.Location = new System.Drawing.Point(12, 3);
+            this.search_tb.Name = "search_tb";
+            this.search_tb.Size = new System.Drawing.Size(192, 26);
+            this.search_tb.TabIndex = 69;
             // 
             // panel3
             // 
@@ -415,24 +454,6 @@ namespace RauViet.ui
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(911, 28);
             this.panel3.TabIndex = 0;
-            // 
-            // monthYear_dtp
-            // 
-            this.monthYear_dtp.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.monthYear_dtp.Location = new System.Drawing.Point(246, 39);
-            this.monthYear_dtp.Name = "monthYear_dtp";
-            this.monthYear_dtp.Size = new System.Drawing.Size(72, 26);
-            this.monthYear_dtp.TabIndex = 72;
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label12.Location = new System.Drawing.Point(196, 41);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(46, 20);
-            this.label12.TabIndex = 71;
-            this.label12.Text = "Năm:";
             // 
             // KhoVatTu_PlantingManagement
             // 
@@ -450,6 +471,8 @@ namespace RauViet.ui
             this.info_gb.PerformLayout();
             this.panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).EndInit();
+            this.panel4.ResumeLayout(false);
+            this.panel4.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -483,13 +506,15 @@ namespace RauViet.ui
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox note_tb;
         private System.Windows.Forms.Label label11;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.DataGridView log_GV;
         private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.DataGridView dataGV;
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.CheckBox complete_cb;
         private System.Windows.Forms.DateTimePicker monthYear_dtp;
         private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.DataGridView log_GV;
+        private System.Windows.Forms.DataGridView dataGV;
+        private System.Windows.Forms.Panel panel4;
+        private System.Windows.Forms.TextBox search_tb;
     }
 }

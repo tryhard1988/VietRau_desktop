@@ -1,7 +1,7 @@
 ﻿
 namespace RauViet.ui
 {
-    partial class KhoVatTu_Materials
+    partial class KhoVatTu_MaterialExport
     {
         /// <summary>
         /// Required designer variable.
@@ -33,13 +33,14 @@ namespace RauViet.ui
             this.label4 = new System.Windows.Forms.Label();
             this.log_GV = new System.Windows.Forms.DataGridView();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.button1 = new System.Windows.Forms.Button();
             this.readOnly_btn = new System.Windows.Forms.Button();
             this.edit_btn = new System.Windows.Forms.Button();
             this.newCustomerBtn = new System.Windows.Forms.Button();
             this.info_gb = new System.Windows.Forms.GroupBox();
             this.materialName_tb = new System.Windows.Forms.TextBox();
             this.catelory_CB = new System.Windows.Forms.ComboBox();
-            this.unit_CBB = new System.Windows.Forms.ComboBox();
+            this.plantingManagement_CBB = new System.Windows.Forms.ComboBox();
             this.label2 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
@@ -91,6 +92,7 @@ namespace RauViet.ui
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.button1);
             this.panel1.Controls.Add(this.readOnly_btn);
             this.panel1.Controls.Add(this.edit_btn);
             this.panel1.Controls.Add(this.newCustomerBtn);
@@ -103,6 +105,18 @@ namespace RauViet.ui
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(533, 433);
             this.panel1.TabIndex = 69;
+            // 
+            // button1
+            // 
+            this.button1.BackColor = System.Drawing.SystemColors.Highlight;
+            this.button1.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button1.Location = new System.Drawing.Point(91, 344);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(104, 43);
+            this.button1.TabIndex = 49;
+            this.button1.Text = "Lưu";
+            this.button1.UseVisualStyleBackColor = false;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // readOnly_btn
             // 
@@ -141,7 +155,7 @@ namespace RauViet.ui
             // 
             this.info_gb.Controls.Add(this.materialName_tb);
             this.info_gb.Controls.Add(this.catelory_CB);
-            this.info_gb.Controls.Add(this.unit_CBB);
+            this.info_gb.Controls.Add(this.plantingManagement_CBB);
             this.info_gb.Controls.Add(this.label2);
             this.info_gb.Controls.Add(this.label7);
             this.info_gb.Controls.Add(this.label1);
@@ -168,14 +182,14 @@ namespace RauViet.ui
             this.catelory_CB.Size = new System.Drawing.Size(193, 24);
             this.catelory_CB.TabIndex = 67;
             // 
-            // unit_CBB
+            // plantingManagement_CBB
             // 
-            this.unit_CBB.FormattingEnabled = true;
-            this.unit_CBB.IntegralHeight = false;
-            this.unit_CBB.Location = new System.Drawing.Point(131, 100);
-            this.unit_CBB.Name = "unit_CBB";
-            this.unit_CBB.Size = new System.Drawing.Size(84, 24);
-            this.unit_CBB.TabIndex = 66;
+            this.plantingManagement_CBB.FormattingEnabled = true;
+            this.plantingManagement_CBB.IntegralHeight = false;
+            this.plantingManagement_CBB.Location = new System.Drawing.Point(131, 100);
+            this.plantingManagement_CBB.Name = "plantingManagement_CBB";
+            this.plantingManagement_CBB.Size = new System.Drawing.Size(84, 24);
+            this.plantingManagement_CBB.TabIndex = 66;
             // 
             // label2
             // 
@@ -234,7 +248,7 @@ namespace RauViet.ui
             this.LuuThayDoiBtn.Text = "Lưu";
             this.LuuThayDoiBtn.UseVisualStyleBackColor = false;
             // 
-            // KhoVatTu_Materials
+            // KhoVatTu_MaterialExport
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -243,7 +257,7 @@ namespace RauViet.ui
             this.Controls.Add(this.label4);
             this.Controls.Add(this.log_GV);
             this.Controls.Add(this.dataGV);
-            this.Name = "KhoVatTu_Materials";
+            this.Name = "KhoVatTu_MaterialExport";
             this.Text = "FormTableData";
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.log_GV)).EndInit();
@@ -270,9 +284,10 @@ namespace RauViet.ui
         private System.Windows.Forms.TextBox id_tb;
         private System.Windows.Forms.Label status_lb;
         private System.Windows.Forms.Button LuuThayDoiBtn;
-        private System.Windows.Forms.ComboBox unit_CBB;
+        private System.Windows.Forms.ComboBox plantingManagement_CBB;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.ComboBox catelory_CB;
         private System.Windows.Forms.TextBox materialName_tb;
+        private System.Windows.Forms.Button button1;
     }
 }

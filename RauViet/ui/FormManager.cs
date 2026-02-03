@@ -256,7 +256,7 @@ namespace RauViet.ui
 
             khoVaTu_mi.Click += khoVaTu_mi_Click;
             plantingManagement_mi.Click += plantingManagement_mi_Click;
-
+            materialExport_mi.Click += materialExport_mi_Click;
 
 
             historyLogin_mi.Click += HistoryLogin_mi_Click;
@@ -366,7 +366,8 @@ namespace RauViet.ui
             VegetableWarehouseTransaction,
             ThongKeTonKhoHangRauCu,
             KhoVatTu_Materials,
-            KhoVatTu_PlantingManagement
+            KhoVatTu_PlantingManagement,
+            KhoVatTu_MaterialExport
         }
 
         private void openCurrentForm(EForm status)
@@ -570,7 +571,10 @@ namespace RauViet.ui
                     SwitchChildForm<KhoVatTu_Materials>("Kho Vật Tư");
                     break;
                 case EForm.KhoVatTu_PlantingManagement:
-                    SwitchChildForm<KhoVatTu_PlantingManagement>("Lịch Ươm - Trồng ");
+                    SwitchChildForm<KhoVatTu_PlantingManagement>("Lịch Ươm - Trồng");
+                    break;
+                case EForm.KhoVatTu_MaterialExport:
+                    SwitchChildForm<KhoVatTu_MaterialExport>("Xuất Kho Vật Tư");
                     break;
             }
             
@@ -645,6 +649,7 @@ namespace RauViet.ui
         private void ResoncileDomesticDebts_Year_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.ResoncileDomesticDebts_Year); }
         private void khoVaTu_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.KhoVatTu_Materials); }
         private void plantingManagement_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.KhoVatTu_PlantingManagement); }
+        private void materialExport_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.KhoVatTu_MaterialExport); }
         private async void checkLoginTimer_Tick(object sender, EventArgs e)
         {
             var isHave = await SQLManager.Instance.HaveOtherComputerLoginAsync();

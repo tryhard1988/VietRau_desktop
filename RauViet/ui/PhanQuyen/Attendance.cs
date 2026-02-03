@@ -55,6 +55,7 @@ namespace RauViet.ui
 
             attendanceGV.CellParsing += AttendanceGV_CellParsing;
             attendanceGV.SelectionChanged += AttendanceGV_SelectionChanged;
+            themCacNgayTrongThang_btn.Click += ThemCacNgayTrongThang_btn_Click;
 
             this.KeyDown += Attendance_KeyDown;
         }
@@ -894,6 +895,64 @@ namespace RauViet.ui
             {
                 Console.WriteLine("ERROR: " + ex.Message);
             }
+        }
+
+        private async void ThemCacNgayTrongThang_btn_Click(object sender, EventArgs e)
+        {
+            DialogResult dialogResult = MessageBox.Show($"Chắc Chắn Chưa?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (dialogResult != DialogResult.Yes)
+                return;
+            
+            if (dataGV.CurrentRow == null) return;
+
+            int month = monthYearDtp.Value.Date.Month;
+            int year = monthYearDtp.Value.Date.Year;
+
+            int daysInMonth = DateTime.DaysInMonth(year, month);
+
+            string employeeCode = dataGV.CurrentRow.Cells["EmployeeCode"].Value.ToString();
+
+            if (string.IsNullOrWhiteSpace("employeeCode")) return;
+
+            // Thêm dữ liệu vào Attendance
+            List<(string EmployeeCode, DateTime WorkDate, decimal WorkingHours, string Note, string log)> attendanceData = new List<(string, DateTime, decimal, string, string)>();
+            List<(string EmployeeCode, string Description, DateTime WorkDate, decimal WorkingHours, string Note, string ActionBy)> logs = new List<(string, string, DateTime, decimal, string, string)>();
+
+            string contractTypeCode = employeeDict[employeeCode].ContractTypeCode;
+
+            string note = "Làm việc từ xa";
+            for (int day = 1; day <= daysInMonth; day++)
+            {
+                DateTime date = new DateTime(year, month, day);
+
+                DataRow newRow = mAttendamce_dt.NewRow();
+                int workHour = date.DayOfWeek == DayOfWeek.Sunday ? 0 : 8;
+
+                newRow["EmployeeCode"] = employeeCode;
+                newRow["WorkDate"] = date;
+                newRow["Note"] = note;
+                newRow["WorkingHours"] = workHour;
+                newRow["AttendanceLog"] = "";
+
+                mAttendamce_dt.Rows.Add(newRow);
+                attendanceData.Add((employeeCode, date, workHour, note, ""));
+                logs.Add((employeeCode, "Tạo dư liệu bằng tay", date, workHour, note, UserManager.Instance.fullName));
+            }
+
+
+            Boolean iSuccess = await SQLManager_QLNS.Instance.UpsertAttendanceBatchAsync(attendanceData);
+
+            var updatedLogs = logs.Select(item =>
+                                (
+                                    item.EmployeeCode,
+                                    Description: item.Description + (iSuccess ? " Success" : "Fail"),   // <— sửa ở đây
+                                    item.WorkDate,
+                                    item.WorkingHours,
+                                    item.Note,
+                                    item.ActionBy
+                                )).ToList();
+            _ = SQLManager_QLNS.Instance.InsertAttendanceLogListAsync(updatedLogs);
         }
     }
 }

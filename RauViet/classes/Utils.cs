@@ -523,4 +523,19 @@ public static class Utils
             CultureInfo.InvariantCulture
         );
     }
+
+    public static DataTable CreateDateTable(int month, int year)
+    {
+        DataTable dt = new DataTable();
+        dt.Columns.Add("Date", typeof(DateTime));
+
+        int daysInMonth = DateTime.DaysInMonth(year, month);
+
+        for (int day = 1; day <= daysInMonth; day++)
+        {
+            dt.Rows.Add(new DateTime(year, month, day));
+        }
+
+        return dt;
+    }
 }
