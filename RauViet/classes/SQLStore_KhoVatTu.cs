@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DocumentFormat.OpenXml.Bibliography;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -20,6 +21,7 @@ namespace RauViet.classes
         DataTable mMaterial_dt = null;
 
         Dictionary<int, DataTable> mPlantingManagements = null;
+        Dictionary<string, DataTable> mMaterialExports = null;
 
         private SQLStore_KhoVatTu() { }
 
@@ -40,23 +42,28 @@ namespace RauViet.classes
         {
             try
             {
+                int year = DateTime.Now.Year;
+
                 mPlantingManagements = new Dictionary<int, DataTable>();
+                mMaterialExports = new Dictionary<string, DataTable>();
 
                 var unitTask = SQLManager_KhoVatTu.Instance.GetUnitAsync();
                 var MaterialCategoryTask = SQLManager_KhoVatTu.Instance.GetMaterialCategoryAsync();
                 var MaterialTask = SQLManager_KhoVatTu.Instance.GetMaterialAsync();
                 var WorkTypeTask = SQLManager_KhoVatTu.Instance.GetWorkTypeAsync();
-
-                await Task.WhenAll(unitTask, MaterialCategoryTask, MaterialTask, WorkTypeTask);
+                var PlantingManagementTask = SQLManager_KhoVatTu.Instance.getPlantingManagementAsync(year);
+                await Task.WhenAll(unitTask, MaterialCategoryTask, MaterialTask, WorkTypeTask, PlantingManagementTask);
 
                 if (unitTask.Status == TaskStatus.RanToCompletion && unitTask.Result != null) mUnit_dt = unitTask.Result;
                 if (MaterialCategoryTask.Status == TaskStatus.RanToCompletion && MaterialCategoryTask.Result != null) mMaterialCategory_dt = MaterialCategoryTask.Result;
                 if (MaterialTask.Status == TaskStatus.RanToCompletion && MaterialTask.Result != null) mMaterial_dt = MaterialTask.Result;
                 if (WorkTypeTask.Status == TaskStatus.RanToCompletion && WorkTypeTask.Result != null) mWorkType_dt = WorkTypeTask.Result;
+                if (PlantingManagementTask.Status == TaskStatus.RanToCompletion && PlantingManagementTask.Result != null) mPlantingManagements[year] = PlantingManagementTask.Result;
 
                 editMaterial(mMaterial_dt);
                 editCategory(mMaterialCategory_dt);
                 editUnit(mUnit_dt);
+                editPlantingManagement(PlantingManagementTask.Result);
             }
             catch
             {
@@ -201,7 +208,7 @@ namespace RauViet.classes
                 int? department = row.Field<int?>("Department");
                 string Supervisor = row["Supervisor"].ToString();
                 
-                DataRow productRow = product_dt.AsEnumerable().FirstOrDefault(r => r.Field<int>("SKU") == sku);
+                DataRow productRow = product_dt.AsEnumerable().FirstOrDefault(r => r.Field<int>("ProductSKU") == sku);
                 if (productRow != null)
                     row["PlantName"] = productRow["ProductNameVN"];
 
@@ -233,6 +240,55 @@ namespace RauViet.classes
             }
 
             return mWorkType_dt;
+        }
+
+        public async Task<DataTable> GetMaterialExportAsync(int month, int year)
+        {
+            string key = $"{month}_{year}";
+            if (!mMaterialExports.ContainsKey(key))
+            {
+                try
+                {
+                    var data = await SQLManager_KhoVatTu.Instance.GetMaterialExportAsync(month, year);
+                    editMaterialExport(data, month, year);
+                    mMaterialExports[key] = data;
+                }
+                catch
+                {
+                    Console.WriteLine("error GetMaterialExportAsync SQLStore");
+                    return null;
+                }
+            }
+
+            return mMaterialExports[key];
+        }
+
+        private async void editMaterialExport(DataTable data, int month, int year)
+        {
+            data.Columns.Add("PlantName", typeof(string));
+            data.Columns.Add("RecieverName", typeof(string));
+
+            DataTable employee_dt = await SQLStore_QLNS.Instance.GetEmployeesAsync();
+            //   DataTable product_dt = await SQLStore_Kho.Instance.getProductSKUAsync();
+            DataTable mPlanting_dt = await SQLStore_KhoVatTu.Instance.getPlantingManagementAsync(year);
+
+            foreach (DataRow row in data.Rows)
+            {
+                int? plantingID = row.Field<int?>("PlantingID");
+                string Receiver = row["Receiver"].ToString();
+
+                if (plantingID.HasValue)
+                {
+                    DataRow plantingRow = mPlanting_dt.AsEnumerable().FirstOrDefault(r => r.Field<int>("PlantingID") == plantingID);
+                    if (plantingRow != null)
+                        row["PlantName"] = plantingRow["PlantName"];
+                }
+
+                DataRow employeeRow = employee_dt.AsEnumerable().FirstOrDefault(r => r.Field<string>("EmployeeCode") == Receiver);
+                if (employeeRow != null)
+                    row["RecieverName"] = employeeRow["FullName"];
+
+            }
         }
     }
     

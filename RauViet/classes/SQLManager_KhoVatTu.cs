@@ -1,4 +1,5 @@
 ﻿
+using Microsoft.Office.Interop.Excel;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -6,6 +7,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Media.Media3D;
 using DataTable = System.Data.DataTable;
 
 namespace RauViet.classes
@@ -464,6 +466,67 @@ namespace RauViet.classes
                 return true;
             }
             catch { return false; }
+        }
+
+        public async Task<int> insertMaterialExportAsync(DateTime ExportDate, int MaterialID, decimal Amount, int? PlantingID, int? WorkTypeID, string Receiver, string Note)
+        {
+            int newId = -1;
+
+            string insertQuery = @"INSERT INTO MaterialExport (ExportDate, MaterialID, Amount, PlantingID, WorkTypeID, Receiver, Note)
+                                    OUTPUT INSERTED.ExportID
+                                    VALUES (@ExportDate, @MaterialID, @Amount, @PlantingID, @WorkTypeID, @Receiver, @Note)";
+
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
+                {
+                    await con.OpenAsync();
+
+                    // 2️⃣ Insert và lấy ID mới
+                    using (SqlCommand cmd = new SqlCommand(insertQuery, con))
+                    {
+                        cmd.Parameters.Add("@ExportDate", SqlDbType.DateTime).Value = ExportDate;
+                        cmd.Parameters.Add("@MaterialID", SqlDbType.Int).Value = MaterialID;
+                        cmd.Parameters.Add("@Amount", SqlDbType.Decimal).Value = Amount;
+                        cmd.Parameters.Add("@PlantingID", SqlDbType.Int).Value = PlantingID.HasValue ? (object)PlantingID.Value : DBNull.Value;
+                        cmd.Parameters.Add("@WorkTypeID", SqlDbType.Int).Value = WorkTypeID.HasValue ? (object)WorkTypeID.Value : DBNull.Value;
+                        cmd.Parameters.Add("@Receiver", SqlDbType.NVarChar).Value = Receiver;
+                        cmd.Parameters.Add("@Note", SqlDbType.NVarChar).Value = Note;
+
+                        object result = await cmd.ExecuteScalarAsync();
+                        if (result != null)
+                            newId = Convert.ToInt32(result);
+                    }
+                }
+
+                return newId;
+            }
+            catch
+            {
+                return -1;
+            }
+        }
+
+        public async Task<DataTable> GetMaterialExportAsync(int month, int year)
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT * FROM MaterialExport WHERE MONTH(ExportDate) = @Month AND YEAR(ExportDate) = @Year;";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    cmd.Parameters.Add("@Month", SqlDbType.Int).Value = month;
+                    cmd.Parameters.Add("@Year", SqlDbType.Int).Value = year;
+
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
         }
     }
 }

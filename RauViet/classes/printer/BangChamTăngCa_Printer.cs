@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.Drawing.Printing;
@@ -13,11 +14,11 @@ public class BangChamTăngCa_Printer
     private int startX = 0;
     private int lineHeight = 40;
     private int lineHeight1 = 25;
-    private string departmentName;
+    private List<string> departmentNames;
 
-    public BangChamTăngCa_Printer(string departmentName, DataTable employeeData, DataTable overtimeData, int month, int year)
+    public BangChamTăngCa_Printer(List<string> departmentNames, DataTable employeeData, DataTable overtimeData, int month, int year)
     {
-        this.departmentName = departmentName;
+        this.departmentNames = departmentNames;
         this.employeeData = employeeData;
         this.overtimeData = overtimeData;
         this.month = month;
@@ -117,6 +118,7 @@ public class BangChamTăngCa_Printer
 
         Font header1Font = new Font("Times New Roman", 7, FontStyle.Bold);
         Font headerFont = new Font("Times New Roman", 14, FontStyle.Bold);
+        Font headerFont1 = new Font("Times New Roman", 11, FontStyle.Regular);
         Font normalFont = new Font("Times New Roman", 7);
         Font tableHeaderFont = new Font("Times New Roman", 7, FontStyle.Bold);
 
@@ -134,7 +136,8 @@ public class BangChamTăngCa_Printer
             g.DrawString($"Địa Chỉ:   {Utils.getCompanyAddress()}", normalFont, Brushes.Black, startX, y);
             y += lineHeight1;
 
-            g.DrawString($"Phòng Ban: {departmentName}", headerFont, Brushes.Black, startX, y);
+            string result = string.Join(", ", departmentNames);
+            g.DrawString($"Phòng Ban: {result}", headerFont1, Brushes.Black, startX, y);
 
             string titleStr = $"BẢNG DÒ TĂNG CA T{month}/{year}";
             SizeF codeSize = g.MeasureString(titleStr, headerFont);
@@ -195,7 +198,7 @@ public class BangChamTăngCa_Printer
             DataRow row = employeeData.Rows[rowIndex];
 
             string departmentName = row["DepartmentName"].ToString();
-            if (departmentName.CompareTo(this.departmentName) != 0) 
+            if (!this.departmentNames.Contains(departmentName)) 
             {
                 rowIndex++;
                 continue; 

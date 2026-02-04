@@ -51,8 +51,6 @@ namespace RauViet.ui
             this.label6 = new System.Windows.Forms.Label();
             this.ngayUom_dtp = new System.Windows.Forms.DateTimePicker();
             this.label5 = new System.Windows.Forms.Label();
-            this.soLuong_tb = new System.Windows.Forms.TextBox();
-            this.label3 = new System.Windows.Forms.Label();
             this.lenhSX_tb = new System.Windows.Forms.TextBox();
             this.caytrong_CB = new System.Windows.Forms.ComboBox();
             this.deparment_CBB = new System.Windows.Forms.ComboBox();
@@ -67,6 +65,11 @@ namespace RauViet.ui
             this.panel4 = new System.Windows.Forms.Panel();
             this.search_tb = new System.Windows.Forms.TextBox();
             this.panel3 = new System.Windows.Forms.Panel();
+            this.thuThu_lb = new System.Windows.Forms.Label();
+            this.thuTrong_lb = new System.Windows.Forms.Label();
+            this.thuUom_lb = new System.Windows.Forms.Label();
+            this.soLuong_tb = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.log_GV)).BeginInit();
             this.info_gb.SuspendLayout();
@@ -172,6 +175,11 @@ namespace RauViet.ui
             // 
             // info_gb
             // 
+            this.info_gb.Controls.Add(this.soLuong_tb);
+            this.info_gb.Controls.Add(this.label3);
+            this.info_gb.Controls.Add(this.thuUom_lb);
+            this.info_gb.Controls.Add(this.thuTrong_lb);
+            this.info_gb.Controls.Add(this.thuThu_lb);
             this.info_gb.Controls.Add(this.complete_cb);
             this.info_gb.Controls.Add(this.note_tb);
             this.info_gb.Controls.Add(this.label11);
@@ -185,8 +193,6 @@ namespace RauViet.ui
             this.info_gb.Controls.Add(this.label6);
             this.info_gb.Controls.Add(this.ngayUom_dtp);
             this.info_gb.Controls.Add(this.label5);
-            this.info_gb.Controls.Add(this.soLuong_tb);
-            this.info_gb.Controls.Add(this.label3);
             this.info_gb.Controls.Add(this.lenhSX_tb);
             this.info_gb.Controls.Add(this.caytrong_CB);
             this.info_gb.Controls.Add(this.deparment_CBB);
@@ -263,7 +269,7 @@ namespace RauViet.ui
             // 
             // ngaythu_dtp
             // 
-            this.ngaythu_dtp.Location = new System.Drawing.Point(182, 183);
+            this.ngaythu_dtp.Location = new System.Drawing.Point(182, 149);
             this.ngaythu_dtp.Name = "ngaythu_dtp";
             this.ngaythu_dtp.Size = new System.Drawing.Size(104, 23);
             this.ngaythu_dtp.TabIndex = 76;
@@ -271,7 +277,7 @@ namespace RauViet.ui
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(24, 185);
+            this.label8.Location = new System.Drawing.Point(24, 151);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(66, 16);
             this.label8.TabIndex = 75;
@@ -279,7 +285,7 @@ namespace RauViet.ui
             // 
             // ngaytrong_dtp
             // 
-            this.ngaytrong_dtp.Location = new System.Drawing.Point(182, 150);
+            this.ngaytrong_dtp.Location = new System.Drawing.Point(182, 116);
             this.ngaytrong_dtp.Name = "ngaytrong_dtp";
             this.ngaytrong_dtp.Size = new System.Drawing.Size(104, 23);
             this.ngaytrong_dtp.TabIndex = 74;
@@ -287,7 +293,7 @@ namespace RauViet.ui
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(24, 152);
+            this.label6.Location = new System.Drawing.Point(24, 118);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(78, 16);
             this.label6.TabIndex = 73;
@@ -295,7 +301,9 @@ namespace RauViet.ui
             // 
             // ngayUom_dtp
             // 
-            this.ngayUom_dtp.Location = new System.Drawing.Point(182, 117);
+            this.ngayUom_dtp.CalendarTitleBackColor = System.Drawing.SystemColors.ControlText;
+            this.ngayUom_dtp.CalendarTitleForeColor = System.Drawing.SystemColors.Highlight;
+            this.ngayUom_dtp.Location = new System.Drawing.Point(182, 83);
             this.ngayUom_dtp.Name = "ngayUom_dtp";
             this.ngayUom_dtp.Size = new System.Drawing.Size(104, 23);
             this.ngayUom_dtp.TabIndex = 72;
@@ -303,27 +311,11 @@ namespace RauViet.ui
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(24, 119);
+            this.label5.Location = new System.Drawing.Point(24, 85);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(71, 16);
             this.label5.TabIndex = 71;
             this.label5.Text = "Ngày Ươm:";
-            // 
-            // soLuong_tb
-            // 
-            this.soLuong_tb.Location = new System.Drawing.Point(182, 84);
-            this.soLuong_tb.Name = "soLuong_tb";
-            this.soLuong_tb.Size = new System.Drawing.Size(76, 23);
-            this.soLuong_tb.TabIndex = 70;
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(24, 86);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(91, 16);
-            this.label3.TabIndex = 69;
-            this.label3.Text = "Số Lượng Cây:";
             // 
             // lenhSX_tb
             // 
@@ -455,6 +447,49 @@ namespace RauViet.ui
             this.panel3.Size = new System.Drawing.Size(911, 28);
             this.panel3.TabIndex = 0;
             // 
+            // thuThu_lb
+            // 
+            this.thuThu_lb.AutoSize = true;
+            this.thuThu_lb.Location = new System.Drawing.Point(289, 151);
+            this.thuThu_lb.Name = "thuThu_lb";
+            this.thuThu_lb.Size = new System.Drawing.Size(66, 16);
+            this.thuThu_lb.TabIndex = 84;
+            this.thuThu_lb.Text = "Ngày Thu:";
+            // 
+            // thuTrong_lb
+            // 
+            this.thuTrong_lb.AutoSize = true;
+            this.thuTrong_lb.Location = new System.Drawing.Point(289, 121);
+            this.thuTrong_lb.Name = "thuTrong_lb";
+            this.thuTrong_lb.Size = new System.Drawing.Size(66, 16);
+            this.thuTrong_lb.TabIndex = 85;
+            this.thuTrong_lb.Text = "Ngày Thu:";
+            // 
+            // thuUom_lb
+            // 
+            this.thuUom_lb.AutoSize = true;
+            this.thuUom_lb.Location = new System.Drawing.Point(289, 88);
+            this.thuUom_lb.Name = "thuUom_lb";
+            this.thuUom_lb.Size = new System.Drawing.Size(66, 16);
+            this.thuUom_lb.TabIndex = 86;
+            this.thuUom_lb.Text = "Ngày Thu:";
+            // 
+            // soLuong_tb
+            // 
+            this.soLuong_tb.Location = new System.Drawing.Point(183, 182);
+            this.soLuong_tb.Name = "soLuong_tb";
+            this.soLuong_tb.Size = new System.Drawing.Size(76, 23);
+            this.soLuong_tb.TabIndex = 88;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(25, 184);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(91, 16);
+            this.label3.TabIndex = 87;
+            this.label3.Text = "Số Lượng Cây:";
+            // 
             // KhoVatTu_PlantingManagement
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -502,8 +537,6 @@ namespace RauViet.ui
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.DateTimePicker ngayUom_dtp;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.TextBox soLuong_tb;
-        private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox note_tb;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Panel panel2;
@@ -516,5 +549,10 @@ namespace RauViet.ui
         private System.Windows.Forms.DataGridView dataGV;
         private System.Windows.Forms.Panel panel4;
         private System.Windows.Forms.TextBox search_tb;
+        private System.Windows.Forms.Label thuUom_lb;
+        private System.Windows.Forms.Label thuTrong_lb;
+        private System.Windows.Forms.Label thuThu_lb;
+        private System.Windows.Forms.TextBox soLuong_tb;
+        private System.Windows.Forms.Label label3;
     }
 }

@@ -12,9 +12,8 @@ namespace RauViet.ui
 {
     public partial class KhoVatTu_MaterialExport : Form
     {
-        System.Data.DataTable mMaterial_dt, mEmployee_dt, mWorkType_dt, mPlantingManagement_dt, mCatelory_dt;
+        System.Data.DataTable mMaterial_dt, mEmployee_dt, mWorkType_dt, mPlantingManagement_dt, mMaterialExport_dt;
         private DataView mLogDV;
-        private Timer CateloryDebounceTimer = new Timer { Interval = 300 };
         private Timer PlantingManagementDebounceTimer = new Timer { Interval = 300 };
         bool isNewState = false;
         private LoadingOverlay loadingOverlay;
@@ -37,9 +36,7 @@ namespace RauViet.ui
             edit_btn.Click += Edit_btn_Click;
             readOnly_btn.Click += ReadOnly_btn_Click; 
             this.KeyDown += Kho_Materials_KeyDown;
-            CateloryDebounceTimer.Tick += cateloryDebounceTimer_Tick;
             PlantingManagementDebounceTimer.Tick += plantingManagementDebounceTimer_Tick;
-            catelory_CB.TextUpdate += catelory_cbb_TextUpdate;
             plantingManagement_CBB.TextUpdate += plantingManagement_CBB_TextUpdate;
             //quantity_tb.KeyPress += Tb_KeyPress_OnlyNumber;
         }
@@ -86,18 +83,19 @@ namespace RauViet.ui
                 var materialTask = SQLStore_KhoVatTu.Instance.getMaterialAsync();
                 var workTypeTask = SQLStore_KhoVatTu.Instance.GetWorkTypeAsync();
                 var employeeTask = SQLStore_QLNS.Instance.GetEmployeesAsync(empKeepColumns);
-                //    var domesticLiquidationImportTask = SQLStore_Kho.Instance.getDomesticLiquidationImportAsync();
+                var materialExportTask = SQLStore_KhoVatTu.Instance.GetMaterialExportAsync(1,2026);
+
                 //    var empTask = SQLStore_QLNS.Instance.GetEmployeesAsync();
                 //    var logDataTask = SQLStore_Kho.Instance.GetDomesticLiquidationImportLogAsync();
-                await Task.WhenAll(plantingManagementTask, cateloryTask, materialTask, employeeTask, workTypeTask);
+                await Task.WhenAll(plantingManagementTask, cateloryTask, materialTask, employeeTask, workTypeTask, materialExportTask);
 
                 //    mDomesticLiquidationPrice_dt = domesticLiquidationPriceTask.Result;
                 //    mDomesticLiquidationImport_dt = domesticLiquidationImportTask.Result;
                 mPlantingManagement_dt = plantingManagementTask.Result;
-                mCatelory_dt = cateloryTask.Result;
                 mMaterial_dt = materialTask.Result;
                 mEmployee_dt = employeeTask.Result;
                 mWorkType_dt = workTypeTask.Result;
+                mMaterialExport_dt = materialExportTask.Result;
                 ////    mLogDV = new DataView(logDataTask.Result);
 
 
@@ -116,7 +114,7 @@ namespace RauViet.ui
                 //catelory_CB.ValueMember = "CategoryID";
                 //catelory_CB.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
 
-                //dataGV.DataSource = mMaterial_dt;
+                dataGV.DataSource = mMaterialExport_dt;
                 ////    log_GV.DataSource = mLogDV;
                 //Utils.HideColumns(dataGV, new[] { "UnitID", "CategoryID", "MaterialID" });
                 //Utils.SetGridOrdinal(mMaterial_dt, new[] { "MaterialName", "CategoryName", "UnitName" });
@@ -158,48 +156,6 @@ namespace RauViet.ui
                 loadingOverlay.Hide();
             }
 
-        }
-
-        
-        private void catelory_cbb_TextUpdate(object sender, EventArgs e)
-        {
-            // Restart timer mỗi khi gõ
-            CateloryDebounceTimer.Stop();
-            CateloryDebounceTimer.Start();
-        }
-
-        private void cateloryDebounceTimer_Tick(object sender, EventArgs e)
-        {
-            try
-            {
-                CateloryDebounceTimer.Stop();
-
-                string typed = catelory_CB.Text ?? "";
-                string plain = Utils.RemoveVietnameseSigns(typed).ToLower();
-
-                // Filter bằng LINQ
-                var filtered = mCatelory_dt.AsEnumerable()
-                    .Where(r => r["CategoryName_nosign"].ToString().ToLower()
-                    .Contains(plain));
-
-                System.Data.DataTable temp;
-                if (filtered.Any())
-                    temp = filtered.CopyToDataTable();
-                else
-                    temp = mCatelory_dt.Clone(); // nếu không có kết quả thì trả về table rỗng
-
-                // Gán lại DataSource
-                catelory_CB.DataSource = temp;
-                catelory_CB.DisplayMember = "CategoryName";
-                catelory_CB.ValueMember = "CategoryID";
-
-                // Giữ lại text người đang gõ
-                catelory_CB.DroppedDown = true;
-                catelory_CB.Text = typed;
-                catelory_CB.SelectionStart = typed.Length;
-                catelory_CB.SelectionLength = 0;
-            }
-            catch { }
         }
 
         private void plantingManagement_CBB_TextUpdate(object sender, EventArgs e)
@@ -249,102 +205,102 @@ namespace RauViet.ui
 
         private async void updateItem(int materialID, string name, int unitID, int cateloryID)
         {
-            DataRow[] unitRows = mPlantingManagement_dt.Select($"UnitID = {unitID}");
-            DataRow[] cateloryRows = mCatelory_dt.Select($"CategoryID = {cateloryID}");
-            if (unitRows.Length <= 0 || cateloryRows.Length <= 0) return;
+            //DataRow[] unitRows = mPlantingManagement_dt.Select($"UnitID = {unitID}");
+            //DataRow[] cateloryRows = mCatelory_dt.Select($"CategoryID = {cateloryID}");
+            //if (unitRows.Length <= 0 || cateloryRows.Length <= 0) return;
 
-            foreach (DataRow row in mMaterial_dt.Rows)
-            {
-                int ID = Convert.ToInt32(row["MaterialID"]);
-                if (ID.CompareTo(materialID) == 0)
-                {
-                    DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            //foreach (DataRow row in mMaterial_dt.Rows)
+            //{
+            //    int ID = Convert.ToInt32(row["MaterialID"]);
+            //    if (ID.CompareTo(materialID) == 0)
+            //    {
+            //        DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
-                    if (dialogResult == DialogResult.Yes)
-                    {
-                        try
-                        {
-                            bool isScussess = await SQLManager_KhoVatTu.Instance.updateMaterialsAsync(materialID, name, cateloryID, unitID);
+            //        if (dialogResult == DialogResult.Yes)
+            //        {
+            //            try
+            //            {
+            //                bool isScussess = await SQLManager_KhoVatTu.Instance.updateMaterialsAsync(materialID, name, cateloryID, unitID);
 
-                            if (isScussess == true)
-                            {
-                                string UnitName = unitRows[0]["UnitName"].ToString();
-                                string CategoryName = cateloryRows[0]["CategoryName"].ToString();
+            //                if (isScussess == true)
+            //                {
+            //                    string UnitName = unitRows[0]["UnitName"].ToString();
+            //                    string CategoryName = cateloryRows[0]["CategoryName"].ToString();
 
-                                row["MaterialName"] = name;
-                                row["CategoryID"] = cateloryID;
-                                row["UnitID"] = unitID;
-                                row["UnitName"] = UnitName;
-                                row["CategoryName"] = CategoryName;
+            //                    row["MaterialName"] = name;
+            //                    row["CategoryID"] = cateloryID;
+            //                    row["UnitID"] = unitID;
+            //                    row["UnitName"] = UnitName;
+            //                    row["CategoryName"] = CategoryName;
 
-                                status_lb.Text = "Thành công.";
-                                status_lb.ForeColor = Color.Green;
-                            }
-                            else
-                            {
-                                status_lb.Text = "Thất bại.";
-                                status_lb.ForeColor = Color.Red;
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            status_lb.Text = "Thất bại.";
-                            status_lb.ForeColor = Color.Red;
-                        }
-                    }
-                    break;
-                }
-            }
+            //                    status_lb.Text = "Thành công.";
+            //                    status_lb.ForeColor = Color.Green;
+            //                }
+            //                else
+            //                {
+            //                    status_lb.Text = "Thất bại.";
+            //                    status_lb.ForeColor = Color.Red;
+            //                }
+            //            }
+            //            catch (Exception ex)
+            //            {
+            //                status_lb.Text = "Thất bại.";
+            //                status_lb.ForeColor = Color.Red;
+            //            }
+            //        }
+            //        break;
+            //    }
+            //}
         }
 
         private async void createItem(string name, int unitID, int cateloryID)
         {
-            DataRow[] unitRows = mPlantingManagement_dt.Select($"UnitID = {unitID}");
-            DataRow[] cateloryRows = mCatelory_dt.Select($"CategoryID = {cateloryID}");
-            if (unitRows.Length <= 0 || cateloryRows.Length <= 0) return;
+            //DataRow[] unitRows = mPlantingManagement_dt.Select($"UnitID = {unitID}");
+            //DataRow[] cateloryRows = mCatelory_dt.Select($"CategoryID = {cateloryID}");
+            //if (unitRows.Length <= 0 || cateloryRows.Length <= 0) return;
 
-            DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            //DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
-            if (dialogResult == DialogResult.Yes)
-            {
-                try
-                {
-                    int newId = await SQLManager_KhoVatTu.Instance.insertMaterialsAsync(name, cateloryID, unitID);
-                    if (newId > 0)
-                    {
-                        DataRow drToAdd = mMaterial_dt.NewRow();
-                        string UnitName = unitRows[0]["UnitName"].ToString();
-                        string CategoryName = cateloryRows[0]["CategoryName"].ToString();
+            //if (dialogResult == DialogResult.Yes)
+            //{
+            //    try
+            //    {
+            //        int newId = await SQLManager_KhoVatTu.Instance.insertMaterialsAsync(name, cateloryID, unitID);
+            //        if (newId > 0)
+            //        {
+            //            DataRow drToAdd = mMaterial_dt.NewRow();
+            //            string UnitName = unitRows[0]["UnitName"].ToString();
+            //            string CategoryName = cateloryRows[0]["CategoryName"].ToString();
 
-                        drToAdd["MaterialID"] = newId;
-                        drToAdd["MaterialName"] = name;
-                        drToAdd["CategoryID"] = cateloryID;
-                        drToAdd["UnitID"] = unitID;
-                        drToAdd["UnitName"] = UnitName;
-                        drToAdd["CategoryName"] = CategoryName;
+            //            drToAdd["MaterialID"] = newId;
+            //            drToAdd["MaterialName"] = name;
+            //            drToAdd["CategoryID"] = cateloryID;
+            //            drToAdd["UnitID"] = unitID;
+            //            drToAdd["UnitName"] = UnitName;
+            //            drToAdd["CategoryName"] = CategoryName;
 
-                        mMaterial_dt.Rows.Add(drToAdd);
-                        mMaterial_dt.AcceptChanges();
+            //            mMaterial_dt.Rows.Add(drToAdd);
+            //            mMaterial_dt.AcceptChanges();
 
-                        status_lb.Text = "Thành công";
-                        status_lb.ForeColor = Color.Green;
+            //            status_lb.Text = "Thành công";
+            //            status_lb.ForeColor = Color.Green;
 
-                        newBtn_Click(null, null);
-                    }
-                    else
-                    {
-                        status_lb.Text = "Thất bại";
-                        status_lb.ForeColor = Color.Red;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("ERROR: " + ex.Message);
-                    status_lb.Text = "Thất bại.";
-                    status_lb.ForeColor = Color.Red;
-                }
+            //            newBtn_Click(null, null);
+            //        }
+            //        else
+            //        {
+            //            status_lb.Text = "Thất bại";
+            //            status_lb.ForeColor = Color.Red;
+            //        }
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        Console.WriteLine("ERROR: " + ex.Message);
+            //        status_lb.Text = "Thất bại.";
+            //        status_lb.ForeColor = Color.Red;
+            //    }
 
-            }
+            //}
         }
         private void saveBtn_Click(object sender, EventArgs e)
         {
@@ -454,41 +410,40 @@ namespace RauViet.ui
 
         private void updateRightUI()
         {
-            try
-            {
-                if (isNewState) return;
+            //try
+            //{
+            //    if (isNewState) return;
 
-                if (dataGV.SelectedRows.Count > 0)
-                {
-                    var cells = dataGV.SelectedRows[0].Cells;
+            //    if (dataGV.SelectedRows.Count > 0)
+            //    {
+            //        var cells = dataGV.SelectedRows[0].Cells;
 
-                    int UnitID = Convert.ToInt32(cells["UnitID"].Value);
-                    int CategoryID = Convert.ToInt32(cells["CategoryID"].Value);
-                    string materialName = cells["MaterialName"].Value.ToString();
+            //        int UnitID = Convert.ToInt32(cells["UnitID"].Value);
+            //        int CategoryID = Convert.ToInt32(cells["CategoryID"].Value);
+            //        string materialName = cells["MaterialName"].Value.ToString();
 
-                    if (!plantingManagement_CBB.Items.Cast<object>().Any(i => ((DataRowView)i)["UnitID"].ToString() == UnitID.ToString()))
-                    {
-                        plantingManagement_CBB.DataSource = mPlantingManagement_dt;
-                    }                    
+            //        if (!plantingManagement_CBB.Items.Cast<object>().Any(i => ((DataRowView)i)["UnitID"].ToString() == UnitID.ToString()))
+            //        {
+            //            plantingManagement_CBB.DataSource = mPlantingManagement_dt;
+            //        }                    
 
-                    if (!catelory_CB.Items.Cast<object>().Any(i => ((DataRowView)i)["CategoryID"].ToString() == CategoryID.ToString()))
-                    {
-                        catelory_CB.DataSource = mCatelory_dt;
-                    }
+            //        if (!catelory_CB.Items.Cast<object>().Any(i => ((DataRowView)i)["CategoryID"].ToString() == CategoryID.ToString()))
+            //        {
+            //            catelory_CB.DataSource = mCatelory_dt;
+            //        }
 
-                    id_tb.Text = cells["MaterialID"].Value.ToString();
-                    plantingManagement_CBB.SelectedValue = UnitID;
-                    catelory_CB.SelectedValue = CategoryID;
-                    materialName_tb.Text = materialName;
+            //        id_tb.Text = cells["MaterialID"].Value.ToString();
+            //        plantingManagement_CBB.SelectedValue = UnitID;
+            //        catelory_CB.SelectedValue = CategoryID;
+            //        materialName_tb.Text = materialName;
 
 
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("ERROR: " + ex.Message);
-            }
-            ;
+            //    }
+            //}
+            //catch (Exception ex)
+            //{
+            //    Console.WriteLine("ERROR: " + ex.Message);
+            //}            
         }
 
 
@@ -509,87 +464,124 @@ namespace RauViet.ui
             }
         }
 
-        private async void button1_Click(object sender, EventArgs e)
-        {
+        //System.Data.DataTable excelData;
+        //private async void button1_Click(object sender, EventArgs e)
+        //{
 
-            var unit_dt = await SQLManager_KhoVatTu.Instance.GetUnitAsync();
-            var materialCategory_dt = await SQLManager_KhoVatTu.Instance.GetMaterialCategoryAsync();
+        //    var unit_dt = await SQLManager_KhoVatTu.Instance.GetUnitAsync();
+        //    var materialCategory_dt = await SQLManager_KhoVatTu.Instance.GetMaterialCategoryAsync();
 
-            using (System.Windows.Forms.OpenFileDialog ofd = new System.Windows.Forms.OpenFileDialog())
-            {
-                ofd.Title = "Chọn file Excel";
-                ofd.Filter = "Excel Files|*.xlsx;*.xls|All Files|*.*";
-                ofd.Multiselect = false; // chỉ cho chọn 1 file
+        //    using (System.Windows.Forms.OpenFileDialog ofd = new System.Windows.Forms.OpenFileDialog())
+        //    {
+        //        ofd.Title = "Chọn file Excel";
+        //        ofd.Filter = "Excel Files|*.xlsx;*.xls|All Files|*.*";
+        //        ofd.Multiselect = false; // chỉ cho chọn 1 file
 
-                if (ofd.ShowDialog() == DialogResult.OK)
-                {
-                    string filePath = ofd.FileName;
-                    System.Data.DataTable excelData = Utils.LoadExcel_NoHeader(filePath);
+        //        if (ofd.ShowDialog() == DialogResult.OK)
+        //        {
+        //            string filePath = ofd.FileName;
+        //            excelData = Utils.LoadExcel_NoHeader(filePath);
 
-                    Utils.AddColumnIfNotExists(excelData, "WorkTypeID", typeof(int));
-                    Utils.AddColumnIfNotExists(excelData, "MaterialID", typeof(int));
-                    Utils.AddColumnIfNotExists(excelData, "EmployeeCode", typeof(string));
-                    foreach (DataRow row in excelData.Rows)
-                    {
-                        string raw = Utils.RemoveVietnameseSigns(row["Column2"].ToString());
+        //            Utils.AddColumnIfNotExists(excelData, "WorkTypeID", typeof(int));
+        //            Utils.AddColumnIfNotExists(excelData, "MaterialID", typeof(int));
+        //            Utils.AddColumnIfNotExists(excelData, "PlantingID", typeof(int));
+        //            Utils.AddColumnIfNotExists(excelData, "EmployeeCode", typeof(string));
+        //            Utils.AddColumnIfNotExists(excelData, "Note", typeof(string));
+        //            foreach (DataRow row in excelData.Rows)
+        //            {
+        //                string raw = Utils.RemoveVietnameseSigns(row["Column2"].ToString());
 
-                        if(raw.CompareTo(Utils.RemoveVietnameseSigns("Magnesium sulphate (Green mag)")) == 0)
-                            raw = Utils.RemoveVietnameseSigns("BitterMag (MgSO4)");
-                        else if (raw.CompareTo(Utils.RemoveVietnameseSigns("YaraMila Winner")) == 0)
-                            raw = Utils.RemoveVietnameseSigns("YaraMila Winner (15-9-20)");
-                        else if (raw.CompareTo(Utils.RemoveVietnameseSigns("Solu-K 0-0-51")) == 0)
-                            raw = Utils.RemoveVietnameseSigns("Solu-K (K2SO4 Hàn Quốc)");
+        //                if(raw.CompareTo(Utils.RemoveVietnameseSigns("Magnesium sulphate (Green mag)")) == 0)
+        //                    raw = Utils.RemoveVietnameseSigns("BitterMag (MgSO4)");
+        //                else if (raw.CompareTo(Utils.RemoveVietnameseSigns("YaraMila Winner")) == 0)
+        //                    raw = Utils.RemoveVietnameseSigns("YaraMila Winner (15-9-20)");
+        //                else if (raw.CompareTo(Utils.RemoveVietnameseSigns("Solu-K 0-0-51")) == 0)
+        //                    raw = Utils.RemoveVietnameseSigns("Solu-K (K2SO4 Hàn Quốc)");
 
-                        DataRow material = mMaterial_dt.AsEnumerable().FirstOrDefault(r => Utils.RemoveVietnameseSigns(r.Field<string>("MaterialName")).Trim().ToLower().Equals(raw.Trim().ToLower(), StringComparison.OrdinalIgnoreCase));
-                        if(material != null)
-                            row["MaterialID"] = material["MaterialID"];
+        //                DataRow material = mMaterial_dt.AsEnumerable().FirstOrDefault(r => Utils.RemoveVietnameseSigns(r.Field<string>("MaterialName")).Trim().ToLower().Equals(raw.Trim().ToLower(), StringComparison.OrdinalIgnoreCase));
+        //                if(material != null)
+        //                    row["MaterialID"] = material["MaterialID"];
 
-                        raw = Utils.RemoveVietnameseSigns(row["Column6"].ToString());
-                        DataRow employee = mEmployee_dt.AsEnumerable().FirstOrDefault(r => Utils.RemoveVietnameseSigns(r.Field<string>("FullName")).Trim().ToLower().Equals(raw.Trim().ToLower(), StringComparison.OrdinalIgnoreCase));
-                        if (employee != null)
-                            row["EmployeeCode"] = employee["EmployeeCode"];
+        //                raw = Utils.RemoveVietnameseSigns(row["Column6"].ToString());
+        //                DataRow employee = mEmployee_dt.AsEnumerable().FirstOrDefault(r => Utils.RemoveVietnameseSigns(r.Field<string>("FullName")).Trim().ToLower().Equals(raw.Trim().ToLower(), StringComparison.OrdinalIgnoreCase));
+        //                if (employee != null)
+        //                    row["EmployeeCode"] = employee["EmployeeCode"];
 
-                        raw = Utils.RemoveVietnameseSigns(row["Column5"].ToString());
-                        DataRow workType = mWorkType_dt.AsEnumerable().FirstOrDefault(r => Utils.RemoveVietnameseSigns(r.Field<string>("WorkTypeName")).Trim().ToLower().Equals(raw.Trim().ToLower(), StringComparison.OrdinalIgnoreCase));
-                        if (workType != null)
-                            row["WorkTypeID"] = workType["WorkTypeID"];
-                    }
+        //                raw = Utils.RemoveVietnameseSigns(row["Column5"].ToString());
+        //                DataRow workType = mWorkType_dt.AsEnumerable().FirstOrDefault(r => Utils.RemoveVietnameseSigns(r.Field<string>("WorkTypeName")).Trim().ToLower().Equals(raw.Trim().ToLower(), StringComparison.OrdinalIgnoreCase));
+        //                if (workType != null)
+        //                    row["WorkTypeID"] = workType["WorkTypeID"];
+
+        //                raw = Utils.RemoveVietnameseSigns(row["Column4"].ToString()).Trim();
+        //                if (raw.CompareTo("28125020") == 0)
+        //                    raw = "28126001";
+        //                else if (raw.CompareTo("11126001") == 0)
+        //                    raw = "11125005";
+        //                else if (raw.CompareTo("143250100") == 0)
+        //                    raw = "14325100";
+        //                else if (raw.CompareTo("12126005") == 0) 
+        //                    raw = "12125007";
+        //                else if (raw.CompareTo("17225053") == 0)
+        //                    raw = "17226001";
+        //                else if (raw.StartsWith("MXC")) 
+        //                {
+        //                    row["Note"] = raw;
+        //                    row["Column4"] = "";
+        //                    raw = "";
+        //                }
+        //                else if (raw.CompareTo("33125001") == 0 || raw.CompareTo("32324002") == 0)
+        //                {
+        //                    row["Note"] = raw;
+        //                    row["Column4"] = "";
+        //                    raw = "";
+        //                }
+
+        //                DataRow plantingManagement = mPlantingManagement_dt.AsEnumerable().FirstOrDefault(r => Utils.RemoveVietnameseSigns(r.Field<string>("ProductionOrder")).Trim().ToLower().Equals(raw.Trim().ToLower(), StringComparison.OrdinalIgnoreCase));
+        //                if (plantingManagement != null)
+        //                    row["PlantingID"] = plantingManagement["PlantingID"];
+        //            }
                     
-                    dataGV.DataSource = excelData;
-                    dataGV.Columns["Column2"].Visible = false;
-                    dataGV.Columns["Column6"].Visible = false;
-                    dataGV.Columns["Column5"].Visible = false;
-                    //excelData = excelData.AsEnumerable()
-                    //                    .Where(r => !string.IsNullOrWhiteSpace(r["Column1"]?.ToString()))
-                    //                    .Select(r => r["Column1"].ToString().Trim())   // chuẩn hoá
-                    //                    .Distinct(StringComparer.OrdinalIgnoreCase)    // bỏ trùng, ignore case
-                    //                    .OrderBy(x => x)                               // sort A-Z
-                    //                    .Select(x =>
-                    //                    {
-                    //                        var row = excelData.NewRow();
-                    //                        row["Column1"] = x;
-                    //                        return row;
-                    //                    })
-                    //                    .CopyToDataTable();
-                    //try
-                    //{
+        //            dataGV.DataSource = excelData;
+        //            dataGV.Columns["Column2"].Visible = false;
+        //            dataGV.Columns["Column6"].Visible = false;
+        //            dataGV.Columns["Column5"].Visible = false;
+        //            }
+        //    }
+        //}
 
-                    //    foreach (DataRow edr in excelData.Rows)
-                    //    {
-                    //        string name = edr["Column1"].ToString();
-                    //        if (string.IsNullOrWhiteSpace(name.Trim())) continue;
+        //private async void button2_Click(object sender, EventArgs e)
+        //{
+        //    try
+        //    {
+        //        foreach (DataRow edr in excelData.Rows)
+        //        {
+        //            if (string.IsNullOrWhiteSpace(edr["Column3"].ToString())) 
+        //                continue;
 
-                    //        int salaryInfoID = await SQLManager_KhoVatTu.Instance.insertCropAsync(name);
-                    //    }
-                    //}
-                    //catch (Exception ex)
-                    //{
-                    //    MessageBox.Show("có lỗi " + ex.Message);
-                    //}
-                    //MessageBox.Show("xong");
-                }
-            }
-        }
+        //            DateTime ExportDate = Convert.ToDateTime(edr["Column1"]);
+        //            int MaterialID = Convert.ToInt32(edr["MaterialID"]);
+        //            decimal Amount = Convert.ToDecimal(edr["Column3"]);
+        //            int? PlantingID = edr["PlantingID"] == DBNull.Value ? (int?)null : Convert.ToInt32(edr["PlantingID"]);
+        //            int? WorkTypeID = edr["WorkTypeID"] == DBNull.Value ? (int?)null : Convert.ToInt32(edr["WorkTypeID"]);
+        //            string EmployeeCode = Convert.ToString(edr["EmployeeCode"]);
+        //            string Note = Convert.ToString(edr["Note"]);
+
+
+        //            int salaryInfoID = await SQLManager_KhoVatTu.Instance.insertMaterialExportAsync(ExportDate, MaterialID, Amount, PlantingID, WorkTypeID, EmployeeCode, Note);
+        //            if(salaryInfoID <= 0)
+        //            {
+        //                MessageBox.Show("có lỗi ");
+        //                return;
+        //            }
+
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        MessageBox.Show("có lỗi " + ex.Message);
+        //    }
+        //    MessageBox.Show("xong");
+        //}
 
     }
 }

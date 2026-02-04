@@ -6,6 +6,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -42,7 +43,7 @@ namespace RauViet.ui
             this.Dock = DockStyle.Fill;
 
             dataGV.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dataGV.MultiSelect = false;
+            dataGV.MultiSelect = true;
 
             allowanceGV.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             allowanceGV.MultiSelect = false;
@@ -1202,9 +1203,14 @@ namespace RauViet.ui
                 MessageBox.Show("Chưa chọn phòng Ban cần in", "thông báo", MessageBoxButtons.OK);
                 return;
             }
-
+            List<string> departmentNames = dataGV.SelectedRows.Cast<DataGridViewRow>()
+                                                            .Select(r => r.Cells["DepartmentName"].Value?.ToString())
+                                                            .Where(x => !string.IsNullOrEmpty(x))
+                                                            .Distinct()
+                                                            .OrderBy(x => x, StringComparer.Create(new CultureInfo("vi-VN"), ignoreCase: true))
+                                                            .ToList();
             DateTime date = monthYearDtp.Value;
-            BangChamCong_Printer deliveryPrinter = new BangChamCong_Printer(dataGV.CurrentRow.Cells["DepartmentName"].Value.ToString(), mEmployee_dt, mAttendamce_dt, mLeaveAttendance_dt, date.Month, date.Year);
+            BangChamCong_Printer deliveryPrinter = new BangChamCong_Printer(departmentNames, mEmployee_dt, mAttendamce_dt, mLeaveAttendance_dt, date.Month, date.Year);
 
             if (!isPreview)
                 deliveryPrinter.PrintDirect();
@@ -1230,8 +1236,14 @@ namespace RauViet.ui
                 return;
             }
 
+            List<string> departmentNames = dataGV.SelectedRows.Cast<DataGridViewRow>()
+                                                            .Select(r => r.Cells["DepartmentName"].Value?.ToString())
+                                                            .Where(x => !string.IsNullOrEmpty(x))
+                                                            .Distinct()
+                                                            .OrderBy(x => x, StringComparer.Create(new CultureInfo("vi-VN"), ignoreCase: true))
+                                                            .ToList();
             DateTime date = monthYearDtp.Value;
-            BangChamTăngCa_Printer printer = new BangChamTăngCa_Printer(dataGV.CurrentRow.Cells["DepartmentName"].Value.ToString(), mEmployee_dt, mOvertimeAttendance_dt, date.Month, date.Year);
+            BangChamTăngCa_Printer printer = new BangChamTăngCa_Printer(departmentNames, mEmployee_dt, mOvertimeAttendance_dt, date.Month, date.Year);
 
             if (!isPreview)
                 printer.PrintDirect();

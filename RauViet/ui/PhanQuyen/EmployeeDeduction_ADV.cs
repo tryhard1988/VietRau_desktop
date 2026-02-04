@@ -596,46 +596,7 @@ namespace RauViet.ui
         private void MonthYearDebounceTimer_Tick(object sender, EventArgs e)
         {
             _monthYearDebounceTimer.Stop();
-            HandleMonthYearChanged();
-        }
-
-        private async void HandleMonthYearChanged()
-        {
-            await Task.Delay(50);
-            LoadingOverlay loadingOverlay = new LoadingOverlay(this);
-            loadingOverlay.Show();
-            await Task.Delay(200);
-            int month = monthYearDtp.Value.Month;
-            int year = monthYearDtp.Value.Year;
-
-            var employeeDeductionAsync = SQLStore_QLNS.Instance.GetDeductionAsync(month, year, DeductionTypeCode);
-            var EmployeeDeductionLogTask = SQLStore_QLNS.Instance.GetEmployeeDeductionLogAsync(month, year, DeductionTypeCode);
-            await Task.WhenAll(employeeDeductionAsync, EmployeeDeductionLogTask);
-            mEmployeeDeduction_dt = employeeDeductionAsync.Result;
-            mDeductionLogDV = new DataView(EmployeeDeductionLogTask.Result);
-            log_GV.DataSource = mDeductionLogDV;
-            employeeDeductionGV.DataSource = mEmployeeDeduction_dt;
-            currMonth = month;
-            currYear = year;
-
-            if (dataGV.CurrentRow != null)
-            {
-                int selectedIndex = dataGV.CurrentRow?.Index ?? -1;
-                UpdateEmployeeDeductionUI(selectedIndex);
-            }
-
-            bool isLock = await SQLStore_QLNS.Instance.IsSalaryLockAsync(month, year);
-            LuuThayDoiBtn.Visible = !isLock;
-            newCustomerBtn.Visible = !isLock;
-            readOnly_btn.Visible = false;// !isLock;
-            edit_btn.Visible = !isLock;
-            isNewState = false;
-            UpdateInfo();
-            if (!isLock) ReadOnly_btn_Click(null, null);
-
-            monthYearLabel.Text = $"Tháng {month}/{year}";
-            await Task.Delay(50);
-            loadingOverlay.Hide();
+            ShowData();
         }
 
         private void UpdateInfo()
