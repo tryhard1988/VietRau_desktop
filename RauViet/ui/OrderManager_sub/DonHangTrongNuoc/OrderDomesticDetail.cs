@@ -350,17 +350,6 @@ namespace RauViet.ui
                 int productPackingID = Convert.ToInt32(dataGV.CurrentRow.Cells["ProductPackingID"].Value);
                 packing_ccb.SelectedValue = productPackingID;
             }
-
-            //var currentDV = packing_ccb.DataSource as DataView;
-            //if (currentDV != null && currentDV.Count > 0)
-            //{
-            //    bool exists = currentDV.Cast<DataRowView>().Any(r => Convert.ToInt32(r["ProductPackingID"]) == productPackingID);
-
-            //    if (exists)
-            //        packing_ccb.SelectedValue = productPackingID;
-            //    else
-            //        packing_ccb.SelectedIndex = 0;
-            //}
         }
         
         private async void packing_cbb_SelectedIndexChanged(object sender, EventArgs e)
@@ -577,6 +566,7 @@ namespace RauViet.ui
             string package = packingRows.Length > 0 ? packingRows[0]["Package"].ToString() : "";
             string packing = packingRows.Length > 0 ? packingRows[0]["packing"].ToString() : "";
             string productTypeName = productTypeRows.Length > 0 ? productTypeRows[0]["TypeName"].ToString() : "";
+            string barCodeEAN13 = packingRows.Length > 0 ? packingRows[0]["BarCodeEAN13"].ToString() : "";
             int amount = packingRows.Length > 0 ? Convert.ToInt32(packingRows[0]["Amount"]) : 0;
             int sku = Convert.ToInt32(packingRows[0]["SKU"]);
             int productSKU = Convert.ToInt32(packingRows[0]["ProductSKU"]);
@@ -615,7 +605,7 @@ namespace RauViet.ui
                             row["ProductNameVN"] = proVN;
                             row["SKU"] = sku;
                             row["ProductSKU"] = productSKU;
-
+                            row["BarCodeEAN13"] = barCodeEAN13;
                             if (package.CompareTo("weight") == 0 || package.CompareTo("kg") == 0)
                                 row["TotalAmountOrder"] = NWOrder * price;
                             else
@@ -653,6 +643,7 @@ namespace RauViet.ui
             string productTypeName = productTypeRows.Length > 0 ? productTypeRows[0]["TypeName"].ToString() : "";
             string package = packingRows.Length > 0 ? packingRows[0]["Package"].ToString() : "";
             string packing = packingRows.Length > 0 ? packingRows[0]["packing"].ToString() : "";
+            string barCodeEAN13 = packingRows.Length > 0 ? packingRows[0]["BarCodeEAN13"].ToString() : "";
             int amount = packingRows.Length > 0 ? Convert.ToInt32(packingRows[0]["Amount"]) : 0;
             int sku = Convert.ToInt32(packingRows[0]["SKU"]);
             int productSKU = Convert.ToInt32(packingRows[0]["ProductSKU"]);
@@ -663,7 +654,7 @@ namespace RauViet.ui
                 if (newId > 0)
                 {
                     DataRow drToAdd = mOrderDomesticDetail_dt.NewRow();
-
+                    
                     drToAdd["OrderDomesticDetailID"] = newId;
                     drToAdd["OrderDomesticCodeID"] = OrderDomesticCodeID;
                     drToAdd["ProductPackingID"] = packingId;
@@ -678,6 +669,7 @@ namespace RauViet.ui
                     drToAdd["ProductSKU"] = productSKU;
                     drToAdd["CustomerProductTypesCode"] = productType;
                     drToAdd["ProductTypeName"] = productTypeName;
+                    drToAdd["BarCodeEAN13"] = barCodeEAN13;
                     if (package.CompareTo("weight") == 0 || package.CompareTo("kg") == 0)
                         drToAdd["TotalAmountOrder"] = NWOrder * price;
                     else

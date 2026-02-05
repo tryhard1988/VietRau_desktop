@@ -257,7 +257,7 @@ namespace RauViet.ui
             khoVaTu_mi.Click += khoVaTu_mi_Click;
             plantingManagement_mi.Click += plantingManagement_mi_Click;
             materialExport_mi.Click += materialExport_mi_Click;
-
+            materialImport_mi.Click += MaterialImport_mi_Click;
 
             historyLogin_mi.Click += HistoryLogin_mi_Click;
             
@@ -367,7 +367,8 @@ namespace RauViet.ui
             ThongKeTonKhoHangRauCu,
             KhoVatTu_Materials,
             KhoVatTu_PlantingManagement,
-            KhoVatTu_MaterialExport
+            KhoVatTu_MaterialExport,
+            KhoVatTu_MaterialImport
         }
 
         private void openCurrentForm(EForm status)
@@ -576,6 +577,9 @@ namespace RauViet.ui
                 case EForm.KhoVatTu_MaterialExport:
                     SwitchChildForm<KhoVatTu_MaterialExport>("Xuất Kho Vật Tư");
                     break;
+                case EForm.KhoVatTu_MaterialImport:
+                    SwitchChildForm<KhoVatTu_MaterialImport>("Nhập Kho Vật Tư");
+                    break;
             }
             
             Properties.Settings.Default.current_form = status.ToString();
@@ -650,6 +654,7 @@ namespace RauViet.ui
         private void khoVaTu_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.KhoVatTu_Materials); }
         private void plantingManagement_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.KhoVatTu_PlantingManagement); }
         private void materialExport_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.KhoVatTu_MaterialExport); }
+        private void MaterialImport_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.KhoVatTu_MaterialImport); }
         private async void checkLoginTimer_Tick(object sender, EventArgs e)
         {
             var isHave = await SQLManager.Instance.HaveOtherComputerLoginAsync();

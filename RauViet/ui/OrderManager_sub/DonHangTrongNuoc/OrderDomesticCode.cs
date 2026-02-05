@@ -342,6 +342,7 @@ namespace RauViet.ui
                                 row["PackingByName"] = packingByRow[0]["FullName"].ToString();
                                 row["CustomerName"] = customerRow[0]["FullName"].ToString();
                                 row["Company"] = customerRow[0]["Company"].ToString();
+                                row["Address"] = customerRow[0]["Address"].ToString();
                                 row["InputByName_NoSign"] = Utils.RemoveVietnameseSigns(inputByRow[0]["FullName"].ToString()).Replace(" ", "");
 
                                 if (completed)
@@ -404,6 +405,7 @@ namespace RauViet.ui
                         drToAdd["PackingByName"] = packingByRow[0]["FullName"].ToString();
                         drToAdd["CustomerName"] = customerRow[0]["FullName"].ToString();
                         drToAdd["Company"] = customerRow[0]["Company"].ToString();
+                        drToAdd["Address"] = customerRow[0]["Address"].ToString();
                         drToAdd["InputByName_NoSign"] = Utils.RemoveVietnameseSigns(inputByRow[0]["FullName"].ToString()).Replace(" ", "");
                         
 

@@ -17,6 +17,8 @@ public class PCTienAnDem_Printer
     private int lineHeight1 = 25;
     private string departmentName;
     private int departmentID;
+    private int TotalRice = 0;
+    private int TotalNoodle = 0;
     public PCTienAnDem_Printer(int departmentID, string departmentName, DataTable allowanceData, DataTable overtimeData, int month, int year)
     {
         this.departmentID = departmentID;
@@ -25,8 +27,10 @@ public class PCTienAnDem_Printer
         this.overtimeData = overtimeData;
         this.month = month;
         this.year = year;
+        this.TotalRice = 0;
+        this.TotalNoodle = 0;
 
-        DataView dv = overtimeData.DefaultView;
+    DataView dv = overtimeData.DefaultView;
         dv.Sort = "WorkDate ASC";   // hoặc DESC
 
         this.overtimeData = dv.ToTable();
@@ -263,10 +267,19 @@ public class PCTienAnDem_Printer
             DrawCellText(g, rice.ToString(), normalFont, new Rectangle(col4, y, col4Width, lineHeight));
             DrawCellText(g, nodle.ToString(), normalFont, new Rectangle(col5, y, col5Width, lineHeight));
 
+            TotalRice += rice;
+            TotalNoodle += nodle;
             y += lineHeight;
             rowIndex++;
             countSTT++;
         }
+
+        g.DrawRectangle(Pens.Gray, col1, y, col1Width + col2Width+ col3Width + colDayWidth * workDates.Count, lineHeight);
+        g.DrawRectangle(Pens.Gray, col4, y, col4Width, lineHeight);
+        g.DrawRectangle(Pens.Gray, col5, y, col5Width, lineHeight);
+        DrawCellText(g, "TỔNG:", headerFont, new Rectangle(col1, y, col1Width + col2Width + col3Width + colDayWidth * workDates.Count, lineHeight), StringAlignment.Center);
+        DrawCellText(g, TotalRice.ToString(), headerFont, new Rectangle(col4, y, col4Width, lineHeight), StringAlignment.Center);
+        DrawCellText(g, TotalNoodle.ToString(), headerFont, new Rectangle(col5, y, col5Width, lineHeight), StringAlignment.Center);
 
         e.HasMorePages = false;
     }

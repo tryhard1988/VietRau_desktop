@@ -45,13 +45,9 @@ namespace RauViet.ui
             this.count_label = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
-            this.loadFromExcel_btn = new System.Windows.Forms.Button();
-            this.monthYearDtp = new System.Windows.Forms.DateTimePicker();
-            this.employeeDeductionID_tb = new System.Windows.Forms.TextBox();
-            this.label3 = new System.Windows.Forms.Label();
-            this.log_GV = new System.Windows.Forms.DataGridView();
             this.panel7 = new System.Windows.Forms.Panel();
             this.readOnly_btn = new System.Windows.Forms.Button();
+            this.loadFromExcel_btn = new System.Windows.Forms.Button();
             this.edit_btn = new System.Windows.Forms.Button();
             this.info_gb = new System.Windows.Forms.GroupBox();
             this.employeeName_tb = new System.Windows.Forms.TextBox();
@@ -65,6 +61,10 @@ namespace RauViet.ui
             this.status_lb = new System.Windows.Forms.Label();
             this.newCustomerBtn = new System.Windows.Forms.Button();
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
+            this.monthYearDtp = new System.Windows.Forms.DateTimePicker();
+            this.employeeDeductionID_tb = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.log_GV = new System.Windows.Forms.DataGridView();
             this.panel4.SuspendLayout();
             this.panel5.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -73,9 +73,9 @@ namespace RauViet.ui
             ((System.ComponentModel.ISupportInitialize)(this.employeeDeductionGV)).BeginInit();
             this.panel6.SuspendLayout();
             this.panel2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.log_GV)).BeginInit();
             this.panel7.SuspendLayout();
             this.info_gb.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.log_GV)).BeginInit();
             this.SuspendLayout();
             // 
             // panel4
@@ -259,60 +259,6 @@ namespace RauViet.ui
             this.panel2.Size = new System.Drawing.Size(453, 511);
             this.panel2.TabIndex = 48;
             // 
-            // loadFromExcel_btn
-            // 
-            this.loadFromExcel_btn.BackColor = System.Drawing.Color.ForestGreen;
-            this.loadFromExcel_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.loadFromExcel_btn.Location = new System.Drawing.Point(4, 7);
-            this.loadFromExcel_btn.Name = "loadFromExcel_btn";
-            this.loadFromExcel_btn.Size = new System.Drawing.Size(116, 39);
-            this.loadFromExcel_btn.TabIndex = 42;
-            this.loadFromExcel_btn.Text = "Tải Từ Excel";
-            this.loadFromExcel_btn.UseVisualStyleBackColor = false;
-            // 
-            // monthYearDtp
-            // 
-            this.monthYearDtp.CalendarFont = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.monthYearDtp.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.monthYearDtp.Location = new System.Drawing.Point(167, 23);
-            this.monthYearDtp.Name = "monthYearDtp";
-            this.monthYearDtp.Size = new System.Drawing.Size(118, 31);
-            this.monthYearDtp.TabIndex = 39;
-            // 
-            // employeeDeductionID_tb
-            // 
-            this.employeeDeductionID_tb.Location = new System.Drawing.Point(367, 23);
-            this.employeeDeductionID_tb.Name = "employeeDeductionID_tb";
-            this.employeeDeductionID_tb.ReadOnly = true;
-            this.employeeDeductionID_tb.Size = new System.Drawing.Size(32, 20);
-            this.employeeDeductionID_tb.TabIndex = 16;
-            this.employeeDeductionID_tb.Visible = false;
-            // 
-            // label3
-            // 
-            this.label3.BackColor = System.Drawing.Color.PeachPuff;
-            this.label3.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.label3.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.ForeColor = System.Drawing.Color.DarkOliveGreen;
-            this.label3.Location = new System.Drawing.Point(0, 511);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(787, 23);
-            this.label3.TabIndex = 46;
-            this.label3.Text = "Lịch sử thay đổi";
-            this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // log_GV
-            // 
-            this.log_GV.AllowUserToAddRows = false;
-            this.log_GV.AllowUserToDeleteRows = false;
-            this.log_GV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.log_GV.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.log_GV.Location = new System.Drawing.Point(0, 534);
-            this.log_GV.Name = "log_GV";
-            this.log_GV.ReadOnly = true;
-            this.log_GV.Size = new System.Drawing.Size(787, 185);
-            this.log_GV.TabIndex = 45;
-            // 
             // panel7
             // 
             this.panel7.Controls.Add(this.readOnly_btn);
@@ -338,6 +284,17 @@ namespace RauViet.ui
             this.readOnly_btn.TabIndex = 47;
             this.readOnly_btn.Text = "X";
             this.readOnly_btn.UseVisualStyleBackColor = false;
+            // 
+            // loadFromExcel_btn
+            // 
+            this.loadFromExcel_btn.BackColor = System.Drawing.Color.ForestGreen;
+            this.loadFromExcel_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.loadFromExcel_btn.Location = new System.Drawing.Point(4, 7);
+            this.loadFromExcel_btn.Name = "loadFromExcel_btn";
+            this.loadFromExcel_btn.Size = new System.Drawing.Size(116, 39);
+            this.loadFromExcel_btn.TabIndex = 42;
+            this.loadFromExcel_btn.Text = "Tải Từ Excel";
+            this.loadFromExcel_btn.UseVisualStyleBackColor = false;
             // 
             // edit_btn
             // 
@@ -472,6 +429,49 @@ namespace RauViet.ui
             this.LuuThayDoiBtn.Text = "Lưu";
             this.LuuThayDoiBtn.UseVisualStyleBackColor = false;
             // 
+            // monthYearDtp
+            // 
+            this.monthYearDtp.CalendarFont = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.monthYearDtp.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.monthYearDtp.Location = new System.Drawing.Point(167, 23);
+            this.monthYearDtp.Name = "monthYearDtp";
+            this.monthYearDtp.Size = new System.Drawing.Size(118, 31);
+            this.monthYearDtp.TabIndex = 39;
+            // 
+            // employeeDeductionID_tb
+            // 
+            this.employeeDeductionID_tb.Location = new System.Drawing.Point(367, 23);
+            this.employeeDeductionID_tb.Name = "employeeDeductionID_tb";
+            this.employeeDeductionID_tb.ReadOnly = true;
+            this.employeeDeductionID_tb.Size = new System.Drawing.Size(32, 20);
+            this.employeeDeductionID_tb.TabIndex = 16;
+            this.employeeDeductionID_tb.Visible = false;
+            // 
+            // label3
+            // 
+            this.label3.BackColor = System.Drawing.Color.PeachPuff;
+            this.label3.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.label3.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label3.ForeColor = System.Drawing.Color.DarkOliveGreen;
+            this.label3.Location = new System.Drawing.Point(0, 511);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(787, 23);
+            this.label3.TabIndex = 46;
+            this.label3.Text = "Lịch sử thay đổi";
+            this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // log_GV
+            // 
+            this.log_GV.AllowUserToAddRows = false;
+            this.log_GV.AllowUserToDeleteRows = false;
+            this.log_GV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.log_GV.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.log_GV.Location = new System.Drawing.Point(0, 534);
+            this.log_GV.Name = "log_GV";
+            this.log_GV.ReadOnly = true;
+            this.log_GV.Size = new System.Drawing.Size(787, 185);
+            this.log_GV.TabIndex = 45;
+            // 
             // EmployeeDeduction_VEG
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -493,11 +493,11 @@ namespace RauViet.ui
             this.panel6.PerformLayout();
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.log_GV)).EndInit();
             this.panel7.ResumeLayout(false);
             this.panel7.PerformLayout();
             this.info_gb.ResumeLayout(false);
             this.info_gb.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.log_GV)).EndInit();
             this.ResumeLayout(false);
 
         }

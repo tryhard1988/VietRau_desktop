@@ -490,7 +490,7 @@ namespace RauViet.classes
                         cmd.Parameters.Add("@Amount", SqlDbType.Decimal).Value = Amount;
                         cmd.Parameters.Add("@PlantingID", SqlDbType.Int).Value = PlantingID.HasValue ? (object)PlantingID.Value : DBNull.Value;
                         cmd.Parameters.Add("@WorkTypeID", SqlDbType.Int).Value = WorkTypeID.HasValue ? (object)WorkTypeID.Value : DBNull.Value;
-                        cmd.Parameters.Add("@Receiver", SqlDbType.NVarChar).Value = Receiver;
+                        cmd.Parameters.Add("@Receiver", SqlDbType.NVarChar).Value = string.IsNullOrWhiteSpace(Receiver) ? (object)DBNull.Value : Receiver;
                         cmd.Parameters.Add("@Note", SqlDbType.NVarChar).Value = Note;
 
                         object result = await cmd.ExecuteScalarAsync();
@@ -501,10 +501,46 @@ namespace RauViet.classes
 
                 return newId;
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine("ERROR: " + ex.Message);
                 return -1;
             }
+        }
+
+        public async Task<bool> updateMaterialExportAsync(int ExportID, DateTime ExportDate, int MaterialID, decimal Amount, int? PlantingID, int? WorkTypeID, string Receiver, string Note)
+        {
+            string query = @"UPDATE MaterialExport SET
+                                ExportDate=@ExportDate,
+                                MaterialID=@MaterialID,
+                                Amount=@Amount,
+                                PlantingID=@PlantingID,
+                                WorkTypeID=@WorkTypeID,
+                                Receiver=@Receiver,
+                                Note=@Note
+                             WHERE ExportID=@ExportID";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.Add("@ExportID", SqlDbType.Int).Value = ExportID;
+                        cmd.Parameters.Add("@ExportDate", SqlDbType.DateTime).Value = ExportDate;
+                        cmd.Parameters.Add("@MaterialID", SqlDbType.Int).Value = MaterialID;
+                        cmd.Parameters.Add("@Amount", SqlDbType.Decimal).Value = Amount;
+                        cmd.Parameters.Add("@PlantingID", SqlDbType.Int).Value = PlantingID.HasValue ? (object)PlantingID.Value : DBNull.Value;
+                        cmd.Parameters.Add("@WorkTypeID", SqlDbType.Int).Value = WorkTypeID.HasValue ? (object)WorkTypeID.Value : DBNull.Value;
+                        cmd.Parameters.Add("@Receiver", SqlDbType.NVarChar).Value = string.IsNullOrWhiteSpace(Receiver) ? (object)DBNull.Value : Receiver;
+                        cmd.Parameters.Add("@Note", SqlDbType.NVarChar).Value = Note;
+
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+                return true;
+            }
+            catch { return false; }
         }
 
         public async Task<DataTable> GetMaterialExportAsync(int month, int year)
@@ -513,7 +549,9 @@ namespace RauViet.classes
             using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
             {
                 await con.OpenAsync();
-                string query = @"SELECT * FROM MaterialExport WHERE MONTH(ExportDate) = @Month AND YEAR(ExportDate) = @Year;";
+                string query = @"SELECT me.*, pm.NurseryDate, pm.ProductionOrder, pm.IsCompleted FROM MaterialExport me
+                                                            LEFT JOIN PlantingManagement pm ON me.PlantingID = pm.PlantingID
+                                                            WHERE me.ExportDate >= DATEFROMPARTS(@Year, @Month, 1) AND me.ExportDate <  DATEADD(MONTH, 1, DATEFROMPARTS(@Year, @Month, 1))";
 
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 {
@@ -527,6 +565,25 @@ namespace RauViet.classes
                 }
             }
             return dt;
+        }
+
+        public async Task<bool> deletetMaterialExportAsync(int ExportID)
+        {
+            string query = "DELETE FROM MaterialExport WHERE ExportID=@ExportID";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@ExportID", ExportID);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+                return true;
+            }
+            catch { return false; }
         }
     }
 }

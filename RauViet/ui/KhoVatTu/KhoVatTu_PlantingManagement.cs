@@ -31,7 +31,7 @@ namespace RauViet.ui
             monthYear_dtp.Format = DateTimePickerFormat.Custom;
             monthYear_dtp.CustomFormat = "yyyy";
             monthYear_dtp.ShowUpDown = true;
-            monthYear_dtp.Value = DateTime.Now;
+            monthYear_dtp.Value = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
 
             ngayUom_dtp.Format = DateTimePickerFormat.Custom;
             ngayUom_dtp.CustomFormat = "dd/MM/yyyy";

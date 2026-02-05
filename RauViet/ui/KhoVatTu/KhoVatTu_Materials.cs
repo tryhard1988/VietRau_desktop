@@ -39,6 +39,7 @@ namespace RauViet.ui
             UnitDebounceTimer.Tick += unitDebounceTimer_Tick;
             catelory_CB.TextUpdate += catelory_cbb_TextUpdate;
             unit_CBB.TextUpdate += unit_CBB_TextUpdate;
+            search_tb.TextChanged += Search_tb_TextChanged;
             //quantity_tb.KeyPress += Tb_KeyPress_OnlyNumber;
         }
 
@@ -78,23 +79,10 @@ namespace RauViet.ui
                 var unitTask = SQLStore_KhoVatTu.Instance.GetUnitAsync();
                 var cateloryTask = SQLStore_KhoVatTu.Instance.GetMaterialCategoryAsync();
                 var materialTask = SQLStore_KhoVatTu.Instance.getMaterialAsync();
-                //    var domesticLiquidationImportTask = SQLStore_Kho.Instance.getDomesticLiquidationImportAsync();
-                //    var empTask = SQLStore_QLNS.Instance.GetEmployeesAsync();
-                //    var logDataTask = SQLStore_Kho.Instance.GetDomesticLiquidationImportLogAsync();
                 await Task.WhenAll(unitTask, cateloryTask, materialTask);
-
-                //    mDomesticLiquidationPrice_dt = domesticLiquidationPriceTask.Result;
-                //    mDomesticLiquidationImport_dt = domesticLiquidationImportTask.Result;
                 mUnit_dt = unitTask.Result;
                 mCatelory_dt = cateloryTask.Result;
                 mMaterial_dt = materialTask.Result;
-                //    mLogDV = new DataView(logDataTask.Result);
-
-
-                //    domesticLiquidationPrice_cbb.DataSource = mDomesticLiquidationPrice_dt;
-                //    domesticLiquidationPrice_cbb.DisplayMember = "Name_VN";  // hiển thị tên
-                //    domesticLiquidationPrice_cbb.ValueMember = "DomesticLiquidationPriceID";
-                //    domesticLiquidationPrice_cbb.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
 
                 unit_CBB.DataSource = mUnit_dt;
                 unit_CBB.DisplayMember = "UnitName";  // hiển thị tên
@@ -108,7 +96,7 @@ namespace RauViet.ui
 
                 dataGV.DataSource = mMaterial_dt;
                 //    log_GV.DataSource = mLogDV;
-                Utils.HideColumns(dataGV, new[] { "UnitID", "CategoryID", "MaterialID" });
+                Utils.HideColumns(dataGV, new[] { "UnitID", "CategoryID", "MaterialID", "MaterialName_nosign" });
                 Utils.SetGridOrdinal(mMaterial_dt, new[] { "MaterialName", "CategoryName", "UnitName" });
                 Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
                         {"MaterialName", "Tên Vật Tư" },
@@ -266,7 +254,7 @@ namespace RauViet.ui
                                 row["UnitID"] = unitID;
                                 row["UnitName"] = UnitName;
                                 row["CategoryName"] = CategoryName;
-
+                                row["MaterialName_nosign"] = Utils.RemoveVietnameseSigns($"{CategoryName} {name}");
                                 status_lb.Text = "Thành công.";
                                 status_lb.ForeColor = Color.Green;
                             }
@@ -312,6 +300,7 @@ namespace RauViet.ui
                         drToAdd["UnitID"] = unitID;
                         drToAdd["UnitName"] = UnitName;
                         drToAdd["CategoryName"] = CategoryName;
+                        drToAdd["MaterialName_nosign"] = Utils.RemoveVietnameseSigns($"{CategoryName} {name}");
 
                         mMaterial_dt.Rows.Add(drToAdd);
                         mMaterial_dt.AcceptChanges();
@@ -498,6 +487,19 @@ namespace RauViet.ui
                 e.Handled = true;
             }
         }
+
+        private void Search_tb_TextChanged(object sender, EventArgs e)
+        {
+            string keyword = Utils.RemoveVietnameseSigns(search_tb.Text.Trim().ToLower())
+                     .Replace("'", "''"); // tránh lỗi cú pháp '
+
+            DataTable dt = dataGV.DataSource as DataTable;
+            if (dt == null) return;
+
+            DataView dv = dt.DefaultView;
+            dv.RowFilter = $"[MaterialName_nosign] LIKE '%{keyword}%'";
+        }
+
 
         //private async void button1_Click(object sender, EventArgs e)
         //{

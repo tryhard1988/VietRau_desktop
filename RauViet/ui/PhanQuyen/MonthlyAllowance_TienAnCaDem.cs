@@ -233,8 +233,6 @@ namespace RauViet.ui
 
         private async void saveBtn_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("tôi chưa làm chỗ này nhà bà thu");
-            return;
 
             int month = monthYearDtp.Value.Month;
             int year = monthYearDtp.Value.Year;

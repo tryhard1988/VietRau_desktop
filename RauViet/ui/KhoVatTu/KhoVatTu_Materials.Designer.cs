@@ -29,10 +29,13 @@ namespace RauViet.ui
         /// </summary>
         private void InitializeComponent()
         {
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.panel3 = new System.Windows.Forms.Panel();
             this.dataGV = new System.Windows.Forms.DataGridView();
+            this.search_tb = new System.Windows.Forms.TextBox();
+            this.panel1 = new System.Windows.Forms.Panel();
             this.label4 = new System.Windows.Forms.Label();
             this.log_GV = new System.Windows.Forms.DataGridView();
-            this.panel1 = new System.Windows.Forms.Panel();
             this.readOnly_btn = new System.Windows.Forms.Button();
             this.edit_btn = new System.Windows.Forms.Button();
             this.newCustomerBtn = new System.Windows.Forms.Button();
@@ -46,23 +49,69 @@ namespace RauViet.ui
             this.id_tb = new System.Windows.Forms.TextBox();
             this.status_lb = new System.Windows.Forms.Label();
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
+            this.panel2.SuspendLayout();
+            this.panel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.log_GV)).BeginInit();
             this.panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.log_GV)).BeginInit();
             this.info_gb.SuspendLayout();
             this.SuspendLayout();
+            // 
+            // panel2
+            // 
+            this.panel2.Controls.Add(this.dataGV);
+            this.panel2.Controls.Add(this.panel3);
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Left;
+            this.panel2.Location = new System.Drawing.Point(0, 0);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(696, 681);
+            this.panel2.TabIndex = 70;
+            // 
+            // panel3
+            // 
+            this.panel3.Controls.Add(this.search_tb);
+            this.panel3.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel3.Location = new System.Drawing.Point(0, 0);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(696, 34);
+            this.panel3.TabIndex = 67;
             // 
             // dataGV
             // 
             this.dataGV.AllowUserToAddRows = false;
             this.dataGV.AllowUserToDeleteRows = false;
             this.dataGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGV.Dock = System.Windows.Forms.DockStyle.Left;
-            this.dataGV.Location = new System.Drawing.Point(0, 0);
+            this.dataGV.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dataGV.Location = new System.Drawing.Point(0, 34);
             this.dataGV.Name = "dataGV";
             this.dataGV.ReadOnly = true;
-            this.dataGV.Size = new System.Drawing.Size(781, 681);
-            this.dataGV.TabIndex = 65;
+            this.dataGV.Size = new System.Drawing.Size(696, 647);
+            this.dataGV.TabIndex = 68;
+            // 
+            // search_tb
+            // 
+            this.search_tb.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.search_tb.Location = new System.Drawing.Point(12, 8);
+            this.search_tb.Name = "search_tb";
+            this.search_tb.Size = new System.Drawing.Size(230, 22);
+            this.search_tb.TabIndex = 69;
+            // 
+            // panel1
+            // 
+            this.panel1.Controls.Add(this.label4);
+            this.panel1.Controls.Add(this.log_GV);
+            this.panel1.Controls.Add(this.readOnly_btn);
+            this.panel1.Controls.Add(this.edit_btn);
+            this.panel1.Controls.Add(this.newCustomerBtn);
+            this.panel1.Controls.Add(this.info_gb);
+            this.panel1.Controls.Add(this.id_tb);
+            this.panel1.Controls.Add(this.status_lb);
+            this.panel1.Controls.Add(this.LuuThayDoiBtn);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel1.Location = new System.Drawing.Point(696, 0);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(653, 681);
+            this.panel1.TabIndex = 71;
             // 
             // label4
             // 
@@ -70,10 +119,10 @@ namespace RauViet.ui
             this.label4.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.label4.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label4.ForeColor = System.Drawing.Color.DarkOliveGreen;
-            this.label4.Location = new System.Drawing.Point(781, 433);
+            this.label4.Location = new System.Drawing.Point(0, 433);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(568, 23);
-            this.label4.TabIndex = 68;
+            this.label4.Size = new System.Drawing.Size(653, 23);
+            this.label4.TabIndex = 70;
             this.label4.Text = "Lịch sử thay đổi";
             this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
@@ -83,26 +132,11 @@ namespace RauViet.ui
             this.log_GV.AllowUserToDeleteRows = false;
             this.log_GV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.log_GV.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.log_GV.Location = new System.Drawing.Point(781, 456);
+            this.log_GV.Location = new System.Drawing.Point(0, 456);
             this.log_GV.Name = "log_GV";
             this.log_GV.ReadOnly = true;
-            this.log_GV.Size = new System.Drawing.Size(568, 225);
-            this.log_GV.TabIndex = 67;
-            // 
-            // panel1
-            // 
-            this.panel1.Controls.Add(this.readOnly_btn);
-            this.panel1.Controls.Add(this.edit_btn);
-            this.panel1.Controls.Add(this.newCustomerBtn);
-            this.panel1.Controls.Add(this.info_gb);
-            this.panel1.Controls.Add(this.id_tb);
-            this.panel1.Controls.Add(this.status_lb);
-            this.panel1.Controls.Add(this.LuuThayDoiBtn);
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Left;
-            this.panel1.Location = new System.Drawing.Point(781, 0);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(533, 433);
-            this.panel1.TabIndex = 69;
+            this.log_GV.Size = new System.Drawing.Size(653, 225);
+            this.log_GV.TabIndex = 69;
             // 
             // readOnly_btn
             // 
@@ -240,15 +274,16 @@ namespace RauViet.ui
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1349, 681);
             this.Controls.Add(this.panel1);
-            this.Controls.Add(this.label4);
-            this.Controls.Add(this.log_GV);
-            this.Controls.Add(this.dataGV);
+            this.Controls.Add(this.panel2);
             this.Name = "KhoVatTu_Materials";
             this.Text = "FormTableData";
+            this.panel2.ResumeLayout(false);
+            this.panel3.ResumeLayout(false);
+            this.panel3.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.log_GV)).EndInit();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.log_GV)).EndInit();
             this.info_gb.ResumeLayout(false);
             this.info_gb.PerformLayout();
             this.ResumeLayout(false);
@@ -256,23 +291,25 @@ namespace RauViet.ui
         }
 
         #endregion
-
+        private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.DataGridView dataGV;
+        private System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.TextBox search_tb;
+        private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.DataGridView log_GV;
-        private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Button readOnly_btn;
         private System.Windows.Forms.Button edit_btn;
         private System.Windows.Forms.Button newCustomerBtn;
         private System.Windows.Forms.GroupBox info_gb;
+        private System.Windows.Forms.TextBox materialName_tb;
+        private System.Windows.Forms.ComboBox catelory_CB;
+        private System.Windows.Forms.ComboBox unit_CBB;
+        private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox id_tb;
         private System.Windows.Forms.Label status_lb;
         private System.Windows.Forms.Button LuuThayDoiBtn;
-        private System.Windows.Forms.ComboBox unit_CBB;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.ComboBox catelory_CB;
-        private System.Windows.Forms.TextBox materialName_tb;
     }
 }
