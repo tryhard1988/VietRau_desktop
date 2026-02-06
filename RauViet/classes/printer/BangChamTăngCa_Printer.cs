@@ -134,10 +134,10 @@ public class BangChamTăngCa_Printer
             y += lineHeight1/2;
 
             g.DrawString($"Địa Chỉ:   {Utils.getCompanyAddress()}", normalFont, Brushes.Black, startX, y);
-            y += lineHeight1;
+            y += lineHeight1/2;
 
             string result = string.Join(", ", departmentNames);
-            g.DrawString($"Phòng Ban: {result}", headerFont1, Brushes.Black, startX, y);
+            g.DrawString($"Phòng Ban: {result}", normalFont, Brushes.Black, startX, y + lineHeight1 / 2);
 
             string titleStr = $"BẢNG DÒ TĂNG CA T{month}/{year}";
             SizeF codeSize = g.MeasureString(titleStr, headerFont);

@@ -1,6 +1,8 @@
 ﻿using RauViet.classes;
 using System;
 using System.Data;
+using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Color = System.Drawing.Color;
@@ -49,8 +51,7 @@ namespace RauViet.ui
             
             amount_tb.KeyPress += Tb_KeyPress_OnlyNumber;
 
-            monthYearDtp.ValueChanged += MonthYearDtp_ValueChanged;
-
+            monthYearDtp.ValueChanged += MonthYearDtp_ValueChanged;            
             edit_btn.Click += Edit_btn_Click;
             readOnly_btn.Click += ReadOnly_btn_Click;
             ReadOnly_btn_Click(null, null);
@@ -102,7 +103,7 @@ namespace RauViet.ui
                 dataGV.SelectionChanged -= this.dataGV_CellClick;
                 allowanceGV.SelectionChanged -= this.allowanceGV_CellClick;
                 monthYearDtp.ValueChanged -= monthYearDtp_ValueChanged;
-
+                allowanceType_cbb.SelectedIndexChanged -= AllowanceType_cbb_SelectedIndexChanged;
                 int month = monthYearDtp.Value.Month;
                 int year = monthYearDtp.Value.Year;
 
@@ -228,6 +229,8 @@ namespace RauViet.ui
 
                 log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 monthYearDtp.ValueChanged += monthYearDtp_ValueChanged;
+                allowanceType_cbb.SelectedIndexChanged += AllowanceType_cbb_SelectedIndexChanged;
+                AllowanceType_cbb_SelectedIndexChanged(null, null);
             }
             catch
             {
@@ -308,12 +311,17 @@ namespace RauViet.ui
                 string allowanceTypeID = Convert.ToString(cells["AllowanceTypeID"].Value);
                 int month = Convert.ToInt32(cells["Month"].Value);
                 int year = Convert.ToInt32(cells["Year"].Value);
-                int amount = Convert.ToInt32(cells["Amount"].Value);
+                decimal amount = Convert.ToDecimal(cells["Amount"].Value);
                 string note = cells["Note"].Value.ToString();
+
+                DataRow row = mAllowanceType_dt.AsEnumerable().FirstOrDefault(r => r.Field<int>("AllowanceTypeID") == Convert.ToInt32(allowanceTypeID));
+                if (row == null) return;
+
+                int giaPhuCap = row.Field<int?>("AllowancePrice") ?? 1;
 
                 employeeName_tb.Text = cells["EmployeeName"].Value.ToString();
                 this.monthlyAllowanceID_tb.Text = monthlyAllowanceID;
-                amount_tb.Text = amount.ToString();
+                amount_tb.Text = (amount / giaPhuCap).ToString("0.##", CultureInfo.InvariantCulture);
                 note_tb.Text = note;
                 allowanceType_cbb.SelectedValue = allowanceTypeID;
             }
@@ -435,7 +443,8 @@ namespace RauViet.ui
             }
 
             string employeeCode = Convert.ToString(dataGV.CurrentRow.Cells["EmployeeCode"].Value);
-            int amount = Convert.ToInt32(amount_tb.Text);
+            decimal amount = Utils.ParseDecimalSmart(amount_tb.Text);
+            int giaPhuCap = Convert.ToInt32(giaPhuCap_tb.Text);
             int month = monthYearDtp.Value.Month;
             int year = monthYearDtp.Value.Year;
             int allowanceTypeID = Convert.ToInt32(allowanceType_cbb.SelectedValue);
@@ -455,9 +464,9 @@ namespace RauViet.ui
             }
 
             if (monthlyAllowanceID_tb.Text.Length != 0)
-                updateData(Convert.ToInt32(monthlyAllowanceID_tb.Text), employeeCode, month, year, amount, allowanceTypeID, note);
+                updateData(Convert.ToInt32(monthlyAllowanceID_tb.Text), employeeCode, month, year, Convert.ToInt32(amount * giaPhuCap), allowanceTypeID, note);
             else
-                createNew(employeeCode, month, year, amount, allowanceTypeID, note);
+                createNew(employeeCode, month, year, Convert.ToInt32(amount * giaPhuCap), allowanceTypeID, note);
 
         }
         private async void deleteBtn_Click(object sender, EventArgs e)
@@ -604,6 +613,20 @@ namespace RauViet.ui
         private async void HandleMonthYearChanged()
         {
             ShowData();
+        }
+
+        private void AllowanceType_cbb_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (allowanceType_cbb.SelectedValue == null) return;
+
+            int allowanceTypeID = Convert.ToInt32(allowanceType_cbb.SelectedValue);
+
+            DataRow row = mAllowanceType_dt.AsEnumerable().FirstOrDefault(r => r.Field<int>("AllowanceTypeID") == allowanceTypeID);
+
+            if (row == null) return;
+
+            int? allowancePrice = row.Field<int?>("AllowancePrice");
+            giaPhuCap_tb.Text = (allowancePrice.HasValue ? allowancePrice : 1).ToString();
         }
     }
 }

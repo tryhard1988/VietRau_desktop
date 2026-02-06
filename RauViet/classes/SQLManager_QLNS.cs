@@ -1352,6 +1352,7 @@ namespace RauViet.classes
                 string query = @"SELECT at.AllowanceTypeID,
                                 at.AllowanceName,
                                 at.IsInsuranceIncluded,
+                                at.AllowancePrice,
                                 at.ApplyScopeID,
                                 at.IsActive
                          FROM AllowanceType at

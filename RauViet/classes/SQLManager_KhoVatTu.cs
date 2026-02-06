@@ -585,6 +585,154 @@ namespace RauViet.classes
             }
             catch { return false; }
         }
+
+        public async Task<int> insertMaterialImportAsync(DateTime ImportDate, int MaterialID, decimal Amount, int? Price, string Note)
+        {
+            int newId = -1;
+
+            string insertQuery = @"INSERT INTO MaterialImport (ImportDate, MaterialID, Amount, Price, Note)
+                                    OUTPUT INSERTED.ImportID
+                                    VALUES (@ImportDate, @MaterialID, @Amount, @Price, @Note)";
+
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
+                {
+                    await con.OpenAsync();
+
+                    // 2️⃣ Insert và lấy ID mới
+                    using (SqlCommand cmd = new SqlCommand(insertQuery, con))
+                    {
+                        cmd.Parameters.Add("@ImportDate", SqlDbType.DateTime).Value = ImportDate;
+                        cmd.Parameters.Add("@MaterialID", SqlDbType.Int).Value = MaterialID;
+                        cmd.Parameters.Add("@Amount", SqlDbType.Decimal).Value = Amount;
+                        cmd.Parameters.Add("@Price", SqlDbType.Int).Value = Price.HasValue ? (object)Price.Value : DBNull.Value;
+                        cmd.Parameters.Add("@Note", SqlDbType.NVarChar).Value = Note;
+
+                        object result = await cmd.ExecuteScalarAsync();
+                        if (result != null)
+                            newId = Convert.ToInt32(result);
+                    }
+                }
+
+                return newId;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("ERROR: " + ex.Message);
+                return -1;
+            }
+        }
+
+        public async Task<bool> updateMaterialImportAsync(int ImportID, DateTime ImportDate, int MaterialID, decimal Amount, int? Price, string Note)
+        {
+            string query = @"UPDATE MaterialImport SET
+                                ImportDate=@ImportDate,
+                                MaterialID=@MaterialID,
+                                Amount=@Amount,
+                                Price=@Price,
+                                Note=@Note
+                             WHERE ImportID=@ImportID";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.Add("@ImportID", SqlDbType.Int).Value = ImportID;
+                        cmd.Parameters.Add("@ImportDate", SqlDbType.DateTime).Value = ImportDate;
+                        cmd.Parameters.Add("@MaterialID", SqlDbType.Int).Value = MaterialID;
+                        cmd.Parameters.Add("@Amount", SqlDbType.Decimal).Value = Amount;
+                        cmd.Parameters.Add("@Price", SqlDbType.Int).Value = Price.HasValue ? (object)Price.Value : DBNull.Value;
+                        cmd.Parameters.Add("@Note", SqlDbType.NVarChar).Value = Note;
+
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+                return true;
+            }
+            catch { return false; }
+        }
+
+        public async Task<DataTable> GetMaterialImportAsync(int month, int year)
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT * FROM MaterialImport WHERE ImportDate >= DATEFROMPARTS(@Year, @Month, 1) AND ImportDate <  DATEADD(MONTH, 1, DATEFROMPARTS(@Year, @Month, 1))";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    cmd.Parameters.Add("@Month", SqlDbType.Int).Value = month;
+                    cmd.Parameters.Add("@Year", SqlDbType.Int).Value = year;
+
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
+        }
+
+        public async Task<bool> deletetMaterialImportAsync(int ImportID)
+        {
+            string query = "DELETE FROM MaterialImport WHERE ImportID=@ImportID";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@ImportID", ImportID);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+                return true;
+            }
+            catch { return false; }
+        }
+
+        public async Task<DataTable> GetSumaryMaterialImportAsync()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT MaterialID, YEAR(ImportDate) AS ImportYear, SUM(Amount) AS ImportAmount FROM MaterialImport GROUP BY MaterialID, YEAR(ImportDate);";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
+        }
+
+        public async Task<DataTable> GetSumaryMaterialExportAsync()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT MaterialID, YEAR(ExportDate) AS ExportYear, SUM(Amount) AS ExportAmount FROM MaterialExport GROUP BY MaterialID, YEAR(ExportDate);";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
+        }
     }
 }
 

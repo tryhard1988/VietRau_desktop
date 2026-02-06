@@ -22,6 +22,7 @@ namespace RauViet.classes
 
         Dictionary<int, DataTable> mPlantingManagements = null;
         Dictionary<string, DataTable> mMaterialExports = null;
+        Dictionary<string, DataTable> mMaterialImports = null;
 
         private SQLStore_KhoVatTu() { }
 
@@ -46,6 +47,7 @@ namespace RauViet.classes
 
                 mPlantingManagements = new Dictionary<int, DataTable>();
                 mMaterialExports = new Dictionary<string, DataTable>();
+                mMaterialImports = new Dictionary<string, DataTable>();
 
                 var unitTask = SQLManager_KhoVatTu.Instance.GetUnitAsync();
                 var MaterialCategoryTask = SQLManager_KhoVatTu.Instance.GetMaterialCategoryAsync();
@@ -354,6 +356,65 @@ namespace RauViet.classes
             }
 
             Utils.SetGridOrdinal(data, new[] { "ExportDate", "MaterialName", "UnitName", "Amount", "ProductionOrder", "PlantName", "WorkTypeName", "RecieverName", "IsCompleted", "Note" });
+        }
+
+        public void removeMaterialImport(int month, int year)
+        {
+            string key = $"{month}_{year}";
+            mMaterialImports.Remove(key);
+        }
+
+        public async Task<DataTable> GetMaterialImportAsync(int month, int year)
+        {
+            string key = $"{month}_{year}";
+            if (!mMaterialImports.ContainsKey(key))
+            {
+                try
+                {
+                    var data = await SQLManager_KhoVatTu.Instance.GetMaterialImportAsync(month, year);
+                    editMaterialImport(data, month, year);
+                    mMaterialImports[key] = data;
+                }
+                catch
+                {
+                    Console.WriteLine("error GetMaterialExportAsync SQLStore");
+                    return null;
+                }
+            }
+
+            return mMaterialImports[key];
+        }
+
+        private async void editMaterialImport(DataTable data, int month, int year)
+        {
+            data.Columns.Add("MaterialName", typeof(string));
+            data.Columns.Add("UnitName", typeof(string));
+            data.Columns.Add("TotalMoney", typeof(int));
+
+            DataTable material_dt = await SQLStore_KhoVatTu.Instance.getMaterialAsync();
+            foreach (DataRow row in data.Rows)
+            {
+                int? materialID = row.Field<int?>("MaterialID");
+
+                if (materialID.HasValue)
+                {
+                    DataRow materialRow = material_dt.AsEnumerable().FirstOrDefault(r => r.Field<int>("MaterialID") == materialID);
+                    if (materialRow != null)
+                    {
+                        row["UnitName"] = materialRow["UnitName"];
+                        row["MaterialName"] = materialRow["MaterialName"];
+                    }
+
+                    decimal amount = Convert.ToDecimal(row["Amount"]);
+                    int? price = row.Field<int?>("Price");
+                    if (price.HasValue)
+                    {
+                        row["TotalMoney"] = Convert.ToInt32(amount * price);
+                    }
+                }
+            }
+
+            Utils.SetGridOrdinal(data, new[] { "ImportDate", "MaterialName", "UnitName", "Amount", "Price", "TotalMoney", "Note" });
         }
     }
     

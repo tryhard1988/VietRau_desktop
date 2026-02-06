@@ -105,6 +105,7 @@ namespace RauViet.classes
         public bool hasRole_ThongKe() { return hasRole("tknsvk"); }
         public bool hasRole_CreateQR() { return hasRole("tqr"); }
         public bool hasRole_NhapDonTrongNuoc() { return hasRole("ndtn"); }
+        public bool hasRole_QLK_VatTu() { return hasRole("qlk_vt"); }
         public bool hasRole_SuaDonTrongNuoc() { return hasRole("csdtn"); }
         public int[] get_ChamCongTangCa_Departments()
         {

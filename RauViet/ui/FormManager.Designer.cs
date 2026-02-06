@@ -108,7 +108,6 @@
             this.resoncileDomesticDebts_Year_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripMenuItem();
             this.khoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.khoVaTu_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.plantingManagement_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.extension_mi = new System.Windows.Forms.ToolStripMenuItem();
@@ -116,8 +115,11 @@
             this.aaaaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadExcelOrderReportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.content_panel = new System.Windows.Forms.Panel();
+            this.qlVatTu_group = new System.Windows.Forms.ToolStripMenuItem();
+            this.khoVaTu_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.materialExport_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.materialImport_mi = new System.Windows.Forms.ToolStripMenuItem();
+            this.tonKhoVatTu_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1.SuspendLayout();
             this.LOT_menuitem.SuspendLayout();
             this.SuspendLayout();
@@ -160,9 +162,10 @@
             this.donhang_group_mi,
             this.orderDomestic_group_mi,
             this.toolStripMenuItem3,
-            this.thongke_main_mi,
-            this.toolStripMenuItem4,
+            this.qlVatTu_group,
             this.khoToolStripMenuItem,
+            this.toolStripMenuItem4,
+            this.thongke_main_mi,
             this.toolStripMenuItem2,
             this.extension_mi,
             this.aaaaToolStripMenuItem});
@@ -729,21 +732,12 @@
             // khoToolStripMenuItem
             // 
             this.khoToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.khoVaTu_mi,
-            this.plantingManagement_mi,
-            this.materialExport_mi,
-            this.materialImport_mi});
+            this.plantingManagement_mi});
             this.khoToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.khoToolStripMenuItem.ForeColor = System.Drawing.Color.MediumBlue;
             this.khoToolStripMenuItem.Name = "khoToolStripMenuItem";
-            this.khoToolStripMenuItem.Size = new System.Drawing.Size(81, 21);
-            this.khoToolStripMenuItem.Text = "Cây Trồng";
-            // 
-            // khoVaTu_mi
-            // 
-            this.khoVaTu_mi.Name = "khoVaTu_mi";
-            this.khoVaTu_mi.Size = new System.Drawing.Size(181, 22);
-            this.khoVaTu_mi.Text = "Kho Vật Tư";
+            this.khoToolStripMenuItem.Size = new System.Drawing.Size(135, 21);
+            this.khoToolStripMenuItem.Text = "Quản Lý Cây Trồng";
             // 
             // plantingManagement_mi
             // 
@@ -799,17 +793,42 @@
             this.content_panel.Size = new System.Drawing.Size(1477, 491);
             this.content_panel.TabIndex = 1;
             // 
+            // qlVatTu_group
+            // 
+            this.qlVatTu_group.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.khoVaTu_mi,
+            this.materialExport_mi,
+            this.materialImport_mi,
+            this.tonKhoVatTu_mi});
+            this.qlVatTu_group.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.qlVatTu_group.ForeColor = System.Drawing.Color.Blue;
+            this.qlVatTu_group.Name = "qlVatTu_group";
+            this.qlVatTu_group.Size = new System.Drawing.Size(113, 21);
+            this.qlVatTu_group.Text = "Quản Lý Vật Tư";
+            // 
+            // khoVaTu_mi
+            // 
+            this.khoVaTu_mi.Name = "khoVaTu_mi";
+            this.khoVaTu_mi.Size = new System.Drawing.Size(180, 22);
+            this.khoVaTu_mi.Text = "Kho Vật Tư";
+            // 
             // materialExport_mi
             // 
             this.materialExport_mi.Name = "materialExport_mi";
-            this.materialExport_mi.Size = new System.Drawing.Size(181, 22);
+            this.materialExport_mi.Size = new System.Drawing.Size(180, 22);
             this.materialExport_mi.Text = "Xuất Kho Vật Tư";
             // 
             // materialImport_mi
             // 
             this.materialImport_mi.Name = "materialImport_mi";
-            this.materialImport_mi.Size = new System.Drawing.Size(181, 22);
+            this.materialImport_mi.Size = new System.Drawing.Size(180, 22);
             this.materialImport_mi.Text = "Nhập Kho Vật Tư";
+            // 
+            // tonKhoVatTu_mi
+            // 
+            this.tonKhoVatTu_mi.Name = "tonKhoVatTu_mi";
+            this.tonKhoVatTu_mi.Size = new System.Drawing.Size(180, 22);
+            this.tonKhoVatTu_mi.Text = "Tồn Kho Vật Tư";
             // 
             // FormManager
             // 
@@ -917,9 +936,11 @@
         private System.Windows.Forms.ToolStripMenuItem thongKeTonKhoHangRauCu_mi;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem4;
         private System.Windows.Forms.ToolStripMenuItem khoToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem khoVaTu_mi;
         private System.Windows.Forms.ToolStripMenuItem plantingManagement_mi;
+        private System.Windows.Forms.ToolStripMenuItem qlVatTu_group;
+        private System.Windows.Forms.ToolStripMenuItem khoVaTu_mi;
         private System.Windows.Forms.ToolStripMenuItem materialExport_mi;
         private System.Windows.Forms.ToolStripMenuItem materialImport_mi;
+        private System.Windows.Forms.ToolStripMenuItem tonKhoVatTu_mi;
     }
 }

@@ -1,10 +1,8 @@
-﻿using DocumentFormat.OpenXml.Drawing;
-using RauViet.classes;
+﻿using RauViet.classes;
 using System;
 using System.Data;
 using System.Globalization;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Color = System.Drawing.Color;
@@ -60,7 +58,7 @@ namespace RauViet.ui
 
             MaterialDebounceTimer.Tick += MaterialDebounceTimer_Tick;
             vatTu_CB.TextUpdate += VatTu_CB_TextUpdate;
-            //quantity_tb.KeyPress += Tb_KeyPress_OnlyNumber;
+            soLuong_tb.KeyPress += Tb_KeyPress_OnlyNumber;
         }
 
         private void Kho_Materials_KeyDown(object sender, KeyEventArgs e)
@@ -111,12 +109,8 @@ namespace RauViet.ui
                 var employeeTask = SQLStore_QLNS.Instance.GetEmployeesAsync(empKeepColumns);
                 var materialExportTask = SQLStore_KhoVatTu.Instance.GetMaterialExportAsync(month, year);
 
-                //    var empTask = SQLStore_QLNS.Instance.GetEmployeesAsync();
-                //    var logDataTask = SQLStore_Kho.Instance.GetDomesticLiquidationImportLogAsync();
                 await Task.WhenAll(plantingManagementTask, cateloryTask, materialTask, employeeTask, workTypeTask, materialExportTask);
 
-                //    mDomesticLiquidationPrice_dt = domesticLiquidationPriceTask.Result;
-                //    mDomesticLiquidationImport_dt = domesticLiquidationImportTask.Result;
                 mPlantingManagement_dt = plantingManagementTask.Result;
                 mMaterial_dt = materialTask.Result;
                 mEmployee_dt = employeeTask.Result;
@@ -608,7 +602,10 @@ namespace RauViet.ui
             soLuong_tb.Enabled = true;
             LenhSX_CBB.Enabled = true;
             vatTu_CB.Enabled = true;
-
+            ngayXuat_dtp.Enabled = true;
+            congViec_CBB.Enabled = true;
+            nguoiNhan_CBB.Enabled = true;
+            note_tb.Enabled = true;
             ngayXuat_dtp.Focus();
         }
 
@@ -623,7 +620,10 @@ namespace RauViet.ui
             soLuong_tb.Enabled = false;
             LenhSX_CBB.Enabled = false;
             vatTu_CB.Enabled = false;
-            
+            ngayXuat_dtp.Enabled = false;
+            congViec_CBB.Enabled = false;
+            nguoiNhan_CBB.Enabled = false;
+            note_tb.Enabled = false;
             if (dataGV.SelectedRows.Count > 0)
                 updateRightUI();
         }
@@ -637,6 +637,10 @@ namespace RauViet.ui
             newCustomerBtn.Visible = false;
             readOnly_btn.Visible = true;
             LuuThayDoiBtn.Visible = true;
+            ngayXuat_dtp.Enabled = true;
+            congViec_CBB.Enabled = true;
+            nguoiNhan_CBB.Enabled = true;
+            note_tb.Enabled = true;
             info_gb.BackColor = edit_btn.BackColor;
             isNewState = false;
             LuuThayDoiBtn.Text = "Lưu C.Sửa";

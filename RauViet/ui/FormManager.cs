@@ -253,11 +253,17 @@ namespace RauViet.ui
                 orderDomestic_group_mi.Visible = false;
             }
 
+            if (UserManager.Instance.hasRole_QLK_VatTu())
+            {
+                khoVaTu_mi.Click += khoVaTu_mi_Click;
+                materialExport_mi.Click += materialExport_mi_Click;
+                materialImport_mi.Click += MaterialImport_mi_Click;
+                tonKhoVatTu_mi.Click += TonKhoVatTu_mi_Click;
+            }
+            else
+                qlVatTu_group.Visible = false;
 
-            khoVaTu_mi.Click += khoVaTu_mi_Click;
             plantingManagement_mi.Click += plantingManagement_mi_Click;
-            materialExport_mi.Click += materialExport_mi_Click;
-            materialImport_mi.Click += MaterialImport_mi_Click;
 
             historyLogin_mi.Click += HistoryLogin_mi_Click;
             
@@ -368,7 +374,8 @@ namespace RauViet.ui
             KhoVatTu_Materials,
             KhoVatTu_PlantingManagement,
             KhoVatTu_MaterialExport,
-            KhoVatTu_MaterialImport
+            KhoVatTu_MaterialImport,
+            KhoVatTu_MaterialInvenStore
         }
 
         private void openCurrentForm(EForm status)
@@ -576,9 +583,12 @@ namespace RauViet.ui
                     break;
                 case EForm.KhoVatTu_MaterialExport:
                     SwitchChildForm<KhoVatTu_MaterialExport>("Xuất Kho Vật Tư");
-                    break;
+                    break; 
                 case EForm.KhoVatTu_MaterialImport:
                     SwitchChildForm<KhoVatTu_MaterialImport>("Nhập Kho Vật Tư");
+                    break;
+                case EForm.KhoVatTu_MaterialInvenStore:
+                    SwitchChildForm<KhoVatTu_MaterialInvenStore>("Tồn Kho Vật Tư");
                     break;
             }
             
@@ -655,6 +665,7 @@ namespace RauViet.ui
         private void plantingManagement_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.KhoVatTu_PlantingManagement); }
         private void materialExport_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.KhoVatTu_MaterialExport); }
         private void MaterialImport_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.KhoVatTu_MaterialImport); }
+        private void TonKhoVatTu_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.KhoVatTu_MaterialInvenStore); ; }
         private async void checkLoginTimer_Tick(object sender, EventArgs e)
         {
             var isHave = await SQLManager.Instance.HaveOtherComputerLoginAsync();
