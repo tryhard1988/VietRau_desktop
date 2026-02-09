@@ -30,6 +30,8 @@ namespace RauViet.ui
         private void InitializeComponent()
         {
             this.load_gb = new System.Windows.Forms.GroupBox();
+            this.panel9 = new System.Windows.Forms.Panel();
+            this.chiHoLuong_btn = new System.Windows.Forms.Button();
             this.panel8 = new System.Windows.Forms.Panel();
             this.printPreview_BTC_btn = new System.Windows.Forms.Button();
             this.print_BTC_btn = new System.Windows.Forms.Button();
@@ -61,9 +63,9 @@ namespace RauViet.ui
             this.allowancePanel = new System.Windows.Forms.Panel();
             this.allowanceGV = new System.Windows.Forms.DataGridView();
             this.label2 = new System.Windows.Forms.Label();
-            this.panel9 = new System.Windows.Forms.Panel();
-            this.chiHoLuong_btn = new System.Windows.Forms.Button();
+            this.reportBoss_btn = new System.Windows.Forms.Button();
             this.load_gb.SuspendLayout();
+            this.panel9.SuspendLayout();
             this.panel8.SuspendLayout();
             this.panel7.SuspendLayout();
             this.panel6.SuspendLayout();
@@ -81,7 +83,6 @@ namespace RauViet.ui
             ((System.ComponentModel.ISupportInitialize)(this.leaveGV)).BeginInit();
             this.allowancePanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.allowanceGV)).BeginInit();
-            this.panel9.SuspendLayout();
             this.SuspendLayout();
             // 
             // load_gb
@@ -100,21 +101,42 @@ namespace RauViet.ui
             this.load_gb.TabIndex = 29;
             this.load_gb.TabStop = false;
             // 
+            // panel9
+            // 
+            this.panel9.Controls.Add(this.reportBoss_btn);
+            this.panel9.Controls.Add(this.chiHoLuong_btn);
+            this.panel9.Dock = System.Windows.Forms.DockStyle.Right;
+            this.panel9.Location = new System.Drawing.Point(336, 13);
+            this.panel9.Name = "panel9";
+            this.panel9.Size = new System.Drawing.Size(358, 38);
+            this.panel9.TabIndex = 40;
+            // 
+            // chiHoLuong_btn
+            // 
+            this.chiHoLuong_btn.BackColor = System.Drawing.Color.DeepSkyBlue;
+            this.chiHoLuong_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.chiHoLuong_btn.Location = new System.Drawing.Point(3, 2);
+            this.chiHoLuong_btn.Name = "chiHoLuong_btn";
+            this.chiHoLuong_btn.Size = new System.Drawing.Size(191, 34);
+            this.chiHoLuong_btn.TabIndex = 37;
+            this.chiHoLuong_btn.Text = "X.Excel Chi Hộ Lương";
+            this.chiHoLuong_btn.UseVisualStyleBackColor = false;
+            // 
             // panel8
             // 
             this.panel8.Controls.Add(this.printPreview_BTC_btn);
             this.panel8.Controls.Add(this.print_BTC_btn);
             this.panel8.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel8.Location = new System.Drawing.Point(578, 13);
+            this.panel8.Location = new System.Drawing.Point(694, 13);
             this.panel8.Name = "panel8";
-            this.panel8.Size = new System.Drawing.Size(244, 38);
+            this.panel8.Size = new System.Drawing.Size(181, 38);
             this.panel8.TabIndex = 39;
             // 
             // printPreview_BTC_btn
             // 
             this.printPreview_BTC_btn.BackColor = System.Drawing.Color.ForestGreen;
             this.printPreview_BTC_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.printPreview_BTC_btn.Location = new System.Drawing.Point(177, 2);
+            this.printPreview_BTC_btn.Location = new System.Drawing.Point(118, 2);
             this.printPreview_BTC_btn.Name = "printPreview_BTC_btn";
             this.printPreview_BTC_btn.Size = new System.Drawing.Size(60, 34);
             this.printPreview_BTC_btn.TabIndex = 38;
@@ -125,11 +147,11 @@ namespace RauViet.ui
             // 
             this.print_BTC_btn.BackColor = System.Drawing.Color.ForestGreen;
             this.print_BTC_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.print_BTC_btn.Location = new System.Drawing.Point(14, 2);
+            this.print_BTC_btn.Location = new System.Drawing.Point(3, 2);
             this.print_BTC_btn.Name = "print_BTC_btn";
-            this.print_BTC_btn.Size = new System.Drawing.Size(158, 34);
+            this.print_BTC_btn.Size = new System.Drawing.Size(110, 34);
             this.print_BTC_btn.TabIndex = 37;
-            this.print_BTC_btn.Text = "In Bảng Tăng Ca";
+            this.print_BTC_btn.Text = "In Tăng Ca";
             this.print_BTC_btn.UseVisualStyleBackColor = false;
             // 
             // panel7
@@ -137,16 +159,16 @@ namespace RauViet.ui
             this.panel7.Controls.Add(this.preview_BCC_btn);
             this.panel7.Controls.Add(this.Print_BCC_btn);
             this.panel7.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel7.Location = new System.Drawing.Point(822, 13);
+            this.panel7.Location = new System.Drawing.Point(875, 13);
             this.panel7.Name = "panel7";
-            this.panel7.Size = new System.Drawing.Size(262, 38);
+            this.panel7.Size = new System.Drawing.Size(209, 38);
             this.panel7.TabIndex = 38;
             // 
             // preview_BCC_btn
             // 
             this.preview_BCC_btn.BackColor = System.Drawing.Color.MediumAquamarine;
             this.preview_BCC_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.preview_BCC_btn.Location = new System.Drawing.Point(197, 2);
+            this.preview_BCC_btn.Location = new System.Drawing.Point(148, 2);
             this.preview_BCC_btn.Name = "preview_BCC_btn";
             this.preview_BCC_btn.Size = new System.Drawing.Size(59, 34);
             this.preview_BCC_btn.TabIndex = 38;
@@ -157,11 +179,11 @@ namespace RauViet.ui
             // 
             this.Print_BCC_btn.BackColor = System.Drawing.Color.MediumAquamarine;
             this.Print_BCC_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Print_BCC_btn.Location = new System.Drawing.Point(10, 2);
+            this.Print_BCC_btn.Location = new System.Drawing.Point(4, 2);
             this.Print_BCC_btn.Name = "Print_BCC_btn";
-            this.Print_BCC_btn.Size = new System.Drawing.Size(177, 34);
+            this.Print_BCC_btn.Size = new System.Drawing.Size(134, 34);
             this.Print_BCC_btn.TabIndex = 37;
-            this.Print_BCC_btn.Text = "In Bảng Chấm Công";
+            this.Print_BCC_btn.Text = "In Chấm Công";
             this.Print_BCC_btn.UseVisualStyleBackColor = false;
             // 
             // panel6
@@ -443,25 +465,16 @@ namespace RauViet.ui
             this.label2.Text = "Phụ Cấp";
             this.label2.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
-            // panel9
+            // reportBoss_btn
             // 
-            this.panel9.Controls.Add(this.chiHoLuong_btn);
-            this.panel9.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel9.Location = new System.Drawing.Point(331, 13);
-            this.panel9.Name = "panel9";
-            this.panel9.Size = new System.Drawing.Size(247, 38);
-            this.panel9.TabIndex = 40;
-            // 
-            // chiHoLuong_btn
-            // 
-            this.chiHoLuong_btn.BackColor = System.Drawing.Color.DeepSkyBlue;
-            this.chiHoLuong_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.chiHoLuong_btn.Location = new System.Drawing.Point(14, 2);
-            this.chiHoLuong_btn.Name = "chiHoLuong_btn";
-            this.chiHoLuong_btn.Size = new System.Drawing.Size(227, 34);
-            this.chiHoLuong_btn.TabIndex = 37;
-            this.chiHoLuong_btn.Text = "Xuất Excel Chi Hộ Lương";
-            this.chiHoLuong_btn.UseVisualStyleBackColor = false;
+            this.reportBoss_btn.BackColor = System.Drawing.Color.DarkOrchid;
+            this.reportBoss_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.reportBoss_btn.Location = new System.Drawing.Point(197, 3);
+            this.reportBoss_btn.Name = "reportBoss_btn";
+            this.reportBoss_btn.Size = new System.Drawing.Size(156, 34);
+            this.reportBoss_btn.TabIndex = 38;
+            this.reportBoss_btn.Text = "B.Cáo Gửi Đại Ca";
+            this.reportBoss_btn.UseVisualStyleBackColor = false;
             // 
             // SalaryCaculator
             // 
@@ -473,6 +486,7 @@ namespace RauViet.ui
             this.Name = "SalaryCaculator";
             this.Text = "FormTableData";
             this.load_gb.ResumeLayout(false);
+            this.panel9.ResumeLayout(false);
             this.panel8.ResumeLayout(false);
             this.panel7.ResumeLayout(false);
             this.panel6.ResumeLayout(false);
@@ -490,7 +504,6 @@ namespace RauViet.ui
             ((System.ComponentModel.ISupportInitialize)(this.leaveGV)).EndInit();
             this.allowancePanel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.allowanceGV)).EndInit();
-            this.panel9.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -530,5 +543,6 @@ namespace RauViet.ui
         private System.Windows.Forms.Button Print_BCC_btn;
         private System.Windows.Forms.Panel panel9;
         private System.Windows.Forms.Button chiHoLuong_btn;
+        private System.Windows.Forms.Button reportBoss_btn;
     }
 }

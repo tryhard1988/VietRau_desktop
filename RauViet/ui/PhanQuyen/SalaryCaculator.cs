@@ -1,13 +1,12 @@
 ﻿using ClosedXML.Excel;
-using DocumentFormat.OpenXml.Spreadsheet;
-using DocumentFormat.OpenXml.Wordprocessing;
+using MySqlX.XDevAPI.Common;
+using PdfSharp.Pdf.Content.Objects;
 using RauViet.classes;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -70,7 +69,9 @@ namespace RauViet.ui
             print_BTC_btn.Click += Print_BTC_btn_Click;
             printPreview_BTC_btn.Click += PrintPreview_BTC_btn_Click;
             chiHoLuong_btn.Click += ChiHoLuong_btn_Click;
-        }   
+
+            reportBoss_btn.Click += ReportBoss_btn_Click;
+        }
 
         private void OvertimeAttendace_Load(object sender, EventArgs e)
         {
@@ -133,7 +134,7 @@ namespace RauViet.ui
             int month = monthYearDtp.Value.Month;
             int year = monthYearDtp.Value.Year;
 
-            string[] keepColumns = { "EmployeeCode", "FullName", "HireDate", "IsInsuranceRefund", "DepartmentName", "ContractTypeName", "BankAccountNumber", "BankName", "BankAccountHolder" };
+            string[] keepColumns = { "EmployeeCode", "FullName", "HireDate", "IsInsuranceRefund", "DepartmentName", "ContractTypeName", "BankAccountNumber", "BankName", "BankAccountHolder", "GradeName", "DepartmentName" };
             string[] keepColumnsInfo = { "BaseSalary", "InsuranceBaseSalary", "ContractTypeName", "IsInsuranceRefund" };
             string[] keepColumnsLeave = { "EmployeeCode", "LeaveTypeCode", "DateOff", "LeaveTypeName", "LeaveHours" };
             string[] keepColumnsAttendamce = { "EmployeeCode", "WorkDate", "WorkingHours" };
@@ -189,6 +190,8 @@ namespace RauViet.ui
             Utils.AddColumnIfNotExists(mEmployee_dt, "BankAccountNumber", typeof(string));
             Utils.AddColumnIfNotExists(mEmployee_dt, "BankName", typeof(string));
             Utils.AddColumnIfNotExists(mEmployee_dt, "BankAccountHolder", typeof(string));
+            Utils.AddColumnIfNotExists(mEmployee_dt, "GradeName", typeof(string));
+            Utils.AddColumnIfNotExists(mEmployee_dt, "DepartmentName", typeof(string));
 
             Utils.AddColumnIfNotExists(mAttendamce_dt, "DayOfWeek", typeof(string));
             
@@ -259,6 +262,8 @@ namespace RauViet.ui
                         dr["BankAccountNumber"] = matchRow["BankAccountNumber"]?.ToString();
                         dr["BankName"] = matchRow["BankName"]?.ToString();
                         dr["BankAccountHolder"] = matchRow["BankAccountHolder"]?.ToString();
+                        dr["GradeName"] = matchRow["GradeName"]?.ToString();
+                        dr["DepartmentName"] = matchRow["DepartmentName"]?.ToString();
                     }
                     if (annualLeaveBalanceLookup.TryGetValue(employeeCode, out DataRow matchRow1))
                     {
@@ -489,7 +494,7 @@ namespace RauViet.ui
             Utils.HideColumns(overtimeAttendanceGV, new[] { "EmployeeCode", "SalaryFactor", "OvertimeTypeID", "OvertimeAttendanceID", "StartTime", "EndTime", "Note", "UpdatedHistory", "EmployeeName", "DepartmentID", "OvertimeTypeCode" });
             Utils.HideColumns(leaveGV, new[] { "EmployeeCode", "LeaveTypeCode" });
             Utils.HideColumns(deductionGV, new[] { "EmployeeCode", "DeductionTypeCode", "EmployeeDeductionID", "Note", "updateHistory" });
-            Utils.HideColumns(dataGV, new[] { "IsInsuranceRefund", "HireDate", "RemainingLeave", "BankAccountNumber", "BankName", "BankAccountHolder" });
+            Utils.HideColumns(dataGV, new[] { "IsInsuranceRefund", "HireDate", "RemainingLeave", "BankAccountNumber", "BankName", "BankAccountHolder", "GradeName", "DepartmentName" });
         }
 
         public async Task SetupGridThemesAsync()
@@ -1029,13 +1034,13 @@ namespace RauViet.ui
                 string employeeCode = Convert.ToString(row["EmployeeCode"]);
                 string allowanceName = Convert.ToString(row["AllowanceName"]);                
                 bool isInsuranceIncluded = row["IsInsuranceIncluded"] != DBNull.Value && Convert.ToBoolean(row["IsInsuranceIncluded"]);
-                int amount = row["Amount"] != DBNull.Value ? Convert.ToInt32(row["Amount"]) : 0;
+                int amount = row["Amount"] != DBNull.Value ? Convert.ToInt32(row["Amount"]) : 0;                
 
                 allowanceList.Add((employeeCode, scopeCode, allowanceTypeID, allowanceName, isInsuranceIncluded, amount, month, year ));
             }
 
             List<(string EmployeeCode, string ContractTypeName, int Month, int Year, decimal BaseSalary, decimal NetSalary, decimal NetInsuranceSalary,
-            decimal InsuranceAllowance, decimal NonInsuranceAllowance, decimal OvertimeSalary, decimal LeaveSalary, decimal DeductionAmount, bool IsInsuranceRefund) > esbsData = new List<(string, string, int, int, decimal, decimal, decimal, decimal, decimal, decimal, decimal, decimal, bool)>();
+            decimal InsuranceAllowance, decimal NonInsuranceAllowance, decimal OvertimeSalary, decimal LeaveSalary, decimal DeductionAmount, bool IsInsuranceRefund, decimal NormalWorkingHours, decimal OvertimeHours) > esbsData = new List<(string, string, int, int, decimal, decimal, decimal, decimal, decimal, decimal, decimal, decimal, bool, decimal , decimal)>();
 
             foreach (DataRow row in mEmployee_dt.Rows)
             {
@@ -1047,6 +1052,8 @@ namespace RauViet.ui
                 decimal netInsuranceSalary = Convert.ToDecimal(row["TotalInsuranceSalary"]);
                 decimal insuranceAllowance = Convert.ToDecimal(row["TotalIncludedInsurance"]);
                 decimal nonInsuranceAllowance = Convert.ToDecimal(row["TotalExcludedInsurance"]);
+                decimal normalWorkingHours = Convert.ToDecimal(row["TotalHourWork"]);
+                decimal overtimeHours = mOvertimeAttendance_dt.AsEnumerable().Where(r => r.Field<string>("EmployeeCode") == employeeCode && r["HourWork"] != DBNull.Value) .Sum(r => r.Field<decimal>("HourWork"));
                 decimal overtimeMoney = 0;
                 decimal leaveMoney = 0;
                 decimal deductionMoney = 0;
@@ -1067,7 +1074,7 @@ namespace RauViet.ui
                     deductionMoney += Convert.ToDecimal(row["DeductionType" + deductionTypeCode]);
                 }
 
-                esbsData.Add((employeeCode, contractTypeName, month, year, baseSalary, netSalary, netInsuranceSalary, insuranceAllowance, nonInsuranceAllowance, overtimeMoney, leaveMoney, deductionMoney, isInsuranceRefund));
+                esbsData.Add((employeeCode, contractTypeName, month, year, baseSalary, netSalary, netInsuranceSalary, insuranceAllowance, nonInsuranceAllowance, overtimeMoney, leaveMoney, deductionMoney, isInsuranceRefund, normalWorkingHours, overtimeHours));
             }
 
             DialogResult dialogResult = MessageBox.Show($"Sau khi thực hiện thao tác này \n dữ liệu sẽ bị khóa vĩnh viễn ?", "Cảnh Báo", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
@@ -1354,7 +1361,7 @@ namespace RauViet.ui
             }
 
             rowInd++;
-            string[] exportColumns = new string[] { "STT", "EmployeeCode", "FullName", "BankAccountNumber", "NetSalary", "Note" };
+            string[] exportColumns = new string[] { "STT", "EmployeeCode", "BankAccountHolder", "BankAccountNumber", "NetSalary", "Note" };
             int totalMoney = 0;
             int countSTT = 1;
             foreach (DataRow row in mEmployee_dt.Rows)
@@ -1480,7 +1487,7 @@ namespace RauViet.ui
             }
 
             rowInd++;
-            string[] exportColumns = new string[] { "STT", "EmployeeCode", "FullName", "BankAccountNumber", "NetSalary", "Note" };
+            string[] exportColumns = new string[] { "STT", "EmployeeCode", "BankAccountHolder", "BankAccountNumber", "NetSalary", "Note" };
             int totalMoney = 0;
             int countSTT = 1;
             foreach (DataRow row in mEmployee_dt.Rows)
@@ -1570,6 +1577,445 @@ namespace RauViet.ui
                 column.Style.Alignment.WrapText = true;
                 ColIndex++;
             }
+        }
+
+        private async void ReportBoss_btn_Click(object sender, EventArgs e)
+        {
+            loadingOverlay = new LoadingOverlay(this);
+            loadingOverlay.Message = "Đang xử lý ...";
+            loadingOverlay.Show();
+            await Task.Delay(100);
+
+            DateTime salaryMonth = monthYearDtp.Value;
+            try
+            {
+                using (var wb = new XLWorkbook())
+                {
+                    var ws_Luong = wb.Worksheets.Add("Lương");
+                    ws_Luong.Style.Font.FontName = "Times New Roman";
+                    ws_Luong.Style.Font.FontSize = 12;
+                    ws_Luong.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+                    report_Luong(ws_Luong, salaryMonth.Month, salaryMonth.Year);
+
+                    var ws_GioCong = wb.Worksheets.Add("Giờ Công");
+                    ws_GioCong.Style.Font.FontName = "Times New Roman";
+                    ws_GioCong.Style.Font.FontSize = 12;
+                    ws_GioCong.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+                    report_GioCong(ws_GioCong, salaryMonth.Month, salaryMonth.Year);
+                    var ws_TangCa = wb.Worksheets.Add("Tăng Ca");
+                    ws_TangCa.Style.Font.FontName = "Times New Roman";
+                    ws_TangCa.Style.Font.FontSize = 12;
+                    ws_TangCa.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+
+
+
+                    // ===== Save file =====
+                    using (SaveFileDialog sfd = new SaveFileDialog())
+                    {
+                        sfd.Filter = "Excel Workbook|*.xlsx";
+                        sfd.FileName = $"CHAM CONG T{salaryMonth.Month.ToString("D2")}-{salaryMonth.Year}.xlsx";
+                        if (sfd.ShowDialog() == DialogResult.OK)
+                        {
+                            wb.SaveAs(sfd.FileName);
+                            DialogResult result = MessageBox.Show("Bạn có muốn mở file này không?", "Lưu file thành công", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                            if (result == DialogResult.Yes)
+                            {
+                                try
+                                {
+                                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo()
+                                    {
+                                        FileName = sfd.FileName,
+                                        UseShellExecute = true
+                                    });
+                                }
+                                catch (Exception ex)
+                                {
+                                    MessageBox.Show("Không thể mở file: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi khi xuất Excel: " + ex.Message);
+            }
+            finally
+            {
+                await Task.Delay(200);
+                loadingOverlay.Hide();
+            }
+        }
+
+        async void report_Luong(IXLWorksheet ws, int month, int year)
+        {
+            int numColumn = 8;
+            int rowInd = 1;
+
+            ws.Range(rowInd, 1, rowInd, numColumn).Merge();
+            ws.Cell(rowInd, 1).Value = $"BẢNG TIỀN LƯƠNG THÁNG {month.ToString("D2")}-{year}";
+            ws.Cell(rowInd, 1).Style.Font.Bold = true;
+            ws.Cell(rowInd, 1).Style.Font.FontSize = 20;
+            ws.Cell(rowInd, 1).Style.Font.FontColor = XLColor.Black;
+            ws.Cell(rowInd, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+            var allowanceTask = Task.Run(() =>{ return mAllowance_dt.AsEnumerable().Where(r => r.Field<string>("ScopeCode") == "ONCE").Select(r => r["AllowanceName"].ToString()).ToList();});
+            var overtimeTask = Task.Run(() =>{return mOvertimeType_dt.AsEnumerable().Select(r => r["OvertimeName"].ToString()).ToList();});
+            var leaveTask = Task.Run(() =>{return mLeaveType_dt.AsEnumerable().Select(r => r["LeaveTypeName"].ToString()).ToList();});
+            var deductionTask = Task.Run(() =>{return mDeductionType.AsEnumerable().Select(r => r["DeductionTypeName"].ToString()).ToList();});
+            
+            await Task.WhenAll(allowanceTask, overtimeTask, leaveTask, deductionTask);
+            var allCols = leaveTask.Result.Concat(overtimeTask.Result).Concat(allowanceTask.Result).Concat(deductionTask.Result).Distinct().ToList();
+
+            var allowanceTask_Value = Task.Run(() =>{return mAllowance_dt.AsEnumerable().Where(r => r.Field<string>("ScopeCode") == "ONCE").Select(r => "Allowance" + r["AllowanceTypeID"]).ToList();});
+
+            var overtimeTask_Value = Task.Run(() =>{ return mOvertimeType_dt.AsEnumerable().Select(r =>  "OvertimeType" + r["OvertimeTypeID"]).ToList();});
+
+            var leaveTask_Value = Task.Run(() =>{ return mLeaveType_dt.AsEnumerable().Select(r => "LeaveType" + r["LeaveTypeCode"]).ToList(); });
+
+            var deductionTask_Value = Task.Run(() => { return mDeductionType.AsEnumerable().Select(r => "DeductionType" + r["DeductionTypeCode"]).ToList(); });
+
+            await Task.WhenAll(allowanceTask_Value, overtimeTask_Value, leaveTask_Value, deductionTask_Value);
+            var allCols_Value = leaveTask_Value.Result.Concat(overtimeTask_Value.Result).Concat(allowanceTask_Value.Result).Concat(deductionTask_Value.Result).Distinct().ToList();
+
+            rowInd+=2;
+            // ===== Header cấp 2 và cấp 3 =====
+            List<string> columnsName = new List<string>{ "STT", "Mã NV", "Họ Và Tên", "Ngày Vào Làm", "Loại Hợp Đồng", "Bậc Lương", "Thực Lãnh", "Lương CB", "Lương Cơ Sở Đóng BHXH", "Lương Theo Giờ Thực Tế", "Số Giờ Công Thực Tế", "Lương Ngày", "Lương Giờ", "Tổng Tiền Cơ Sở Đóng BH"};
+            foreach (var col in allCols)
+            {
+                columnsName.Add(col);
+            }
+
+            columnsName.Add("Tiền NLĐ Nộp BH Hàng Tháng");
+            columnsName.Add("Hoàn Trả BHXH");
+
+
+            int colIndex = 1;
+            foreach (var col in columnsName)
+            {
+                var cell = ws.Cell(rowInd, colIndex);
+                cell.Value = col;
+                cell.Style.Font.Bold = true;
+                cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                cell.Style.Alignment.WrapText = true;
+                cell.Style.Border.OutsideBorder = XLBorderStyleValues.Thin; // Đóng khung
+                colIndex++;
+
+            }
+
+            rowInd++;
+            List<string> exportColumns = new List<string>{ "STT", "EmployeeCode", "FullName", "HireDate", "ContractTypeName", "GradeName", "NetSalary", "BaseSalary", "InsuranceBaseSalary", "TotalSalaryHourWork", "TotalHourWork", "HourSalary", "TotalInsuranceSalary" };
+            foreach (var col in allCols_Value)
+            {
+                exportColumns.Add(col);
+            }
+            exportColumns.Add("EmployeeInsurancePaid");
+            exportColumns.Add("InsuranceRefund");
+
+            int countSTT = 1;
+            foreach (DataRow row in mEmployee_dt.Rows)
+            {
+                colIndex = 1;
+                foreach (var colName in exportColumns)
+                {
+                    var cell = ws.Cell(rowInd, colIndex);
+                    string cellValue = countSTT.ToString();
+
+                    if (colName.CompareTo("STT") != 0)
+                        cellValue = row[colName]?.ToString() ?? "";
+
+
+                    // Căn phải các cột số
+
+                    if (colName.CompareTo("NetSalary") == 0 
+                        || colName.CompareTo("BaseSalary") == 0
+                        || colName.CompareTo("InsuranceBaseSalary") == 0 
+                        || colName.CompareTo("TotalSalaryHourWork") == 0 
+                        || colName.CompareTo("TotalInsuranceSalary") == 0
+                        || colName.CompareTo("EmployeeInsurancePaid") == 0
+                        || colName.CompareTo("InsuranceRefund") == 0
+                        || allCols_Value.Contains(colName))
+                    {
+                        decimal value = 0;
+                        decimal.TryParse(cellValue?.ToString(), out value);
+                        int result = Convert.ToInt32(Math.Round(value));
+                        cell.Value = result;
+
+                        cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
+                        cell.Style.NumberFormat.Format = "#,##0;-#,##0;\"-\"";
+                    }
+                    else if (colName.CompareTo("HourSalary") == 0 )
+                    {
+                        decimal value = 0;
+                        decimal.TryParse(cellValue?.ToString(), out value);
+                        int result = Convert.ToInt32(Math.Round(value));
+                        cell.Value = result * 8;
+                        cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
+                        cell.Style.NumberFormat.Format = "#,##0;-#,##0;\"-\"";
+
+                        colIndex++;
+                        var cell1 = ws.Cell(rowInd, colIndex);
+                        cell1.Value = result;
+                        cell1.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
+                        cell1.Style.NumberFormat.Format = "#,##0";
+                        cell1.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                    }
+                    else if (colName.CompareTo("TotalHourWork") == 0)
+                    {
+                        decimal value = 0;
+                        decimal.TryParse(cellValue?.ToString(), out value);
+                        cell.Value = value;
+
+                        cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
+                        cell.Style.NumberFormat.Format = "#,##0.0";
+                    }
+                    else if (colName.CompareTo("HireDate") == 0)
+                    {
+                        DateTime? dateValue = null;
+
+                        if (DateTime.TryParse(cellValue?.ToString(), out DateTime tmp))
+                        {
+                            dateValue = tmp;
+                        }
+
+                        cell.Value = dateValue;
+
+                        cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+                    }
+                    else
+                    {
+                        cell.Value = cellValue;
+                        cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+
+                    }
+
+                    // Thêm border
+                    cell.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+
+                    colIndex++;
+
+                }
+                countSTT++;
+                rowInd++;
+            }
+
+            foreach (var col in ws.ColumnsUsed())
+            {
+                col.Width = 11;
+            }
+            ws.Column(1).Width = 4.5;
+            ws.Column(2).Width = 8;
+            ws.Column(3).Width = 32;
+        }
+
+        async void report_GioCong(IXLWorksheet ws, int month, int year)
+        {
+            int rowInd = 1;
+            ws.Range(rowInd, 1, rowInd, 4).Merge();
+            ws.Cell(rowInd, 1).Value = $"CÔNG TY CỔ PHẦN VIỆT RAU";
+            ws.Cell(rowInd, 1).Style.Font.Bold = true;
+            ws.Cell(rowInd, 1).Style.Font.FontSize = 12;
+            ws.Cell(rowInd, 1).Style.Font.FontColor = XLColor.Black;
+            ws.Cell(rowInd, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            rowInd++;
+
+            ws.Range(rowInd, 1, rowInd, 4).Merge();
+            ws.Cell(rowInd, 1).Value = $"MST: 0313983703";
+            ws.Cell(rowInd, 1).Style.Font.Bold = true;
+            ws.Cell(rowInd, 1).Style.Font.FontSize = 12;
+            ws.Cell(rowInd, 1).Style.Font.FontColor = XLColor.Black;
+            ws.Cell(rowInd, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            rowInd++;
+
+            ws.Range(rowInd, 1, rowInd, 4).Merge();
+            ws.Cell(rowInd, 1).Value = $"Địa Chỉ: Tổ 1, Ấp 4, X. Phước Thái, T. Đồng Nai, Việt Nam";
+            ws.Cell(rowInd, 1).Style.Font.Bold = true;
+            ws.Cell(rowInd, 1).Style.Font.FontSize = 12;
+            ws.Cell(rowInd, 1).Style.Font.FontColor = XLColor.Black;
+            ws.Cell(rowInd, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            rowInd += 2;
+                        
+            ws.Range(rowInd, 1, rowInd, 8).Merge();
+            ws.Cell(rowInd, 1).Value = $"BẢNG CHẤM CÔNG THÁNG {month.ToString("D2")}-{year}";
+            ws.Cell(rowInd, 1).Style.Font.Bold = true;
+            ws.Cell(rowInd, 1).Style.Font.FontSize = 20;
+            ws.Cell(rowInd, 1).Style.Font.FontColor = XLColor.Black;
+            ws.Cell(rowInd, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+            rowInd += 2;
+
+            List<string> columnsName = new List<string> { "STT", "Mã NV", "Họ Và Tên", "Phòng/Ban", "Tổng Giờ Làm", "PN Còn Lại", "Nghỉ Phép Thường" };
+
+            var leaveTask = Task.Run(() =>{ return mLeaveType_dt.AsEnumerable().Select(r => r["LeaveTypeName"]).ToList();});
+            await Task.WhenAll(leaveTask);
+            var allCols = leaveTask.Result.Distinct().ToList();
+            foreach (var col in allCols)
+            {
+                columnsName.Add(col.ToString());
+            }
+
+            int colIndex = 1;
+            foreach (var col in columnsName)
+            {
+                ws.Range(rowInd, colIndex, rowInd + 1, colIndex).Merge();
+                var cell = ws.Cell(rowInd, colIndex);
+                cell.Value = col;
+                cell.Style.Font.Bold = true;
+                cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                cell.Style.Alignment.WrapText = true;
+                ws.Range(rowInd, colIndex, rowInd + 1, colIndex).Style.Border.OutsideBorder = XLBorderStyleValues.Thin; // Đóng khung
+                colIndex++;
+
+            }
+
+            int daysInMonth = DateTime.DaysInMonth(year, month);
+            for(int dayName = 0; dayName < daysInMonth; dayName++)
+            {
+                var cell = ws.Cell(rowInd, colIndex);
+                cell.Value = (dayName + 1).ToString();
+                cell.Style.Font.Bold = true;
+                cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                cell.Style.Alignment.WrapText = true;
+                cell.Style.Border.OutsideBorder = XLBorderStyleValues.Thin; // Đóng khung
+
+                var cell1 = ws.Cell(rowInd + 1, colIndex);
+                cell1.Value = Utils.GetThu_Viet(new DateTime(year, month, dayName + 1));
+                cell1.Style.Font.Bold = true;
+                cell1.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                cell1.Style.Alignment.WrapText = true;
+                cell1.Style.Border.OutsideBorder = XLBorderStyleValues.Thin; // Đóng khung
+                colIndex++;
+            }
+
+            rowInd += 2;
+            List<string> exportColumns = new List<string> { "STT", "EmployeeCode", "FullName", "DepartmentName", "TotalHourWork", "RemainingLeave", "PT_1" };
+            var leaveTask_value = Task.Run(() => { return mLeaveType_dt.AsEnumerable().Select(r => "c_LeaveType" + r["LeaveTypeCode"]).ToList(); });
+            await Task.WhenAll(leaveTask_value);
+            var allCols_value = leaveTask_value.Result.Distinct().ToList();
+            foreach (var col in allCols_value)
+            {
+                exportColumns.Add(col.ToString());
+            }
+
+            int countSTT = 1;
+            foreach (DataRow row in mEmployee_dt.Rows)
+            {
+                colIndex = 1;
+                string employeeCode = row["EmployeeCode"].ToString();
+                foreach (var colName in exportColumns)
+                {
+                    var cell = ws.Cell(rowInd, colIndex);
+                    string cellValue = countSTT.ToString();
+
+                    if (colName.CompareTo("STT") != 0 && colName.CompareTo("PT_1") != 0)
+                        cellValue = row[colName]?.ToString() ?? "";
+
+
+                    // Căn phải các cột số
+
+                    if (colName.CompareTo("RemainingLeave") == 0 
+                        || colName.CompareTo("TotalHourWork") == 0
+                        || allCols_value.Contains(colName))
+                    {
+                        decimal value = 0;
+                        decimal.TryParse(cellValue?.ToString(), out value);
+                        int result = Convert.ToInt32(Math.Round(value));
+                        cell.Value = result;
+
+                        cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
+                        cell.Style.NumberFormat.Format = "#,##0.0;-#,##0;\"-\"";
+                    }
+                    else if (colName.CompareTo("PT_1") == 0)
+                    {
+                        decimal totalLeaveHours = mLeaveAttendance_dt.AsEnumerable()
+                                                                    .Where(r => r.Field<string>("EmployeeCode") == employeeCode
+                                                                             && r.Field<string>("LeaveTypeCode") == colName
+                                                                             && r["LeaveHours"] != DBNull.Value)
+                                                                    .Sum(r => r.Field<decimal>("LeaveHours"));
+                        cell.Value = totalLeaveHours;
+
+                        cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
+                        cell.Style.NumberFormat.Format = "#,##0.0;-#,##0;\"-\"";
+                    }
+                    else
+                    {
+                        cell.Value = cellValue;
+                        cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+
+                    }
+
+                    // Thêm border
+                    cell.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+
+                    colIndex++;
+
+                }
+
+                
+                var attendamceRows = mAttendamce_dt.AsEnumerable()
+                    .Where(r => r.Field<string>("EmployeeCode") == employeeCode)
+                    .OrderBy(r => r.Field<DateTime?>("WorkDate"));
+
+                var leaveAttendanceRows = mLeaveAttendance_dt.AsEnumerable()
+                    .Where(r => r.Field<string>("EmployeeCode") == employeeCode);
+
+                foreach (DataRow attendamceRow in attendamceRows)
+                {
+                    var cell = ws.Cell(rowInd, colIndex);
+
+                    DateTime workDate = Convert.ToDateTime(attendamceRow["WorkDate"]);
+                    decimal hourWork = Convert.ToDecimal(attendamceRow["WorkingHours"]);
+                    if (hourWork <= 0 && leaveAttendanceRows.Any())
+                    {
+                        foreach (DataRow leaveAttendanceRow in leaveAttendanceRows)
+                        {
+                            DateTime dateOff = Convert.ToDateTime(leaveAttendanceRow["DateOff"]);
+                            if(dateOff.Date == workDate.Date)
+                            {
+                                string leaveTypeCode = Convert.ToString(leaveAttendanceRow["LeaveTypeCode"]);
+                                cell.Value = leaveTypeCode.Substring(0, leaveTypeCode.Length - 2);                                
+                            }
+                        }    
+                    }
+                    else
+                    {
+                        cell.Value = hourWork;
+                        cell.Style.NumberFormat.Format = "#,##0.0;-#,##0;\"-\"";
+                    }
+
+                    cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
+                    cell.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+
+
+                    colIndex++;
+                }
+
+                countSTT++;
+                rowInd++;
+            }
+
+            foreach (var col in ws.ColumnsUsed())
+            {
+                col.Width = 4.5;
+            }
+            ws.Column(1).Width = 4.5;
+            ws.Column(2).Width = 8;
+            ws.Column(3).Width = 32;
+            ws.Column(4).Width = 22.5;
+            ws.Column(5).Width = 7.5;
+            ws.Column(6).Width = 8.5;
+            ws.Column(7).Width =7.6;
+            ws.Column(8).Width = 7.2;
+            ws.Column(9).Width = 7.5;
+            ws.Column(10).Width = 7.0;
+            ws.Row(7).Height= 32;
+            ws.Row(8).Height = 19;
+        }
+
+        void report_TangCa(IXLWorksheet ws, int month, int year)
+        {
+
         }
     }
 }

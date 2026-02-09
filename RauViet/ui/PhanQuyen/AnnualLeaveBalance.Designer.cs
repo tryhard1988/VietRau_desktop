@@ -54,9 +54,9 @@ namespace RauViet.ui
             // 
             this.info_gb.Controls.Add(this.ResetPhep_btn);
             this.info_gb.Controls.Add(this.capphep_btn);
-            this.info_gb.Location = new System.Drawing.Point(35, 156);
+            this.info_gb.Location = new System.Drawing.Point(35, 80);
             this.info_gb.Name = "info_gb";
-            this.info_gb.Size = new System.Drawing.Size(241, 166);
+            this.info_gb.Size = new System.Drawing.Size(241, 161);
             this.info_gb.TabIndex = 28;
             this.info_gb.TabStop = false;
             // 
@@ -64,7 +64,7 @@ namespace RauViet.ui
             // 
             this.ResetPhep_btn.BackColor = System.Drawing.Color.OrangeRed;
             this.ResetPhep_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ResetPhep_btn.Location = new System.Drawing.Point(39, 83);
+            this.ResetPhep_btn.Location = new System.Drawing.Point(39, 89);
             this.ResetPhep_btn.Name = "ResetPhep_btn";
             this.ResetPhep_btn.Size = new System.Drawing.Size(169, 54);
             this.ResetPhep_btn.TabIndex = 33;

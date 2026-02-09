@@ -152,7 +152,8 @@ namespace RauViet.ui
                 Utils.HideColumns(dataGV, new[] { "EmployessName_NoSign" });
                 Utils.SetGridOrdinal(mEmployeeLeave_dt, new[] { "DateOff", "LeaveTypeName", "LeaveHours", "Note"});
                 Utils.HideColumns(log_GV, new[] { "LogID", "EmployeeCode", "DeductionTypeCode" });
-
+                Utils.SetGridFormat_NO(dataGV, "AllowanceAmount");
+                Utils.SetGridFormat_NO(dataGV, "DeductionAmount");
                 bool isLock = await SQLStore_QLNS.Instance.IsSalaryLockAsync(month, year);
                 dataGV.ReadOnly = isLock;
                 Utils.SetGridReadOnly(dataGV, new Dictionary<string, bool> {

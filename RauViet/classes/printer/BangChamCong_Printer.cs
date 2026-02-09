@@ -107,7 +107,7 @@ public class BangChamCong_Printer
         int pageHeight = e.PageBounds.Height - 50; // margin dưới
         int days = DateTime.DaysInMonth(year, month);
         // Cột
-        int col1Width = 29, col2Width = 40, col3Width = 110, col4Width = 36, col5Width = 32, col6Width = 32, col7Width = 32, col8Width = 32, colDayWidth = 19;
+        int col1Width = 29, col2Width = 40, col3Width = 110, col4Width = 36, col5Width = 32, col6Width = 32, col7Width = 32, col8Width = 32, colDayWidth = 21;
         int col1 = startX;
         int col2 = col1 + col1Width;
         int col3 = col2 + col2Width;
@@ -239,21 +239,22 @@ public class BangChamCong_Printer
             DrawCellText(g, Convert.ToDecimal(row["c_LeaveTypeCN_1"]).ToString("F1"), normalFont, new Rectangle(col7, y, col7Width, lineHeight));
             DrawCellText(g, Convert.ToDecimal(row["TotalHourWork"]).ToString("F1"), normalFont, new Rectangle(col8, y, col8Width, lineHeight));
 
-            foreach (DataRow attendanceRow in attendanceRows)
-            {                
-                DateTime workDate = Convert.ToDateTime(attendanceRow["WorkDate"]);
-                if(workDate.DayOfWeek != DayOfWeek.Sunday)
-                    DrawCellText(g, Convert.ToDecimal(attendanceRow["WorkingHours"]).ToString("F1"), normalFont, new Rectangle(colDay + colDayWidth * (workDate.Day - 1), y, colDayWidth, lineHeight));
-                
-            }
-
             for (int i = 0; i < days; i++)
             {
-                DateTime workDate = new DateTime(year, month, i +1);
+                DateTime workDate = new DateTime(year, month, i + 1);
                 if (workDate.DayOfWeek == DayOfWeek.Sunday)
                     g.FillRectangle(bgBrush_Yellow, new Rectangle(colDay + colDayWidth * (workDate.Day - 1) + 1, y + 1, colDayWidth - 2, lineHeight - 2));
 
                 g.DrawLine(Pens.Gray, colDay + colDayWidth * i, y, colDay + colDayWidth * i, y + lineHeight);
+            }
+
+            foreach (DataRow attendanceRow in attendanceRows)
+            {
+                decimal workingHour = Convert.ToDecimal(attendanceRow["WorkingHours"]);
+                DateTime workDate = Convert.ToDateTime(attendanceRow["WorkDate"]);
+                if(workDate.DayOfWeek != DayOfWeek.Sunday || workingHour > 0)
+                    DrawCellText(g, workingHour.ToString("F1"), normalFont, new Rectangle(colDay + colDayWidth * (workDate.Day - 1), y, colDayWidth, lineHeight));
+                
             }
 
             y += lineHeight;
