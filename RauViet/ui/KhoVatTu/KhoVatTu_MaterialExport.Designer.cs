@@ -54,11 +54,17 @@ namespace RauViet.ui
             this.id_tb = new System.Windows.Forms.TextBox();
             this.status_lb = new System.Windows.Forms.Label();
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.panel3 = new System.Windows.Forms.Panel();
             this.dataGV = new System.Windows.Forms.DataGridView();
+            this.dayGV = new System.Windows.Forms.DataGridView();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.log_GV)).BeginInit();
             this.info_gb.SuspendLayout();
+            this.panel2.SuspendLayout();
+            this.panel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dayGV)).BeginInit();
             this.SuspendLayout();
             // 
             // panel1
@@ -321,6 +327,24 @@ namespace RauViet.ui
             this.LuuThayDoiBtn.Text = "Lưu";
             this.LuuThayDoiBtn.UseVisualStyleBackColor = false;
             // 
+            // panel2
+            // 
+            this.panel2.Controls.Add(this.dayGV);
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Left;
+            this.panel2.Location = new System.Drawing.Point(0, 0);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(200, 758);
+            this.panel2.TabIndex = 70;
+            // 
+            // panel3
+            // 
+            this.panel3.Controls.Add(this.dataGV);
+            this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel3.Location = new System.Drawing.Point(200, 0);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(616, 758);
+            this.panel3.TabIndex = 71;
+            // 
             // dataGV
             // 
             this.dataGV.AllowUserToAddRows = false;
@@ -330,15 +354,28 @@ namespace RauViet.ui
             this.dataGV.Location = new System.Drawing.Point(0, 0);
             this.dataGV.Name = "dataGV";
             this.dataGV.ReadOnly = true;
-            this.dataGV.Size = new System.Drawing.Size(816, 758);
-            this.dataGV.TabIndex = 70;
+            this.dataGV.Size = new System.Drawing.Size(616, 758);
+            this.dataGV.TabIndex = 71;
+            // 
+            // dayGV
+            // 
+            this.dayGV.AllowUserToAddRows = false;
+            this.dayGV.AllowUserToDeleteRows = false;
+            this.dayGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dayGV.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dayGV.Location = new System.Drawing.Point(0, 0);
+            this.dayGV.Name = "dayGV";
+            this.dayGV.ReadOnly = true;
+            this.dayGV.Size = new System.Drawing.Size(200, 758);
+            this.dayGV.TabIndex = 71;
             // 
             // KhoVatTu_MaterialExport
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1349, 758);
-            this.Controls.Add(this.dataGV);
+            this.Controls.Add(this.panel3);
+            this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.Name = "KhoVatTu_MaterialExport";
             this.Text = "FormTableData";
@@ -347,7 +384,10 @@ namespace RauViet.ui
             ((System.ComponentModel.ISupportInitialize)(this.log_GV)).EndInit();
             this.info_gb.ResumeLayout(false);
             this.info_gb.PerformLayout();
+            this.panel2.ResumeLayout(false);
+            this.panel3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dayGV)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -369,7 +409,6 @@ namespace RauViet.ui
         private System.Windows.Forms.TextBox soLuong_tb;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.DataGridView log_GV;
-        private System.Windows.Forms.DataGridView dataGV;
         private System.Windows.Forms.DateTimePicker monthYear_dtp;
         private System.Windows.Forms.DateTimePicker ngayXuat_dtp;
         private System.Windows.Forms.Label label5;
@@ -379,5 +418,9 @@ namespace RauViet.ui
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.ComboBox congViec_CBB;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.DataGridView dayGV;
+        private System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.DataGridView dataGV;
     }
 }

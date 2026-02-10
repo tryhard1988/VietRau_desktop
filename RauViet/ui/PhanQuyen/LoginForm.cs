@@ -56,6 +56,12 @@ namespace RauViet.ui.PhanQuyen
             updatePass_btn.Click += UpdatePass_btn_Click;
             password_tb.KeyDown += Password_tb_KeyDown;
             this.Load += LoginForm_Load;
+            showPass_cb.CheckedChanged += ShowPass_cb_CheckedChanged;
+        }
+
+        private void ShowPass_cb_CheckedChanged(object sender, EventArgs e)
+        {
+            password_tb.UseSystemPasswordChar = !showPass_cb.Checked;
         }
 
         private async void UpdatePass_btn_Click(object sender, EventArgs e)

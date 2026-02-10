@@ -182,8 +182,9 @@ public class SalarySlipPrinter
         g.DrawString("CÔNG TY CỔ PHẦN VIỆT RAU", titleFont, Brushes.Black, headerRect, centerFormat);
         g.DrawString($"Phiếu Lương Tháng {month:00}-{year}", subTitleFont, Brushes.Black, new RectangleF(textX, y + 30, headerRect.Width, 50), centerFormat);
         g.DrawString($"Tên NV: {row.Cells["FullName"].Value}", subTitleFont, Brushes.Black, new RectangleF(textX, y + 55, headerRect.Width, 50), centerFormat);
+        g.DrawString($"-- {row.Cells["DepartmentName"].Value} --", tableFont, Brushes.Black, new RectangleF(textX, y + 75, headerRect.Width, 50), centerFormat);
 
-        y += 90;
+        y += 100;
         
         // --- INFO NHÂN VIÊN ---
         g.DrawString($"Mã nhân viên: {employeeCode}", tableFont, Brushes.Black, new PointF(margin + 50, y));
@@ -193,7 +194,7 @@ public class SalarySlipPrinter
         g.DrawString($"Ngày phép năm còn lại: {row.Cells["RemainingLeave"].Value}", tableFont, Brushes.Black,new PointF(pageWidth * 2 / 3 - 50, y));
         g.DrawString($"Lương giờ: {row.Cells["HourSalary"].Value:N0} đồng/giờ", tableFont, Brushes.Black,new PointF(pageWidth * 2 / 3 - 50, y + 20));       
 
-        y += 50;        
+        y += 40;        
         // --- BẢNG LƯƠNG THEO GIỜ LÀM ---
         int tableLeft = margin - 2;
         int tableWidth = (pageWidth - 3 * margin) * 2 / 3;

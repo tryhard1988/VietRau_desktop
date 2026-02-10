@@ -29,9 +29,6 @@ namespace RauViet.ui
             monthYearDtp.ShowUpDown = true;
             monthYearDtp.Value = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
 
-            int countTab = 0;
-            LuuThayDoiBtn.TabIndex = countTab++; LuuThayDoiBtn.TabStop = true;
-
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Dock = DockStyle.Fill;
 
@@ -43,8 +40,7 @@ namespace RauViet.ui
 
             allowanceGV.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             allowanceGV.MultiSelect = false;
-
-            LuuThayDoiBtn.Click += saveBtn_Click;            
+           
             this.KeyDown += MonthlyAllowance_KeyDown;
             this.Load += OvertimeAttendace_Load;
             print_btn.Click += Print_btn_Click;
@@ -230,27 +226,15 @@ namespace RauViet.ui
 
         }
 
-
-        private async void saveBtn_Click(object sender, EventArgs e)
+        private async Task<bool> saveAsync()
         {
 
             int month = monthYearDtp.Value.Month;
             int year = monthYearDtp.Value.Year;
 
-            bool isLock = await SQLStore_QLNS.Instance.IsSalaryLockAsync(month, year);
-            if (isLock)
-            {
-                MessageBox.Show("Tháng " + month + "/" + year + " đã bị khóa.", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-            if (dialogResult != DialogResult.Yes)
-                return;
-
             int departmentID = Convert.ToInt32(department_GV.CurrentRow.Cells["DepartmentID"].Value);
             var rows = _mAllowance_dt.AsEnumerable().Where(r => r["DepartmentID"] != DBNull.Value && Convert.ToInt32(r["DepartmentID"]) == departmentID);
-            
+
             List<(string emp, int type, int month, int year, int amount, string note)> list = new List<(string, int, int, int, int, string)>();
             foreach (DataRow row in rows)
             {
@@ -262,13 +246,11 @@ namespace RauViet.ui
                     list.Add((emp, mAllowanceTypeID, month, year, amount, "Auto"));
                 }
             }
-            
-            bool isSucess = await SQLManager_QLNS.Instance.upsertMonthlyAllowanceBySPAsync(list);
-            string messStr = isSucess == true ? "Thành Công!" : "Thất Bại!";
-            MessageBox.Show(messStr, "Kết Quả", MessageBoxButtons.OK);
 
+            bool isSucess = await SQLManager_QLNS.Instance.upsertMonthlyAllowanceBySPAsync(list);
+            return isSucess;
         }
-        
+
         private void monthYearDtp_ValueChanged(object sender, EventArgs e)
         {
             // Mỗi lần thay đổi thì reset timer
@@ -292,9 +274,24 @@ namespace RauViet.ui
             Print_PC_AnDem(true);
         }
 
-        private void Print_btn_Click(object sender, EventArgs e)
+        private async void Print_btn_Click(object sender, EventArgs e)
         {
-            Print_PC_AnDem(false);
+            int month = monthYearDtp.Value.Month;
+            int year = monthYearDtp.Value.Year;
+            bool isLock = await SQLStore_QLNS.Instance.IsSalaryLockAsync(month, year);
+            if (isLock)
+            {
+                Print_PC_AnDem(false);
+                return;
+            }
+            else
+            {
+                bool isSucess = await saveAsync();
+                if (isSucess)
+                    Print_PC_AnDem(false);
+                else
+                    MessageBox.Show("Lỗi", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }                
         }
 
         private void Print_PC_AnDem(bool isPreview)

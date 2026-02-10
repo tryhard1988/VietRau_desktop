@@ -39,6 +39,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.changePass_panel = new System.Windows.Forms.Panel();
+            this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.back_btn = new System.Windows.Forms.Button();
             this.change_comfirm_tb = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
@@ -49,7 +50,7 @@
             this.change_pass_tb = new System.Windows.Forms.TextBox();
             this.change_user_tb = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
-            this.pictureBox2 = new System.Windows.Forms.PictureBox();
+            this.showPass_cb = new System.Windows.Forms.CheckBox();
             this.login_panel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.changePass_panel.SuspendLayout();
@@ -78,7 +79,7 @@
             // 
             this.login_btn.BackColor = System.Drawing.SystemColors.HotTrack;
             this.login_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.login_btn.Location = new System.Drawing.Point(6, 181);
+            this.login_btn.Location = new System.Drawing.Point(6, 186);
             this.login_btn.Name = "login_btn";
             this.login_btn.Size = new System.Drawing.Size(130, 50);
             this.login_btn.TabIndex = 2;
@@ -90,9 +91,9 @@
             this.password_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.password_tb.Location = new System.Drawing.Point(123, 135);
             this.password_tb.Name = "password_tb";
-            this.password_tb.PasswordChar = '*';
             this.password_tb.Size = new System.Drawing.Size(162, 23);
             this.password_tb.TabIndex = 4;
+            this.password_tb.UseSystemPasswordChar = true;
             // 
             // login_loading_tb
             // 
@@ -100,7 +101,7 @@
             this.login_loading_tb.BackColor = System.Drawing.Color.Linen;
             this.login_loading_tb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.login_loading_tb.ForeColor = System.Drawing.Color.Black;
-            this.login_loading_tb.Location = new System.Drawing.Point(82, 235);
+            this.login_loading_tb.Location = new System.Drawing.Point(82, 240);
             this.login_loading_tb.Name = "login_loading_tb";
             this.login_loading_tb.Size = new System.Drawing.Size(104, 16);
             this.login_loading_tb.TabIndex = 3;
@@ -110,7 +111,7 @@
             // 
             this.changePass_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.changePass_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.changePass_btn.Location = new System.Drawing.Point(144, 181);
+            this.changePass_btn.Location = new System.Drawing.Point(144, 186);
             this.changePass_btn.Name = "changePass_btn";
             this.changePass_btn.Size = new System.Drawing.Size(130, 50);
             this.changePass_btn.TabIndex = 6;
@@ -120,6 +121,7 @@
             // login_panel
             // 
             this.login_panel.BackColor = System.Drawing.Color.Transparent;
+            this.login_panel.Controls.Add(this.showPass_cb);
             this.login_panel.Controls.Add(this.label2);
             this.login_panel.Controls.Add(this.pictureBox1);
             this.login_panel.Controls.Add(this.changePass_btn);
@@ -130,7 +132,7 @@
             this.login_panel.Controls.Add(this.login_loading_tb);
             this.login_panel.Location = new System.Drawing.Point(81, 22);
             this.login_panel.Name = "login_panel";
-            this.login_panel.Size = new System.Drawing.Size(286, 311);
+            this.login_panel.Size = new System.Drawing.Size(320, 320);
             this.login_panel.TabIndex = 7;
             // 
             // label2
@@ -145,12 +147,13 @@
             // 
             // pictureBox1
             // 
+            this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Top;
             this.pictureBox1.ErrorImage = null;
             this.pictureBox1.Image = global::RauViet.Properties.Resources.ic_logo;
             this.pictureBox1.InitialImage = null;
-            this.pictureBox1.Location = new System.Drawing.Point(1, 1);
+            this.pictureBox1.Location = new System.Drawing.Point(0, 0);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(282, 81);
+            this.pictureBox1.Size = new System.Drawing.Size(320, 81);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 5;
             this.pictureBox1.TabStop = false;
@@ -171,8 +174,21 @@
             this.changePass_panel.Controls.Add(this.label4);
             this.changePass_panel.Location = new System.Drawing.Point(384, 36);
             this.changePass_panel.Name = "changePass_panel";
-            this.changePass_panel.Size = new System.Drawing.Size(286, 311);
+            this.changePass_panel.Size = new System.Drawing.Size(320, 320);
             this.changePass_panel.TabIndex = 8;
+            // 
+            // pictureBox2
+            // 
+            this.pictureBox2.Dock = System.Windows.Forms.DockStyle.Top;
+            this.pictureBox2.ErrorImage = null;
+            this.pictureBox2.Image = global::RauViet.Properties.Resources.ic_logo;
+            this.pictureBox2.InitialImage = null;
+            this.pictureBox2.Location = new System.Drawing.Point(0, 0);
+            this.pictureBox2.Name = "pictureBox2";
+            this.pictureBox2.Size = new System.Drawing.Size(320, 81);
+            this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBox2.TabIndex = 10;
+            this.pictureBox2.TabStop = false;
             // 
             // back_btn
             // 
@@ -271,17 +287,15 @@
             this.label4.TabIndex = 3;
             this.label4.Text = "Mật Khẩu:";
             // 
-            // pictureBox2
+            // showPass_cb
             // 
-            this.pictureBox2.ErrorImage = null;
-            this.pictureBox2.Image = global::RauViet.Properties.Resources.ic_logo;
-            this.pictureBox2.InitialImage = null;
-            this.pictureBox2.Location = new System.Drawing.Point(3, 1);
-            this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(282, 81);
-            this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pictureBox2.TabIndex = 10;
-            this.pictureBox2.TabStop = false;
+            this.showPass_cb.AutoSize = true;
+            this.showPass_cb.Location = new System.Drawing.Point(155, 161);
+            this.showPass_cb.Name = "showPass_cb";
+            this.showPass_cb.Size = new System.Drawing.Size(115, 17);
+            this.showPass_cb.TabIndex = 8;
+            this.showPass_cb.Text = "Hiện Thị Mật Khẩu";
+            this.showPass_cb.UseVisualStyleBackColor = true;
             // 
             // LoginForm
             // 
@@ -328,5 +342,6 @@
         private System.Windows.Forms.Button back_btn;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.PictureBox pictureBox2;
+        private System.Windows.Forms.CheckBox showPass_cb;
     }
 }

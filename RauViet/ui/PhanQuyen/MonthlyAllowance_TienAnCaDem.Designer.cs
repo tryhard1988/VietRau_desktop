@@ -33,15 +33,14 @@ namespace RauViet.ui
             this.monthYearLabel = new System.Windows.Forms.Label();
             this.panel5 = new System.Windows.Forms.Panel();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.filter_CB = new System.Windows.Forms.CheckBox();
             this.printPreview_btn = new System.Windows.Forms.Button();
             this.print_btn = new System.Windows.Forms.Button();
             this.monthYearDtp = new System.Windows.Forms.DateTimePicker();
-            this.LuuThayDoiBtn = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
             this.dataGV = new System.Windows.Forms.DataGridView();
             this.allowanceGV = new System.Windows.Forms.DataGridView();
             this.department_GV = new System.Windows.Forms.DataGridView();
-            this.filter_CB = new System.Windows.Forms.CheckBox();
             this.panel4.SuspendLayout();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -88,12 +87,21 @@ namespace RauViet.ui
             this.panel1.Controls.Add(this.printPreview_btn);
             this.panel1.Controls.Add(this.print_btn);
             this.panel1.Controls.Add(this.monthYearDtp);
-            this.panel1.Controls.Add(this.LuuThayDoiBtn);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Right;
             this.panel1.Location = new System.Drawing.Point(925, 0);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(339, 669);
             this.panel1.TabIndex = 50;
+            // 
+            // filter_CB
+            // 
+            this.filter_CB.AutoSize = true;
+            this.filter_CB.Location = new System.Drawing.Point(42, 74);
+            this.filter_CB.Name = "filter_CB";
+            this.filter_CB.Size = new System.Drawing.Size(139, 17);
+            this.filter_CB.TabIndex = 42;
+            this.filter_CB.Text = "Hiện thị theo Nhân Viên";
+            this.filter_CB.UseVisualStyleBackColor = true;
             // 
             // printPreview_btn
             // 
@@ -125,17 +133,6 @@ namespace RauViet.ui
             this.monthYearDtp.Name = "monthYearDtp";
             this.monthYearDtp.Size = new System.Drawing.Size(122, 31);
             this.monthYearDtp.TabIndex = 39;
-            // 
-            // LuuThayDoiBtn
-            // 
-            this.LuuThayDoiBtn.BackColor = System.Drawing.SystemColors.Highlight;
-            this.LuuThayDoiBtn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LuuThayDoiBtn.Location = new System.Drawing.Point(107, 188);
-            this.LuuThayDoiBtn.Name = "LuuThayDoiBtn";
-            this.LuuThayDoiBtn.Size = new System.Drawing.Size(113, 47);
-            this.LuuThayDoiBtn.TabIndex = 25;
-            this.LuuThayDoiBtn.Text = "Lưu";
-            this.LuuThayDoiBtn.UseVisualStyleBackColor = false;
             // 
             // panel2
             // 
@@ -185,16 +182,6 @@ namespace RauViet.ui
             this.department_GV.Size = new System.Drawing.Size(212, 669);
             this.department_GV.TabIndex = 52;
             // 
-            // filter_CB
-            // 
-            this.filter_CB.AutoSize = true;
-            this.filter_CB.Location = new System.Drawing.Point(42, 74);
-            this.filter_CB.Name = "filter_CB";
-            this.filter_CB.Size = new System.Drawing.Size(139, 17);
-            this.filter_CB.TabIndex = 42;
-            this.filter_CB.Text = "Hiện thị theo Nhân Viên";
-            this.filter_CB.UseVisualStyleBackColor = true;
-            // 
             // MonthlyAllowance_TienAnCaDem
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -222,7 +209,6 @@ namespace RauViet.ui
         private System.Windows.Forms.Label monthYearLabel;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.DateTimePicker monthYearDtp;
-        private System.Windows.Forms.Button LuuThayDoiBtn;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.DataGridView department_GV;
         private System.Windows.Forms.DataGridView dataGV;

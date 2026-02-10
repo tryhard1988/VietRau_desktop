@@ -234,10 +234,10 @@ namespace RauViet.ui
                     {"TotalAmountCHF", 80}
                 });
 
-                decimal totalmoney = exportHistoryByYear_dt.AsEnumerable().Sum(r => r.Field<decimal>("TotalMoney"));
-                decimal totalNW = exportHistoryByYear_dt.AsEnumerable().Sum(r => r.Field<decimal>("TotalNW"));
-                int totalCarton = exportHistoryByYear_dt.AsEnumerable().Sum(r => r.Field<int>("NumberCarton"));
-                decimal totalFreightCharge = exportHistoryByYear_dt.AsEnumerable().Sum(r => r.Field<decimal>("FreightCharge"));
+                decimal totalmoney = exportHistoryByYear_dt.AsEnumerable().Where(r => r.Field<DateTime>("ExportDate").Month == month && r.Field<DateTime>("ExportDate").Year == year).Sum(r => r.Field<decimal>("TotalMoney"));
+                decimal totalNW = exportHistoryByYear_dt.AsEnumerable().Where(r => r.Field<DateTime>("ExportDate").Month == month && r.Field<DateTime>("ExportDate").Year == year).Sum(r => r.Field<decimal>("TotalNW"));
+                int totalCarton = exportHistoryByYear_dt.AsEnumerable().Where(r => r.Field<DateTime>("ExportDate").Month == month && r.Field<DateTime>("ExportDate").Year == year).Sum(r => r.Field<int>("NumberCarton"));
+                decimal totalFreightCharge = exportHistoryByYear_dt.AsEnumerable().Where(r =>r.Field<DateTime>("ExportDate").Month == month && r.Field<DateTime>("ExportDate").Year == year).Sum(r => r.Field<decimal>("FreightCharge"));
                 totalMoney_tb.Text = totalmoney.ToString("N2");
                 totalNW_tb.Text = totalNW.ToString("N2");
                 totalCarton_tb.Text = (totalCarton).ToString();

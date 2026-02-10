@@ -38,6 +38,9 @@ namespace RauViet.ui
             dataGV.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dataGV.MultiSelect = false;
 
+            dayGV.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dayGV.MultiSelect = false;
+
             status_lb.Text = "";
 
             _monthYearDebounceTimer.Tick += MonthYearDebounceTimer_Tick;
@@ -59,6 +62,8 @@ namespace RauViet.ui
             MaterialDebounceTimer.Tick += MaterialDebounceTimer_Tick;
             vatTu_CB.TextUpdate += VatTu_CB_TextUpdate;
             soLuong_tb.KeyPress += Tb_KeyPress_OnlyNumber;
+
+            dayGV.SelectionChanged += DayGV_SelectionChanged;
         }
 
         private void Kho_Materials_KeyDown(object sender, KeyEventArgs e)
@@ -118,6 +123,7 @@ namespace RauViet.ui
                 mMaterialExport_dt = materialExportTask.Result;
                 ////    mLogDV = new DataView(logDataTask.Result);
 
+                dayGV.DataSource = Utils.CreateDateTable(month, year);
 
                 vatTu_CB.DataSource = mMaterial_dt;
                 vatTu_CB.DisplayMember = "MaterialName";  // hiển thị tên
@@ -359,6 +365,20 @@ namespace RauViet.ui
             catch { }
         }
 
+        private void DayGV_SelectionChanged(object sender, EventArgs e)
+        {
+            if (dayGV.SelectedRows.Count == 0)
+                return;
+            var cells = dayGV.SelectedRows[0].Cells;
+            if (cells == null) return;
+            DateTime date = Convert.ToDateTime(cells["Date"].Value);
+
+
+            DataView dv = mMaterialExport_dt.DefaultView;
+            dv.RowFilter = $"ExportDate >= #{date:MM/dd/yyyy}# AND ExportDate < #{date.AddDays(1):MM/dd/yyyy}#";
+
+        }
+
         private void dataGV_CellClick(object sender, EventArgs e)
         {
             updateRightUI();            
@@ -529,8 +549,12 @@ namespace RauViet.ui
             DateTime ngayXuat = ngayXuat_dtp.Value;
             int vatTu = Convert.ToInt32(vatTu_CB.SelectedValue);
             decimal soLuong = Utils.ParseDecimalSmart(soLuong_tb.Text);
-            int? lenhSX = LenhSX_CBB.SelectedValue as int?;
-            int? congViec = congViec_CBB.SelectedValue as int?;
+            int? lenhSX = null;
+            if(!string.IsNullOrWhiteSpace(LenhSX_CBB.Text))
+                lenhSX = LenhSX_CBB.SelectedValue as int?;
+            int? congViec = null;
+            if(string.IsNullOrWhiteSpace(congViec_CBB.Text))
+                congViec = congViec_CBB.SelectedValue as int?;
             string nguoiNhan = nguoiNhan_CBB.SelectedValue as string;
             string note = note_tb.Text;
 

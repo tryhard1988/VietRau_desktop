@@ -177,6 +177,7 @@ namespace RauViet.classes
                 row["CategoryName_nosign"] = Utils.RemoveVietnameseSigns(row["CategoryName"].ToString());
         }
 
+        public void removePlantingManagementAsync(int year) { mPlantingManagements.Remove(year); }
         public async Task<DataTable> getPlantingManagementAsync(int year)
         {
             if (mPlantingManagements.ContainsKey(year) == false)

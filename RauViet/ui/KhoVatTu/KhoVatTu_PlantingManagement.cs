@@ -34,11 +34,11 @@ namespace RauViet.ui
             monthYear_dtp.Value = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
 
             ngayUom_dtp.Format = DateTimePickerFormat.Custom;
-            ngayUom_dtp.CustomFormat = "dd/MM/yyyy";
+            ngayUom_dtp.CustomFormat = "dddd, dd/MM/yyyy";
             ngaytrong_dtp.Format = DateTimePickerFormat.Custom;
-            ngaytrong_dtp.CustomFormat = "dd/MM/yyyy";
+            ngaytrong_dtp.CustomFormat = "dddd, dd/MM/yyyy";
             ngaythu_dtp.Format = DateTimePickerFormat.Custom;
-            ngaythu_dtp.CustomFormat = "dd/MM/yyyy";
+            ngaythu_dtp.CustomFormat = "dddd, dd/MM/yyyy";
 
             dataGV.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dataGV.MultiSelect = false;
@@ -73,7 +73,7 @@ namespace RauViet.ui
         {
             if (e.KeyCode == Keys.F5)
             {
-                SQLStore_Kho.Instance.removeDomesticLiquidationImport();
+                SQLStore_KhoVatTu.Instance.removePlantingManagementAsync(monthYear_dtp.Value.Year);
                 ShowData();
             }
             else if (!isNewState && !edit_btn.Visible)
@@ -599,9 +599,6 @@ namespace RauViet.ui
                     ngayUom_dtp.Value = Convert.ToDateTime(cells["NurseryDate"].Value);
                     ngaytrong_dtp.Value = Convert.ToDateTime(cells["PlantingDate"].Value);
                     ngaythu_dtp.Value = Convert.ToDateTime(cells["HarvestDate"].Value);
-                    thuUom_lb.Text = "-" + Utils.GetThu_Viet(ngayUom_dtp.Value);
-                    thuTrong_lb.Text = "-" + Utils.GetThu_Viet(ngaytrong_dtp.Value);
-                    thuThu_lb.Text = "-" + Utils.GetThu_Viet(ngaythu_dtp.Value);
                     if (department.HasValue)
                         deparment_CBB.SelectedValue = department.Value;
                     else
@@ -755,7 +752,6 @@ namespace RauViet.ui
                     break;
             }
             ngaytrong_dtp.Value = nextDate;
-            thuTrong_lb.Text = "-" + Utils.GetThu_Viet(nextDate);
         }
 
         private void Ngaytrong_dtp_ValueChanged(object sender, EventArgs e)
@@ -815,8 +811,7 @@ namespace RauViet.ui
                     nextDate = ngaytrong_dtp.Value.AddDays(25);
                     break;
             }
-
-            thuThu_lb.Text = "-" + Utils.GetThu_Viet(nextDate);
+            ngaythu_dtp.Value = nextDate;
         }
 
         int GetMaxProductionOrderIndex(DataTable dt, int sku)
@@ -870,17 +865,17 @@ namespace RauViet.ui
                 case 311: //bắp non
                     nextDay = nurseryDate.AddDays(7);
                     departmentID = (index_lenhSX % 2) == 0 ? 25 : 24; // tổ B, Tô A
-                    Supervisor = (index_lenhSX % 2) == 0 ? "VR384" : "VR0063"; // tổ B, Tô A
+                    Supervisor = (index_lenhSX % 2) == 0 ? "VR0384" : "VR0063"; // tổ B, Tô A
                     break;
                 case 291: //bí đao chanh
                     nextDay = nurseryDate.AddDays(14);
                     departmentID = (index_lenhSX % 2) == 0 ? 25 : 24; // tổ B, Tô A
-                    Supervisor = (index_lenhSX % 2) == 0 ? "VR384" : "VR0063"; // tổ B, Tô A
+                    Supervisor = (index_lenhSX % 2) == 0 ? "VR0384" : "VR0063"; // tổ B, Tô A
                     break;
                 case 143: //cai bẻ xanh
                     nextDay = GetNextMondayOrThursday(nurseryDate, 14, 19);
                     departmentID = (index_lenhSX % 2) == 0 ? 25 : 24; // tổ B, Tô A
-                    Supervisor = (index_lenhSX % 2) == 0 ? "VR384" : "VR0063"; // tổ B, Tô A
+                    Supervisor = (index_lenhSX % 2) == 0 ? "VR0384" : "VR0063"; // tổ B, Tô A
                     break;
                 case 141: //cai ngọt
                     nextDay = GetNextMondayOrThursday(nurseryDate, 13, 19);
@@ -905,52 +900,51 @@ namespace RauViet.ui
                 case 261: //đậu đũa
                     nextDay = nurseryDate.AddDays(7);
                     departmentID = (index_lenhSX % 2) == 0 ? 25 : 24; // tổ B, Tô A
-                    Supervisor = (index_lenhSX % 2) == 0 ? "VR384" : "VR0063"; // tổ B, Tô A
+                    Supervisor = (index_lenhSX % 2) == 0 ? "VR0384" : "VR0063"; // tổ B, Tô A
                     break;
                 case 181: //hành lá
                     nextDay = GetNextTuedayOrFriday(nurseryDate, 14, 44);
                     departmentID = (index_lenhSX % 2) == 0 ? 25 : 24; // tổ B, Tô A
-                    Supervisor = (index_lenhSX % 2) == 0 ? "VR384" : "VR0063"; // tổ B, Tô A
+                    Supervisor = (index_lenhSX % 2) == 0 ? "VR0384" : "VR0063"; // tổ B, Tô A
                     break;
                 case 172: //hương nhu
                     nextDay = nurseryDate.AddDays(7);
                     departmentID = (index_lenhSX % 2) == 0 ? 25 : 24; // tổ B, Tô A
-                    Supervisor = (index_lenhSX % 2) == 0 ? "VR384" : "VR0063"; // tổ B, Tô A
+                    Supervisor = (index_lenhSX % 2) == 0 ? "VR0384" : "VR0063"; // tổ B, Tô A
                     break;
                 case 171: //Lá quế
                     nextDay = nurseryDate.AddDays(7);
                     departmentID = (index_lenhSX % 2) == 0 ? 25 : 24; // tổ B, Tô A
-                    Supervisor = (index_lenhSX % 2) == 0 ? "VR384" : "VR0063"; // tổ B, Tô A
+                    Supervisor = (index_lenhSX % 2) == 0 ? "VR0384" : "VR0063"; // tổ B, Tô A
                     break;
                 case 151: //Mồng tơi
                     nextDay = GetNextMondayOrThursday(nurseryDate, 16, 19);
                     departmentID = (index_lenhSX % 2) == 0 ? 25 : 24; // tổ B, Tô A
-                    Supervisor = (index_lenhSX % 2) == 0 ? "VR384" : "VR0063"; // tổ B, Tô A
+                    Supervisor = (index_lenhSX % 2) == 0 ? "VR0384" : "VR0063"; // tổ B, Tô A
                     break;
                 case 271: //Mướp hương
                     nextDay = nurseryDate.AddDays(14);
                     departmentID = (index_lenhSX % 2) == 0 ? 25 : 24; // tổ B, Tô A
-                    Supervisor = (index_lenhSX % 2) == 0 ? "VR384" : "VR0063"; // tổ B, Tô A
+                    Supervisor = (index_lenhSX % 2) == 0 ? "VR0384" : "VR0063"; // tổ B, Tô A
                     break;
                 case 131: //ngò gai
                     nextDay = nurseryDate.AddDays(7);
                     departmentID = (index_lenhSX % 2) == 0 ? 25 : 24; // tổ B, Tô A
-                    Supervisor = (index_lenhSX % 2) == 0 ? "VR384" : "VR0063"; // tổ B, Tô A
+                    Supervisor = (index_lenhSX % 2) == 0 ? "VR0384" : "VR0063"; // tổ B, Tô A
                     break;
                 case 161: //rau muống
                     nextDay = GetNextMondayOrThursday(nurseryDate, 0, 23);
                     departmentID = (index_lenhSX % 2) == 0 ? 25 : 24; // tổ B, Tô A
-                    Supervisor = (index_lenhSX % 2) == 0 ? "VR384" : "VR0063"; // tổ B, Tô A
+                    Supervisor = (index_lenhSX % 2) == 0 ? "VR0384" : "VR0063"; // tổ B, Tô A
                     break;
                 case 221: //tía tô
                     nextDay = nurseryDate.AddDays(7);
                     departmentID = (index_lenhSX % 2) == 0 ? 25 : 24; // tổ B, Tô A
-                    Supervisor = (index_lenhSX % 2) == 0 ? "VR384" : "VR0063"; // tổ B, Tô A
+                    Supervisor = (index_lenhSX % 2) == 0 ? "VR0384" : "VR0063"; // tổ B, Tô A
                     break;
             }
 
             ngayUom_dtp.Value = nextDay;
-            thuUom_lb.Text = "-" + Utils.GetThu_Viet(nextDay);
             deparment_CBB.SelectedValue = departmentID;
             nguoiPhuTrach_CB.SelectedValue = Supervisor;
         }

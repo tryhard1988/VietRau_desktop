@@ -61,6 +61,15 @@ namespace RauViet.ui
                     {"TotalEmployees", "Tổng NV Làm Việc" }
                 });
 
+                Utils.SetGridFormat_NO(dataGV, "TotalBaseSalary");
+                Utils.SetGridFormat_NO(dataGV, "TotalNetSalary");
+                Utils.SetGridFormat_NO(dataGV, "TotalNetInsuranceSalary");
+                Utils.SetGridFormat_NO(dataGV, "TotalInsuranceAllowance");
+                Utils.SetGridFormat_NO(dataGV, "TotalNonInsuranceAllowance");
+                Utils.SetGridFormat_NO(dataGV, "TotalOvertimeSalary");
+                Utils.SetGridFormat_NO(dataGV, "TotalLeaveSalary");
+                Utils.SetGridFormat_NO(dataGV, "TotalDeductionAmount");
+                Utils.SetGridFormat_NO(dataGV, "TotalEmployees");
 
                 dataGV.Columns["Month"].Visible = false;
                 dataGV.Columns["Year"].Visible = false;
@@ -84,9 +93,9 @@ namespace RauViet.ui
                 decimal totalNetInsuranceSalary = salarySummaryByYear_dt.AsEnumerable().Sum(r => r.Field<decimal>("TotalNetInsuranceSalary"));
                 decimal totalInsuranceAllowance = salarySummaryByYear_dt.AsEnumerable().Sum(r => r.Field<decimal>("TotalInsuranceAllowance"));
                 decimal totalNonInsuranceAllowance = salarySummaryByYear_dt.AsEnumerable().Sum(r => r.Field<decimal>("TotalNonInsuranceAllowance"));
-                totalNetSalary_tb.Text = totalNetSalary.ToString();
-                totalNetInsuranceSalary_tb.Text = totalNetInsuranceSalary.ToString();
-                totalAllowance_tb.Text = (totalInsuranceAllowance + totalNonInsuranceAllowance).ToString();
+                totalNetSalary_tb.Text = totalNetSalary.ToString("N0");
+                totalNetInsuranceSalary_tb.Text = totalNetInsuranceSalary.ToString("N0");
+                totalAllowance_tb.Text = (totalInsuranceAllowance + totalNonInsuranceAllowance).ToString("N0");
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }

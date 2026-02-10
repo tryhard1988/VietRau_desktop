@@ -2520,7 +2520,8 @@ namespace RauViet.classes
         }
 
         public async Task<bool> UpsertEmployeeSalaryHistoryAsync(List<(string EmployeeCode, string ContractTypeName, int Month, int Year, decimal BaseSalary, decimal NetSalary, decimal NetInsuranceSalary,
-            decimal InsuranceAllowance, decimal NonInsuranceAllowance, decimal OvertimeSalary, decimal LeaveSalary, decimal DeductionAmount, bool IsInsuranceRefund, decimal NormalWorkingHours, decimal OvertimeHours)> data)
+            decimal InsuranceAllowance, decimal NonInsuranceAllowance, decimal OvertimeSalary, decimal LeaveSalary, decimal DeductionAmount, bool IsInsuranceRefund, 
+            decimal NormalWorkingHours, decimal OvertimeHours, int RemainingLeave)> data)
         {
             try
             {
@@ -2540,11 +2541,13 @@ namespace RauViet.classes
                 dt.Columns.Add("IsInsuranceRefund", typeof(bool));
                 dt.Columns.Add("NormalWorkingHours", typeof(decimal));
                 dt.Columns.Add("OvertimeHours", typeof(decimal));
+                dt.Columns.Add("RemainingLeave", typeof(int));
 
                 foreach (var item in data)
                 {
                     dt.Rows.Add(item.EmployeeCode, item.ContractTypeName, item.Month, item.Year, item.BaseSalary, item.NetSalary, item.NetInsuranceSalary, item.InsuranceAllowance,
-                         item.NonInsuranceAllowance, item.OvertimeSalary, item.LeaveSalary, item.DeductionAmount, item.IsInsuranceRefund, item.NormalWorkingHours, item.OvertimeHours);
+                         item.NonInsuranceAllowance, item.OvertimeSalary, item.LeaveSalary, item.DeductionAmount, item.IsInsuranceRefund, 
+                         item.NormalWorkingHours, item.OvertimeHours, item.RemainingLeave);
                 }
 
                 using (SqlConnection conn = new SqlConnection(qlnvHis_conStr()))

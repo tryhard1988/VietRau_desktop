@@ -1,4 +1,7 @@
 ﻿using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Drawing.Diagrams;
+using DocumentFormat.OpenXml.Spreadsheet;
+using DocumentFormat.OpenXml.Wordprocessing;
 using MySqlX.XDevAPI.Common;
 using PdfSharp.Pdf.Content.Objects;
 using RauViet.classes;
@@ -957,6 +960,7 @@ namespace RauViet.ui
         }
         private void UpdateAllowanceUI(int index)
         {
+            if (dataGV.Rows.Count <= 0) return;
             allowanceGV.ClearSelection();
 
             var cells = dataGV.Rows[index].Cells;
@@ -1040,7 +1044,7 @@ namespace RauViet.ui
             }
 
             List<(string EmployeeCode, string ContractTypeName, int Month, int Year, decimal BaseSalary, decimal NetSalary, decimal NetInsuranceSalary,
-            decimal InsuranceAllowance, decimal NonInsuranceAllowance, decimal OvertimeSalary, decimal LeaveSalary, decimal DeductionAmount, bool IsInsuranceRefund, decimal NormalWorkingHours, decimal OvertimeHours) > esbsData = new List<(string, string, int, int, decimal, decimal, decimal, decimal, decimal, decimal, decimal, decimal, bool, decimal , decimal)>();
+            decimal InsuranceAllowance, decimal NonInsuranceAllowance, decimal OvertimeSalary, decimal LeaveSalary, decimal DeductionAmount, bool IsInsuranceRefund, decimal NormalWorkingHours, decimal OvertimeHours, int RemainingLeave) > esbsData = new List<(string, string, int, int, decimal, decimal, decimal, decimal, decimal, decimal, decimal, decimal, bool, decimal , decimal, int)>();
 
             foreach (DataRow row in mEmployee_dt.Rows)
             {
@@ -1053,6 +1057,7 @@ namespace RauViet.ui
                 decimal insuranceAllowance = Convert.ToDecimal(row["TotalIncludedInsurance"]);
                 decimal nonInsuranceAllowance = Convert.ToDecimal(row["TotalExcludedInsurance"]);
                 decimal normalWorkingHours = Convert.ToDecimal(row["TotalHourWork"]);
+                int remainingLeave = Convert.ToInt32(row["RemainingLeave"]);
                 decimal overtimeHours = mOvertimeAttendance_dt.AsEnumerable().Where(r => r.Field<string>("EmployeeCode") == employeeCode && r["HourWork"] != DBNull.Value) .Sum(r => r.Field<decimal>("HourWork"));
                 decimal overtimeMoney = 0;
                 decimal leaveMoney = 0;
@@ -1074,7 +1079,7 @@ namespace RauViet.ui
                     deductionMoney += Convert.ToDecimal(row["DeductionType" + deductionTypeCode]);
                 }
 
-                esbsData.Add((employeeCode, contractTypeName, month, year, baseSalary, netSalary, netInsuranceSalary, insuranceAllowance, nonInsuranceAllowance, overtimeMoney, leaveMoney, deductionMoney, isInsuranceRefund, normalWorkingHours, overtimeHours));
+                esbsData.Add((employeeCode, contractTypeName, month, year, baseSalary, netSalary, netInsuranceSalary, insuranceAllowance, nonInsuranceAllowance, overtimeMoney, leaveMoney, deductionMoney, isInsuranceRefund, normalWorkingHours, overtimeHours, remainingLeave));
             }
 
             DialogResult dialogResult = MessageBox.Show($"Sau khi thực hiện thao tác này \n dữ liệu sẽ bị khóa vĩnh viễn ?", "Cảnh Báo", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
@@ -1602,11 +1607,12 @@ namespace RauViet.ui
                     ws_GioCong.Style.Font.FontSize = 12;
                     ws_GioCong.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
                     report_GioCong(ws_GioCong, salaryMonth.Month, salaryMonth.Year);
+
                     var ws_TangCa = wb.Worksheets.Add("Tăng Ca");
                     ws_TangCa.Style.Font.FontName = "Times New Roman";
                     ws_TangCa.Style.Font.FontSize = 12;
                     ws_TangCa.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
-
+                    report_TangCa(ws_TangCa, salaryMonth.Month, salaryMonth.Year);
 
 
                     // ===== Save file =====
@@ -1817,7 +1823,7 @@ namespace RauViet.ui
             ws.Cell(rowInd, 1).Style.Font.Bold = true;
             ws.Cell(rowInd, 1).Style.Font.FontSize = 12;
             ws.Cell(rowInd, 1).Style.Font.FontColor = XLColor.Black;
-            ws.Cell(rowInd, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            ws.Cell(rowInd, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
             rowInd++;
 
             ws.Range(rowInd, 1, rowInd, 4).Merge();
@@ -1825,7 +1831,7 @@ namespace RauViet.ui
             ws.Cell(rowInd, 1).Style.Font.Bold = true;
             ws.Cell(rowInd, 1).Style.Font.FontSize = 12;
             ws.Cell(rowInd, 1).Style.Font.FontColor = XLColor.Black;
-            ws.Cell(rowInd, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            ws.Cell(rowInd, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
             rowInd++;
 
             ws.Range(rowInd, 1, rowInd, 4).Merge();
@@ -1833,7 +1839,7 @@ namespace RauViet.ui
             ws.Cell(rowInd, 1).Style.Font.Bold = true;
             ws.Cell(rowInd, 1).Style.Font.FontSize = 12;
             ws.Cell(rowInd, 1).Style.Font.FontColor = XLColor.Black;
-            ws.Cell(rowInd, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            ws.Cell(rowInd, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
             rowInd += 2;
                         
             ws.Range(rowInd, 1, rowInd, 8).Merge();
@@ -1841,7 +1847,16 @@ namespace RauViet.ui
             ws.Cell(rowInd, 1).Style.Font.Bold = true;
             ws.Cell(rowInd, 1).Style.Font.FontSize = 20;
             ws.Cell(rowInd, 1).Style.Font.FontColor = XLColor.Black;
-            ws.Cell(rowInd, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            ws.Cell(rowInd, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+
+
+            ws.Range(1, 10, 3, 15).Merge();
+            ws.Cell(1, 10).Value = $"PN: PHÉP NĂM\nNL: NGHỈ LỄ\nHL: NGHỈ HƯỞNG LƯƠNG";
+            ws.Cell(1, 10).Style.Font.Bold = false;
+            ws.Cell(1, 10).Style.Font.FontSize = 10;
+            ws.Cell(1, 10).Style.Font.FontColor = XLColor.Black;
+            ws.Cell(1, 10).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+            ws.Cell(1, 10).Style.Alignment.WrapText = true;
 
             rowInd += 2;
 
@@ -1865,6 +1880,7 @@ namespace RauViet.ui
                 cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
                 cell.Style.Alignment.WrapText = true;
                 ws.Range(rowInd, colIndex, rowInd + 1, colIndex).Style.Border.OutsideBorder = XLBorderStyleValues.Thin; // Đóng khung
+                cell.Style.Fill.BackgroundColor = XLColor.FromArgb(255, 192, 0);
                 colIndex++;
 
             }
@@ -1878,6 +1894,7 @@ namespace RauViet.ui
                 cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
                 cell.Style.Alignment.WrapText = true;
                 cell.Style.Border.OutsideBorder = XLBorderStyleValues.Thin; // Đóng khung
+                cell.Style.Fill.BackgroundColor = XLColor.FromArgb(255, 192, 0);
 
                 var cell1 = ws.Cell(rowInd + 1, colIndex);
                 cell1.Value = Utils.GetThu_Viet(new DateTime(year, month, dayName + 1));
@@ -1885,6 +1902,7 @@ namespace RauViet.ui
                 cell1.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
                 cell1.Style.Alignment.WrapText = true;
                 cell1.Style.Border.OutsideBorder = XLBorderStyleValues.Thin; // Đóng khung
+                cell1.Style.Fill.BackgroundColor = XLColor.FromArgb(198, 224, 180);
                 colIndex++;
             }
 
@@ -1925,6 +1943,13 @@ namespace RauViet.ui
 
                         cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
                         cell.Style.NumberFormat.Format = "#,##0.0;-#,##0;\"-\"";
+
+                        if(allCols_value.Contains(colName))
+                            cell.Style.Fill.BackgroundColor = XLColor.FromArgb(255, 230, 153);
+                        else if (colName.CompareTo("RemainingLeave") == 0)
+                            cell.Style.Fill.BackgroundColor = XLColor.FromArgb(241, 173, 135);
+                        else if (colName.CompareTo("TotalHourWork") == 0)
+                            cell.Style.Fill.BackgroundColor = XLColor.FromArgb(169, 208, 142);
                     }
                     else if (colName.CompareTo("PT_1") == 0)
                     {
@@ -1937,6 +1962,7 @@ namespace RauViet.ui
 
                         cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
                         cell.Style.NumberFormat.Format = "#,##0.0;-#,##0;\"-\"";
+                        cell.Style.Fill.BackgroundColor = XLColor.FromArgb(255, 230, 153);
                     }
                     else
                     {
@@ -1964,24 +1990,47 @@ namespace RauViet.ui
                 {
                     var cell = ws.Cell(rowInd, colIndex);
 
-                    DateTime workDate = Convert.ToDateTime(attendamceRow["WorkDate"]);
+                    DateTime workDate = Convert.ToDateTime(attendamceRow["WorkDate"]);                    
                     decimal hourWork = Convert.ToDecimal(attendamceRow["WorkingHours"]);
+
                     if (hourWork <= 0 && leaveAttendanceRows.Any())
                     {
+                        bool hasData = false;
                         foreach (DataRow leaveAttendanceRow in leaveAttendanceRows)
                         {
                             DateTime dateOff = Convert.ToDateTime(leaveAttendanceRow["DateOff"]);
                             if(dateOff.Date == workDate.Date)
                             {
                                 string leaveTypeCode = Convert.ToString(leaveAttendanceRow["LeaveTypeCode"]);
-                                cell.Value = leaveTypeCode.Substring(0, leaveTypeCode.Length - 2);                                
+                                cell.Value = leaveTypeCode.Substring(0, leaveTypeCode.Length - 2);
+                                cell.Style.Fill.BackgroundColor = XLColor.FromArgb(217, 225, 242);
+                                hasData = true;
+                                break;
                             }
-                        }    
+                        }
+                        if (!hasData)
+                        {
+                            cell.Value = hourWork;
+                            cell.Style.NumberFormat.Format = "#,##0.0;-#,##0;\"-\"";
+
+                            if (hourWork > 0)
+                                cell.Style.Fill.BackgroundColor = XLColor.FromArgb(255, 230, 153);
+                            else if (workDate.DayOfWeek == DayOfWeek.Sunday)
+                                cell.Style.Fill.BackgroundColor = XLColor.FromArgb(68, 114, 196);
+                            else
+                                cell.Style.Fill.BackgroundColor = XLColor.FromArgb(255, 230, 153);
+                        }
                     }
                     else
                     {
-                        cell.Value = hourWork;
+                        cell.Value = hourWork;                        
                         cell.Style.NumberFormat.Format = "#,##0.0;-#,##0;\"-\"";
+                        if(hourWork > 0)
+                            cell.Style.Fill.BackgroundColor = XLColor.FromArgb(255, 230, 153);
+                        else if (workDate.DayOfWeek == DayOfWeek.Sunday)
+                            cell.Style.Fill.BackgroundColor = XLColor.FromArgb(68, 114, 196);
+                        else
+                            cell.Style.Fill.BackgroundColor = XLColor.FromArgb(255, 230, 153);
                     }
 
                     cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
@@ -2013,9 +2062,256 @@ namespace RauViet.ui
             ws.Row(8).Height = 19;
         }
 
-        void report_TangCa(IXLWorksheet ws, int month, int year)
+        async void report_TangCa(IXLWorksheet ws, int month, int year)
         {
+            int rowInd = 3;
+            List<string> columnsName = new List<string> { "STT", "Mã NV", "Họ Và Tên", "Phòng/Ban"};
 
+            var overtimeTask = Task.Run(() => { return mOvertimeType_dt.AsEnumerable().Select(r => r["OvertimeName"]).ToList(); });
+            await Task.WhenAll(overtimeTask);
+            var allCols = overtimeTask.Result.Distinct().ToList();
+            foreach (var col in allCols)
+            {
+                columnsName.Add($"Tổng Giờ {col.ToString()}");
+            }
+
+            int colIndex = 1;
+            foreach (var col in columnsName)
+            {
+                ws.Range(rowInd, colIndex, rowInd + 1, colIndex).Merge();
+                var cell = ws.Cell(rowInd, colIndex);
+                cell.Value = col;
+                cell.Style.Font.Bold = true;
+                cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                cell.Style.Alignment.WrapText = true;
+                ws.Range(rowInd, colIndex, rowInd + 1, colIndex).Style.Border.OutsideBorder = XLBorderStyleValues.Thin; // Đóng khung
+                cell.Style.Fill.BackgroundColor = XLColor.FromArgb(255, 192, 0);
+                colIndex++;
+
+            }
+
+            int daysInMonth = DateTime.DaysInMonth(year, month);
+            int startColumn_T_Ca_Thuong = colIndex;
+            for (int dayName = 0; dayName < daysInMonth; dayName++)
+            {
+                var cell = ws.Cell(rowInd, colIndex);
+                cell.Value = (dayName + 1).ToString();
+                cell.Style.Font.Bold = true;
+                cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                cell.Style.Alignment.WrapText = true;
+                cell.Style.Border.OutsideBorder = XLBorderStyleValues.Thin; // Đóng khung
+                cell.Style.Fill.BackgroundColor = XLColor.FromArgb(255, 0, 0);
+
+                var cell1 = ws.Cell(rowInd + 1, colIndex);
+                cell1.Value = Utils.GetThu_Viet(new DateTime(year, month, dayName + 1));
+                cell1.Style.Font.Bold = true;
+                cell1.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                cell1.Style.Alignment.WrapText = true;
+                cell1.Style.Border.OutsideBorder = XLBorderStyleValues.Thin; // Đóng khung
+                cell1.Style.Fill.BackgroundColor = XLColor.FromArgb(198, 224, 180);
+                colIndex++;
+            }
+
+            int startColumn_T_Ca_Ngay_Nghi = colIndex;
+            for (int dayName = 0; dayName < daysInMonth; dayName++)
+            {
+                var cell = ws.Cell(rowInd, colIndex);
+                cell.Value = (dayName + 1).ToString();
+                cell.Style.Font.Bold = true;
+                cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                cell.Style.Alignment.WrapText = true;
+                cell.Style.Border.OutsideBorder = XLBorderStyleValues.Thin; // Đóng khung
+                
+                if (new DateTime(year, month, dayName + 1).DayOfWeek == DayOfWeek.Sunday)
+                    cell.Style.Fill.BackgroundColor = XLColor.FromArgb(255, 255, 0);
+
+                var cell1 = ws.Cell(rowInd + 1, colIndex);
+                cell1.Value = Utils.GetThu_Viet(new DateTime(year, month, dayName + 1));
+                cell1.Style.Font.Bold = true;
+                cell1.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                cell1.Style.Alignment.WrapText = true;
+                cell1.Style.Border.OutsideBorder = XLBorderStyleValues.Thin; // Đóng khung
+                cell1.Style.Fill.BackgroundColor = XLColor.FromArgb(198, 224, 180);
+                colIndex++;
+            }
+            int startColumn_T_Ca_Ngay_Le = colIndex;
+            for (int dayName = 0; dayName < daysInMonth; dayName++)
+            {
+                var cell = ws.Cell(rowInd, colIndex);
+                cell.Value = (dayName + 1).ToString();
+                cell.Style.Font.Bold = true;
+                cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                cell.Style.Alignment.WrapText = true;
+                cell.Style.Border.OutsideBorder = XLBorderStyleValues.Thin; // Đóng khung
+                cell.Style.Fill.BackgroundColor = XLColor.FromArgb(0, 176, 240);
+
+                var cell1 = ws.Cell(rowInd + 1, colIndex);
+                cell1.Value = Utils.GetThu_Viet(new DateTime(year, month, dayName + 1));
+                cell1.Style.Font.Bold = true;
+                cell1.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                cell1.Style.Alignment.WrapText = true;
+                cell1.Style.Border.OutsideBorder = XLBorderStyleValues.Thin; // Đóng khung
+                cell1.Style.Fill.BackgroundColor = XLColor.FromArgb(198, 224, 180);
+                colIndex++;
+            }
+
+            int startColumn_T_Ca_Dem = colIndex;
+            for (int dayName = 0; dayName < daysInMonth; dayName++)
+            {
+                var cell = ws.Cell(rowInd, colIndex);
+                cell.Value = (dayName + 1).ToString();
+                cell.Style.Font.Bold = true;
+                cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                cell.Style.Alignment.WrapText = true;
+                cell.Style.Border.OutsideBorder = XLBorderStyleValues.Thin; // Đóng khung
+                cell.Style.Fill.BackgroundColor = XLColor.FromArgb(150, 190, 230);
+
+                var cell1 = ws.Cell(rowInd + 1, colIndex);
+                cell1.Value = Utils.GetThu_Viet(new DateTime(year, month, dayName + 1));
+                cell1.Style.Font.Bold = true;
+                cell1.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                cell1.Style.Alignment.WrapText = true;
+                cell1.Style.Border.OutsideBorder = XLBorderStyleValues.Thin; // Đóng khung
+                cell1.Style.Fill.BackgroundColor = XLColor.FromArgb(198, 224, 180);
+                colIndex++;
+            }
+
+            ws.Range(1, startColumn_T_Ca_Dem, 2, startColumn_T_Ca_Dem + 15).Merge();
+            ws.Cell(1, startColumn_T_Ca_Dem).Value = $"TĂNG CA ĐÊM";
+            ws.Cell(1, startColumn_T_Ca_Dem).Style.Font.Bold = true;
+            ws.Cell(1, startColumn_T_Ca_Dem).Style.Font.FontSize = 20;
+            ws.Cell(1, startColumn_T_Ca_Dem).Style.Font.FontColor = XLColor.Black;
+            ws.Cell(1, startColumn_T_Ca_Dem).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+
+            ws.Range(1, startColumn_T_Ca_Ngay_Le, 2, startColumn_T_Ca_Ngay_Le + 15).Merge();
+            ws.Cell(1, startColumn_T_Ca_Ngay_Le).Value = $"TĂNG CA NGÀY LỄ";
+            ws.Cell(1, startColumn_T_Ca_Ngay_Le).Style.Font.Bold = true;
+            ws.Cell(1, startColumn_T_Ca_Ngay_Le).Style.Font.FontSize = 20;
+            ws.Cell(1, startColumn_T_Ca_Ngay_Le).Style.Font.FontColor = XLColor.Black;
+            ws.Cell(1, startColumn_T_Ca_Ngay_Le).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+
+            ws.Range(1, startColumn_T_Ca_Ngay_Nghi, 2, startColumn_T_Ca_Ngay_Nghi + 15).Merge();
+            ws.Cell(1, startColumn_T_Ca_Ngay_Nghi).Value = $"TĂNG CA NGÀY NGHỈ";
+            ws.Cell(1, startColumn_T_Ca_Ngay_Nghi).Style.Font.Bold = true;
+            ws.Cell(1, startColumn_T_Ca_Ngay_Nghi).Style.Font.FontSize = 20;
+            ws.Cell(1, startColumn_T_Ca_Ngay_Nghi).Style.Font.FontColor = XLColor.Black;
+            ws.Cell(1, startColumn_T_Ca_Ngay_Nghi).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+
+            ws.Range(1, startColumn_T_Ca_Thuong, 2, startColumn_T_Ca_Thuong + 15).Merge();
+            ws.Cell(1, startColumn_T_Ca_Thuong).Value = $"TĂNG CA NGÀY THƯỜNG";
+            ws.Cell(1, startColumn_T_Ca_Thuong).Style.Font.Bold = true;
+            ws.Cell(1, startColumn_T_Ca_Thuong).Style.Font.FontSize = 20;
+            ws.Cell(1, startColumn_T_Ca_Thuong).Style.Font.FontColor = XLColor.Black;
+            ws.Cell(1, startColumn_T_Ca_Thuong).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+
+            rowInd += 2;
+            List<string> exportColumns = new List<string> { "STT", "EmployeeCode", "FullName", "DepartmentName" };
+
+            var overtimeTask_value = Task.Run(() =>{return mOvertimeType_dt.AsEnumerable().Select(r => "c_OvertimeType" + r["OvertimeTypeID"]).ToList();});
+            await Task.WhenAll(overtimeTask_value);
+            var allCols_value = overtimeTask_value.Result.Distinct().ToList();
+            foreach (var col in allCols_value)
+            {
+                exportColumns.Add(col.ToString());
+            }
+
+            int countSTT = 1;
+            foreach (DataRow row in mEmployee_dt.Rows)
+            {
+                colIndex = 1;
+                string employeeCode = row["EmployeeCode"].ToString();
+                foreach (var colName in exportColumns)
+                {
+                    var cell = ws.Cell(rowInd, colIndex);
+                    string cellValue = countSTT.ToString();
+
+                    if (colName.CompareTo("STT") != 0)
+                        cellValue = row[colName]?.ToString() ?? "";
+
+                    if (allCols_value.Contains(colName))
+                    {
+                        decimal value = 0;
+                        decimal.TryParse(cellValue?.ToString(), out value);
+                        int result = Convert.ToInt32(Math.Round(value));
+                        cell.Value = result;
+                        if(value <= 0)
+                            cell.Style.Fill.BackgroundColor = XLColor.FromArgb(68, 114, 196);
+
+                        cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
+                        cell.Style.NumberFormat.Format = "#,##0.0;-#,##0;\"-\"";
+                    }
+                    else
+                    {
+                        cell.Value = cellValue;
+                        cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+                    }
+
+                    cell.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+
+                    colIndex++;
+
+                }
+
+
+                var attendamceRows = mOvertimeAttendance_dt.AsEnumerable()
+                    .Where(r => r.Field<string>("EmployeeCode") == employeeCode)
+                    .OrderBy(r => r.Field<DateTime?>("WorkDate"));
+
+                foreach (DataRow attendamceRow in attendamceRows)
+                {
+                    DateTime workDate = Convert.ToDateTime(attendamceRow["WorkDate"]);
+                    string OvertimeTypeCode = Convert.ToString(attendamceRow["OvertimeTypeCode"]);
+                    decimal hourWork = Convert.ToDecimal(attendamceRow["HourWork"]);
+
+                    int ColumnIndex = startColumn_T_Ca_Dem + workDate.Day;
+                    if (OvertimeTypeCode.CompareTo("OT_Thuong") == 0)
+                    {
+                        ColumnIndex = startColumn_T_Ca_Thuong + workDate.Day;
+                    }
+                    else if (OvertimeTypeCode.CompareTo("OT_NN") == 0)
+                    {
+                        ColumnIndex = startColumn_T_Ca_Ngay_Nghi + workDate.Day;
+                    }
+                    else if (OvertimeTypeCode.CompareTo("OT_NL") == 0)
+                    {
+                        ColumnIndex = startColumn_T_Ca_Ngay_Le + workDate.Day;
+                    }
+
+                    ColumnIndex--;
+
+                    var cell = ws.Cell(rowInd, ColumnIndex);
+                    cell.Value = hourWork;
+                    cell.Style.NumberFormat.Format = "#,##0.0;-#,##0;\"-\"";
+                    
+                    cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
+                }
+
+                for (int dayName = 0; dayName < daysInMonth; dayName++)
+                {
+                    ws.Cell(rowInd, startColumn_T_Ca_Thuong + dayName).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                    ws.Cell(rowInd, startColumn_T_Ca_Ngay_Le + dayName).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                    ws.Cell(rowInd, startColumn_T_Ca_Ngay_Nghi + dayName).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                    ws.Cell(rowInd, startColumn_T_Ca_Dem + dayName).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                }
+
+                countSTT++;
+                rowInd++;
+            }
+
+            foreach (var col in ws.ColumnsUsed())
+            {
+                col.Width = 4.5;
+            }
+            ws.Column(1).Width = 4.5;
+            ws.Column(2).Width = 8;
+            ws.Column(3).Width = 32;
+            ws.Column(4).Width = 22.5;
+            ws.Column(5).Width = 8.5;
+            ws.Column(6).Width = 9.3;
+            ws.Column(7).Width = 8.7;
+            ws.Column(8).Width = 8.2;
+            ws.Row(3).Height = 50;
+            ws.Row(4).Height = 19;
         }
     }
 }
