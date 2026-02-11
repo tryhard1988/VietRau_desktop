@@ -3369,6 +3369,46 @@ namespace RauViet.classes
                 Console.WriteLine($"Error InsertHolidayToAttendanceAsync: {ex.Message}");
             }
         }
+
+        public async Task<bool> UpsertReportAttendenceHistoryAsync(List<(int month, int year, string workBlock, string workBlockCode, int EmployeeCount, decimal WorkHours, decimal OvertimeHours)> data)
+        {
+            try
+            {
+                DataTable dt = new DataTable();
+                dt.Columns.Add("ReportMonth", typeof(int));
+                dt.Columns.Add("ReportYear", typeof(int));
+                dt.Columns.Add("WorkBlock", typeof(string));
+                dt.Columns.Add("WorkBlockCode", typeof(string));
+                dt.Columns.Add("EmployeeCount", typeof(int));
+                dt.Columns.Add("WorkHours", typeof(decimal));
+                dt.Columns.Add("OvertimeHours", typeof(decimal));
+                foreach (var item in data)
+                {
+                    dt.Rows.Add(item.month, item.year, item.workBlock, item.workBlockCode, item.EmployeeCount, item.WorkHours, item.OvertimeHours);
+                }
+
+                using (SqlConnection conn = new SqlConnection(qlnvHis_conStr()))
+                {
+                    await conn.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand("sp_Upsert_ReportAttendenceHistory_List", conn))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        var param = cmd.Parameters.AddWithValue("@Data", dt);
+                        param.SqlDbType = SqlDbType.Structured;
+                        param.TypeName = "ReportAttendenceHistory_TVP";
+
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Lỗi khi cập nhật: " + ex.Message);
+                return false;
+            }
+        }
     }
 }
 

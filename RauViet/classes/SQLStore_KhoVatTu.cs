@@ -237,7 +237,7 @@ namespace RauViet.classes
                 int? department = row.Field<int?>("Department");
                 string Supervisor = row["Supervisor"].ToString();
                 
-                DataRow productRow = product_dt.AsEnumerable().FirstOrDefault(r => r.Field<int>("SKU") == sku);
+                DataRow productRow = product_dt.AsEnumerable().FirstOrDefault(r => r.Field<int>("ProductSKU") == sku);
                 if (productRow != null)
                     row["PlantName"] = productRow["ProductNameVN"];
 

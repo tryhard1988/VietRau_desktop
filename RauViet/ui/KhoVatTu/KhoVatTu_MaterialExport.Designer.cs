@@ -55,16 +55,16 @@ namespace RauViet.ui
             this.status_lb = new System.Windows.Forms.Label();
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.dayGV = new System.Windows.Forms.DataGridView();
             this.panel3 = new System.Windows.Forms.Panel();
             this.dataGV = new System.Windows.Forms.DataGridView();
-            this.dayGV = new System.Windows.Forms.DataGridView();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.log_GV)).BeginInit();
             this.info_gb.SuspendLayout();
             this.panel2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dayGV)).BeginInit();
             this.panel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dayGV)).BeginInit();
             this.SuspendLayout();
             // 
             // panel1
@@ -99,7 +99,7 @@ namespace RauViet.ui
             this.label4.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.label4.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label4.ForeColor = System.Drawing.Color.DarkOliveGreen;
-            this.label4.Location = new System.Drawing.Point(0, 541);
+            this.label4.Location = new System.Drawing.Point(0, 579);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(533, 23);
             this.label4.TabIndex = 70;
@@ -112,17 +112,17 @@ namespace RauViet.ui
             this.log_GV.AllowUserToDeleteRows = false;
             this.log_GV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.log_GV.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.log_GV.Location = new System.Drawing.Point(0, 564);
+            this.log_GV.Location = new System.Drawing.Point(0, 602);
             this.log_GV.Name = "log_GV";
             this.log_GV.ReadOnly = true;
-            this.log_GV.Size = new System.Drawing.Size(533, 194);
+            this.log_GV.Size = new System.Drawing.Size(533, 156);
             this.log_GV.TabIndex = 69;
             // 
             // readOnly_btn
             // 
             this.readOnly_btn.BackColor = System.Drawing.Color.MediumSlateBlue;
             this.readOnly_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.readOnly_btn.Location = new System.Drawing.Point(490, 74);
+            this.readOnly_btn.Location = new System.Drawing.Point(490, 55);
             this.readOnly_btn.Name = "readOnly_btn";
             this.readOnly_btn.Size = new System.Drawing.Size(42, 32);
             this.readOnly_btn.TabIndex = 48;
@@ -133,7 +133,7 @@ namespace RauViet.ui
             // 
             this.edit_btn.BackColor = System.Drawing.SystemColors.MenuHighlight;
             this.edit_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.edit_btn.Location = new System.Drawing.Point(363, 74);
+            this.edit_btn.Location = new System.Drawing.Point(363, 55);
             this.edit_btn.Name = "edit_btn";
             this.edit_btn.Size = new System.Drawing.Size(94, 32);
             this.edit_btn.TabIndex = 47;
@@ -144,7 +144,7 @@ namespace RauViet.ui
             // 
             this.newCustomerBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
             this.newCustomerBtn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.newCustomerBtn.Location = new System.Drawing.Point(459, 74);
+            this.newCustomerBtn.Location = new System.Drawing.Point(459, 55);
             this.newCustomerBtn.Name = "newCustomerBtn";
             this.newCustomerBtn.Size = new System.Drawing.Size(74, 32);
             this.newCustomerBtn.TabIndex = 46;
@@ -168,7 +168,7 @@ namespace RauViet.ui
             this.info_gb.Controls.Add(this.label7);
             this.info_gb.Controls.Add(this.label1);
             this.info_gb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.info_gb.Location = new System.Drawing.Point(17, 102);
+            this.info_gb.Location = new System.Drawing.Point(17, 83);
             this.info_gb.Name = "info_gb";
             this.info_gb.Size = new System.Drawing.Size(513, 294);
             this.info_gb.TabIndex = 43;
@@ -310,7 +310,7 @@ namespace RauViet.ui
             // 
             this.status_lb.AutoSize = true;
             this.status_lb.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.status_lb.Location = new System.Drawing.Point(4, 411);
+            this.status_lb.Location = new System.Drawing.Point(4, 392);
             this.status_lb.Name = "status_lb";
             this.status_lb.Size = new System.Drawing.Size(59, 23);
             this.status_lb.TabIndex = 40;
@@ -320,7 +320,7 @@ namespace RauViet.ui
             // 
             this.LuuThayDoiBtn.BackColor = System.Drawing.SystemColors.Highlight;
             this.LuuThayDoiBtn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LuuThayDoiBtn.Location = new System.Drawing.Point(254, 402);
+            this.LuuThayDoiBtn.Location = new System.Drawing.Point(254, 383);
             this.LuuThayDoiBtn.Name = "LuuThayDoiBtn";
             this.LuuThayDoiBtn.Size = new System.Drawing.Size(104, 43);
             this.LuuThayDoiBtn.TabIndex = 25;
@@ -335,6 +335,18 @@ namespace RauViet.ui
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(200, 758);
             this.panel2.TabIndex = 70;
+            // 
+            // dayGV
+            // 
+            this.dayGV.AllowUserToAddRows = false;
+            this.dayGV.AllowUserToDeleteRows = false;
+            this.dayGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dayGV.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dayGV.Location = new System.Drawing.Point(0, 0);
+            this.dayGV.Name = "dayGV";
+            this.dayGV.ReadOnly = true;
+            this.dayGV.Size = new System.Drawing.Size(200, 758);
+            this.dayGV.TabIndex = 71;
             // 
             // panel3
             // 
@@ -357,18 +369,6 @@ namespace RauViet.ui
             this.dataGV.Size = new System.Drawing.Size(616, 758);
             this.dataGV.TabIndex = 71;
             // 
-            // dayGV
-            // 
-            this.dayGV.AllowUserToAddRows = false;
-            this.dayGV.AllowUserToDeleteRows = false;
-            this.dayGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dayGV.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dayGV.Location = new System.Drawing.Point(0, 0);
-            this.dayGV.Name = "dayGV";
-            this.dayGV.ReadOnly = true;
-            this.dayGV.Size = new System.Drawing.Size(200, 758);
-            this.dayGV.TabIndex = 71;
-            // 
             // KhoVatTu_MaterialExport
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -385,9 +385,9 @@ namespace RauViet.ui
             this.info_gb.ResumeLayout(false);
             this.info_gb.PerformLayout();
             this.panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dayGV)).EndInit();
             this.panel3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dayGV)).EndInit();
             this.ResumeLayout(false);
 
         }

@@ -242,7 +242,7 @@ namespace RauViet.ui.PhanQuyen
                 if (!CheckTestKeyExist(updateXmlUrl, "check_version"))
                 {
                     int check_version = Utils.LoadCheckVersion();
-                    if (check_version > 40)
+                    if (check_version > 100)
                     {
                         Application.Exit();
                         return;

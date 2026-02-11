@@ -1,9 +1,5 @@
 ﻿using ClosedXML.Excel;
-using DocumentFormat.OpenXml.Drawing.Diagrams;
-using DocumentFormat.OpenXml.Spreadsheet;
-using DocumentFormat.OpenXml.Wordprocessing;
-using MySqlX.XDevAPI.Common;
-using PdfSharp.Pdf.Content.Objects;
+using Microsoft.Office.Interop.Excel;
 using RauViet.classes;
 using System;
 using System.Collections.Concurrent;
@@ -13,6 +9,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Action = System.Action;
 using Color = System.Drawing.Color;
 using DataTable = System.Data.DataTable;
 
@@ -137,7 +134,7 @@ namespace RauViet.ui
             int month = monthYearDtp.Value.Month;
             int year = monthYearDtp.Value.Year;
 
-            string[] keepColumns = { "EmployeeCode", "FullName", "HireDate", "IsInsuranceRefund", "DepartmentName", "ContractTypeName", "BankAccountNumber", "BankName", "BankAccountHolder", "GradeName", "DepartmentName" };
+            string[] keepColumns = { "EmployeeCode", "FullName", "HireDate", "IsInsuranceRefund", "DepartmentName", "WorkBlock", "ContractTypeName", "BankAccountNumber", "BankName", "BankAccountHolder", "GradeName", "DepartmentName" };
             string[] keepColumnsInfo = { "BaseSalary", "InsuranceBaseSalary", "ContractTypeName", "IsInsuranceRefund" };
             string[] keepColumnsLeave = { "EmployeeCode", "LeaveTypeCode", "DateOff", "LeaveTypeName", "LeaveHours" };
             string[] keepColumnsAttendamce = { "EmployeeCode", "WorkDate", "WorkingHours" };
@@ -195,6 +192,7 @@ namespace RauViet.ui
             Utils.AddColumnIfNotExists(mEmployee_dt, "BankAccountHolder", typeof(string));
             Utils.AddColumnIfNotExists(mEmployee_dt, "GradeName", typeof(string));
             Utils.AddColumnIfNotExists(mEmployee_dt, "DepartmentName", typeof(string));
+            Utils.AddColumnIfNotExists(mEmployee_dt, "WorkBlock", typeof(string));
 
             Utils.AddColumnIfNotExists(mAttendamce_dt, "DayOfWeek", typeof(string));
             
@@ -267,6 +265,7 @@ namespace RauViet.ui
                         dr["BankAccountHolder"] = matchRow["BankAccountHolder"]?.ToString();
                         dr["GradeName"] = matchRow["GradeName"]?.ToString();
                         dr["DepartmentName"] = matchRow["DepartmentName"]?.ToString();
+                        dr["WorkBlock"] = matchRow["WorkBlock"]?.ToString();
                     }
                     if (annualLeaveBalanceLookup.TryGetValue(employeeCode, out DataRow matchRow1))
                     {
@@ -497,7 +496,7 @@ namespace RauViet.ui
             Utils.HideColumns(overtimeAttendanceGV, new[] { "EmployeeCode", "SalaryFactor", "OvertimeTypeID", "OvertimeAttendanceID", "StartTime", "EndTime", "Note", "UpdatedHistory", "EmployeeName", "DepartmentID", "OvertimeTypeCode" });
             Utils.HideColumns(leaveGV, new[] { "EmployeeCode", "LeaveTypeCode" });
             Utils.HideColumns(deductionGV, new[] { "EmployeeCode", "DeductionTypeCode", "EmployeeDeductionID", "Note", "updateHistory" });
-            Utils.HideColumns(dataGV, new[] { "IsInsuranceRefund", "HireDate", "RemainingLeave", "BankAccountNumber", "BankName", "BankAccountHolder", "GradeName", "DepartmentName" });
+            Utils.HideColumns(dataGV, new[] { "IsInsuranceRefund", "HireDate", "RemainingLeave", "BankAccountNumber", "BankName", "BankAccountHolder", "GradeName", "DepartmentName", "WorkBlock" });
         }
 
         public async Task SetupGridThemesAsync()
@@ -1015,7 +1014,7 @@ namespace RauViet.ui
         {
             int month = Convert.ToInt32(monthYearDtp.Value.Month);
             int year = Convert.ToInt32(monthYearDtp.Value.Year);
-
+            
             bool isLock = await SQLStore_QLNS.Instance.IsSalaryLockAsync(month, year);
             if (isLock)
             {
@@ -1091,21 +1090,23 @@ namespace RauViet.ui
                     // Chạy song song 2 task
                     var task1 = SQLManager_QLNS.Instance.UpsertSaveEmployeeAllowanceHistoryBatchAsync(allowanceList);
                     var task2 = SQLManager_QLNS.Instance.UpsertEmployeeSalaryHistoryAsync(esbsData);
-
+                    var task3 = SaveSumaryAttendance();
+                    
                     // Chờ cả 2 task hoàn tất
-                    var results = await Task.WhenAll(task1, task2);
+                    await Task.WhenAll(task1, task2, task3);
 
-                    bool success1 = results[0];
-                    bool success2 = results[1];
+                    bool success1 = task1.Result;
+                    bool success2 = task2.Result;
+                    bool success4 = task3.Result;
                     bool success3 = false;
 
-                    if (success1 && success2)
+                    if (success1 && success2 && success4)
                     {
                         // Chỉ khóa lương khi 2 bước trước thành công
                         success3 = await SQLManager.Instance.UpsertLockSalaryAsync(month, year, true);
                     }
 
-                    if (success1 && success2 && success3)
+                    if (success1 && success2 && success3 && success4)
                     {
                         SQLStore_QLNS.Instance.ResetlockSalary();
                         MessageBox.Show("✅ Thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -1264,7 +1265,7 @@ namespace RauViet.ui
         }
 
         private async void ChiHoLuong_btn_Click(object sender, EventArgs e)
-        {
+        {            
             loadingOverlay = new LoadingOverlay(this);
             loadingOverlay.Message = "Đang xử lý ...";
             loadingOverlay.Show();
@@ -2312,6 +2313,55 @@ namespace RauViet.ui
             ws.Column(8).Width = 8.2;
             ws.Row(3).Height = 50;
             ws.Row(4).Height = 19;
+        }
+
+        private async Task<bool> SaveSumaryAttendance()
+        {
+            int month = Convert.ToInt32(monthYearDtp.Value.Month);
+            int year = Convert.ToInt32(monthYearDtp.Value.Year);
+
+            var overtimeColumns = mEmployee_dt.Columns.Cast<DataColumn>().Where(c => c.ColumnName.StartsWith("c_OvertimeType")).Select(c => c.ColumnName).ToList();
+
+            var result = mEmployee_dt.AsEnumerable()
+                .GroupBy(r => new
+                {
+                    WorkBlock = r.Field<string>("WorkBlock")
+                })
+                .Select(g => new
+                {
+                    g.Key.WorkBlock,
+                    EmployeeCount = g.Count(),
+                    TotalHourWork = g.Sum(r =>
+                        r.IsNull("TotalHourWork") ? 0 : Convert.ToDecimal(r["TotalHourWork"])
+                    ),
+
+                    TotalOvertime = g.Sum(r =>
+                        overtimeColumns.Sum(col =>
+                            r.IsNull(col) ? 0 : Convert.ToDecimal(r[col])
+                        )
+                    )
+                })
+                .ToList();
+
+            List<(int month, int year, string workBlock, string workBlockCode, int EmployeeCount, decimal WorkHours, decimal OvertimeHours)> data = new List<(int, int, string, string, int, decimal, decimal)>();
+
+
+            foreach (var item in result)
+            {
+                string workBlockName = "";
+                if (item.WorkBlock.CompareTo("VP") == 0)
+                    workBlockName = "VĂN PHÒNG";
+                else if (item.WorkBlock.CompareTo("FARM") == 0)
+                    workBlockName = "FARM";
+                else if (item.WorkBlock.CompareTo("XUONG") == 0)
+                    workBlockName = "XƯỞNG";
+
+                data.Add((month, year, workBlockName, item.WorkBlock, item.EmployeeCount, item.TotalHourWork, item.TotalOvertime));                
+            }
+
+            bool success = await SQLManager_QLNS.Instance.UpsertReportAttendenceHistoryAsync(data);
+
+            return success;
         }
     }
 }

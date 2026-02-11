@@ -22,7 +22,6 @@ namespace RauViet.ui
         int mCurrentMonth = -1;
         int mCurrentYear = -1;
         object oldValue;
-        CZKEM axCZKEM = new CZKEM();
         int machineNumber = 1;
         public Attendance()
         {
@@ -875,6 +874,12 @@ namespace RauViet.ui
 
         private async void Holiday_btn_Click(object sender, EventArgs e)
         {
+            bool isLock = await SQLStore_QLNS.Instance.IsSalaryLockAsync(mCurrentMonth, mCurrentYear);
+            if (isLock)
+            {
+                MessageBox.Show($"Tháng {mCurrentMonth}/{mCurrentYear} Đã Bị Khóa", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
             try
             {
                 foreach (DataRow holidayRow in mHoliday_dt.Rows)
@@ -906,10 +911,14 @@ namespace RauViet.ui
             
             if (dataGV.CurrentRow == null) return;
 
-            int month = monthYearDtp.Value.Date.Month;
-            int year = monthYearDtp.Value.Date.Year;
+            bool isLock = await SQLStore_QLNS.Instance.IsSalaryLockAsync(mCurrentMonth, mCurrentYear);
+            if (isLock)
+            {
+                MessageBox.Show($"Tháng {mCurrentMonth}/{mCurrentYear} Đã Bị Khóa", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
 
-            int daysInMonth = DateTime.DaysInMonth(year, month);
+            int daysInMonth = DateTime.DaysInMonth(mCurrentYear, mCurrentMonth);
 
             string employeeCode = dataGV.CurrentRow.Cells["EmployeeCode"].Value.ToString();
 
@@ -924,7 +933,7 @@ namespace RauViet.ui
             string note = "Làm việc từ xa";
             for (int day = 1; day <= daysInMonth; day++)
             {
-                DateTime date = new DateTime(year, month, day);
+                DateTime date = new DateTime(mCurrentYear, mCurrentMonth, day);
 
                 DataRow newRow = mAttendamce_dt.NewRow();
                 int workHour = date.DayOfWeek == DayOfWeek.Sunday ? 0 : 8;

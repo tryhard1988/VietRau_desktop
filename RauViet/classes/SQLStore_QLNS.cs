@@ -221,6 +221,7 @@ namespace RauViet.classes
             Utils.AddColumnIfNotExists(mEmployee_dt, "PositionCode", typeof(string));
             Utils.AddColumnIfNotExists(mEmployee_dt, "PositionName", typeof(string));
             Utils.AddColumnIfNotExists(mEmployee_dt, "DepartmentName", typeof(string));
+            Utils.AddColumnIfNotExists(mEmployee_dt, "WorkBlock", typeof(string));
             Utils.AddColumnIfNotExists(mEmployee_dt, "ContractTypeName", typeof(string));
             Utils.AddColumnIfNotExists(mEmployee_dt, "ContractTypeCode", typeof(string));
             Utils.AddColumnIfNotExists(mEmployee_dt, "GradeName", typeof(string));
@@ -255,6 +256,7 @@ namespace RauViet.classes
                 string positionName = "";
                 string positionCode = "";
                 string departmentName = "";
+                string workBlock = "";
                 string gradeName = "";
                 int salaryGrade = 0;
                 string contractTypeName = "";
@@ -273,7 +275,10 @@ namespace RauViet.classes
                 {
                     DataRow[] departmentRows = mDepartment_dt.Select($"departmentID = {departmentID}");
                     if (departmentRows.Length > 0)
+                    {
                         departmentName = departmentRows[0]["DepartmentName"].ToString();
+                        workBlock = departmentRows[0]["WorkBlock"].ToString();
+                    }
                 }
                 if (salaryGradeID != null)
                 {
@@ -297,6 +302,7 @@ namespace RauViet.classes
 
                 dr["PositionCode"] = positionCode;
                 dr["PositionName"] = positionName;
+                dr["WorkBlock"] = workBlock;
                 dr["DepartmentName"] = departmentName;
                 dr["ContractTypeName"] = contractTypeName;
                 dr["ContractTypeCode"] = contractTypeCode;
