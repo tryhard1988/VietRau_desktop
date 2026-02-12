@@ -104,7 +104,6 @@
             this.plantingManagement_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripMenuItem();
             this.thongke_main_mi = new System.Windows.Forms.ToolStripMenuItem();
-            this.reportSalary_Month_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.báoCáoĐơnHàngToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.reportOrderIn1Year_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.reportOrderIn1Month_mi = new System.Windows.Forms.ToolStripMenuItem();
@@ -120,6 +119,9 @@
             this.aaaaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadExcelOrderReportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.content_panel = new System.Windows.Forms.Panel();
+            this.báoCáoBênNhânSựToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.sumaryAttendanceReport_mi = new System.Windows.Forms.ToolStripMenuItem();
+            this.reportSalary_Month_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1.SuspendLayout();
             this.LOT_menuitem.SuspendLayout();
             this.SuspendLayout();
@@ -132,7 +134,7 @@
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1477, 56);
+            this.panel1.Size = new System.Drawing.Size(1528, 56);
             this.panel1.TabIndex = 0;
             // 
             // title_lb
@@ -142,7 +144,7 @@
             this.title_lb.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
             this.title_lb.Location = new System.Drawing.Point(0, 25);
             this.title_lb.Name = "title_lb";
-            this.title_lb.Size = new System.Drawing.Size(1477, 31);
+            this.title_lb.Size = new System.Drawing.Size(1528, 31);
             this.title_lb.TabIndex = 19;
             this.title_lb.Text = "label1";
             this.title_lb.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -171,7 +173,7 @@
             this.aaaaToolStripMenuItem});
             this.LOT_menuitem.Location = new System.Drawing.Point(0, 0);
             this.LOT_menuitem.Name = "LOT_menuitem";
-            this.LOT_menuitem.Size = new System.Drawing.Size(1477, 25);
+            this.LOT_menuitem.Size = new System.Drawing.Size(1528, 25);
             this.LOT_menuitem.TabIndex = 18;
             this.LOT_menuitem.Text = "topMenu_ms";
             // 
@@ -704,20 +706,14 @@
             // thongke_main_mi
             // 
             this.thongke_main_mi.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.reportSalary_Month_mi,
             this.báoCáoĐơnHàngToolStripMenuItem,
-            this.báoCáoĐơnHàngTrongNướcToolStripMenuItem});
+            this.báoCáoĐơnHàngTrongNướcToolStripMenuItem,
+            this.báoCáoBênNhânSựToolStripMenuItem});
             this.thongke_main_mi.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.thongke_main_mi.ForeColor = System.Drawing.Color.Crimson;
             this.thongke_main_mi.Name = "thongke_main_mi";
             this.thongke_main_mi.Size = new System.Drawing.Size(78, 21);
             this.thongke_main_mi.Text = "Thống Kê";
-            // 
-            // reportSalary_Month_mi
-            // 
-            this.reportSalary_Month_mi.Name = "reportSalary_Month_mi";
-            this.reportSalary_Month_mi.Size = new System.Drawing.Size(268, 22);
-            this.reportSalary_Month_mi.Text = "Báo Cáo Lương Theo Năm";
             // 
             // báoCáoĐơnHàngToolStripMenuItem
             // 
@@ -803,7 +799,7 @@
             // 
             this.QR_mi.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.QR_mi.Name = "QR_mi";
-            this.QR_mi.Size = new System.Drawing.Size(120, 22);
+            this.QR_mi.Size = new System.Drawing.Size(180, 22);
             this.QR_mi.Text = "Tạo QR";
             // 
             // aaaaToolStripMenuItem
@@ -827,15 +823,36 @@
             this.content_panel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.content_panel.Location = new System.Drawing.Point(0, 56);
             this.content_panel.Name = "content_panel";
-            this.content_panel.Size = new System.Drawing.Size(1477, 491);
+            this.content_panel.Size = new System.Drawing.Size(1528, 491);
             this.content_panel.TabIndex = 1;
+            // 
+            // báoCáoBênNhânSựToolStripMenuItem
+            // 
+            this.báoCáoBênNhânSựToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.sumaryAttendanceReport_mi,
+            this.reportSalary_Month_mi});
+            this.báoCáoBênNhânSựToolStripMenuItem.Name = "báoCáoBênNhânSựToolStripMenuItem";
+            this.báoCáoBênNhânSựToolStripMenuItem.Size = new System.Drawing.Size(268, 22);
+            this.báoCáoBênNhânSựToolStripMenuItem.Text = "Báo Cáo Bên Nhân Sự";
+            // 
+            // sumaryAttendanceReport_mi
+            // 
+            this.sumaryAttendanceReport_mi.Name = "sumaryAttendanceReport_mi";
+            this.sumaryAttendanceReport_mi.Size = new System.Drawing.Size(235, 22);
+            this.sumaryAttendanceReport_mi.Text = "So Sánh Giờ Công";
+            // 
+            // reportSalary_Month_mi
+            // 
+            this.reportSalary_Month_mi.Name = "reportSalary_Month_mi";
+            this.reportSalary_Month_mi.Size = new System.Drawing.Size(235, 22);
+            this.reportSalary_Month_mi.Text = "Báo Cáo Lương Theo Năm";
             // 
             // FormManager
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(1477, 547);
+            this.ClientSize = new System.Drawing.Size(1528, 547);
             this.Controls.Add(this.content_panel);
             this.Controls.Add(this.panel1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -893,7 +910,6 @@
         private System.Windows.Forms.ToolStripMenuItem salaryCaculator_mi;
         private System.Windows.Forms.ToolStripMenuItem deduction_ATT_mi;
         private System.Windows.Forms.ToolStripMenuItem thongke_main_mi;
-        private System.Windows.Forms.ToolStripMenuItem reportSalary_Month_mi;
         private System.Windows.Forms.ToolStripMenuItem employeeSalaryInfo_mi;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
@@ -942,5 +958,8 @@
         private System.Windows.Forms.ToolStripMenuItem materialExport_mi;
         private System.Windows.Forms.ToolStripMenuItem materialImport_mi;
         private System.Windows.Forms.ToolStripMenuItem tonKhoVatTu_mi;
+        private System.Windows.Forms.ToolStripMenuItem báoCáoBênNhânSựToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem sumaryAttendanceReport_mi;
+        private System.Windows.Forms.ToolStripMenuItem reportSalary_Month_mi;
     }
 }

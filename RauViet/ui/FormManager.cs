@@ -198,6 +198,7 @@ namespace RauViet.ui
 
             if (UserManager.Instance.hasRole_ThongKe())
             {
+                sumaryAttendanceReport_mi.Click += SumaryAttendanceReport_mi_Click;
                 reportSalary_Month_mi.Click += ReportSalary_Month_mi_Click;
                 reportOrderIn1Year_mi.Click += ReportExportYear_mi_Click;
                 reportOrderIn1Month_mi.Click += ReportOrderIn1Month_mi_Click;
@@ -375,7 +376,8 @@ namespace RauViet.ui
             KhoVatTu_PlantingManagement,
             KhoVatTu_MaterialExport,
             KhoVatTu_MaterialImport,
-            KhoVatTu_MaterialInvenStore
+            KhoVatTu_MaterialInvenStore,
+            SumaryAttendanceReport
         }
 
         private void openCurrentForm(EForm status)
@@ -590,12 +592,16 @@ namespace RauViet.ui
                 case EForm.KhoVatTu_MaterialInvenStore:
                     SwitchChildForm<KhoVatTu_MaterialInvenStore>("Tồn Kho Vật Tư");
                     break;
+                case EForm.SumaryAttendanceReport:
+                    SwitchChildForm<SumaryAttendanceReport>("So Sánh Giờ Công");
+                    break;
             }
             
             Properties.Settings.Default.current_form = status.ToString();
             Properties.Settings.Default.Save();
         }
-        
+
+        private void SumaryAttendanceReport_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.SumaryAttendanceReport); }
         private void ReportSalary_Month_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.ReportSalary_Year); }
         private void ReportExportYear_mi_Click(object sender, EventArgs e){ openCurrentForm(EForm.ReportOrderIn1Year_Year); }
         private void ReportOrderIn1Month_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.ReportOrderIn1Month_Year); }

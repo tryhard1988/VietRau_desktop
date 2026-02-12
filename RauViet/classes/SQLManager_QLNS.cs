@@ -3347,7 +3347,6 @@ namespace RauViet.classes
         //    catch { }
         //}
 
-
         public async Task InsertHolidayToAttendanceAsync(DateTime holidayDate, string holidayName)
         {
             try
@@ -3368,6 +3367,25 @@ namespace RauViet.classes
             {
                 Console.WriteLine($"Error InsertHolidayToAttendanceAsync: {ex.Message}");
             }
+        }
+
+        public async Task<DataTable> GetSumaryAttendanceHistoryAsync()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(qlnvHis_conStr()))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT * FROM ReportAttendenceHistory";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
         }
 
         public async Task<bool> UpsertReportAttendenceHistoryAsync(List<(int month, int year, string workBlock, string workBlockCode, int EmployeeCount, decimal WorkHours, decimal OvertimeHours)> data)
