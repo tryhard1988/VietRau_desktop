@@ -16,6 +16,7 @@ namespace RauViet.classes
 
         //suong
         DataTable mWorkType_dt = null;
+        DataTable mCultivationType_dt = null;
         DataTable mUnit_dt = null;
         DataTable mMaterialCategory_dt = null;
         DataTable mMaterial_dt = null;
@@ -23,6 +24,10 @@ namespace RauViet.classes
         Dictionary<int, DataTable> mPlantingManagements = null;
         Dictionary<string, DataTable> mMaterialExports = null;
         Dictionary<string, DataTable> mMaterialImports = null;
+
+        Dictionary<string, DataTable> mMaterialExportLogs = null;
+        Dictionary<string, DataTable> mMaterialImportLogs = null;
+        Dictionary<int, DataTable> mPlantingManagementLogs = null;
 
         private SQLStore_KhoVatTu() { }
 
@@ -48,24 +53,30 @@ namespace RauViet.classes
                 mPlantingManagements = new Dictionary<int, DataTable>();
                 mMaterialExports = new Dictionary<string, DataTable>();
                 mMaterialImports = new Dictionary<string, DataTable>();
+                mMaterialExportLogs = new Dictionary<string, DataTable>();
+                mMaterialImportLogs = new Dictionary<string, DataTable>();
+                mPlantingManagementLogs = new Dictionary<int, DataTable>();
 
                 var unitTask = SQLManager_KhoVatTu.Instance.GetUnitAsync();
                 var MaterialCategoryTask = SQLManager_KhoVatTu.Instance.GetMaterialCategoryAsync();
                 var MaterialTask = SQLManager_KhoVatTu.Instance.GetMaterialAsync();
                 var WorkTypeTask = SQLManager_KhoVatTu.Instance.GetWorkTypeAsync();
+                var CultivationTypeTask = SQLManager_KhoVatTu.Instance.GetCultivationTypeAsync();
                 var PlantingManagementTask = SQLManager_KhoVatTu.Instance.getPlantingManagementAsync(year);
-                await Task.WhenAll(unitTask, MaterialCategoryTask, MaterialTask, WorkTypeTask, PlantingManagementTask);
+                await Task.WhenAll(unitTask, MaterialCategoryTask, MaterialTask, WorkTypeTask, PlantingManagementTask, CultivationTypeTask);
 
                 if (unitTask.Status == TaskStatus.RanToCompletion && unitTask.Result != null) mUnit_dt = unitTask.Result;
                 if (MaterialCategoryTask.Status == TaskStatus.RanToCompletion && MaterialCategoryTask.Result != null) mMaterialCategory_dt = MaterialCategoryTask.Result;
                 if (MaterialTask.Status == TaskStatus.RanToCompletion && MaterialTask.Result != null) mMaterial_dt = MaterialTask.Result;
                 if (WorkTypeTask.Status == TaskStatus.RanToCompletion && WorkTypeTask.Result != null) mWorkType_dt = WorkTypeTask.Result;
                 if (PlantingManagementTask.Status == TaskStatus.RanToCompletion && PlantingManagementTask.Result != null) mPlantingManagements[year] = PlantingManagementTask.Result;
+                if (CultivationTypeTask.Status == TaskStatus.RanToCompletion && CultivationTypeTask.Result != null) mCultivationType_dt = CultivationTypeTask.Result;
 
                 editMaterial(mMaterial_dt);
                 editCategory(mMaterialCategory_dt);
                 editUnit(mUnit_dt);
                 editWorkType(mWorkType_dt);
+                editCultivationType(mCultivationType_dt);
                 editPlantingManagement(PlantingManagementTask.Result);
             }
             catch
@@ -226,15 +237,18 @@ namespace RauViet.classes
             data.Columns.Add("DepartmentName", typeof(string));
             data.Columns.Add("PlantName", typeof(string));
             data.Columns.Add("SupervisorName", typeof(string));
+            data.Columns.Add("CultivationTypeName", typeof(string));
             data.Columns.Add("search_nosign", typeof(string));
 
             DataTable employee_dt = await SQLStore_QLNS.Instance.GetEmployeesAsync();
             DataTable department_dt = await SQLStore_QLNS.Instance.GetDepartmentAsync();
             DataTable product_dt = await SQLStore_Kho.Instance.getProductSKUAsync();
+            await SQLStore_KhoVatTu.Instance.GetCultivationTypeAsync();
             foreach (DataRow row in data.Rows)
             {
                 int sku = Convert.ToInt32(row["SKU"]);
                 int? department = row.Field<int?>("Department");
+                int? cultivationTypeID = row.Field<int?>("CultivationTypeID");
                 string Supervisor = row["Supervisor"].ToString();
                 
                 DataRow productRow = product_dt.AsEnumerable().FirstOrDefault(r => r.Field<int>("ProductSKU") == sku);
@@ -249,6 +263,12 @@ namespace RauViet.classes
                 if (departmentRow != null)
                     row["DepartmentName"] = departmentRow["DepartmentName"];
 
+                if (cultivationTypeID.HasValue)
+                {
+                    DataRow cultivationRow = mCultivationType_dt.AsEnumerable().FirstOrDefault(r => r.Field<int>("CultivationTypeID") == cultivationTypeID);
+                    if (cultivationRow != null)
+                        row["CultivationTypeName"] = cultivationRow["CultivationTypeName"];
+                }
                 row["search_nosign"] = Utils.RemoveVietnameseSigns( $"{row["ProductionOrder"]} {row["PlantName"]}");
             }
         }
@@ -272,12 +292,40 @@ namespace RauViet.classes
             return mWorkType_dt;
         }
 
+        public async Task<DataTable> GetCultivationTypeAsync()
+        {
+            if (mCultivationType_dt == null)
+            {
+                try
+                {
+                    mCultivationType_dt = await SQLManager_KhoVatTu.Instance.GetCultivationTypeAsync();
+                    editCultivationType(mCultivationType_dt);
+                }
+                catch
+                {
+                    Console.WriteLine("error GetCultivationTypeAsync SQLStore");
+                    return null;
+                }
+            }
+
+            return mCultivationType_dt;
+        }
+
         void editWorkType(DataTable data)
         {
             data.Columns.Add("search_nosign", typeof(string));
             foreach (DataRow row in data.Rows)
             {
                 row["search_nosign"] = Utils.RemoveVietnameseSigns(row["WorkTypeName"].ToString());
+            }
+        }
+
+        void editCultivationType(DataTable data)
+        {
+            data.Columns.Add("search_nosign", typeof(string));
+            foreach (DataRow row in data.Rows)
+            {
+                row["search_nosign"] = Utils.RemoveVietnameseSigns(row["CultivationTypeName"].ToString());
             }
         }
 
@@ -416,6 +464,65 @@ namespace RauViet.classes
             }
 
             Utils.SetGridOrdinal(data, new[] { "ImportDate", "MaterialName", "UnitName", "Amount", "Price", "TotalMoney", "Note" });
+        }
+
+        public async Task<DataTable> GetMaterialExportLogAsync(int month, int year)
+        {
+            string key = $"{month}_{year}";
+            if (!mMaterialExportLogs.ContainsKey(key))
+            {
+                try
+                {
+                    var data = await SQLManager_KhoVatTu.Instance.GetMaterialExportLogAsync(month, year);
+                    mMaterialExportLogs[key] = data;
+                }
+                catch
+                {
+                    Console.WriteLine("error GetMaterialExportLogAsync SQLStore");
+                    return null;
+                }
+            }
+
+            return mMaterialExportLogs[key];
+        }
+
+        public async Task<DataTable> GetMaterialImportLogAsync(int month, int year)
+        {
+            string key = $"{month}_{year}";
+            if (!mMaterialImportLogs.ContainsKey(key))
+            {
+                try
+                {
+                    var data = await SQLManager_KhoVatTu.Instance.GetMaterialImportLogAsync(month, year);
+                    mMaterialImportLogs[key] = data;
+                }
+                catch
+                {
+                    Console.WriteLine("error GetMaterialExportLogAsync SQLStore");
+                    return null;
+                }
+            }
+
+            return mMaterialImportLogs[key];
+        }
+
+        public async Task<DataTable> getPlantingManagementLogAsync(int year)
+        {
+            if (!mPlantingManagementLogs.ContainsKey(year))
+            {
+                try
+                {
+                    var data = await SQLManager_KhoVatTu.Instance.getPlantingManagementLogAsync(year);
+                    mPlantingManagementLogs[year] = data;
+                }
+                catch
+                {
+                    Console.WriteLine("error GetMaterialExportLogAsync SQLStore");
+                    return null;
+                }
+            }
+
+            return mPlantingManagementLogs[year];
         }
     }
     

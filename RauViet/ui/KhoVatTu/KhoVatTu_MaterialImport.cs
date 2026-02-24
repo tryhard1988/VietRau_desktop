@@ -1,4 +1,5 @@
-﻿using RauViet.classes;
+﻿using DocumentFormat.OpenXml.Vml.Office;
+using RauViet.classes;
 using System;
 using System.Data;
 using System.Globalization;
@@ -34,6 +35,8 @@ namespace RauViet.ui
 
             dataGV.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dataGV.MultiSelect = false;
+            dayGV.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dayGV.MultiSelect = false;
 
             status_lb.Text = "";
 
@@ -48,6 +51,7 @@ namespace RauViet.ui
             vatTu_CB.TextUpdate += VatTu_CB_TextUpdate;
             soLuong_tb.KeyPress += Tb_KeyPress_OnlyNumber;
             giaMua_tb.KeyPress += Tb_KeyPress_OnlyNumber;
+            dayGV.SelectionChanged += DayGV_SelectionChanged;
         }
 
         private void Kho_Materials_KeyDown(object sender, KeyEventArgs e)
@@ -91,18 +95,20 @@ namespace RauViet.ui
 
                 var materialTask = SQLStore_KhoVatTu.Instance.getMaterialAsync();
                 var materialImportTask = SQLStore_KhoVatTu.Instance.GetMaterialImportAsync(month, year);
-                await Task.WhenAll( materialTask, materialImportTask);
+                var logDataTask = SQLStore_KhoVatTu.Instance.GetMaterialImportLogAsync(month, year);
+                await Task.WhenAll( materialTask, materialImportTask, logDataTask);
 
                 mMaterial_dt = materialTask.Result;
                 mMaterialImport_dt = materialImportTask.Result;
-
+                mLogDV = new DataView(logDataTask.Result);
                 vatTu_CB.DataSource = mMaterial_dt;
                 vatTu_CB.DisplayMember = "MaterialName";  // hiển thị tên
                 vatTu_CB.ValueMember = "MaterialID";
                 vatTu_CB.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
 
+                dayGV.DataSource = Utils.CreateDateTable(month, year);
                 dataGV.DataSource = mMaterialImport_dt;
-                //    ////    log_GV.DataSource = mLogDV;
+                log_GV.DataSource = mLogDV;
                 Utils.HideColumns(dataGV, new[] { "ImportID", "MaterialID" });
                 Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
                             {"ImportDate", "Ngày Nhập" },
@@ -113,6 +119,15 @@ namespace RauViet.ui
                             {"TotalMoney", "Thành Tiền" },
                             {"Note", "Ghi Chú" }
                             
+                        });
+
+                Utils.HideColumns(log_GV, new[] { "LogID", "ImportDate" });
+                Utils.SetGridHeaders(log_GV, new System.Collections.Generic.Dictionary<string, string> {
+                            {"OldValue", "Cũ" },
+                            {"NewValue", "Mới" },
+                            {"CreatedDate", "Ngày Tạo" },
+                            {"ActionBy", "Người Tạo" }
+
                         });
 
                 Utils.SetGridWidths(dataGV, new System.Collections.Generic.Dictionary<string, int> {
@@ -141,6 +156,7 @@ namespace RauViet.ui
                 LuuThayDoiBtn.TabIndex = countTab++; LuuThayDoiBtn.TabStop = true;
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 ReadOnly_btn_Click(null, null);
                 dataGV.SelectionChanged += this.dataGV_CellClick;
                 monthYear_dtp.ValueChanged += monthYearDtp_ValueChanged;
@@ -158,6 +174,21 @@ namespace RauViet.ui
 
         }
 
+        private void DayGV_SelectionChanged(object sender, EventArgs e)
+        {
+            if (dayGV.SelectedRows.Count == 0)
+                return;
+            var cells = dayGV.SelectedRows[0].Cells;
+            if (cells == null) return;
+            DateTime date = Convert.ToDateTime(cells["Date"].Value);
+
+
+            DataView dv = mMaterialImport_dt.DefaultView;
+            dv.RowFilter = $"ImportDate >= #{date:MM/dd/yyyy}# AND ImportDate < #{date.AddDays(1):MM/dd/yyyy}#";
+
+            mLogDV.RowFilter = $"ImportDate >= #{date:MM/dd/yyyy}# AND ImportDate < #{date.AddDays(1):MM/dd/yyyy}#";
+
+        }
         private void VatTu_CB_TextUpdate(object sender, EventArgs e)
         {
             MaterialDebounceTimer.Stop();
@@ -216,12 +247,16 @@ namespace RauViet.ui
 
                     if (dialogResult == DialogResult.Yes)
                     {
+                        string oldValue = $"Update: ImportDate:{row["ImportDate"].ToString()}; MaterialName:{row["MaterialName"].ToString()}; Price:{row["Price"].ToString()}; Amount:{row["Amount"].ToString()}; Note: {row["Note"].ToString()}";
+                        string newValue = "";
+
                         try
                         {
                             bool isScussess = await SQLManager_KhoVatTu.Instance.updateMaterialImportAsync(ImportID, ImportDate, MaterialID, Amount, Price, Note);
 
                             if (isScussess == true)
                             {
+                                newValue = "Success: ";
                                 row["ImportDate"] = ImportDate;
                                 row["MaterialID"] = MaterialID;
                                 row["Amount"] = Amount;
@@ -233,21 +268,30 @@ namespace RauViet.ui
                                 {
                                     row["UnitName"] = matiralRows[0]["UnitName"].ToString();
                                     row["MaterialName"] = matiralRows[0]["MaterialName"].ToString();
+
+                                    newValue += $"MaterialName: {matiralRows[0]["MaterialName"].ToString()}; ";
                                 }
 
+                                newValue += $"Price: {Price}; Amount:{Amount}; Note: {Note}";
                                 status_lb.Text = "Thành công.";
                                 status_lb.ForeColor = Color.Green;
                             }
                             else
                             {
+                                newValue = "False";
                                 status_lb.Text = "Thất bại.";
                                 status_lb.ForeColor = Color.Red;
                             }
                         }
                         catch (Exception ex)
                         {
+                            newValue = ex.Message;
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;
+                        }
+                        finally
+                        {
+                            _ = SQLManager_KhoVatTu.Instance.insertMaterialImportLogAsync(ImportDate, oldValue, newValue);
                         }
                     }
                     break;
@@ -264,6 +308,8 @@ namespace RauViet.ui
 
             if (dialogResult == DialogResult.Yes)
             {
+                string oldValue = "Create: ";
+                string newValue = "";
                 try
                 {
                     int newId = await SQLManager_KhoVatTu.Instance.insertMaterialImportAsync(ImportDate, MaterialID, Amount, Price, Note);
@@ -284,7 +330,10 @@ namespace RauViet.ui
                         {
                             drToAdd["UnitName"] = matiralRows[0]["UnitName"].ToString();
                             drToAdd["MaterialName"] = matiralRows[0]["MaterialName"].ToString();
+                            newValue = $"MaterialName: {matiralRows[0]["MaterialName"].ToString()}";
                         }
+
+                        newValue += $"Price: {Price}; Amount: {Amount}; Note: {Note}";
 
                         mMaterialImport_dt.Rows.Add(drToAdd);
                         mMaterialImport_dt.AcceptChanges();
@@ -293,20 +342,27 @@ namespace RauViet.ui
                         status_lb.ForeColor = Color.Green;
 
                         newBtn_Click(null, null);
+
+                        oldValue += "Success";
                     }
                     else
                     {
+                        oldValue += "Fail";
                         status_lb.Text = "Thất bại";
                         status_lb.ForeColor = Color.Red;
                     }
                 }
                 catch (Exception ex)
                 {
+                    oldValue += ex.Message;
                     Console.WriteLine("ERROR: " + ex.Message);
                     status_lb.Text = "Thất bại.";
                     status_lb.ForeColor = Color.Red;
                 }
-
+                finally
+                {
+                    _ = SQLManager_KhoVatTu.Instance.insertMaterialImportLogAsync(ImportDate, oldValue, newValue);
+                }
             }
         }
         private void saveBtn_Click(object sender, EventArgs e)
@@ -338,12 +394,16 @@ namespace RauViet.ui
 
                     if (dialogResult == DialogResult.Yes)
                     {
+                        DateTime importDate = Convert.ToDateTime(row["ImportDate"]);
+                        string oldValue = $"ImportDate:{row["ImportDate"].ToString()}; MaterialName:{row["MaterialName"].ToString()}; Price:{row["Price"].ToString()}; Amount:{row["Amount"].ToString()}; Note: {row["Note"].ToString()}";
+                        string newValue = "Delete ";
                         try
                         {
                             bool isScussess = await SQLManager_KhoVatTu.Instance.deletetMaterialImportAsync(Convert.ToInt32(id));
 
                             if (isScussess == true)
                             {
+                                newValue += "Success";
                                 status_lb.Text = "Thành công.";
                                 status_lb.ForeColor = Color.Green;
 
@@ -352,14 +412,20 @@ namespace RauViet.ui
                             }
                             else
                             {
+                                newValue += "Fail";
                                 status_lb.Text = "Thất bại.";
                                 status_lb.ForeColor = Color.Red;
                             }
                         }
                         catch (Exception ex)
                         {
+                            newValue += ex.Message;
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;
+                        }
+                        finally
+                        {
+                            _ = SQLManager_KhoVatTu.Instance.insertMaterialImportLogAsync(importDate, oldValue, newValue);
                         }
                     }
                     break;

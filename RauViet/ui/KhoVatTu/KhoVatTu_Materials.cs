@@ -96,12 +96,13 @@ namespace RauViet.ui
 
                 dataGV.DataSource = mMaterial_dt;
                 //    log_GV.DataSource = mLogDV;
-                Utils.HideColumns(dataGV, new[] { "UnitID", "CategoryID", "MaterialID", "MaterialName_nosign" });
+                Utils.HideColumns(dataGV, new[] { "UnitID", "CategoryID", "MaterialName_nosign" });
                 Utils.SetGridOrdinal(mMaterial_dt, new[] { "MaterialName", "CategoryName", "UnitName" });
                 Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
                         {"MaterialName", "Tên Vật Tư" },
                         {"CategoryName", "Phân Loại" },
-                        {"UnitName", "Đ.Vị" }
+                        {"UnitName", "Đ.Vị" },
+                        {"MaterialID", "Mã Vật Tư" }
                     });
 
                 Utils.SetGridWidths(dataGV, new System.Collections.Generic.Dictionary<string, int> {

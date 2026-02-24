@@ -63,16 +63,25 @@ namespace RauViet.ui
             this.status_lb = new System.Windows.Forms.Label();
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
-            this.dataGV = new System.Windows.Forms.DataGridView();
             this.panel4 = new System.Windows.Forms.Panel();
             this.search_tb = new System.Windows.Forms.TextBox();
             this.panel3 = new System.Windows.Forms.Panel();
+            this.panel5 = new System.Windows.Forms.Panel();
+            this.panel6 = new System.Windows.Forms.Panel();
+            this.dataGV = new System.Windows.Forms.DataGridView();
+            this.monthGV = new System.Windows.Forms.DataGridView();
+            this.locTheoNgayUom_CB = new System.Windows.Forms.CheckBox();
+            this.locTheoNgayTrong_CB = new System.Windows.Forms.CheckBox();
+            this.locTheoNgayThu_CB = new System.Windows.Forms.CheckBox();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.log_GV)).BeginInit();
             this.info_gb.SuspendLayout();
             this.panel2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
             this.panel4.SuspendLayout();
+            this.panel5.SuspendLayout();
+            this.panel6.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.monthGV)).BeginInit();
             this.SuspendLayout();
             // 
             // panel1
@@ -411,7 +420,8 @@ namespace RauViet.ui
             // 
             // panel2
             // 
-            this.panel2.Controls.Add(this.dataGV);
+            this.panel2.Controls.Add(this.panel6);
+            this.panel2.Controls.Add(this.panel5);
             this.panel2.Controls.Add(this.panel4);
             this.panel2.Controls.Add(this.panel3);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -420,33 +430,26 @@ namespace RauViet.ui
             this.panel2.Size = new System.Drawing.Size(911, 741);
             this.panel2.TabIndex = 70;
             // 
-            // dataGV
-            // 
-            this.dataGV.AllowUserToAddRows = false;
-            this.dataGV.AllowUserToDeleteRows = false;
-            this.dataGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGV.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dataGV.Location = new System.Drawing.Point(0, 30);
-            this.dataGV.Name = "dataGV";
-            this.dataGV.ReadOnly = true;
-            this.dataGV.Size = new System.Drawing.Size(911, 683);
-            this.dataGV.TabIndex = 73;
-            // 
             // panel4
             // 
+            this.panel4.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.panel4.Controls.Add(this.locTheoNgayThu_CB);
+            this.panel4.Controls.Add(this.locTheoNgayTrong_CB);
+            this.panel4.Controls.Add(this.locTheoNgayUom_CB);
             this.panel4.Controls.Add(this.search_tb);
             this.panel4.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel4.Location = new System.Drawing.Point(0, 0);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(911, 30);
+            this.panel4.Size = new System.Drawing.Size(911, 33);
             this.panel4.TabIndex = 1;
             // 
             // search_tb
             // 
+            this.search_tb.Dock = System.Windows.Forms.DockStyle.Right;
             this.search_tb.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.search_tb.Location = new System.Drawing.Point(12, 3);
+            this.search_tb.Location = new System.Drawing.Point(681, 0);
             this.search_tb.Name = "search_tb";
-            this.search_tb.Size = new System.Drawing.Size(192, 26);
+            this.search_tb.Size = new System.Drawing.Size(230, 26);
             this.search_tb.TabIndex = 69;
             // 
             // panel3
@@ -456,6 +459,75 @@ namespace RauViet.ui
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(911, 28);
             this.panel3.TabIndex = 0;
+            // 
+            // panel5
+            // 
+            this.panel5.Controls.Add(this.monthGV);
+            this.panel5.Dock = System.Windows.Forms.DockStyle.Left;
+            this.panel5.Location = new System.Drawing.Point(0, 33);
+            this.panel5.Name = "panel5";
+            this.panel5.Size = new System.Drawing.Size(137, 680);
+            this.panel5.TabIndex = 3;
+            // 
+            // panel6
+            // 
+            this.panel6.Controls.Add(this.dataGV);
+            this.panel6.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel6.Location = new System.Drawing.Point(137, 33);
+            this.panel6.Name = "panel6";
+            this.panel6.Size = new System.Drawing.Size(774, 680);
+            this.panel6.TabIndex = 4;
+            // 
+            // dataGV
+            // 
+            this.dataGV.AllowUserToAddRows = false;
+            this.dataGV.AllowUserToDeleteRows = false;
+            this.dataGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGV.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dataGV.Location = new System.Drawing.Point(0, 0);
+            this.dataGV.Name = "dataGV";
+            this.dataGV.ReadOnly = true;
+            this.dataGV.Size = new System.Drawing.Size(774, 680);
+            this.dataGV.TabIndex = 75;
+            // 
+            // monthGV
+            // 
+            this.monthGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.monthGV.Dock = System.Windows.Forms.DockStyle.Left;
+            this.monthGV.Location = new System.Drawing.Point(0, 0);
+            this.monthGV.Name = "monthGV";
+            this.monthGV.Size = new System.Drawing.Size(131, 680);
+            this.monthGV.TabIndex = 3;
+            // 
+            // locTheoNgayUom_CB
+            // 
+            this.locTheoNgayUom_CB.AutoSize = true;
+            this.locTheoNgayUom_CB.Location = new System.Drawing.Point(9, 8);
+            this.locTheoNgayUom_CB.Name = "locTheoNgayUom_CB";
+            this.locTheoNgayUom_CB.Size = new System.Drawing.Size(128, 17);
+            this.locTheoNgayUom_CB.TabIndex = 84;
+            this.locTheoNgayUom_CB.Text = "Lọc Theo Ngày Ươm.";
+            this.locTheoNgayUom_CB.UseVisualStyleBackColor = true;
+            // 
+            // locTheoNgayTrong_CB
+            // 
+            this.locTheoNgayTrong_CB.AutoSize = true;
+            this.locTheoNgayTrong_CB.Location = new System.Drawing.Point(176, 8);
+            this.locTheoNgayTrong_CB.Name = "locTheoNgayTrong_CB";
+            this.locTheoNgayTrong_CB.Size = new System.Drawing.Size(134, 17);
+            this.locTheoNgayTrong_CB.TabIndex = 85;
+            this.locTheoNgayTrong_CB.Text = "Lọc Theo Ngày Trồng.";
+            this.locTheoNgayTrong_CB.UseVisualStyleBackColor = true;
+            // 
+            // locTheoNgayThu_CB
+            // 
+            this.locTheoNgayThu_CB.AutoSize = true;
+            this.locTheoNgayThu_CB.Location = new System.Drawing.Point(349, 8);
+            this.locTheoNgayThu_CB.Name = "locTheoNgayThu_CB";
+            this.locTheoNgayThu_CB.Size = new System.Drawing.Size(125, 17);
+            this.locTheoNgayThu_CB.TabIndex = 86;
+            this.locTheoNgayThu_CB.Text = "Lọc Theo Ngày Thu.";
+            this.locTheoNgayThu_CB.UseVisualStyleBackColor = true;
             // 
             // KhoVatTu_PlantingManagement
             // 
@@ -472,9 +544,12 @@ namespace RauViet.ui
             this.info_gb.ResumeLayout(false);
             this.info_gb.PerformLayout();
             this.panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dataGV)).EndInit();
             this.panel4.ResumeLayout(false);
             this.panel4.PerformLayout();
+            this.panel5.ResumeLayout(false);
+            this.panel6.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dataGV)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.monthGV)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -513,10 +588,16 @@ namespace RauViet.ui
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.DataGridView log_GV;
-        private System.Windows.Forms.DataGridView dataGV;
         private System.Windows.Forms.Panel panel4;
         private System.Windows.Forms.TextBox search_tb;
         private System.Windows.Forms.TextBox soLuong_tb;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Panel panel6;
+        private System.Windows.Forms.DataGridView dataGV;
+        private System.Windows.Forms.Panel panel5;
+        private System.Windows.Forms.DataGridView monthGV;
+        private System.Windows.Forms.CheckBox locTheoNgayThu_CB;
+        private System.Windows.Forms.CheckBox locTheoNgayTrong_CB;
+        private System.Windows.Forms.CheckBox locTheoNgayUom_CB;
     }
 }

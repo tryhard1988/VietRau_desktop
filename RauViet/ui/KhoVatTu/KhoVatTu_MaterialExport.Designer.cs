@@ -99,7 +99,7 @@ namespace RauViet.ui
             this.label4.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.label4.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label4.ForeColor = System.Drawing.Color.DarkOliveGreen;
-            this.label4.Location = new System.Drawing.Point(0, 579);
+            this.label4.Location = new System.Drawing.Point(0, 443);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(533, 23);
             this.label4.TabIndex = 70;
@@ -112,10 +112,10 @@ namespace RauViet.ui
             this.log_GV.AllowUserToDeleteRows = false;
             this.log_GV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.log_GV.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.log_GV.Location = new System.Drawing.Point(0, 602);
+            this.log_GV.Location = new System.Drawing.Point(0, 466);
             this.log_GV.Name = "log_GV";
             this.log_GV.ReadOnly = true;
-            this.log_GV.Size = new System.Drawing.Size(533, 156);
+            this.log_GV.Size = new System.Drawing.Size(533, 292);
             this.log_GV.TabIndex = 69;
             // 
             // readOnly_btn

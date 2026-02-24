@@ -55,7 +55,7 @@ namespace RauViet.ui
             await Task.Delay(200);
             try
             {
-                string[] keepColumns = { "EmployeeCode", "FullName", "SocialInsuranceNumber", "HealthInsuranceNumber", "EmployessName_NoSign" };
+                string[] keepColumns = { "EmployeeCode", "FullName", "SocialInsuranceNumber", "HealthInsuranceNumber", "EmployessName_NoSign", "IsInsuranceRefund" };
                 var employeesTask = SQLStore_QLNS.Instance.GetEmployeesAsync(keepColumns);
                 var employeeInsuranceLogTask = SQLStore_QLNS.Instance.GetEmployeeInsuranceLogAsync();
                 var employeeSalaryInfoAsync = SQLStore_QLNS.Instance.GetEmployeeSalaryInfoAsync();
@@ -86,6 +86,7 @@ namespace RauViet.ui
 
                 Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
                     {"EmployeeCode", "Mã NV" },
+                    {"IsInsuranceRefund", "Hoàn BH" },
                     {"FullName", "Tên NV" },
                     {"SocialInsuranceNumber", "BHXH" },
                     {"HealthInsuranceNumber", "BHYT" },
@@ -318,6 +319,13 @@ namespace RauViet.ui
             foreach (DataRow row in employee_dt.Rows)
             {
                 string employeeCode = row.Field<string>("EmployeeCode");
+                bool IsInsuranceRefund = Convert.ToBoolean(row["IsInsuranceRefund"]);
+
+                if (IsInsuranceRefund)
+                {
+                    soNguoiKhongNop++;
+                    continue;
+                }
 
                 int baseSalary = latestSalaryDict.ContainsKey(employeeCode)? latestSalaryDict[employeeCode]: 0;
                 int allowanceSum = Convert.ToInt32(allowanceSumDict.ContainsKey(employeeCode)? allowanceSumDict[employeeCode]: 0);
@@ -326,7 +334,7 @@ namespace RauViet.ui
                 row["Tong_InsuranceContribution"] = (baseSalary + allowanceSum) * 0.32m;
                 row["NLD_InsuranceContribution"] = (baseSalary + allowanceSum) * 0.105m;
                 row["CTY_InsuranceContribution"] = (baseSalary + allowanceSum) * 0.215m;
-
+                
                 if (baseSalary + allowanceSum < 1)
                     soNguoiKhongNop++;
                 else

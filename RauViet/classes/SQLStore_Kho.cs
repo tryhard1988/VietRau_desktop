@@ -32,6 +32,7 @@ namespace RauViet.classes
         DataTable mReportCustomerOrderDetail_dt = null;
         DataTable mInventoryTransaction_dt = null;
         DataTable mVegetableWarehouseTransaction_dt = null;
+        DataTable mSupplier_dt = null;
 
         DataTable mProductType_dt = null;
         DataTable mOrderDomesticCodeLog_dt = null;
@@ -237,14 +238,25 @@ namespace RauViet.classes
             return result;
         }
 
-        private void editProductSKUA()
+        private async Task editProductSKUA()
         {
+            await GetSupplierAsync();
+
             mProductSKU_dt.Columns.Add("ProductNameVN_NoSign", typeof(string));
+            mProductSKU_dt.Columns.Add("SupplierName", typeof(string));
 
             foreach (DataRow row in mProductSKU_dt.Rows)
             {
                 string name = row["ProductNameVN"]?.ToString() ?? "";
                 int SKU = Convert.ToInt32(row["SKU"]);
+                int? supplierID = row["SupplierID"] == DBNull.Value ? (int?)null : Convert.ToInt32(row["SupplierID"]);
+
+                if(supplierID.HasValue)
+                {
+                    DataRow[] rows = mSupplier_dt.Select($"SupplierID = {supplierID}");
+                    if(rows.Length > 0)                    
+                        row["SupplierName"] = rows[0]["SupplierName"].ToString();                    
+                }    
                 row["ProductNameVN_NoSign"] = Utils.RemoveVietnameseSigns(name + " " + SKU).ToLower();
             }
         }
@@ -1970,14 +1982,27 @@ namespace RauViet.classes
 
         private void editInventoryTransaction()
         {
-            mInventoryTransaction_dt.Columns.Add(new DataColumn("Name_VN", typeof(string)));
-            mInventoryTransaction_dt.Columns.Add(new DataColumn("ProductNameVN_NoSign", typeof(string)));
-            mInventoryTransaction_dt.Columns.Add(new DataColumn("TransactionTypeName", typeof(string)));
-            mInventoryTransaction_dt.Columns.Add(new DataColumn("Package", typeof(string)));
+            Utils.AddColumnIfNotExists(mInventoryTransaction_dt, "Name_VN", typeof(string));
+            Utils.AddColumnIfNotExists(mInventoryTransaction_dt, "ProductNameVN_NoSign", typeof(string));
+            Utils.AddColumnIfNotExists(mInventoryTransaction_dt, "TransactionTypeName", typeof(string));
+            Utils.AddColumnIfNotExists(mInventoryTransaction_dt, "Package", typeof(string));
+            Utils.AddColumnIfNotExists(mInventoryTransaction_dt, "SupplierName", typeof(string));
             foreach (DataRow row in mInventoryTransaction_dt.Rows)
             {
                 int sku = Convert.ToInt32(row["SKU"]);
                 string tranType = Convert.ToString(row["TransactionType"]);
+                DataRow[] skuRows = mProductSKU_dt.Select($"SKU = {sku}");
+                if (skuRows.Length > 0)
+                {
+                    int? supplierID = skuRows[0]["SupplierID"] == DBNull.Value ? (int?)null : Convert.ToInt32(skuRows[0]["SupplierID"]);
+                    if (supplierID.HasValue)
+                    {
+                        DataRow[] rows = mSupplier_dt.Select($"SupplierID = {supplierID}");
+                        if (rows.Length > 0)
+                            row["SupplierName"] = rows[0]["SupplierName"].ToString();
+                    }
+                }
+
                 DataRow pprow = mProductSKU_dt.Select($"SKU = {sku}").FirstOrDefault();
 
                 if (tranType.CompareTo("IN") == 0)
@@ -2362,6 +2387,24 @@ namespace RauViet.classes
             }
 
             return mVegetableWarehouseTransactionLOG_dt;
+        }
+
+        public async Task<DataTable> GetSupplierAsync()
+        {
+            if (mSupplier_dt == null)
+            {
+                try
+                {
+                    mSupplier_dt = await SQLManager_Kho.Instance.GetSupplierAsybc();
+                }
+                catch
+                {
+                    Console.WriteLine("GetSupplierAsync errror");
+                    return null;
+                }
+            }
+
+            return mSupplier_dt;
         }
     }
 }

@@ -39,7 +39,7 @@ namespace RauViet.classes
         DataTable mEmployeeSalary_Log_dt = null;
         DataTable mMonthlyAllowanceLog_dt = null;
         DataTable mAnnualLeaveBalance_dt = null;
-        DataTable mEmployeeAllowances_dt= null;
+        DataTable mEmployeeAllowances_dt= null;        
 
         Dictionary<int, DataTable> mDeductions;
         Dictionary<string, DataTable> mOvertimeAttendaces;
@@ -509,7 +509,7 @@ namespace RauViet.classes
             return mSalaryInfoHistories[key];
         }
 
-        public async Task<DataTable> GetEmployeeSalaryInfoAsync(string[] colNames, int monthInput, int yearInput)
+        public async Task<DataTable> GetEmployeeSalaryInfoAsync(string[] colNames, int monthInput, int yearInput, bool IsAllEmployee = false)
         {
             bool isLock = await SQLStore_QLNS.Instance.IsSalaryLockAsync(monthInput, yearInput);
             if (!isLock)
@@ -536,8 +536,12 @@ namespace RauViet.classes
                         result.Columns.Remove(col);
                 }
 
+                DataTable filterEmployee = mEmployee_dt;
+                if(!IsAllEmployee)
+                    filterEmployee = mEmployee_dt.AsEnumerable().Where(r => r.Field<bool>("IsActive")).CopyToDataTable();
+
                 // 4️⃣ Duyệt toàn bộ nhân viên trong mEmployee_dt
-                foreach (DataRow empRow in mEmployee_dt.AsEnumerable().Where(r => r.Field<bool>("IsActive")))
+                foreach (DataRow empRow in filterEmployee.Rows)
                 {
                     string empCode = empRow.Field<string>("EmployeeCode");
                     string contractTypeCode = empRow.Field<string>("ContractTypeCode");
@@ -668,7 +672,7 @@ namespace RauViet.classes
             return mEmployee_dt;
         }
 
-        public async Task<DataTable> GetEmployeesAsync(string[] keepColumns)
+        public async Task<DataTable> GetEmployeesAsync(string[] keepColumns, bool isAllEmp = false)
         {
             await GetEmployeesAsync();
 
@@ -684,8 +688,11 @@ namespace RauViet.classes
                     Utils.AddColumnIfNotExists(activeEmployees, colName, mEmployee_dt.Columns[colName].DataType);
             }
 
+            DataRow[] filterEmp = mEmployee_dt.Select();
+            if (!isAllEmp)
+                filterEmp = mEmployee_dt.Select("IsActive = true");
             // Lọc và copy dữ liệu IsActive = true
-            foreach (DataRow row in mEmployee_dt.Select("IsActive = true"))
+            foreach (DataRow row in filterEmp)
             {
                 DataRow newRow = activeEmployees.NewRow();
                 foreach (string colName in keepColumns)
@@ -903,7 +910,8 @@ namespace RauViet.classes
             }
 
             return mDepartment_dt;
-        }        
+        }
+
 
         public async Task<DataTable> GetActiveDepartmentAsync()
         {
@@ -1267,14 +1275,13 @@ namespace RauViet.classes
             var rows = data.AsEnumerable().Where(r =>
             {
                 int deptId = Convert.ToInt32(r["DepartmentID"]);
+                string OTCode = Convert.ToString(r["OvertimeTypeCode"]);
                 double hour = Convert.ToDouble(r["HourWork"]);
                 TimeSpan? startTime = r.Field<TimeSpan?>("StartTime");
 
-                return (deptId == 26 || deptId == 28 || deptId == 29)
-                    && hour >= 2.5
-                    && startTime.Value >= new TimeSpan(17, 0, 0);
+                return (deptId == 26 || deptId == 28 || deptId == 29) && (hour >= 2.5 || OTCode.CompareTo("OT_Dem") == 0) && startTime.Value >= new TimeSpan(17, 0, 0);//kjdfjgkd
             });
-            string[] keepColumns ={"EmployeeCode", "EmployeeName", "WorkDate", "OvertimeTypeID", "HourWork", "Note", "DepartmentID", "StartTime", "EndTime"};
+            string[] keepColumns ={"EmployeeCode", "EmployeeName", "WorkDate", "OvertimeTypeID", "HourWork", "Note", "DepartmentID", "StartTime", "EndTime", "OvertimeTypeCode", "OvertimeName" };
 
             DataTable dtOTDem;
 

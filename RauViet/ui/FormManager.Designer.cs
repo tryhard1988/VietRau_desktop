@@ -62,6 +62,7 @@
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.KhachHang_menuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.sanpham_group_mi = new System.Windows.Forms.ToolStripMenuItem();
+            this.supplier_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.productMain_menuitem = new System.Windows.Forms.ToolStripMenuItem();
             this.productPacking_meniitem = new System.Windows.Forms.ToolStripMenuItem();
             this.productDomesticPrices_mi = new System.Windows.Forms.ToolStripMenuItem();
@@ -113,15 +114,16 @@
             this.báoCáoĐơnHàngTrongNướcToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ResoncileDomesticDebts_Month_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.resoncileDomesticDebts_Year_mi = new System.Windows.Forms.ToolStripMenuItem();
+            this.báoCáoBênNhânSựToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.sumaryAttendanceReport_mi = new System.Windows.Forms.ToolStripMenuItem();
+            this.reportSalary_Month_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.extension_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.QR_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.aaaaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadExcelOrderReportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.content_panel = new System.Windows.Forms.Panel();
-            this.báoCáoBênNhânSựToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.sumaryAttendanceReport_mi = new System.Windows.Forms.ToolStripMenuItem();
-            this.reportSalary_Month_mi = new System.Windows.Forms.ToolStripMenuItem();
+            this.mẫuQuyTrìnhSảnXuấtToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1.SuspendLayout();
             this.LOT_menuitem.SuspendLayout();
             this.SuspendLayout();
@@ -394,6 +396,7 @@
             // sanpham_group_mi
             // 
             this.sanpham_group_mi.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.supplier_mi,
             this.productMain_menuitem,
             this.productPacking_meniitem,
             this.productDomesticPrices_mi,
@@ -404,6 +407,12 @@
             this.sanpham_group_mi.Name = "sanpham_group_mi";
             this.sanpham_group_mi.Size = new System.Drawing.Size(103, 21);
             this.sanpham_group_mi.Text = "Danh Sách SP";
+            // 
+            // supplier_mi
+            // 
+            this.supplier_mi.Name = "supplier_mi";
+            this.supplier_mi.Size = new System.Drawing.Size(216, 22);
+            this.supplier_mi.Text = "Nhà Cung Cấp";
             // 
             // productMain_menuitem
             // 
@@ -683,7 +692,8 @@
             // khoToolStripMenuItem
             // 
             this.khoToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.plantingManagement_mi});
+            this.plantingManagement_mi,
+            this.mẫuQuyTrìnhSảnXuấtToolStripMenuItem});
             this.khoToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.khoToolStripMenuItem.ForeColor = System.Drawing.Color.MediumBlue;
             this.khoToolStripMenuItem.Name = "khoToolStripMenuItem";
@@ -693,7 +703,7 @@
             // plantingManagement_mi
             // 
             this.plantingManagement_mi.Name = "plantingManagement_mi";
-            this.plantingManagement_mi.Size = new System.Drawing.Size(181, 22);
+            this.plantingManagement_mi.Size = new System.Drawing.Size(224, 22);
             this.plantingManagement_mi.Text = "Lịch Ươm - Trồng";
             // 
             // toolStripMenuItem4
@@ -778,6 +788,27 @@
             this.resoncileDomesticDebts_Year_mi.Size = new System.Drawing.Size(273, 22);
             this.resoncileDomesticDebts_Year_mi.Text = "Thống Kê Trong Năm";
             // 
+            // báoCáoBênNhânSựToolStripMenuItem
+            // 
+            this.báoCáoBênNhânSựToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.sumaryAttendanceReport_mi,
+            this.reportSalary_Month_mi});
+            this.báoCáoBênNhânSựToolStripMenuItem.Name = "báoCáoBênNhânSựToolStripMenuItem";
+            this.báoCáoBênNhânSựToolStripMenuItem.Size = new System.Drawing.Size(268, 22);
+            this.báoCáoBênNhânSựToolStripMenuItem.Text = "Báo Cáo Bên Nhân Sự";
+            // 
+            // sumaryAttendanceReport_mi
+            // 
+            this.sumaryAttendanceReport_mi.Name = "sumaryAttendanceReport_mi";
+            this.sumaryAttendanceReport_mi.Size = new System.Drawing.Size(235, 22);
+            this.sumaryAttendanceReport_mi.Text = "So Sánh Giờ Công";
+            // 
+            // reportSalary_Month_mi
+            // 
+            this.reportSalary_Month_mi.Name = "reportSalary_Month_mi";
+            this.reportSalary_Month_mi.Size = new System.Drawing.Size(235, 22);
+            this.reportSalary_Month_mi.Text = "Báo Cáo Lương Theo Năm";
+            // 
             // toolStripMenuItem2
             // 
             this.toolStripMenuItem2.BackColor = System.Drawing.Color.Bisque;
@@ -799,7 +830,7 @@
             // 
             this.QR_mi.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.QR_mi.Name = "QR_mi";
-            this.QR_mi.Size = new System.Drawing.Size(180, 22);
+            this.QR_mi.Size = new System.Drawing.Size(120, 22);
             this.QR_mi.Text = "Tạo QR";
             // 
             // aaaaToolStripMenuItem
@@ -826,26 +857,11 @@
             this.content_panel.Size = new System.Drawing.Size(1528, 491);
             this.content_panel.TabIndex = 1;
             // 
-            // báoCáoBênNhânSựToolStripMenuItem
+            // mẫuQuyTrìnhSảnXuấtToolStripMenuItem
             // 
-            this.báoCáoBênNhânSựToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.sumaryAttendanceReport_mi,
-            this.reportSalary_Month_mi});
-            this.báoCáoBênNhânSựToolStripMenuItem.Name = "báoCáoBênNhânSựToolStripMenuItem";
-            this.báoCáoBênNhânSựToolStripMenuItem.Size = new System.Drawing.Size(268, 22);
-            this.báoCáoBênNhânSựToolStripMenuItem.Text = "Báo Cáo Bên Nhân Sự";
-            // 
-            // sumaryAttendanceReport_mi
-            // 
-            this.sumaryAttendanceReport_mi.Name = "sumaryAttendanceReport_mi";
-            this.sumaryAttendanceReport_mi.Size = new System.Drawing.Size(235, 22);
-            this.sumaryAttendanceReport_mi.Text = "So Sánh Giờ Công";
-            // 
-            // reportSalary_Month_mi
-            // 
-            this.reportSalary_Month_mi.Name = "reportSalary_Month_mi";
-            this.reportSalary_Month_mi.Size = new System.Drawing.Size(235, 22);
-            this.reportSalary_Month_mi.Text = "Báo Cáo Lương Theo Năm";
+            this.mẫuQuyTrìnhSảnXuấtToolStripMenuItem.Name = "mẫuQuyTrìnhSảnXuấtToolStripMenuItem";
+            this.mẫuQuyTrìnhSảnXuấtToolStripMenuItem.Size = new System.Drawing.Size(224, 22);
+            this.mẫuQuyTrìnhSảnXuấtToolStripMenuItem.Text = "Mẫu Quy Trình Sản Xuất";
             // 
             // FormManager
             // 
@@ -961,5 +977,7 @@
         private System.Windows.Forms.ToolStripMenuItem báoCáoBênNhânSựToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem sumaryAttendanceReport_mi;
         private System.Windows.Forms.ToolStripMenuItem reportSalary_Month_mi;
+        private System.Windows.Forms.ToolStripMenuItem supplier_mi;
+        private System.Windows.Forms.ToolStripMenuItem mẫuQuyTrìnhSảnXuấtToolStripMenuItem;
     }
 }

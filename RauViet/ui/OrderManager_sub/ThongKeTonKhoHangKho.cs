@@ -79,6 +79,7 @@ namespace RauViet.ui
                                     SKU = g.Key,
                                     Name_VN = firstRow.Field<string>("Name_VN"),
                                     Package = firstRow.Field<string>("Package"),
+                                    SupplierName = firstRow.Field<string>("SupplierName"),
                                     TonDauNam = tonDauNam,
                                     NhapHang = nhapHang,
                                     XuatHang = xuatHang
@@ -94,7 +95,7 @@ namespace RauViet.ui
                 dtResult.Columns.Add("Nhập hàng", typeof(int));
                 dtResult.Columns.Add("Xuất hàng", typeof(int));
                 dtResult.Columns.Add("Tồn Trong Kho", typeof(int));
-
+                dtResult.Columns.Add("Nhà Cung Cấp", typeof(string));
                 foreach (var item in result)
                 {
                     dtResult.Rows.Add(
@@ -104,7 +105,8 @@ namespace RauViet.ui
                         item.TonDauNam,
                         item.NhapHang,
                         item.XuatHang,
-                        item.TonDauNam + item.NhapHang - item.XuatHang
+                        item.TonDauNam + item.NhapHang - item.XuatHang,
+                        item.SupplierName                        
                     );
                 }
 
@@ -113,7 +115,8 @@ namespace RauViet.ui
 
                 Utils.SetGridWidths(dataGV, new System.Collections.Generic.Dictionary<string, int> {
                     {"SKU", 70},
-                    {"Tên Sản Phẩm", 250}
+                    {"Tên Sản Phẩm", 250},
+                    {"Nhà Cung Cấp", 350}
                 });
 
                 Utils.SetGridWidths(log_GV, new System.Collections.Generic.Dictionary<string, int> {

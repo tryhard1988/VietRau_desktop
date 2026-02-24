@@ -1,5 +1,4 @@
 ﻿using ClosedXML.Excel;
-using PdfSharp.Pdf.Filters;
 using RauViet.classes;
 using System;
 using System.Collections.Generic;
@@ -185,7 +184,7 @@ namespace RauViet.ui
                 mlatestOrders_dt = latestOrdersTask.Result;
 
                 cusProduct_GV.DataSource = mlatestOrders_dt;
-                Utils.HideColumns(cusProduct_GV, new[] { "CustomerID", "ProductPackingID", "Package", "OrderPackingPriceCNF", "packing", "Amount" });                
+                Utils.HideColumns(cusProduct_GV, new[] { "CustomerID", "ProductPackingID1", "Package", "OrderPackingPriceCNF", "packing", "Amount" });                
                 Utils.HideColumns(logGV, new[] { "LogID", "ExportCodeID", "OrderID" });
 
                 Utils.SetGridHeaders(cusProduct_GV, new System.Collections.Generic.Dictionary<string, string> {
@@ -345,7 +344,8 @@ namespace RauViet.ui
                 string package = Convert.ToString(row["Package"]);
                 string packing = Convert.ToString(row["packing"]);
                 int amount = Convert.ToInt32(row["Amount"]);
-                updateCusProduct(cusID, ppID, name, price, PCSOther, NWOther, package, packing, amount);
+
+                updateCusProduct(cusID, ppID, name, price, PCSOther, NWOther, package, packing, amount);                
             }
 
         }
@@ -1340,18 +1340,18 @@ namespace RauViet.ui
                 DataRowView dataR = (DataRowView)exportCode_search_cbb.SelectedItem;
 
                 string staff = dataR["InputByName_NoSign"].ToString();
-                if (UserManager.Instance.fullName_NoSign.CompareTo(staff) != 0 && !UserManager.Instance.hasRole_SuaDonNuocNgoai())
-                {
-                    edit_btn.Visible = false;
-                    newCustomerBtn.Visible = false;
-                    readOnly_btn.Visible = false;
-                    customer_ccb.Enabled = false;
-                    product_ccb.Enabled = false;
-                    packing_ccb.Enabled = false;
-                    PCSOther_tb.ReadOnly = true;
-                    netWeight_tb.ReadOnly = true;
-                    return;
-                }
+                //if (UserManager.Instance.fullName_NoSign.CompareTo(staff) != 0 && !UserManager.Instance.hasRole_SuaDonNuocNgoai())
+                //{
+                //    edit_btn.Visible = false;
+                //    newCustomerBtn.Visible = false;
+                //    readOnly_btn.Visible = false;
+                //    customer_ccb.Enabled = false;
+                //    product_ccb.Enabled = false;
+                //    packing_ccb.Enabled = false;
+                //    PCSOther_tb.ReadOnly = true;
+                //    netWeight_tb.ReadOnly = true;
+                //    return;
+                //}
             }
             customer_ccb.Enabled = !isReadOnly;
             product_ccb.Enabled = !isReadOnly;

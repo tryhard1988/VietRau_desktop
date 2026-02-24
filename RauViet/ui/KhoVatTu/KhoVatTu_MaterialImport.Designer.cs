@@ -50,10 +50,14 @@ namespace RauViet.ui
             this.id_tb = new System.Windows.Forms.TextBox();
             this.status_lb = new System.Windows.Forms.Label();
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.dayGV = new System.Windows.Forms.DataGridView();
             this.dataGV = new System.Windows.Forms.DataGridView();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.log_GV)).BeginInit();
             this.info_gb.SuspendLayout();
+            this.panel2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dayGV)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
             this.SuspendLayout();
             // 
@@ -70,9 +74,9 @@ namespace RauViet.ui
             this.panel1.Controls.Add(this.status_lb);
             this.panel1.Controls.Add(this.LuuThayDoiBtn);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel1.Location = new System.Drawing.Point(816, 0);
+            this.panel1.Location = new System.Drawing.Point(716, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(533, 758);
+            this.panel1.Size = new System.Drawing.Size(633, 758);
             this.panel1.TabIndex = 69;
             // 
             // monthYear_dtp
@@ -91,7 +95,7 @@ namespace RauViet.ui
             this.label4.ForeColor = System.Drawing.Color.DarkOliveGreen;
             this.label4.Location = new System.Drawing.Point(0, 541);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(533, 23);
+            this.label4.Size = new System.Drawing.Size(633, 23);
             this.label4.TabIndex = 70;
             this.label4.Text = "Lịch sử thay đổi";
             this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -105,7 +109,7 @@ namespace RauViet.ui
             this.log_GV.Location = new System.Drawing.Point(0, 564);
             this.log_GV.Name = "log_GV";
             this.log_GV.ReadOnly = true;
-            this.log_GV.Size = new System.Drawing.Size(533, 194);
+            this.log_GV.Size = new System.Drawing.Size(633, 194);
             this.log_GV.TabIndex = 69;
             // 
             // readOnly_btn
@@ -275,17 +279,38 @@ namespace RauViet.ui
             this.LuuThayDoiBtn.Text = "Lưu";
             this.LuuThayDoiBtn.UseVisualStyleBackColor = false;
             // 
+            // panel2
+            // 
+            this.panel2.Controls.Add(this.dayGV);
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Left;
+            this.panel2.Location = new System.Drawing.Point(0, 0);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(200, 758);
+            this.panel2.TabIndex = 71;
+            // 
+            // dayGV
+            // 
+            this.dayGV.AllowUserToAddRows = false;
+            this.dayGV.AllowUserToDeleteRows = false;
+            this.dayGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dayGV.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dayGV.Location = new System.Drawing.Point(0, 0);
+            this.dayGV.Name = "dayGV";
+            this.dayGV.ReadOnly = true;
+            this.dayGV.Size = new System.Drawing.Size(200, 758);
+            this.dayGV.TabIndex = 71;
+            // 
             // dataGV
             // 
             this.dataGV.AllowUserToAddRows = false;
             this.dataGV.AllowUserToDeleteRows = false;
             this.dataGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGV.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dataGV.Location = new System.Drawing.Point(0, 0);
+            this.dataGV.Location = new System.Drawing.Point(200, 0);
             this.dataGV.Name = "dataGV";
             this.dataGV.ReadOnly = true;
-            this.dataGV.Size = new System.Drawing.Size(816, 758);
-            this.dataGV.TabIndex = 70;
+            this.dataGV.Size = new System.Drawing.Size(516, 758);
+            this.dataGV.TabIndex = 72;
             // 
             // KhoVatTu_MaterialImport
             // 
@@ -293,6 +318,7 @@ namespace RauViet.ui
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1349, 758);
             this.Controls.Add(this.dataGV);
+            this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.Name = "KhoVatTu_MaterialImport";
             this.Text = "FormTableData";
@@ -301,6 +327,8 @@ namespace RauViet.ui
             ((System.ComponentModel.ISupportInitialize)(this.log_GV)).EndInit();
             this.info_gb.ResumeLayout(false);
             this.info_gb.PerformLayout();
+            this.panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dayGV)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).EndInit();
             this.ResumeLayout(false);
 
@@ -321,7 +349,6 @@ namespace RauViet.ui
         private System.Windows.Forms.TextBox soLuong_tb;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.DataGridView log_GV;
-        private System.Windows.Forms.DataGridView dataGV;
         private System.Windows.Forms.DateTimePicker monthYear_dtp;
         private System.Windows.Forms.DateTimePicker ngayNhap_dtp;
         private System.Windows.Forms.Label label5;
@@ -329,5 +356,8 @@ namespace RauViet.ui
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.TextBox giaMua_tb;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.DataGridView dayGV;
+        private System.Windows.Forms.DataGridView dataGV;
     }
 }

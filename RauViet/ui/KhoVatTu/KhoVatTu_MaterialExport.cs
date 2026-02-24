@@ -113,15 +113,16 @@ namespace RauViet.ui
                 var workTypeTask = SQLStore_KhoVatTu.Instance.GetWorkTypeAsync();
                 var employeeTask = SQLStore_QLNS.Instance.GetEmployeesAsync(empKeepColumns);
                 var materialExportTask = SQLStore_KhoVatTu.Instance.GetMaterialExportAsync(month, year);
+                var logDataTask = SQLStore_KhoVatTu.Instance.GetMaterialExportLogAsync(month, year);
 
-                await Task.WhenAll(plantingManagementTask, cateloryTask, materialTask, employeeTask, workTypeTask, materialExportTask);
+                await Task.WhenAll(plantingManagementTask, cateloryTask, materialTask, employeeTask, workTypeTask, materialExportTask, logDataTask);
 
                 mPlantingManagement_dt = plantingManagementTask.Result;
                 mMaterial_dt = materialTask.Result;
                 mEmployee_dt = employeeTask.Result;
                 mWorkType_dt = workTypeTask.Result;
                 mMaterialExport_dt = materialExportTask.Result;
-                ////    mLogDV = new DataView(logDataTask.Result);
+                mLogDV = new DataView(logDataTask.Result);
 
                 dayGV.DataSource = Utils.CreateDateTable(month, year);
 
@@ -146,7 +147,7 @@ namespace RauViet.ui
                 LenhSX_CBB.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
 
                 dataGV.DataSource = mMaterialExport_dt;
-                ////    log_GV.DataSource = mLogDV;
+                log_GV.DataSource = mLogDV;
                 Utils.HideColumns(dataGV, new[] { "NurseryDate", "PlantingID", "Receiver", "MaterialID", "WorkTypeID", "ExportID" });                
                 Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
                         {"ExportDate", "Ngày Xuất" },
@@ -159,6 +160,14 @@ namespace RauViet.ui
                         {"MaterialName", "Vật Tư" },
                         {"IsCompleted", "Đóng" },
                         {"UnitName", "Đ.Vị" }
+                    });
+
+                Utils.HideColumns(log_GV, new[] { "LogID", "ExportDate" });
+                Utils.SetGridHeaders(log_GV, new System.Collections.Generic.Dictionary<string, string> {
+                        {"OldValue", "Cũ" },
+                        {"NewValue", "Mới" },
+                        {"CreatedDate", "Ngày tạo" },
+                        {"ActionBy", "Người tạo" }
                     });
 
                 Utils.SetGridWidths(dataGV, new System.Collections.Generic.Dictionary<string, int> {
@@ -188,6 +197,7 @@ namespace RauViet.ui
                 LuuThayDoiBtn.TabIndex = countTab++; LuuThayDoiBtn.TabStop = true;
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 ReadOnly_btn_Click(null, null);
                 dataGV.SelectionChanged += this.dataGV_CellClick;
                 monthYear_dtp.ValueChanged += monthYearDtp_ValueChanged;
@@ -377,6 +387,8 @@ namespace RauViet.ui
             DataView dv = mMaterialExport_dt.DefaultView;
             dv.RowFilter = $"ExportDate >= #{date:MM/dd/yyyy}# AND ExportDate < #{date.AddDays(1):MM/dd/yyyy}#";
 
+            mLogDV.RowFilter = $"ExportDate >= #{date:MM/dd/yyyy}# AND ExportDate < #{date.AddDays(1):MM/dd/yyyy}#";
+
         }
 
         private void dataGV_CellClick(object sender, EventArgs e)
@@ -406,12 +418,15 @@ namespace RauViet.ui
 
                     if (dialogResult == DialogResult.Yes)
                     {
+                        string oldValue = $"Update: ExportDate:{row["ExportDate"].ToString()}; PlantName:{row["PlantName"].ToString()}; MaterialName:{row["MaterialName"].ToString()}; RecieverName:{row["RecieverName"].ToString()}; WorkTypeName:{row["WorkTypeName"].ToString()}; Amount:{row["Amount"].ToString()}; Note: {row["Note"].ToString()}";
+                        string newValue = "";
                         try
                         {
                             bool isScussess = await SQLManager_KhoVatTu.Instance.updateMaterialExportAsync(ExportID, ExportDate, MaterialID, Amount, PlantingID, WorkTypeID, Receiver, Note);
 
                             if (isScussess == true)
                             {
+                                newValue = "Success: ";
                                 row["ExportDate"] = ExportDate;
                                 row["MaterialID"] = MaterialID;
                                 row["Amount"] = Amount;
@@ -424,38 +439,54 @@ namespace RauViet.ui
                                     row["ProductionOrder"] = plantingRows[0]["ProductionOrder"].ToString();
                                     row["IsCompleted"] = plantingRows[0]["IsCompleted"].ToString();
                                     row["NurseryDate"] = Convert.ToDateTime(plantingRows[0]["NurseryDate"]);
+
+                                    newValue += $"PlantName: {plantingRows[0]["PlantName"].ToString()}; ";
                                 }
 
                                 if (matiralRows.Length > 0)
                                 {
                                     row["UnitName"] = matiralRows[0]["UnitName"].ToString();
                                     row["MaterialName"] = matiralRows[0]["MaterialName"].ToString();
+
+                                    newValue += $"MaterialName: {matiralRows[0]["MaterialName"].ToString()}; ";
                                 }
                                 if (employeeRows.Length > 0)
                                 {
                                     row["Receiver"] = Receiver;
                                     row["RecieverName"] = employeeRows[0]["FullName"].ToString();
+
+                                    newValue += $"RecieverName: {employeeRows[0]["FullName"].ToString()}; ";
                                 }
 
                                 if (WorkTypeID.HasValue)
                                 {
                                     row["WorkTypeID"] = WorkTypeID;
                                     row["WorkTypeName"] = workTypeRows[0]["WorkTypeName"].ToString();
+
+                                    newValue += $"WorkTypeName: {workTypeRows[0]["WorkTypeName"].ToString()}; ";
                                 }
+
+                                newValue += $"Amount: {Amount}; Note: {Note}";
 
                                 status_lb.Text = "Thành công.";
                                 status_lb.ForeColor = Color.Green;
                             }
                             else
                             {
+                                newValue = "Fail: ";
                                 status_lb.Text = "Thất bại.";
                                 status_lb.ForeColor = Color.Red;
                             }
                         }
                         catch (Exception ex)
                         {
+                            newValue = ex.Message;
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;
+                        }
+                        finally
+                        {
+                            _ = SQLManager_KhoVatTu.Instance.insertMaterialExportLogAsync(ExportDate, oldValue, newValue);
                         }
                     }
                     break;
@@ -480,6 +511,8 @@ namespace RauViet.ui
 
             if (dialogResult == DialogResult.Yes)
             {
+                string oldValue = "create: ";
+                string newValue = "";
                 try
                 {
                     int newId = await SQLManager_KhoVatTu.Instance.insertMaterialExportAsync(ExportDate, MaterialID, Amount, PlantingID, WorkTypeID, Receiver, Note);
@@ -490,7 +523,7 @@ namespace RauViet.ui
                         drToAdd["ExportID"] = newId;
                         drToAdd["ExportDate"] = ExportDate;
                         drToAdd["MaterialID"] = MaterialID;
-                        drToAdd["Amount"] = Amount;                        
+                        drToAdd["Amount"] = Amount;
                         drToAdd["Note"] = Note;
 
                         if (PlantingID.HasValue)
@@ -500,46 +533,60 @@ namespace RauViet.ui
                             drToAdd["ProductionOrder"] = plantingRows[0]["ProductionOrder"].ToString();
                             drToAdd["IsCompleted"] = plantingRows[0]["IsCompleted"].ToString();
                             drToAdd["NurseryDate"] = Convert.ToDateTime(plantingRows[0]["NurseryDate"]);
+
+                            newValue += $"PlantName: {plantingRows[0]["PlantName"].ToString()}; ";
                         }
 
                         if (matiralRows.Length > 0)
                         {
                             drToAdd["UnitName"] = matiralRows[0]["UnitName"].ToString();
                             drToAdd["MaterialName"] = matiralRows[0]["MaterialName"].ToString();
+
+                            newValue += $"MaterialName: {matiralRows[0]["MaterialName"].ToString()}; ";
                         }
                         if (employeeRows.Length > 0)
                         {
                             drToAdd["Receiver"] = Receiver;
                             drToAdd["RecieverName"] = employeeRows[0]["FullName"].ToString();
+                            newValue += $"RecieverName: {employeeRows[0]["FullName"].ToString()}; ";
                         }
 
                         if (WorkTypeID.HasValue)
                         {
                             drToAdd["WorkTypeID"] = WorkTypeID;
                             drToAdd["WorkTypeName"] = workTypeRows[0]["WorkTypeName"].ToString();
+                            newValue += $"WorkTypeName: {workTypeRows[0]["WorkTypeName"].ToString()}; ";
                         }
+
+                        newValue += $"Amount: {Amount}; Note: {Note}";
 
                         mMaterialExport_dt.Rows.Add(drToAdd);
                         mMaterialExport_dt.AcceptChanges();
 
                         status_lb.Text = "Thành công";
                         status_lb.ForeColor = Color.Green;
+                        oldValue += "Success";
 
                         newBtn_Click(null, null);
                     }
                     else
                     {
+                        oldValue += "Fail";
                         status_lb.Text = "Thất bại";
                         status_lb.ForeColor = Color.Red;
                     }
                 }
                 catch (Exception ex)
                 {
+                    oldValue += ex.Message;
                     Console.WriteLine("ERROR: " + ex.Message);
                     status_lb.Text = "Thất bại.";
                     status_lb.ForeColor = Color.Red;
                 }
-
+                finally
+                {
+                    _ = SQLManager_KhoVatTu.Instance.insertMaterialExportLogAsync(ExportDate, oldValue, newValue);
+                }
             }
         }
         private void saveBtn_Click(object sender, EventArgs e)
@@ -581,6 +628,9 @@ namespace RauViet.ui
 
                     if (dialogResult == DialogResult.Yes)
                     {
+                        DateTime exportDate = Convert.ToDateTime(row["ExportDate"]);
+                        string oldValue = $"ExportDate:{exportDate.ToString("dd/MM/yyyy")}; PlantName:{row["PlantName"].ToString()}; MaterialName:{row["MaterialName"].ToString()}; RecieverName:{row["RecieverName"].ToString()}; WorkTypeName:{row["WorkTypeName"].ToString()}; Amount:{row["Amount"].ToString()}; Note: {row["Note"].ToString()}";
+                        string newValue = "Delete: ";                        
                         try
                         {
                             bool isScussess = await SQLManager_KhoVatTu.Instance.deletetMaterialExportAsync(Convert.ToInt32(id));
@@ -592,17 +642,25 @@ namespace RauViet.ui
 
                                 mMaterialExport_dt.Rows.Remove(row);
                                 mMaterialExport_dt.AcceptChanges();
+
+                                newValue += "Success";
                             }
                             else
                             {
+                                newValue += "Fail";
                                 status_lb.Text = "Thất bại.";
                                 status_lb.ForeColor = Color.Red;
                             }
                         }
                         catch (Exception ex)
                         {
+                            newValue += ex.Message;
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;
+                        }
+                        finally
+                        {
+                            _ = SQLManager_KhoVatTu.Instance.insertMaterialExportLogAsync(exportDate, oldValue, newValue);
                         }
                     }
                     break;

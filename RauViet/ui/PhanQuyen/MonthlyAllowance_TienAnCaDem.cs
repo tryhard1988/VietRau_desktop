@@ -105,7 +105,7 @@ namespace RauViet.ui
                 allowanceGV.DataSource = mAllowanceDV;
 
                 Utils.HideColumns(department_GV, new[] { "DepartmentID", "Description", "IsActive", "CreatedAt" });
-                Utils.HideColumns(dataGV, new[] { "OvertimeTypeID", "DepartmentID" });
+                Utils.HideColumns(dataGV, new[] { "OvertimeTypeID", "DepartmentID", "OvertimeTypeCode" });
 
                 Utils.SetGridHeaders(allowanceGV, new System.Collections.Generic.Dictionary<string, string> {
                     {"EmployeeCode", "Mã NV" },
@@ -118,7 +118,8 @@ namespace RauViet.ui
                     {"EmployeeName", "Tên Nhân Viên" },
                     {"EmployeeCode", "Mã NV" },
                     {"WorkDate", "Ngày Làm" },
-                    {"HourWork", "Số Giờ" }
+                    {"HourWork", "Số Giờ" },
+                    {"OvertimeName", "Loại T.Ca" }
                 });
 
                 Utils.SetGridHeaders(department_GV, new System.Collections.Generic.Dictionary<string, string> {
@@ -180,7 +181,8 @@ namespace RauViet.ui
                 foreach (DataRow oRow in rows)
                 {
                     decimal hourWork = Convert.ToDecimal(oRow["HourWork"]);
-                    if (hourWork >= 3.0m)
+                    string OTCode = Convert.ToString(oRow["OvertimeTypeCode"]);
+                    if (hourWork >= 3.0m || OTCode.CompareTo("OT_Dem") == 0)
                         rice++;
                     else if (hourWork >= 2.5m)
                         noodle++;                    

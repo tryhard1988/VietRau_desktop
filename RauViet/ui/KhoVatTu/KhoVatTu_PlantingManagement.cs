@@ -1,6 +1,4 @@
-﻿
-using DocumentFormat.OpenXml.Bibliography;
-using RauViet.classes;
+﻿using RauViet.classes;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -42,6 +40,9 @@ namespace RauViet.ui
 
             dataGV.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dataGV.MultiSelect = false;
+            monthGV.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            monthGV.MultiSelect = false;
+            monthGV.ReadOnly = true;
 
             status_lb.Text = "";
 
@@ -67,7 +68,13 @@ namespace RauViet.ui
 
             ngaytrong_dtp.ValueChanged += Ngaytrong_dtp_ValueChanged;
             ngayUom_dtp.ValueChanged += NgayUom_dtp_ValueChanged;
+
+            monthGV.SelectionChanged += MonthGV_SelectionChanged; ;
+            locTheoNgayThu_CB.CheckedChanged += LocTheoNgayThu_CB_CheckedChanged;
+            locTheoNgayTrong_CB.CheckedChanged += LocTheoNgayThu_CB_CheckedChanged;
+            locTheoNgayUom_CB.CheckedChanged += LocTheoNgayThu_CB_CheckedChanged;
         }
+
 
         private void Kho_Materials_KeyDown(object sender, KeyEventArgs e)
         {
@@ -110,6 +117,7 @@ namespace RauViet.ui
                 var departmentTask = SQLStore_QLNS.Instance.GetDepartmentAsync();
                 var productSKUTask = SQLStore_Kho.Instance.getProductSKUAsync(parameters);
                 var plantingManagementTask = SQLStore_KhoVatTu.Instance.getPlantingManagementAsync(monthYear_dtp.Value.Year);
+                var logTask = SQLStore_KhoVatTu.Instance.getPlantingManagementLogAsync(monthYear_dtp.Value.Year);
                 await Task.WhenAll(departmentTask, productSKUTask, plantingManagementTask, employeesTask);
                 mDepartment_dt = departmentTask.Result;
                 mProductSKU_dt = productSKUTask.Result;
@@ -132,9 +140,10 @@ namespace RauViet.ui
                 nguoiPhuTrach_CB.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
 
                 dataGV.DataSource = mPlantingManagement_dt;
+                monthGV.DataSource = Utils.CreateMonthsInYearTable();
                 //    log_GV.DataSource = mLogDV;
-                Utils.HideColumns(dataGV, new[] { "PlantingID", "SKU", "Department", "Department", "Supervisor", "CreatedAt", "search_nosign" });
-                Utils.SetGridOrdinal(mPlantingManagement_dt, new[] { "ProductionOrder", "PlantName", "Quantity", "NurseryDate", "PlantingDate", "Area", "HarvestDate", "DepartmentName", "SupervisorName", "Note", "IsCompleted" });
+                Utils.HideColumns(dataGV, new[] { "PlantingID", "SKU", "Department", "Supervisor", "CreatedAt", "search_nosign", "CultivationTypeID" });
+                Utils.SetGridOrdinal(mPlantingManagement_dt, new[] { "IsCompleted","ProductionOrder", "PlantName", "CultivationTypeName", "Quantity", "NurseryDate", "PlantingDate", "Area", "HarvestDate", "DepartmentName", "SupervisorName", "Note", "PlantingID", "Department" });
                 Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
                         {"ProductionOrder", "Lệnh\nSản Xuất" },
                         {"Area", "Diện\nTích" },
@@ -146,11 +155,31 @@ namespace RauViet.ui
                         {"SupervisorName", "Giám Sát" },
                         {"PlantName", "Tên\nCây Trồng" },
                         {"IsCompleted", "Đóng Lệnh" },
-                        {"Note", "Ghi Chú" }
+                        {"Note", "Ghi Chú" },
+                        {"CultivationTypeName", "Canh Tác" }
                     });
 
-                dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                Utils.SetGridWidths(dataGV, new System.Collections.Generic.Dictionary<string, int> {
+                        {"ProductionOrder", 70},
+                        {"Area", 60},
+                        {"Quantity",60},
+                        {"NurseryDate",70},
+                        {"PlantingDate",70},
+                        {"HarvestDate",70},
+                        {"DepartmentName",130},
+                        {"SupervisorName",150},
+                        {"PlantName",100},
+                        {"IsCompleted",60},
+                        {"Note",250},
+                        {"CultivationTypeName",100}
+                    });
 
+                Utils.HideColumns(monthGV, new[] { "Month"});
+                Utils.SetGridHeaders(monthGV, new System.Collections.Generic.Dictionary<string, string> {{"MonthName", "Tháng" }});
+                Utils.SetGridWidths(monthGV, new System.Collections.Generic.Dictionary<string, int> { { "MonthName", 70}});
+
+                dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                monthGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
                 Utils.SetTabStopRecursive(this, false);
 
@@ -1029,6 +1058,43 @@ namespace RauViet.ui
                 dateTemp = dateTemp.AddDays(1);
                 count++;
             }
+        }
+
+        private void LocTheoNgayThu_CB_CheckedChanged(object sender, EventArgs e)
+        {
+            MonthGV_SelectionChanged(null, null);
+        }
+
+        private void MonthGV_SelectionChanged(object sender, EventArgs e)
+        {
+            if (monthGV.SelectedRows.Count == 0)
+                return;
+            var cells = monthGV.SelectedRows[0].Cells;
+            if (cells == null) return;
+            int month = Convert.ToInt32(cells["Month"].Value);
+            DateTime fromDate = new DateTime(monthYear_dtp.Value.Year, month, 1);
+            DateTime toDate = fromDate.AddMonths(1);
+
+            List<string> conditions = new List<string>();
+
+            if (locTheoNgayUom_CB.Checked)
+            {
+                conditions.Add($"(NurseryDate >= #{fromDate:MM/dd/yyyy}# AND NurseryDate < #{toDate:MM/dd/yyyy}#)");
+            }
+
+            if (locTheoNgayTrong_CB.Checked)
+            {
+                conditions.Add($"(PlantingDate >= #{fromDate:MM/dd/yyyy}# AND PlantingDate < #{toDate:MM/dd/yyyy}#)");
+            }
+
+            if (locTheoNgayThu_CB.Checked)
+            {
+                conditions.Add($"(HarvestDate >= #{fromDate:MM/dd/yyyy}# AND HarvestDate < #{toDate:MM/dd/yyyy}#)");
+            }
+
+            DataView dv = mPlantingManagement_dt.DefaultView;
+            dv.RowFilter = string.Join(" OR ", conditions);
+
         }
 
         //System.Data.DataTable excelData;

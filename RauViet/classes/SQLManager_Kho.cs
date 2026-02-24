@@ -1,12 +1,8 @@
-﻿
-using RauViet.ui;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using DataTable = System.Data.DataTable;
 
 namespace RauViet.classes
@@ -152,7 +148,7 @@ namespace RauViet.classes
         }
 
         public async Task<bool> updateProductSKUAsync(int SKU, string ProductNameVN, string ProductNameEN, string PackingType, string Package,
-            string PackingList, string BotanicalName, decimal PriceCNF, int priority, string plantingareaCode, string LOTCodeHeader, bool isActive)
+            string PackingList, string BotanicalName, decimal PriceCNF, int priority, string plantingareaCode, string LOTCodeHeader, bool isActive, int? supplierID)
         {
             string query = @"UPDATE ProductSKU SET 
                                 ProductNameVN=@ProductNameVN, 
@@ -165,7 +161,8 @@ namespace RauViet.classes
                                 PlantingAreaCode=@PlantingAreaCode,
                                 LOTCodeHeader=@LOTCodeHeader,
                                 IsActive=@IsActive,
-                                Priority=@Priority
+                                Priority=@Priority,
+                                SupplierID=@SupplierID
                              WHERE SKU=@SKU";
             try
             {
@@ -186,6 +183,7 @@ namespace RauViet.classes
                         cmd.Parameters.AddWithValue("@LOTCodeHeader", LOTCodeHeader);
                         cmd.Parameters.AddWithValue("@Priority", priority);
                         cmd.Parameters.AddWithValue("@IsActive", isActive);
+                        cmd.Parameters.AddWithValue("@SupplierID", (object)supplierID ?? DBNull.Value);
                         await cmd.ExecuteNonQueryAsync();
                     }
                 }
@@ -195,7 +193,7 @@ namespace RauViet.classes
         }
 
         public async Task<int> insertProductSKUAsync(string ProductNameVN, string ProductNameEN, string PackingType, string Package, 
-            string PackingList, string BotanicalName, decimal PriceCNF, int priority, string plantingareaCode, string LOTCodeHeader)
+            string PackingList, string BotanicalName, decimal PriceCNF, int priority, string plantingareaCode, string LOTCodeHeader, int? supplierID)
         {
             int newId = -1;
 
@@ -216,6 +214,7 @@ namespace RauViet.classes
                         cmd.Parameters.AddWithValue("@BotanicalName", BotanicalName);
                         cmd.Parameters.AddWithValue("@PriceCNF", PriceCNF);
                         cmd.Parameters.AddWithValue("@Priority", priority);
+                        cmd.Parameters.AddWithValue("@SupplierID", (object)supplierID ?? DBNull.Value);
                         cmd.Parameters.AddWithValue("@PlantingAreaCode", plantingareaCode);
                         cmd.Parameters.AddWithValue("@LOTCodeHeader", LOTCodeHeader);
 
@@ -2993,6 +2992,89 @@ namespace RauViet.classes
                 }
             }
             return dt;
+        }
+
+        public async Task<DataTable> GetSupplierAsybc()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT * FROM Supplier";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                {
+                    dt.Load(reader);
+                }
+            }
+            return dt;
+        }
+
+        public async Task<bool> updateSupplierAsync(int SupplierID, string SupplierName, string Phone)
+        {
+            string query = @"UPDATE Supplier SET SupplierName=@SupplierName, Phone=@Phone WHERE SupplierID=@SupplierID";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@SupplierID", SupplierID);
+                        cmd.Parameters.AddWithValue("@SupplierName", SupplierName);
+                        cmd.Parameters.AddWithValue("@Phone", Phone);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+                return true;
+            }
+            catch { return false; }
+        }
+
+        public async Task<int> insertSupplierAsync(string SupplierName, string Phone)
+        {
+            int newId = -1;
+
+            string query = @"INSERT INTO Supplier (SupplierName, Phone) 
+                                OUTPUT INSERTED.SupplierID
+                                VALUES (@SupplierName, @Phone)";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@SupplierName", SupplierName);
+                        cmd.Parameters.AddWithValue("@Phone", Phone);
+                        object result = await cmd.ExecuteScalarAsync();
+                        if (result != null)
+                            newId = Convert.ToInt32(result);
+                    }
+                }
+                return newId;
+            }
+            catch { return -1; }
+        }
+
+        public async Task<bool> deleteSupplierAsync(int ID)
+        {
+            string query = "DELETE FROM Supplier WHERE SupplierID=@SupplierID";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@SupplierID", ID);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+                return true;
+            }
+            catch { return false; }
         }
     }
 }

@@ -1,13 +1,8 @@
 ﻿
-using Microsoft.Office.Interop.Excel;
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.Windows.Media.Media3D;
 using DataTable = System.Data.DataTable;
 
 namespace RauViet.classes
@@ -33,6 +28,7 @@ namespace RauViet.classes
         }
 
         public string ql_khoVatTu_conStr() { return "Server=192.168.1.8,1433;Database=QL_KhoVatTu;User Id=ql_kho;Password=A7t#kP2x;"; }
+        public string ql_khoVatTuLog_conStr() { return "Server=192.168.1.8,1433;Database=QL_KhoVatTu_Log;User Id=ql_kho;Password=A7t#kP2x;"; }
 
         //==============================Customers==============================
 
@@ -293,6 +289,25 @@ namespace RauViet.classes
             {
                 await con.OpenAsync();
                 string query = @"SELECT * FROM WorkType";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
+        }
+
+        public async Task<DataTable> GetCultivationTypeAsync()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT * FROM CultivationType";
 
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 {
@@ -725,6 +740,140 @@ namespace RauViet.classes
 
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 {
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
+        }
+
+        public async Task<DataTable> GetMaterialExportLogAsync(int month, int year)
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_khoVatTuLog_conStr()))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT * FROM MaterialExportLog WHERE YEAR(ExportDate) = @Year AND MONTH(ExportDate) = @Month;";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    cmd.Parameters.Add("@Month", SqlDbType.Int).Value = month;
+                    cmd.Parameters.Add("@Year", SqlDbType.Int).Value = year;
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
+        }
+
+        public async Task<int> insertMaterialExportLogAsync(DateTime ExportDate, string oldValue, string newValue)
+        {
+            int newId = -1;
+            string insertQuery = @"INSERT INTO MaterialExportLog (ExportDate, OldValue, NewValue, ActionBy)
+                                    OUTPUT INSERTED.LogID
+                                    VALUES (@ExportDate, @OldValue, @NewValue, @ActionBy)";
+
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_khoVatTuLog_conStr()))
+                {
+                    await con.OpenAsync();
+
+                    // 2️⃣ Insert và lấy ID mới
+                    using (SqlCommand cmd = new SqlCommand(insertQuery, con))
+                    {
+                        cmd.Parameters.Add("@ExportDate", SqlDbType.DateTime).Value = ExportDate;
+                        cmd.Parameters.Add("@OldValue", SqlDbType.NChar).Value = oldValue;
+                        cmd.Parameters.Add("@NewValue", SqlDbType.NChar).Value = newValue;
+                        cmd.Parameters.Add("@ActionBy", SqlDbType.NChar).Value = UserManager.Instance.fullName;
+                       
+                        object result = await cmd.ExecuteScalarAsync();
+                        if (result != null)
+                            newId = Convert.ToInt32(result);
+                    }
+                }
+
+                return newId;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("ERROR: " + ex.Message);
+                return -1;
+            }
+        }
+
+        public async Task<DataTable> GetMaterialImportLogAsync(int month, int year)
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_khoVatTuLog_conStr()))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT * FROM MaterialImportLog WHERE YEAR(ImportDate) = @Year AND MONTH(ImportDate) = @Month;";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    cmd.Parameters.Add("@Month", SqlDbType.Int).Value = month;
+                    cmd.Parameters.Add("@Year", SqlDbType.Int).Value = year;
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
+        }
+
+        public async Task<int> insertMaterialImportLogAsync(DateTime ImportDate, string oldValue, string newValue)
+        {
+            int newId = -1;
+            string insertQuery = @"INSERT INTO MaterialImportLog (ImportDate, OldValue, NewValue, ActionBy)
+                                    OUTPUT INSERTED.LogID
+                                    VALUES (@ImportDate, @OldValue, @NewValue, @ActionBy)";
+
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_khoVatTuLog_conStr()))
+                {
+                    await con.OpenAsync();
+
+                    // 2️⃣ Insert và lấy ID mới
+                    using (SqlCommand cmd = new SqlCommand(insertQuery, con))
+                    {
+                        cmd.Parameters.Add("@ImportDate", SqlDbType.DateTime).Value = ImportDate;
+                        cmd.Parameters.Add("@OldValue", SqlDbType.NChar).Value = oldValue;
+                        cmd.Parameters.Add("@NewValue", SqlDbType.NChar).Value = newValue;
+                        cmd.Parameters.Add("@ActionBy", SqlDbType.NChar).Value = UserManager.Instance.fullName;
+
+                        object result = await cmd.ExecuteScalarAsync();
+                        if (result != null)
+                            newId = Convert.ToInt32(result);
+                    }
+                }
+
+                return newId;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("ERROR: " + ex.Message);
+                return -1;
+            }
+        }
+
+        public async Task<DataTable> getPlantingManagementLogAsync(int year)
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_khoVatTuLog_conStr()))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT * FROM PlantingManagement_Log WHERE YEAR(NurseryDate) = @Year";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    cmd.Parameters.Add("@Year", SqlDbType.Int).Value = year;
                     using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                     {
                         dt.Load(reader);

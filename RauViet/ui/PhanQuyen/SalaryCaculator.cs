@@ -1,5 +1,4 @@
 ﻿using ClosedXML.Excel;
-using Microsoft.Office.Interop.Excel;
 using RauViet.classes;
 using System;
 using System.Collections.Concurrent;
@@ -134,31 +133,31 @@ namespace RauViet.ui
             int month = monthYearDtp.Value.Month;
             int year = monthYearDtp.Value.Year;
 
-            string[] keepColumns = { "EmployeeCode", "FullName", "HireDate", "IsInsuranceRefund", "DepartmentName", "WorkBlock", "ContractTypeName", "BankAccountNumber", "BankName", "BankAccountHolder", "GradeName", "DepartmentName" };
+            isLockData = await SQLStore_QLNS.Instance.IsSalaryLockAsync(month, year);
+
+            string[] keepColumns = { "EmployeeCode", "FullName", "HireDate", "IsInsuranceRefund", "DepartmentName", "WorkBlock", "ContractTypeName", "BankAccountNumber", "BankName", "BankAccountHolder", "GradeName", "DepartmentName", "IsActive" };
             string[] keepColumnsInfo = { "BaseSalary", "InsuranceBaseSalary", "ContractTypeName", "IsInsuranceRefund" };
             string[] keepColumnsLeave = { "EmployeeCode", "LeaveTypeCode", "DateOff", "LeaveTypeName", "LeaveHours" };
             string[] keepColumnsAttendamce = { "EmployeeCode", "WorkDate", "WorkingHours" };
-            var employeInfoTask = SQLStore_QLNS.Instance.GetEmployeesAsync(keepColumns);
+            var employeInfoTask = SQLStore_QLNS.Instance.GetEmployeesAsync(keepColumns, isLockData);
             var annualLeaveBalanceTask = SQLStore_QLNS.Instance.GetAnnualLeaveBalanceAsync();
             var overtimeTypeAsync = SQLStore_QLNS.Instance.GetOvertimeTypeAsync();
             var leaveTypeAsync = SQLStore_QLNS.Instance.GetLeaveTypeWithPaidAsync(true);
             var deductionTypeAsync = SQLStore_QLNS.Instance.GetDeductionTypeAsync();
             var deductionAsync = SQLStore_QLNS.Instance.GetDeductionAsync(month, year);
             var overtimeAttendamceAsync = SQLStore_QLNS.Instance.GetOvertimeAttendamceAsync(month, year);
-            var employeeTask = SQLStore_QLNS.Instance.GetEmployeeSalaryInfoAsync(keepColumnsInfo, month, year);
+            var employeeTask = SQLStore_QLNS.Instance.GetEmployeeSalaryInfoAsync(keepColumnsInfo, month, year, isLockData);
             var leaveAttendanceAsync = SQLStore_QLNS.Instance.GetLeaveAttendancesAsyn(keepColumnsLeave, month, year);
-            var attendamceTask = SQLStore_QLNS.Instance.GetAttendamceAsync(keepColumnsAttendamce, month, year);
-            var isLockTask = SQLStore_QLNS.Instance.IsSalaryLockAsync(month, year);
+            var attendamceTask = SQLStore_QLNS.Instance.GetAttendamceAsync(keepColumnsAttendamce, month, year);            
             var employeeAllowanceAsync = SQLManager_QLNS.Instance.GetEmployeeAllowanceAsync(month, year);
 
 
             await Task.WhenAll(employeInfoTask, employeeTask, employeeAllowanceAsync, overtimeAttendamceAsync, leaveAttendanceAsync,
-                deductionAsync, overtimeTypeAsync, leaveTypeAsync, deductionTypeAsync, attendamceTask, annualLeaveBalanceTask, isLockTask);
+                deductionAsync, overtimeTypeAsync, leaveTypeAsync, deductionTypeAsync, attendamceTask, annualLeaveBalanceTask);
 
             mCurentMonth = month;
             mCurentYear = year;
 
-            isLockData = isLockTask.Result;
             mOvertimeType_dt = overtimeTypeAsync.Result;
             mEmployee_dt = employeeTask.Result;
             mAllowance_dt = employeeAllowanceAsync.Result;
@@ -193,6 +192,7 @@ namespace RauViet.ui
             Utils.AddColumnIfNotExists(mEmployee_dt, "GradeName", typeof(string));
             Utils.AddColumnIfNotExists(mEmployee_dt, "DepartmentName", typeof(string));
             Utils.AddColumnIfNotExists(mEmployee_dt, "WorkBlock", typeof(string));
+            Utils.AddColumnIfNotExists(mEmployee_dt, "IsActive", typeof(Boolean));
 
             Utils.AddColumnIfNotExists(mAttendamce_dt, "DayOfWeek", typeof(string));
             
@@ -220,6 +220,7 @@ namespace RauViet.ui
 
         public async Task CalculateAllSalaries(DataTable employeInfo, DataTable annualLeaveBalance)
         {
+
             var insuranceResult = from row in mAllowance_dt.AsEnumerable()
                                   where row.Field<string>("ScopeCode") != "ONCE"
                                   group row by row.Field<string>("EmployeeCode") into g
@@ -244,6 +245,7 @@ namespace RauViet.ui
 
             var employeeLookup = employeInfo.AsEnumerable().ToDictionary(r => r.Field<string>("EmployeeCode"));
             var annualLeaveBalanceLookup = annualLeaveBalance.AsEnumerable().ToDictionary(r => r.Field<string>("EmployeeCode"));
+
             _ = Task.Run(async () =>
             {
                 foreach (DataRow dr in mEmployee_dt.Rows)
@@ -260,6 +262,7 @@ namespace RauViet.ui
                         }
                         dr["HireDate"] = Convert.ToDateTime(matchRow["HireDate"]);
                         dr["FullName"] = matchRow["FullName"]?.ToString();
+                        dr["IsActive"] = Convert.ToBoolean(matchRow["IsActive"]);
                         dr["BankAccountNumber"] = matchRow["BankAccountNumber"]?.ToString();
                         dr["BankName"] = matchRow["BankName"]?.ToString();
                         dr["BankAccountHolder"] = matchRow["BankAccountHolder"]?.ToString();
@@ -290,8 +293,8 @@ namespace RauViet.ui
 
                 if (!employeeLookup.TryGetValue(employeeCode, out DataRow matchRow))
                     return;
-                
-                bool isInsuranceRefund = isLockData ? Convert.ToBoolean(dr["IsInsuranceRefund"]): Convert.ToBoolean(matchRow["IsInsuranceRefund"]);
+
+                bool isInsuranceRefund = isLockData ? Convert.ToBoolean(dr["IsInsuranceRefund"]) : Convert.ToBoolean(matchRow["IsInsuranceRefund"]);
                 int insuranceBaseSalary = dr["InsuranceBaseSalary"] == DBNull.Value ? 0 : Convert.ToInt32(dr["InsuranceBaseSalary"]);
                 int baseSalary = dr["BaseSalary"] == DBNull.Value ? 0 : Convert.ToInt32(dr["BaseSalary"]);
 
@@ -315,7 +318,7 @@ namespace RauViet.ui
             });
 
             // Sau khi tính xong, cập nhật lại DataTable trên UI/main thread
-            
+
             foreach (var r in resultList)
             {
                 var dr = mEmployee_dt.AsEnumerable()
@@ -333,8 +336,10 @@ namespace RauViet.ui
             // ====== 4️⃣ Tính tiền tăng ca ======
             Utils.AddColumnIfNotExists(mOvertimeAttendance_dt, "OvertimeAttendanceSalary", typeof(decimal));
 
+
             foreach (DataRow dr in mOvertimeAttendance_dt.Rows)
             {
+
                 string employeeCode = Convert.ToString(dr["EmployeeCode"]);
                 decimal salaryFactor = dr["SalaryFactor"] == DBNull.Value ? 1 : Convert.ToDecimal(dr["SalaryFactor"]);
                 decimal hourWork = dr["HourWork"] == DBNull.Value ? 0 : Convert.ToDecimal(dr["HourWork"]);
@@ -342,29 +347,32 @@ namespace RauViet.ui
                 var employeeRow = mEmployee_dt.AsEnumerable()
                     .FirstOrDefault(r => r.Field<string>("EmployeeCode") == employeeCode);
 
-                decimal hourSalary = employeeRow?.Field<decimal>("HourSalary") ?? 0;
+                decimal hourSalary = employeeRow?.Field<decimal?>("HourSalary") ?? 0;
 
                 dr["OvertimeAttendanceSalary"] = Math.Round(hourSalary * hourWork * salaryFactor, 1);
             }
 
+
+
             // ====== 5️⃣ Tổng tiền tăng ca theo nhân viên ======
             foreach (DataRow dr in mEmployee_dt.Rows)
             {
+
                 string employeeCode = Convert.ToString(dr["EmployeeCode"]);
-                decimal hourSalary = Convert.ToDecimal(dr["HourSalary"]);
+                decimal hourSalary = dr["HourSalary"] != DBNull.Value ? Convert.ToDecimal(dr["HourSalary"]) : 0;
 
                 //luong
-                decimal totalIncludedInsurance = Convert.ToDecimal(dr["TotalIncludedInsurance"]);
-                decimal totalExcludedInsurance = Convert.ToDecimal(dr["TotalExcludedInsurance"]);
+                decimal totalIncludedInsurance = dr["TotalIncludedInsurance"] != DBNull.Value ? Convert.ToDecimal(dr["TotalIncludedInsurance"]) : 0;
+                decimal totalExcludedInsurance = dr["TotalExcludedInsurance"] != DBNull.Value ? Convert.ToDecimal(dr["TotalExcludedInsurance"]) : 0;
                 decimal totalSalaryHourWork = 0; ;
-                decimal insuranceRefund = Convert.ToDecimal(dr["InsuranceRefund"]);
+                decimal insuranceRefund = dr["InsuranceRefund"] != DBNull.Value ? Convert.ToDecimal(dr["InsuranceRefund"]) : 0;
                 decimal overtimeMoney = 0;
                 decimal leaveMoney = 0;
                 decimal allowanceONCE = 0;
 
                 //các khoảng trừ
                 decimal deductionMoney = 0;
-                decimal employeeInsurancePaid = Convert.ToDecimal(dr["EmployeeInsurancePaid"]);
+                decimal employeeInsurancePaid = dr["EmployeeInsurancePaid"] != DBNull.Value ? Convert.ToDecimal(dr["EmployeeInsurancePaid"]) : 0;
 
                 var hwMatch = attendamceResult.FirstOrDefault(r => r.EmployeeCode == employeeCode);
                 decimal totalHourWork = hwMatch?.TotalHourWork ?? 0;
@@ -424,13 +432,11 @@ namespace RauViet.ui
                     deductionMoney += total;
                 }
 
-
-
                 decimal netSalary = totalSalaryHourWork + insuranceRefund + overtimeMoney + leaveMoney + allowanceONCE;
                 netSalary -= (deductionMoney);
                 dr["NetSalary"] = netSalary;
-
             }
+
         }
 
         public async Task SetupAllGrids()
@@ -438,7 +444,7 @@ namespace RauViet.ui
             // 🔹 Task 1️⃣: Sắp xếp cột Employee
             var t1 = Task.Run(() =>
             {
-                Utils.SetGridOrdinal(mEmployee_dt, new[] { "EmployeeCode", "FullName", "DepartmentName", "ContractTypeName", "NetSalary", "BaseSalary", "TotalSalaryHourWork", "TotalHourWork", "HourSalary", "InsuranceBaseSalary", "TotalInsuranceSalary", "EmployeeInsurancePaid", "InsuranceRefund" });
+                Utils.SetGridOrdinal(mEmployee_dt, new[] { "EmployeeCode", "FullName", "IsActive", "DepartmentName", "ContractTypeName", "NetSalary", "BaseSalary", "TotalSalaryHourWork", "TotalHourWork", "HourSalary", "InsuranceBaseSalary", "TotalInsuranceSalary", "EmployeeInsurancePaid", "InsuranceRefund" });
             });
 
             // 🔹 Task 2️⃣: Sắp xếp cột Leave
@@ -628,6 +634,7 @@ namespace RauViet.ui
                         {"ContractTypeName", "Hợp Đồng" },
                         {"NetSalary", "Thực Lãnh" },
                         {"BaseSalary", "Lương CB" },
+                        {"IsActive", "Đang Làm Việc" },
                         {"InsuranceBaseSalary", "Lương C.S Đóng BHXH" },
                         {"TotalInsuranceSalary", "Lương Tính Đóng BHXH" },
                         {"TotalSalaryHourWork", "T.Lương Theo Giờ" },
@@ -675,6 +682,7 @@ namespace RauViet.ui
                         {"TotalSalaryHourWork", 70},
                         {"TotalHourWork", 50},
                         {"HourSalary", 50},
+                        {"IsActive", 50},
                         {"InsuranceBaseSalary", 70},
                         {"TotalInsuranceSalary", 70},
                         {"EmployeeInsurancePaid", 50},

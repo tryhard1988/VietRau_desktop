@@ -538,4 +538,21 @@ public static class Utils
 
         return dt;
     }
+
+    public static DataTable CreateMonthsInYearTable()
+    {
+        DataTable dt = new DataTable();
+        dt.Columns.Add("Month", typeof(int));
+        dt.Columns.Add("MonthName", typeof(string));
+
+        for (int month = 1; month <= 12; month++)
+        {
+            DataRow dr = dt.NewRow();
+            dr["Month"] = month;
+            dr["MonthName"] =$"Tháng {month.ToString("D2")}";
+            dt.Rows.Add(dr);
+        }
+
+        return dt;
+    }
 }

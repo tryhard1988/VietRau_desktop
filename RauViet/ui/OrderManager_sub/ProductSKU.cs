@@ -11,7 +11,7 @@ namespace RauViet.ui
     {
         bool isNewState = false;
         private LoadingOverlay loadingOverlay;
-        DataTable mPoductSKUHistory_dt, mProductSKU_dt;
+        DataTable mPoductSKUHistory_dt, mProductSKU_dt, mSupplier_dt;
         public ProductSKU()
         {
             InitializeComponent();
@@ -30,6 +30,7 @@ namespace RauViet.ui
             plantingareaCode_tb.TabIndex = countTab++; plantingareaCode_tb.TabStop = true;
             lotCodeHeader_tb.TabIndex = countTab++; lotCodeHeader_tb.TabStop = true;
             priority_tb.TabIndex = countTab++; priority_tb.TabStop = true;
+            supplier_cbb.TabIndex = countTab++; supplier_cbb.TabStop = true;
             luuBtn.TabIndex = countTab++; luuBtn.TabStop = true;
 
 
@@ -87,19 +88,24 @@ namespace RauViet.ui
             {
                 // Chạy truy vấn trên thread riêng
                 var productSKUATask = SQLStore_Kho.Instance.getProductSKUAsync();
+                var supplierTask = SQLStore_Kho.Instance.GetSupplierAsync();
                 var productSKUHistoryTask = SQLStore_Kho.Instance.GetProductSKUHistoryAsync();
 
-                await Task.WhenAll(productSKUATask, productSKUHistoryTask);
+                await Task.WhenAll(productSKUATask, productSKUHistoryTask, supplierTask);
                 mProductSKU_dt = productSKUATask.Result;
                 mPoductSKUHistory_dt = productSKUHistoryTask.Result;
-
-                int count = 0;
+                mSupplier_dt = supplierTask.Result;
 
                 Utils.SetGridOrdinal(mProductSKU_dt, new[] { "SKU", "ProductNameVN", "ProductNameEN", "PackingType", "Package", "PackingList", "BotanicalName", "PriceCNF", "PlantingAreaCode", "LOTCodeHeader", "Priority" });
                
                 priceCNFHisGV.DataSource = mPoductSKUHistory_dt;
                 dataGV.DataSource = mProductSKU_dt;
-                Utils.HideColumns(dataGV, new[] { "ProductSKU", "ProductNameVN_NoSign", "PackingType", "GroupProduct" });
+
+                supplier_cbb.DataSource = mSupplier_dt;
+                supplier_cbb.DisplayMember = "SupplierName";  // hiển thị tên
+                supplier_cbb.ValueMember = "SupplierID";
+
+                Utils.HideColumns(dataGV, new[] { "ProductSKU", "ProductNameVN_NoSign", "PackingType", "GroupProduct", "SupplierID" });
                 Utils.HideColumns(priceCNFHisGV, new[] { "id", "SKU" });
 
                 Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
@@ -112,7 +118,8 @@ namespace RauViet.ui
                     {"PackingType", "Packing\nType" },
                     {"PlantingAreaCode", "Mã\nVùng Trồng" },
                     {"LOTCodeHeader", "Mã LOT\n3 số đầu" },
-                    {"IsActive", "H.Động" }
+                    {"IsActive", "H.Động" },
+                    {"SupplierName", "Nhà Cung Cấp" }
                 });
 
                 Utils.SetGridWidths(dataGV, new System.Collections.Generic.Dictionary<string, int> {
@@ -127,7 +134,8 @@ namespace RauViet.ui
                     {"PackingType", 60},
                     {"PackingList", 60},
                     {"SKU", 60},
-                    {"IsActive", 30}
+                    {"IsActive", 30},
+                    {"SupplierName", 300}
                 });
 
                 dataGV.Columns["PriceCNF"].Visible = !UserManager.Instance.hasRole_AnGiaSanPham();
@@ -192,6 +200,9 @@ namespace RauViet.ui
             string lotCodeHeader = cells["LOTCodeHeader"].Value.ToString();
             bool isActive = Convert.ToBoolean(cells["IsActive"].Value);
 
+            int supplierID = cells["SupplierID"].Value == DBNull.Value ? -1 : Convert.ToInt32(cells["SupplierID"].Value);
+
+            supplier_cbb.SelectedValue = supplierID;
             sku_tb.Text = SKU;
             product_VN_tb.Text = productNameVN;
             product_EN_tb.Text = productNameEN;
@@ -219,7 +230,7 @@ namespace RauViet.ui
        
 
         private async void updateProductSKU(int SKU, string productNameVN, string productNameEN, string packingType, string package, 
-            string packingList, string botanicalName, decimal priceCNF, int priority, string plantingareaCode, string LOTCodeHeader, bool isActive)
+            string packingList, string botanicalName, decimal priceCNF, int priority, string plantingareaCode, string LOTCodeHeader, bool isActive, int? supplierID)
         {
             foreach (DataRow row in mProductSKU_dt.Rows)
             {
@@ -232,7 +243,7 @@ namespace RauViet.ui
                         try
                         {
                             bool isScussess = await SQLManager_Kho.Instance.updateProductSKUAsync(SKU, productNameVN, productNameEN, packingType, package, 
-                                packingList, botanicalName, priceCNF, priority, plantingareaCode, LOTCodeHeader, isActive);
+                                packingList, botanicalName, priceCNF, priority, plantingareaCode, LOTCodeHeader, isActive, supplierID);
 
                             if (isScussess == true)
                             {
@@ -251,7 +262,21 @@ namespace RauViet.ui
                                 row["PlantingAreaCode"] = plantingareaCode;
                                 row["LOTCodeHeader"] = LOTCodeHeader;
                                 row["IsActive"] = isActive;
-                                row["ProductNameVN_NoSign"] = Utils.RemoveVietnameseSigns(productNameVN + " " + SKU).ToLower(); ;
+                                row["ProductNameVN_NoSign"] = Utils.RemoveVietnameseSigns(productNameVN + " " + SKU).ToLower();
+
+                                if(supplierID.HasValue)
+                                {
+                                    row["SupplierID"] = (object)supplierID.Value;
+
+                                    DataRow[] rows = mSupplier_dt.Select($"SupplierID = {supplierID}");
+                                    row["SupplierName"] = rows[0]["SupplierName"].ToString();
+                                }
+                                else
+                                {
+                                    row["SupplierID"] = DBNull.Value;
+                                    row["SupplierName"] = DBNull.Value;
+                                }
+                                   
                                 status_lb.Text = "Thành công.";
                                 status_lb.ForeColor = Color.Green;
                             }
@@ -273,7 +298,7 @@ namespace RauViet.ui
         }
 
         private async void createNewProductSKU(string productNameVN, string productNameEN, string packingType, string package, 
-            string packingList, string botanicalName, decimal priceCNF, int priority, string plantingareaCode, string LOTCodeHeader)
+            string packingList, string botanicalName, decimal priceCNF, int priority, string plantingareaCode, string LOTCodeHeader, int? supplierID)
         {
             DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
@@ -282,7 +307,7 @@ namespace RauViet.ui
                 try
                 {
                     int newId = await SQLManager_Kho.Instance.insertProductSKUAsync(productNameVN, productNameEN, packingType, package, 
-                        packingList, botanicalName, priceCNF, priority, plantingareaCode, LOTCodeHeader);
+                        packingList, botanicalName, priceCNF, priority, plantingareaCode, LOTCodeHeader, supplierID);
                     if (newId > 0)
                     {
                         SQLStore_Kho.Instance.removeProductpacking();
@@ -309,6 +334,18 @@ namespace RauViet.ui
                         drToAdd["ProductSKU"] = newId;
                         sku_tb.Text = newId.ToString();
 
+                        if (supplierID.HasValue)
+                        {
+                            drToAdd["SupplierID"] = (object)supplierID.Value;
+
+                            DataRow[] rows = mSupplier_dt.Select($"SupplierID = {supplierID}");
+                            drToAdd["SupplierName"] = rows[0]["SupplierName"].ToString();
+                        }
+                        else
+                        {
+                            drToAdd["SupplierID"] = DBNull.Value;
+                            drToAdd["SupplierName"] = DBNull.Value;
+                        }
 
                         dataTable.Rows.Add(drToAdd);
                         dataTable.AcceptChanges();
@@ -360,14 +397,17 @@ namespace RauViet.ui
             string lotCode = lotCodeHeader_tb.Text;
             string package = package_tb.Text.Replace(" ", "").ToLower();
             bool isActive = isActive_cb.Checked;
+            int? supplierID = null;
+            if (!string.IsNullOrEmpty(supplier_cbb.Text) && supplier_cbb.SelectedValue != null && Convert.ToInt32(supplier_cbb.SelectedValue) > 0)
+                supplierID = Convert.ToInt32(supplier_cbb.SelectedValue);
 
             if (sku_tb.Text.Length != 0)
                 updateProductSKU(Convert.ToInt32(sku_tb.Text), productNameVN, productNameEN, packingType, package, packingList, botanicalName_tb.Text,
-                    Convert.ToDecimal(priceCNF_tb.Text), Convert.ToInt32(priority_tb.Text), plantingareaCode, lotCode, isActive);
+                    Convert.ToDecimal(priceCNF_tb.Text), Convert.ToInt32(priority_tb.Text), plantingareaCode, lotCode, isActive, supplierID);
             else
             {
                 createNewProductSKU(productNameVN, productNameEN, packingType, package,
-                    packingList, botanicalName_tb.Text, Convert.ToDecimal(priceCNF_tb.Text), Convert.ToInt32(priority_tb.Text), plantingareaCode, lotCode);
+                    packingList, botanicalName_tb.Text, Convert.ToDecimal(priceCNF_tb.Text), Convert.ToInt32(priority_tb.Text), plantingareaCode, lotCode, supplierID);
             }
             info_gb.BackColor = Color.Gray;
            // await SQLStore.Instance.getProductpackingAsync(true);
@@ -519,14 +559,14 @@ namespace RauViet.ui
             lotCodeHeader_tb.ReadOnly = isReadOnly;
             priority_tb.ReadOnly = isReadOnly;
             isActive_cb.Enabled = !isReadOnly;
-            
+            supplier_cbb.Enabled = !isReadOnly;
         }
 
         private void RightUIEnable(bool enable)
         {
             product_VN_tb.Enabled = enable;
-            product_EN_tb.Enabled = enable;
-           // package_tb.Enabled = enable;
+            product_EN_tb.Enabled = enable;            
+            // package_tb.Enabled = enable;
             //packing_tb.Enabled = enable;
             botanicalName_tb.Enabled = enable;
         }

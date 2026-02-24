@@ -59,9 +59,15 @@ namespace RauViet.ui
 
             {
                 if (UserManager.Instance.hasRole_SanPhamChinh())
+                {
                     productMain_menuitem.Click += Products_SKU_btn_Click;
+                    supplier_mi.Click += Supplier_mi_Click;
+                }
                 else
+                {
                     productMain_menuitem.Visible = false;
+                    supplier_mi.Visible = false;
+                }
 
                 if (UserManager.Instance.hasRole_SanPhamQuyCach())
                 {
@@ -377,7 +383,8 @@ namespace RauViet.ui
             KhoVatTu_MaterialExport,
             KhoVatTu_MaterialImport,
             KhoVatTu_MaterialInvenStore,
-            SumaryAttendanceReport
+            SumaryAttendanceReport,
+            Supplier
         }
 
         private void openCurrentForm(EForm status)
@@ -595,6 +602,9 @@ namespace RauViet.ui
                 case EForm.SumaryAttendanceReport:
                     SwitchChildForm<SumaryAttendanceReport>("So Sánh Giờ Công");
                     break;
+                case EForm.Supplier:
+                    SwitchChildForm<Supplier>("Nhà Cung Cấp");
+                    break;
             }
             
             Properties.Settings.Default.current_form = status.ToString();
@@ -671,7 +681,8 @@ namespace RauViet.ui
         private void plantingManagement_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.KhoVatTu_PlantingManagement); }
         private void materialExport_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.KhoVatTu_MaterialExport); }
         private void MaterialImport_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.KhoVatTu_MaterialImport); }
-        private void TonKhoVatTu_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.KhoVatTu_MaterialInvenStore); ; }
+        private void TonKhoVatTu_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.KhoVatTu_MaterialInvenStore); }
+        private void Supplier_mi_Click(object sender, EventArgs e){ openCurrentForm(EForm.Supplier); }
         private async void checkLoginTimer_Tick(object sender, EventArgs e)
         {
             var isHave = await SQLManager.Instance.HaveOtherComputerLoginAsync();
