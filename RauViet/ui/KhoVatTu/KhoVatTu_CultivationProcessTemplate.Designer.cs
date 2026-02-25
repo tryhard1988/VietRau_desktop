@@ -1,7 +1,7 @@
 ﻿
 namespace RauViet.ui
 {
-    partial class KhoVatTu_MaterialImport
+    partial class KhoVatTu_CultivationProcessTemplate
     {
         /// <summary>
         /// Required designer variable.
@@ -37,13 +37,19 @@ namespace RauViet.ui
             this.edit_btn = new System.Windows.Forms.Button();
             this.newCustomerBtn = new System.Windows.Forms.Button();
             this.info_gb = new System.Windows.Forms.GroupBox();
-            this.giaMua_tb = new System.Windows.Forms.TextBox();
+            this.waterAmount_tb = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
-            this.note_tb = new System.Windows.Forms.TextBox();
+            this.daysAfter_tb = new System.Windows.Forms.TextBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.cultivationType_CBB = new System.Windows.Forms.ComboBox();
+            this.label9 = new System.Windows.Forms.Label();
+            this.sku_CBB = new System.Windows.Forms.ComboBox();
             this.label8 = new System.Windows.Forms.Label();
-            this.ngayNhap_dtp = new System.Windows.Forms.DateTimePicker();
+            this.baseDateType_CBB = new System.Windows.Forms.ComboBox();
+            this.congViec_CBB = new System.Windows.Forms.ComboBox();
+            this.label3 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
-            this.soLuong_tb = new System.Windows.Forms.TextBox();
+            this.materialQuantity_tb = new System.Windows.Forms.TextBox();
             this.vatTu_CB = new System.Windows.Forms.ComboBox();
             this.label7 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
@@ -52,12 +58,14 @@ namespace RauViet.ui
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
             this.dayGV = new System.Windows.Forms.DataGridView();
+            this.panel3 = new System.Windows.Forms.Panel();
             this.dataGV = new System.Windows.Forms.DataGridView();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.log_GV)).BeginInit();
             this.info_gb.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dayGV)).BeginInit();
+            this.panel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
             this.SuspendLayout();
             // 
@@ -74,15 +82,15 @@ namespace RauViet.ui
             this.panel1.Controls.Add(this.status_lb);
             this.panel1.Controls.Add(this.LuuThayDoiBtn);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel1.Location = new System.Drawing.Point(716, 0);
+            this.panel1.Location = new System.Drawing.Point(816, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(633, 758);
+            this.panel1.Size = new System.Drawing.Size(533, 758);
             this.panel1.TabIndex = 69;
             // 
             // monthYear_dtp
             // 
             this.monthYear_dtp.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.monthYear_dtp.Location = new System.Drawing.Point(212, 11);
+            this.monthYear_dtp.Location = new System.Drawing.Point(212, 10);
             this.monthYear_dtp.Name = "monthYear_dtp";
             this.monthYear_dtp.Size = new System.Drawing.Size(98, 26);
             this.monthYear_dtp.TabIndex = 73;
@@ -93,9 +101,9 @@ namespace RauViet.ui
             this.label4.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.label4.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label4.ForeColor = System.Drawing.Color.DarkOliveGreen;
-            this.label4.Location = new System.Drawing.Point(0, 566);
+            this.label4.Location = new System.Drawing.Point(0, 554);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(633, 23);
+            this.label4.Size = new System.Drawing.Size(533, 23);
             this.label4.TabIndex = 70;
             this.label4.Text = "Lịch sử thay đổi";
             this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -106,10 +114,10 @@ namespace RauViet.ui
             this.log_GV.AllowUserToDeleteRows = false;
             this.log_GV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.log_GV.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.log_GV.Location = new System.Drawing.Point(0, 589);
+            this.log_GV.Location = new System.Drawing.Point(0, 577);
             this.log_GV.Name = "log_GV";
             this.log_GV.ReadOnly = true;
-            this.log_GV.Size = new System.Drawing.Size(633, 169);
+            this.log_GV.Size = new System.Drawing.Size(533, 181);
             this.log_GV.TabIndex = 69;
             // 
             // readOnly_btn
@@ -147,94 +155,155 @@ namespace RauViet.ui
             // 
             // info_gb
             // 
-            this.info_gb.Controls.Add(this.giaMua_tb);
+            this.info_gb.Controls.Add(this.waterAmount_tb);
             this.info_gb.Controls.Add(this.label2);
-            this.info_gb.Controls.Add(this.note_tb);
+            this.info_gb.Controls.Add(this.daysAfter_tb);
+            this.info_gb.Controls.Add(this.label10);
+            this.info_gb.Controls.Add(this.cultivationType_CBB);
+            this.info_gb.Controls.Add(this.label9);
+            this.info_gb.Controls.Add(this.sku_CBB);
             this.info_gb.Controls.Add(this.label8);
-            this.info_gb.Controls.Add(this.ngayNhap_dtp);
+            this.info_gb.Controls.Add(this.baseDateType_CBB);
+            this.info_gb.Controls.Add(this.congViec_CBB);
+            this.info_gb.Controls.Add(this.label3);
             this.info_gb.Controls.Add(this.label5);
-            this.info_gb.Controls.Add(this.soLuong_tb);
+            this.info_gb.Controls.Add(this.materialQuantity_tb);
             this.info_gb.Controls.Add(this.vatTu_CB);
             this.info_gb.Controls.Add(this.label7);
             this.info_gb.Controls.Add(this.label1);
             this.info_gb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.info_gb.Location = new System.Drawing.Point(17, 74);
             this.info_gb.Name = "info_gb";
-            this.info_gb.Size = new System.Drawing.Size(513, 227);
+            this.info_gb.Size = new System.Drawing.Size(513, 272);
             this.info_gb.TabIndex = 43;
             this.info_gb.TabStop = false;
             // 
-            // giaMua_tb
+            // waterAmount_tb
             // 
-            this.giaMua_tb.Location = new System.Drawing.Point(112, 131);
-            this.giaMua_tb.Name = "giaMua_tb";
-            this.giaMua_tb.Size = new System.Drawing.Size(98, 23);
-            this.giaMua_tb.TabIndex = 82;
+            this.waterAmount_tb.Location = new System.Drawing.Point(182, 237);
+            this.waterAmount_tb.Name = "waterAmount_tb";
+            this.waterAmount_tb.Size = new System.Drawing.Size(98, 23);
+            this.waterAmount_tb.TabIndex = 89;
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(33, 132);
+            this.label2.Location = new System.Drawing.Point(50, 236);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(58, 16);
-            this.label2.TabIndex = 81;
-            this.label2.Text = "Giá Mua:";
+            this.label2.Size = new System.Drawing.Size(119, 16);
+            this.label2.TabIndex = 88;
+            this.label2.Text = "Lượng Nước(1 m2):";
             // 
-            // note_tb
+            // daysAfter_tb
             // 
-            this.note_tb.Location = new System.Drawing.Point(112, 168);
-            this.note_tb.Multiline = true;
-            this.note_tb.Name = "note_tb";
-            this.note_tb.Size = new System.Drawing.Size(317, 54);
-            this.note_tb.TabIndex = 80;
+            this.daysAfter_tb.Location = new System.Drawing.Point(182, 115);
+            this.daysAfter_tb.Name = "daysAfter_tb";
+            this.daysAfter_tb.Size = new System.Drawing.Size(98, 23);
+            this.daysAfter_tb.TabIndex = 87;
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(51, 116);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(118, 16);
+            this.label10.TabIndex = 86;
+            this.label10.Text = "Khoảng Cách Ngày:";
+            // 
+            // cultivationType_CBB
+            // 
+            this.cultivationType_CBB.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cultivationType_CBB.FormattingEnabled = true;
+            this.cultivationType_CBB.IntegralHeight = false;
+            this.cultivationType_CBB.Location = new System.Drawing.Point(182, 53);
+            this.cultivationType_CBB.Name = "cultivationType_CBB";
+            this.cultivationType_CBB.Size = new System.Drawing.Size(188, 24);
+            this.cultivationType_CBB.TabIndex = 85;
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(76, 56);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(93, 16);
+            this.label9.TabIndex = 84;
+            this.label9.Text = "Loại Canh Tác:";
+            // 
+            // sku_CBB
+            // 
+            this.sku_CBB.FormattingEnabled = true;
+            this.sku_CBB.IntegralHeight = false;
+            this.sku_CBB.Location = new System.Drawing.Point(182, 22);
+            this.sku_CBB.Name = "sku_CBB";
+            this.sku_CBB.Size = new System.Drawing.Size(188, 24);
+            this.sku_CBB.TabIndex = 83;
             // 
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(36, 185);
+            this.label8.Location = new System.Drawing.Point(98, 26);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(56, 16);
-            this.label8.TabIndex = 79;
-            this.label8.Text = "Ghi Chú:";
+            this.label8.Size = new System.Drawing.Size(71, 16);
+            this.label8.TabIndex = 82;
+            this.label8.Text = "Cây Trồng:";
             // 
-            // ngayNhap_dtp
+            // baseDateType_CBB
             // 
-            this.ngayNhap_dtp.CalendarTitleBackColor = System.Drawing.SystemColors.ControlText;
-            this.ngayNhap_dtp.CalendarTitleForeColor = System.Drawing.SystemColors.Highlight;
-            this.ngayNhap_dtp.Location = new System.Drawing.Point(112, 22);
-            this.ngayNhap_dtp.Name = "ngayNhap_dtp";
-            this.ngayNhap_dtp.Size = new System.Drawing.Size(104, 23);
-            this.ngayNhap_dtp.TabIndex = 74;
+            this.baseDateType_CBB.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.baseDateType_CBB.FormattingEnabled = true;
+            this.baseDateType_CBB.IntegralHeight = false;
+            this.baseDateType_CBB.Location = new System.Drawing.Point(182, 84);
+            this.baseDateType_CBB.Name = "baseDateType_CBB";
+            this.baseDateType_CBB.Size = new System.Drawing.Size(188, 24);
+            this.baseDateType_CBB.TabIndex = 81;
+            // 
+            // congViec_CBB
+            // 
+            this.congViec_CBB.FormattingEnabled = true;
+            this.congViec_CBB.IntegralHeight = false;
+            this.congViec_CBB.Location = new System.Drawing.Point(182, 145);
+            this.congViec_CBB.Name = "congViec_CBB";
+            this.congViec_CBB.Size = new System.Drawing.Size(157, 24);
+            this.congViec_CBB.TabIndex = 76;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(100, 146);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(69, 16);
+            this.label3.TabIndex = 75;
+            this.label3.Text = "Công Việc:";
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(33, 24);
+            this.label5.Location = new System.Drawing.Point(76, 86);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(73, 16);
+            this.label5.Size = new System.Drawing.Size(93, 16);
             this.label5.TabIndex = 73;
-            this.label5.Text = "Ngày Nhập:";
+            this.label5.Text = "Mốc Thời Gian:";
             // 
-            // soLuong_tb
+            // materialQuantity_tb
             // 
-            this.soLuong_tb.Location = new System.Drawing.Point(112, 95);
-            this.soLuong_tb.Name = "soLuong_tb";
-            this.soLuong_tb.Size = new System.Drawing.Size(98, 23);
-            this.soLuong_tb.TabIndex = 68;
+            this.materialQuantity_tb.Location = new System.Drawing.Point(182, 207);
+            this.materialQuantity_tb.Name = "materialQuantity_tb";
+            this.materialQuantity_tb.Size = new System.Drawing.Size(98, 23);
+            this.materialQuantity_tb.TabIndex = 68;
             // 
             // vatTu_CB
             // 
             this.vatTu_CB.FormattingEnabled = true;
             this.vatTu_CB.IntegralHeight = false;
-            this.vatTu_CB.Location = new System.Drawing.Point(112, 58);
+            this.vatTu_CB.Location = new System.Drawing.Point(182, 176);
             this.vatTu_CB.Name = "vatTu_CB";
-            this.vatTu_CB.Size = new System.Drawing.Size(293, 24);
+            this.vatTu_CB.Size = new System.Drawing.Size(283, 24);
             this.vatTu_CB.TabIndex = 67;
             // 
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(33, 60);
+            this.label7.Location = new System.Drawing.Point(118, 176);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(51, 16);
             this.label7.TabIndex = 53;
@@ -243,11 +312,11 @@ namespace RauViet.ui
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(33, 96);
+            this.label1.Location = new System.Drawing.Point(21, 206);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(66, 16);
+            this.label1.Size = new System.Drawing.Size(148, 16);
             this.label1.TabIndex = 47;
-            this.label1.Text = "Số Lượng:";
+            this.label1.Text = "Số Lượng Vật Tư(1 m2):";
             // 
             // id_tb
             // 
@@ -262,7 +331,7 @@ namespace RauViet.ui
             // 
             this.status_lb.AutoSize = true;
             this.status_lb.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.status_lb.Location = new System.Drawing.Point(4, 317);
+            this.status_lb.Location = new System.Drawing.Point(4, 364);
             this.status_lb.Name = "status_lb";
             this.status_lb.Size = new System.Drawing.Size(59, 23);
             this.status_lb.TabIndex = 40;
@@ -272,7 +341,7 @@ namespace RauViet.ui
             // 
             this.LuuThayDoiBtn.BackColor = System.Drawing.SystemColors.Highlight;
             this.LuuThayDoiBtn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LuuThayDoiBtn.Location = new System.Drawing.Point(254, 308);
+            this.LuuThayDoiBtn.Location = new System.Drawing.Point(254, 355);
             this.LuuThayDoiBtn.Name = "LuuThayDoiBtn";
             this.LuuThayDoiBtn.Size = new System.Drawing.Size(104, 43);
             this.LuuThayDoiBtn.TabIndex = 25;
@@ -286,7 +355,7 @@ namespace RauViet.ui
             this.panel2.Location = new System.Drawing.Point(0, 0);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(200, 758);
-            this.panel2.TabIndex = 71;
+            this.panel2.TabIndex = 70;
             // 
             // dayGV
             // 
@@ -300,27 +369,36 @@ namespace RauViet.ui
             this.dayGV.Size = new System.Drawing.Size(200, 758);
             this.dayGV.TabIndex = 71;
             // 
+            // panel3
+            // 
+            this.panel3.Controls.Add(this.dataGV);
+            this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel3.Location = new System.Drawing.Point(200, 0);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(616, 758);
+            this.panel3.TabIndex = 71;
+            // 
             // dataGV
             // 
             this.dataGV.AllowUserToAddRows = false;
             this.dataGV.AllowUserToDeleteRows = false;
             this.dataGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGV.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dataGV.Location = new System.Drawing.Point(200, 0);
+            this.dataGV.Location = new System.Drawing.Point(0, 0);
             this.dataGV.Name = "dataGV";
             this.dataGV.ReadOnly = true;
-            this.dataGV.Size = new System.Drawing.Size(516, 758);
-            this.dataGV.TabIndex = 72;
+            this.dataGV.Size = new System.Drawing.Size(616, 758);
+            this.dataGV.TabIndex = 71;
             // 
-            // KhoVatTu_MaterialImport
+            // KhoVatTu_CultivationProcessTemplate
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1349, 758);
-            this.Controls.Add(this.dataGV);
+            this.Controls.Add(this.panel3);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
-            this.Name = "KhoVatTu_MaterialImport";
+            this.Name = "KhoVatTu_CultivationProcessTemplate";
             this.Text = "FormTableData";
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
@@ -329,6 +407,7 @@ namespace RauViet.ui
             this.info_gb.PerformLayout();
             this.panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dayGV)).EndInit();
+            this.panel3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).EndInit();
             this.ResumeLayout(false);
 
@@ -346,18 +425,25 @@ namespace RauViet.ui
         private System.Windows.Forms.Label status_lb;
         private System.Windows.Forms.Button LuuThayDoiBtn;
         private System.Windows.Forms.ComboBox vatTu_CB;
-        private System.Windows.Forms.TextBox soLuong_tb;
+        private System.Windows.Forms.TextBox materialQuantity_tb;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.DataGridView log_GV;
         private System.Windows.Forms.DateTimePicker monthYear_dtp;
-        private System.Windows.Forms.DateTimePicker ngayNhap_dtp;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.TextBox note_tb;
-        private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.TextBox giaMua_tb;
-        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.ComboBox congViec_CBB;
+        private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.DataGridView dayGV;
+        private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.DataGridView dataGV;
+        private System.Windows.Forms.ComboBox baseDateType_CBB;
+        private System.Windows.Forms.TextBox daysAfter_tb;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.ComboBox cultivationType_CBB;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.ComboBox sku_CBB;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.TextBox waterAmount_tb;
+        private System.Windows.Forms.Label label2;
     }
 }

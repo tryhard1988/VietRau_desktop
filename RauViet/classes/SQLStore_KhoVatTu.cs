@@ -20,6 +20,7 @@ namespace RauViet.classes
         DataTable mUnit_dt = null;
         DataTable mMaterialCategory_dt = null;
         DataTable mMaterial_dt = null;
+        DataTable mCultivationProcessTemplate_dt = null;
 
         Dictionary<int, DataTable> mPlantingManagements = null;
         Dictionary<string, DataTable> mMaterialExports = null;
@@ -291,7 +292,7 @@ namespace RauViet.classes
 
             return mWorkType_dt;
         }
-
+        
         public async Task<DataTable> GetCultivationTypeAsync()
         {
             if (mCultivationType_dt == null)
@@ -309,6 +310,20 @@ namespace RauViet.classes
             }
 
             return mCultivationType_dt;
+        }
+
+        public DataTable GetBaseDateType()
+        {
+            DataTable baseDateType_dt = new DataTable();
+            
+            baseDateType_dt.Columns.Add("Value", typeof(string));
+            baseDateType_dt.Columns.Add("Text", typeof(string));
+
+            baseDateType_dt.Rows.Add("NurseryDate", "Ngày Ươm");
+            baseDateType_dt.Rows.Add("PlantingDate", "Ngày Trồng");
+            baseDateType_dt.Rows.Add("HarvestDate", "Ngày Thu");
+
+            return baseDateType_dt;
         }
 
         void editWorkType(DataTable data)
@@ -523,6 +538,53 @@ namespace RauViet.classes
             }
 
             return mPlantingManagementLogs[year];
+        }
+
+        public async Task<DataTable> GetCultivationProcessTemplateAsync()
+        {
+            if (mCultivationProcessTemplate_dt == null)
+            {
+                try
+                {
+                    mCultivationProcessTemplate_dt = await SQLManager_KhoVatTu.Instance.GetCultivationProcessTemplateAsync();
+                    editCultivationProcessTemplate(mCultivationProcessTemplate_dt);
+                }
+                catch
+                {
+                    Console.WriteLine("error GetMaterialCategoryAsync SQLStore");
+                    return null;
+                }
+            }
+
+            return mCultivationProcessTemplate_dt;
+        }
+
+        private async void editCultivationProcessTemplate(DataTable data)
+        {   
+            data.Columns.Add("ProductNameVN", typeof(string));
+            data.Columns.Add("CultivationTypeName", typeof(string));
+            data.Columns.Add("BaseDateTypeName", typeof(string));
+            data.Columns.Add("WorkTypeName", typeof(string));
+            data.Columns.Add("MaterialName", typeof(string));
+
+            DataTable baseDateType_dt = GetBaseDateType();
+            DataTable productSKU_dt = await SQLStore_Kho.Instance.getProductSKUAsync();
+            foreach (DataRow row in data.Rows)
+            {
+                int sku = Convert.ToInt32(row["SKU"]);
+                int cultivationTypeID = Convert.ToInt32(row["CultivationTypeID"]);
+                string baseDateType = Convert.ToString(row["BaseDateType"]);
+                int workTypeID = Convert.ToInt32(row["WorkTypeID"]);
+                int materialID = Convert.ToInt32(row["MaterialID"]);
+
+                DataRow baseDateTypeRow = baseDateType_dt.AsEnumerable().FirstOrDefault(r => r.Field<string>("Value") == baseDateType);
+                if (baseDateTypeRow != null)
+                    row["BaseDateTypeName"] = baseDateTypeRow["Text"].ToString();
+
+                DataRow skuRow = productSKU_dt.AsEnumerable().FirstOrDefault(r => r.Field<int>("ProductSKU") == sku);
+                if (skuRow != null)
+                    row["ProductNameVN"] = skuRow["ProductNameVN"].ToString();
+            }
         }
     }
     

@@ -271,6 +271,7 @@ namespace RauViet.ui
                 qlVatTu_group.Visible = false;
 
             plantingManagement_mi.Click += plantingManagement_mi_Click;
+            cultivationProcessTemplate_mi.Click += CultivationProcessTemplate_mi_Click; ;
 
             historyLogin_mi.Click += HistoryLogin_mi_Click;
             
@@ -384,7 +385,8 @@ namespace RauViet.ui
             KhoVatTu_MaterialImport,
             KhoVatTu_MaterialInvenStore,
             SumaryAttendanceReport,
-            Supplier
+            Supplier,
+            KhoVatTu_CultivationProcessTemplate
         }
 
         private void openCurrentForm(EForm status)
@@ -605,6 +607,9 @@ namespace RauViet.ui
                 case EForm.Supplier:
                     SwitchChildForm<Supplier>("Nhà Cung Cấp");
                     break;
+                case EForm.KhoVatTu_CultivationProcessTemplate:
+                    SwitchChildForm<KhoVatTu_CultivationProcessTemplate>("Các Mẫu Quy Trình Sản Xuất Cây Trồng");
+                    break;
             }
             
             Properties.Settings.Default.current_form = status.ToString();
@@ -679,6 +684,7 @@ namespace RauViet.ui
         private void ResoncileDomesticDebts_Year_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.ResoncileDomesticDebts_Year); }
         private void khoVaTu_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.KhoVatTu_Materials); }
         private void plantingManagement_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.KhoVatTu_PlantingManagement); }
+        private void CultivationProcessTemplate_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.KhoVatTu_CultivationProcessTemplate); }
         private void materialExport_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.KhoVatTu_MaterialExport); }
         private void MaterialImport_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.KhoVatTu_MaterialImport); }
         private void TonKhoVatTu_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.KhoVatTu_MaterialInvenStore); }

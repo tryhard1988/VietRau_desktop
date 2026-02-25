@@ -379,13 +379,13 @@ namespace RauViet.classes
             return dt;
         }
 
-        public async Task<int> insertPlantingManagementAsync(string ProductionOrder, int SKU, decimal Area, int Quantity, DateTime NurseryDate, DateTime PlantingDate, DateTime HarvestDate, int? Department, string Supervisor, string Note)
+        public async Task<int> insertPlantingManagementAsync(string ProductionOrder, int SKU, decimal Area, int Quantity, DateTime NurseryDate, DateTime PlantingDate, DateTime HarvestDate, int? Department, string Supervisor, string Note, int cultivationTypeID)
         {
             int newId = -1;
 
-            string insertQuery = @"INSERT INTO PlantingManagement (ProductionOrder, SKU, Area, Quantity, NurseryDate, PlantingDate, HarvestDate, Department, Supervisor, Note)
+            string insertQuery = @"INSERT INTO PlantingManagement (ProductionOrder, SKU, Area, Quantity, NurseryDate, PlantingDate, HarvestDate, Department, Supervisor, Note, CultivationTypeID)
                                     OUTPUT INSERTED.PlantingID
-                                    VALUES (@ProductionOrder, @SKU, @Area, @Quantity, @NurseryDate, @PlantingDate, @HarvestDate, @Department, @Supervisor, @Note)";
+                                    VALUES (@ProductionOrder, @SKU, @Area, @Quantity, @NurseryDate, @PlantingDate, @HarvestDate, @Department, @Supervisor, @Note, @CultivationTypeID)";
 
             try
             {
@@ -404,6 +404,7 @@ namespace RauViet.classes
                         cmd.Parameters.Add("@PlantingDate", SqlDbType.Date).Value = PlantingDate;
                         cmd.Parameters.Add("@HarvestDate", SqlDbType.Date).Value = HarvestDate;
                         cmd.Parameters.Add("@Department", SqlDbType.Int).Value = Department.HasValue ? (object)Department.Value : DBNull.Value;
+                        cmd.Parameters.Add("@CultivationTypeID", SqlDbType.Int).Value = cultivationTypeID;
                         cmd.Parameters.Add("@Supervisor", SqlDbType.NVarChar).Value = string.IsNullOrWhiteSpace(Supervisor) ? DBNull.Value : (object)Supervisor;
                         cmd.Parameters.Add("@Note", SqlDbType.NVarChar).Value = Note;
 
@@ -422,7 +423,7 @@ namespace RauViet.classes
             }
         }
 
-        public async Task<bool> updatePlantingManagementAsync(int PlantingID, string ProductionOrder, int SKU, decimal Area, int Quantity, DateTime NurseryDate, DateTime PlantingDate, DateTime HarvestDate, int Department, string Supervisor, string Note,  bool IsCompleted)
+        public async Task<bool> updatePlantingManagementAsync(int PlantingID, string ProductionOrder, int SKU, decimal Area, int Quantity, DateTime NurseryDate, DateTime PlantingDate, DateTime HarvestDate, int Department, string Supervisor, string Note,  bool IsCompleted, int cultivationTypeID)
         {
             string query = @"UPDATE PlantingManagement SET
                                 ProductionOrder=@ProductionOrder,
@@ -435,7 +436,8 @@ namespace RauViet.classes
                                 Department=@Department,
                                 Supervisor=@Supervisor,
                                 Note=@Note,
-                                IsCompleted=@IsCompleted
+                                IsCompleted=@IsCompleted,
+                                CultivationTypeID=@CultivationTypeID
                              WHERE PlantingID=@PlantingID";
             try
             {
@@ -453,6 +455,7 @@ namespace RauViet.classes
                         cmd.Parameters.AddWithValue("@PlantingDate", PlantingDate);
                         cmd.Parameters.AddWithValue("@HarvestDate", HarvestDate);
                         cmd.Parameters.AddWithValue("@Department", Department);
+                        cmd.Parameters.AddWithValue("@CultivationTypeID", cultivationTypeID);
                         cmd.Parameters.AddWithValue("@Supervisor", Supervisor);
                         cmd.Parameters.AddWithValue("@Note", Note);
                         cmd.Parameters.AddWithValue("@IsCompleted", IsCompleted);
@@ -874,6 +877,65 @@ namespace RauViet.classes
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 {
                     cmd.Parameters.Add("@Year", SqlDbType.Int).Value = year;
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
+        }
+        public async Task<int> insertMaterialExportAsync(int sku, int cultivationTypeID, string baseDateType, int daysAfter, int workTypeID, int? materialID, decimal materialQuantity, decimal waterAmount)
+        {
+            int newId = -1;
+
+            string insertQuery = @"INSERT INTO CultivationProcessTemplate (SKU, CultivationTypeID, BaseDateType, DaysAfter, WorkTypeID, MaterialID, MaterialQuantity, WaterAmount)
+                                    OUTPUT INSERTED.ProcessTemplateID
+                                    VALUES (@SKU, @CultivationTypeID, @BaseDateType, @DaysAfter, @WorkTypeID, @MaterialID, @MaterialQuantity, @WaterAmount)";
+
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
+                {
+                    await con.OpenAsync();
+
+                    // 2️⃣ Insert và lấy ID mới
+                    using (SqlCommand cmd = new SqlCommand(insertQuery, con))
+                    {
+                        cmd.Parameters.Add("@SKU", SqlDbType.Int).Value = sku;
+                        cmd.Parameters.Add("@CultivationTypeID", SqlDbType.Int).Value = cultivationTypeID;
+                        cmd.Parameters.Add("@BaseDateType", SqlDbType.NVarChar).Value = baseDateType;
+                        cmd.Parameters.Add("@DaysAfter", SqlDbType.Int).Value = daysAfter;
+                        cmd.Parameters.Add("@WorkTypeID", SqlDbType.Int).Value = workTypeID;
+                        cmd.Parameters.Add("@MaterialID", SqlDbType.Decimal).Value = materialID.HasValue ? (object)materialID.Value : DBNull.Value;
+                        cmd.Parameters.Add("@MaterialQuantity", SqlDbType.Decimal).Value = materialQuantity;
+                        cmd.Parameters.Add("@WaterAmount", SqlDbType.Decimal).Value = waterAmount;
+
+                        object result = await cmd.ExecuteScalarAsync();
+                        if (result != null)
+                            newId = Convert.ToInt32(result);
+                    }
+                }
+
+                return newId;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("ERROR: " + ex.Message);
+                return -1;
+            }
+        }
+
+        public async Task<DataTable> GetCultivationProcessTemplateAsync()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT * FROM CultivationProcessTemplate";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
                     using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                     {
                         dt.Load(reader);

@@ -12,7 +12,7 @@ namespace RauViet.ui
 {
     public partial class KhoVatTu_PlantingManagement : Form
     {
-        System.Data.DataTable mPlantingManagement_dt, mDepartment_dt, mProductSKU_dt, mEmployee_dt;
+        System.Data.DataTable mPlantingManagement_dt, mDepartment_dt, mProductSKU_dt, mEmployee_dt, mCultivationType_dt;
         private Timer productSKUDebounceTimer = new Timer { Interval = 300 };
         private Timer employeeDebounceTimer = new Timer { Interval = 300 };
         private Timer departmentDebounceTimer = new Timer { Interval = 300 };
@@ -115,14 +115,16 @@ namespace RauViet.ui
 
                 var employeesTask = SQLStore_QLNS.Instance.GetEmployeesAsync(keepColumns);
                 var departmentTask = SQLStore_QLNS.Instance.GetDepartmentAsync();
+                var cultivationTypeTask = SQLStore_KhoVatTu.Instance.GetCultivationTypeAsync();
                 var productSKUTask = SQLStore_Kho.Instance.getProductSKUAsync(parameters);
                 var plantingManagementTask = SQLStore_KhoVatTu.Instance.getPlantingManagementAsync(monthYear_dtp.Value.Year);
                 var logTask = SQLStore_KhoVatTu.Instance.getPlantingManagementLogAsync(monthYear_dtp.Value.Year);
-                await Task.WhenAll(departmentTask, productSKUTask, plantingManagementTask, employeesTask);
+                await Task.WhenAll(departmentTask, productSKUTask, plantingManagementTask, employeesTask, cultivationTypeTask);
                 mDepartment_dt = departmentTask.Result;
                 mProductSKU_dt = productSKUTask.Result;
                 mPlantingManagement_dt = plantingManagementTask.Result;
                 mEmployee_dt = employeesTask.Result;
+                mCultivationType_dt = cultivationTypeTask.Result;
 
                 deparment_CBB.DataSource = mDepartment_dt;
                 deparment_CBB.DisplayMember = "DepartmentName";  // hiển thị tên
@@ -138,6 +140,10 @@ namespace RauViet.ui
                 nguoiPhuTrach_CB.DisplayMember = "FullName";  // hiển thị tên
                 nguoiPhuTrach_CB.ValueMember = "EmployeeCode";
                 nguoiPhuTrach_CB.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+
+                cultivationType_CB.DataSource = mCultivationType_dt;
+                cultivationType_CB.DisplayMember = "CultivationTypeName";  // hiển thị tên
+                cultivationType_CB.ValueMember = "CultivationTypeID";
 
                 dataGV.DataSource = mPlantingManagement_dt;
                 monthGV.DataSource = Utils.CreateMonthsInYearTable();
@@ -340,11 +346,13 @@ namespace RauViet.ui
             updateRightUI();            
         }
 
-        private async void updateItem(int plantingID, string ProductionOrder, int SKU, decimal Area, int Quantity, DateTime NurseryDate, DateTime PlantingDate, DateTime HarvestDate, int Department, string Supervisor, string Note, bool IsCompleted)
+        private async void updateItem(int plantingID, string ProductionOrder, int SKU, decimal Area, int Quantity, DateTime NurseryDate, DateTime PlantingDate, DateTime HarvestDate, int Department, string Supervisor, string Note, bool IsCompleted, int cultivationTypeID)
         {
             DataRow[] employeeRows = mEmployee_dt.Select($"EmployeeCode = '{Supervisor}'");
             DataRow[] departmentRows = mDepartment_dt.Select($"DepartmentID = {Department}");
             DataRow[] productRows = mProductSKU_dt.Select($"ProductSKU = {SKU}");
+            DataRow[] cultivationTypeRows = mCultivationType_dt.Select($"CultivationTypeID = {cultivationTypeID}");
+
             if (employeeRows.Length <= 0 || departmentRows.Length <= 0 || productRows.Length <= 0) return;
 
             foreach (DataRow row in mPlantingManagement_dt.Rows)
@@ -358,7 +366,7 @@ namespace RauViet.ui
                     {
                         try
                         {
-                            bool isScussess = await SQLManager_KhoVatTu.Instance.updatePlantingManagementAsync(plantingID, ProductionOrder, SKU, Area, Quantity, NurseryDate, PlantingDate, HarvestDate, Department, Supervisor, Note, IsCompleted);
+                            bool isScussess = await SQLManager_KhoVatTu.Instance.updatePlantingManagementAsync(plantingID, ProductionOrder, SKU, Area, Quantity, NurseryDate, PlantingDate, HarvestDate, Department, Supervisor, Note, IsCompleted, cultivationTypeID);
 
                             if (isScussess == true)
                             {
@@ -370,6 +378,8 @@ namespace RauViet.ui
                                 row["PlantingDate"] = PlantingDate;
                                 row["HarvestDate"] = HarvestDate;
                                 row["Department"] = Department;
+                                row["CultivationTypeID"] = cultivationTypeID;
+                                row["CultivationTypeName"] = cultivationTypeRows[0]["CultivationTypeName"].ToString();
                                 row["Supervisor"] = Supervisor;
                                 row["Note"] = Note;
                                 row["DepartmentName"] = departmentRows[0]["DepartmentName"].ToString();
@@ -398,10 +408,11 @@ namespace RauViet.ui
             }
         }
 
-        private async void createItem(string ProductionOrder, int SKU, decimal Area, int Quantity, DateTime NurseryDate, DateTime PlantingDate, DateTime HarvestDate, int Department, string Supervisor, string Note)
+        private async void createItem(string ProductionOrder, int SKU, decimal Area, int Quantity, DateTime NurseryDate, DateTime PlantingDate, DateTime HarvestDate, int Department, string Supervisor, string Note, int cultivationTypeID)
         {
             DataRow[] employeeRows = mEmployee_dt.Select($"EmployeeCode = '{Supervisor}'");
             DataRow[] departmentRows = mDepartment_dt.Select($"DepartmentID = {Department}");
+            DataRow[] cultivationTypeRows = mCultivationType_dt.Select($"CultivationTypeID = {cultivationTypeID}");
             DataRow[] productRows = mProductSKU_dt.Select($"SKU = {SKU}");
             if (employeeRows.Length <= 0 || departmentRows.Length <= 0 || productRows.Length <= 0) return;
 
@@ -411,7 +422,7 @@ namespace RauViet.ui
             {
                 try
                 {
-                    int newId = await SQLManager_KhoVatTu.Instance.insertPlantingManagementAsync(ProductionOrder, SKU, Area, Quantity, NurseryDate, PlantingDate, HarvestDate, Department, Supervisor, Note);
+                    int newId = await SQLManager_KhoVatTu.Instance.insertPlantingManagementAsync(ProductionOrder, SKU, Area, Quantity, NurseryDate, PlantingDate, HarvestDate, Department, Supervisor, Note, cultivationTypeID);
                     if (newId > 0)
                     {
                         DataRow drToAdd = mPlantingManagement_dt.NewRow();
@@ -424,6 +435,8 @@ namespace RauViet.ui
                         drToAdd["PlantingDate"] = PlantingDate;
                         drToAdd["HarvestDate"] = HarvestDate;
                         drToAdd["Department"] = Department;
+                        drToAdd["CultivationTypeID"] = cultivationTypeID;
+                        drToAdd["CultivationTypeName"] = cultivationTypeRows[0]["CultivationTypeName"].ToString();
                         drToAdd["Supervisor"] = Supervisor;
                         drToAdd["Note"] = Note;
                         drToAdd["DepartmentName"] = departmentRows[0]["DepartmentName"].ToString();
@@ -470,12 +483,13 @@ namespace RauViet.ui
             DateTime plantingDate = ngaytrong_dtp.Value.Date;
             DateTime harvestDate = ngaythu_dtp.Value.Date;
             int dep = Convert.ToInt32(deparment_CBB.SelectedValue);
+            int cultivationTypeID = Convert.ToInt32(cultivationType_CB.SelectedValue);
             string empCode = Convert.ToString(nguoiPhuTrach_CB.SelectedValue);
             string note = note_tb.Text;
             if (id_tb.Text.Length != 0)
-                updateItem(Convert.ToInt32(id_tb.Text), productionOrder, productSKU, area, quantity, nurseryDate, plantingDate, harvestDate, dep, empCode, note, complete_cb.Checked);
+                updateItem(Convert.ToInt32(id_tb.Text), productionOrder, productSKU, area, quantity, nurseryDate, plantingDate, harvestDate, dep, empCode, note, complete_cb.Checked, cultivationTypeID);
             else
-                createItem(productionOrder, productSKU, area, quantity, nurseryDate, plantingDate, harvestDate, dep, empCode, note);
+                createItem(productionOrder, productSKU, area, quantity, nurseryDate, plantingDate, harvestDate, dep, empCode, note, cultivationTypeID);
 
         }
         private async void deleteProduct()
@@ -604,6 +618,7 @@ namespace RauViet.ui
 
                     int? department = cells["Department"].Value == null || cells["Department"].Value == DBNull.Value ? (int?)null : Convert.ToInt32(cells["Department"].Value);
                     int sku = Convert.ToInt32(cells["SKU"].Value);
+                    int cultivationTypeID = Convert.ToInt32(cells["CultivationTypeID"].Value);
                     string Supervisor = Convert.ToString(cells["Supervisor"].Value);
 
                     if (!deparment_CBB.Items.Cast<object>().Any(i => ((DataRowView)i)["DepartmentID"].ToString() == department.ToString()))
@@ -635,6 +650,7 @@ namespace RauViet.ui
 
                     nguoiPhuTrach_CB.SelectedValue = Supervisor;
                     caytrong_CB.SelectedValue = sku;
+                    cultivationType_CB.SelectedValue = cultivationTypeID;
                     note_tb.Text = cells["Note"].Value.ToString();
                     complete_cb.Checked = Convert.ToBoolean(cells["IsCompleted"].Value);
                 }

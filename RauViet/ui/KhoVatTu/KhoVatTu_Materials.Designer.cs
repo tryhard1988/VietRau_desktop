@@ -30,8 +30,8 @@ namespace RauViet.ui
         private void InitializeComponent()
         {
             this.panel2 = new System.Windows.Forms.Panel();
-            this.panel3 = new System.Windows.Forms.Panel();
             this.dataGV = new System.Windows.Forms.DataGridView();
+            this.panel3 = new System.Windows.Forms.Panel();
             this.search_tb = new System.Windows.Forms.TextBox();
             this.panel1 = new System.Windows.Forms.Panel();
             this.label4 = new System.Windows.Forms.Label();
@@ -50,8 +50,8 @@ namespace RauViet.ui
             this.status_lb = new System.Windows.Forms.Label();
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
             this.panel2.SuspendLayout();
-            this.panel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
+            this.panel3.SuspendLayout();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.log_GV)).BeginInit();
             this.info_gb.SuspendLayout();
@@ -67,15 +67,6 @@ namespace RauViet.ui
             this.panel2.Size = new System.Drawing.Size(696, 681);
             this.panel2.TabIndex = 70;
             // 
-            // panel3
-            // 
-            this.panel3.Controls.Add(this.search_tb);
-            this.panel3.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel3.Location = new System.Drawing.Point(0, 0);
-            this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(696, 34);
-            this.panel3.TabIndex = 67;
-            // 
             // dataGV
             // 
             this.dataGV.AllowUserToAddRows = false;
@@ -87,6 +78,15 @@ namespace RauViet.ui
             this.dataGV.ReadOnly = true;
             this.dataGV.Size = new System.Drawing.Size(696, 647);
             this.dataGV.TabIndex = 68;
+            // 
+            // panel3
+            // 
+            this.panel3.Controls.Add(this.search_tb);
+            this.panel3.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel3.Location = new System.Drawing.Point(0, 0);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(696, 34);
+            this.panel3.TabIndex = 67;
             // 
             // search_tb
             // 
@@ -119,7 +119,7 @@ namespace RauViet.ui
             this.label4.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.label4.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label4.ForeColor = System.Drawing.Color.DarkOliveGreen;
-            this.label4.Location = new System.Drawing.Point(0, 433);
+            this.label4.Location = new System.Drawing.Point(0, 476);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(653, 23);
             this.label4.TabIndex = 70;
@@ -132,10 +132,10 @@ namespace RauViet.ui
             this.log_GV.AllowUserToDeleteRows = false;
             this.log_GV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.log_GV.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.log_GV.Location = new System.Drawing.Point(0, 456);
+            this.log_GV.Location = new System.Drawing.Point(0, 499);
             this.log_GV.Name = "log_GV";
             this.log_GV.ReadOnly = true;
-            this.log_GV.Size = new System.Drawing.Size(653, 225);
+            this.log_GV.Size = new System.Drawing.Size(653, 182);
             this.log_GV.TabIndex = 69;
             // 
             // readOnly_btn
@@ -278,9 +278,9 @@ namespace RauViet.ui
             this.Name = "KhoVatTu_Materials";
             this.Text = "FormTableData";
             this.panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dataGV)).EndInit();
             this.panel3.ResumeLayout(false);
             this.panel3.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGV)).EndInit();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.log_GV)).EndInit();

@@ -103,6 +103,7 @@
             this.tonKhoVatTu_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.khoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.plantingManagement_mi = new System.Windows.Forms.ToolStripMenuItem();
+            this.cultivationProcessTemplate_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripMenuItem();
             this.thongke_main_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.báoCáoĐơnHàngToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -123,7 +124,6 @@
             this.aaaaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadExcelOrderReportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.content_panel = new System.Windows.Forms.Panel();
-            this.mẫuQuyTrìnhSảnXuấtToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1.SuspendLayout();
             this.LOT_menuitem.SuspendLayout();
             this.SuspendLayout();
@@ -693,7 +693,7 @@
             // 
             this.khoToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.plantingManagement_mi,
-            this.mẫuQuyTrìnhSảnXuấtToolStripMenuItem});
+            this.cultivationProcessTemplate_mi});
             this.khoToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.khoToolStripMenuItem.ForeColor = System.Drawing.Color.MediumBlue;
             this.khoToolStripMenuItem.Name = "khoToolStripMenuItem";
@@ -705,6 +705,12 @@
             this.plantingManagement_mi.Name = "plantingManagement_mi";
             this.plantingManagement_mi.Size = new System.Drawing.Size(224, 22);
             this.plantingManagement_mi.Text = "Lịch Ươm - Trồng";
+            // 
+            // cultivationProcessTemplate_mi
+            // 
+            this.cultivationProcessTemplate_mi.Name = "cultivationProcessTemplate_mi";
+            this.cultivationProcessTemplate_mi.Size = new System.Drawing.Size(224, 22);
+            this.cultivationProcessTemplate_mi.Text = "Mẫu Quy Trình Sản Xuất";
             // 
             // toolStripMenuItem4
             // 
@@ -857,12 +863,6 @@
             this.content_panel.Size = new System.Drawing.Size(1528, 491);
             this.content_panel.TabIndex = 1;
             // 
-            // mẫuQuyTrìnhSảnXuấtToolStripMenuItem
-            // 
-            this.mẫuQuyTrìnhSảnXuấtToolStripMenuItem.Name = "mẫuQuyTrìnhSảnXuấtToolStripMenuItem";
-            this.mẫuQuyTrìnhSảnXuấtToolStripMenuItem.Size = new System.Drawing.Size(224, 22);
-            this.mẫuQuyTrìnhSảnXuấtToolStripMenuItem.Text = "Mẫu Quy Trình Sản Xuất";
-            // 
             // FormManager
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -978,6 +978,6 @@
         private System.Windows.Forms.ToolStripMenuItem sumaryAttendanceReport_mi;
         private System.Windows.Forms.ToolStripMenuItem reportSalary_Month_mi;
         private System.Windows.Forms.ToolStripMenuItem supplier_mi;
-        private System.Windows.Forms.ToolStripMenuItem mẫuQuyTrìnhSảnXuấtToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem cultivationProcessTemplate_mi;
     }
 }
