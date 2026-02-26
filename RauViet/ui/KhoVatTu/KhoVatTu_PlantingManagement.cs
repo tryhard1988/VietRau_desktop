@@ -63,6 +63,7 @@ namespace RauViet.ui
             dientich_tb.KeyPress += Tb_KeyPress_OnlyNumber_decimal;
             soLuong_tb.KeyPress += Tb_KeyPress_OnlyNumber_int;
             dataGV.CellFormatting += dataGV_CellFormatting;
+            dataGV.CellDoubleClick += DataGV_CellDoubleClick;
 
             search_tb.TextChanged += Search_tb_TextChanged;
 
@@ -74,7 +75,6 @@ namespace RauViet.ui
             locTheoNgayTrong_CB.CheckedChanged += LocTheoNgayThu_CB_CheckedChanged;
             locTheoNgayUom_CB.CheckedChanged += LocTheoNgayThu_CB_CheckedChanged;
         }
-
 
         private void Kho_Materials_KeyDown(object sender, KeyEventArgs e)
         {
@@ -1111,6 +1111,26 @@ namespace RauViet.ui
             DataView dv = mPlantingManagement_dt.DefaultView;
             dv.RowFilter = string.Join(" OR ", conditions);
 
+        }
+
+        private void DataGV_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0) return; // tránh click header
+
+            DataRowView drv = dataGV.Rows[e.RowIndex].DataBoundItem as DataRowView;
+            if (drv == null) return;
+
+            DataRow row = drv.Row;
+
+            int plantingID = row.Field<int>("PlantingID");
+            int sku = row.Field<int>("SKU");
+            int ctID = row.Field<int>("CultivationTypeID");
+            string skuName = row["PlantName"].ToString();
+            string ctName = row["CultivationTypeName"].ToString();
+
+            KhoVatTu_CultivationProcess frm = new KhoVatTu_CultivationProcess(plantingID, sku, ctID, skuName, ctName);
+            frm.ShowData();
+            frm.ShowDialog(); // hoặc Show()
         }
 
         //System.Data.DataTable excelData;

@@ -356,6 +356,12 @@
     <Compile Include="ui\FormManager.Designer.cs">
       <DependentUpon>FormManager.cs</DependentUpon>
     </Compile>
+    <Compile Include="ui\KhoVatTu\KhoVatTu_CultivationProcess.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\KhoVatTu\KhoVatTu_CultivationProcess.Designer.cs">
+      <DependentUpon>KhoVatTu_CultivationProcess.cs</DependentUpon>
+    </Compile>
     <Compile Include="ui\KhoVatTu\KhoVatTu_CultivationProcessTemplate.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -849,6 +855,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ui\FormManager.resx">
       <DependentUpon>FormManager.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\KhoVatTu\KhoVatTu_CultivationProcess.resx">
+      <DependentUpon>KhoVatTu_CultivationProcess.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ui\KhoVatTu\KhoVatTu_CultivationProcessTemplate.resx">
       <DependentUpon>KhoVatTu_CultivationProcessTemplate.cs</DependentUpon>

@@ -67,7 +67,7 @@ namespace RauViet.ui
             await Task.Delay(200);
             try
             {
-                string[] keepColumns = { "EmployeeCode", "FullName", "DepartmentName", "PositionName", "ContractTypeName", "EmployessName_NoSign" };
+                string[] keepColumns = { "EmployeeCode", "FullName", "HireDate", "DepartmentName", "PositionName", "ContractTypeName", "EmployessName_NoSign" };
                 var employeesTask = SQLStore_QLNS.Instance.GetEmployeesAsync(keepColumns);
                 var employeeAllowanceAsync = SQLManager_QLNS.Instance.GetEmployeeAllowanceAsybc();
                 var allowanceTypeAsync = SQLManager_QLNS.Instance.GetAllowanceTypeAsync("EMP");
@@ -112,10 +112,18 @@ namespace RauViet.ui
 
                 Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
                     {"FullName", "Tên Nhân Viên" },
+                    {"HireDate", "Ngày Vào Làm" },
                     {"EmployeeCode", "Mã NV" },
                     {"PositionName", "Chức Vụ" },
                     {"ContractTypeName", "Loại Hợp Đồng" },
                     {"DepartmentName", "Phòng Ban" },
+                });
+
+                Utils.SetGridWidths(dataGV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"FullName", 160},
+                    {"HireDate", 80},
+                    {"EmployeeCode", 70},
+                    {"DepartmentName", 140},
                 });
 
                 Utils.SetGridHeaders(log_GV, new System.Collections.Generic.Dictionary<string, string> {

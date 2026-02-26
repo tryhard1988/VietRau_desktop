@@ -22,6 +22,7 @@ namespace RauViet.classes
         DataTable mMaterial_dt = null;
         DataTable mCultivationProcessTemplate_dt = null;
 
+        Dictionary<int, DataTable> mCultivationProcesses = null;
         Dictionary<int, DataTable> mPlantingManagements = null;
         Dictionary<string, DataTable> mMaterialExports = null;
         Dictionary<string, DataTable> mMaterialImports = null;
@@ -57,6 +58,7 @@ namespace RauViet.classes
                 mMaterialExportLogs = new Dictionary<string, DataTable>();
                 mMaterialImportLogs = new Dictionary<string, DataTable>();
                 mPlantingManagementLogs = new Dictionary<int, DataTable>();
+                mCultivationProcesses = new Dictionary<int, DataTable>();
 
                 var unitTask = SQLManager_KhoVatTu.Instance.GetUnitAsync();
                 var MaterialCategoryTask = SQLManager_KhoVatTu.Instance.GetMaterialCategoryAsync();
@@ -99,7 +101,7 @@ namespace RauViet.classes
                 DataRow unitRow = mUnit_dt.AsEnumerable().FirstOrDefault(r => Convert.ToInt32(r["UnitID"]) == UnitID);
                 DataRow categoryRow = mMaterialCategory_dt.AsEnumerable().FirstOrDefault(r => Convert.ToInt32(r["CategoryID"]) == CategoryID);
 
-                
+
                 if (unitRow != null)
                 {
                     row["UnitName"] = unitRow["UnitName"].ToString();
@@ -110,7 +112,7 @@ namespace RauViet.classes
                     row["CategoryName"] = categoryRow["CategoryName"].ToString();
                 }
 
-                row["MaterialName_nosign"] = Utils.RemoveVietnameseSigns($"{row["CategoryName"].ToString()} {row["MaterialName"].ToString()}" );
+                row["MaterialName_nosign"] = Utils.RemoveVietnameseSigns($"{row["CategoryName"].ToString()} {row["MaterialName"].ToString()}");
             }
         }
 
@@ -251,13 +253,13 @@ namespace RauViet.classes
                 int? department = row.Field<int?>("Department");
                 int? cultivationTypeID = row.Field<int?>("CultivationTypeID");
                 string Supervisor = row["Supervisor"].ToString();
-                
+
                 DataRow productRow = product_dt.AsEnumerable().FirstOrDefault(r => r.Field<int>("ProductSKU") == sku);
                 if (productRow != null)
                     row["PlantName"] = productRow["ProductNameVN"];
 
                 DataRow employeeRow = employee_dt.AsEnumerable().FirstOrDefault(r => r.Field<string>("EmployeeCode") == Supervisor);
-                if(employeeRow != null)
+                if (employeeRow != null)
                     row["SupervisorName"] = employeeRow["FullName"];
 
                 DataRow departmentRow = department_dt.AsEnumerable().FirstOrDefault(r => r.Field<int>("DepartmentID") == department);
@@ -270,7 +272,7 @@ namespace RauViet.classes
                     if (cultivationRow != null)
                         row["CultivationTypeName"] = cultivationRow["CultivationTypeName"];
                 }
-                row["search_nosign"] = Utils.RemoveVietnameseSigns( $"{row["ProductionOrder"]} {row["PlantName"]}");
+                row["search_nosign"] = Utils.RemoveVietnameseSigns($"{row["ProductionOrder"]} {row["PlantName"]}");
             }
         }
 
@@ -292,7 +294,7 @@ namespace RauViet.classes
 
             return mWorkType_dt;
         }
-        
+
         public async Task<DataTable> GetCultivationTypeAsync()
         {
             if (mCultivationType_dt == null)
@@ -315,7 +317,7 @@ namespace RauViet.classes
         public DataTable GetBaseDateType()
         {
             DataTable baseDateType_dt = new DataTable();
-            
+
             baseDateType_dt.Columns.Add("Value", typeof(string));
             baseDateType_dt.Columns.Add("Text", typeof(string));
 
@@ -344,7 +346,8 @@ namespace RauViet.classes
             }
         }
 
-        public void removeMaterialExport(int month, int year) {
+        public void removeMaterialExport(int month, int year)
+        {
             string key = $"{month}_{year}";
             mMaterialExports.Remove(key);
         }
@@ -373,7 +376,7 @@ namespace RauViet.classes
         private async void editMaterialExport(DataTable data, int month, int year)
         {
             data.Columns.Add("MaterialName", typeof(string));
-            data.Columns.Add("PlantName", typeof(string));            
+            data.Columns.Add("PlantName", typeof(string));
             data.Columns.Add("WorkTypeName", typeof(string));
             data.Columns.Add("RecieverName", typeof(string));
             data.Columns.Add("UnitName", typeof(string));
@@ -560,7 +563,7 @@ namespace RauViet.classes
         }
 
         private async void editCultivationProcessTemplate(DataTable data)
-        {   
+        {
             data.Columns.Add("ProductNameVN", typeof(string));
             data.Columns.Add("CultivationTypeName", typeof(string));
             data.Columns.Add("BaseDateTypeName", typeof(string));
@@ -569,13 +572,16 @@ namespace RauViet.classes
 
             DataTable baseDateType_dt = GetBaseDateType();
             DataTable productSKU_dt = await SQLStore_Kho.Instance.getProductSKUAsync();
+            DataTable cultivationType_dt = await GetCultivationTypeAsync();
+            DataTable workType_dt = await GetWorkTypeAsync();
+            DataTable material_dt = await getMaterialAsync();
             foreach (DataRow row in data.Rows)
             {
                 int sku = Convert.ToInt32(row["SKU"]);
                 int cultivationTypeID = Convert.ToInt32(row["CultivationTypeID"]);
                 string baseDateType = Convert.ToString(row["BaseDateType"]);
                 int workTypeID = Convert.ToInt32(row["WorkTypeID"]);
-                int materialID = Convert.ToInt32(row["MaterialID"]);
+                int? materialID = row["MaterialID"] != DBNull.Value ? Convert.ToInt32(row["MaterialID"]) : (int?)null;
 
                 DataRow baseDateTypeRow = baseDateType_dt.AsEnumerable().FirstOrDefault(r => r.Field<string>("Value") == baseDateType);
                 if (baseDateTypeRow != null)
@@ -584,8 +590,56 @@ namespace RauViet.classes
                 DataRow skuRow = productSKU_dt.AsEnumerable().FirstOrDefault(r => r.Field<int>("ProductSKU") == sku);
                 if (skuRow != null)
                     row["ProductNameVN"] = skuRow["ProductNameVN"].ToString();
+
+                DataRow cultivationTypeRow = cultivationType_dt.AsEnumerable().FirstOrDefault(r => r.Field<int>("CultivationTypeID") == cultivationTypeID);
+                if (cultivationTypeRow != null)
+                    row["CultivationTypeName"] = cultivationTypeRow["CultivationTypeName"].ToString();
+
+                DataRow workTypeRow = workType_dt.AsEnumerable().FirstOrDefault(r => r.Field<int>("WorkTypeID") == workTypeID);
+                if (workTypeRow != null)
+                    row["WorkTypeName"] = workTypeRow["WorkTypeName"].ToString();
+
+                if (materialID.HasValue)
+                {
+                    DataRow materialRow = material_dt.AsEnumerable().FirstOrDefault(r => r.Field<int>("MaterialID") == materialID);
+                    if (materialRow != null)
+                        row["MaterialName"] = materialRow["MaterialName"].ToString();
+                }
+            }
+        }
+
+        public async Task<DataTable> GetCultivationProcessAsync(int plantingID)
+        {
+            if (!mCultivationProcesses.ContainsKey(plantingID))
+            {
+                try
+                {
+                    DataTable data = await SQLManager_KhoVatTu.Instance.GetCultivationProcessAsync(plantingID);
+                    editCultivationProcess(data);
+
+                    mCultivationProcesses[plantingID] = data;
+                }
+                catch
+                {
+                    Console.WriteLine("error GetMaterialCategoryAsync SQLStore");
+                    return null;
+                }
+            }
+
+            return mCultivationProcesses[plantingID];
+        }
+
+        private async void editCultivationProcess(DataTable data)
+        {
+            data.Columns.Add("WorkTypeName", typeof(string));
+            data.Columns.Add("MaterialName", typeof(string));
+            data.Columns.Add("DepartmentName", typeof(string));
+            data.Columns.Add("EmployeeName", typeof(string));
+            data.Columns.Add("IsolationEndDate", typeof(string));
+            foreach (DataRow row in data.Rows) 
+            {
+                
             }
         }
     }
-    
 }

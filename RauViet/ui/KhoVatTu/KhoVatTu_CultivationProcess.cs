@@ -9,34 +9,39 @@ using Color = System.Drawing.Color;
 
 namespace RauViet.ui
 {
-    public partial class KhoVatTu_CultivationProcessTemplate : Form
+    public partial class KhoVatTu_CultivationProcess : Form
     {
-        System.Data.DataTable mMaterial_dt, mWorkType_dt, mProduct_dt, mCultivationType_dt, mCultivationProcessTemplate_dt, mBaseDateType_dt;
+        int mPlantingID, mSKU, mCultivationTypeID, mPlantName, mCultivationTypeName;
+        System.Data.DataTable mMaterial_dt, mWorkType_dt, mProduct_dt, mCultivationType_dt, mCultivationProcess_dt, mBaseDateType_dt;
     //    private DataView mLogDV;
         private Timer WorkTypeDebounceTimer = new Timer { Interval = 300 };
         private Timer MaterialDebounceTimer = new Timer { Interval = 300 };
         private Timer PlantDebounceTimer = new Timer { Interval = 300 };
         bool isNewState = false;
-        private LoadingOverlay loadingOverlay;
-        public KhoVatTu_CultivationProcessTemplate()
+        private LoadingOverlay loadingOverlay;        
+        public KhoVatTu_CultivationProcess(int plantingID, int sku, int cultivationTypeID, string plantName, string cultivationTypeName)
         {
             InitializeComponent();
             this.KeyPreview = true;
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Dock = DockStyle.Fill;
 
             dataGV.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dataGV.MultiSelect = false;
 
-            plantGV.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            plantGV.MultiSelect = false;
+            processDate_dtp.Format = DateTimePickerFormat.Custom;
+            processDate_dtp.CustomFormat = "dd/MM/yyyy";
 
             status_lb.Text = "";
+            plant_lb.Text = $"{plantName} - {cultivationTypeName}";
+            mPlantingID = plantingID;
+            mSKU = sku;
+            mCultivationTypeID = cultivationTypeID;
+
 
             newCustomerBtn.Click += newBtn_Click;
             LuuThayDoiBtn.Click += saveBtn_Click;
             edit_btn.Click += Edit_btn_Click;
-            readOnly_btn.Click += ReadOnly_btn_Click; 
+            readOnly_btn.Click += ReadOnly_btn_Click;
+            LoadDefaultData_btn.Click += LoadDefaultData_btn_Click;
             this.KeyDown += form_KeyDown;
 
 
@@ -50,7 +55,6 @@ namespace RauViet.ui
             PlantDebounceTimer.Tick += PlantDebounceTimer_Tick;
             sku_CBB.TextUpdate += Sku_CBB_TextUpdate;
             materialQuantity_tb.KeyPress += Tb_KeyPress_OnlyNumber;
-            plantGV.SelectionChanged += PlantGV_SelectionChanged;
         }
 
         private void form_KeyDown(object sender, KeyEventArgs e)
@@ -65,8 +69,7 @@ namespace RauViet.ui
                 {
                     System.Windows.Forms.Control ctrl = this.ActiveControl;
 
-                    if (ctrl is TextBox || ctrl is RichTextBox ||
-                        (ctrl is DataGridView dgv && dgv.CurrentCell != null && dgv.IsCurrentCellInEditMode))
+                    if (ctrl is TextBox || ctrl is RichTextBox ||(ctrl is DataGridView dgv && dgv.CurrentCell != null && dgv.IsCurrentCellInEditMode))
                     {
                         return; // không xử lý Delete
                     }
@@ -86,22 +89,20 @@ namespace RauViet.ui
             try
             {
                 string[] empKeepColumns = { "EmployeeCode", "FullName", "EmployessName_NoSign" };
-                var cultivationProcessTemplateTask = SQLStore_KhoVatTu.Instance.GetCultivationProcessTemplateAsync();
+                var cultivationProcessTask = SQLStore_KhoVatTu.Instance.GetCultivationProcessAsync(mPlantingID);
                 var materialTask = SQLStore_KhoVatTu.Instance.getMaterialAsync();
                 var workTypeTask = SQLStore_KhoVatTu.Instance.GetWorkTypeAsync();
                 var productTask = SQLStore_Kho.Instance.getProductSKUAsync();
                 var CultivationTypeTask = SQLStore_KhoVatTu.Instance.GetCultivationTypeAsync();
 
-                await Task.WhenAll(cultivationProcessTemplateTask, materialTask, workTypeTask, CultivationTypeTask, productTask);
-                mCultivationProcessTemplate_dt = cultivationProcessTemplateTask.Result;
+                await Task.WhenAll(cultivationProcessTask, materialTask, workTypeTask, CultivationTypeTask, productTask);
+                mCultivationProcess_dt = cultivationProcessTask.Result;
                 mMaterial_dt = materialTask.Result;
                 mWorkType_dt = workTypeTask.Result;
                 mProduct_dt = productTask.Result;
                 mCultivationType_dt = CultivationTypeTask.Result;
                 mBaseDateType_dt = SQLStore_KhoVatTu.Instance.GetBaseDateType();
                 // mLogDV = new DataView(logDataTask.Result);
-
-                plantGV.DataSource = getPlantData();
 
                 vatTu_CB.DataSource = mMaterial_dt;
                 vatTu_CB.DisplayMember = "MaterialName";  // hiển thị tên
@@ -118,37 +119,33 @@ namespace RauViet.ui
                 sku_CBB.DisplayMember = "ProductNameVN";  // hiển thị tên
                 sku_CBB.ValueMember = "ProductSKU";
                 sku_CBB.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
-
-                cultivationType_CBB.DataSource = mCultivationType_dt;
-                cultivationType_CBB.DisplayMember = "CultivationTypeName"; 
-                cultivationType_CBB.ValueMember = "CultivationTypeID";
-
-                
+                                
                 baseDateType_CBB.DataSource = mBaseDateType_dt;
                 baseDateType_CBB.DisplayMember = "Text";
                 baseDateType_CBB.ValueMember = "Value";
 
 
-                dataGV.DataSource = mCultivationProcessTemplate_dt;
+                dataGV.DataSource = mCultivationProcess_dt;
                 //   log_GV.DataSource = mLogDV;
 
-                Utils.HideColumns(plantGV, new[] { "SKU", "CultivationTypeID"});
-                Utils.SetGridHeaders(plantGV, new System.Collections.Generic.Dictionary<string, string> {
-                        {"ProductNameVN", "Cây Trồng" },
-                        {"CultivationTypeName", "Canh Tác" }
-                    });
 
-                Utils.HideColumns(dataGV, new[] { "ProcessTemplateID", "SKU", "CultivationTypeID", "BaseDateType", "WorkTypeID", "MaterialID" });
-                Utils.SetGridOrdinal(mCultivationProcessTemplate_dt, new[] { "ProductNameVN", "CultivationTypeName", "BaseDateTypeName", "DaysAfter", "WorkTypeName", "MaterialName", "MaterialQuantity", "WaterAmount" });
+                Utils.HideColumns(dataGV, new[] { "CultivationProcessID", "PlantingID", "MaterialID", "WorkTypeID", "WorkTypeID", "MaterialID" , "EmployeeCode" , "DepartmentID" });
+                Utils.SetGridOrdinal(mCultivationProcess_dt, new[] { "ProcessDate", "WorkTypeName", "MaterialName", "MaterialQuantity", "Dosage", "PlantStatus", "EmployeeName", "IsolationDays", "IsolationEndDate", "DepartmentName", "PlantLocation", "WaterAmount", "Note" });
                 Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
-                        {"ProductNameVN", "Cây Trồng" },
-                        {"CultivationTypeName", "Canh Tác" },
-                        {"BaseDateTypeName", "Mốc Thời Gian" },
-                        {"DaysAfter", "Cộng Thêm" },
+                        {"ProcessDate", "Ngày Xử Lý" },
                         {"WorkTypeName", "Công Việc" },
                         {"MaterialName", "Vật Tư" },
                         {"MaterialQuantity", "SL Vật Tư" },
-                        {"WaterAmount", "Lượng Nước" }
+                        {"Dosage", "Liều Lượng" },
+                        {"PlantStatus", "Tình Trạng Cây" },
+                        {"ActiveIngredient", "Thành Phần" },
+                        {"EmployeeName", "Người Thực Hiện" },
+                        {"IsolationDays", "T.Gian Cách Ly" },
+                        {"IsolationEndDate", "Ngày Hết Cách Ly" },
+                        {"DepartmentName", "Tổ Phụ Trách" },
+                        {"PlantLocation", "Vị Trí Trồng" },
+                        {"WaterAmount", "Lượng Nước" },
+                        {"Note", "Ghi Chú" }
                     });
 
                 //Utils.HideColumns(log_GV, new[] { "LogID", "ExportDate" });
@@ -175,7 +172,6 @@ namespace RauViet.ui
                 Utils.SetTabStopRecursive(this, false);
                 int countTab = 0;
                 sku_CBB.TabIndex = countTab++; sku_CBB.TabStop = true;
-                cultivationType_CBB.TabIndex = countTab++; cultivationType_CBB.TabStop = true;
                 baseDateType_CBB.TabIndex = countTab++; baseDateType_CBB.TabStop = true;
                 daysAfter_tb.TabIndex = countTab++; daysAfter_tb.TabStop = true;
                 congViec_CBB.TabIndex = countTab++; congViec_CBB.TabStop = true;
@@ -323,21 +319,6 @@ namespace RauViet.ui
             catch { }
         }
 
-        private void PlantGV_SelectionChanged(object sender, EventArgs e)
-        {
-            if (plantGV.SelectedRows.Count == 0)
-                return;
-            var cells = plantGV.SelectedRows[0].Cells;
-            if (cells == null) return;
-            int sku = Convert.ToInt32(cells["SKU"].Value);
-            int cultivationTypeID = Convert.ToInt32(cells["CultivationTypeID"].Value);
-
-
-            DataView dv = mCultivationProcessTemplate_dt.DefaultView;
-            dv.RowFilter = $"SKU = {sku} AND CultivationTypeID = {cultivationTypeID}";
-
-        }
-
         private void dataGV_CellClick(object sender, EventArgs e)
         {
             updateRightUI();            
@@ -353,7 +334,7 @@ namespace RauViet.ui
             if (materialID.HasValue)
                 matiralRows = mMaterial_dt.Select($"MaterialID = {materialID}");
 
-            foreach (DataRow row in mCultivationProcessTemplate_dt.Rows)
+            foreach (DataRow row in mCultivationProcess_dt.Rows)
             {
                 int ID = Convert.ToInt32(row["ProcessTemplateID"]);
                 if (ID.CompareTo(processTemplateID) == 0)
@@ -392,7 +373,6 @@ namespace RauViet.ui
                                 if (materialID.HasValue && matiralRows.Length > 0)
                                     row["MaterialName"] = matiralRows[0]["MaterialName"].ToString();
 
-                                plantGV.DataSource = getPlantData();
                                 status_lb.Text = "Thành công.";
                                 status_lb.ForeColor = Color.Green;
                             }
@@ -439,7 +419,7 @@ namespace RauViet.ui
                     int newId = await SQLManager_KhoVatTu.Instance.insertCultivationProcessTemplateAsync(sku, cultivationTypeID, baseDateType, daysAfter, workTypeID, materialID, materialQuantity, waterAmount);
                     if (newId > 0)
                     {
-                        DataRow drToAdd = mCultivationProcessTemplate_dt.NewRow();
+                        DataRow drToAdd = mCultivationProcess_dt.NewRow();
 
                         drToAdd["ProcessTemplateID"] = newId;
                         drToAdd["SKU"] = sku;
@@ -467,14 +447,12 @@ namespace RauViet.ui
                         if (materialID.HasValue && matiralRows.Length > 0)
                             drToAdd["MaterialName"] = matiralRows[0]["MaterialName"].ToString();
 
-                        mCultivationProcessTemplate_dt.Rows.Add(drToAdd);
-                        mCultivationProcessTemplate_dt.AcceptChanges();
+                        mCultivationProcess_dt.Rows.Add(drToAdd);
+                        mCultivationProcess_dt.AcceptChanges();
 
                         status_lb.Text = "Thành công";
                         status_lb.ForeColor = Color.Green;
                         oldValue += "Success";
-
-                        plantGV.DataSource = getPlantData();
 
                         newBtn_Click(null, null);
                     }
@@ -500,35 +478,34 @@ namespace RauViet.ui
         }
         private void saveBtn_Click(object sender, EventArgs e)
         {
-            if (sku_CBB.SelectedValue == null || string.IsNullOrEmpty(sku_CBB.Text.Trim()) ||
-                congViec_CBB.SelectedValue == null || string.IsNullOrEmpty(congViec_CBB.Text.Trim()) ||
-                string.IsNullOrEmpty(materialQuantity_tb.Text.Trim()) ||
-                string.IsNullOrEmpty(waterAmount_tb.Text.Trim()) ||
-                string.IsNullOrEmpty(daysAfter_tb.Text.Trim())
-                )
-                return;
+            //if (sku_CBB.SelectedValue == null || string.IsNullOrEmpty(sku_CBB.Text.Trim()) ||
+            //    congViec_CBB.SelectedValue == null || string.IsNullOrEmpty(congViec_CBB.Text.Trim()) ||
+            //    string.IsNullOrEmpty(materialQuantity_tb.Text.Trim()) ||
+            //    string.IsNullOrEmpty(waterAmount_tb.Text.Trim()) ||
+            //    string.IsNullOrEmpty(daysAfter_tb.Text.Trim())
+            //    )
+            //    return;
 
-            int sku = Convert.ToInt32(sku_CBB.SelectedValue);
-            int cultivationTypeID = Convert.ToInt32(cultivationType_CBB.SelectedValue);
-            string baseDateType = baseDateType_CBB.SelectedValue.ToString();
-            int daysAfter = Convert.ToInt32(daysAfter_tb.Text);
-            int workTypeID = Convert.ToInt32(congViec_CBB.SelectedValue);
-            int? materialID = (string.IsNullOrEmpty(vatTu_CB.Text) || vatTu_CB.SelectedValue == null || vatTu_CB.SelectedValue == DBNull.Value) ? (int?)null : Convert.ToInt32(vatTu_CB.SelectedValue);
+            //int sku = Convert.ToInt32(sku_CBB.SelectedValue);
+            //string baseDateType = baseDateType_CBB.SelectedValue.ToString();
+            //int daysAfter = Convert.ToInt32(daysAfter_tb.Text);
+            //int workTypeID = Convert.ToInt32(congViec_CBB.SelectedValue);
+            //int? materialID = (string.IsNullOrEmpty(vatTu_CB.Text) || vatTu_CB.SelectedValue == null || vatTu_CB.SelectedValue == DBNull.Value) ? (int?)null : Convert.ToInt32(vatTu_CB.SelectedValue);
 
-            decimal materialQuantity = Utils.ParseDecimalSmart(materialQuantity_tb.Text);
-            decimal waterAmount = Utils.ParseDecimalSmart(waterAmount_tb.Text);
+            //decimal materialQuantity = Utils.ParseDecimalSmart(materialQuantity_tb.Text);
+            //decimal waterAmount = Utils.ParseDecimalSmart(waterAmount_tb.Text);
 
-            if (id_tb.Text.Length != 0)
-                updateItem(Convert.ToInt32(id_tb.Text), sku, cultivationTypeID, baseDateType, daysAfter, workTypeID, materialID, materialQuantity, waterAmount);
-            else
-                createItem(sku, cultivationTypeID, baseDateType, daysAfter, workTypeID, materialID, materialQuantity, waterAmount);
+            //if (id_tb.Text.Length != 0)
+            //    updateItem(Convert.ToInt32(id_tb.Text), sku, cultivationTypeID, baseDateType, daysAfter, workTypeID, materialID, materialQuantity, waterAmount);
+            //else
+            //    createItem(sku, cultivationTypeID, baseDateType, daysAfter, workTypeID, materialID, materialQuantity, waterAmount);
 
         }
         private async void deleteProduct()
         {
             string id = id_tb.Text;
 
-            foreach (DataRow row in mCultivationProcessTemplate_dt.Rows)
+            foreach (DataRow row in mCultivationProcess_dt.Rows)
             {
                 string processTemplateID = row["ProcessTemplateID"].ToString();
                 if (processTemplateID.CompareTo(id) == 0)
@@ -546,8 +523,8 @@ namespace RauViet.ui
                                 status_lb.Text = "Thành công.";
                                 status_lb.ForeColor = Color.Green;
 
-                                mCultivationProcessTemplate_dt.Rows.Remove(row);
-                                mCultivationProcessTemplate_dt.AcceptChanges();
+                                mCultivationProcess_dt.Rows.Remove(row);
+                                mCultivationProcess_dt.AcceptChanges();
 
                             }
                             else
@@ -656,7 +633,6 @@ namespace RauViet.ui
 
                     id_tb.Text = cells["ProcessTemplateID"].Value.ToString();
                     sku_CBB.SelectedValue = sku;
-                    cultivationType_CBB.SelectedValue = cultivationTypeID;
                     baseDateType_CBB.SelectedValue = baseDateType;
                     daysAfter_tb.Text = daysAfter.ToString();
                     congViec_CBB.SelectedValue = workTypeID;
@@ -689,17 +665,8 @@ namespace RauViet.ui
             }
         }
 
-        private DataTable getPlantData()
+        private void LoadDefaultData_btn_Click(object sender, EventArgs e)
         {
-            DataView dv = new DataView(mCultivationProcessTemplate_dt);
-
-            return dv.ToTable(
-                true,
-                "SKU",
-                "CultivationTypeID",
-                "ProductNameVN",
-                "CultivationTypeName"
-            );
         }
 
         //System.Data.DataTable excelData;

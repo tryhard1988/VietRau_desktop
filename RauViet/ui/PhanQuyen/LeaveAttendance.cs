@@ -356,9 +356,17 @@ namespace RauViet.ui
                     if (dialogResult == DialogResult.Yes)
                     {
                         string temp1 = row.Cells["LeaveTypeName"].Value.ToString();
-                        string temp2 = row.Cells["DateOff"].Value.ToString();
+                        DateTime temp2 = Convert.ToDateTime(row.Cells["DateOff"].Value);
                         string temp3 = row.Cells["LeaveHours"].Value.ToString();
                         string temp4 = row.Cells["Note"].Value.ToString();
+
+                        bool isLock = await SQLStore_QLNS.Instance.IsSalaryLockAsync(temp2.Month, temp2.Year);
+                        if (isLock)
+                        {
+                            MessageBox.Show("Tháng " + temp2.Month + "/" + temp2.Year + " đã bị khóa.", "Thông Tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }
+
                         try
                         {
                             bool isScussess = await SQLManager_QLNS.Instance.updateLeaveAttendanceAsync(leaveID, employeeCode, leaveTypeCode, dateOff, Note, hourLeave);
@@ -369,7 +377,7 @@ namespace RauViet.ui
                             if (isScussess == true)
                             {
                                 _ = SQLManager_QLNS.Instance.InsertLeaveAttandanceLogAsync(employeeCode, leaveName,
-                                    $"Edit Success {leaveID} - {temp1} - {temp2} - {temp3} - {temp4}",
+                                    $"Edit Success {leaveID} - {temp1} - {temp2.Date.ToString()} - {temp3} - {temp4}",
                                     dateOff.Date, hourLeave, Note);
 
                                 status_lb.Text = "Thành công.";
@@ -417,7 +425,7 @@ namespace RauViet.ui
                             else
                             {
                                 _ = SQLManager_QLNS.Instance.InsertLeaveAttandanceLogAsync(employeeCode, leaveName,
-                                    $"Edit Fail {leaveID} - {temp1} - {temp2} - {temp3} - {temp4}", 
+                                    $"Edit Fail {leaveID} - {temp1} - {temp2.ToString()} - {temp3} - {temp4}", 
                                     dateOff.Date, hourLeave, Note);
                                 status_lb.Text = "Thất bại.";
                                 status_lb.ForeColor = Color.Red;
@@ -429,7 +437,7 @@ namespace RauViet.ui
                             string leaveName = foundRows.Length > 0 ? leaveName = foundRows[0]["LeaveTypeName"].ToString() : "";
                             
                             _ = SQLManager_QLNS.Instance.InsertLeaveAttandanceLogAsync(employeeCode, leaveName,
-                                    $"Edit Fail Exception: {ex.Message} : {leaveID} - {temp1} - {temp2} - {temp3} - {temp4}",
+                                    $"Edit Fail Exception: {ex.Message} : {leaveID} - {temp1} - {temp2.ToString()} - {temp3} - {temp4}",
                                     dateOff.Date, hourLeave, Note);
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;

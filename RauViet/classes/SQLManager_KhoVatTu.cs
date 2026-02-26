@@ -885,7 +885,7 @@ namespace RauViet.classes
             }
             return dt;
         }
-        public async Task<int> insertMaterialExportAsync(int sku, int cultivationTypeID, string baseDateType, int daysAfter, int workTypeID, int? materialID, decimal materialQuantity, decimal waterAmount)
+        public async Task<int> insertCultivationProcessTemplateAsync(int sku, int cultivationTypeID, string baseDateType, int daysAfter, int workTypeID, int? materialID, decimal materialQuantity, decimal waterAmount)
         {
             int newId = -1;
 
@@ -926,6 +926,62 @@ namespace RauViet.classes
             }
         }
 
+        public async Task<bool> updateCultivationProcessTemplateAsync(int processTemplateID, int sku, int cultivationTypeID, string baseDateType, int daysAfter, int workTypeID, int? materialID, decimal materialQuantity, decimal waterAmount)
+        {
+            string query = @"UPDATE CultivationProcessTemplate SET
+                                SKU=@SKU,
+                                CultivationTypeID=@CultivationTypeID,
+                                BaseDateType=@BaseDateType,
+                                DaysAfter=@DaysAfter,
+                                WorkTypeID=@WorkTypeID,
+                                MaterialID=@MaterialID,
+                                MaterialQuantity=@MaterialQuantity,
+                                WaterAmount=@WaterAmount
+                             WHERE ProcessTemplateID=@ProcessTemplateID";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.Add("@ProcessTemplateID", SqlDbType.Int).Value = processTemplateID;
+                        cmd.Parameters.Add("@SKU", SqlDbType.Int).Value = sku;
+                        cmd.Parameters.Add("@CultivationTypeID", SqlDbType.Int).Value = cultivationTypeID;
+                        cmd.Parameters.Add("@BaseDateType", SqlDbType.NVarChar).Value = baseDateType;
+                        cmd.Parameters.Add("@DaysAfter", SqlDbType.Int).Value = daysAfter;
+                        cmd.Parameters.Add("@WorkTypeID", SqlDbType.Int).Value = workTypeID;
+                        cmd.Parameters.Add("@MaterialID", SqlDbType.Decimal).Value = materialID.HasValue ? (object)materialID.Value : DBNull.Value;
+                        cmd.Parameters.Add("@MaterialQuantity", SqlDbType.Decimal).Value = materialQuantity;
+                        cmd.Parameters.Add("@WaterAmount", SqlDbType.Decimal).Value = waterAmount;
+
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+                return true;
+            }
+            catch { return false; }
+        }
+
+        public async Task<bool> deletetCultivationProcessTemplateAsync(int ProcessTemplateID)
+        {
+            string query = "DELETE FROM CultivationProcessTemplate WHERE ProcessTemplateID=@ProcessTemplateID";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@ProcessTemplateID", ProcessTemplateID);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+                return true;
+            }
+            catch { return false; }
+        }
+
         public async Task<DataTable> GetCultivationProcessTemplateAsync()
         {
             DataTable dt = new DataTable();
@@ -936,6 +992,27 @@ namespace RauViet.classes
 
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 {
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
+        }
+
+        public async Task<DataTable> GetCultivationProcessAsync(int plantingID)
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT * FROM CultivationProcess WHERE PlantingID = @PlantingID";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    cmd.Parameters.Add("@PlantingID", SqlDbType.Int).Value = plantingID;
+
                     using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                     {
                         dt.Load(reader);

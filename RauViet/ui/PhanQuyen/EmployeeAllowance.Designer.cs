@@ -113,7 +113,7 @@ namespace RauViet.ui
             this.dataGV.Location = new System.Drawing.Point(0, 41);
             this.dataGV.Name = "dataGV";
             this.dataGV.ReadOnly = true;
-            this.dataGV.Size = new System.Drawing.Size(574, 683);
+            this.dataGV.Size = new System.Drawing.Size(721, 683);
             this.dataGV.TabIndex = 41;
             // 
             // panel2
@@ -123,9 +123,9 @@ namespace RauViet.ui
             this.panel2.Controls.Add(this.label3);
             this.panel2.Controls.Add(this.log_GV);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel2.Location = new System.Drawing.Point(574, 41);
+            this.panel2.Location = new System.Drawing.Point(721, 41);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(690, 683);
+            this.panel2.Size = new System.Drawing.Size(543, 683);
             this.panel2.TabIndex = 42;
             // 
             // allowanceGV
@@ -137,7 +137,7 @@ namespace RauViet.ui
             this.allowanceGV.Location = new System.Drawing.Point(0, 0);
             this.allowanceGV.Name = "allowanceGV";
             this.allowanceGV.ReadOnly = true;
-            this.allowanceGV.Size = new System.Drawing.Size(275, 506);
+            this.allowanceGV.Size = new System.Drawing.Size(128, 506);
             this.allowanceGV.TabIndex = 52;
             // 
             // panel1
@@ -151,7 +151,7 @@ namespace RauViet.ui
             this.panel1.Controls.Add(this.LuuThayDoiBtn);
             this.panel1.Controls.Add(this.employeeAllowanceID_tb);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel1.Location = new System.Drawing.Point(275, 0);
+            this.panel1.Location = new System.Drawing.Point(128, 0);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(415, 506);
             this.panel1.TabIndex = 51;
@@ -309,7 +309,7 @@ namespace RauViet.ui
             this.label3.ForeColor = System.Drawing.Color.DarkOliveGreen;
             this.label3.Location = new System.Drawing.Point(0, 506);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(690, 23);
+            this.label3.Size = new System.Drawing.Size(543, 23);
             this.label3.TabIndex = 49;
             this.label3.Text = "Lịch sử thay đổi";
             this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -323,7 +323,7 @@ namespace RauViet.ui
             this.log_GV.Location = new System.Drawing.Point(0, 529);
             this.log_GV.Name = "log_GV";
             this.log_GV.ReadOnly = true;
-            this.log_GV.Size = new System.Drawing.Size(690, 154);
+            this.log_GV.Size = new System.Drawing.Size(543, 154);
             this.log_GV.TabIndex = 40;
             // 
             // EmployeeAllowance
