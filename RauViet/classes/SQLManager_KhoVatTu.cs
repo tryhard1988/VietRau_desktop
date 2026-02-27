@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
@@ -885,13 +886,13 @@ namespace RauViet.classes
             }
             return dt;
         }
-        public async Task<int> insertCultivationProcessTemplateAsync(int sku, int cultivationTypeID, string baseDateType, int daysAfter, int workTypeID, int? materialID, decimal materialQuantity, decimal waterAmount)
+        public async Task<int> insertCultivationProcessTemplateAsync(int sku, int cultivationTypeID, string baseDateType, int daysAfter, int? fertilizationWorkTypeID, int workTypeID, int? materialID, decimal materialQuantity, decimal waterAmount)
         {
             int newId = -1;
 
-            string insertQuery = @"INSERT INTO CultivationProcessTemplate (SKU, CultivationTypeID, BaseDateType, DaysAfter, WorkTypeID, MaterialID, MaterialQuantity, WaterAmount)
+            string insertQuery = @"INSERT INTO CultivationProcessTemplate (SKU, CultivationTypeID, BaseDateType, DaysAfter, FertilizationWorkTypeID, WorkTypeID, MaterialID, MaterialQuantity, WaterAmount)
                                     OUTPUT INSERTED.ProcessTemplateID
-                                    VALUES (@SKU, @CultivationTypeID, @BaseDateType, @DaysAfter, @WorkTypeID, @MaterialID, @MaterialQuantity, @WaterAmount)";
+                                    VALUES (@SKU, @CultivationTypeID, @BaseDateType, @DaysAfter, @FertilizationWorkTypeID, @WorkTypeID, @MaterialID, @MaterialQuantity, @WaterAmount)";
 
             try
             {
@@ -906,6 +907,7 @@ namespace RauViet.classes
                         cmd.Parameters.Add("@CultivationTypeID", SqlDbType.Int).Value = cultivationTypeID;
                         cmd.Parameters.Add("@BaseDateType", SqlDbType.NVarChar).Value = baseDateType;
                         cmd.Parameters.Add("@DaysAfter", SqlDbType.Int).Value = daysAfter;
+                        cmd.Parameters.Add("@FertilizationWorkTypeID", SqlDbType.Decimal).Value = fertilizationWorkTypeID.HasValue ? (object)fertilizationWorkTypeID.Value : DBNull.Value;
                         cmd.Parameters.Add("@WorkTypeID", SqlDbType.Int).Value = workTypeID;
                         cmd.Parameters.Add("@MaterialID", SqlDbType.Decimal).Value = materialID.HasValue ? (object)materialID.Value : DBNull.Value;
                         cmd.Parameters.Add("@MaterialQuantity", SqlDbType.Decimal).Value = materialQuantity;
@@ -926,13 +928,14 @@ namespace RauViet.classes
             }
         }
 
-        public async Task<bool> updateCultivationProcessTemplateAsync(int processTemplateID, int sku, int cultivationTypeID, string baseDateType, int daysAfter, int workTypeID, int? materialID, decimal materialQuantity, decimal waterAmount)
+        public async Task<bool> updateCultivationProcessTemplateAsync(int processTemplateID, int sku, int cultivationTypeID, string baseDateType, int daysAfter, int? fertilizationWorkTypeID, int workTypeID, int? materialID, decimal materialQuantity, decimal waterAmount)
         {
             string query = @"UPDATE CultivationProcessTemplate SET
                                 SKU=@SKU,
                                 CultivationTypeID=@CultivationTypeID,
                                 BaseDateType=@BaseDateType,
                                 DaysAfter=@DaysAfter,
+                                FertilizationWorkTypeID = @FertilizationWorkTypeID,
                                 WorkTypeID=@WorkTypeID,
                                 MaterialID=@MaterialID,
                                 MaterialQuantity=@MaterialQuantity,
@@ -950,6 +953,7 @@ namespace RauViet.classes
                         cmd.Parameters.Add("@CultivationTypeID", SqlDbType.Int).Value = cultivationTypeID;
                         cmd.Parameters.Add("@BaseDateType", SqlDbType.NVarChar).Value = baseDateType;
                         cmd.Parameters.Add("@DaysAfter", SqlDbType.Int).Value = daysAfter;
+                        cmd.Parameters.Add("@FertilizationWorkTypeID", SqlDbType.Int).Value = fertilizationWorkTypeID.HasValue ? (object)fertilizationWorkTypeID.Value : DBNull.Value;
                         cmd.Parameters.Add("@WorkTypeID", SqlDbType.Int).Value = workTypeID;
                         cmd.Parameters.Add("@MaterialID", SqlDbType.Decimal).Value = materialID.HasValue ? (object)materialID.Value : DBNull.Value;
                         cmd.Parameters.Add("@MaterialQuantity", SqlDbType.Decimal).Value = materialQuantity;
@@ -1020,6 +1024,61 @@ namespace RauViet.classes
                 }
             }
             return dt;
+        }
+
+        public async Task<bool> InsertCultivationProcessListAsync(List<(int PlantingID, DateTime ProcessDate, int? FertilizationWorkTypeID, int WorkTypeID, int? MaterialID, decimal? MaterialQuantity, decimal? WaterAmount, int? DepartmentID, string EmployeeCode)> list)
+        {
+            try
+            {
+                using (var con = new SqlConnection(ql_khoVatTu_conStr()))
+                {
+                    await con.OpenAsync();
+
+                    // 1️⃣ Chuẩn bị DataTable khớp với kiểu TVP
+                    var dt = new DataTable();
+                    dt.Columns.Add("PlantingID", typeof(int));
+                    dt.Columns.Add("ProcessDate", typeof(DateTime));
+                    dt.Columns.Add("FertilizationWorkTypeID", typeof(int));
+                    dt.Columns.Add("WorkTypeID", typeof(int));
+                    dt.Columns.Add("MaterialID", typeof(int));
+                    dt.Columns.Add("MaterialQuantity", typeof(decimal));
+                    dt.Columns.Add("WaterAmount", typeof(decimal));
+                    dt.Columns.Add("DepartmentID", typeof(int));
+                    dt.Columns.Add("EmployeeCode", typeof(string));
+
+                    foreach (var item in list)
+                    {
+                        dt.Rows.Add(item.PlantingID, 
+                                    item.ProcessDate,
+                                    (object)item.FertilizationWorkTypeID ?? DBNull.Value,
+                                    item.WorkTypeID, 
+                                    (object)item.MaterialID ?? DBNull.Value,
+                                    (object)item.MaterialQuantity ?? DBNull.Value,
+                                    (object)item.WaterAmount ?? DBNull.Value,
+                                    (object)item.DepartmentID ?? DBNull.Value,
+                                    item.EmployeeCode);
+                    }
+
+                    // 2️⃣ Gọi SP
+                    using (var cmd = new SqlCommand("dbo.sp_InsertCultivationProcessList", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        var param = cmd.Parameters.AddWithValue("@ProcessList", dt);
+                        param.SqlDbType = SqlDbType.Structured;
+                        param.TypeName = "dbo.CultivationProcessType";
+
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[InsertCultivationProcessListAsync] Error: {ex.Message}");
+                Console.WriteLine(ex.StackTrace);
+                return false;
+            }
         }
     }
 }

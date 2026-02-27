@@ -59,6 +59,9 @@ namespace RauViet.ui
             this.plantGV = new System.Windows.Forms.DataGridView();
             this.panel3 = new System.Windows.Forms.Panel();
             this.dataGV = new System.Windows.Forms.DataGridView();
+            this.fertilizationWork_CBB = new System.Windows.Forms.ComboBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.button1 = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.log_GV)).BeginInit();
             this.info_gb.SuspendLayout();
@@ -70,6 +73,7 @@ namespace RauViet.ui
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.button1);
             this.panel1.Controls.Add(this.label4);
             this.panel1.Controls.Add(this.log_GV);
             this.panel1.Controls.Add(this.readOnly_btn);
@@ -145,6 +149,8 @@ namespace RauViet.ui
             // 
             // info_gb
             // 
+            this.info_gb.Controls.Add(this.fertilizationWork_CBB);
+            this.info_gb.Controls.Add(this.label6);
             this.info_gb.Controls.Add(this.waterAmount_tb);
             this.info_gb.Controls.Add(this.label2);
             this.info_gb.Controls.Add(this.daysAfter_tb);
@@ -164,13 +170,13 @@ namespace RauViet.ui
             this.info_gb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.info_gb.Location = new System.Drawing.Point(17, 74);
             this.info_gb.Name = "info_gb";
-            this.info_gb.Size = new System.Drawing.Size(513, 272);
+            this.info_gb.Size = new System.Drawing.Size(513, 315);
             this.info_gb.TabIndex = 43;
             this.info_gb.TabStop = false;
             // 
             // waterAmount_tb
             // 
-            this.waterAmount_tb.Location = new System.Drawing.Point(182, 237);
+            this.waterAmount_tb.Location = new System.Drawing.Point(182, 269);
             this.waterAmount_tb.Name = "waterAmount_tb";
             this.waterAmount_tb.Size = new System.Drawing.Size(98, 23);
             this.waterAmount_tb.TabIndex = 89;
@@ -178,7 +184,7 @@ namespace RauViet.ui
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(50, 236);
+            this.label2.Location = new System.Drawing.Point(50, 268);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(119, 16);
             this.label2.TabIndex = 88;
@@ -251,7 +257,7 @@ namespace RauViet.ui
             // 
             this.congViec_CBB.FormattingEnabled = true;
             this.congViec_CBB.IntegralHeight = false;
-            this.congViec_CBB.Location = new System.Drawing.Point(182, 145);
+            this.congViec_CBB.Location = new System.Drawing.Point(182, 177);
             this.congViec_CBB.Name = "congViec_CBB";
             this.congViec_CBB.Size = new System.Drawing.Size(157, 24);
             this.congViec_CBB.TabIndex = 76;
@@ -259,7 +265,7 @@ namespace RauViet.ui
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(100, 146);
+            this.label3.Location = new System.Drawing.Point(100, 178);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(69, 16);
             this.label3.TabIndex = 75;
@@ -276,7 +282,7 @@ namespace RauViet.ui
             // 
             // materialQuantity_tb
             // 
-            this.materialQuantity_tb.Location = new System.Drawing.Point(182, 207);
+            this.materialQuantity_tb.Location = new System.Drawing.Point(182, 239);
             this.materialQuantity_tb.Name = "materialQuantity_tb";
             this.materialQuantity_tb.Size = new System.Drawing.Size(98, 23);
             this.materialQuantity_tb.TabIndex = 68;
@@ -285,7 +291,7 @@ namespace RauViet.ui
             // 
             this.vatTu_CB.FormattingEnabled = true;
             this.vatTu_CB.IntegralHeight = false;
-            this.vatTu_CB.Location = new System.Drawing.Point(182, 176);
+            this.vatTu_CB.Location = new System.Drawing.Point(182, 208);
             this.vatTu_CB.Name = "vatTu_CB";
             this.vatTu_CB.Size = new System.Drawing.Size(283, 24);
             this.vatTu_CB.TabIndex = 67;
@@ -293,7 +299,7 @@ namespace RauViet.ui
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(118, 176);
+            this.label7.Location = new System.Drawing.Point(118, 208);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(51, 16);
             this.label7.TabIndex = 53;
@@ -302,7 +308,7 @@ namespace RauViet.ui
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(21, 206);
+            this.label1.Location = new System.Drawing.Point(21, 238);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(148, 16);
             this.label1.TabIndex = 47;
@@ -321,7 +327,7 @@ namespace RauViet.ui
             // 
             this.status_lb.AutoSize = true;
             this.status_lb.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.status_lb.Location = new System.Drawing.Point(4, 364);
+            this.status_lb.Location = new System.Drawing.Point(4, 404);
             this.status_lb.Name = "status_lb";
             this.status_lb.Size = new System.Drawing.Size(59, 23);
             this.status_lb.TabIndex = 40;
@@ -331,7 +337,7 @@ namespace RauViet.ui
             // 
             this.LuuThayDoiBtn.BackColor = System.Drawing.SystemColors.Highlight;
             this.LuuThayDoiBtn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LuuThayDoiBtn.Location = new System.Drawing.Point(254, 355);
+            this.LuuThayDoiBtn.Location = new System.Drawing.Point(254, 395);
             this.LuuThayDoiBtn.Name = "LuuThayDoiBtn";
             this.LuuThayDoiBtn.Size = new System.Drawing.Size(104, 43);
             this.LuuThayDoiBtn.TabIndex = 25;
@@ -379,6 +385,34 @@ namespace RauViet.ui
             this.dataGV.ReadOnly = true;
             this.dataGV.Size = new System.Drawing.Size(567, 758);
             this.dataGV.TabIndex = 71;
+            // 
+            // fertilizationWork_CBB
+            // 
+            this.fertilizationWork_CBB.FormattingEnabled = true;
+            this.fertilizationWork_CBB.IntegralHeight = false;
+            this.fertilizationWork_CBB.Location = new System.Drawing.Point(182, 144);
+            this.fertilizationWork_CBB.Name = "fertilizationWork_CBB";
+            this.fertilizationWork_CBB.Size = new System.Drawing.Size(157, 24);
+            this.fertilizationWork_CBB.TabIndex = 91;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(74, 145);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(95, 16);
+            this.label6.TabIndex = 90;
+            this.label6.Text = "Hình Thức Bón:";
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(110, 478);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 71;
+            this.button1.Text = "button1";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // KhoVatTu_CultivationProcessTemplate
             // 
@@ -434,5 +468,8 @@ namespace RauViet.ui
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.TextBox waterAmount_tb;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.ComboBox fertilizationWork_CBB;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Button button1;
     }
 }

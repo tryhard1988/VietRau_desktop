@@ -13,6 +13,7 @@ namespace RauViet.ui
     public partial class KhoVatTu_PlantingManagement : Form
     {
         System.Data.DataTable mPlantingManagement_dt, mDepartment_dt, mProductSKU_dt, mEmployee_dt, mCultivationType_dt;
+        DataView mPlantingManagement_dv;
         private Timer productSKUDebounceTimer = new Timer { Interval = 300 };
         private Timer employeeDebounceTimer = new Timer { Interval = 300 };
         private Timer departmentDebounceTimer = new Timer { Interval = 300 };
@@ -145,6 +146,7 @@ namespace RauViet.ui
                 cultivationType_CB.DisplayMember = "CultivationTypeName";  // hiển thị tên
                 cultivationType_CB.ValueMember = "CultivationTypeID";
 
+                mPlantingManagement_dv = new DataView(mPlantingManagement_dt);
                 dataGV.DataSource = mPlantingManagement_dt;
                 monthGV.DataSource = Utils.CreateMonthsInYearTable();
                 //    log_GV.DataSource = mLogDV;
@@ -550,6 +552,7 @@ namespace RauViet.ui
             lenhSX_tb.Enabled = true;
             deparment_CBB.Enabled = true;
             caytrong_CB.Enabled = true;
+            cultivationType_CB.Enabled = true;
             complete_cb.Visible = false;
             ngayUom_dtp.Enabled = true;
             ngaytrong_dtp.Enabled = true;
@@ -573,6 +576,7 @@ namespace RauViet.ui
             lenhSX_tb.Enabled = false;
             deparment_CBB.Enabled = false;
             caytrong_CB.Enabled = false;
+            cultivationType_CB.Enabled = false;
             complete_cb.Visible = true;
             ngayUom_dtp.Enabled = false;
             ngaytrong_dtp.Enabled = false;
@@ -589,7 +593,8 @@ namespace RauViet.ui
         {
             lenhSX_tb.Enabled = true;
             deparment_CBB.Enabled = true;
-            caytrong_CB.Enabled = true;
+            caytrong_CB.Enabled = false;
+            cultivationType_CB.Enabled = false;
             edit_btn.Visible = false;
             newCustomerBtn.Visible = false;
             readOnly_btn.Visible = true;
@@ -902,8 +907,8 @@ namespace RauViet.ui
 
 
             var nurseryDate = DateTime.Now;
-            if (maxRow != null) 
-                Convert.ToDateTime(maxRow["NurseryDate"]);
+            if (maxRow != null)
+                nurseryDate = Convert.ToDateTime(maxRow["NurseryDate"]);
 
             var nextDay = nurseryDate;
             int departmentID = -1;
@@ -1128,7 +1133,7 @@ namespace RauViet.ui
             string skuName = row["PlantName"].ToString();
             string ctName = row["CultivationTypeName"].ToString();
 
-            KhoVatTu_CultivationProcess frm = new KhoVatTu_CultivationProcess(plantingID, sku, ctID, skuName, ctName);
+            KhoVatTu_CultivationProcess frm = new KhoVatTu_CultivationProcess(row);
             frm.ShowData();
             frm.ShowDialog(); // hoặc Show()
         }

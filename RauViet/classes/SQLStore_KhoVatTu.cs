@@ -543,6 +543,11 @@ namespace RauViet.classes
             return mPlantingManagementLogs[year];
         }
 
+        public void RemoveCultivationProcessTemplate()
+        {
+            mCultivationProcessTemplate_dt = null;
+        }
+
         public async Task<DataTable> GetCultivationProcessTemplateAsync()
         {
             if (mCultivationProcessTemplate_dt == null)
@@ -568,6 +573,7 @@ namespace RauViet.classes
             data.Columns.Add("CultivationTypeName", typeof(string));
             data.Columns.Add("BaseDateTypeName", typeof(string));
             data.Columns.Add("WorkTypeName", typeof(string));
+            data.Columns.Add("FertilizationWorkTypeName", typeof(string));
             data.Columns.Add("MaterialName", typeof(string));
 
             DataTable baseDateType_dt = GetBaseDateType();
@@ -582,6 +588,7 @@ namespace RauViet.classes
                 string baseDateType = Convert.ToString(row["BaseDateType"]);
                 int workTypeID = Convert.ToInt32(row["WorkTypeID"]);
                 int? materialID = row["MaterialID"] != DBNull.Value ? Convert.ToInt32(row["MaterialID"]) : (int?)null;
+                int? fertilizationWorkTypeID = row["FertilizationWorkTypeID"] != DBNull.Value ? Convert.ToInt32(row["FertilizationWorkTypeID"]) : (int?)null;
 
                 DataRow baseDateTypeRow = baseDateType_dt.AsEnumerable().FirstOrDefault(r => r.Field<string>("Value") == baseDateType);
                 if (baseDateTypeRow != null)
@@ -599,6 +606,13 @@ namespace RauViet.classes
                 if (workTypeRow != null)
                     row["WorkTypeName"] = workTypeRow["WorkTypeName"].ToString();
 
+                if (fertilizationWorkTypeID.HasValue)
+                {
+                    DataRow fertilizationWorkRow = workType_dt.AsEnumerable().FirstOrDefault(r => r.Field<int>("WorkTypeID") == fertilizationWorkTypeID);
+                    if (fertilizationWorkRow != null)
+                        row["FertilizationWorkTypeName"] = fertilizationWorkRow["WorkTypeName"].ToString();
+                }
+
                 if (materialID.HasValue)
                 {
                     DataRow materialRow = material_dt.AsEnumerable().FirstOrDefault(r => r.Field<int>("MaterialID") == materialID);
@@ -606,6 +620,11 @@ namespace RauViet.classes
                         row["MaterialName"] = materialRow["MaterialName"].ToString();
                 }
             }
+        }
+
+        public void removeCultivationProcess(int plantingID)
+        {
+            mCultivationProcesses.Remove(plantingID);
         }
 
         public async Task<DataTable> GetCultivationProcessAsync(int plantingID)
@@ -636,9 +655,51 @@ namespace RauViet.classes
             data.Columns.Add("DepartmentName", typeof(string));
             data.Columns.Add("EmployeeName", typeof(string));
             data.Columns.Add("IsolationEndDate", typeof(string));
-            foreach (DataRow row in data.Rows) 
+            data.Columns.Add("FertilizationWorkTypeName", typeof(string));
+
+            DataTable workType_dt = await GetWorkTypeAsync();
+            DataTable material_dt = await getMaterialAsync();
+            DataTable employee_dt = await SQLStore_QLNS.Instance.GetEmployeesAsync();
+            DataTable department_dt = await SQLStore_QLNS.Instance.GetDepartmentAsync();
+            foreach (DataRow rowItem in data.Rows) 
             {
-                
+                int workTypeID = Convert.ToInt32(rowItem["WorkTypeID"]);
+                int? fertilizationWorkTypeID = rowItem["FertilizationWorkTypeID"] == DBNull.Value ? (int?)null : Convert.ToInt32(rowItem["FertilizationWorkTypeID"]);
+                int? materialID = rowItem["MaterialID"] == DBNull.Value ? (int?)null : Convert.ToInt32(rowItem["MaterialID"]);
+                int? departmentID = rowItem["DepartmentID"] == DBNull.Value ? (int?)null : Convert.ToInt32(rowItem["DepartmentID"]);
+                string employeeCode = rowItem["EmployeeCode"].ToString().Trim();
+
+                DataRow workTypeRow = workType_dt.AsEnumerable().FirstOrDefault(r => r.Field<int>("WorkTypeID") == workTypeID);
+                if (workTypeRow != null)
+                    rowItem["WorkTypeName"] = workTypeRow["WorkTypeName"].ToString();
+
+                if (materialID.HasValue)
+                {
+                    DataRow materialRow = material_dt.AsEnumerable().FirstOrDefault(r => r.Field<int>("MaterialID") == materialID);
+                    if (materialRow != null)
+                        rowItem["MaterialName"] = materialRow["MaterialName"].ToString();
+                }
+
+                if (departmentID.HasValue)
+                {
+                    DataRow departmentRow = department_dt.AsEnumerable().FirstOrDefault(r => r.Field<int>("DepartmentID") == departmentID);
+                    if (departmentRow != null)
+                        rowItem["DepartmentName"] = departmentRow["DepartmentName"].ToString();
+                }
+
+                if (fertilizationWorkTypeID.HasValue)
+                {
+                    DataRow fertilizationWorkRow = workType_dt.AsEnumerable().FirstOrDefault(r => r.Field<int>("WorkTypeID") == fertilizationWorkTypeID);
+                    if (fertilizationWorkRow != null)
+                        rowItem["FertilizationWorkTypeName"] = fertilizationWorkRow["WorkTypeName"].ToString();
+                }
+
+                if (!string.IsNullOrEmpty(employeeCode))
+                {
+                    DataRow employeeRow = employee_dt.AsEnumerable().FirstOrDefault(r => r.Field<string>("EmployeeCode") == employeeCode);
+                    if (employeeRow != null)
+                        rowItem["EmployeeName"] = employeeRow["FullName"].ToString();
+                }
             }
         }
     }

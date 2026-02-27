@@ -362,6 +362,12 @@
     <Compile Include="ui\KhoVatTu\KhoVatTu_CultivationProcess.Designer.cs">
       <DependentUpon>KhoVatTu_CultivationProcess.cs</DependentUpon>
     </Compile>
+    <Compile Include="ui\KhoVatTu\KhoVatTu_CultivationProcessTemplate_Insert.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\KhoVatTu\KhoVatTu_CultivationProcessTemplate_Insert.Designer.cs">
+      <DependentUpon>KhoVatTu_CultivationProcessTemplate_Insert.cs</DependentUpon>
+    </Compile>
     <Compile Include="ui\KhoVatTu\KhoVatTu_CultivationProcessTemplate.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -858,6 +864,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ui\KhoVatTu\KhoVatTu_CultivationProcess.resx">
       <DependentUpon>KhoVatTu_CultivationProcess.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\KhoVatTu\KhoVatTu_CultivationProcessTemplate_Insert.resx">
+      <DependentUpon>KhoVatTu_CultivationProcessTemplate_Insert.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ui\KhoVatTu\KhoVatTu_CultivationProcessTemplate.resx">
       <DependentUpon>KhoVatTu_CultivationProcessTemplate.cs</DependentUpon>
