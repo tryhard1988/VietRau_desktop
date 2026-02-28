@@ -102,13 +102,16 @@ namespace RauViet.ui
                         {"MaterialName", "Tên Vật Tư" },
                         {"CategoryName", "Phân Loại" },
                         {"UnitName", "Đ.Vị" },
-                        {"MaterialID", "Mã Vật Tư" }
+                        {"MaterialID", "Mã Vật Tư" },
+                        {"MaterialPrice", "Giá Vật Tư" },
+                        {"Composition", "Thành Phần" }
                     });
 
                 Utils.SetGridWidths(dataGV, new System.Collections.Generic.Dictionary<string, int> {
                         {"MaterialName", 300},
                         {"CategoryName", 150},
-                        {"UnitName",60}
+                        {"UnitName",60},
+                        {"Composition",150}
                     });
                                                     
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
@@ -226,7 +229,7 @@ namespace RauViet.ui
             updateRightUI();            
         }
 
-        private async void updateItem(int materialID, string name, int unitID, int cateloryID)
+        private async void updateItem(int materialID, string name, int unitID, int cateloryID, string composition)
         {
             DataRow[] unitRows = mUnit_dt.Select($"UnitID = {unitID}");
             DataRow[] cateloryRows = mCatelory_dt.Select($"CategoryID = {cateloryID}");
@@ -243,7 +246,7 @@ namespace RauViet.ui
                     {
                         try
                         {
-                            bool isScussess = await SQLManager_KhoVatTu.Instance.updateMaterialsAsync(materialID, name, cateloryID, unitID);
+                            bool isScussess = await SQLManager_KhoVatTu.Instance.updateMaterialsAsync(materialID, name, cateloryID, unitID, composition);
 
                             if (isScussess == true)
                             {
@@ -255,6 +258,7 @@ namespace RauViet.ui
                                 row["UnitID"] = unitID;
                                 row["UnitName"] = UnitName;
                                 row["CategoryName"] = CategoryName;
+                                row["Composition"] = composition;
                                 row["MaterialName_nosign"] = Utils.RemoveVietnameseSigns($"{CategoryName} {name}");
                                 status_lb.Text = "Thành công.";
                                 status_lb.ForeColor = Color.Green;
@@ -276,7 +280,7 @@ namespace RauViet.ui
             }
         }
 
-        private async void createItem(string name, int unitID, int cateloryID)
+        private async void createItem(string name, int unitID, int cateloryID, string composition)
         {
             DataRow[] unitRows = mUnit_dt.Select($"UnitID = {unitID}");
             DataRow[] cateloryRows = mCatelory_dt.Select($"CategoryID = {cateloryID}");
@@ -288,7 +292,7 @@ namespace RauViet.ui
             {
                 try
                 {
-                    int newId = await SQLManager_KhoVatTu.Instance.insertMaterialsAsync(name, cateloryID, unitID);
+                    int newId = await SQLManager_KhoVatTu.Instance.insertMaterialsAsync(name, cateloryID, unitID, composition);
                     if (newId > 0)
                     {
                         DataRow drToAdd = mMaterial_dt.NewRow();
@@ -301,6 +305,7 @@ namespace RauViet.ui
                         drToAdd["UnitID"] = unitID;
                         drToAdd["UnitName"] = UnitName;
                         drToAdd["CategoryName"] = CategoryName;
+                        drToAdd["Composition"] = composition;
                         drToAdd["MaterialName_nosign"] = Utils.RemoveVietnameseSigns($"{CategoryName} {name}");
 
                         mMaterial_dt.Rows.Add(drToAdd);
@@ -333,11 +338,12 @@ namespace RauViet.ui
             string name = materialName_tb.Text;
             int unitID = Convert.ToInt32(unit_CBB.SelectedValue);
             int cateloryID = Convert.ToInt32(catelory_CB.SelectedValue);
+            string Composition = composition_tb.Text;
 
             if (id_tb.Text.Length != 0)
-                updateItem(Convert.ToInt32(id_tb.Text), name, unitID, cateloryID);
+                updateItem(Convert.ToInt32(id_tb.Text), name, unitID, cateloryID, Composition);
             else
-                createItem(name, unitID, cateloryID);
+                createItem(name, unitID, cateloryID, Composition);
 
         }
         private async void deleteProduct()
@@ -396,6 +402,7 @@ namespace RauViet.ui
             isNewState = true;
             LuuThayDoiBtn.Text = "Lưu Mới";
             materialName_tb.Enabled = true;
+            composition_tb.Enabled = true;
             unit_CBB.Enabled = true;
             catelory_CB.Enabled = true;
 
@@ -411,6 +418,7 @@ namespace RauViet.ui
             info_gb.BackColor = Color.DarkGray;
             isNewState = false;
             materialName_tb.Enabled = false;
+            composition_tb.Enabled = false;
             unit_CBB.Enabled = false;
             catelory_CB.Enabled = false;
             
@@ -421,6 +429,7 @@ namespace RauViet.ui
         private void Edit_btn_Click(object sender, EventArgs e)
         {
             materialName_tb.Enabled = true;
+            composition_tb.Enabled = true;
             unit_CBB.Enabled = true;
             catelory_CB.Enabled = true;
             edit_btn.Visible = false;
@@ -445,6 +454,7 @@ namespace RauViet.ui
                     int UnitID = Convert.ToInt32(cells["UnitID"].Value);
                     int CategoryID = Convert.ToInt32(cells["CategoryID"].Value);
                     string materialName = cells["MaterialName"].Value.ToString();
+                    string composition = cells["Composition"].Value.ToString();
 
                     if (!unit_CBB.Items.Cast<object>().Any(i => ((DataRowView)i)["UnitID"].ToString() == UnitID.ToString()))
                     {
@@ -460,6 +470,7 @@ namespace RauViet.ui
                     unit_CBB.SelectedValue = UnitID;
                     catelory_CB.SelectedValue = CategoryID;
                     materialName_tb.Text = materialName;
+                    composition_tb.Text = composition;
 
 
                 }

@@ -88,19 +88,24 @@ namespace RauViet.classes
             }
         }
 
-        private void editMaterial(DataTable data)
+        private async void editMaterial(DataTable data)
         {
             data.Columns.Add("CategoryName", typeof(string));
             data.Columns.Add("UnitName", typeof(string));
             data.Columns.Add("MaterialName_nosign", typeof(string));
+            data.Columns.Add("MaterialPrice", typeof(int));
+
+            DataTable materialPrice = await SQLManager_KhoVatTu.Instance.GetMaterialPriceAsync();
+
             foreach (DataRow row in data.Rows)
             {
                 int CategoryID = Convert.ToInt32(row["CategoryID"]);
                 int UnitID = Convert.ToInt32(row["UnitID"]);
+                int MaterialID = Convert.ToInt32(row["MaterialID"]);
 
                 DataRow unitRow = mUnit_dt.AsEnumerable().FirstOrDefault(r => Convert.ToInt32(r["UnitID"]) == UnitID);
                 DataRow categoryRow = mMaterialCategory_dt.AsEnumerable().FirstOrDefault(r => Convert.ToInt32(r["CategoryID"]) == CategoryID);
-
+                DataRow materialRow = materialPrice.AsEnumerable().Where(r => r.Field<int>("MaterialID") == MaterialID).OrderByDescending(r => r.Field<DateTime>("ImportDate")).FirstOrDefault();
 
                 if (unitRow != null)
                 {
@@ -112,6 +117,13 @@ namespace RauViet.classes
                     row["CategoryName"] = categoryRow["CategoryName"].ToString();
                 }
 
+                if (materialRow != null)
+                {
+                    row["MaterialPrice"] = materialRow["Price"] == DBNull.Value ? 0 : Convert.ToInt32(materialRow["Price"]);
+                }
+                else
+                    row["MaterialPrice"] = 0;
+                    
                 row["MaterialName_nosign"] = Utils.RemoveVietnameseSigns($"{row["CategoryName"].ToString()} {row["MaterialName"].ToString()}");
             }
         }
@@ -656,6 +668,8 @@ namespace RauViet.classes
             data.Columns.Add("EmployeeName", typeof(string));
             data.Columns.Add("IsolationEndDate", typeof(string));
             data.Columns.Add("FertilizationWorkTypeName", typeof(string));
+            data.Columns.Add("MaterialUnit", typeof(string));
+            data.Columns.Add("TotalMaterialCost", typeof(string));
 
             DataTable workType_dt = await GetWorkTypeAsync();
             DataTable material_dt = await getMaterialAsync();
@@ -677,7 +691,13 @@ namespace RauViet.classes
                 {
                     DataRow materialRow = material_dt.AsEnumerable().FirstOrDefault(r => r.Field<int>("MaterialID") == materialID);
                     if (materialRow != null)
+                    {
+                        decimal materialQuantity = Convert.ToDecimal(rowItem["MaterialQuantity"]);
+                        int materialPrice = Convert.ToInt32(rowItem["MaterialPrice"]);
                         rowItem["MaterialName"] = materialRow["MaterialName"].ToString();
+                        rowItem["MaterialUnit"] = materialRow["UnitName"].ToString();
+                        rowItem["TotalMaterialCost"] = materialQuantity * materialPrice;
+                    }
                 }
 
                 if (departmentID.HasValue)

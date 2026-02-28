@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -137,7 +136,7 @@ namespace RauViet.ui
                 //   log_GV.DataSource = mLogDV;
 
                 Utils.HideColumns(dataGV, new[] { "CultivationProcessID", "PlantingID", "MaterialID", "WorkTypeID", "WorkTypeID", "MaterialID" , "EmployeeCode" , "DepartmentID", "FertilizationWorkTypeID" });
-                Utils.SetGridOrdinal(mCultivationProcess_dt, new[] { "ProcessDate", "FertilizationWorkTypeName", "WorkTypeName", "MaterialName", "MaterialQuantity", "Dosage", "PlantStatus", "EmployeeName", "IsolationDays", "IsolationEndDate", "DepartmentName", "PlantLocation", "WaterAmount", "Note" });
+                Utils.SetGridOrdinal(mCultivationProcess_dt, new[] { "ProcessDate", "FertilizationWorkTypeName", "WorkTypeName", "MaterialName", "MaterialQuantity", "MaterialUnit", "Dosage", "PlantStatus", "EmployeeName", "IsolationDays", "IsolationEndDate", "DepartmentName", "PlantLocation", "WaterAmount", "MaterialPrice", "TotalMaterialCost", "Note" });
                 Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
                         {"ProcessDate", "Ngày Xử Lý" },
                         {"WorkTypeName", "Công Việc" },
@@ -153,7 +152,10 @@ namespace RauViet.ui
                         {"PlantLocation", "Vị Trí Trồng" },
                         {"WaterAmount", "Lượng Nước" },
                         {"Note", "Ghi Chú" },
-                        {"FertilizationWorkTypeName", "Hình Thức Bón" }
+                        {"FertilizationWorkTypeName", "Hình Thức Bón" },
+                        {"MaterialUnit", "Đơn Vị" },
+                        {"MaterialPrice", "Giá V.tư" },
+                        {"TotalMaterialCost", "Thành Tiền" }
                     });
 
                 //Utils.HideColumns(log_GV, new[] { "LogID", "ExportDate" });
@@ -171,7 +173,9 @@ namespace RauViet.ui
                         {"IsolationDays", 60 },
                         {"EmployeeName", 150 },
                         {"MaterialName", 150 },
-                        {"IsolationEndDate", 70 }
+                        {"IsolationEndDate", 70 },
+                        {"MaterialPrice", 60 },
+                        {"MaterialUnit", 50 }
                     });
 
                 
@@ -725,7 +729,7 @@ namespace RauViet.ui
             decimal area = Convert.ToDecimal(mPlantingRow["Area"]);
             var filteredRows = mCultivationProcessTemplate_dt.AsEnumerable().Where(r =>r.Field<int>("SKU") == sku &&  r.Field<int>("CultivationTypeID") == cultivationTypeID);
 
-            List<(int PlantingID, DateTime ProcessDate, int? FertilizationWorkTypeID, int WorkTypeID, int? MaterialID, decimal? MaterialQuantity, decimal? WaterAmount, int? DepartmentID, string EmployeeCode)> data = new List<(int, DateTime, int?, int, int?, decimal?, decimal?, int?, string)>();
+            List<(int PlantingID, DateTime ProcessDate, int? FertilizationWorkTypeID, int WorkTypeID, int? MaterialID, int? MaterialPrice, decimal? MaterialQuantity, decimal? WaterAmount, int? DepartmentID, string EmployeeCode)> data = new List<(int, DateTime, int?, int, int?, int?, decimal?, decimal?, int?, string)>();
            
             foreach(DataRow rowItem in filteredRows)
             {
@@ -745,7 +749,16 @@ namespace RauViet.ui
                     departmentIdTemp = 27;
                     employeeCodeTemp = "VR0359";
                 }
-                data.Add((plantingID, processDate, fertilizationWorkTypeID, workTypeID, materialID, materialQuantity * area, waterAmount * area, departmentIdTemp, employeeCodeTemp));
+
+                int? materialPrice = null;
+                if (materialID.HasValue)
+                {
+                    DataRow materiaRow = mMaterial_dt.AsEnumerable().FirstOrDefault(r => Convert.ToInt32(r["MaterialID"]) == materialID);
+                    if (materiaRow != null)
+                        materialPrice = Convert.ToInt32(materiaRow["MaterialPrice"]);
+                }
+
+                data.Add((plantingID, processDate, fertilizationWorkTypeID, workTypeID, materialID, materialPrice, materialQuantity * area, waterAmount * area, departmentIdTemp, employeeCodeTemp));
             }
 
             if(data.Count <= 0)

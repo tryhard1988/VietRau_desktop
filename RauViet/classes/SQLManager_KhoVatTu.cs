@@ -166,13 +166,13 @@ namespace RauViet.classes
             }
         }
 
-        public async Task<int> insertMaterialsAsync(string MaterialName, int CategoryID, int UnitID)
+        public async Task<int> insertMaterialsAsync(string MaterialName, int CategoryID, int UnitID, string composition)
         {
             int newId = -1;
 
-            string insertQuery = @"INSERT INTO Materials (MaterialName, CategoryID, UnitID)
+            string insertQuery = @"INSERT INTO Materials (MaterialName, CategoryID, UnitID, Composition)
                                     OUTPUT INSERTED.MaterialID
-                                    VALUES (@MaterialName, @CategoryID, @UnitID)";
+                                    VALUES (@MaterialName, @CategoryID, @UnitID, @Composition)";
 
             try
             {
@@ -186,6 +186,7 @@ namespace RauViet.classes
                         cmd.Parameters.AddWithValue("@MaterialName", MaterialName);
                         cmd.Parameters.AddWithValue("@CategoryID", CategoryID);
                         cmd.Parameters.AddWithValue("@UnitID", UnitID);
+                        cmd.Parameters.AddWithValue("@Composition", composition);
 
                         object result = await cmd.ExecuteScalarAsync();
                         if (result != null)
@@ -201,11 +202,12 @@ namespace RauViet.classes
             }
         }
 
-        public async Task<bool> updateMaterialsAsync(int MaterialID, string MaterialName, int CategoryID, int UnitID)
+        public async Task<bool> updateMaterialsAsync(int MaterialID, string MaterialName, int CategoryID, int UnitID, string composition)
         {
             string query = @"UPDATE Materials SET
                                 MaterialName=@MaterialName,
                                 CategoryID=@CategoryID,
+                                Composition=@Composition,
                                 UnitID=@UnitID
                              WHERE MaterialID=@MaterialID";
             try
@@ -218,6 +220,7 @@ namespace RauViet.classes
                         cmd.Parameters.AddWithValue("@MaterialID", MaterialID);
                         cmd.Parameters.AddWithValue("@MaterialName", MaterialName);
                         cmd.Parameters.AddWithValue("@CategoryID", CategoryID);
+                        cmd.Parameters.AddWithValue("@Composition", composition);
                         cmd.Parameters.AddWithValue("@UnitID", UnitID);
                         await cmd.ExecuteNonQueryAsync();
                     }
@@ -696,6 +699,32 @@ namespace RauViet.classes
             return dt;
         }
 
+        public async Task<DataTable> GetMaterialPriceAsync()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT *
+                                FROM (
+                                    SELECT *,
+                                            ROW_NUMBER() OVER (PARTITION BY MaterialID 
+                                                                ORDER BY ImportDate DESC) AS rn
+                                    FROM MaterialImport
+                                ) t
+                                WHERE rn = 1;";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
+        }
+
         public async Task<bool> deletetMaterialImportAsync(int ImportID)
         {
             string query = "DELETE FROM MaterialImport WHERE ImportID=@ImportID";
@@ -1026,7 +1055,7 @@ namespace RauViet.classes
             return dt;
         }
 
-        public async Task<bool> InsertCultivationProcessListAsync(List<(int PlantingID, DateTime ProcessDate, int? FertilizationWorkTypeID, int WorkTypeID, int? MaterialID, decimal? MaterialQuantity, decimal? WaterAmount, int? DepartmentID, string EmployeeCode)> list)
+        public async Task<bool> InsertCultivationProcessListAsync(List<(int PlantingID, DateTime ProcessDate, int? FertilizationWorkTypeID, int WorkTypeID, int? MaterialID, int? MaterialPrice, decimal? MaterialQuantity, decimal? WaterAmount, int? DepartmentID, string EmployeeCode)> list)
         {
             try
             {
@@ -1041,6 +1070,7 @@ namespace RauViet.classes
                     dt.Columns.Add("FertilizationWorkTypeID", typeof(int));
                     dt.Columns.Add("WorkTypeID", typeof(int));
                     dt.Columns.Add("MaterialID", typeof(int));
+                    dt.Columns.Add("MaterialPrice", typeof(int));
                     dt.Columns.Add("MaterialQuantity", typeof(decimal));
                     dt.Columns.Add("WaterAmount", typeof(decimal));
                     dt.Columns.Add("DepartmentID", typeof(int));
@@ -1053,6 +1083,7 @@ namespace RauViet.classes
                                     (object)item.FertilizationWorkTypeID ?? DBNull.Value,
                                     item.WorkTypeID, 
                                     (object)item.MaterialID ?? DBNull.Value,
+                                    (object)item.MaterialPrice ?? DBNull.Value,
                                     (object)item.MaterialQuantity ?? DBNull.Value,
                                     (object)item.WaterAmount ?? DBNull.Value,
                                     (object)item.DepartmentID ?? DBNull.Value,

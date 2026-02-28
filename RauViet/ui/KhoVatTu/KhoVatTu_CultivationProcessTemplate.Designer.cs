@@ -30,12 +30,15 @@ namespace RauViet.ui
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
+            this.button1 = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
             this.log_GV = new System.Windows.Forms.DataGridView();
             this.readOnly_btn = new System.Windows.Forms.Button();
             this.edit_btn = new System.Windows.Forms.Button();
             this.newCustomerBtn = new System.Windows.Forms.Button();
             this.info_gb = new System.Windows.Forms.GroupBox();
+            this.fertilizationWork_CBB = new System.Windows.Forms.ComboBox();
+            this.label6 = new System.Windows.Forms.Label();
             this.waterAmount_tb = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.daysAfter_tb = new System.Windows.Forms.TextBox();
@@ -59,9 +62,6 @@ namespace RauViet.ui
             this.plantGV = new System.Windows.Forms.DataGridView();
             this.panel3 = new System.Windows.Forms.Panel();
             this.dataGV = new System.Windows.Forms.DataGridView();
-            this.fertilizationWork_CBB = new System.Windows.Forms.ComboBox();
-            this.label6 = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.log_GV)).BeginInit();
             this.info_gb.SuspendLayout();
@@ -88,6 +88,16 @@ namespace RauViet.ui
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(533, 758);
             this.panel1.TabIndex = 69;
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(110, 478);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 71;
+            this.button1.Text = "button1";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // label4
             // 
@@ -173,6 +183,24 @@ namespace RauViet.ui
             this.info_gb.Size = new System.Drawing.Size(513, 315);
             this.info_gb.TabIndex = 43;
             this.info_gb.TabStop = false;
+            // 
+            // fertilizationWork_CBB
+            // 
+            this.fertilizationWork_CBB.FormattingEnabled = true;
+            this.fertilizationWork_CBB.IntegralHeight = false;
+            this.fertilizationWork_CBB.Location = new System.Drawing.Point(182, 144);
+            this.fertilizationWork_CBB.Name = "fertilizationWork_CBB";
+            this.fertilizationWork_CBB.Size = new System.Drawing.Size(157, 24);
+            this.fertilizationWork_CBB.TabIndex = 91;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(74, 145);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(95, 16);
+            this.label6.TabIndex = 90;
+            this.label6.Text = "Hình Thức Bón:";
             // 
             // waterAmount_tb
             // 
@@ -350,7 +378,7 @@ namespace RauViet.ui
             this.panel2.Dock = System.Windows.Forms.DockStyle.Left;
             this.panel2.Location = new System.Drawing.Point(0, 0);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(249, 758);
+            this.panel2.Size = new System.Drawing.Size(273, 758);
             this.panel2.TabIndex = 70;
             // 
             // plantGV
@@ -362,16 +390,16 @@ namespace RauViet.ui
             this.plantGV.Location = new System.Drawing.Point(0, 0);
             this.plantGV.Name = "plantGV";
             this.plantGV.ReadOnly = true;
-            this.plantGV.Size = new System.Drawing.Size(243, 758);
+            this.plantGV.Size = new System.Drawing.Size(267, 758);
             this.plantGV.TabIndex = 71;
             // 
             // panel3
             // 
             this.panel3.Controls.Add(this.dataGV);
             this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel3.Location = new System.Drawing.Point(249, 0);
+            this.panel3.Location = new System.Drawing.Point(273, 0);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(567, 758);
+            this.panel3.Size = new System.Drawing.Size(543, 758);
             this.panel3.TabIndex = 71;
             // 
             // dataGV
@@ -383,36 +411,8 @@ namespace RauViet.ui
             this.dataGV.Location = new System.Drawing.Point(0, 0);
             this.dataGV.Name = "dataGV";
             this.dataGV.ReadOnly = true;
-            this.dataGV.Size = new System.Drawing.Size(567, 758);
+            this.dataGV.Size = new System.Drawing.Size(543, 758);
             this.dataGV.TabIndex = 71;
-            // 
-            // fertilizationWork_CBB
-            // 
-            this.fertilizationWork_CBB.FormattingEnabled = true;
-            this.fertilizationWork_CBB.IntegralHeight = false;
-            this.fertilizationWork_CBB.Location = new System.Drawing.Point(182, 144);
-            this.fertilizationWork_CBB.Name = "fertilizationWork_CBB";
-            this.fertilizationWork_CBB.Size = new System.Drawing.Size(157, 24);
-            this.fertilizationWork_CBB.TabIndex = 91;
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(74, 145);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(95, 16);
-            this.label6.TabIndex = 90;
-            this.label6.Text = "Hình Thức Bón:";
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(110, 478);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 71;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // KhoVatTu_CultivationProcessTemplate
             // 

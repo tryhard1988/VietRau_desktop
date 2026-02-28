@@ -167,7 +167,7 @@ namespace RauViet.ui
 
                 Utils.SetGridWidths(dataGV, new System.Collections.Generic.Dictionary<string, int> {
                         {"ProductNameVN", 150 },
-                        {"CultivationTypeName", 100 },
+                        {"CultivationTypeName", 120 },
                         {"BaseDateTypeName", 100 },
                         {"DaysAfter", 100 },
                         {"WorkTypeName", 100 },
@@ -176,7 +176,10 @@ namespace RauViet.ui
                         {"WaterAmount", 100}
                     });
 
-                
+                Utils.SetGridWidths(plantGV, new System.Collections.Generic.Dictionary<string, int> {
+                        {"ProductNameVN", 80 },
+                        {"CultivationTypeName", 120 },
+                    });
 
                 Utils.SetTabStopRecursive(this, false);
                 int countTab = 0;

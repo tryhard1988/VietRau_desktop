@@ -1,12 +1,9 @@
 ﻿using RauViet.classes;
 using System;
 using System.Data;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Windows.Media.Media3D;
-using Color = System.Drawing.Color;
 
 namespace RauViet.ui
 {
@@ -77,6 +74,13 @@ namespace RauViet.ui
                         }
 
                         string fertilizationWorkName_NS = Utils.RemoveVietnameseSigns(item["Column3"].ToString()).ToLower().Trim();
+                        if (fertilizationWorkName_NS.CompareTo(Utils.RemoveVietnameseSigns("Gieo xạ").ToLower()) == 0 || fertilizationWorkName_NS.CompareTo(Utils.RemoveVietnameseSigns("Gieo hạt").ToLower()) ==0)
+                            fertilizationWorkName_NS = Utils.RemoveVietnameseSigns("Gieo sạ").ToLower().Trim();
+                        else if (fertilizationWorkName_NS.StartsWith("thuc "))
+                        {
+                            fertilizationWorkName_NS = "bon " + fertilizationWorkName_NS;
+                        }
+
                         var fertilizationWorkRow = workTypeTask.Result.AsEnumerable().FirstOrDefault(r => Utils.RemoveVietnameseSigns(r.Field<string>("WorkTypeName")).ToLower().Trim() == fertilizationWorkName_NS);
                         if (fertilizationWorkRow != null)
                         {
@@ -84,6 +88,9 @@ namespace RauViet.ui
                         }
 
                         string workTypeName_NS = Utils.RemoveVietnameseSigns(item["Column4"].ToString()).ToLower().Trim();
+                        if (workTypeName_NS.CompareTo(Utils.RemoveVietnameseSigns("Gieo xạ").ToLower()) == 0 || workTypeName_NS.CompareTo(Utils.RemoveVietnameseSigns("Gieo hạt").ToLower()) == 0)
+                            workTypeName_NS = Utils.RemoveVietnameseSigns("Gieo sạ").ToLower().Trim();
+
                         var workTypeRow = workTypeTask.Result.AsEnumerable().FirstOrDefault(r => Utils.RemoveVietnameseSigns(r.Field<string>("WorkTypeName")).ToLower().Trim() == workTypeName_NS);
                         if (workTypeRow != null)
                         {
@@ -91,6 +98,45 @@ namespace RauViet.ui
                         }
 
                         string materialName_NS = Utils.RemoveVietnameseSigns(item["Column7"].ToString()).ToLower().Trim();
+                        if(materialName_NS.CompareTo(Utils.RemoveVietnameseSigns("so dua")) == 0 || materialName_NS.CompareTo(Utils.RemoveVietnameseSigns("Xơ dừa đã xử lý").ToLower()) == 0)
+                            materialName_NS = Utils.RemoveVietnameseSigns("Xơ dừa thô").ToLower().Trim();
+                        else if (materialName_NS.CompareTo(Utils.RemoveVietnameseSigns("YaraMila Winner").ToLower()) == 0)
+                            materialName_NS = Utils.RemoveVietnameseSigns("YaraMila Winner (15-9-20)").ToLower().Trim();
+                        else if (materialName_NS.CompareTo(Utils.RemoveVietnameseSigns("CYTOGREEN N36").ToLower()) == 0)
+                            materialName_NS = Utils.RemoveVietnameseSigns("Phân bón Cytogreen N36").ToLower().Trim();
+                        else if (materialName_NS.CompareTo(Utils.RemoveVietnameseSigns("Hạt giống Khổ Qua F1 TN 166").ToLower()) == 0)
+                            materialName_NS = Utils.RemoveVietnameseSigns("Hạt giống khổ qua F1 SV 749").ToLower().Trim();
+                        else if (materialName_NS.CompareTo(Utils.RemoveVietnameseSigns("Vôi mịn loại 1 CaO").ToLower()) == 0)
+                            materialName_NS = Utils.RemoveVietnameseSigns("Vôi CaCO3").ToLower().Trim();
+                        else if (materialName_NS.CompareTo(Utils.RemoveVietnameseSigns("DAP Phú Mỹ").ToLower()) == 0)
+                            materialName_NS = Utils.RemoveVietnameseSigns("DAP 18-46 Vinacam").ToLower().Trim();
+                        else if (materialName_NS.CompareTo(Utils.RemoveVietnameseSigns("Tricho endim").ToLower()) == 0)
+                            materialName_NS = Utils.RemoveVietnameseSigns("Bio Pro TRICHO FG").ToLower().Trim();
+                        else if (materialName_NS.CompareTo(Utils.RemoveVietnameseSigns("Phân bón hữu cơ DAWU 2").ToLower()) == 0)
+                            materialName_NS = Utils.RemoveVietnameseSigns("Phân bón hữu cơ Mizufert 3,5-2-2 55 OM").ToLower().Trim();
+                        else if (materialName_NS.CompareTo(Utils.RemoveVietnameseSigns("Fetrilon-combi").ToLower()) == 0)
+                            materialName_NS = Utils.RemoveVietnameseSigns("Fetrilon combi").ToLower().Trim();
+                        else if (materialName_NS.CompareTo(Utils.RemoveVietnameseSigns("Polyram").ToLower()) == 0)
+                            materialName_NS = Utils.RemoveVietnameseSigns("Polyram 80WG").ToLower().Trim();
+                        else if (materialName_NS.CompareTo(Utils.RemoveVietnameseSigns("Orande 280 SC").ToLower()) == 0)
+                            materialName_NS = Utils.RemoveVietnameseSigns("Orande 280SC").ToLower().Trim();
+                        else if (materialName_NS.CompareTo(Utils.RemoveVietnameseSigns("DAP 19-49-0 (SEU 55)").ToLower()) == 0)
+                            materialName_NS = Utils.RemoveVietnameseSigns("DAP 18-46 Vinacam").ToLower().Trim();
+                        else if (materialName_NS.CompareTo(Utils.RemoveVietnameseSigns("Phân bò ủ hoai").ToLower()) == 0)
+                            materialName_NS = Utils.RemoveVietnameseSigns("Phân bò đã xử lý").ToLower().Trim();
+                        else if (materialName_NS.CompareTo(Utils.RemoveVietnameseSigns("Magnesium sulphate (Green mag)").ToLower()) == 0)
+                            materialName_NS = Utils.RemoveVietnameseSigns("BitterMag (MgSO4)").ToLower().Trim();
+                        else if (materialName_NS.CompareTo(Utils.RemoveVietnameseSigns("Haifa MKP").ToLower()) == 0)
+                            materialName_NS = Utils.RemoveVietnameseSigns("Nova Peak 0-52-34").ToLower().Trim();
+                        else if (materialName_NS.CompareTo(Utils.RemoveVietnameseSigns("Humic acid powder").ToLower()) == 0)
+                            materialName_NS = Utils.RemoveVietnameseSigns("Super Humic").ToLower().Trim();
+                        else if (materialName_NS.CompareTo(Utils.RemoveVietnameseSigns("Phân gà vi sinh Nhật").ToLower()) == 0)
+                            materialName_NS = Utils.RemoveVietnameseSigns("Phân gà hữu cơ Nhật AKI").ToLower().Trim();
+                        else if (materialName_NS.CompareTo(Utils.RemoveVietnameseSigns("Phân trùn quế cao cấp SFARM pb01").ToLower()) == 0)
+                            materialName_NS = Utils.RemoveVietnameseSigns("Phân trùn quế SFARM PB01").ToLower().Trim();
+                        else if (materialName_NS.CompareTo(Utils.RemoveVietnameseSigns("NPK Phú Mỹ 20-7-7+TE").ToLower()) == 0)
+                            materialName_NS = Utils.RemoveVietnameseSigns("NPK Phú Mỹ 16-16-8+13S+TE").ToLower().Trim();
+
                         var materialRow = materialTask.Result.AsEnumerable().FirstOrDefault(r => Utils.RemoveVietnameseSigns(r.Field<string>("MaterialName")).ToLower().Trim() == materialName_NS);
                         if (materialRow != null)
                         {
