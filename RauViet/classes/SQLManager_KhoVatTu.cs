@@ -1111,6 +1111,313 @@ namespace RauViet.classes
                 return false;
             }
         }
+
+        public async Task<int> insertCultivationProcessAsync(
+            int PlantingID,
+            DateTime processDate,
+            int fertilizationWorkTypeID,
+            int workTypeID,
+            int? materialID,
+            int? MaterialPrice,
+            decimal materialQuantity,
+            string dosage,
+            string plantStatus,
+            string activeIngredient,
+            string employeeCode,
+            int isolationDays,
+            int? departmentID,
+            string plantLocation,
+            decimal waterAmount,
+            string note)
+        {
+            int newId = -1;
+
+            string insertQuery = @"INSERT INTO CultivationProcess (PlantingID, MaterialID, WorkTypeID, ProcessDate, MaterialQuantity, WaterAmount, Dosage, PlantStatus, ActiveIngredient, EmployeeCode, IsolationDays, DepartmentID, PlantLocation, Note, FertilizationWorkTypeID, MaterialPrice)
+                                    OUTPUT INSERTED.CultivationProcessID
+                                    VALUES (@PlantingID, @MaterialID, @WorkTypeID, @ProcessDate, @MaterialQuantity, @WaterAmount, @Dosage, @PlantStatus, @ActiveIngredient, @EmployeeCode, @IsolationDays, @DepartmentID, @PlantLocation, @Note, @FertilizationWorkTypeID, @MaterialPrice)";
+
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
+                {
+                    await con.OpenAsync();
+
+                    // 2️⃣ Insert và lấy ID mới
+                    using (SqlCommand cmd = new SqlCommand(insertQuery, con))
+                    {
+                        cmd.Parameters.Add("@PlantingID", SqlDbType.Int).Value = PlantingID;
+                        cmd.Parameters.Add("@MaterialID", SqlDbType.Int).Value = materialID.HasValue ? (object)materialID.Value : DBNull.Value;
+                        cmd.Parameters.Add("@WorkTypeID", SqlDbType.Int).Value = workTypeID;
+                        cmd.Parameters.Add("@ProcessDate", SqlDbType.Date).Value = processDate.Date;
+                        cmd.Parameters.Add("@MaterialQuantity", SqlDbType.Decimal).Value = materialQuantity;
+                        cmd.Parameters.Add("@WaterAmount", SqlDbType.Decimal).Value = waterAmount;
+                        cmd.Parameters.Add("@Dosage", SqlDbType.NVarChar).Value = dosage;
+                        cmd.Parameters.Add("@PlantStatus", SqlDbType.NVarChar).Value = plantStatus;
+                        cmd.Parameters.Add("@ActiveIngredient", SqlDbType.NVarChar).Value = activeIngredient;
+                        cmd.Parameters.Add("@EmployeeCode", SqlDbType.NVarChar).Value = employeeCode;
+                        cmd.Parameters.Add("@IsolationDays", SqlDbType.Int).Value = isolationDays;
+                        cmd.Parameters.Add("@DepartmentID", SqlDbType.Int).Value = departmentID;
+                        cmd.Parameters.Add("@PlantLocation", SqlDbType.NVarChar).Value = plantLocation;
+                        cmd.Parameters.Add("@Note", SqlDbType.NVarChar).Value = note;
+                        cmd.Parameters.Add("@FertilizationWorkTypeID", SqlDbType.Int).Value = fertilizationWorkTypeID;
+                        cmd.Parameters.Add("@MaterialPrice", SqlDbType.Int).Value = MaterialPrice.HasValue ? (object)MaterialPrice.Value : DBNull.Value;
+
+                        object result = await cmd.ExecuteScalarAsync();
+                        if (result != null)
+                            newId = Convert.ToInt32(result);
+                    }
+                }
+
+                return newId;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("ERROR: " + ex.Message);
+                return -1;
+            }
+        }
+
+        public async Task<bool> updateCultivationProcessAsync(
+            int CultivationProcessID,
+            int PlantingID,
+            DateTime processDate,
+            int fertilizationWorkTypeID,
+            int workTypeID,
+            int? materialID,
+            int? MaterialPrice,
+            decimal materialQuantity,
+            string dosage,
+            string plantStatus,
+            string activeIngredient,
+            string employeeCode,
+            int isolationDays,
+            int? departmentID,
+            string plantLocation,
+            decimal waterAmount,
+            string note)
+        {
+            string query = @"UPDATE CultivationProcess SET
+                                PlantingID=@PlantingID, 
+                                MaterialID=@MaterialID, 
+                                WorkTypeID=@WorkTypeID, 
+                                ProcessDate=@ProcessDate, 
+                                MaterialQuantity=@MaterialQuantity, 
+                                WaterAmount=@WaterAmount, 
+                                Dosage=@Dosage, 
+                                PlantStatus=@PlantStatus, 
+                                ActiveIngredient=@ActiveIngredient, 
+                                EmployeeCode=@EmployeeCode, 
+                                IsolationDays=@IsolationDays, 
+                                DepartmentID=@DepartmentID, 
+                                PlantLocation=@PlantLocation, 
+                                Note=@Note, 
+                                FertilizationWorkTypeID=@FertilizationWorkTypeID, 
+                                MaterialPrice=@MaterialPrice
+                             WHERE CultivationProcessID=@CultivationProcessID";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.Add("@CultivationProcessID", SqlDbType.Int).Value = CultivationProcessID;
+                        cmd.Parameters.Add("@PlantingID", SqlDbType.Int).Value = PlantingID;
+                        cmd.Parameters.Add("@MaterialID", SqlDbType.Int).Value = materialID.HasValue ? (object)materialID.Value : DBNull.Value;
+                        cmd.Parameters.Add("@WorkTypeID", SqlDbType.Int).Value = workTypeID;
+                        cmd.Parameters.Add("@ProcessDate", SqlDbType.Date).Value = processDate.Date;
+                        cmd.Parameters.Add("@MaterialQuantity", SqlDbType.Decimal).Value = materialQuantity;
+                        cmd.Parameters.Add("@WaterAmount", SqlDbType.Decimal).Value = waterAmount;
+                        cmd.Parameters.Add("@Dosage", SqlDbType.NVarChar).Value = dosage;
+                        cmd.Parameters.Add("@PlantStatus", SqlDbType.NVarChar).Value = plantStatus;
+                        cmd.Parameters.Add("@ActiveIngredient", SqlDbType.NVarChar).Value = activeIngredient;
+                        cmd.Parameters.Add("@EmployeeCode", SqlDbType.NVarChar).Value = employeeCode;
+                        cmd.Parameters.Add("@IsolationDays", SqlDbType.Int).Value = isolationDays;
+                        cmd.Parameters.Add("@DepartmentID", SqlDbType.Int).Value = departmentID;
+                        cmd.Parameters.Add("@PlantLocation", SqlDbType.NVarChar).Value = plantLocation;
+                        cmd.Parameters.Add("@Note", SqlDbType.NVarChar).Value = note;
+                        cmd.Parameters.Add("@FertilizationWorkTypeID", SqlDbType.Int).Value = fertilizationWorkTypeID;
+                        cmd.Parameters.Add("@MaterialPrice", SqlDbType.Int).Value = MaterialPrice.HasValue ? (object)MaterialPrice.Value : DBNull.Value;
+
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+                return true;
+            }
+            catch { return false; }
+        }
+
+        public async Task<bool> deletetCultivationProcessAsync(int ProcessID)
+        {
+            string query = "DELETE FROM CultivationProcess WHERE CultivationProcessID=@CultivationProcessID";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@CultivationProcessID", ProcessID);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+                return true;
+            }
+            catch { return false; }
+        }
+
+        public async Task<int> insertPlantingManagementLogAsync(DateTime nurseryDate, DateTime plantingDate, DateTime harvestDate, string oldValue, string newValue)
+        {
+            int newId = -1;
+            string insertQuery = @"INSERT INTO PlantingManagement_Log (NurseryDate, PlantingDate, HarvestDate, OldValue, NewValue, ActionBy)
+                                    OUTPUT INSERTED.LogID
+                                    VALUES (@NurseryDate, @PlantingDate, @HarvestDate, @OldValue, @NewValue, @ActionBy)";
+
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_khoVatTuLog_conStr()))
+                {
+                    await con.OpenAsync();
+
+                    // 2️⃣ Insert và lấy ID mới
+                    using (SqlCommand cmd = new SqlCommand(insertQuery, con))
+                    {
+                        cmd.Parameters.Add("@NurseryDate", SqlDbType.DateTime).Value = nurseryDate;
+                        cmd.Parameters.Add("@PlantingDate", SqlDbType.DateTime).Value = plantingDate;
+                        cmd.Parameters.Add("@HarvestDate", SqlDbType.DateTime).Value = harvestDate;
+                        cmd.Parameters.Add("@OldValue", SqlDbType.NVarChar).Value = oldValue;
+                        cmd.Parameters.Add("@NewValue", SqlDbType.NVarChar).Value = newValue;
+                        cmd.Parameters.Add("@ActionBy", SqlDbType.NVarChar).Value = UserManager.Instance.fullName;
+
+                        object result = await cmd.ExecuteScalarAsync();
+                        if (result != null)
+                            newId = Convert.ToInt32(result);
+                    }
+                }
+
+                return newId;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("ERROR: " + ex.Message);
+                return -1;
+            }
+        }
+
+        public async Task<DataTable> GetCultivationProcessLogAsync(int plantingID)
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_khoVatTuLog_conStr()))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT * FROM CultivationProcess_Log WHERE PlantingID = @PlantingID";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    cmd.Parameters.Add("@PlantingID", SqlDbType.Int).Value = plantingID;
+
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
+        }
+
+        public async Task<int> insertCultivationProcessLogAsync(int plantingID, string actionType, string oldValue, string newValue)
+        {
+            int newId = -1;
+            string insertQuery = @"INSERT INTO CultivationProcess_Log (PlantingID, ActionType, OldValue, NewValue, ActionBy)
+                                    OUTPUT INSERTED.LogID
+                                    VALUES (@PlantingID, @ActionType, @OldValue, @NewValue, @ActionBy)";
+
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_khoVatTuLog_conStr()))
+                {
+                    await con.OpenAsync();
+
+                    // 2️⃣ Insert và lấy ID mới
+                    using (SqlCommand cmd = new SqlCommand(insertQuery, con))
+                    {
+                        cmd.Parameters.Add("@PlantingID", SqlDbType.Int).Value = plantingID;
+                        cmd.Parameters.Add("@ActionType", SqlDbType.NVarChar).Value = actionType;
+                        cmd.Parameters.Add("@OldValue", SqlDbType.NVarChar).Value = oldValue;
+                        cmd.Parameters.Add("@NewValue", SqlDbType.NVarChar).Value = newValue;
+                        cmd.Parameters.Add("@ActionBy", SqlDbType.NVarChar).Value = UserManager.Instance.fullName;
+
+                        object result = await cmd.ExecuteScalarAsync();
+                        if (result != null)
+                            newId = Convert.ToInt32(result);
+                    }
+                }
+
+                return newId;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("ERROR: " + ex.Message);
+                return -1;
+            }
+        }
+
+        public async Task<DataTable> GetCultivationProcessTemplateLogAsync()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_khoVatTuLog_conStr()))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT * FROM CultivationProcessTemplate_Log";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
+        }
+
+        public async Task<int> insertCultivationProcessTemplateLogAsync(int SKU, int CultivationTypeID, string actionType, string oldValue, string newValue)
+        {
+            int newId = -1;
+            string insertQuery = @"INSERT INTO CultivationProcessTemplate_Log (SKU, CultivationTypeID, ActionType, OldValue, NewValue, ActionBy)
+                                    OUTPUT INSERTED.LogID
+                                    VALUES (@SKU, @CultivationTypeID, @ActionType, @OldValue, @NewValue, @ActionBy)";
+
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_khoVatTuLog_conStr()))
+                {
+                    await con.OpenAsync();
+
+                    // 2️⃣ Insert và lấy ID mới
+                    using (SqlCommand cmd = new SqlCommand(insertQuery, con))
+                    {
+                        cmd.Parameters.Add("@SKU", SqlDbType.Int).Value = SKU;
+                        cmd.Parameters.Add("@CultivationTypeID", SqlDbType.Int).Value = CultivationTypeID;
+                        cmd.Parameters.Add("@ActionType", SqlDbType.NVarChar).Value = actionType;
+                        cmd.Parameters.Add("@OldValue", SqlDbType.NVarChar).Value = oldValue;
+                        cmd.Parameters.Add("@NewValue", SqlDbType.NVarChar).Value = newValue;
+                        cmd.Parameters.Add("@ActionBy", SqlDbType.NVarChar).Value = UserManager.Instance.fullName;
+
+                        object result = await cmd.ExecuteScalarAsync();
+                        if (result != null)
+                            newId = Convert.ToInt32(result);
+                    }
+                }
+
+                return newId;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("ERROR: " + ex.Message);
+                return -1;
+            }
+        }
     }
 }
 

@@ -1,4 +1,5 @@
-﻿using RauViet.classes;
+﻿using DocumentFormat.OpenXml.Vml.Office;
+using RauViet.classes;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -13,7 +14,7 @@ namespace RauViet.ui
     public partial class KhoVatTu_PlantingManagement : Form
     {
         System.Data.DataTable mPlantingManagement_dt, mDepartment_dt, mProductSKU_dt, mEmployee_dt, mCultivationType_dt;
-        DataView mPlantingManagement_dv;
+        DataView mLog_dv;
         private Timer productSKUDebounceTimer = new Timer { Interval = 300 };
         private Timer employeeDebounceTimer = new Timer { Interval = 300 };
         private Timer departmentDebounceTimer = new Timer { Interval = 300 };
@@ -120,7 +121,7 @@ namespace RauViet.ui
                 var productSKUTask = SQLStore_Kho.Instance.getProductSKUAsync(parameters);
                 var plantingManagementTask = SQLStore_KhoVatTu.Instance.getPlantingManagementAsync(monthYear_dtp.Value.Year);
                 var logTask = SQLStore_KhoVatTu.Instance.getPlantingManagementLogAsync(monthYear_dtp.Value.Year);
-                await Task.WhenAll(departmentTask, productSKUTask, plantingManagementTask, employeesTask, cultivationTypeTask);
+                await Task.WhenAll(departmentTask, productSKUTask, plantingManagementTask, employeesTask, cultivationTypeTask, logTask);
                 mDepartment_dt = departmentTask.Result;
                 mProductSKU_dt = productSKUTask.Result;
                 mPlantingManagement_dt = plantingManagementTask.Result;
@@ -146,10 +147,10 @@ namespace RauViet.ui
                 cultivationType_CB.DisplayMember = "CultivationTypeName";  // hiển thị tên
                 cultivationType_CB.ValueMember = "CultivationTypeID";
 
-                mPlantingManagement_dv = new DataView(mPlantingManagement_dt);
+                mLog_dv = new DataView(logTask.Result);
+                log_GV.DataSource = mLog_dv;
                 dataGV.DataSource = mPlantingManagement_dt;
                 monthGV.DataSource = Utils.CreateMonthsInYearTable();
-                //    log_GV.DataSource = mLogDV;
                 Utils.HideColumns(dataGV, new[] { "PlantingID", "SKU", "Department", "Supervisor", "CreatedAt", "search_nosign", "CultivationTypeID" });
                 Utils.SetGridOrdinal(mPlantingManagement_dt, new[] { "IsCompleted","ProductionOrder", "PlantName", "CultivationTypeName", "Quantity", "NurseryDate", "PlantingDate", "Area", "HarvestDate", "DepartmentName", "SupervisorName", "Note", "PlantingID", "Department" });
                 Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
@@ -185,6 +186,18 @@ namespace RauViet.ui
                 Utils.HideColumns(monthGV, new[] { "Month"});
                 Utils.SetGridHeaders(monthGV, new System.Collections.Generic.Dictionary<string, string> {{"MonthName", "Tháng" }});
                 Utils.SetGridWidths(monthGV, new System.Collections.Generic.Dictionary<string, int> { { "MonthName", 70}});
+
+                Utils.HideColumns(log_GV, new[] { "LogID"});
+                Utils.SetGridHeaders(log_GV, new System.Collections.Generic.Dictionary<string, string> {
+                        {"OldValue", "Cũ" },
+                        {"NewValue", "Mới" },
+                        {"CreatedDate", "Ngày tạo" },
+                        {"ActionBy", "Người tạo" }
+                    });
+                Utils.SetGridWidths(log_GV, new System.Collections.Generic.Dictionary<string, int> {
+                        {"OldValue", 400},
+                        {"NewValue", 400},
+                    });
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 monthGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
@@ -366,6 +379,8 @@ namespace RauViet.ui
 
                     if (dialogResult == DialogResult.Yes)
                     {
+                        string newValue = $"ProductionOrder: {ProductionOrder}; Cây Trồng: {productRows[0]["ProductNameVN"].ToString()}; Loại Canh Tác: {cultivationTypeRows[0]["CultivationTypeName"].ToString()}; Ngày Ươm: {NurseryDate}; Ngày Trồng: {PlantingDate}; Ngày Thu: {HarvestDate}; Số Cây: {Quantity}; Diện Tích: {Area}; Tổ P.Trách: {departmentRows[0]["DepartmentName"].ToString()}; Người Giám Sát: {employeeRows[0]["FullName"].ToString()}; Ghi Chú: {Note}";
+                        string oldValue = $"ProductionOrder: {row["ProductionOrder"]}; Cây Trồng: {row["PlantName"]}; Loại Canh Tác: {row["CultivationTypeName"]}; Ngày Ươm: {row["NurseryDate"]}; Ngày Trồng: {row["PlantingDate"]}; Ngày Thu: {row["HarvestDate"]}; Số Cây: {row["Quantity"]}; Diện Tích: {row["Area"]}; Tổ P.Trách: {row["DepartmentName"]}; Người Giám Sát: {row["SupervisorName"]}; Ghi Chú: {row["Note"]}";
                         try
                         {
                             bool isScussess = await SQLManager_KhoVatTu.Instance.updatePlantingManagementAsync(plantingID, ProductionOrder, SKU, Area, Quantity, NurseryDate, PlantingDate, HarvestDate, Department, Supervisor, Note, IsCompleted, cultivationTypeID);
@@ -390,19 +405,26 @@ namespace RauViet.ui
                                 row["IsCompleted"] = IsCompleted;
                                 row["search_nosign"] = Utils.RemoveVietnameseSigns( $"{ProductionOrder} {productRows[0]["ProductNameVN"].ToString()}");
 
+                                oldValue = "Update Success" + oldValue;
                                 status_lb.Text = "Thành công.";
                                 status_lb.ForeColor = Color.Green;
                             }
                             else
                             {
+                                oldValue = "Update Fail" + oldValue;
                                 status_lb.Text = "Thất bại.";
                                 status_lb.ForeColor = Color.Red;
                             }
                         }
                         catch (Exception ex)
                         {
+                            oldValue = "Update " + ex.Message + " " + oldValue;
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;
+                        }
+                        finally
+                        {
+                            _ = SQLManager_KhoVatTu.Instance.insertPlantingManagementLogAsync(NurseryDate, PlantingDate, HarvestDate, oldValue, newValue);
                         }
                     }
                     break;
@@ -422,6 +444,8 @@ namespace RauViet.ui
 
             if (dialogResult == DialogResult.Yes)
             {
+                string newValue = $"ProductionOrder: {ProductionOrder}; Cây Trồng: {productRows[0]["ProductNameVN"].ToString()}; Loại Canh Tác: {cultivationTypeRows[0]["CultivationTypeName"].ToString()}; Ngày Ươm: {NurseryDate}; Ngày Trồng: {PlantingDate}; Ngày Thu: {HarvestDate}; Số Cây: {Quantity}; Diện Tích: {Area}; Tổ P.Trách: {departmentRows[0]["DepartmentName"].ToString()}; Người Giám Sát: {employeeRows[0]["FullName"].ToString()}; Ghi Chú: {Note}";
+                string oldValue = "Create: ";
                 try
                 {
                     int newId = await SQLManager_KhoVatTu.Instance.insertPlantingManagementAsync(ProductionOrder, SKU, Area, Quantity, NurseryDate, PlantingDate, HarvestDate, Department, Supervisor, Note, cultivationTypeID);
@@ -455,19 +479,26 @@ namespace RauViet.ui
                         status_lb.Text = "Thành công";
                         status_lb.ForeColor = Color.Green;
 
+                        oldValue += "Success";
                         newBtn_Click(null, null);
                     }
                     else
                     {
+                        oldValue += "Fail";
                         status_lb.Text = "Thất bại";
                         status_lb.ForeColor = Color.Red;
                     }
                 }
                 catch (Exception ex)
                 {
+                    oldValue += ex.Message;
                     Console.WriteLine("ERROR: " + ex.Message);
                     status_lb.Text = "Thất bại.";
                     status_lb.ForeColor = Color.Red;
+                }
+                finally
+                {
+                    _ = SQLManager_KhoVatTu.Instance.insertPlantingManagementLogAsync(NurseryDate, PlantingDate, HarvestDate, oldValue, newValue);
                 }
 
             }
@@ -507,6 +538,11 @@ namespace RauViet.ui
 
                     if (dialogResult == DialogResult.Yes)
                     {
+                        string newValue = "";
+                        string oldValue = $"ProductionOrder: {row["ProductionOrder"]}; Cây Trồng: {row["PlantName"]}; Loại Canh Tác: {row["CultivationTypeName"]}; Ngày Ươm: {row["NurseryDate"]}; Ngày Trồng: {row["PlantingDate"]}; Ngày Thu: {row["HarvestDate"]}; Số Cây: {row["Quantity"]}; Diện Tích: {row["Area"]}; Tổ P.Trách: {row["DepartmentName"]}; Người Giám Sát: {row["SupervisorName"]}; Ghi Chú: {row["Note"]}";
+                        DateTime NurseryDate = Convert.ToDateTime(row["NurseryDate"]);
+                        DateTime PlantingDate = Convert.ToDateTime(row["PlantingDate"]);
+                        DateTime HarvestDate = Convert.ToDateTime(row["HarvestDate"]);
                         try
                         {
                             bool isScussess = await SQLManager_KhoVatTu.Instance.deletetPlantingManagementAsync(Convert.ToInt32(id));
@@ -515,20 +551,26 @@ namespace RauViet.ui
                             {
                                 status_lb.Text = "Thành công.";
                                 status_lb.ForeColor = Color.Green;
-
+                                newValue = "Delete Success";
                                 mPlantingManagement_dt.Rows.Remove(row);
                                 mPlantingManagement_dt.AcceptChanges();
                             }
                             else
                             {
+                                newValue = "Delete Fail";
                                 status_lb.Text = "Thất bại.";
                                 status_lb.ForeColor = Color.Red;
                             }
                         }
                         catch (Exception ex)
                         {
+                            newValue = "Delete " + ex.Message;
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;
+                        }
+                        finally
+                        {
+                            _ = SQLManager_KhoVatTu.Instance.insertPlantingManagementLogAsync(NurseryDate, PlantingDate, HarvestDate, oldValue, newValue);
                         }
                     }
                     break;
@@ -585,6 +627,7 @@ namespace RauViet.ui
             soLuong_tb.Enabled = false;
             nguoiPhuTrach_CB.Enabled = false;
             note_tb.Enabled = false;
+            complete_cb.Enabled = false;
             if (dataGV.SelectedRows.Count > 0)
                 updateRightUI();
         }
@@ -594,7 +637,7 @@ namespace RauViet.ui
             lenhSX_tb.Enabled = true;
             deparment_CBB.Enabled = true;
             caytrong_CB.Enabled = false;
-            cultivationType_CB.Enabled = false;
+            cultivationType_CB.Enabled = true;
             edit_btn.Visible = false;
             newCustomerBtn.Visible = false;
             readOnly_btn.Visible = true;
@@ -608,6 +651,7 @@ namespace RauViet.ui
             nguoiPhuTrach_CB.Enabled = true;
             info_gb.BackColor = edit_btn.BackColor;
             isNewState = false;
+            complete_cb.Enabled = true;
             LuuThayDoiBtn.Text = "Lưu C.Sửa";
         }
 
@@ -769,13 +813,13 @@ namespace RauViet.ui
                     nextDate = ngayUom_dtp.Value.AddDays(14);
                     break;
                 case 232: //can tây
-                    nextDate = ngayUom_dtp.Value.AddDays(14);
+                    nextDate = ngayUom_dtp.Value.AddDays(40);
                     break;
                 case 261: //đậu đũa
                     nextDate = ngayUom_dtp.Value;
                     break;
                 case 181: //hành lá
-                    nextDate = ngayUom_dtp.Value.AddDays(14);
+                    nextDate = ngayUom_dtp.Value.AddDays(30);
                     break;
                 case 172: //hương nhu
                     nextDate = ngayUom_dtp.Value.AddDays(18);
@@ -829,7 +873,7 @@ namespace RauViet.ui
                     nextDate = ngaytrong_dtp.Value.AddDays(21);
                     break;
                 case 232: //can tây
-                    nextDate = ngaytrong_dtp.Value.AddDays(21);
+                    nextDate = ngaytrong_dtp.Value.AddDays(30);
                     break;
                 case 261: //đậu đũa
                     nextDate = ngaytrong_dtp.Value.AddDays(45);
@@ -847,7 +891,7 @@ namespace RauViet.ui
                     nextDate = ngaytrong_dtp.Value.AddDays(19);
                     break;
                 case 271: //Mướp hương
-                    nextDate = ngaytrong_dtp.Value.AddDays(49);
+                    nextDate = ngaytrong_dtp.Value.AddDays(35);
                     break;
                 case 131: //ngò gai
                     nextDate = ngaytrong_dtp.Value.AddDays(60);
@@ -859,7 +903,37 @@ namespace RauViet.ui
                     nextDate = ngaytrong_dtp.Value.AddDays(25);
                     break;
             }
+            
+            DayOfWeek dow = nextDate.DayOfWeek;
+            int SL = 0;
+            decimal DienTich = 0;
+            switch (productSKU)
+            {
+               
+                case 141: //cai ngọt
+                    SL = dow == DayOfWeek.Monday ? 870 : 435;
+                    DienTich = dow == DayOfWeek.Monday ? 34.8m : 17.4m;
+                    break;
+                case 144: //cai rổ
+                    SL = dow == DayOfWeek.Monday ? 1740 : 2175;
+                    DienTich = dow == DayOfWeek.Monday ? 69.6m : 87.0m;
+                    break;
+                case 142: //cai thìa
+                    SL = dow == DayOfWeek.Monday ? 1740 : 2175;
+                    DienTich = dow == DayOfWeek.Monday ? 69.6m : 87.0m;
+                    break;
+                case 232: //can tây
+                    SL = dow == DayOfWeek.Monday ? 870 : 870;
+                    DienTich = dow == DayOfWeek.Monday ? 34.8m : 34.8m;
+                    break;                
+            }
+
+
             ngaythu_dtp.Value = nextDate;
+            if(SL > 0)
+                soLuong_tb.Text = SL.ToString();
+            if(DienTich > 0)
+                dientich_tb.Text = DienTich.ToString();
         }
 
         int GetMaxProductionOrderIndex(DataTable dt, int sku, DateTime ngayUom)
@@ -912,7 +986,7 @@ namespace RauViet.ui
 
             var nextDay = nurseryDate;
             int departmentID = -1;
-            string Supervisor = "";
+            string Supervisor = "";            
             switch (SKU)
             {
                 case 311: //bắp non
@@ -940,7 +1014,7 @@ namespace RauViet.ui
                     Supervisor = "VR0359";
                     break;
                 case 232: //can tây
-                    nextDay = GetNextMondayOrThursday(nurseryDate, 14, 21);
+                    nextDay = GetNextMondayOrThursday(nurseryDate, 40, 30);
                     departmentID = 27; // nhà ươm thủy canh
                     Supervisor = "VR0359";
                     break;
@@ -948,7 +1022,7 @@ namespace RauViet.ui
                     nextDay = nurseryDate.AddDays(7);
                     break;
                 case 181: //hành lá
-                    nextDay = GetNextTuedayOrFriday(nurseryDate, 14, 44);
+                    nextDay = GetNextTuedayOrFriday(nurseryDate, 30, 44);
                     break;
                 case 172: //hương nhu
                     nextDay = nurseryDate.AddDays(7);
@@ -1115,6 +1189,7 @@ namespace RauViet.ui
 
             DataView dv = mPlantingManagement_dt.DefaultView;
             dv.RowFilter = string.Join(" OR ", conditions);
+            mLog_dv.RowFilter = string.Join(" OR ", conditions);
 
         }
 

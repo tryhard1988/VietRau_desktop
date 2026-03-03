@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -13,7 +14,8 @@ namespace RauViet.ui
     {
         DataRow mPlantingRow;
         System.Data.DataTable mMaterial_dt, mWorkType_dt, mCultivationProcess_dt, mCultivationProcessTemplate_dt, mEmployee_dt, mDepartment_dt;
-    //    private DataView mLogDV;
+        private DataView mLogDV;
+        private Timer FertilizationTypeDebounceTimer = new Timer { Interval = 300 };
         private Timer WorkTypeDebounceTimer = new Timer { Interval = 300 };
         private Timer MaterialDebounceTimer = new Timer { Interval = 300 };
         private Timer EmployeeDebounceTimer = new Timer { Interval = 300 };
@@ -32,7 +34,9 @@ namespace RauViet.ui
             processDate_dtp.CustomFormat = "dd/MM/yyyy";
 
             status_lb.Text = "";
-            plant_lb.Text = $"{plantingRow["PlantName"].ToString()} - {plantingRow["CultivationTypeName"].ToString()}";
+
+            string completeStr = Convert.ToBoolean(plantingRow["IsCompleted"]) ? "Đã Đóng" : "Đang Hoạt Động";
+            plant_lb.Text = $"{plantingRow["ProductionOrder"].ToString()} - {plantingRow["PlantName"].ToString()}({plantingRow["CultivationTypeName"].ToString()}) ==> {completeStr}";
             mPlantingRow = plantingRow;
 
 
@@ -43,6 +47,8 @@ namespace RauViet.ui
             LoadDefaultData_btn.Click += LoadDefaultData_btn_Click;
             this.KeyDown += form_KeyDown;
 
+            FertilizationTypeDebounceTimer.Tick += FertilizationTypeDebounceTimer_Tick;
+            hinhThucBon_CBB.TextUpdate += HinhThucBon_CBB_TextUpdate;
 
             WorkTypeDebounceTimer.Tick += WokTypeDebounceTimer_Tick;
             congViec_CBB.TextUpdate += CongViec_CBB_TextUpdate;
@@ -55,6 +61,8 @@ namespace RauViet.ui
             EmployeeDebounceTimer.Tick += EmployeeDebounceTimer_Tick;
             employee_CBB.TextUpdate += Employee_CBB_TextUpdate;
             materialQuantity_tb.KeyPress += Tb_KeyPress_OnlyNumber;
+            waterAmount_tb.KeyPress += Tb_KeyPress_OnlyNumber;
+            isolationDays_tb.KeyPress += Tb_KeyPress_OnlyNumber;
         }
 
         private void form_KeyDown(object sender, KeyEventArgs e)
@@ -71,7 +79,7 @@ namespace RauViet.ui
                 {
                     System.Windows.Forms.Control ctrl = this.ActiveControl;
 
-                    if (ctrl is TextBox || ctrl is RichTextBox ||(ctrl is DataGridView dgv && dgv.CurrentCell != null && dgv.IsCurrentCellInEditMode))
+                    if (ctrl is System.Windows.Controls.TextBox || ctrl is RichTextBox ||(ctrl is DataGridView dgv && dgv.CurrentCell != null && dgv.IsCurrentCellInEditMode))
                     {
                         return; // không xử lý Delete
                     }
@@ -94,26 +102,31 @@ namespace RauViet.ui
 
                 string[] empKeepColumns = { "EmployeeCode", "FullName", "EmployessName_NoSign" };
                 var cultivationProcessTask = SQLStore_KhoVatTu.Instance.GetCultivationProcessAsync(plantingID);
+                var logDataTask = SQLStore_KhoVatTu.Instance.GetCultivationProcessLogAsync(plantingID);
                 var cultivationProcessTemplateTask = SQLStore_KhoVatTu.Instance.GetCultivationProcessTemplateAsync();
                 var materialTask = SQLStore_KhoVatTu.Instance.getMaterialAsync();
                 var workTypeTask = SQLStore_KhoVatTu.Instance.GetWorkTypeAsync();
                 var departmentTask = SQLStore_QLNS.Instance.GetDepartmentAsync();
                 var employeeTask = SQLStore_QLNS.Instance.GetEmployeesAsync(empKeepColumns);
 
-                await Task.WhenAll(cultivationProcessTask, materialTask, workTypeTask, cultivationProcessTemplateTask, employeeTask, departmentTask);
+                await Task.WhenAll(cultivationProcessTask, materialTask, workTypeTask, cultivationProcessTemplateTask, employeeTask, departmentTask, logDataTask);
                 mCultivationProcess_dt = cultivationProcessTask.Result;
                 mMaterial_dt = materialTask.Result;
                 mWorkType_dt = workTypeTask.Result;
                 mCultivationProcessTemplate_dt = cultivationProcessTemplateTask.Result;
                 mEmployee_dt = employeeTask.Result;
                 mDepartment_dt = departmentTask.Result;
-                // mLogDV = new DataView(logDataTask.Result);
+                 mLogDV = new DataView(logDataTask.Result);
 
                 vatTu_CB.DataSource = mMaterial_dt;
                 vatTu_CB.DisplayMember = "MaterialName";  // hiển thị tên
                 vatTu_CB.ValueMember = "MaterialID";
                 vatTu_CB.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
 
+                hinhThucBon_CBB.DataSource = mWorkType_dt.Copy();
+                hinhThucBon_CBB.DisplayMember = "WorkTypeName";  // hiển thị tên
+                hinhThucBon_CBB.ValueMember = "WorkTypeID";
+                hinhThucBon_CBB.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
 
                 congViec_CBB.DataSource = mWorkType_dt;
                 congViec_CBB.DisplayMember = "WorkTypeName";  // hiển thị tên
@@ -133,7 +146,7 @@ namespace RauViet.ui
                 dataGV.DataSource = mCultivationProcess_dt;
                 LoadDefaultData_btn.Visible = mCultivationProcess_dt.Rows.Count <= 0;
                 
-                //   log_GV.DataSource = mLogDV;
+                log_GV.DataSource = mLogDV;
 
                 Utils.HideColumns(dataGV, new[] { "CultivationProcessID", "PlantingID", "MaterialID", "WorkTypeID", "WorkTypeID", "MaterialID" , "EmployeeCode" , "DepartmentID", "FertilizationWorkTypeID" });
                 Utils.SetGridOrdinal(mCultivationProcess_dt, new[] { "ProcessDate", "FertilizationWorkTypeName", "WorkTypeName", "MaterialName", "MaterialQuantity", "MaterialUnit", "Dosage", "PlantStatus", "EmployeeName", "IsolationDays", "IsolationEndDate", "DepartmentName", "PlantLocation", "WaterAmount", "MaterialPrice", "TotalMaterialCost", "Note" });
@@ -157,15 +170,6 @@ namespace RauViet.ui
                         {"MaterialPrice", "Giá V.tư" },
                         {"TotalMaterialCost", "Thành Tiền" }
                     });
-
-                //Utils.HideColumns(log_GV, new[] { "LogID", "ExportDate" });
-                //Utils.SetGridHeaders(log_GV, new System.Collections.Generic.Dictionary<string, string> {
-                //        {"OldValue", "Cũ" },
-                //        {"NewValue", "Mới" },
-                //        {"CreatedDate", "Ngày tạo" },
-                //        {"ActionBy", "Người tạo" }
-                //    });
-
                 Utils.SetGridWidths(dataGV, new System.Collections.Generic.Dictionary<string, int> {
                         {"ProcessDate", 70 },
                         {"MaterialQuantity", 70 },
@@ -178,17 +182,35 @@ namespace RauViet.ui
                         {"MaterialUnit", 50 }
                     });
 
-                
+                Utils.HideColumns(log_GV, new[] { "LogID", "PlantingID" });
+                Utils.SetGridHeaders(log_GV, new System.Collections.Generic.Dictionary<string, string> {
+                        {"ActionType", "Hành Động" },
+                        {"OldValue", "Cũ" },
+                        {"NewValue", "Mới" },
+                        {"CreatedDate", "Ngày tạo" },
+                        {"ActionBy", "Người tạo" }
+                    });
+                Utils.SetGridWidths(log_GV, new System.Collections.Generic.Dictionary<string, int> {
+                        {"OldValue", 350 },
+                        {"NewValue", 350 }
+                    });
 
                 Utils.SetTabStopRecursive(this, false);
                 int countTab = 0;
-                employee_CBB.TabIndex = countTab++; employee_CBB.TabStop = true;
-                department_CBB.TabIndex = countTab++; department_CBB.TabStop = true;
-                plantLocation_tb.TabIndex = countTab++; plantLocation_tb.TabStop = true;
+                processDate_dtp.TabIndex = countTab++; employee_CBB.TabStop = true;
+                hinhThucBon_CBB.TabIndex = countTab++; hinhThucBon_CBB.TabStop = true;
                 congViec_CBB.TabIndex = countTab++; congViec_CBB.TabStop = true;
                 vatTu_CB.TabIndex = countTab++; vatTu_CB.TabStop = true;
                 materialQuantity_tb.TabIndex = countTab++; materialQuantity_tb.TabStop = true;
+                dosage_tb.TabIndex = countTab++; dosage_tb.TabStop = true;
+                plantStatus_tb.TabIndex = countTab++; plantStatus_tb.TabStop = true;
+                activeIngredient_tb.TabIndex = countTab++; activeIngredient_tb.TabStop = true;
+                employee_CBB.TabIndex = countTab++; employee_CBB.TabStop = true;
+                isolationDays_tb.TabIndex = countTab++; isolationDays_tb.TabStop = true;
+                department_CBB.TabIndex = countTab++; department_CBB.TabStop = true;
+                plantLocation_tb.TabIndex = countTab++; plantLocation_tb.TabStop = true;
                 waterAmount_tb.TabIndex = countTab++; waterAmount_tb.TabStop = true;
+                note_tb.TabIndex = countTab++; note_tb.TabStop = true;
                 LuuThayDoiBtn.TabIndex = countTab++; LuuThayDoiBtn.TabStop = true;
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
@@ -245,6 +267,45 @@ namespace RauViet.ui
                 congViec_CBB.Text = typed;
                 congViec_CBB.SelectionStart = typed.Length;
                 congViec_CBB.SelectionLength = 0;
+            }
+            catch { }
+        }
+
+        private void HinhThucBon_CBB_TextUpdate(object sender, EventArgs e)
+        {
+            FertilizationTypeDebounceTimer.Stop();
+            FertilizationTypeDebounceTimer.Start();
+        }
+        private void FertilizationTypeDebounceTimer_Tick(object sender, EventArgs e)
+        {
+            try
+            {
+                FertilizationTypeDebounceTimer.Stop();
+
+                string typed = hinhThucBon_CBB.Text ?? "";
+                string plain = Utils.RemoveVietnameseSigns(typed).ToLower();
+
+                // Filter bằng LINQ
+                var filtered = mWorkType_dt.AsEnumerable()
+                    .Where(r => r["search_nosign"].ToString().ToLower()
+                    .Contains(plain));
+
+                System.Data.DataTable temp;
+                if (filtered.Any())
+                    temp = filtered.CopyToDataTable();
+                else
+                    temp = mWorkType_dt.Clone(); // nếu không có kết quả thì trả về table rỗng
+
+                // Gán lại DataSource
+                hinhThucBon_CBB.DataSource = temp;
+                hinhThucBon_CBB.DisplayMember = "WorkTypeName";  // hiển thị tên
+                hinhThucBon_CBB.ValueMember = "WorkTypeID";
+
+                // Giữ lại text người đang gõ
+                hinhThucBon_CBB.DroppedDown = true;
+                hinhThucBon_CBB.Text = typed;
+                hinhThucBon_CBB.SelectionStart = typed.Length;
+                hinhThucBon_CBB.SelectionLength = 0;
             }
             catch { }
         }
@@ -374,181 +435,260 @@ namespace RauViet.ui
             updateRightUI();            
         }
 
-        private async void updateItem(int processTemplateID, int sku, int cultivationTypeID, string baseDateType, int daysAfter, int workTypeID, int? materialID, decimal materialQuantity, decimal waterAmount)
+        private async void updateItem(
+            int cultivationProcessID,
+            DateTime processDate,
+            int fertilizationWorkTypeID,
+            int workTypeID,
+            int? materialID,
+            decimal materialQuantity,
+            string dosage,
+            string plantStatus,
+            string activeIngredient,
+            string employeeCode,
+            int isolationDays,
+            int? departmentID,
+            string plantLocation,
+            decimal waterAmount,
+            string note)
         {
-            //DataRow[] workTypeRows = mWorkType_dt.Select($"WorkTypeID = {workTypeID}");
-            //DataRow[] skuRows = mProduct_dt.Select($"ProductSKU = {sku}");
-            //DataRow[] cultivationTypeRows = mCultivationType_dt.Select($"CultivationTypeID = {cultivationTypeID}");
-            //DataRow[] baseDateTypeRows = mBaseDateType_dt.Select($"Value = '{baseDateType}'");
-            //DataRow[] matiralRows = Array.Empty<DataRow>();
-            //if (materialID.HasValue)
-            //    matiralRows = mMaterial_dt.Select($"MaterialID = {materialID}");
+            DataRow[] fertilizationWorkRows = mWorkType_dt.Select($"WorkTypeID = {fertilizationWorkTypeID}");
+            DataRow[] workTypeRows = mWorkType_dt.Select($"WorkTypeID = {workTypeID}");
+            DataRow[] matiralRows = Array.Empty<DataRow>();
+            if (materialID.HasValue)
+                matiralRows = mMaterial_dt.Select($"MaterialID = {materialID}");
 
-            //foreach (DataRow row in mCultivationProcess_dt.Rows)
-            //{
-            //    int ID = Convert.ToInt32(row["ProcessTemplateID"]);
-            //    if (ID.CompareTo(processTemplateID) == 0)
-            //    {
-            //        DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            DataRow[] employeeRows = mEmployee_dt.Select($"EmployeeCode = '{employeeCode}'");
 
-            //        if (dialogResult == DialogResult.Yes)
-            //        {
-            //            try
-            //            {
-            //                bool isScussess = await SQLManager_KhoVatTu.Instance.updateCultivationProcessTemplateAsync(processTemplateID, sku, cultivationTypeID, baseDateType, daysAfter, workTypeID, materialID, materialQuantity, waterAmount);
+            DataRow[] departmentRows = Array.Empty<DataRow>();
+            if (departmentID.HasValue)
+                departmentRows = mDepartment_dt.Select($"DepartmentID = {departmentID}");
 
-            //                if (isScussess == true)
-            //                {
-            //                    row["SKU"] = sku;
-            //                    row["CultivationTypeID"] = cultivationTypeID;
-            //                    row["BaseDateType"] = baseDateType;
-            //                    row["DaysAfter"] = daysAfter;
-            //                    row["WorkTypeID"] = workTypeID;
-            //                    row["MaterialID"] = materialID.HasValue ? (object)materialID.Value : DBNull.Value;
-            //                    row["MaterialQuantity"] = materialQuantity;
-            //                    row["WaterAmount"] = waterAmount;
+            foreach (DataRow row in mCultivationProcess_dt.Rows)
+            {
+                int ID = Convert.ToInt32(row["CultivationProcessID"]);
+                if (ID.CompareTo(cultivationProcessID) == 0)
+                {
+                    DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
-            //                    if (baseDateTypeRows.Length > 0)
-            //                        row["BaseDateTypeName"] = baseDateTypeRows[0]["Text"].ToString();
+                    if (dialogResult == DialogResult.Yes)
+                    {
+                        string workTypeName = workTypeRows.Length > 0 ? workTypeRows[0]["WorkTypeName"].ToString() : "";
+                        string fertilizationWorkTypeName = fertilizationWorkRows.Length > 0 ? workTypeRows[0]["WorkTypeName"].ToString() : "";
+                        string employeeName = employeeRows.Length > 0 ? employeeRows[0]["FullName"].ToString() : "";
+                        string departmentName = departmentRows.Length > 0 ? departmentRows[0]["DepartmentName"].ToString() : "";
+                        string materialName = matiralRows.Length > 0 ? matiralRows[0]["MaterialName"].ToString() : "";
 
-            //                    if (skuRows.Length > 0)
-            //                        row["ProductNameVN"] = skuRows[0]["ProductNameVN"].ToString();
+                        string actionType = "Update ";
+                        string oldValue = $"Ngày: {row["ProcessDate"]}; Hình Thức: {row["FertilizationWorkTypeName"]}; Công Việc: {row["WorkTypeName"]}; Vật Tư: {row["MaterialName"]}; S.Lượng VT: {row["MaterialQuantity"]}; Liều Lượng: {row["Dosage"]}; Tình Trạng Cây: {row["PlantStatus"]}; Hoạt Chất: {row["ActiveIngredient"]}; Người TH: {row["EmployeeName"]}; S.Ngày C.Li: {row["IsolationDays"]}; Tổ P.Trách: {row["DepartmentName"]}; V.Trí Trồng: {row["PlantLocation"]}; Lượng Nước: {row["WaterAmount"]}, Ghi Chú: {row["Note"]}";
+                        string newValue = $"Ngày: {processDate}; Hình Thức: {fertilizationWorkTypeName}; Công Việc: {workTypeName}; Vật Tư: {materialName}; S.Lượng VT: {materialQuantity}; Liều Lượng: {dosage}; Tình Trạng Cây: {plantStatus}; Hoạt Chất: {activeIngredient}; Người TH: {employeeName}; S.Ngày C.Li: {isolationDays}; Tổ P.Trách: {departmentName}; V.Trí Trồng: {plantLocation}; Lượng Nước: {waterAmount}, Ghi Chú: {note}";
 
-            //                    if (cultivationTypeRows != null)
-            //                        row["CultivationTypeName"] = cultivationTypeRows[0]["CultivationTypeName"].ToString();
+                        int plantingID = Convert.ToInt32(mPlantingRow["PlantingID"]);
+                        int? materialPrice = null;
+                        if (materialID.HasValue)
+                        {
+                            DataRow materiaRow = mMaterial_dt.AsEnumerable().FirstOrDefault(r => Convert.ToInt32(r["MaterialID"]) == materialID);
+                            if (materiaRow != null)
+                                materialPrice = Convert.ToInt32(materiaRow["MaterialPrice"]);
+                        }
+                        try
+                        {
+                            bool isScussess = await SQLManager_KhoVatTu.Instance.updateCultivationProcessAsync(cultivationProcessID, plantingID, processDate, fertilizationWorkTypeID, workTypeID, materialID, materialPrice, 
+                                                                                                             materialQuantity, dosage, plantStatus, activeIngredient, employeeCode, isolationDays, departmentID, plantLocation, waterAmount, note);
 
-            //                    if (workTypeRows.Length > 0)
-            //                        row["WorkTypeName"] = workTypeRows[0]["WorkTypeName"].ToString();
+                            if (isScussess == true)
+                            {
+                                row["MaterialID"] = materialID.HasValue ? (object)materialID.Value : DBNull.Value;
+                                row["PlantingID"] = plantingID;
+                                row["WorkTypeID"] = workTypeID;
+                                row["ProcessDate"] = processDate;
+                                row["MaterialQuantity"] = materialQuantity;
+                                row["WaterAmount"] = waterAmount;
+                                row["Dosage"] = dosage;
+                                row["PlantStatus"] = plantStatus;
+                                row["ActiveIngredient"] = activeIngredient;
+                                row["EmployeeCode"] = employeeCode;
+                                row["IsolationDays"] = isolationDays;
+                                row["DepartmentID"] = departmentID.HasValue ? (object)departmentID.Value : DBNull.Value;
+                                row["PlantLocation"] = plantLocation;
+                                row["Note"] = note;
+                                row["FertilizationWorkTypeID"] = fertilizationWorkTypeID;
+                                row["MaterialPrice"] = materialPrice.HasValue ? (object)materialPrice.Value : DBNull.Value;
+                                row["WorkTypeName"] = workTypeName;
+                                row["FertilizationWorkTypeName"] = fertilizationWorkTypeName;
+                                row["EmployeeName"] = employeeName;
+                                row["DepartmentName"] = departmentName;
+                                row["MaterialName"] = materialName;
 
-            //                    if (materialID.HasValue && matiralRows.Length > 0)
-            //                        row["MaterialName"] = matiralRows[0]["MaterialName"].ToString();
-
-            //                    status_lb.Text = "Thành công.";
-            //                    status_lb.ForeColor = Color.Green;
-            //                }
-            //                else
-            //                {
-            //                    status_lb.Text = "Thất bại.";
-            //                    status_lb.ForeColor = Color.Red;
-            //                }
-            //            }
-            //            catch (Exception ex)
-            //            {
-            //                status_lb.Text = "Thất bại.";
-            //                status_lb.ForeColor = Color.Red;
-            //            }
-            //            finally
-            //            {
-            //               // _ = SQLManager_KhoVatTu.Instance.insertMaterialExportLogAsync(ExportDate, oldValue, newValue);
-            //            }
-            //        }
-            //        break;
-            //    }
-            //}
+                                actionType += "Success";
+                                status_lb.Text = "Thành công.";
+                                status_lb.ForeColor = Color.Green;
+                            }
+                            else
+                            {
+                                actionType += "Fail";
+                                status_lb.Text = "Thất bại.";
+                                status_lb.ForeColor = Color.Red;
+                            }
+                        }
+                        catch
+                        {
+                            actionType += "Exception";
+                            status_lb.Text = "Thất bại.";
+                            status_lb.ForeColor = Color.Red;
+                        }
+                        finally
+                        {
+                             _ = SQLManager_KhoVatTu.Instance.insertCultivationProcessLogAsync(plantingID, actionType, oldValue, newValue);
+                        }
+                    }
+                    break;
+                }
+            }
         }
 
-        private async void createItem(int sku, int cultivationTypeID, string baseDateType, int daysAfter, int workTypeID, int? materialID, decimal materialQuantity, decimal waterAmount)
+        private async void createItem(
+            DateTime processDate,
+            int fertilizationWorkTypeID, 
+            int workTypeID, 
+            int? materialID, 
+            decimal materialQuantity,
+            string dosage,
+            string plantStatus,
+            string activeIngredient,
+            string employeeCode,
+            int isolationDays,
+            int? departmentID,
+            string plantLocation,
+            decimal waterAmount,
+            string note)
         {
-            //DataRow[] workTypeRows =  mWorkType_dt.Select($"WorkTypeID = {workTypeID}");
-            //DataRow[] skuRows = mProduct_dt.Select($"ProductSKU = {sku}");
-            //DataRow[] cultivationTypeRows = mCultivationType_dt.Select($"CultivationTypeID = {cultivationTypeID}");
-            //DataRow[] baseDateTypeRows = mBaseDateType_dt.Select($"Value = '{baseDateType}'");
-            //DataRow[] matiralRows = Array.Empty<DataRow>();
-            //if (materialID.HasValue)
-            //    matiralRows = mMaterial_dt.Select($"MaterialID = {materialID}");
+            DataRow[] fertilizationWorkRows = mWorkType_dt.Select($"WorkTypeID = {fertilizationWorkTypeID}");
+            DataRow[] workTypeRows = mWorkType_dt.Select($"WorkTypeID = {workTypeID}");
+            DataRow[] matiralRows = Array.Empty<DataRow>();
+            if (materialID.HasValue)
+                matiralRows = mMaterial_dt.Select($"MaterialID = {materialID}");
 
-            //DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            DataRow[] employeeRows = mEmployee_dt.Select($"EmployeeCode = '{employeeCode}'");
 
-            //if (dialogResult == DialogResult.Yes)
-            //{
-            //    string oldValue = "create: ";
-            //    string newValue = "";
+            DataRow[] departmentRows = Array.Empty<DataRow>();
+            if (departmentID.HasValue)
+                departmentRows = mDepartment_dt.Select($"DepartmentID = {departmentID}");
 
-            //    try
-            //    {
-            //        int newId = await SQLManager_KhoVatTu.Instance.insertCultivationProcessTemplateAsync(sku, cultivationTypeID, baseDateType, daysAfter, workTypeID, materialID, materialQuantity, waterAmount);
-            //        if (newId > 0)
-            //        {
-            //            DataRow drToAdd = mCultivationProcess_dt.NewRow();
+            DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
-            //            drToAdd["ProcessTemplateID"] = newId;
-            //            drToAdd["SKU"] = sku;
-            //            drToAdd["CultivationTypeID"] = cultivationTypeID;
-            //            drToAdd["BaseDateType"] = baseDateType;
-            //            drToAdd["DaysAfter"] = daysAfter;
-            //            drToAdd["WorkTypeID"] = workTypeID;
-            //            drToAdd["MaterialID"] = materialID.HasValue ? (object)materialID.Value : DBNull.Value;
-            //            drToAdd["MaterialQuantity"] = materialQuantity;
-            //            drToAdd["WaterAmount"] = waterAmount;
+            if (dialogResult == DialogResult.Yes)
+            {
+                string workTypeName = workTypeRows.Length > 0 ? workTypeRows[0]["WorkTypeName"].ToString() : "";
+                string fertilizationWorkTypeName = fertilizationWorkRows.Length > 0 ? workTypeRows[0]["WorkTypeName"].ToString() : "";
+                string employeeName = employeeRows.Length > 0 ? employeeRows[0]["FullName"].ToString() : "";
+                string departmentName = departmentRows.Length > 0 ? departmentRows[0]["DepartmentName"].ToString() : "";
+                string materialName = matiralRows.Length > 0 ? matiralRows[0]["MaterialName"].ToString() : "";
 
-                        
-            //            if (baseDateTypeRows.Length > 0)
-            //                drToAdd["BaseDateTypeName"] = baseDateTypeRows[0]["Text"].ToString();
-                        
-            //            if (skuRows.Length > 0)
-            //                drToAdd["ProductNameVN"] = skuRows[0]["ProductNameVN"].ToString();
-                        
-            //            if (cultivationTypeRows != null)
-            //                drToAdd["CultivationTypeName"] = cultivationTypeRows[0]["CultivationTypeName"].ToString();
-                        
-            //            if (workTypeRows.Length > 0)
-            //                drToAdd["WorkTypeName"] = workTypeRows[0]["WorkTypeName"].ToString();
-                        
-            //            if (materialID.HasValue && matiralRows.Length > 0)
-            //                drToAdd["MaterialName"] = matiralRows[0]["MaterialName"].ToString();
+                string actionType = "Create ";
+                string oldValue = "";
+                string newValue = $"Ngày: {processDate}; Hình Thức: {fertilizationWorkTypeName}; Công Việc: {workTypeName}; Vật Tư: {materialName}; S.Lượng VT: {materialQuantity}; Liều Lượng: {dosage}; Tình Trạng Cây: {plantStatus}; Hoạt Chất: {activeIngredient}; Người TH: {employeeName}; S.Ngày C.Li: {isolationDays}; Tổ P.Trách: {departmentName}; V.Trí Trồng: {plantLocation}; Lượng Nước: {waterAmount}, Ghi Chú: {note}";
 
-            //            mCultivationProcess_dt.Rows.Add(drToAdd);
-            //            mCultivationProcess_dt.AcceptChanges();
+                int plantingID = Convert.ToInt32(mPlantingRow["PlantingID"]);
+                int? materialPrice = null;
+                if (materialID.HasValue)
+                {
+                    DataRow materiaRow = mMaterial_dt.AsEnumerable().FirstOrDefault(r => Convert.ToInt32(r["MaterialID"]) == materialID);
+                    if (materiaRow != null)
+                        materialPrice = Convert.ToInt32(materiaRow["MaterialPrice"]);
+                }
 
-            //            status_lb.Text = "Thành công";
-            //            status_lb.ForeColor = Color.Green;
-            //            oldValue += "Success";
+                try
+                {                    
+                    int newId = await SQLManager_KhoVatTu.Instance.insertCultivationProcessAsync(plantingID, processDate, fertilizationWorkTypeID, workTypeID, materialID, materialPrice, materialQuantity, dosage, plantStatus,
+                                                                                                activeIngredient, employeeCode, isolationDays, departmentID, plantLocation, waterAmount, note);
+                    if (newId > 0)
+                    {
+                        DataRow drToAdd = mCultivationProcess_dt.NewRow();
 
-            //            newBtn_Click(null, null);
-            //        }
-            //        else
-            //        {
-            //            oldValue += "Fail";
-            //            status_lb.Text = "Thất bại";
-            //            status_lb.ForeColor = Color.Red;
-            //        }
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        oldValue += ex.Message;
-            //        Console.WriteLine("ERROR: " + ex.Message);
-            //        status_lb.Text = "Thất bại.";
-            //        status_lb.ForeColor = Color.Red;
-            //    }
-            //    finally
-            //    {
-            //        //_ = SQLManager_KhoVatTu.Instance.insertMaterialExportLogAsync(ExportDate, oldValue, newValue);
-            //    }
-            //}
+                        drToAdd["CultivationProcessID"] = newId;
+                        drToAdd["MaterialID"] = materialID.HasValue ? (object)materialID.Value : DBNull.Value;
+                        drToAdd["PlantingID"] = plantingID;
+                        drToAdd["WorkTypeID"] = workTypeID;
+                        drToAdd["ProcessDate"] = processDate;
+                        drToAdd["MaterialQuantity"] = materialQuantity;
+                        drToAdd["WaterAmount"] = waterAmount;
+                        drToAdd["Dosage"] = dosage;
+                        drToAdd["PlantStatus"] = plantStatus;
+                        drToAdd["ActiveIngredient"] = activeIngredient;
+                        drToAdd["EmployeeCode"] = employeeCode;
+                        drToAdd["IsolationDays"] = isolationDays;
+                        drToAdd["DepartmentID"] = departmentID.HasValue ? (object)departmentID.Value : DBNull.Value;
+                        drToAdd["PlantLocation"] = plantLocation;
+                        drToAdd["Note"] = note;
+                        drToAdd["FertilizationWorkTypeID"] = fertilizationWorkTypeID;
+                        drToAdd["MaterialPrice"] = materialPrice.HasValue ? (object)materialPrice.Value : DBNull.Value;                        
+                        drToAdd["EmployeeName"] = employeeName;
+                        drToAdd["DepartmentName"] = departmentName;
+                        drToAdd["WorkTypeName"] = workTypeName;
+                        drToAdd["FertilizationWorkTypeName"] = fertilizationWorkTypeName;
+                        drToAdd["MaterialName"] = materialName;
+
+                        mCultivationProcess_dt.Rows.Add(drToAdd);
+                        mCultivationProcess_dt.AcceptChanges();
+
+                        actionType += "Success";
+                        status_lb.Text = "Thành công";
+                        status_lb.ForeColor = Color.Green;
+
+                        newBtn_Click(null, null);
+                    }
+                    else
+                    {
+                        actionType += "Fail";
+                        status_lb.Text = "Thất bại";
+                        status_lb.ForeColor = Color.Red;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    actionType += "Exception";
+                    Console.WriteLine("ERROR: " + ex.Message);
+                    status_lb.Text = "Thất bại.";
+                    status_lb.ForeColor = Color.Red;
+                }
+                finally
+                {
+                    _ = SQLManager_KhoVatTu.Instance.insertCultivationProcessLogAsync(plantingID, actionType, oldValue, newValue);
+                }
+            }
         }
         private void saveBtn_Click(object sender, EventArgs e)
         {
-            //if (sku_CBB.SelectedValue == null || string.IsNullOrEmpty(sku_CBB.Text.Trim()) ||
-            //    congViec_CBB.SelectedValue == null || string.IsNullOrEmpty(congViec_CBB.Text.Trim()) ||
-            //    string.IsNullOrEmpty(materialQuantity_tb.Text.Trim()) ||
-            //    string.IsNullOrEmpty(waterAmount_tb.Text.Trim()) ||
-            //    string.IsNullOrEmpty(daysAfter_tb.Text.Trim())
-            //    )
-            //    return;
+            if (hinhThucBon_CBB.SelectedValue == null || string.IsNullOrEmpty(hinhThucBon_CBB.Text.Trim()) ||
+                congViec_CBB.SelectedValue == null || string.IsNullOrEmpty(congViec_CBB.Text.Trim()) ||
+                string.IsNullOrEmpty(materialQuantity_tb.Text.Trim()) ||
+                string.IsNullOrEmpty(waterAmount_tb.Text.Trim()) ||
+                string.IsNullOrEmpty(isolationDays_tb.Text.Trim())
+                )
+                return;
 
-            //int sku = Convert.ToInt32(sku_CBB.SelectedValue);
-            //string baseDateType = baseDateType_CBB.SelectedValue.ToString();
-            //int daysAfter = Convert.ToInt32(daysAfter_tb.Text);
-            //int workTypeID = Convert.ToInt32(congViec_CBB.SelectedValue);
-            //int? materialID = (string.IsNullOrEmpty(vatTu_CB.Text) || vatTu_CB.SelectedValue == null || vatTu_CB.SelectedValue == DBNull.Value) ? (int?)null : Convert.ToInt32(vatTu_CB.SelectedValue);
+            DateTime processDate = processDate_dtp.Value;
+            int fertilizationWorkTypeID = Convert.ToInt32(hinhThucBon_CBB.SelectedValue);
+            int workTypeID = Convert.ToInt32(congViec_CBB.SelectedValue);
+            int? materialID = (string.IsNullOrEmpty(vatTu_CB.Text) || vatTu_CB.SelectedValue == null || vatTu_CB.SelectedValue == DBNull.Value) ? (int?)null : Convert.ToInt32(vatTu_CB.SelectedValue);
+            decimal materialQuantity = Utils.ParseDecimalSmart(materialQuantity_tb.Text);
+            string dosage = dosage_tb.Text;
+            string plantStatus= plantStatus_tb.Text;
+            string activeIngredient = activeIngredient_tb.Text;
+            string employeeCode = Convert.ToString(employee_CBB.SelectedValue);
+            int isolationDays = Convert.ToInt32(isolationDays_tb.Text);
+            int? departmentID = (string.IsNullOrEmpty(department_CBB.Text) || department_CBB.SelectedValue == null || department_CBB.SelectedValue == DBNull.Value) ? (int?)null : Convert.ToInt32(department_CBB.SelectedValue);
+            string plantLocation = plantLocation_tb.Text;
+            decimal waterAmount = Utils.ParseDecimalSmart(waterAmount_tb.Text);
+            string note = note_tb.Text;
 
-            //decimal materialQuantity = Utils.ParseDecimalSmart(materialQuantity_tb.Text);
-            //decimal waterAmount = Utils.ParseDecimalSmart(waterAmount_tb.Text);
-
-            //if (id_tb.Text.Length != 0)
-            //    updateItem(Convert.ToInt32(id_tb.Text), sku, cultivationTypeID, baseDateType, daysAfter, workTypeID, materialID, materialQuantity, waterAmount);
-            //else
-            //    createItem(sku, cultivationTypeID, baseDateType, daysAfter, workTypeID, materialID, materialQuantity, waterAmount);
+            if (id_tb.Text.Length != 0)
+                updateItem(Convert.ToInt32(id_tb.Text), processDate, fertilizationWorkTypeID, workTypeID, materialID, materialQuantity, dosage, plantStatus,
+                            activeIngredient, employeeCode, isolationDays, departmentID, plantLocation, waterAmount, note);
+            else
+                createItem(processDate, fertilizationWorkTypeID, workTypeID, materialID, materialQuantity, dosage, plantStatus, 
+                            activeIngredient, employeeCode, isolationDays, departmentID, plantLocation, waterAmount, note);
 
         }
         private async void deleteProduct()
@@ -557,16 +697,19 @@ namespace RauViet.ui
 
             foreach (DataRow row in mCultivationProcess_dt.Rows)
             {
-                string processTemplateID = row["ProcessTemplateID"].ToString();
-                if (processTemplateID.CompareTo(id) == 0)
+                string cultivationProcessID = row["CultivationProcessID"].ToString();
+                if (cultivationProcessID.CompareTo(id) == 0)
                 {
                     DialogResult dialogResult = MessageBox.Show("Xóa Nha, Chắc Chắn Chưa!", "Thông Báo", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
                     if (dialogResult == DialogResult.Yes)
                     {
+                        int plantingID = Convert.ToInt32(mPlantingRow["PlantingID"]);
+                        string actionType = "Update ";
+                        string oldValue = $"Ngày: {row["ProcessDate"]}; Hình Thức: {row["FertilizationWorkTypeName"]}; Công Việc: {row["WorkTypeName"]}; Vật Tư: {row["MaterialName"]}; S.Lượng VT: {row["MaterialQuantity"]}; Liều Lượng: {row["Dosage"]}; Tình Trạng Cây: {row["PlantStatus"]}; Hoạt Chất: {row["ActiveIngredient"]}; Người TH: {row["EmployeeName"]}; S.Ngày C.Li: {row["IsolationDays"]}; Tổ P.Trách: {row["DepartmentName"]}; V.Trí Trồng: {row["PlantLocation"]}; Lượng Nước: {row["WaterAmount"]}, Ghi Chú: {row["Note"]}";
                         try
                         {
-                            bool isScussess = await SQLManager_KhoVatTu.Instance.deletetCultivationProcessTemplateAsync(Convert.ToInt32(id));
+                            bool isScussess = await SQLManager_KhoVatTu.Instance.deletetCultivationProcessAsync(Convert.ToInt32(id));
 
                             if (isScussess == true)
                             {
@@ -575,21 +718,24 @@ namespace RauViet.ui
 
                                 mCultivationProcess_dt.Rows.Remove(row);
                                 mCultivationProcess_dt.AcceptChanges();
-
+                                actionType += "Success";
                             }
                             else
                             {
+                                actionType += "Fail";
                                 status_lb.Text = "Thất bại.";
                                 status_lb.ForeColor = Color.Red;
                             }
                         }
                         catch (Exception ex)
                         {
+                            actionType += "Exception";
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;
                         }
                         finally
                         {
+                            _ = SQLManager_KhoVatTu.Instance.insertCultivationProcessLogAsync(plantingID, actionType, oldValue, "");
                         }
                     }
                     break;
@@ -614,7 +760,17 @@ namespace RauViet.ui
             vatTu_CB.Enabled = true;
             department_CBB.Enabled = true;
             congViec_CBB.Enabled = true;
-            employee_CBB.Focus();
+            processDate_dtp.Enabled = true;
+            dosage_tb.Enabled = true;
+            plantStatus_tb.Enabled = true;
+            activeIngredient_tb.Enabled = true;
+            employee_CBB.Enabled = true;
+            isolationDays_tb.Enabled = true;
+            plantLocation_tb.Enabled = true;
+            waterAmount_tb.Enabled = true;
+            note_tb.Enabled = true;
+            hinhThucBon_CBB.Enabled = true;
+            processDate_dtp.Focus();
         }
 
         private void ReadOnly_btn_Click(object sender, EventArgs e)
@@ -629,6 +785,16 @@ namespace RauViet.ui
             vatTu_CB.Enabled = false;
             department_CBB.Enabled = false;
             congViec_CBB.Enabled = false;
+            processDate_dtp.Enabled = false;
+            dosage_tb.Enabled = false;
+            plantStatus_tb.Enabled = false;
+            activeIngredient_tb.Enabled = false;
+            employee_CBB.Enabled = false;
+            isolationDays_tb.Enabled = false;
+            plantLocation_tb.Enabled = false;
+            waterAmount_tb.Enabled = false;
+            note_tb.Enabled = false;
+            hinhThucBon_CBB.Enabled = false;
             if (dataGV.SelectedRows.Count > 0)
                 updateRightUI();
         }
@@ -645,56 +811,80 @@ namespace RauViet.ui
             congViec_CBB.Enabled = true;
             info_gb.BackColor = edit_btn.BackColor;
             isNewState = false;
+            processDate_dtp.Enabled = true;
+            dosage_tb.Enabled = true;
+            plantStatus_tb.Enabled = true;
+            activeIngredient_tb.Enabled = true;
+            employee_CBB.Enabled = true;
+            isolationDays_tb.Enabled = true;
+            plantLocation_tb.Enabled = true;
+            waterAmount_tb.Enabled = true;
+            note_tb.Enabled = true;
+            hinhThucBon_CBB.Enabled = true;
             LuuThayDoiBtn.Text = "Lưu C.Sửa";
         }
 
         private void updateRightUI()
         {
-            //try
-            //{
-            //    if (isNewState) return;
+            congViec_CBB.SelectionLength = 0;
+            vatTu_CB.SelectionLength = 0;
+            department_CBB.SelectionLength = 0;
+            try
+            {
+                if (isNewState) return;
 
-            //    if (dataGV.SelectedRows.Count > 0)
-            //    {
-            //        var cells = dataGV.SelectedRows[0].Cells;
+                if (dataGV.SelectedRows.Count > 0)
+                {
+                    var cells = dataGV.SelectedRows[0].Cells;
 
-                    
-            //        int sku = int.TryParse(cells["SKU"].Value?.ToString(), out int skuTemp) ? skuTemp : -1;
-            //        int cultivationTypeID = int.TryParse(cells["CultivationTypeID"].Value?.ToString(), out int cultivationType) ? cultivationType : -1;
-            //        string baseDateType = cells["BaseDateType"].Value.ToString();
-            //        int daysAfter = Convert.ToInt32(cells["DaysAfter"].Value);
-            //        int workTypeID = int.TryParse(cells["WorkTypeID"].Value?.ToString(), out int workType) ? workType : -1;
-            //        int materialID = int.TryParse(cells["MaterialID"].Value?.ToString(), out int material) ? material : -1;
+                    DateTime processDate = Convert.ToDateTime(cells["ProcessDate"].Value);
+                    int fertilizationWorkTypeID = int.TryParse(cells["FertilizationWorkTypeID"].Value?.ToString(), out int fertilizationWorkType) ? fertilizationWorkType : -1;
+                    int workTypeID = int.TryParse(cells["WorkTypeID"].Value?.ToString(), out int workType) ? workType : -1;
+                    int materialID = int.TryParse(cells["MaterialID"].Value?.ToString(), out int material) ? material : -1;
+                    int departmentID = int.TryParse(cells["DepartmentID"].Value?.ToString(), out int department) ? department : -1;
+                    string employeeCode = cells["EmployeeCode"].Value.ToString();
 
-            //        if (!vatTu_CB.Items.Cast<object>().Any(i => ((DataRowView)i)["MaterialID"].ToString() == materialID.ToString()))
-            //        {
-            //            vatTu_CB.DataSource = mMaterial_dt;
-            //        }
+                    if (!vatTu_CB.Items.Cast<object>().Any(i => ((DataRowView)i)["MaterialID"].ToString() == materialID.ToString()))
+                    {
+                        vatTu_CB.DataSource = mMaterial_dt;
+                    }
 
-            //        if (!congViec_CBB.Items.Cast<object>().Any(i => ((DataRowView)i)["WorkTypeID"].ToString() == workTypeID.ToString()))
-            //        {
-            //            congViec_CBB.DataSource = mWorkType_dt;
-            //        }
+                    if (!congViec_CBB.Items.Cast<object>().Any(i => ((DataRowView)i)["WorkTypeID"].ToString() == workTypeID.ToString()))
+                    {
+                        congViec_CBB.DataSource = mWorkType_dt;
+                    }
 
-            //        if (!employee_CBB.Items.Cast<object>().Any(i => ((DataRowView)i)["ProductSKU"].ToString() == sku.ToString()))
-            //        {
-            //            employee_CBB.DataSource = mProduct_dt;
-            //        }
+                    if (!hinhThucBon_CBB.Items.Cast<object>().Any(i => ((DataRowView)i)["WorkTypeID"].ToString() == fertilizationWorkTypeID.ToString()))
+                    {
+                        hinhThucBon_CBB.DataSource = mWorkType_dt.Copy();
+                    }
 
-            //        id_tb.Text = cells["ProcessTemplateID"].Value.ToString();
-            //        employee_CBB.SelectedValue = sku;
-            //        department_CBB.SelectedValue = baseDateType;
-            //        plantLocation_tb.Text = daysAfter.ToString();
-            //        congViec_CBB.SelectedValue = workTypeID;
-            //        vatTu_CB.SelectedValue = materialID;
-            //        materialQuantity_tb.Text = Convert.ToDecimal(cells["MaterialQuantity"].Value).ToString("G29", CultureInfo.InvariantCulture);
-            //        waterAmount_tb.Text = Convert.ToDecimal(cells["WaterAmount"].Value).ToString("G29", CultureInfo.InvariantCulture);
-            //    }
-            //}
-            //catch (Exception ex)
-            //{
-            //    Console.WriteLine("ERROR: " + ex.Message);
-            //}
+                    if (!employee_CBB.Items.Cast<object>().Any(i => ((DataRowView)i)["EmployeeCode"].ToString() == employeeCode))
+                    {
+                        employee_CBB.DataSource = mEmployee_dt;
+                    }
+
+                    id_tb.Text = cells["CultivationProcessID"].Value.ToString();
+                    processDate_dtp.Value = processDate;
+                    hinhThucBon_CBB.SelectedValue = fertilizationWorkTypeID;
+                    congViec_CBB.SelectedValue = workTypeID;
+                    vatTu_CB.SelectedValue = materialID;
+                    materialQuantity_tb.Text = Convert.ToDecimal(cells["MaterialQuantity"].Value).ToString("G29", CultureInfo.InvariantCulture);
+                    dosage_tb.Text = cells["Dosage"].Value.ToString();
+                    plantStatus_tb.Text = cells["PlantStatus"].Value.ToString();
+                    activeIngredient_tb.Text = cells["ActiveIngredient"].Value.ToString();
+                    employee_CBB.SelectedValue = employeeCode;
+                    isolationDays_tb.Text = cells["IsolationDays"].Value.ToString();
+                    department_CBB.SelectedValue = departmentID;
+                    plantLocation_tb.Text = cells["PlantLocation"].Value.ToString();
+                    waterAmount_tb.Text = Convert.ToDecimal(cells["WaterAmount"].Value).ToString("G29", CultureInfo.InvariantCulture);
+                    note_tb.Text = cells["Note"].Value.ToString();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("ERROR: " + ex.Message);
+            }
         }
 
 

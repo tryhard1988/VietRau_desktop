@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -30,6 +31,8 @@ namespace RauViet.classes
         Dictionary<string, DataTable> mMaterialExportLogs = null;
         Dictionary<string, DataTable> mMaterialImportLogs = null;
         Dictionary<int, DataTable> mPlantingManagementLogs = null;
+        Dictionary<int, DataTable> mCultivationProcessesLogs = null;
+        DataTable mCultivationProcessTemplateLog_dt = null;
 
         private SQLStore_KhoVatTu() { }
 
@@ -59,6 +62,7 @@ namespace RauViet.classes
                 mMaterialImportLogs = new Dictionary<string, DataTable>();
                 mPlantingManagementLogs = new Dictionary<int, DataTable>();
                 mCultivationProcesses = new Dictionary<int, DataTable>();
+                mCultivationProcessesLogs = new Dictionary<int, DataTable>();
 
                 var unitTask = SQLManager_KhoVatTu.Instance.GetUnitAsync();
                 var MaterialCategoryTask = SQLManager_KhoVatTu.Instance.GetMaterialCategoryAsync();
@@ -553,7 +557,7 @@ namespace RauViet.classes
             }
 
             return mPlantingManagementLogs[year];
-        }
+        }               
 
         public void RemoveCultivationProcessTemplate()
         {
@@ -721,6 +725,43 @@ namespace RauViet.classes
                         rowItem["EmployeeName"] = employeeRow["FullName"].ToString();
                 }
             }
+        }
+
+        public async Task<DataTable> GetCultivationProcessLogAsync(int plantingID)
+        {
+            if (!mCultivationProcessesLogs.ContainsKey(plantingID))
+            {
+                try
+                {
+                    DataTable data = await SQLManager_KhoVatTu.Instance.GetCultivationProcessLogAsync(plantingID);
+                    mCultivationProcessesLogs[plantingID] = data;
+                }
+                catch
+                {
+                    Console.WriteLine("error GetMaterialCategoryAsync SQLStore");
+                    return null;
+                }
+            }
+
+            return mCultivationProcessesLogs[plantingID];
+        }
+
+        public async Task<DataTable> GetCultivationProcessTemplateLogAsync()
+        {
+            if (mCultivationProcessTemplateLog_dt == null)
+            {
+                try
+                {
+                    mCultivationProcessTemplateLog_dt = await SQLManager_KhoVatTu.Instance.GetCultivationProcessTemplateLogAsync();
+                }
+                catch
+                {
+                    Console.WriteLine("error GetMaterialCategoryAsync SQLStore");
+                    return null;
+                }
+            }
+
+            return mCultivationProcessTemplateLog_dt;
         }
     }
 }
