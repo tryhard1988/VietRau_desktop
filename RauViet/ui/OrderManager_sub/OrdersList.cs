@@ -59,7 +59,9 @@ namespace RauViet.ui
 
             debounceTimer.Tick += DebounceTimer_Tick;
             edit_btn.Click += Edit_btn_Click;
-            readOnly_btn.Click += ReadOnly_btn_Click;            
+            readOnly_btn.Click += ReadOnly_btn_Click;
+            inTem_btn.Click += InTem_btn_Click;
+            tem_preview_btn.Click += Tem_preview_btn_Click;
 
             search_tb.TextChanged += search_txt_TextChanged;
 
@@ -184,7 +186,7 @@ namespace RauViet.ui
                 mlatestOrders_dt = latestOrdersTask.Result;
 
                 cusProduct_GV.DataSource = mlatestOrders_dt;
-                Utils.HideColumns(cusProduct_GV, new[] { "CustomerID", "ProductPackingID1", "Package", "OrderPackingPriceCNF", "packing", "Amount" });                
+                Utils.HideColumns(cusProduct_GV, new[] { "CustomerID", "ProductPackingID", "Package", "OrderPackingPriceCNF", "packing", "Amount" });                
                 Utils.HideColumns(logGV, new[] { "LogID", "ExportCodeID", "OrderID" });
 
                 Utils.SetGridHeaders(cusProduct_GV, new System.Collections.Generic.Dictionary<string, string> {
@@ -194,7 +196,7 @@ namespace RauViet.ui
                 });
 
                 Utils.SetGridWidths(cusProduct_GV, new System.Collections.Generic.Dictionary<string, int> {
-                    {"ProductNameVN", 150},
+                    {"ProductNameVN", 250},
                     {"PCSOther", 80},
                     {"NWOther", 80},
                 });
@@ -345,7 +347,8 @@ namespace RauViet.ui
                 string packing = Convert.ToString(row["packing"]);
                 int amount = Convert.ToInt32(row["Amount"]);
 
-                updateCusProduct(cusID, ppID, name, price, PCSOther, NWOther, package, packing, amount);                
+                if(PCSOther > 0 || NWOther > 0)
+                    updateCusProduct(cusID, ppID, name, price, PCSOther, NWOther, package, packing, amount);                
             }
 
         }
@@ -1340,18 +1343,18 @@ namespace RauViet.ui
                 DataRowView dataR = (DataRowView)exportCode_search_cbb.SelectedItem;
 
                 string staff = dataR["InputByName_NoSign"].ToString();
-                //if (UserManager.Instance.fullName_NoSign.CompareTo(staff) != 0 && !UserManager.Instance.hasRole_SuaDonNuocNgoai())
-                //{
-                //    edit_btn.Visible = false;
-                //    newCustomerBtn.Visible = false;
-                //    readOnly_btn.Visible = false;
-                //    customer_ccb.Enabled = false;
-                //    product_ccb.Enabled = false;
-                //    packing_ccb.Enabled = false;
-                //    PCSOther_tb.ReadOnly = true;
-                //    netWeight_tb.ReadOnly = true;
-                //    return;
-                //}
+                if (UserManager.Instance.fullName_NoSign.CompareTo(staff) != 0 && !UserManager.Instance.hasRole_SuaDonNuocNgoai())
+                {
+                    edit_btn.Visible = false;
+                    newCustomerBtn.Visible = false;
+                    readOnly_btn.Visible = false;
+                    customer_ccb.Enabled = false;
+                    product_ccb.Enabled = false;
+                    packing_ccb.Enabled = false;
+                    PCSOther_tb.ReadOnly = true;
+                    netWeight_tb.ReadOnly = true;
+                    return;
+                }
             }
             customer_ccb.Enabled = !isReadOnly;
             product_ccb.Enabled = !isReadOnly;
@@ -1540,6 +1543,82 @@ namespace RauViet.ui
                 mlatestOrders_dt.AcceptChanges();
 
             }
+        }
+
+        private void Tem_preview_btn_Click(object sender, EventArgs e)
+        {
+            InTem(true);
+        }
+
+
+        private void InTem_btn_Click(object sender, EventArgs e)
+        {
+            InTem(false);
+        }
+
+        private async void InTem(bool isPreview)
+        {
+            if (dataGV.CurrentRow == null) return;
+
+            loadingOverlay = new LoadingOverlay(this);
+            loadingOverlay.Message = "Đang xử lý ...";
+            loadingOverlay.Show();
+            await Task.Delay(100);
+
+            var currentRow = dataGV.CurrentRow;
+            int pPackingID = Convert.ToInt32(currentRow.Cells["ProductPackingID"].Value);
+
+            var rows = mOrders_dt.AsEnumerable().Where(r => r.Field<int>("ProductPackingID") == pPackingID &&
+                !string.IsNullOrWhiteSpace(r.Field<string>("LOTCodeComplete"))).ToList();
+
+            if (rows.Count <= 0)
+            {
+                MessageBox.Show("Chưa có Mã LOTCodeComplete");
+
+                await Task.Delay(200);
+                loadingOverlay.Hide();
+
+                return;
+            }
+
+            PickDateDialog dlg = new PickDateDialog();
+
+            if (dlg.ShowDialog(this) != DialogResult.OK)
+            {
+                loadingOverlay.Hide();
+                return;   // Người dùng bấm Cancel → không in
+            }
+
+            string packedDate = dlg.SelectedDate.ToString("dd/MM/yyyy");
+
+            var row = rows[0];
+            int SKU = Convert.ToInt32(row["SKU"]);
+            string LOTCodeComplete = Convert.ToString(row["LOTCodeComplete"]);
+            DataRow[] SKURows = mProduct_dt.Select($"SKU = {SKU}");
+            DataRow[] packingRows = mProductPacking_dt.Select($"ProductPackingID = {pPackingID}");
+            if (SKURows.Length <= 0 || packingRows.Length <= 0) return;
+
+            string packing = row["packing"].ToString();
+            int Amount = Convert.ToInt32(row["Amount"]);
+            string amountPackingStr = $"{Amount} {packing}";
+            if (packing.CompareTo("weight") == 0)
+                amountPackingStr = "weight";
+
+            var printer = new LabelPrinter(
+                SKURows[0]["ProductNameEN"].ToString(),
+                SKURows[0]["BotanicalName"].ToString(),
+                amountPackingStr,
+                packingRows[0]["BarCodeEAN13"].ToString(),
+                SKU.ToString(),
+                LOTCodeComplete,
+                packedDate);
+            if (isPreview)
+                printer.PrintPreview(this);
+            else
+                printer.Print();
+
+            await Task.Delay(200);
+            loadingOverlay.Hide();
         }
     }
 }

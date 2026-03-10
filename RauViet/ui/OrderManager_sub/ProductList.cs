@@ -1,4 +1,5 @@
-﻿using RauViet.classes;
+﻿using ClosedXML.Excel;
+using RauViet.classes;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -31,6 +32,7 @@ namespace RauViet.ui
 
             newCustomerBtn.Click += newBtn_Click;
             LuuThayDoiBtn.Click += saveBtn_Click;
+            excel_btn.Click += Excel_btn_Click;
             dataGV.SelectionChanged += this.dataGV_CellClick;
             priceCNF_tb.TextChanged += priceCNF_tb_TextChanged;
             search_tb.TextChanged += search_txt_TextChanged;
@@ -690,6 +692,79 @@ namespace RauViet.ui
            // PLU_tb.Enabled = enable;
            // packing_panel.Enabled = enable;
            // amount_tb.Enabled = enable;
+        }
+
+        private async void Excel_btn_Click(object sender, EventArgs e)
+        {
+            loadingOverlay = new LoadingOverlay(this);
+            loadingOverlay.Message = "Đang xử lý ...";
+            loadingOverlay.Show();
+            await Task.Delay(100);
+
+            try
+            {
+                using (var wb = new XLWorkbook())
+                {
+                    var ws = wb.Worksheets.Add("Data");
+                    ws.Style.Font.FontName = "Times New Roman";
+                    ws.Style.Font.FontSize = 12;
+                    ws.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+
+                    for (int i = 0; i < packing_dt.Columns.Count; i++)
+                    {
+                        ws.Cell(1, i + 1).Value = packing_dt.Columns[i].ColumnName;
+                        ws.Cell(1, i + 1).Style.Font.Bold = true;
+                    }
+
+                    // data
+                    for (int r = 0; r < packing_dt.Rows.Count; r++)
+                    {
+                        for (int c = 0; c < packing_dt.Columns.Count; c++)
+                        {
+                            ws.Cell(r + 2, c + 1).Value = packing_dt.Rows[r][c].ToString(); ;
+                        }
+                    }
+
+                    ws.Columns().AdjustToContents();
+
+                    //ws.Column(8).Width = 27;
+                    // ===== Save file =====
+                    using (SaveFileDialog sfd = new SaveFileDialog())
+                    {
+                        sfd.Filter = "Excel Workbook|*.xlsx";
+                        sfd.FileName = $"San_Pham_Qui_Cach";
+                        if (sfd.ShowDialog() == DialogResult.OK)
+                        {
+                            wb.SaveAs(sfd.FileName);
+                            DialogResult result = MessageBox.Show("Bạn có muốn mở file này không?", "Lưu file thành công", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                            if (result == DialogResult.Yes)
+                            {
+                                try
+                                {
+                                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo()
+                                    {
+                                        FileName = sfd.FileName,
+                                        UseShellExecute = true
+                                    });
+                                }
+                                catch (Exception ex)
+                                {
+                                    MessageBox.Show("Không thể mở file: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi khi xuất Excel: " + ex.Message);
+            }
+            finally
+            {
+                await Task.Delay(200);
+                loadingOverlay.Hide();
+            }
         }
     }
 }

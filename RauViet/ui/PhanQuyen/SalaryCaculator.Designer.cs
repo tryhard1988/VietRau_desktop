@@ -31,6 +31,7 @@ namespace RauViet.ui
         {
             this.load_gb = new System.Windows.Forms.GroupBox();
             this.panel9 = new System.Windows.Forms.Panel();
+            this.reportBoss_btn = new System.Windows.Forms.Button();
             this.chiHoLuong_btn = new System.Windows.Forms.Button();
             this.panel8 = new System.Windows.Forms.Panel();
             this.printPreview_BTC_btn = new System.Windows.Forms.Button();
@@ -44,6 +45,21 @@ namespace RauViet.ui
             this.exportPDF_btn = new System.Windows.Forms.Button();
             this.monthYearDtp = new System.Windows.Forms.DateTimePicker();
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
+            this.panel10 = new System.Windows.Forms.Panel();
+            this.tongHoanTra_lb = new System.Windows.Forms.Label();
+            this.label20 = new System.Windows.Forms.Label();
+            this.label15 = new System.Windows.Forms.Label();
+            this.tongNopBH_lb = new System.Windows.Forms.Label();
+            this.label17 = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
+            this.tongGioLam_bl = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
+            this.tongNV_lb = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
+            this.tongThucLanh_lb = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
             this.dataGV = new System.Windows.Forms.DataGridView();
             this.panel4 = new System.Windows.Forms.Panel();
@@ -63,12 +79,12 @@ namespace RauViet.ui
             this.allowancePanel = new System.Windows.Forms.Panel();
             this.allowanceGV = new System.Windows.Forms.DataGridView();
             this.label2 = new System.Windows.Forms.Label();
-            this.reportBoss_btn = new System.Windows.Forms.Button();
             this.load_gb.SuspendLayout();
             this.panel9.SuspendLayout();
             this.panel8.SuspendLayout();
             this.panel7.SuspendLayout();
             this.panel6.SuspendLayout();
+            this.panel10.SuspendLayout();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
             this.panel4.SuspendLayout();
@@ -110,6 +126,17 @@ namespace RauViet.ui
             this.panel9.Name = "panel9";
             this.panel9.Size = new System.Drawing.Size(358, 38);
             this.panel9.TabIndex = 40;
+            // 
+            // reportBoss_btn
+            // 
+            this.reportBoss_btn.BackColor = System.Drawing.Color.DarkOrchid;
+            this.reportBoss_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.reportBoss_btn.Location = new System.Drawing.Point(197, 3);
+            this.reportBoss_btn.Name = "reportBoss_btn";
+            this.reportBoss_btn.Size = new System.Drawing.Size(156, 34);
+            this.reportBoss_btn.TabIndex = 38;
+            this.reportBoss_btn.Text = "B.Cáo Gửi Đại Ca";
+            this.reportBoss_btn.UseVisualStyleBackColor = false;
             // 
             // chiHoLuong_btn
             // 
@@ -251,6 +278,192 @@ namespace RauViet.ui
             this.LuuThayDoiBtn.Text = "Khóa Lại";
             this.LuuThayDoiBtn.UseVisualStyleBackColor = false;
             // 
+            // panel10
+            // 
+            this.panel10.Controls.Add(this.tongHoanTra_lb);
+            this.panel10.Controls.Add(this.label20);
+            this.panel10.Controls.Add(this.label15);
+            this.panel10.Controls.Add(this.tongNopBH_lb);
+            this.panel10.Controls.Add(this.label17);
+            this.panel10.Controls.Add(this.label12);
+            this.panel10.Controls.Add(this.tongGioLam_bl);
+            this.panel10.Controls.Add(this.label14);
+            this.panel10.Controls.Add(this.label9);
+            this.panel10.Controls.Add(this.tongNV_lb);
+            this.panel10.Controls.Add(this.label11);
+            this.panel10.Controls.Add(this.label8);
+            this.panel10.Controls.Add(this.tongThucLanh_lb);
+            this.panel10.Controls.Add(this.label3);
+            this.panel10.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.panel10.Location = new System.Drawing.Point(0, 702);
+            this.panel10.Name = "panel10";
+            this.panel10.Size = new System.Drawing.Size(1427, 22);
+            this.panel10.TabIndex = 31;
+            // 
+            // tongHoanTra_lb
+            // 
+            this.tongHoanTra_lb.AutoSize = true;
+            this.tongHoanTra_lb.Dock = System.Windows.Forms.DockStyle.Left;
+            this.tongHoanTra_lb.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tongHoanTra_lb.ForeColor = System.Drawing.Color.Red;
+            this.tongHoanTra_lb.Location = new System.Drawing.Point(842, 0);
+            this.tongHoanTra_lb.Name = "tongHoanTra_lb";
+            this.tongHoanTra_lb.Size = new System.Drawing.Size(47, 16);
+            this.tongHoanTra_lb.TabIndex = 13;
+            this.tongHoanTra_lb.Text = "25656";
+            // 
+            // label20
+            // 
+            this.label20.AutoSize = true;
+            this.label20.Dock = System.Windows.Forms.DockStyle.Left;
+            this.label20.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label20.ForeColor = System.Drawing.SystemColors.Highlight;
+            this.label20.Location = new System.Drawing.Point(689, 0);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(153, 16);
+            this.label20.TabIndex = 12;
+            this.label20.Text = "T.Tiền Hoàn Trả BH:";
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Dock = System.Windows.Forms.DockStyle.Left;
+            this.label15.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label15.Location = new System.Drawing.Point(669, 0);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(20, 16);
+            this.label15.TabIndex = 11;
+            this.label15.Text = " | ";
+            // 
+            // tongNopBH_lb
+            // 
+            this.tongNopBH_lb.AutoSize = true;
+            this.tongNopBH_lb.Dock = System.Windows.Forms.DockStyle.Left;
+            this.tongNopBH_lb.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tongNopBH_lb.ForeColor = System.Drawing.Color.Fuchsia;
+            this.tongNopBH_lb.Location = new System.Drawing.Point(622, 0);
+            this.tongNopBH_lb.Name = "tongNopBH_lb";
+            this.tongNopBH_lb.Size = new System.Drawing.Size(47, 16);
+            this.tongNopBH_lb.TabIndex = 10;
+            this.tongNopBH_lb.Text = "25656";
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Dock = System.Windows.Forms.DockStyle.Left;
+            this.label17.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label17.ForeColor = System.Drawing.SystemColors.Highlight;
+            this.label17.Location = new System.Drawing.Point(482, 0);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(140, 16);
+            this.label17.TabIndex = 9;
+            this.label17.Text = "T.Tiền NV Nộp BH:";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Dock = System.Windows.Forms.DockStyle.Left;
+            this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label12.Location = new System.Drawing.Point(462, 0);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(20, 16);
+            this.label12.TabIndex = 8;
+            this.label12.Text = " | ";
+            // 
+            // tongGioLam_bl
+            // 
+            this.tongGioLam_bl.AutoSize = true;
+            this.tongGioLam_bl.Dock = System.Windows.Forms.DockStyle.Left;
+            this.tongGioLam_bl.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tongGioLam_bl.ForeColor = System.Drawing.Color.MediumBlue;
+            this.tongGioLam_bl.Location = new System.Drawing.Point(415, 0);
+            this.tongGioLam_bl.Name = "tongGioLam_bl";
+            this.tongGioLam_bl.Size = new System.Drawing.Size(47, 16);
+            this.tongGioLam_bl.TabIndex = 7;
+            this.tongGioLam_bl.Text = "25656";
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Dock = System.Windows.Forms.DockStyle.Left;
+            this.label14.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label14.ForeColor = System.Drawing.SystemColors.Highlight;
+            this.label14.Location = new System.Drawing.Point(332, 0);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(83, 16);
+            this.label14.TabIndex = 6;
+            this.label14.Text = "T.Giờ Làm:";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Dock = System.Windows.Forms.DockStyle.Left;
+            this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label9.Location = new System.Drawing.Point(312, 0);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(20, 16);
+            this.label9.TabIndex = 5;
+            this.label9.Text = " | ";
+            // 
+            // tongNV_lb
+            // 
+            this.tongNV_lb.AutoSize = true;
+            this.tongNV_lb.Dock = System.Windows.Forms.DockStyle.Left;
+            this.tongNV_lb.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tongNV_lb.ForeColor = System.Drawing.Color.ForestGreen;
+            this.tongNV_lb.Location = new System.Drawing.Point(265, 0);
+            this.tongNV_lb.Name = "tongNV_lb";
+            this.tongNV_lb.Size = new System.Drawing.Size(47, 16);
+            this.tongNV_lb.TabIndex = 4;
+            this.tongNV_lb.Text = "25656";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Dock = System.Windows.Forms.DockStyle.Left;
+            this.label11.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label11.ForeColor = System.Drawing.SystemColors.Highlight;
+            this.label11.Location = new System.Drawing.Point(166, 0);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(99, 16);
+            this.label11.TabIndex = 3;
+            this.label11.Text = "T.Nhân Viên:";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Dock = System.Windows.Forms.DockStyle.Left;
+            this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label8.Location = new System.Drawing.Point(146, 0);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(20, 16);
+            this.label8.TabIndex = 2;
+            this.label8.Text = " | ";
+            // 
+            // tongThucLanh_lb
+            // 
+            this.tongThucLanh_lb.AutoSize = true;
+            this.tongThucLanh_lb.Dock = System.Windows.Forms.DockStyle.Left;
+            this.tongThucLanh_lb.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tongThucLanh_lb.ForeColor = System.Drawing.Color.DarkOrange;
+            this.tongThucLanh_lb.Location = new System.Drawing.Point(99, 0);
+            this.tongThucLanh_lb.Name = "tongThucLanh_lb";
+            this.tongThucLanh_lb.Size = new System.Drawing.Size(47, 16);
+            this.tongThucLanh_lb.TabIndex = 1;
+            this.tongThucLanh_lb.Text = "25656";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Dock = System.Windows.Forms.DockStyle.Left;
+            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label3.ForeColor = System.Drawing.SystemColors.Highlight;
+            this.label3.Location = new System.Drawing.Point(0, 0);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(99, 16);
+            this.label3.TabIndex = 0;
+            this.label3.Text = "T.Thực Lãnh:";
+            // 
             // panel1
             // 
             this.panel1.Controls.Add(this.dataGV);
@@ -259,8 +472,8 @@ namespace RauViet.ui
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(0, 51);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1427, 673);
-            this.panel1.TabIndex = 30;
+            this.panel1.Size = new System.Drawing.Size(1427, 651);
+            this.panel1.TabIndex = 32;
             // 
             // dataGV
             // 
@@ -271,7 +484,7 @@ namespace RauViet.ui
             this.dataGV.Location = new System.Drawing.Point(0, 0);
             this.dataGV.Name = "dataGV";
             this.dataGV.ReadOnly = true;
-            this.dataGV.Size = new System.Drawing.Size(875, 673);
+            this.dataGV.Size = new System.Drawing.Size(875, 651);
             this.dataGV.TabIndex = 15;
             // 
             // panel4
@@ -281,7 +494,7 @@ namespace RauViet.ui
             this.panel4.Dock = System.Windows.Forms.DockStyle.Right;
             this.panel4.Location = new System.Drawing.Point(875, 0);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(259, 673);
+            this.panel4.Size = new System.Drawing.Size(259, 651);
             this.panel4.TabIndex = 14;
             // 
             // panel5
@@ -291,7 +504,7 @@ namespace RauViet.ui
             this.panel5.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel5.Location = new System.Drawing.Point(0, 336);
             this.panel5.Name = "panel5";
-            this.panel5.Size = new System.Drawing.Size(259, 337);
+            this.panel5.Size = new System.Drawing.Size(259, 315);
             this.panel5.TabIndex = 22;
             // 
             // attendamceGV
@@ -303,7 +516,7 @@ namespace RauViet.ui
             this.attendamceGV.Location = new System.Drawing.Point(0, 20);
             this.attendamceGV.Name = "attendamceGV";
             this.attendamceGV.ReadOnly = true;
-            this.attendamceGV.Size = new System.Drawing.Size(259, 317);
+            this.attendamceGV.Size = new System.Drawing.Size(259, 295);
             this.attendamceGV.TabIndex = 15;
             // 
             // label7
@@ -360,7 +573,7 @@ namespace RauViet.ui
             this.panel2.Dock = System.Windows.Forms.DockStyle.Right;
             this.panel2.Location = new System.Drawing.Point(1134, 0);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(293, 673);
+            this.panel2.Size = new System.Drawing.Size(293, 651);
             this.panel2.TabIndex = 13;
             // 
             // panel3
@@ -370,7 +583,7 @@ namespace RauViet.ui
             this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel3.Location = new System.Drawing.Point(0, 336);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(293, 220);
+            this.panel3.Size = new System.Drawing.Size(293, 198);
             this.panel3.TabIndex = 23;
             // 
             // overtimeAttendanceGV
@@ -382,7 +595,7 @@ namespace RauViet.ui
             this.overtimeAttendanceGV.Location = new System.Drawing.Point(0, 20);
             this.overtimeAttendanceGV.Name = "overtimeAttendanceGV";
             this.overtimeAttendanceGV.ReadOnly = true;
-            this.overtimeAttendanceGV.Size = new System.Drawing.Size(293, 200);
+            this.overtimeAttendanceGV.Size = new System.Drawing.Size(293, 178);
             this.overtimeAttendanceGV.TabIndex = 15;
             // 
             // label1
@@ -402,7 +615,7 @@ namespace RauViet.ui
             this.leave_panel.Controls.Add(this.leaveGV);
             this.leave_panel.Controls.Add(this.label4);
             this.leave_panel.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.leave_panel.Location = new System.Drawing.Point(0, 556);
+            this.leave_panel.Location = new System.Drawing.Point(0, 534);
             this.leave_panel.Name = "leave_panel";
             this.leave_panel.Size = new System.Drawing.Size(293, 117);
             this.leave_panel.TabIndex = 22;
@@ -465,23 +678,13 @@ namespace RauViet.ui
             this.label2.Text = "Phụ Cấp";
             this.label2.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
-            // reportBoss_btn
-            // 
-            this.reportBoss_btn.BackColor = System.Drawing.Color.DarkOrchid;
-            this.reportBoss_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.reportBoss_btn.Location = new System.Drawing.Point(197, 3);
-            this.reportBoss_btn.Name = "reportBoss_btn";
-            this.reportBoss_btn.Size = new System.Drawing.Size(156, 34);
-            this.reportBoss_btn.TabIndex = 38;
-            this.reportBoss_btn.Text = "B.Cáo Gửi Đại Ca";
-            this.reportBoss_btn.UseVisualStyleBackColor = false;
-            // 
             // SalaryCaculator
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1427, 724);
             this.Controls.Add(this.panel1);
+            this.Controls.Add(this.panel10);
             this.Controls.Add(this.load_gb);
             this.Name = "SalaryCaculator";
             this.Text = "FormTableData";
@@ -490,6 +693,8 @@ namespace RauViet.ui
             this.panel8.ResumeLayout(false);
             this.panel7.ResumeLayout(false);
             this.panel6.ResumeLayout(false);
+            this.panel10.ResumeLayout(false);
+            this.panel10.PerformLayout();
             this.panel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).EndInit();
             this.panel4.ResumeLayout(false);
@@ -511,25 +716,6 @@ namespace RauViet.ui
         #endregion
         private System.Windows.Forms.Button LuuThayDoiBtn;
         private System.Windows.Forms.GroupBox load_gb;
-        private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.Panel allowancePanel;
-        private System.Windows.Forms.DataGridView allowanceGV;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Panel panel4;
-        private System.Windows.Forms.DataGridView dataGV;
-        private System.Windows.Forms.Panel leave_panel;
-        private System.Windows.Forms.DataGridView leaveGV;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Panel panel3;
-        private System.Windows.Forms.DataGridView overtimeAttendanceGV;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Panel panel5;
-        private System.Windows.Forms.DataGridView attendamceGV;
-        private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.Panel deductionPanel;
-        private System.Windows.Forms.DataGridView deductionGV;
-        private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Button print_pl_btn;
         private System.Windows.Forms.Button printPreview_pl_btn;
         private System.Windows.Forms.Button exportPDF_btn;
@@ -544,5 +730,39 @@ namespace RauViet.ui
         private System.Windows.Forms.Panel panel9;
         private System.Windows.Forms.Button chiHoLuong_btn;
         private System.Windows.Forms.Button reportBoss_btn;
+        private System.Windows.Forms.Panel panel10;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.DataGridView dataGV;
+        private System.Windows.Forms.Panel panel4;
+        private System.Windows.Forms.Panel panel5;
+        private System.Windows.Forms.DataGridView attendamceGV;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Panel deductionPanel;
+        private System.Windows.Forms.DataGridView deductionGV;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.DataGridView overtimeAttendanceGV;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Panel leave_panel;
+        private System.Windows.Forms.DataGridView leaveGV;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Panel allowancePanel;
+        private System.Windows.Forms.DataGridView allowanceGV;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label tongHoanTra_lb;
+        private System.Windows.Forms.Label label20;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.Label tongNopBH_lb;
+        private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Label tongGioLam_bl;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Label tongNV_lb;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Label tongThucLanh_lb;
+        private System.Windows.Forms.Label label3;
     }
 }

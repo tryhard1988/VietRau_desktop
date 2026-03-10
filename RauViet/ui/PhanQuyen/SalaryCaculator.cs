@@ -353,7 +353,10 @@ namespace RauViet.ui
             }
 
 
-
+            decimal tongThucLanh = 0;
+            decimal tongGioLam = 0;
+            decimal tongTienNLDNopBH = 0;
+            decimal tongHoanTraBH = 0;
             // ====== 5️⃣ Tổng tiền tăng ca theo nhân viên ======
             foreach (DataRow dr in mEmployee_dt.Rows)
             {
@@ -373,11 +376,12 @@ namespace RauViet.ui
                 //các khoảng trừ
                 decimal deductionMoney = 0;
                 decimal employeeInsurancePaid = dr["EmployeeInsurancePaid"] != DBNull.Value ? Convert.ToDecimal(dr["EmployeeInsurancePaid"]) : 0;
+                
 
                 var hwMatch = attendamceResult.FirstOrDefault(r => r.EmployeeCode == employeeCode);
                 decimal totalHourWork = hwMatch?.TotalHourWork ?? 0;
                 totalSalaryHourWork = totalHourWork * hourSalary;
-
+                
                 dr["TotalHourWork"] = totalHourWork;
                 dr["TotalSalaryHourWork"] = totalSalaryHourWork;
 
@@ -435,8 +439,17 @@ namespace RauViet.ui
                 decimal netSalary = totalSalaryHourWork + insuranceRefund + overtimeMoney + leaveMoney + allowanceONCE;
                 netSalary -= (deductionMoney);
                 dr["NetSalary"] = netSalary;
+                tongThucLanh += netSalary;
+                tongHoanTraBH += insuranceRefund;
+                tongGioLam += totalHourWork;
+                tongTienNLDNopBH += employeeInsurancePaid;
             }
 
+            tongThucLanh_lb.Text = tongThucLanh.ToString("N0");
+            tongNV_lb.Text = mEmployee_dt.Rows.Count.ToString("N0");
+            tongNopBH_lb.Text = tongTienNLDNopBH.ToString("N0");
+            tongGioLam_bl.Text = tongGioLam.ToString("N1");
+            tongHoanTra_lb.Text = tongHoanTraBH.ToString("N0");
         }
 
         public async Task SetupAllGrids()

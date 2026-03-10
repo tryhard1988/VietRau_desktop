@@ -30,22 +30,33 @@ namespace RauViet.ui
         private void InitializeComponent()
         {
             this.panel2 = new System.Windows.Forms.Panel();
+            this.search_tb = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.log_GV = new System.Windows.Forms.DataGridView();
             this.panel1 = new System.Windows.Forms.Panel();
             this.dataGV = new System.Windows.Forms.DataGridView();
+            this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.log_GV)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
             this.SuspendLayout();
             // 
             // panel2
             // 
-            this.panel2.BackColor = System.Drawing.SystemColors.Control;
+            this.panel2.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.panel2.Controls.Add(this.search_tb);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel2.Location = new System.Drawing.Point(0, 0);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(1264, 36);
             this.panel2.TabIndex = 63;
+            // 
+            // search_tb
+            // 
+            this.search_tb.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.search_tb.Location = new System.Drawing.Point(30, 8);
+            this.search_tb.Name = "search_tb";
+            this.search_tb.Size = new System.Drawing.Size(254, 22);
+            this.search_tb.TabIndex = 0;
             // 
             // label1
             // 
@@ -104,6 +115,8 @@ namespace RauViet.ui
             this.Controls.Add(this.panel2);
             this.Name = "ThongKeTonKhoHangKho";
             this.Text = "FormTableData";
+            this.panel2.ResumeLayout(false);
+            this.panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.log_GV)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).EndInit();
             this.ResumeLayout(false);
@@ -116,5 +129,6 @@ namespace RauViet.ui
         private System.Windows.Forms.DataGridView log_GV;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.DataGridView dataGV;
+        private System.Windows.Forms.TextBox search_tb;
     }
 }

@@ -270,10 +270,24 @@ namespace RauViet.ui
             else
                 qlVatTu_group.Visible = false;
 
-            plantingManagement_mi.Click += plantingManagement_mi_Click;
-            cultivationProcessTemplate_mi.Click += CultivationProcessTemplate_mi_Click; ;
+            if (UserManager.Instance.hasRole_QLK_QuanLyLichUom() || UserManager.Instance.hasRole_QLK_QuanLyMauSanXuat())
+            {
+                if (UserManager.Instance.hasRole_QLK_QuanLyLichUom())
+                    plantingManagement_mi.Click += plantingManagement_mi_Click;
+                else
+                    plantingManagement_mi.Visible = false;
 
-            historyLogin_mi.Click += HistoryLogin_mi_Click;
+                if(UserManager.Instance.hasRole_QLK_QuanLyMauSanXuat())
+                    cultivationProcessTemplate_mi.Click += CultivationProcessTemplate_mi_Click;
+                else
+                    cultivationProcessTemplate_mi.Visible = false;
+            }
+            else
+            {
+                QLCT_group_mi.Visible = false;
+            }
+
+                historyLogin_mi.Click += HistoryLogin_mi_Click;
             
             string saved = Properties.Settings.Default.current_form;
             if (Enum.TryParse(saved, out EForm status))

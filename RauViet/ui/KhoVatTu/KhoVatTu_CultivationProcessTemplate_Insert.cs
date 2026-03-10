@@ -34,7 +34,7 @@ namespace RauViet.ui
                 decimal MaterialQuantity = Convert.ToDecimal(item["Column8"]);
                 decimal WaterAmount = Convert.ToDecimal(item["Column9"]);
 
-                int newId = await SQLManager_KhoVatTu.Instance.insertCultivationProcessTemplateAsync(SKU, CultivationTypeID, BaseDateType, DaysAfter, FertilizationWorkTypeID, WorkTypeID, MaterialID, MaterialQuantity, WaterAmount);
+                int newId = await SQLManager_KhoVatTu.Instance.insertCultivationProcessTemplateAsync(SKU, CultivationTypeID, BaseDateType, DaysAfter, FertilizationWorkTypeID, WorkTypeID, MaterialID, MaterialQuantity, WaterAmount, true);
                 if(newId <= 0)
                 {
                     MessageBox.Show("Error");

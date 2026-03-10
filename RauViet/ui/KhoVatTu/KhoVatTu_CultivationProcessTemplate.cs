@@ -1,5 +1,4 @@
-﻿using DocumentFormat.OpenXml.Vml.Office;
-using RauViet.classes;
+﻿using RauViet.classes;
 using System;
 using System.Data;
 using System.Globalization;
@@ -148,7 +147,7 @@ namespace RauViet.ui
                     });
 
                 Utils.HideColumns(dataGV, new[] { "ProcessTemplateID", "SKU", "CultivationTypeID", "BaseDateType", "WorkTypeID", "MaterialID", "FertilizationWorkTypeID" });
-                Utils.SetGridOrdinal(mCultivationProcessTemplate_dt, new[] { "ProductNameVN", "CultivationTypeName", "BaseDateTypeName", "DaysAfter", "FertilizationWorkTypeName", "WorkTypeName", "MaterialName", "MaterialQuantity", "WaterAmount" });
+                Utils.SetGridOrdinal(mCultivationProcessTemplate_dt, new[] { "ProductNameVN", "CultivationTypeName", "BaseDateTypeName", "DaysAfter", "FertilizationWorkTypeName", "WorkTypeName", "MaterialName", "UnitName", "MaterialQuantity", "WaterAmount" });
                 Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
                         {"ProductNameVN", "Cây Trồng" },
                         {"CultivationTypeName", "Canh Tác" },
@@ -158,6 +157,8 @@ namespace RauViet.ui
                         {"MaterialName", "Vật Tư" },
                         {"MaterialQuantity", "SL Vật Tư" },
                         {"WaterAmount", "Lượng Nước" },
+                        {"UnitName", "Đ.Vị" },
+                        {"IsMultiplyArea", "Nhân D.Tích" },
                         {"FertilizationWorkTypeName", "Hình Thức Bón" }
                     });
 
@@ -176,6 +177,8 @@ namespace RauViet.ui
                         {"DaysAfter", 100 },
                         {"WorkTypeName", 100 },
                         {"MaterialName", 100 },
+                        {"UnitName", 50 },
+                        {"IsMultiplyArea", 50 },
                         {"MaterialQuantity", 100 },
                         {"WaterAmount", 100}
                     });
@@ -201,12 +204,20 @@ namespace RauViet.ui
                 vatTu_CB.TabIndex = countTab++; vatTu_CB.TabStop = true;
                 materialQuantity_tb.TabIndex = countTab++; materialQuantity_tb.TabStop = true;
                 waterAmount_tb.TabIndex = countTab++; waterAmount_tb.TabStop = true;
+                isMultiplyArea_CB.TabIndex = countTab++; isMultiplyArea_CB.TabStop = true;
                 LuuThayDoiBtn.TabIndex = countTab++; LuuThayDoiBtn.TabStop = true;
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 ReadOnly_btn_Click(null, null);
                 dataGV.SelectionChanged += this.dataGV_CellClick;
+
+                if (UserManager.Instance.hasRole_QLK_QuanLyMauSanXuat_ReadOnly())
+                {
+                    newCustomerBtn.Visible = false;
+                    edit_btn.Visible = false;
+                    readOnly_btn.Visible = false;
+                }
             }
                 catch
             {
@@ -362,7 +373,7 @@ namespace RauViet.ui
             updateRightUI();            
         }
 
-        private async void updateItem(int processTemplateID, int sku, int cultivationTypeID, string baseDateType, int daysAfter, int? fertilizationWorkTypeID, int workTypeID, int? materialID, decimal materialQuantity, decimal waterAmount)
+        private async void updateItem(int processTemplateID, int sku, int cultivationTypeID, string baseDateType, int daysAfter, int? fertilizationWorkTypeID, int workTypeID, int? materialID, decimal materialQuantity, decimal waterAmount, bool isMultiplyArea)
         {
             DataRow[] workTypeRows = mWorkType_dt.Select($"WorkTypeID = {workTypeID}");
             DataRow[] skuRows = mProduct_dt.Select($"ProductSKU = {sku}");
@@ -393,11 +404,11 @@ namespace RauViet.ui
                         string fertilizationWorkTypeName = fertilizationWorkRows.Length > 0 ?fertilizationWorkRows[0]["WorkTypeName"].ToString() : "";
 
                         string actionType = "Update ";
-                        string oldValue = $"Cây Trồng:{row["ProductNameVN"]}; Loại Canh Tác:{row["CultivationTypeName"]}; Mốc Thời Gian:{row["BaseDateTypeName"]}; Khoảng Cách Ngày:{row["DaysAfter"]}; Hình Thức Bón:{row["FertilizationWorkTypeName"]}; Công Việc:{row["WorkTypeName"]}; Vật Tư:{row["MaterialName"]}; S.Lượng VT:{row["MaterialQuantity"]}; Lượng Nước:{row["WaterAmount"]}";
-                        string newValue = $"Cây Trồng:{productNameVN}; Loại Canh Tác:{cultivationTypeName}; Mốc Thời Gian:{baseDateTypeName}; Khoảng Cách Ngày:{daysAfter}; Hình Thức Bón:{fertilizationWorkTypeName}; Công Việc:{workTypeName}; Vật Tư:{materialName}; S.Lượng VT:{materialQuantity}; Lượng Nước:{waterAmount}";
+                        string oldValue = $"Cây Trồng:{row["ProductNameVN"]}; Loại Canh Tác:{row["CultivationTypeName"]}; Mốc Thời Gian:{row["BaseDateTypeName"]}; Khoảng Cách Ngày:{row["DaysAfter"]}; Hình Thức Bón:{row["FertilizationWorkTypeName"]}; Công Việc:{row["WorkTypeName"]}; Vật Tư:{row["MaterialName"]}; S.Lượng VT:{row["MaterialQuantity"]}; Lượng Nước:{row["WaterAmount"]}; Nhân Diện Tích:{(Convert.ToBoolean(row["IsMultiplyArea"]) ? "true":"false")}";
+                        string newValue = $"Cây Trồng:{productNameVN}; Loại Canh Tác:{cultivationTypeName}; Mốc Thời Gian:{baseDateTypeName}; Khoảng Cách Ngày:{daysAfter}; Hình Thức Bón:{fertilizationWorkTypeName}; Công Việc:{workTypeName}; Vật Tư:{materialName}; S.Lượng VT:{materialQuantity}; Lượng Nước:{waterAmount}; Nhân Diện Tích:{(isMultiplyArea?"true":"false")}";
                         try
                         {
-                            bool isScussess = await SQLManager_KhoVatTu.Instance.updateCultivationProcessTemplateAsync(processTemplateID, sku, cultivationTypeID, baseDateType, daysAfter, fertilizationWorkTypeID, workTypeID, materialID, materialQuantity, waterAmount);
+                            bool isScussess = await SQLManager_KhoVatTu.Instance.updateCultivationProcessTemplateAsync(processTemplateID, sku, cultivationTypeID, baseDateType, daysAfter, fertilizationWorkTypeID, workTypeID, materialID, materialQuantity, waterAmount, isMultiplyArea);
 
                             if (isScussess == true)
                             {
@@ -416,9 +427,10 @@ namespace RauViet.ui
                                 row["WorkTypeName"] = workTypeName;
                                 row["MaterialName"] = materialName;
                                 row["FertilizationWorkTypeName"] = fertilizationWorkTypeName;
+                                row["IsMultiplyArea"] = isMultiplyArea;
 
                                 actionType += "Success";
-                                plantGV.DataSource = getPlantData();
+                            //    plantGV.DataSource = getPlantData();
                                 status_lb.Text = "Thành công.";
                                 status_lb.ForeColor = Color.Green;
                             }
@@ -445,7 +457,7 @@ namespace RauViet.ui
             }
         }
 
-        private async void createItem(int sku, int cultivationTypeID, string baseDateType, int daysAfter, int? fertilizationWorkTypeID, int workTypeID, int? materialID, decimal materialQuantity, decimal waterAmount)
+        private async void createItem(int sku, int cultivationTypeID, string baseDateType, int daysAfter, int? fertilizationWorkTypeID, int workTypeID, int? materialID, decimal materialQuantity, decimal waterAmount, bool isMultiplyArea)
         {
             DataRow[] workTypeRows =  mWorkType_dt.Select($"WorkTypeID = {workTypeID}");
             DataRow[] skuRows = mProduct_dt.Select($"ProductSKU = {sku}");
@@ -473,11 +485,11 @@ namespace RauViet.ui
 
                 string actionType = "Create ";
                 string oldValue = "";
-                string newValue = $"Cây Trồng:{productNameVN}; Loại Canh Tác:{cultivationTypeName}; Mốc Thời Gian:{baseDateTypeName}; Khoảng Cách Ngày:{daysAfter}; Hình Thức Bón:{fertilizationWorkTypeName}; Công Việc:{workTypeName}; Vật Tư:{materialName}; S.Lượng VT:{materialQuantity}; Lượng Nước:{waterAmount}";
+                string newValue = $"Cây Trồng:{productNameVN}; Loại Canh Tác:{cultivationTypeName}; Mốc Thời Gian:{baseDateTypeName}; Khoảng Cách Ngày:{daysAfter}; Hình Thức Bón:{fertilizationWorkTypeName}; Công Việc:{workTypeName}; Vật Tư:{materialName}; S.Lượng VT:{materialQuantity}; Lượng Nước:{waterAmount}; Nhân Diện Tích:{(isMultiplyArea ? "true" : "false")}";
 
                 try
                 {
-                    int newId = await SQLManager_KhoVatTu.Instance.insertCultivationProcessTemplateAsync(sku, cultivationTypeID, baseDateType, daysAfter, fertilizationWorkTypeID, workTypeID, materialID, materialQuantity, waterAmount);
+                    int newId = await SQLManager_KhoVatTu.Instance.insertCultivationProcessTemplateAsync(sku, cultivationTypeID, baseDateType, daysAfter, fertilizationWorkTypeID, workTypeID, materialID, materialQuantity, waterAmount, isMultiplyArea);
                     if (newId > 0)
                     {
                         DataRow drToAdd = mCultivationProcessTemplate_dt.NewRow();
@@ -498,6 +510,7 @@ namespace RauViet.ui
                         drToAdd["WorkTypeName"] = workTypeName;
                         drToAdd["MaterialName"] = materialName;
                         drToAdd["FertilizationWorkTypeName"] = fertilizationWorkTypeName;
+                        drToAdd["IsMultiplyArea"] = isMultiplyArea;
 
                         mCultivationProcessTemplate_dt.Rows.Add(drToAdd);
                         mCultivationProcessTemplate_dt.AcceptChanges();
@@ -506,7 +519,7 @@ namespace RauViet.ui
                         status_lb.ForeColor = Color.Green;
                         actionType += "Success";
 
-                        plantGV.DataSource = getPlantData();
+                    //    plantGV.DataSource = getPlantData();
 
                         newBtn_Click(null, null);
                     }
@@ -550,11 +563,12 @@ namespace RauViet.ui
 
             decimal materialQuantity = Utils.ParseDecimalSmart(materialQuantity_tb.Text);
             decimal waterAmount = Utils.ParseDecimalSmart(waterAmount_tb.Text);
+            bool isMultiplyArea = isMultiplyArea_CB.Checked;
 
             if (id_tb.Text.Length != 0)
-                updateItem(Convert.ToInt32(id_tb.Text), sku, cultivationTypeID, baseDateType, daysAfter, fertilizationWorkTypeID, workTypeID, materialID, materialQuantity, waterAmount);
+                updateItem(Convert.ToInt32(id_tb.Text), sku, cultivationTypeID, baseDateType, daysAfter, fertilizationWorkTypeID, workTypeID, materialID, materialQuantity, waterAmount, isMultiplyArea);
             else
-                createItem(sku, cultivationTypeID, baseDateType, daysAfter, fertilizationWorkTypeID, workTypeID, materialID, materialQuantity, waterAmount);
+                createItem(sku, cultivationTypeID, baseDateType, daysAfter, fertilizationWorkTypeID, workTypeID, materialID, materialQuantity, waterAmount, isMultiplyArea);
 
         }
         private async void deleteProduct()
@@ -573,7 +587,7 @@ namespace RauViet.ui
                         int sku = Convert.ToInt32(row["SKU"]);
                         int cultivationTypeID = Convert.ToInt32(row["CultivationTypeID"]);
                         string actionType = "Update ";
-                        string oldValue = $"Cây Trồng:{row["ProductNameVN"]}; Loại Canh Tác:{row["CultivationTypeName"]}; Mốc Thời Gian:{row["BaseDateTypeName"]}; Khoảng Cách Ngày:{row["DaysAfter"]}; Hình Thức Bón:{row["FertilizationWorkTypeName"]}; Công Việc:{row["WorkTypeName"]}; Vật Tư:{row["MaterialName"]}; S.Lượng VT:{row["MaterialQuantity"]}; Lượng Nước:{row["WaterAmount"]}";
+                        string oldValue = $"Cây Trồng:{row["ProductNameVN"]}; Loại Canh Tác:{row["CultivationTypeName"]}; Mốc Thời Gian:{row["BaseDateTypeName"]}; Khoảng Cách Ngày:{row["DaysAfter"]}; Hình Thức Bón:{row["FertilizationWorkTypeName"]}; Công Việc:{row["WorkTypeName"]}; Vật Tư:{row["MaterialName"]}; S.Lượng VT:{row["MaterialQuantity"]}; Lượng Nước:{row["WaterAmount"]}; Nhân Diện Tích:{(Convert.ToBoolean(row["IsMultiplyArea"]) ? "true" : "false")}";
                         
                         try
                         {
@@ -720,6 +734,7 @@ namespace RauViet.ui
                     congViec_CBB.SelectedValue = workTypeID;
                     fertilizationWork_CBB.SelectedValue = fertilizationWorkType;
                     vatTu_CB.SelectedValue = materialID;
+                    isMultiplyArea_CB.Checked = Convert.ToBoolean(cells["IsMultiplyArea"].Value);
                     materialQuantity_tb.Text = Convert.ToDecimal(cells["MaterialQuantity"].Value).ToString("G29", CultureInfo.InvariantCulture);
                     waterAmount_tb.Text = Convert.ToDecimal(cells["WaterAmount"].Value).ToString("G29", CultureInfo.InvariantCulture);
                 }

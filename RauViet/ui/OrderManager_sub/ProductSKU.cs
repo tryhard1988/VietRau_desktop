@@ -1,9 +1,10 @@
-﻿using System;
+﻿using ClosedXML.Excel;
+using RauViet.classes;
+using System;
 using System.Data;
 using System.Drawing;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using RauViet.classes;
 
 namespace RauViet.ui
 {
@@ -41,6 +42,7 @@ namespace RauViet.ui
 
             newBtn.Click += newBtn_Click;
             luuBtn.Click += saveBtn_Click;
+            excel_btn.Click += Excel_btn_Click;
             dataGV.SelectionChanged += this.dataGV_CellClick;
             priceCNF_tb.KeyPress += Tb_KeyPress_OnlyNumber;
             priority_tb.KeyPress += Tb_KeyPress_OnlyNumber;
@@ -544,7 +546,6 @@ namespace RauViet.ui
 
             DataView dv = dt.DefaultView;
             dv.RowFilter = $"[ProductNameVN_NoSign] LIKE '%{keyword}%'";
-
         }
 
         private void RightUIReadOnly(bool isReadOnly)
@@ -571,5 +572,77 @@ namespace RauViet.ui
             botanicalName_tb.Enabled = enable;
         }
 
+        private async void Excel_btn_Click(object sender, EventArgs e)
+        {
+            loadingOverlay = new LoadingOverlay(this);
+            loadingOverlay.Message = "Đang xử lý ...";
+            loadingOverlay.Show();
+            await Task.Delay(100);
+
+            try
+            {
+                using (var wb = new XLWorkbook())
+                {
+                    var ws = wb.Worksheets.Add("Data");
+                    ws.Style.Font.FontName = "Times New Roman";
+                    ws.Style.Font.FontSize = 12;
+                    ws.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+
+                    for (int i = 0; i < mProductSKU_dt.Columns.Count; i++)
+                    {
+                        ws.Cell(1, i + 1).Value = mProductSKU_dt.Columns[i].ColumnName;
+                        ws.Cell(1, i + 1).Style.Font.Bold = true;
+                    }
+
+                    // data
+                    for (int r = 0; r < mProductSKU_dt.Rows.Count; r++)
+                    {
+                        for (int c = 0; c < mProductSKU_dt.Columns.Count; c++)
+                        {
+                            ws.Cell(r + 2, c + 1).Value = mProductSKU_dt.Rows[r][c].ToString(); ;
+                        }
+                    }
+
+                    ws.Columns().AdjustToContents();
+
+                    //ws.Column(8).Width = 27;
+                    // ===== Save file =====
+                    using (SaveFileDialog sfd = new SaveFileDialog())
+                    {
+                        sfd.Filter = "Excel Workbook|*.xlsx";
+                        sfd.FileName = $"San_Pham";
+                        if (sfd.ShowDialog() == DialogResult.OK)
+                        {
+                            wb.SaveAs(sfd.FileName);
+                            DialogResult result = MessageBox.Show("Bạn có muốn mở file này không?", "Lưu file thành công", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                            if (result == DialogResult.Yes)
+                            {
+                                try
+                                {
+                                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo()
+                                    {
+                                        FileName = sfd.FileName,
+                                        UseShellExecute = true
+                                    });
+                                }
+                                catch (Exception ex)
+                                {
+                                    MessageBox.Show("Không thể mở file: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi khi xuất Excel: " + ex.Message);
+            }
+            finally
+            {
+                await Task.Delay(200);
+                loadingOverlay.Hide();
+            }
+        }
     }
 }

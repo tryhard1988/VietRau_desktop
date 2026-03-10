@@ -555,4 +555,43 @@ public static class Utils
 
         return dt;
     }
+
+    public static void ComboBoxSearchResult(ComboBox ccb, DataTable dataTable, string keySearch, bool isNosign = true)
+    {
+        try
+        {
+            string typed = ccb.Text ?? "";
+            string plain = Utils.RemoveVietnameseSigns(typed).ToLower();
+
+            // Filter bằng LINQ
+            var filtered = dataTable.AsEnumerable()
+                            .Where(r =>
+                            {
+                                var value = r[keySearch]?.ToString() ?? "";
+
+                                if (isNosign)
+                                    value = value.ToLower();
+                                else
+                                    value = Utils.RemoveVietnameseSigns(value).ToLower();
+
+                                return value.Contains(plain);
+                            });
+
+            System.Data.DataTable temp;
+            if (filtered.Any())
+                temp = filtered.CopyToDataTable();
+            else
+                temp = dataTable.Clone(); // nếu không có kết quả thì trả về table rỗng
+
+            // Gán lại DataSource
+            ccb.DataSource = temp;
+
+            // Giữ lại text người đang gõ
+            ccb.DroppedDown = true;
+            ccb.Text = typed;
+            ccb.SelectionStart = typed.Length;
+            ccb.SelectionLength = 0;
+        }
+        catch { }
+    }
 }

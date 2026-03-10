@@ -519,12 +519,12 @@ namespace RauViet.ui
 
                                         await AddMissingEmployees(month, year);
 
-                                        SQLStore_QLNS.Instance.removeAttendamce(month, year);
-                                        var attendamceTask = SQLStore_QLNS.Instance.GetAttendamceAsync(null, month, year);
-                                        await Task.WhenAll(attendamceTask);
-                                        mAttendamce_dt = attendamceTask.Result;
+                                        //SQLStore_QLNS.Instance.removeAttendamce(month, year);
+                                        //var attendamceTask = SQLStore_QLNS.Instance.GetAttendamceAsync(null, month, year);
+                                        //await Task.WhenAll(attendamceTask);
+                                        //mAttendamce_dt = attendamceTask.Result;
 
-                                        Attendamce(month, year);
+                                        //Attendamce(month, year);
                                     }
                                     else
                                     {
@@ -582,6 +582,8 @@ namespace RauViet.ui
                 await Task.Delay(200);
                 loadingOverlay.Hide();
             }
+
+            Holiday_btn_Click(null, null);
         }
 
         private async void LoadAttandance_btn_Click(object sender, EventArgs e)

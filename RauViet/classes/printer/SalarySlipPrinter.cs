@@ -3,10 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.Drawing.Printing;
-using System.IO;
-using System.Linq;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.ProgressBar;
 
 public class SalarySlipPrinter
 {
@@ -199,7 +196,7 @@ public class SalarySlipPrinter
         int tableLeft = margin - 2;
         int tableWidth = (pageWidth - 3 * margin) * 2 / 3;
         int tableRight = tableLeft + tableWidth + 5;
-        int tableRightWidth = (pageWidth - 3 * margin) / 3;
+        int tableRightWidth = (pageWidth - 7 * margin) / 3;
         int rowHeight = 20;
 
         y += rowHeight;
@@ -407,7 +404,7 @@ public class SalarySlipPrinter
         }
 
         // --- BẢNG PHỤ CẤP bên phải ---
-        int[] rightColWidths = { tableRightWidth * 2 / 3, tableRightWidth / 3 };
+        int[] rightColWidths = { tableRightWidth * 2 / 3 - 10, tableRightWidth / 3 + 10};
 
         
         x = tableRight;

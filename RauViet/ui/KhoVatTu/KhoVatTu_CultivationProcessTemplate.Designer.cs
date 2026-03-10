@@ -58,16 +58,18 @@ namespace RauViet.ui
             this.panel2 = new System.Windows.Forms.Panel();
             this.plantGV = new System.Windows.Forms.DataGridView();
             this.panel3 = new System.Windows.Forms.Panel();
+            this.dataGV = new System.Windows.Forms.DataGridView();
             this.label4 = new System.Windows.Forms.Label();
             this.log_GV = new System.Windows.Forms.DataGridView();
-            this.dataGV = new System.Windows.Forms.DataGridView();
+            this.isMultiplyArea_CB = new System.Windows.Forms.CheckBox();
+            this.label11 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.info_gb.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.plantGV)).BeginInit();
             this.panel3.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.log_GV)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.log_GV)).BeginInit();
             this.SuspendLayout();
             // 
             // panel1
@@ -120,6 +122,8 @@ namespace RauViet.ui
             // 
             // info_gb
             // 
+            this.info_gb.Controls.Add(this.label11);
+            this.info_gb.Controls.Add(this.isMultiplyArea_CB);
             this.info_gb.Controls.Add(this.fertilizationWork_CBB);
             this.info_gb.Controls.Add(this.label6);
             this.info_gb.Controls.Add(this.waterAmount_tb);
@@ -141,7 +145,7 @@ namespace RauViet.ui
             this.info_gb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.info_gb.Location = new System.Drawing.Point(10, 74);
             this.info_gb.Name = "info_gb";
-            this.info_gb.Size = new System.Drawing.Size(480, 315);
+            this.info_gb.Size = new System.Drawing.Size(480, 343);
             this.info_gb.TabIndex = 43;
             this.info_gb.TabStop = false;
             // 
@@ -316,7 +320,7 @@ namespace RauViet.ui
             // 
             this.status_lb.AutoSize = true;
             this.status_lb.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.status_lb.Location = new System.Drawing.Point(4, 404);
+            this.status_lb.Location = new System.Drawing.Point(4, 432);
             this.status_lb.Name = "status_lb";
             this.status_lb.Size = new System.Drawing.Size(59, 23);
             this.status_lb.TabIndex = 40;
@@ -326,7 +330,7 @@ namespace RauViet.ui
             // 
             this.LuuThayDoiBtn.BackColor = System.Drawing.SystemColors.Highlight;
             this.LuuThayDoiBtn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LuuThayDoiBtn.Location = new System.Drawing.Point(254, 395);
+            this.LuuThayDoiBtn.Location = new System.Drawing.Point(254, 423);
             this.LuuThayDoiBtn.Name = "LuuThayDoiBtn";
             this.LuuThayDoiBtn.Size = new System.Drawing.Size(104, 43);
             this.LuuThayDoiBtn.TabIndex = 25;
@@ -365,6 +369,18 @@ namespace RauViet.ui
             this.panel3.Size = new System.Drawing.Size(575, 758);
             this.panel3.TabIndex = 71;
             // 
+            // dataGV
+            // 
+            this.dataGV.AllowUserToAddRows = false;
+            this.dataGV.AllowUserToDeleteRows = false;
+            this.dataGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGV.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dataGV.Location = new System.Drawing.Point(0, 0);
+            this.dataGV.Name = "dataGV";
+            this.dataGV.ReadOnly = true;
+            this.dataGV.Size = new System.Drawing.Size(575, 554);
+            this.dataGV.TabIndex = 74;
+            // 
             // label4
             // 
             this.label4.BackColor = System.Drawing.Color.PeachPuff;
@@ -390,17 +406,23 @@ namespace RauViet.ui
             this.log_GV.Size = new System.Drawing.Size(575, 181);
             this.log_GV.TabIndex = 72;
             // 
-            // dataGV
+            // isMultiplyArea_CB
             // 
-            this.dataGV.AllowUserToAddRows = false;
-            this.dataGV.AllowUserToDeleteRows = false;
-            this.dataGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGV.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dataGV.Location = new System.Drawing.Point(0, 0);
-            this.dataGV.Name = "dataGV";
-            this.dataGV.ReadOnly = true;
-            this.dataGV.Size = new System.Drawing.Size(575, 554);
-            this.dataGV.TabIndex = 74;
+            this.isMultiplyArea_CB.AutoSize = true;
+            this.isMultiplyArea_CB.Location = new System.Drawing.Point(183, 303);
+            this.isMultiplyArea_CB.Name = "isMultiplyArea_CB";
+            this.isMultiplyArea_CB.Size = new System.Drawing.Size(15, 14);
+            this.isMultiplyArea_CB.TabIndex = 92;
+            this.isMultiplyArea_CB.UseVisualStyleBackColor = true;
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(51, 301);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(120, 16);
+            this.label11.TabIndex = 93;
+            this.label11.Text = "Nhân Với Diện Tích:";
             // 
             // KhoVatTu_CultivationProcessTemplate
             // 
@@ -419,8 +441,8 @@ namespace RauViet.ui
             this.panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.plantGV)).EndInit();
             this.panel3.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.log_GV)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.log_GV)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -458,5 +480,7 @@ namespace RauViet.ui
         private System.Windows.Forms.DataGridView dataGV;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.DataGridView log_GV;
+        private System.Windows.Forms.CheckBox isMultiplyArea_CB;
+        private System.Windows.Forms.Label label11;
     }
 }

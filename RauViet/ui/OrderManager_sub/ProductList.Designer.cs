@@ -61,6 +61,7 @@ namespace RauViet.ui
             this.search_tb = new System.Windows.Forms.TextBox();
             this.panel2 = new System.Windows.Forms.Panel();
             this.dataGV = new System.Windows.Forms.DataGridView();
+            this.excel_btn = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.info_gb.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -69,6 +70,7 @@ namespace RauViet.ui
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.excel_btn);
             this.panel1.Controls.Add(this.edit_btn);
             this.panel1.Controls.Add(this.newCustomerBtn);
             this.panel1.Controls.Add(this.readOnly_btn);
@@ -386,6 +388,17 @@ namespace RauViet.ui
             this.dataGV.Size = new System.Drawing.Size(861, 645);
             this.dataGV.TabIndex = 64;
             // 
+            // excel_btn
+            // 
+            this.excel_btn.BackColor = System.Drawing.SystemColors.Info;
+            this.excel_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.excel_btn.Location = new System.Drawing.Point(10, 64);
+            this.excel_btn.Name = "excel_btn";
+            this.excel_btn.Size = new System.Drawing.Size(94, 32);
+            this.excel_btn.TabIndex = 63;
+            this.excel_btn.Text = "Xuất Excel";
+            this.excel_btn.UseVisualStyleBackColor = false;
+            // 
             // ProductList
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -440,5 +453,6 @@ namespace RauViet.ui
         private System.Windows.Forms.Button newCustomerBtn;
         private System.Windows.Forms.CheckBox isActive_cb;
         private System.Windows.Forms.Button edit_btn;
+        private System.Windows.Forms.Button excel_btn;
     }
 }

@@ -36,6 +36,8 @@ namespace RauViet.ui
             this.edit_btn = new System.Windows.Forms.Button();
             this.readOnly_btn = new System.Windows.Forms.Button();
             this.info_gb = new System.Windows.Forms.GroupBox();
+            this.supplier_cbb = new System.Windows.Forms.ComboBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.isActive_cb = new System.Windows.Forms.CheckBox();
             this.lotCodeHeader_tb = new System.Windows.Forms.TextBox();
             this.label14 = new System.Windows.Forms.Label();
@@ -67,8 +69,7 @@ namespace RauViet.ui
             this.panel3 = new System.Windows.Forms.Panel();
             this.label15 = new System.Windows.Forms.Label();
             this.search_tb = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.supplier_cbb = new System.Windows.Forms.ComboBox();
+            this.excel_btn = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.priceCNFHisGV)).BeginInit();
@@ -114,6 +115,7 @@ namespace RauViet.ui
             // 
             // panel5
             // 
+            this.panel5.Controls.Add(this.excel_btn);
             this.panel5.Controls.Add(this.edit_btn);
             this.panel5.Controls.Add(this.readOnly_btn);
             this.panel5.Controls.Add(this.info_gb);
@@ -181,6 +183,26 @@ namespace RauViet.ui
             this.info_gb.Size = new System.Drawing.Size(430, 404);
             this.info_gb.TabIndex = 58;
             this.info_gb.TabStop = false;
+            // 
+            // supplier_cbb
+            // 
+            this.supplier_cbb.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.supplier_cbb.FormattingEnabled = true;
+            this.supplier_cbb.IntegralHeight = false;
+            this.supplier_cbb.Location = new System.Drawing.Point(153, 346);
+            this.supplier_cbb.Name = "supplier_cbb";
+            this.supplier_cbb.Size = new System.Drawing.Size(268, 24);
+            this.supplier_cbb.TabIndex = 63;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Location = new System.Drawing.Point(18, 350);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(88, 16);
+            this.label1.TabIndex = 61;
+            this.label1.Text = "Nhà Cung Cấp";
             // 
             // isActive_cb
             // 
@@ -482,25 +504,16 @@ namespace RauViet.ui
             this.search_tb.Size = new System.Drawing.Size(252, 23);
             this.search_tb.TabIndex = 12;
             // 
-            // label1
+            // excel_btn
             // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(18, 350);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(88, 16);
-            this.label1.TabIndex = 61;
-            this.label1.Text = "Nhà Cung Cấp";
-            // 
-            // supplier_cbb
-            // 
-            this.supplier_cbb.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.supplier_cbb.FormattingEnabled = true;
-            this.supplier_cbb.IntegralHeight = false;
-            this.supplier_cbb.Location = new System.Drawing.Point(153, 346);
-            this.supplier_cbb.Name = "supplier_cbb";
-            this.supplier_cbb.Size = new System.Drawing.Size(268, 24);
-            this.supplier_cbb.TabIndex = 63;
+            this.excel_btn.BackColor = System.Drawing.SystemColors.Info;
+            this.excel_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.excel_btn.Location = new System.Drawing.Point(35, 31);
+            this.excel_btn.Name = "excel_btn";
+            this.excel_btn.Size = new System.Drawing.Size(94, 32);
+            this.excel_btn.TabIndex = 62;
+            this.excel_btn.Text = "Xuất Excel";
+            this.excel_btn.UseVisualStyleBackColor = false;
             // 
             // ProductSKU
             // 
@@ -568,5 +581,6 @@ namespace RauViet.ui
         private System.Windows.Forms.Button edit_btn;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ComboBox supplier_cbb;
+        private System.Windows.Forms.Button excel_btn;
     }
 }

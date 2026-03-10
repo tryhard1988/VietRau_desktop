@@ -1,8 +1,10 @@
-﻿using System;
+﻿using MySqlX.XDevAPI.Common;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.Drawing.Printing;
+using System.Linq;
 using System.Windows.Forms;
 
 public class BangChamTăngCa_Printer
@@ -104,7 +106,7 @@ public class BangChamTăngCa_Printer
         int pageHeight = e.PageBounds.Height - 50; // margin dưới
         int days = DateTime.DaysInMonth(year, month);
         // Cột
-        int col1Width = 29, col2Width = 40, col3Width = 110, col4Width = 40, col5Width = 40, col6Width = 40, col7Width = 40, colDayWidth = 19;
+        int col1Width = 29, col2Width = 40, col3Width = 110, col4Width = 40, col5Width = 40, col6Width = 40, col7Width = 40, colDayWidth = 22;
         int col1 = startX;
         int col2 = col1 + col1Width;
         int col3 = col2 + col2Width;
@@ -168,6 +170,7 @@ public class BangChamTăngCa_Printer
         SolidBrush bgBrush_TCA_Thuong = new SolidBrush(Color.LightCyan);//T.Ca Thường
         SolidBrush bgBrush_TCA_NL = new SolidBrush(Color.LightCoral);//T.Ca Thường
         SolidBrush bgBrush_TCA_Dem = new SolidBrush(Color.LightBlue);//T.Ca Thường
+        SolidBrush bgBrush_TCA_NhieuLoai = new SolidBrush(Color.Bisque);//T.Ca Nhiều Loại
 
         for (int i = 0; i < days; i++)
         {
@@ -203,9 +206,43 @@ public class BangChamTăngCa_Printer
                 rowIndex++;
                 continue; 
             }
+            var sortedData = overtimeData.AsEnumerable()
+                            .GroupBy(r2 => new
+                            {
+                                EmployeeCode = r2.Field<string>("EmployeeCode"),
+                                WorkDate = r2.Field<DateTime>("WorkDate"),
+                                OvertimeTypeID = r2.Field<int>("OvertimeTypeID"),
+                                OvertimeTypeCode = r2.Field<string>("OvertimeTypeCode")
+                            })
+                            .Select(g2 => new
+                            {
+                                EmployeeCode = g2.Key.EmployeeCode,
+                                WorkDate = g2.Key.WorkDate,
+                                OvertimeTypeID = g2.Key.OvertimeTypeID,
+                                OvertimeTypeCode = g2.Key.OvertimeTypeCode,
+                                TotalHourWork = g2.Sum(r => r.Field<decimal>("HourWork"))
+                            })
+                            .OrderBy(r => r.OvertimeTypeID)
+                            .ToList();
 
             string employeeCode = row["EmployeeCode"].ToString();
-            DataRow[] attendanceRows = overtimeData.Select($"EmployeeCode = '{employeeCode}'");
+            var attendanceRows = sortedData.Where(r => r.EmployeeCode == employeeCode);
+            var HourWorkOverTimeRows = attendanceRows.GroupBy(r => new
+                                                    {
+                                                        r.EmployeeCode,
+                                                        r.WorkDate
+                                                    })
+                                                    .Select(g1 => new
+                                                    {
+                                                        EmployeeCode = g1.Key.EmployeeCode,
+                                                        WorkDate = g1.Key.WorkDate,
+                                                        DetailHW = string.Join("\n", g1.Select(r =>
+                                                            r.TotalHourWork.ToString("F1") +
+                                                            (r.OvertimeTypeCode == "OT_Dem" ? "*" : "")
+                                                        )),
+                                                        MultiType = g1.Select(r => r.OvertimeTypeID).Distinct().Count() > 1
+                                                    })
+                                                    .ToList();
 
             g.FillRectangle(bgBrush_TCA_Thuong, new Rectangle(col4, y, col4Width, lineHeight));
             g.FillRectangle(bgBrush_TCA_NL, new Rectangle(col5, y, col5Width, lineHeight));
@@ -229,37 +266,38 @@ public class BangChamTăngCa_Printer
             decimal total_Thuong = 0;
             decimal total_Le = 0;
             decimal total_Dem = 0;
-            foreach (DataRow attendanceRow in attendanceRows)
+            foreach (var attendanceRow in attendanceRows)
             {                
-                DateTime workDate = Convert.ToDateTime(attendanceRow["WorkDate"]);
-                int overtimeTypeID = Convert.ToInt32(attendanceRow["OvertimeTypeID"]);
-                decimal hourWork = Convert.ToDecimal(attendanceRow["HourWork"]);
+                DateTime workDate = Convert.ToDateTime(attendanceRow.WorkDate);
+                int overtimeTypeID = Convert.ToInt32(attendanceRow.OvertimeTypeID);
+                decimal hourWork = Convert.ToDecimal(attendanceRow.TotalHourWork);
+
+                var filterResult = HourWorkOverTimeRows.Where(r => r.WorkDate.Date == workDate.Date).ToList();
 
                 var rect = new Rectangle(colDay + colDayWidth * (workDate.Day - 1) + 1, y + 1, colDayWidth - 2, lineHeight - 2);
                 if (overtimeTypeID == 1)//T.Ca Thường
                 {
                     total_Thuong += hourWork;
-                    g.FillRectangle(bgBrush_TCA_Thuong, rect);
+                    g.FillRectangle(filterResult[0].MultiType == true ? bgBrush_TCA_NhieuLoai :  bgBrush_TCA_Thuong, rect);
                 }
                 else if (overtimeTypeID == 2)//T.Ca Ngày Nghỉ
                 {
                     total_CN += hourWork;
-                    g.FillRectangle(bgBrush_TCA_CN, rect);
+                    g.FillRectangle(filterResult[0].MultiType == true ? bgBrush_TCA_NhieuLoai : bgBrush_TCA_CN, rect);
                 }
                 else if (overtimeTypeID == 3)//T.Ca Ngày Lễ
                 {
                     total_Le += hourWork;
-                    g.FillRectangle(bgBrush_TCA_NL, rect);
+                    g.FillRectangle(filterResult[0].MultiType == true ? bgBrush_TCA_NhieuLoai : bgBrush_TCA_NL, rect);
                 }
                 else if (overtimeTypeID == 4)//T.Ca Đêm
                 {
                     total_Dem += hourWork;
-                    g.FillRectangle(bgBrush_TCA_Dem, rect);
+                    g.FillRectangle(filterResult[0].MultiType == true ? bgBrush_TCA_NhieuLoai : bgBrush_TCA_Dem, rect);
                 }
 
                 var rect1 = new Rectangle(colDay + colDayWidth * (workDate.Day - 1), y, colDayWidth, lineHeight);
-                DrawCellText(g, hourWork.ToString("F1"), normalFont, rect1);
-                                
+                DrawCellText(g, filterResult[0].DetailHW, normalFont, rect1);                                
                 
             }
 

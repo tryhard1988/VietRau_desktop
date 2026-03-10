@@ -29,7 +29,7 @@ namespace RauViet.ui
             dataGV.SelectionChanged += this.dataGV_CellClick;
 
             this.KeyDown += ProductList_KeyDown;
-
+            search_tb.TextChanged += search_txt_TextChanged;
         }
 
         private void ProductList_KeyDown(object sender, KeyEventArgs e)
@@ -78,6 +78,7 @@ namespace RauViet.ui
                                 {
                                     SKU = g.Key,
                                     Name_VN = firstRow.Field<string>("Name_VN"),
+                                    ProductNameVN_NoSign = firstRow.Field<string>("ProductNameVN_NoSign"),
                                     Package = firstRow.Field<string>("Package"),
                                     SupplierName = firstRow.Field<string>("SupplierName"),
                                     TonDauNam = tonDauNam,
@@ -96,6 +97,7 @@ namespace RauViet.ui
                 dtResult.Columns.Add("Xuất hàng", typeof(int));
                 dtResult.Columns.Add("Tồn Trong Kho", typeof(int));
                 dtResult.Columns.Add("Nhà Cung Cấp", typeof(string));
+                dtResult.Columns.Add("ProductNameVN_NoSign", typeof(string));
                 foreach (var item in result)
                 {
                     dtResult.Rows.Add(
@@ -106,13 +108,15 @@ namespace RauViet.ui
                         item.NhapHang,
                         item.XuatHang,
                         item.TonDauNam + item.NhapHang - item.XuatHang,
-                        item.SupplierName                        
+                        item.SupplierName         ,
+                        item.ProductNameVN_NoSign
                     );
                 }
 
                 log_GV.DataSource = mLogDV;
                 dataGV.DataSource = dtResult;
 
+                Utils.HideColumns(dataGV, new[] { "ProductNameVN_NoSign" });
                 Utils.SetGridWidths(dataGV, new System.Collections.Generic.Dictionary<string, int> {
                     {"SKU", 70},
                     {"Tên Sản Phẩm", 250},
@@ -175,7 +179,18 @@ namespace RauViet.ui
                     e.CellStyle.Font = new Font(dataGV.Font, FontStyle.Bold);
                 }            
             }
+        }
 
+        private void search_txt_TextChanged(object sender, EventArgs e)
+        {
+            string keyword = Utils.RemoveVietnameseSigns(search_tb.Text.Trim().ToLower())
+                     .Replace("'", "''"); // tránh lỗi cú pháp '
+
+            DataTable dt = dataGV.DataSource as DataTable;
+            if (dt == null) return;
+
+            DataView dv = dt.DefaultView;
+            dv.RowFilter = $"[ProductNameVN_NoSign] LIKE '%{keyword}%'";
         }
     }
 }

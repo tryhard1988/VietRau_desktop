@@ -1,5 +1,6 @@
 ﻿using Org.BouncyCastle.Asn1.X509;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.Drawing.Printing;
@@ -8,7 +9,7 @@ using System.Windows.Forms;
 
 public class PCTienAnDem_Printer
 {
-    private DataTable allowanceData, overtimeData;
+    private DataTable allowanceData, overtimeData, workStrData;
     private int month, year;
     private int countSTT = 1;
     private int rowIndex = 0; // để phân trang
@@ -30,7 +31,54 @@ public class PCTienAnDem_Printer
         this.TotalRice = 0;
         this.TotalNoodle = 0;
 
-    DataView dv = overtimeData.DefaultView;
+        workStrData = new DataTable();
+        workStrData.Columns.Add("EmployeeCode", typeof(string));
+        workStrData.Columns.Add("WorkDate", typeof(DateTime));
+        workStrData.Columns.Add("PhuCap", typeof(string));
+
+        // 2. Group dữ liệu
+        var groupedData = overtimeData.AsEnumerable()
+            .Where(r => r.Field<decimal?>("HourWork") != null)
+            .GroupBy(r => new
+            {
+                EmployeeCode = r.Field<string>("EmployeeCode"),
+                WorkDate = r.Field<DateTime>("WorkDate")
+            });
+
+        foreach (var group in groupedData)
+        {
+            List<string> phuCapList = new List<string>();
+
+            foreach (var row in group)
+            {
+                decimal hourWork = row.Field<decimal?>("HourWork") ?? 0;
+                string overtimeType = row.Field<string>("OvertimeTypeCode");
+
+
+                if (hourWork < 2.5m && overtimeType.CompareTo("OT_Dem") != 0) continue;
+
+                if (hourWork >= 3.0m)
+                {
+                    phuCapList.Add($"{hourWork.ToString("F1")}h-Cơm");
+                }
+                else if (overtimeType == "OT_Dem")
+                {
+                    phuCapList.Add($"{hourWork.ToString("F1")}h-Cơm*");
+                }
+                else
+                {
+                    phuCapList.Add($"{hourWork.ToString("F1")}h-Mì");
+                }
+            }
+
+            workStrData.Rows.Add(
+                group.Key.EmployeeCode,
+                group.Key.WorkDate,
+                string.Join("\n", phuCapList)
+            );
+        }
+
+        DataView dv = overtimeData.DefaultView;
         dv.Sort = "WorkDate ASC";   // hoặc DESC
 
         this.overtimeData = dv.ToTable();
@@ -119,7 +167,7 @@ public class PCTienAnDem_Printer
                                     .OrderBy(d => d)
                                     .ToList();
         // Cột
-        int col1Width = 40, col2Width = 80, col3Width = 200, colDayWidth = 60, col4Width = 90, col5Width = 90;
+        int col1Width = 40, col2Width = 80, col3Width = 200, colDayWidth = 70, col4Width = 90, col5Width = 90;
         int col1 = startX;
         int col2 = col1 + col1Width;
         int col3 = col2 + col2Width;       
@@ -210,12 +258,13 @@ public class PCTienAnDem_Printer
             }
 
             string employeeCode = row["EmployeeCode"].ToString();
-            DataRow[] attendanceRows = overtimeData.Select($"EmployeeCode = '{employeeCode}' AND HourWork >= 2.5");//
+            DataRow[] attendanceRows = overtimeData.Select($"EmployeeCode = '{employeeCode}' AND (HourWork >= 2.5 OR OvertimeTypeCode = 'OT_Dem')");//
 
             if (attendanceRows.Length <= 0) {
                 rowIndex++;
                 continue; 
             }
+
 
             int rice = 0;
             int nodle = 0;
@@ -223,25 +272,30 @@ public class PCTienAnDem_Printer
             {
                 DateTime targetDate = Convert.ToDateTime(attendanceRow["WorkDate"]);
                 decimal hourWork = Convert.ToDecimal(attendanceRow["HourWork"]);
-                if (hourWork < 2.5m) continue;
+                string overtimeTypeCode = attendanceRow["OvertimeTypeCode"].ToString();
+
+                if (hourWork < 2.5m && overtimeTypeCode.CompareTo("OT_Dem") != 0) continue;
 
                 int index = workDates.FindIndex(d => d.Date == targetDate);
                 var rect = new Rectangle(colDay + colDayWidth * index + 1, y + 1, colDayWidth - 2, lineHeight - 2);                
                 var rect1 = new Rectangle(colDay + colDayWidth * index, y, colDayWidth, lineHeight);
 
-                string text = hourWork.ToString("F1");
-                if (hourWork >= 3.0m)
-                {
+                
+                if (hourWork >= 3.0m || overtimeTypeCode.CompareTo("OT_Dem") == 0)
                     rice ++;
-                    text += "\n(Cơm)";
-                }
-                else if (hourWork >= 2.5m)
-                {
-                    nodle ++;
-                    text += "\n(Mì)";
-                }
                 else
-                    text += "\n(ko pc)";
+                    nodle ++;
+
+                DataRow workStrRow = workStrData.AsEnumerable().FirstOrDefault(r => r.Field<string>("EmployeeCode") == employeeCode && r.Field<DateTime>("WorkDate").Date == targetDate.Date);
+
+                string text = "";
+                if (workStrRow != null)
+                {
+                    text = workStrRow["PhuCap"].ToString();
+                    workStrData.Rows.Remove(workStrRow);
+
+                }
+
                 DrawCellText(g, text, normalFont, rect1);
 
 

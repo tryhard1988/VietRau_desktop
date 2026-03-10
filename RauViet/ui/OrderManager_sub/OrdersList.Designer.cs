@@ -43,6 +43,9 @@ namespace RauViet.ui
             this.logGV = new System.Windows.Forms.DataGridView();
             this.label10 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.tem_preview_btn = new System.Windows.Forms.Button();
+            this.inTem_btn = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.label8 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
@@ -81,6 +84,7 @@ namespace RauViet.ui
             this.panel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.logGV)).BeginInit();
             this.panel1.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.dddh_gb.SuspendLayout();
             this.tongdon_gb.SuspendLayout();
@@ -97,7 +101,7 @@ namespace RauViet.ui
             this.panel2.Dock = System.Windows.Forms.DockStyle.Left;
             this.panel2.Location = new System.Drawing.Point(0, 0);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(644, 681);
+            this.panel2.Size = new System.Drawing.Size(644, 818);
             this.panel2.TabIndex = 13;
             // 
             // dataGV
@@ -109,7 +113,7 @@ namespace RauViet.ui
             this.dataGV.Location = new System.Drawing.Point(0, 24);
             this.dataGV.Name = "dataGV";
             this.dataGV.ReadOnly = true;
-            this.dataGV.Size = new System.Drawing.Size(644, 637);
+            this.dataGV.Size = new System.Drawing.Size(644, 774);
             this.dataGV.TabIndex = 76;
             // 
             // panel4
@@ -119,7 +123,7 @@ namespace RauViet.ui
             this.panel4.Controls.Add(this.total_label);
             this.panel4.Controls.Add(this.label1);
             this.panel4.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel4.Location = new System.Drawing.Point(0, 661);
+            this.panel4.Location = new System.Drawing.Point(0, 798);
             this.panel4.Name = "panel4";
             this.panel4.Size = new System.Drawing.Size(644, 20);
             this.panel4.TabIndex = 75;
@@ -219,7 +223,7 @@ namespace RauViet.ui
             this.logGV.AllowUserToDeleteRows = false;
             this.logGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.logGV.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.logGV.Location = new System.Drawing.Point(644, 523);
+            this.logGV.Location = new System.Drawing.Point(644, 660);
             this.logGV.Name = "logGV";
             this.logGV.ReadOnly = true;
             this.logGV.Size = new System.Drawing.Size(898, 158);
@@ -231,7 +235,7 @@ namespace RauViet.ui
             this.label10.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.label10.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label10.ForeColor = System.Drawing.Color.DarkOliveGreen;
-            this.label10.Location = new System.Drawing.Point(644, 500);
+            this.label10.Location = new System.Drawing.Point(644, 637);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(898, 23);
             this.label10.TabIndex = 87;
@@ -240,6 +244,7 @@ namespace RauViet.ui
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.groupBox2);
             this.panel1.Controls.Add(this.groupBox1);
             this.panel1.Controls.Add(this.dddh_gb);
             this.panel1.Controls.Add(this.tongdon_gb);
@@ -254,8 +259,43 @@ namespace RauViet.ui
             this.panel1.Dock = System.Windows.Forms.DockStyle.Left;
             this.panel1.Location = new System.Drawing.Point(644, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(416, 500);
+            this.panel1.Size = new System.Drawing.Size(416, 637);
             this.panel1.TabIndex = 89;
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.BackColor = System.Drawing.Color.Wheat;
+            this.groupBox2.Controls.Add(this.tem_preview_btn);
+            this.groupBox2.Controls.Add(this.inTem_btn);
+            this.groupBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.groupBox2.Location = new System.Drawing.Point(68, 497);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(145, 125);
+            this.groupBox2.TabIndex = 76;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Phiếu Tem";
+            // 
+            // tem_preview_btn
+            // 
+            this.tem_preview_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.tem_preview_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tem_preview_btn.Location = new System.Drawing.Point(28, 70);
+            this.tem_preview_btn.Name = "tem_preview_btn";
+            this.tem_preview_btn.Size = new System.Drawing.Size(94, 38);
+            this.tem_preview_btn.TabIndex = 69;
+            this.tem_preview_btn.Text = "Xem";
+            this.tem_preview_btn.UseVisualStyleBackColor = false;
+            // 
+            // inTem_btn
+            // 
+            this.inTem_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.inTem_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.inTem_btn.Location = new System.Drawing.Point(28, 27);
+            this.inTem_btn.Name = "inTem_btn";
+            this.inTem_btn.Size = new System.Drawing.Size(94, 38);
+            this.inTem_btn.TabIndex = 68;
+            this.inTem_btn.Text = "In";
+            this.inTem_btn.UseVisualStyleBackColor = false;
             // 
             // groupBox1
             // 
@@ -311,7 +351,7 @@ namespace RauViet.ui
             this.dddh_gb.Controls.Add(this.prewiew_print_DSDH_btn);
             this.dddh_gb.Controls.Add(this.print_order_list_btn);
             this.dddh_gb.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.dddh_gb.Location = new System.Drawing.Point(68, 407);
+            this.dddh_gb.Location = new System.Drawing.Point(68, 381);
             this.dddh_gb.Name = "dddh_gb";
             this.dddh_gb.Size = new System.Drawing.Size(145, 110);
             this.dddh_gb.TabIndex = 70;
@@ -358,7 +398,7 @@ namespace RauViet.ui
             this.tongdon_gb.Controls.Add(this.preview_print_TD_btn);
             this.tongdon_gb.Controls.Add(this.exportExcel_TD_btn);
             this.tongdon_gb.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tongdon_gb.Location = new System.Drawing.Point(229, 407);
+            this.tongdon_gb.Location = new System.Drawing.Point(229, 381);
             this.tongdon_gb.Name = "tongdon_gb";
             this.tongdon_gb.Size = new System.Drawing.Size(159, 152);
             this.tongdon_gb.TabIndex = 69;
@@ -414,7 +454,7 @@ namespace RauViet.ui
             this.status_lb.AutoSize = true;
             this.status_lb.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.status_lb.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.status_lb.Location = new System.Drawing.Point(166, 125);
+            this.status_lb.Location = new System.Drawing.Point(166, 99);
             this.status_lb.Name = "status_lb";
             this.status_lb.Size = new System.Drawing.Size(93, 20);
             this.status_lb.TabIndex = 48;
@@ -424,7 +464,7 @@ namespace RauViet.ui
             // 
             this.readOnly_btn.BackColor = System.Drawing.Color.MediumSlateBlue;
             this.readOnly_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.readOnly_btn.Location = new System.Drawing.Point(348, 148);
+            this.readOnly_btn.Location = new System.Drawing.Point(348, 122);
             this.readOnly_btn.Name = "readOnly_btn";
             this.readOnly_btn.Size = new System.Drawing.Size(42, 32);
             this.readOnly_btn.TabIndex = 47;
@@ -436,7 +476,7 @@ namespace RauViet.ui
             this.newCustomerBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
             this.newCustomerBtn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.newCustomerBtn.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.newCustomerBtn.Location = new System.Drawing.Point(315, 148);
+            this.newCustomerBtn.Location = new System.Drawing.Point(315, 122);
             this.newCustomerBtn.Name = "newCustomerBtn";
             this.newCustomerBtn.Size = new System.Drawing.Size(75, 32);
             this.newCustomerBtn.TabIndex = 46;
@@ -447,7 +487,7 @@ namespace RauViet.ui
             // 
             this.edit_btn.BackColor = System.Drawing.SystemColors.MenuHighlight;
             this.edit_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.edit_btn.Location = new System.Drawing.Point(219, 148);
+            this.edit_btn.Location = new System.Drawing.Point(219, 122);
             this.edit_btn.Name = "edit_btn";
             this.edit_btn.Size = new System.Drawing.Size(94, 32);
             this.edit_btn.TabIndex = 44;
@@ -466,7 +506,7 @@ namespace RauViet.ui
             this.info_gb.Controls.Add(this.netWeight_tb);
             this.info_gb.Controls.Add(this.label7);
             this.info_gb.Controls.Add(this.product_ccb);
-            this.info_gb.Location = new System.Drawing.Point(17, 180);
+            this.info_gb.Location = new System.Drawing.Point(17, 154);
             this.info_gb.Name = "info_gb";
             this.info_gb.Size = new System.Drawing.Size(387, 221);
             this.info_gb.TabIndex = 40;
@@ -572,7 +612,7 @@ namespace RauViet.ui
             this.LuuThayDoiBtn.BackColor = System.Drawing.SystemColors.Highlight;
             this.LuuThayDoiBtn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.LuuThayDoiBtn.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.LuuThayDoiBtn.Location = new System.Drawing.Point(143, 407);
+            this.LuuThayDoiBtn.Location = new System.Drawing.Point(143, 381);
             this.LuuThayDoiBtn.Name = "LuuThayDoiBtn";
             this.LuuThayDoiBtn.Size = new System.Drawing.Size(99, 38);
             this.LuuThayDoiBtn.TabIndex = 25;
@@ -606,14 +646,14 @@ namespace RauViet.ui
             this.cusProduct_GV.Location = new System.Drawing.Point(1060, 0);
             this.cusProduct_GV.Name = "cusProduct_GV";
             this.cusProduct_GV.ReadOnly = true;
-            this.cusProduct_GV.Size = new System.Drawing.Size(393, 500);
+            this.cusProduct_GV.Size = new System.Drawing.Size(482, 637);
             this.cusProduct_GV.TabIndex = 90;
             // 
             // OrdersList
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1542, 681);
+            this.ClientSize = new System.Drawing.Size(1542, 818);
             this.Controls.Add(this.cusProduct_GV);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.label10);
@@ -630,6 +670,7 @@ namespace RauViet.ui
             ((System.ComponentModel.ISupportInitialize)(this.logGV)).EndInit();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.dddh_gb.ResumeLayout(false);
@@ -690,5 +731,8 @@ namespace RauViet.ui
         private System.Windows.Forms.TextBox priceCNF_tb;
         private System.Windows.Forms.TextBox orderId_tb;
         private System.Windows.Forms.DataGridView cusProduct_GV;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.Button tem_preview_btn;
+        private System.Windows.Forms.Button inTem_btn;
     }
 }

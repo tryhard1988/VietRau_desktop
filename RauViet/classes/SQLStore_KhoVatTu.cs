@@ -17,6 +17,8 @@ namespace RauViet.classes
 
         //suong
         DataTable mWorkType_dt = null;
+        DataTable mGrowthStage_dt = null;
+        DataTable mPestDisease_dt = null;
         DataTable mCultivationType_dt = null;
         DataTable mUnit_dt = null;
         DataTable mMaterialCategory_dt = null;
@@ -24,6 +26,8 @@ namespace RauViet.classes
         DataTable mCultivationProcessTemplate_dt = null;
 
         Dictionary<int, DataTable> mCultivationProcesses = null;
+        Dictionary<int, DataTable> mPestDiseaseMonitorings = null;
+        Dictionary<int, DataTable>  mHarvestSchedules = null;
         Dictionary<int, DataTable> mPlantingManagements = null;
         Dictionary<string, DataTable> mMaterialExports = null;
         Dictionary<string, DataTable> mMaterialImports = null;
@@ -32,6 +36,8 @@ namespace RauViet.classes
         Dictionary<string, DataTable> mMaterialImportLogs = null;
         Dictionary<int, DataTable> mPlantingManagementLogs = null;
         Dictionary<int, DataTable> mCultivationProcessesLogs = null;
+        Dictionary<int, DataTable> mPestDiseaseMonitoringLogs = null;
+        Dictionary<int, DataTable> mHarvestScheduleLogs = null;
         DataTable mCultivationProcessTemplateLog_dt = null;
 
         private SQLStore_KhoVatTu() { }
@@ -63,6 +69,10 @@ namespace RauViet.classes
                 mPlantingManagementLogs = new Dictionary<int, DataTable>();
                 mCultivationProcesses = new Dictionary<int, DataTable>();
                 mCultivationProcessesLogs = new Dictionary<int, DataTable>();
+                mPestDiseaseMonitorings = new Dictionary<int, DataTable>();
+                mPestDiseaseMonitoringLogs = new Dictionary<int, DataTable>();
+                mHarvestSchedules = new Dictionary<int, DataTable>();
+                mHarvestScheduleLogs = new Dictionary<int, DataTable>();
 
                 var unitTask = SQLManager_KhoVatTu.Instance.GetUnitAsync();
                 var MaterialCategoryTask = SQLManager_KhoVatTu.Instance.GetMaterialCategoryAsync();
@@ -311,6 +321,44 @@ namespace RauViet.classes
             return mWorkType_dt;
         }
 
+        public async Task<DataTable> GetGrowthStageAsync()
+        {
+            if (mGrowthStage_dt == null)
+            {
+                try
+                {
+                    mGrowthStage_dt = await SQLManager_KhoVatTu.Instance.GetGrowthStageAsync();
+                    editGrowthStage(mGrowthStage_dt);
+                }
+                catch
+                {
+                    Console.WriteLine("error GetGrowthStageAsync SQLStore");
+                    return null;
+                }
+            }
+
+            return mGrowthStage_dt;
+        }
+
+        public async Task<DataTable> GetPestDiseaseAsync()
+        {
+            if (mPestDisease_dt == null)
+            {
+                try
+                {
+                    mPestDisease_dt = await SQLManager_KhoVatTu.Instance.GetPestDiseaseAsync();
+                    editPestDisease(mPestDisease_dt);
+                }
+                catch
+                {
+                    Console.WriteLine("error GetPestDiseaseAsync SQLStore");
+                    return null;
+                }
+            }
+
+            return mPestDisease_dt;
+        }
+
         public async Task<DataTable> GetCultivationTypeAsync()
         {
             if (mCultivationType_dt == null)
@@ -350,6 +398,24 @@ namespace RauViet.classes
             foreach (DataRow row in data.Rows)
             {
                 row["search_nosign"] = Utils.RemoveVietnameseSigns(row["WorkTypeName"].ToString());
+            }
+        }
+
+        void editGrowthStage(DataTable data)
+        {
+            data.Columns.Add("search_nosign", typeof(string));
+            foreach (DataRow row in data.Rows)
+            {
+                row["search_nosign"] = Utils.RemoveVietnameseSigns(row["GrowthStageName"].ToString());
+            }
+        }
+
+        void editPestDisease(DataTable data)
+        {
+            data.Columns.Add("search_nosign", typeof(string));
+            foreach (DataRow row in data.Rows)
+            {
+                row["search_nosign"] = Utils.RemoveVietnameseSigns(row["PestDiseaseName"].ToString());
             }
         }
 
@@ -591,6 +657,7 @@ namespace RauViet.classes
             data.Columns.Add("WorkTypeName", typeof(string));
             data.Columns.Add("FertilizationWorkTypeName", typeof(string));
             data.Columns.Add("MaterialName", typeof(string));
+            data.Columns.Add("UnitName", typeof(string));
 
             DataTable baseDateType_dt = GetBaseDateType();
             DataTable productSKU_dt = await SQLStore_Kho.Instance.getProductSKUAsync();
@@ -633,7 +700,13 @@ namespace RauViet.classes
                 {
                     DataRow materialRow = material_dt.AsEnumerable().FirstOrDefault(r => r.Field<int>("MaterialID") == materialID);
                     if (materialRow != null)
+                    {
                         row["MaterialName"] = materialRow["MaterialName"].ToString();
+                        string unitName = materialRow["UnitName"].ToString();
+                        if (unitName.CompareTo("Bao") == 0)
+                            unitName = "Kg";
+                        row["UnitName"] = unitName;
+                    }
                 }
             }
         }
@@ -672,8 +745,9 @@ namespace RauViet.classes
             data.Columns.Add("EmployeeName", typeof(string));
             data.Columns.Add("IsolationEndDate", typeof(string));
             data.Columns.Add("FertilizationWorkTypeName", typeof(string));
-            data.Columns.Add("MaterialUnit", typeof(string));
+            data.Columns.Add("MaterialUnit", typeof(string)); 
             data.Columns.Add("TotalMaterialCost", typeof(string));
+            data.Columns.Add("ProcessDate_Week", typeof(string));
 
             DataTable workType_dt = await GetWorkTypeAsync();
             DataTable material_dt = await getMaterialAsync();
@@ -698,9 +772,16 @@ namespace RauViet.classes
                     {
                         decimal materialQuantity = Convert.ToDecimal(rowItem["MaterialQuantity"]);
                         int materialPrice = Convert.ToInt32(rowItem["MaterialPrice"]);
+                        string unit = materialRow["UnitName"].ToString();
+                        DateTime processDate = Convert.ToDateTime(rowItem["ProcessDate"]);
+
+                        if (unit.CompareTo("Bao") == 0)
+                            unit = "Kg";
+
                         rowItem["MaterialName"] = materialRow["MaterialName"].ToString();
-                        rowItem["MaterialUnit"] = materialRow["UnitName"].ToString();
+                        rowItem["MaterialUnit"] = unit;
                         rowItem["TotalMaterialCost"] = materialQuantity * materialPrice;
+                        rowItem["ProcessDate_Week"] = Utils.GetThu_Viet(processDate);
                     }
                 }
 
@@ -762,6 +843,191 @@ namespace RauViet.classes
             }
 
             return mCultivationProcessTemplateLog_dt;
+        }
+
+        public async Task<DataTable> GetPestDiseaseMonitoringAsync(int plantingID)
+        {
+            if (!mPestDiseaseMonitorings.ContainsKey(plantingID))
+            {
+                try
+                {
+                    DataTable data = await SQLManager_KhoVatTu.Instance.GetPestDiseaseMonitoringAsync(plantingID);
+                    editPestDiseaseMonitoring(data);
+
+                    mPestDiseaseMonitorings[plantingID] = data;
+                }
+                catch
+                {
+                    Console.WriteLine("error GetMaterialCategoryAsync SQLStore");
+                    return null;
+                }
+            }
+
+            return mPestDiseaseMonitorings[plantingID];
+        }
+
+        private async void editPestDiseaseMonitoring(DataTable data)
+        {
+            data.Columns.Add("ObserverName", typeof(string));
+            data.Columns.Add("DecisionMakerName", typeof(string));
+            data.Columns.Add("GrowthStageName", typeof(string));
+            data.Columns.Add("MonitoringDate_Week", typeof(string));
+            data.Columns.Add("PestDiseaseName", typeof(string));
+
+            DataTable employee_dt = await SQLStore_QLNS.Instance.GetEmployeesAsync();
+            DataTable growthStage_dt = await SQLStore_KhoVatTu.Instance.GetGrowthStageAsync();
+            DataTable pestDisease_dt = await SQLStore_KhoVatTu.Instance.GetPestDiseaseAsync();
+            
+            foreach (DataRow rowItem in data.Rows)
+            {
+                int? growthStageID = rowItem["GrowthStageID"] == DBNull.Value ? (int?)null : Convert.ToInt32(rowItem["GrowthStageID"]);
+                int? pestDiseaseID = rowItem["PestDiseaseID"] == DBNull.Value ? (int?)null : Convert.ToInt32(rowItem["PestDiseaseID"]);
+                string observer = rowItem["Observer"].ToString().Trim();
+                string decisionMaker = rowItem["DecisionMaker"].ToString().Trim();
+                DateTime MonitoringDate = Convert.ToDateTime(rowItem["MonitoringDate"]);
+                rowItem["MonitoringDate_Week"] = Utils.GetThu_Viet(MonitoringDate);
+
+                if (growthStageID.HasValue)
+                {
+                    DataRow growthStageRow = growthStage_dt.AsEnumerable().FirstOrDefault(r => r.Field<int>("GrowthStageID") == growthStageID);
+                    if (growthStageRow != null)
+                        rowItem["GrowthStageName"] = growthStageRow["GrowthStageName"].ToString();
+                }
+                if (pestDiseaseID.HasValue)
+                {
+                    DataRow pestDiseaseRow = pestDisease_dt.AsEnumerable().FirstOrDefault(r => r.Field<int>("PestDiseaseID") == pestDiseaseID);
+                    if (pestDiseaseRow != null)
+                        rowItem["PestDiseaseName"] = pestDiseaseRow["PestDiseaseName"].ToString();
+                }
+
+                if (!string.IsNullOrEmpty(observer))
+                {
+                    DataRow employeeRow = employee_dt.AsEnumerable().FirstOrDefault(r => r.Field<string>("EmployeeCode") == observer);
+                    if (employeeRow != null)
+                        rowItem["ObserverName"] = employeeRow["FullName"].ToString();
+                }
+
+                if (!string.IsNullOrEmpty(decisionMaker))
+                {
+                    DataRow employeeRow = employee_dt.AsEnumerable().FirstOrDefault(r => r.Field<string>("EmployeeCode") == decisionMaker);
+                    if (employeeRow != null)
+                        rowItem["DecisionMakerName"] = employeeRow["FullName"].ToString();
+                }
+            }
+        }
+
+        public async Task<DataTable> GetPestDiseaseMonitoringLogAsync(int plantingID)
+        {
+            if (!mPestDiseaseMonitoringLogs.ContainsKey(plantingID))
+            {
+                try
+                {
+                    DataTable data = await SQLManager_KhoVatTu.Instance.GetPestDiseaseMonitoringLogAsync(plantingID);
+                    mPestDiseaseMonitoringLogs[plantingID] = data;
+                }
+                catch
+                {
+                    Console.WriteLine("error GetPestDiseaseMonitoringLogAsync SQLStore");
+                    return null;
+                }
+            }
+
+            return mPestDiseaseMonitoringLogs[plantingID];
+        }
+
+        public void removePestDiseaseMonitoring(int plantingID)
+        {
+            mPestDiseaseMonitorings.Remove(plantingID);
+        }
+
+        public async Task<DataTable> GetHarvestScheduleAsync(int plantingID)
+        {
+            if (!mHarvestSchedules.ContainsKey(plantingID))
+            {
+                try
+                {
+                    DataTable data = await SQLManager_KhoVatTu.Instance.GetHarvestScheduleAsync(plantingID);
+                    editHarvestSchedule(data);
+
+                    mHarvestSchedules[plantingID] = data;
+                }
+                catch
+                {
+                    Console.WriteLine("error GetHarvestScheduleAsync SQLStore");
+                    return null;
+                }
+            }
+
+            return mHarvestSchedules[plantingID];
+        }
+
+        private async void editHarvestSchedule(DataTable data)
+        {
+            data.Columns.Add("HarvestDate_Week", typeof(string));
+            data.Columns.Add("HarvestEmployeeName", typeof(string));
+            data.Columns.Add("ReceiveDepartmentName", typeof(string));
+
+            return;
+
+            DataTable employee_dt = await SQLStore_QLNS.Instance.GetEmployeesAsync();
+            DataTable growthStage_dt = await SQLStore_KhoVatTu.Instance.GetGrowthStageAsync();
+            DataTable pestDisease_dt = await SQLStore_KhoVatTu.Instance.GetPestDiseaseAsync();
+
+            foreach (DataRow rowItem in data.Rows)
+            {
+                int? growthStageID = rowItem["GrowthStageID"] == DBNull.Value ? (int?)null : Convert.ToInt32(rowItem["GrowthStageID"]);
+                int? pestDiseaseID = rowItem["PestDiseaseID"] == DBNull.Value ? (int?)null : Convert.ToInt32(rowItem["PestDiseaseID"]);
+                string observer = rowItem["Observer"].ToString().Trim();
+                string decisionMaker = rowItem["DecisionMaker"].ToString().Trim();
+                DateTime MonitoringDate = Convert.ToDateTime(rowItem["MonitoringDate"]);
+                rowItem["MonitoringDate_Week"] = Utils.GetThu_Viet(MonitoringDate);
+
+                if (growthStageID.HasValue)
+                {
+                    DataRow growthStageRow = growthStage_dt.AsEnumerable().FirstOrDefault(r => r.Field<int>("GrowthStageID") == growthStageID);
+                    if (growthStageRow != null)
+                        rowItem["GrowthStageName"] = growthStageRow["GrowthStageName"].ToString();
+                }
+                if (pestDiseaseID.HasValue)
+                {
+                    DataRow pestDiseaseRow = pestDisease_dt.AsEnumerable().FirstOrDefault(r => r.Field<int>("PestDiseaseID") == pestDiseaseID);
+                    if (pestDiseaseRow != null)
+                        rowItem["PestDiseaseName"] = pestDiseaseRow["PestDiseaseName"].ToString();
+                }
+
+                if (!string.IsNullOrEmpty(observer))
+                {
+                    DataRow employeeRow = employee_dt.AsEnumerable().FirstOrDefault(r => r.Field<string>("EmployeeCode") == observer);
+                    if (employeeRow != null)
+                        rowItem["ObserverName"] = employeeRow["FullName"].ToString();
+                }
+
+                if (!string.IsNullOrEmpty(decisionMaker))
+                {
+                    DataRow employeeRow = employee_dt.AsEnumerable().FirstOrDefault(r => r.Field<string>("EmployeeCode") == decisionMaker);
+                    if (employeeRow != null)
+                        rowItem["DecisionMakerName"] = employeeRow["FullName"].ToString();
+                }
+            }
+        }
+
+        public async Task<DataTable> GetHarvestScheduleLogAsync(int plantingID)
+        {
+            if (!mHarvestScheduleLogs.ContainsKey(plantingID))
+            {
+                try
+                {
+                    DataTable data = await SQLManager_KhoVatTu.Instance.GetHarvestScheduleLogAsync(plantingID);
+                    mHarvestScheduleLogs[plantingID] = data;
+                }
+                catch
+                {
+                    Console.WriteLine("error GetHarvestScheduleLogAsync SQLStore");
+                    return null;
+                }
+            }
+
+            return mHarvestScheduleLogs[plantingID];
         }
     }
 }

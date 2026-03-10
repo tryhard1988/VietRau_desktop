@@ -1,8 +1,11 @@
-﻿using RauViet.classes;
+﻿using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Bibliography;
+using RauViet.classes;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -13,14 +16,22 @@ namespace RauViet.ui
     public partial class KhoVatTu_CultivationProcess : Form
     {
         DataRow mPlantingRow;
-        System.Data.DataTable mMaterial_dt, mWorkType_dt, mCultivationProcess_dt, mCultivationProcessTemplate_dt, mEmployee_dt, mDepartment_dt;
-        private DataView mLogDV;
+        System.Data.DataTable mMaterial_dt, mWorkType_dt, mCultivationProcess_dt, mCultivationProcessTemplate_dt, mEmployee_dt, mDepartment_dt, mPestDiseaseMonitoring_dt, 
+            mGrowthStage_dt, mPestDisease_dt, mHarvestSchedule_dt;
+        private DataView mLogDV, mQLSBLogDV, mQLTHLog_DV;
         private Timer FertilizationTypeDebounceTimer = new Timer { Interval = 300 };
         private Timer WorkTypeDebounceTimer = new Timer { Interval = 300 };
         private Timer MaterialDebounceTimer = new Timer { Interval = 300 };
         private Timer EmployeeDebounceTimer = new Timer { Interval = 300 };
         private Timer departmentDebounceTimer = new Timer { Interval = 300 };
+        private Timer qlsb_PestDiseaseDebounceTimer = new Timer { Interval = 300 };
+        private Timer qlsb_ObserverDebounceTimer = new Timer { Interval = 300 };
+        private Timer qlsb_DecisionMakerDebounceTimer = new Timer { Interval = 300 };
+        private Timer qlsb_GrowthStageDebounceTimer = new Timer { Interval = 300 };
         bool isNewState = false;
+        bool qlsb_isNewState = false;
+        bool qlth_isNewState = false;
+
         private LoadingOverlay loadingOverlay;        
         public KhoVatTu_CultivationProcess(DataRow plantingRow)
         {
@@ -30,8 +41,17 @@ namespace RauViet.ui
             dataGV.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dataGV.MultiSelect = false;
 
+            qlsb_gv.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            qlsb_gv.MultiSelect = false;
+
             processDate_dtp.Format = DateTimePickerFormat.Custom;
             processDate_dtp.CustomFormat = "dd/MM/yyyy";
+
+            qlsb_date_dtp.Format = DateTimePickerFormat.Custom;
+            qlsb_date_dtp.CustomFormat = "dd/MM/yyyy";
+
+            qlth_date_dtp.Format = DateTimePickerFormat.Custom;
+            qlth_date_dtp.CustomFormat = "dd/MM/yyyy";
 
             status_lb.Text = "";
 
@@ -44,7 +64,19 @@ namespace RauViet.ui
             LuuThayDoiBtn.Click += saveBtn_Click;
             edit_btn.Click += Edit_btn_Click;
             readOnly_btn.Click += ReadOnly_btn_Click;
+
+            qlsb_create_btn.Click += Qlsb_create_btn_Click; 
+            qlsb_Save_btn.Click += Qlsb_Save_btn_Click; 
+            qlsb_edit_btn.Click += Qlsb_edit_btn_Click; 
+            qlsb_readOnly_btn.Click += Qlsb_readOnly_btn_Click; 
+
+            qlth_create_btn.Click += Qlth_create_btn_Click;
+            qlth_Save_btn.Click += Qlth_Save_btn_Click;
+            qlth_edit_btn.Click += Qlth_edit_btn_Click; ;
+            qlth_readOnly_btn.Click += Qlth_readOnly_btn_Click;
+
             LoadDefaultData_btn.Click += LoadDefaultData_btn_Click;
+            exportExcel_btn.Click += ExportExcel_btn_Click;
             this.KeyDown += form_KeyDown;
 
             FertilizationTypeDebounceTimer.Tick += FertilizationTypeDebounceTimer_Tick;
@@ -57,23 +89,43 @@ namespace RauViet.ui
             MaterialDebounceTimer.Tick += MaterialDebounceTimer_Tick;
             vatTu_CB.TextUpdate += VatTu_CB_TextUpdate;
             department_CBB.TextUpdate += Department_CBB_TextUpdate;
+                        
+            qlsb_PestDiseaseDebounceTimer.Tick += Qlsb_PestDiseaseDebounceTimer_Tick;
+            qlsb_pestDisease_cbb.TextUpdate += Qlsb_pestDisease_cbb_TextUpdate;
+
+            qlsb_GrowthStageDebounceTimer.Tick += Qlsb_GrowthStageDebounceTimer_Tick;
+            qlsb_growthStatus_cbb.TextUpdate += Qlsb_growthStatus_cbb_TextUpdate;
+
+            qlsb_ObserverDebounceTimer.Tick += Qlsb_ObserverDebounceTimer_Tick;
+            qlsb_observer_cbb.TextUpdate += Qlsb_observer_cbb_TextUpdate;
+
+            qlsb_DecisionMakerDebounceTimer.Tick += Qlsb_DecisionMakerDebounceTimer_Tick;
+            qlsb_decisionMaker_cbb.TextUpdate += Qlsb_decisionMaker_cbb_TextUpdate;
 
             EmployeeDebounceTimer.Tick += EmployeeDebounceTimer_Tick;
             employee_CBB.TextUpdate += Employee_CBB_TextUpdate;
+            
             materialQuantity_tb.KeyPress += Tb_KeyPress_OnlyNumber;
             waterAmount_tb.KeyPress += Tb_KeyPress_OnlyNumber;
             isolationDays_tb.KeyPress += Tb_KeyPress_OnlyNumber;
+            qlth_Quantity_tb.KeyPress += Tb_KeyPress_OnlyNumber;
         }
+
 
         private void form_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.F5)
             {
                 int plantingID = Convert.ToInt32(mPlantingRow["PlantingID"]);
-                SQLStore_KhoVatTu.Instance.removeCultivationProcess(plantingID);
+                if(data_tc.SelectedTab == nhatKyTheoDoi_tp)
+                    SQLStore_KhoVatTu.Instance.removeCultivationProcess(plantingID);
+                else if(data_tc.SelectedTab == quanLySauBenh_tp)
+                    SQLStore_KhoVatTu.Instance.removePestDiseaseMonitoring(plantingID);
+
                 ShowData();
             }
-            else if (!isNewState && !edit_btn.Visible)
+            else if ((!isNewState && !edit_btn.Visible && data_tc.SelectedTab == nhatKyTheoDoi_tp) || 
+                (!qlsb_isNewState && !qlsb_edit_btn.Visible && data_tc.SelectedTab == quanLySauBenh_tp))
             {
                 if (e.KeyCode == Keys.Delete)
                 {
@@ -84,7 +136,10 @@ namespace RauViet.ui
                         return; // không xử lý Delete
                     }
 
-                    deleteProduct();
+                    if((!isNewState && !edit_btn.Visible && data_tc.SelectedTab == nhatKyTheoDoi_tp))
+                        deleteProduct();
+                    else if((!qlsb_isNewState && !qlsb_edit_btn.Visible && data_tc.SelectedTab == quanLySauBenh_tp))
+                        qlsb_deleteProduct();
                 }
             }
         }
@@ -92,6 +147,7 @@ namespace RauViet.ui
         public async void ShowData()
         {
             dataGV.SelectionChanged -= this.dataGV_CellClick;
+            qlsb_gv.SelectionChanged -= this.qlsb_gv_CellClick;
             await Task.Delay(50);
             loadingOverlay = new LoadingOverlay(this);
             loadingOverlay.Show();
@@ -100,23 +156,61 @@ namespace RauViet.ui
             {
                 int plantingID = Convert.ToInt32(mPlantingRow["PlantingID"]);
 
-                string[] empKeepColumns = { "EmployeeCode", "FullName", "EmployessName_NoSign" };
+                var harvestScheduleTask = SQLStore_KhoVatTu.Instance.GetHarvestScheduleAsync(plantingID);
+                await Task.WhenAll(harvestScheduleTask);
+
+                string[] empKeepColumns = { "EmployeeCode", "FullName", "EmployessName_NoSign", "DepartmentID", "PositionID" };
                 var cultivationProcessTask = SQLStore_KhoVatTu.Instance.GetCultivationProcessAsync(plantingID);
+                var pestDiseaseMonitoringTask = SQLStore_KhoVatTu.Instance.GetPestDiseaseMonitoringAsync(plantingID);
+                
                 var logDataTask = SQLStore_KhoVatTu.Instance.GetCultivationProcessLogAsync(plantingID);
+                var QLSBlogDataTask = SQLStore_KhoVatTu.Instance.GetPestDiseaseMonitoringLogAsync(plantingID);
+                var QLTHlogDataTask = SQLStore_KhoVatTu.Instance.GetHarvestScheduleLogAsync(plantingID);
+
                 var cultivationProcessTemplateTask = SQLStore_KhoVatTu.Instance.GetCultivationProcessTemplateAsync();
                 var materialTask = SQLStore_KhoVatTu.Instance.getMaterialAsync();
                 var workTypeTask = SQLStore_KhoVatTu.Instance.GetWorkTypeAsync();
                 var departmentTask = SQLStore_QLNS.Instance.GetDepartmentAsync();
+                var growthStageTask = SQLStore_KhoVatTu.Instance.GetGrowthStageAsync();
+                var pestDiseaseTask = SQLStore_KhoVatTu.Instance.GetPestDiseaseAsync();
                 var employeeTask = SQLStore_QLNS.Instance.GetEmployeesAsync(empKeepColumns);
 
-                await Task.WhenAll(cultivationProcessTask, materialTask, workTypeTask, cultivationProcessTemplateTask, employeeTask, departmentTask, logDataTask);
+                await Task.WhenAll(cultivationProcessTask, pestDiseaseMonitoringTask, materialTask, workTypeTask, cultivationProcessTemplateTask, employeeTask, 
+                    departmentTask, logDataTask, growthStageTask, pestDiseaseTask, QLSBlogDataTask, harvestScheduleTask, QLTHlogDataTask);
+
+                mHarvestSchedule_dt = harvestScheduleTask.Result;
                 mCultivationProcess_dt = cultivationProcessTask.Result;
+                mPestDiseaseMonitoring_dt = pestDiseaseMonitoringTask.Result;
                 mMaterial_dt = materialTask.Result;
                 mWorkType_dt = workTypeTask.Result;
                 mCultivationProcessTemplate_dt = cultivationProcessTemplateTask.Result;
                 mEmployee_dt = employeeTask.Result;
                 mDepartment_dt = departmentTask.Result;
-                 mLogDV = new DataView(logDataTask.Result);
+                mGrowthStage_dt = growthStageTask.Result;
+                mPestDisease_dt = pestDiseaseTask.Result;
+                mLogDV = new DataView(logDataTask.Result);
+                mQLSBLogDV = new DataView(QLSBlogDataTask.Result);
+                mQLTHLog_DV = new DataView(QLTHlogDataTask.Result);
+
+                qlsb_growthStatus_cbb.DataSource = mGrowthStage_dt;
+                qlsb_growthStatus_cbb.DisplayMember = "GrowthStageName";  // hiển thị tên
+                qlsb_growthStatus_cbb.ValueMember = "GrowthStageID";
+                qlsb_growthStatus_cbb.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+
+                qlsb_pestDisease_cbb.DataSource = mPestDisease_dt;
+                qlsb_pestDisease_cbb.DisplayMember = "PestDiseaseName";  // hiển thị tên
+                qlsb_pestDisease_cbb.ValueMember = "PestDiseaseID";
+                qlsb_pestDisease_cbb.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+
+                qlsb_observer_cbb.DataSource = mEmployee_dt.Copy();
+                qlsb_observer_cbb.DisplayMember = "FullName";  // hiển thị tên
+                qlsb_observer_cbb.ValueMember = "EmployeeCode";
+                qlsb_observer_cbb.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+
+                qlsb_decisionMaker_cbb.DataSource = mEmployee_dt.Copy();
+                qlsb_decisionMaker_cbb.DisplayMember = "FullName";  // hiển thị tên
+                qlsb_decisionMaker_cbb.ValueMember = "EmployeeCode";
+                qlsb_decisionMaker_cbb.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
 
                 vatTu_CB.DataSource = mMaterial_dt;
                 vatTu_CB.DisplayMember = "MaterialName";  // hiển thị tên
@@ -144,12 +238,17 @@ namespace RauViet.ui
                 department_CBB.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
 
                 dataGV.DataSource = mCultivationProcess_dt;
-                LoadDefaultData_btn.Visible = mCultivationProcess_dt.Rows.Count <= 0;
+                qlsb_gv.DataSource = mPestDiseaseMonitoring_dt;
+                qlth_gv.DataSource = mHarvestSchedule_dt;
                 
                 log_GV.DataSource = mLogDV;
+                qlsb_LOG_gv.DataSource = mQLSBLogDV;
+                qlth_Log_gv.DataSource = mQLTHLog_DV;
 
+                LoadDefaultData_btn.Visible = mCultivationProcess_dt.Rows.Count <= 0;
+                
                 Utils.HideColumns(dataGV, new[] { "CultivationProcessID", "PlantingID", "MaterialID", "WorkTypeID", "WorkTypeID", "MaterialID" , "EmployeeCode" , "DepartmentID", "FertilizationWorkTypeID" });
-                Utils.SetGridOrdinal(mCultivationProcess_dt, new[] { "ProcessDate", "FertilizationWorkTypeName", "WorkTypeName", "MaterialName", "MaterialQuantity", "MaterialUnit", "Dosage", "PlantStatus", "EmployeeName", "IsolationDays", "IsolationEndDate", "DepartmentName", "PlantLocation", "WaterAmount", "MaterialPrice", "TotalMaterialCost", "Note" });
+                Utils.SetGridOrdinal(mCultivationProcess_dt, new[] { "ProcessDate", "ProcessDate_Week", "FertilizationWorkTypeName", "WorkTypeName", "MaterialName", "MaterialQuantity", "MaterialUnit", "Dosage", "PlantStatus", "EmployeeName", "IsolationDays", "IsolationEndDate", "DepartmentName", "PlantLocation", "WaterAmount", "MaterialPrice", "TotalMaterialCost", "Note" });
                 Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
                         {"ProcessDate", "Ngày Xử Lý" },
                         {"WorkTypeName", "Công Việc" },
@@ -168,7 +267,8 @@ namespace RauViet.ui
                         {"FertilizationWorkTypeName", "Hình Thức Bón" },
                         {"MaterialUnit", "Đơn Vị" },
                         {"MaterialPrice", "Giá V.tư" },
-                        {"TotalMaterialCost", "Thành Tiền" }
+                        {"TotalMaterialCost", "Thành Tiền" },
+                        {"ProcessDate_Week", "Thứ" }
                     });
                 Utils.SetGridWidths(dataGV, new System.Collections.Generic.Dictionary<string, int> {
                         {"ProcessDate", 70 },
@@ -179,7 +279,53 @@ namespace RauViet.ui
                         {"MaterialName", 150 },
                         {"IsolationEndDate", 70 },
                         {"MaterialPrice", 60 },
-                        {"MaterialUnit", 50 }
+                        {"MaterialUnit", 50 },
+                        {"ProcessDate_Week", 50 }
+                    });
+
+
+                Utils.HideColumns(qlsb_gv, new[] { "MonitoringID", "PlantingID", "GrowthStageID", "Observer", "DecisionMaker", "PestDiseaseID" });
+                Utils.SetGridOrdinal(mPestDiseaseMonitoring_dt, new[] { "MonitoringDate", "MonitoringDate_Week", "Location", "GrowthStageName", "PestDiseaseName", "CurrentStatus", "ObserverName", "TreatmentPlan", "DecisionMakerName"});
+                Utils.SetGridHeaders(qlsb_gv, new System.Collections.Generic.Dictionary<string, string> {
+                        {"MonitoringDate", "Ngày" },
+                        {"MonitoringDate_Week", "Thứ" },
+                        {"Location", "Vị Trí Mã Lô" },
+                        {"GrowthStageName", "Giai Đoạn Sinh Trưởng" },
+                        {"PestDiseaseName", "Tên Sâu Bệnh" },
+                        {"CurrentStatus", "Hiện Trạng và Mật Độ Sâu Bệnh" },
+                        {"ObserverName", "Người Theo Dõi" },
+                        {"TreatmentPlan", "Phương Án Xử Lý và sử dụng thuốc BVTV" },
+                        {"DecisionMakerName", "Người Quyết Định Phương Án Xử Lý" }
+                    });
+                Utils.SetGridWidths(qlsb_gv, new System.Collections.Generic.Dictionary<string, int> {
+                        {"MonitoringDate", 70 },
+                        {"MonitoringDate_Week", 50 },
+                        {"Location", 80 },
+                        {"GrowthStageName", 200 },
+                        {"PestDiseaseName", 120 },
+                        {"CurrentStatus", 200 },
+                        {"ObserverName", 150},
+                        {"TreatmentPlan", 200 },
+                        {"DecisionMakerName", 150 }
+                    });
+
+                Utils.HideColumns(qlth_gv, new[] { "HarvestID", "PlantingID", "HarvestEmployee", "ReceiveDepartmentID"});
+                Utils.SetGridOrdinal(mHarvestSchedule_dt, new[] { "HarvestDate", "HarvestDate_Week", "Quantity", "ProductLotCode", "HarvestEmployeeName", "ReceiveDepartmentName" });
+                Utils.SetGridHeaders(qlth_gv, new System.Collections.Generic.Dictionary<string, string> {
+                        {"HarvestDate", "Ngày" },
+                        {"HarvestDate_Week", "Thứ" },
+                        {"Quantity", "Số Lượng (Kg)" },
+                        {"ProductLotCode", "Mã Lô SP" },
+                        {"HarvestEmployeeName", "Người Thu Hoạch" },
+                        {"ReceiveDepartmentName", "Nơi Nhận SP" }
+                    });
+                Utils.SetGridWidths(qlth_gv, new System.Collections.Generic.Dictionary<string, int> {
+                        {"HarvestDate", 70 },
+                        {"HarvestDate_Week", 50 },
+                        {"Quantity", 80 },
+                        {"ProductLotCode", 100 },
+                        {"HarvestEmployeeName", 180 },
+                        {"ReceiveDepartmentName", 200 }
                     });
 
                 Utils.HideColumns(log_GV, new[] { "LogID", "PlantingID" });
@@ -194,6 +340,34 @@ namespace RauViet.ui
                         {"OldValue", 350 },
                         {"NewValue", 350 }
                     });
+
+                Utils.HideColumns(qlsb_LOG_gv, new[] { "LogID", "PlantingID" });
+                Utils.SetGridHeaders(qlsb_LOG_gv, new System.Collections.Generic.Dictionary<string, string> {
+                        {"ActionType", "Hành Động" },
+                        {"OldValue", "Cũ" },
+                        {"NewValue", "Mới" },
+                        {"CreatedDate", "Ngày tạo" },
+                        {"ActionBy", "Người tạo" }
+                    });
+                Utils.SetGridWidths(qlsb_LOG_gv, new System.Collections.Generic.Dictionary<string, int> {
+                        {"OldValue", 350 },
+                        {"NewValue", 350 }
+                    });
+
+                Utils.HideColumns(qlth_Log_gv, new[] { "LogID", "PlantingID" });
+                Utils.SetGridHeaders(qlth_Log_gv, new System.Collections.Generic.Dictionary<string, string> {
+                        {"ActionType", "Hành Động" },
+                        {"OldValue", "Cũ" },
+                        {"NewValue", "Mới" },
+                        {"CreatedDate", "Ngày tạo" },
+                        {"ActionBy", "Người tạo" }
+                    });
+                Utils.SetGridWidths(qlth_Log_gv, new System.Collections.Generic.Dictionary<string, int> {
+                        {"OldValue", 350 },
+                        {"NewValue", 350 }
+                    });
+
+
 
                 Utils.SetTabStopRecursive(this, false);
                 int countTab = 0;
@@ -213,10 +387,31 @@ namespace RauViet.ui
                 note_tb.TabIndex = countTab++; note_tb.TabStop = true;
                 LuuThayDoiBtn.TabIndex = countTab++; LuuThayDoiBtn.TabStop = true;
 
+                qlsb_date_dtp.TabIndex = countTab++; qlsb_date_dtp.TabStop = true;
+                qlsb_location_tb.TabIndex = countTab++; qlsb_location_tb.TabStop = true;
+                qlsb_growthStatus_cbb.TabIndex = countTab++; qlsb_growthStatus_cbb.TabStop = true;
+                qlsb_pestDisease_cbb.TabIndex = countTab++; qlsb_pestDisease_cbb.TabStop = true;
+                qlsb_currentStatus_tb.TabIndex = countTab++; qlsb_currentStatus_tb.TabStop = true;
+                qlsb_observer_cbb.TabIndex = countTab++; qlsb_observer_cbb.TabStop = true;
+                qlsb_treatmentPlan_tb.TabIndex = countTab++; qlsb_treatmentPlan_tb.TabStop = true;
+                qlsb_decisionMaker_cbb.TabIndex = countTab++; qlsb_decisionMaker_cbb.TabStop = true;
+                qlsb_Save_btn.TabIndex = countTab++; qlsb_Save_btn.TabStop = true;
+
+                qlth_date_dtp.TabIndex = countTab++; qlth_date_dtp.TabStop = true;
+                qlth_Quantity_tb.TabIndex = countTab++; qlth_Quantity_tb.TabStop = true;
+                qlth_ProductLotCode_tb.TabIndex = countTab++; qlth_ProductLotCode_tb.TabStop = true;
+                qlth_HarvestEmployee_cbb.TabIndex = countTab++; qlth_HarvestEmployee_cbb.TabStop = true;
+                qlth_ReceiveDepartment_cbb.TabIndex = countTab++; qlth_ReceiveDepartment_cbb.TabStop = true;
+                qlth_Save_btn.TabIndex = countTab++; qlth_Save_btn.TabStop = true;
+
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                qlsb_gv.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 ReadOnly_btn_Click(null, null);
+                Qlsb_readOnly_btn_Click(null, null);
+                Qlth_readOnly_btn_Click(null, null);
                 dataGV.SelectionChanged += this.dataGV_CellClick;
+                qlsb_gv.SelectionChanged += this.qlsb_gv_CellClick;
             }
                 catch
             {
@@ -239,36 +434,8 @@ namespace RauViet.ui
 
         private void WokTypeDebounceTimer_Tick(object sender, EventArgs e)
         {
-            try
-            {
-                WorkTypeDebounceTimer.Stop();
-
-                string typed = congViec_CBB.Text ?? "";
-                string plain = Utils.RemoveVietnameseSigns(typed).ToLower();
-
-                // Filter bằng LINQ
-                var filtered = mWorkType_dt.AsEnumerable()
-                    .Where(r => r["search_nosign"].ToString().ToLower()
-                    .Contains(plain));
-
-                System.Data.DataTable temp;
-                if (filtered.Any())
-                    temp = filtered.CopyToDataTable();
-                else
-                    temp = mWorkType_dt.Clone(); // nếu không có kết quả thì trả về table rỗng
-                
-                // Gán lại DataSource
-                congViec_CBB.DataSource = temp;
-                congViec_CBB.DisplayMember = "WorkTypeName";  // hiển thị tên
-                congViec_CBB.ValueMember = "WorkTypeID";
-
-                // Giữ lại text người đang gõ
-                congViec_CBB.DroppedDown = true;
-                congViec_CBB.Text = typed;
-                congViec_CBB.SelectionStart = typed.Length;
-                congViec_CBB.SelectionLength = 0;
-            }
-            catch { }
+            WorkTypeDebounceTimer.Stop();
+            Utils.ComboBoxSearchResult(congViec_CBB, mWorkType_dt, "search_nosign");            
         }
 
         private void HinhThucBon_CBB_TextUpdate(object sender, EventArgs e)
@@ -278,36 +445,8 @@ namespace RauViet.ui
         }
         private void FertilizationTypeDebounceTimer_Tick(object sender, EventArgs e)
         {
-            try
-            {
-                FertilizationTypeDebounceTimer.Stop();
-
-                string typed = hinhThucBon_CBB.Text ?? "";
-                string plain = Utils.RemoveVietnameseSigns(typed).ToLower();
-
-                // Filter bằng LINQ
-                var filtered = mWorkType_dt.AsEnumerable()
-                    .Where(r => r["search_nosign"].ToString().ToLower()
-                    .Contains(plain));
-
-                System.Data.DataTable temp;
-                if (filtered.Any())
-                    temp = filtered.CopyToDataTable();
-                else
-                    temp = mWorkType_dt.Clone(); // nếu không có kết quả thì trả về table rỗng
-
-                // Gán lại DataSource
-                hinhThucBon_CBB.DataSource = temp;
-                hinhThucBon_CBB.DisplayMember = "WorkTypeName";  // hiển thị tên
-                hinhThucBon_CBB.ValueMember = "WorkTypeID";
-
-                // Giữ lại text người đang gõ
-                hinhThucBon_CBB.DroppedDown = true;
-                hinhThucBon_CBB.Text = typed;
-                hinhThucBon_CBB.SelectionStart = typed.Length;
-                hinhThucBon_CBB.SelectionLength = 0;
-            }
-            catch { }
+            FertilizationTypeDebounceTimer.Stop();
+            Utils.ComboBoxSearchResult(hinhThucBon_CBB, mWorkType_dt, "search_nosign");            
         }
 
         private void Department_CBB_TextUpdate(object sender, EventArgs e)
@@ -318,36 +457,8 @@ namespace RauViet.ui
         }
         private void departmentDebounceTimer_Tick(object sender, EventArgs e)
         {
-            try
-            {
-                departmentDebounceTimer.Stop();
-
-                string typed = department_CBB.Text ?? "";
-                string plain = Utils.RemoveVietnameseSigns(typed).ToLower();
-
-                // Filter bằng LINQ
-                var filtered = mDepartment_dt.AsEnumerable()
-                    .Where(r => Utils.RemoveVietnameseSigns(r["DepartmentName"].ToString()).ToLower()
-                    .Contains(plain));
-
-                System.Data.DataTable temp;
-                if (filtered.Any())
-                    temp = filtered.CopyToDataTable();
-                else
-                    temp = mDepartment_dt.Clone(); // nếu không có kết quả thì trả về table rỗng
-
-                // Gán lại DataSource
-                department_CBB.DataSource = temp;
-                department_CBB.DisplayMember = "DepartmentName";  // hiển thị tên
-                department_CBB.ValueMember = "DepartmentID";
-
-                // Giữ lại text người đang gõ
-                department_CBB.DroppedDown = true;
-                department_CBB.Text = typed;
-                department_CBB.SelectionStart = typed.Length;
-                department_CBB.SelectionLength = 0;
-            }
-            catch { }
+            departmentDebounceTimer.Stop();
+            Utils.ComboBoxSearchResult(department_CBB, mDepartment_dt, "DepartmentName", false);            
         }
         private void VatTu_CB_TextUpdate(object sender, EventArgs e)
         {
@@ -357,38 +468,8 @@ namespace RauViet.ui
 
         private void MaterialDebounceTimer_Tick(object sender, EventArgs e)
         {
-            try
-            {
-                MaterialDebounceTimer.Stop();
-
-                string typed = vatTu_CB.Text ?? "";
-                string plain = Utils.RemoveVietnameseSigns(typed).ToLower();
-
-                // Filter bằng LINQ
-                var filtered = mMaterial_dt.AsEnumerable()
-                    .Where(r => r["MaterialName_nosign"].ToString().ToLower()
-                    .Contains(plain));
-
-                System.Data.DataTable temp;
-                if (filtered.Any())
-                    temp = filtered.CopyToDataTable();
-                else
-                    temp = mMaterial_dt.Clone(); // nếu không có kết quả thì trả về table rỗng
-                
-                // Gán lại DataSource
-                vatTu_CB.DataSource = temp;
-                vatTu_CB.DisplayMember = "MaterialName";  // hiển thị tên
-                vatTu_CB.ValueMember = "MaterialID";
-
-                // Giữ lại text người đang gõ
-                vatTu_CB.DroppedDown = true;
-                vatTu_CB.Text = typed;
-                vatTu_CB.SelectionStart = typed.Length;
-                vatTu_CB.SelectionLength = 0;
-            }
-            catch (Exception ex){ 
-                Console.WriteLine("ERROR " + ex.ToString());
-            }
+            MaterialDebounceTimer.Stop();
+            Utils.ComboBoxSearchResult(vatTu_CB, mMaterial_dt, "MaterialName_nosign");
         }
 
         private void Employee_CBB_TextUpdate(object sender, EventArgs e)
@@ -398,41 +479,65 @@ namespace RauViet.ui
         }
         private void EmployeeDebounceTimer_Tick(object sender, EventArgs e)
         {
-            try
-            {
-                EmployeeDebounceTimer.Stop();
+            EmployeeDebounceTimer.Stop();
+            Utils.ComboBoxSearchResult(employee_CBB, mEmployee_dt, "EmployessName_NoSign");
+        }
 
-                string typed = employee_CBB.Text ?? "";
-                string plain = Utils.RemoveVietnameseSigns(typed).ToLower();
+        private void Qlsb_observer_cbb_TextUpdate(object sender, EventArgs e)
+        {
+            qlsb_ObserverDebounceTimer.Stop();
+            qlsb_ObserverDebounceTimer.Start();
+        }
 
-                // Filter bằng LINQ
-                var filtered = mEmployee_dt.AsEnumerable()
-                    .Where(r => r["EmployessName_NoSign"].ToString().ToLower()
-                    .Contains(plain));
+        private void Qlsb_ObserverDebounceTimer_Tick(object sender, EventArgs e)
+        {
+            qlsb_ObserverDebounceTimer.Stop();
+            Utils.ComboBoxSearchResult(qlsb_observer_cbb, mEmployee_dt, "EmployessName_NoSign");
+        }
 
-                System.Data.DataTable temp;
-                if (filtered.Any())
-                    temp = filtered.CopyToDataTable();
-                else
-                    temp = mMaterial_dt.Clone(); // nếu không có kết quả thì trả về table rỗng
+        private void Qlsb_decisionMaker_cbb_TextUpdate(object sender, EventArgs e)
+        {
+            qlsb_DecisionMakerDebounceTimer.Stop();
+            qlsb_DecisionMakerDebounceTimer.Start();
+        }
 
-                // Gán lại DataSource
-                employee_CBB.DataSource = temp;
-                employee_CBB.DisplayMember = "FullName";  // hiển thị tên
-                employee_CBB.ValueMember = "EmployeeCode";
+        private void Qlsb_DecisionMakerDebounceTimer_Tick(object sender, EventArgs e)
+        {
+            qlsb_DecisionMakerDebounceTimer.Stop();
+            Utils.ComboBoxSearchResult(qlsb_decisionMaker_cbb, mEmployee_dt, "EmployessName_NoSign");
+        }
 
-                // Giữ lại text người đang gõ
-                employee_CBB.DroppedDown = true;
-                employee_CBB.Text = typed;
-                employee_CBB.SelectionStart = typed.Length;
-                employee_CBB.SelectionLength = 0;
-            }
-            catch { }
+        private void Qlsb_pestDisease_cbb_TextUpdate(object sender, EventArgs e)
+        {
+            qlsb_PestDiseaseDebounceTimer.Stop();
+            qlsb_PestDiseaseDebounceTimer.Start();
+        }
+
+        private void Qlsb_PestDiseaseDebounceTimer_Tick(object sender, EventArgs e)
+        {
+            qlsb_PestDiseaseDebounceTimer.Stop();
+            Utils.ComboBoxSearchResult(qlsb_pestDisease_cbb, mPestDisease_dt, "search_nosign");            
+        }
+
+        private void Qlsb_growthStatus_cbb_TextUpdate(object sender, EventArgs e)
+        {
+            qlsb_GrowthStageDebounceTimer.Stop();
+            qlsb_GrowthStageDebounceTimer.Start();
+        }
+
+        private void Qlsb_GrowthStageDebounceTimer_Tick(object sender, EventArgs e)
+        {
+            qlsb_GrowthStageDebounceTimer.Stop();
+            Utils.ComboBoxSearchResult(qlsb_growthStatus_cbb, mGrowthStage_dt, "search_nosign");
         }
 
         private void dataGV_CellClick(object sender, EventArgs e)
         {
             updateRightUI();            
+        }
+        private void qlsb_gv_CellClick(object sender, EventArgs e)
+        {
+            qlsb_updateRightUI();
         }
 
         private async void updateItem(
@@ -478,6 +583,7 @@ namespace RauViet.ui
                         string employeeName = employeeRows.Length > 0 ? employeeRows[0]["FullName"].ToString() : "";
                         string departmentName = departmentRows.Length > 0 ? departmentRows[0]["DepartmentName"].ToString() : "";
                         string materialName = matiralRows.Length > 0 ? matiralRows[0]["MaterialName"].ToString() : "";
+                        string unitName = matiralRows.Length > 0 ? matiralRows[0]["UnitName"].ToString() : "";
 
                         string actionType = "Update ";
                         string oldValue = $"Ngày: {row["ProcessDate"]}; Hình Thức: {row["FertilizationWorkTypeName"]}; Công Việc: {row["WorkTypeName"]}; Vật Tư: {row["MaterialName"]}; S.Lượng VT: {row["MaterialQuantity"]}; Liều Lượng: {row["Dosage"]}; Tình Trạng Cây: {row["PlantStatus"]}; Hoạt Chất: {row["ActiveIngredient"]}; Người TH: {row["EmployeeName"]}; S.Ngày C.Li: {row["IsolationDays"]}; Tổ P.Trách: {row["DepartmentName"]}; V.Trí Trồng: {row["PlantLocation"]}; Lượng Nước: {row["WaterAmount"]}, Ghi Chú: {row["Note"]}";
@@ -519,6 +625,8 @@ namespace RauViet.ui
                                 row["EmployeeName"] = employeeName;
                                 row["DepartmentName"] = departmentName;
                                 row["MaterialName"] = materialName;
+                                row["MaterialUnit"] = unitName;
+                                row["ProcessDate_Week"] = Utils.GetThu_Viet(processDate);
 
                                 actionType += "Success";
                                 status_lb.Text = "Thành công.";
@@ -584,6 +692,7 @@ namespace RauViet.ui
                 string employeeName = employeeRows.Length > 0 ? employeeRows[0]["FullName"].ToString() : "";
                 string departmentName = departmentRows.Length > 0 ? departmentRows[0]["DepartmentName"].ToString() : "";
                 string materialName = matiralRows.Length > 0 ? matiralRows[0]["MaterialName"].ToString() : "";
+                string unitName = matiralRows.Length > 0 ? matiralRows[0]["UnitName"].ToString() : "";
 
                 string actionType = "Create ";
                 string oldValue = "";
@@ -628,6 +737,8 @@ namespace RauViet.ui
                         drToAdd["WorkTypeName"] = workTypeName;
                         drToAdd["FertilizationWorkTypeName"] = fertilizationWorkTypeName;
                         drToAdd["MaterialName"] = materialName;
+                        drToAdd["MaterialUnit"] = unitName;
+                        drToAdd["ProcessDate_Week"] = Utils.GetThu_Viet(processDate);
 
                         mCultivationProcess_dt.Rows.Add(drToAdd);
                         mCultivationProcess_dt.AcceptChanges();
@@ -691,6 +802,358 @@ namespace RauViet.ui
                             activeIngredient, employeeCode, isolationDays, departmentID, plantLocation, waterAmount, note);
 
         }
+
+        private async void qlsb_updateItem(int monitoringID, DateTime processDate, string location, int? growwthStatusID, int? pestDiseaseID, string currentStatus, string observerCode, string treatmentPlan, string decisionMakerCode)
+        {
+            DataRow[] observerRows = mEmployee_dt.Select($"EmployeeCode = '{observerCode}'");
+            DataRow[] decisionMakerRows = mEmployee_dt.Select($"EmployeeCode = '{decisionMakerCode}'");
+
+            DataRow[] growthStageRows = Array.Empty<DataRow>();
+            if (growwthStatusID.HasValue)
+                growthStageRows = mGrowthStage_dt.Select($"GrowthStageID = {growwthStatusID}");
+
+            DataRow[] pestDiseaseRows = Array.Empty<DataRow>();
+            if (pestDiseaseID.HasValue)
+                pestDiseaseRows = mPestDisease_dt.Select($"PestDiseaseID = {pestDiseaseID}");
+
+            foreach (DataRow row in mPestDiseaseMonitoring_dt.Rows)
+            {
+                int ID = Convert.ToInt32(row["MonitoringID"]);
+                if (ID.CompareTo(monitoringID) == 0)
+                {
+                    DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+                    if (dialogResult == DialogResult.Yes)
+                    {
+                        string growthStageName = growthStageRows.Length > 0 ? growthStageRows[0]["GrowthStageName"].ToString() : "";
+                        string pestDiseaseName = pestDiseaseRows.Length > 0 ? pestDiseaseRows[0]["PestDiseaseName"].ToString() : "";
+                        string observerName = observerRows.Length > 0 ? observerRows[0]["FullName"].ToString() : "";
+                        string decisionMakerName = decisionMakerRows.Length > 0 ? decisionMakerRows[0]["FullName"].ToString() : "";
+
+                        string actionType = "Update ";
+                        string oldValue = $"Ngày: {row["MonitoringDate"]};Vị Trí Mã Lô: {row["Location"]}; Giai Đoạn Sinh Trưởng: {row["GrowthStageName"]}; Tên Sâu Bệnh: {row["PestDiseaseName"]}; Hiện Trạng: {row["CurrentStatus"]}; Người Theo Dõi: {row["ObserverName"]}; Phương Án Xử Lý: {row["PestDiseaseName"]}; Người Quyết Định: {row["DecisionMakerName"]};";
+                        string newValue = $"Ngày: {processDate};Vị Trí Mã Lô: {location}; Giai Đoạn Sinh Trưởng: {growthStageName}; Tên Sâu Bệnh: {pestDiseaseName}; Hiện Trạng: {currentStatus}; Người Theo Dõi: {growthStageName}; Phương Án Xử Lý: {treatmentPlan}; Người Quyết Định: {pestDiseaseName};";
+
+                        int plantingID = Convert.ToInt32(mPlantingRow["PlantingID"]);
+                        try
+                        {
+                            bool isScussess = await SQLManager_KhoVatTu.Instance.updatePestDiseaseMonitoringAsync(plantingID, monitoringID, processDate, location, growwthStatusID, pestDiseaseID, currentStatus, observerCode, treatmentPlan, decisionMakerCode);
+
+                            if (isScussess == true)
+                            {
+                                row["PlantingID"] = plantingID;
+                                row["MonitoringDate"] = processDate;
+                                row["Location"] = location;
+                                row["GrowthStageID"] = growwthStatusID.HasValue ? (object)growwthStatusID.Value : DBNull.Value;
+                                row["PestDiseaseID"] = pestDiseaseID.HasValue ? (object)pestDiseaseID.Value : DBNull.Value;
+                                row["CurrentStatus"] = currentStatus;
+                                row["Observer"] = observerCode;
+                                row["TreatmentPlan"] = treatmentPlan;
+                                row["DecisionMaker"] = decisionMakerCode;
+
+                                row["ObserverName"] = observerName;
+                                row["DecisionMakerName"] = decisionMakerName;
+                                row["GrowthStageName"] = growthStageName;
+                                row["MonitoringDate_Week"] = Utils.GetThu_Viet(processDate);
+                                row["PestDiseaseName"] = pestDiseaseName;
+
+                                actionType += "Success";
+                                qlsb_status_lb.Text = "Thành công.";
+                                qlsb_status_lb.ForeColor = Color.Green;
+                            }
+                            else
+                            {
+                                actionType += "Fail";
+                                qlsb_status_lb.Text = "Thất bại.";
+                                qlsb_status_lb.ForeColor = Color.Red;
+                            }
+                        }
+                        catch
+                        {
+                            actionType += "Exception";
+                            qlsb_status_lb.Text = "Thất bại.";
+                            qlsb_status_lb.ForeColor = Color.Red;
+                        }
+                        finally
+                        {
+                            _ = SQLManager_KhoVatTu.Instance.insertPestDiseaseMonitoringLogAsync(plantingID, actionType, oldValue, newValue);
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+
+        private async void qlsb_createItem(DateTime processDate, string location, int? growwthStatusID, int? pestDiseaseID, string currentStatus, string observerCode, string treatmentPlan, string decisionMakerCode)
+        {
+            DataRow[] observerRows = mEmployee_dt.Select($"EmployeeCode = '{observerCode}'");
+            DataRow[] decisionMakerRows = mEmployee_dt.Select($"EmployeeCode = '{decisionMakerCode}'");
+
+            DataRow[] growthStageRows = Array.Empty<DataRow>();
+            if (growwthStatusID.HasValue)
+                growthStageRows = mGrowthStage_dt.Select($"GrowthStageID = {growwthStatusID}");
+
+            DataRow[] pestDiseaseRows = Array.Empty<DataRow>();
+            if (pestDiseaseID.HasValue)
+                pestDiseaseRows = mPestDisease_dt.Select($"PestDiseaseID = {pestDiseaseID}");
+
+            DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (dialogResult == DialogResult.Yes)
+            {
+                string growthStageName = growthStageRows.Length > 0 ? growthStageRows[0]["GrowthStageName"].ToString() : "";
+                string pestDiseaseName = pestDiseaseRows.Length > 0 ? pestDiseaseRows[0]["PestDiseaseName"].ToString() : "";
+                string observerName = observerRows.Length > 0 ? observerRows[0]["FullName"].ToString() : "";
+                string decisionMakerName = decisionMakerRows.Length > 0 ? decisionMakerRows[0]["FullName"].ToString() : "";
+
+                string actionType = "Create ";
+                string oldValue = "";
+                string newValue = $"Ngày: {processDate};Vị Trí Mã Lô: {location}; Giai Đoạn Sinh Trưởng: {growthStageName}; Tên Sâu Bệnh: {pestDiseaseName}; Hiện Trạng: {currentStatus}; Người Theo Dõi: {growthStageName}; Phương Án Xử Lý: {treatmentPlan}; Người Quyết Định: {pestDiseaseName};";
+
+                int plantingID = Convert.ToInt32(mPlantingRow["PlantingID"]);
+
+                try
+                {
+                    int newId = await SQLManager_KhoVatTu.Instance.insertPestDiseaseMonitoringAsync(plantingID, processDate, location, growwthStatusID, pestDiseaseID, currentStatus, observerCode, treatmentPlan, decisionMakerCode);
+                    if (newId > 0)
+                    {
+                        DataRow drToAdd = mPestDiseaseMonitoring_dt.NewRow();
+
+                        drToAdd["MonitoringID"] = newId;
+                        drToAdd["PlantingID"] = plantingID;
+                        drToAdd["MonitoringDate"] = processDate;
+                        drToAdd["Location"] = location;
+                        drToAdd["GrowthStageID"] = growwthStatusID.HasValue ? (object)growwthStatusID.Value : DBNull.Value;
+                        drToAdd["PestDiseaseID"] = pestDiseaseID.HasValue ? (object)pestDiseaseID.Value : DBNull.Value;
+                        drToAdd["CurrentStatus"] = currentStatus;
+                        drToAdd["Observer"] = observerCode;
+                        drToAdd["TreatmentPlan"] = treatmentPlan;
+                        drToAdd["DecisionMaker"] = decisionMakerCode;
+
+                        drToAdd["ObserverName"] = observerName;
+                        drToAdd["DecisionMakerName"] = decisionMakerName;
+                        drToAdd["GrowthStageName"] = growthStageName;
+                        drToAdd["MonitoringDate_Week"] = Utils.GetThu_Viet(processDate);
+                        drToAdd["PestDiseaseName"] = pestDiseaseName;
+
+                        mPestDiseaseMonitoring_dt.Rows.Add(drToAdd);
+                        mPestDiseaseMonitoring_dt.AcceptChanges();
+
+                        actionType += "Success";
+                        qlsb_status_lb.Text = "Thành công";
+                        qlsb_status_lb.ForeColor = Color.Green;
+
+                        Qlsb_create_btn_Click(null, null);
+                    }
+                    else
+                    {
+                        actionType += "Fail";
+                        qlsb_status_lb.Text = "Thất bại";
+                        qlsb_status_lb.ForeColor = Color.Red;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    actionType += "Exception";
+                    Console.WriteLine("ERROR: " + ex.Message);
+                    qlsb_status_lb.Text = "Thất bại.";
+                    qlsb_status_lb.ForeColor = Color.Red;
+                }
+                finally
+                {
+                    _ = SQLManager_KhoVatTu.Instance.insertPestDiseaseMonitoringLogAsync(plantingID, actionType, oldValue, newValue);
+                }
+            }
+        }
+        private void Qlsb_Save_btn_Click(object sender, EventArgs e)
+        {
+            DateTime processDate = qlsb_date_dtp.Value;
+            string location = qlsb_location_tb.Text;
+            int? growwthStatusID = (string.IsNullOrEmpty(qlsb_growthStatus_cbb.Text) || qlsb_growthStatus_cbb.SelectedValue == null || qlsb_growthStatus_cbb.SelectedValue == DBNull.Value) ? (int?)null : Convert.ToInt32(qlsb_growthStatus_cbb.SelectedValue);
+            int? pestDiseaseID = (string.IsNullOrEmpty(qlsb_pestDisease_cbb.Text) || qlsb_pestDisease_cbb.SelectedValue == null || qlsb_pestDisease_cbb.SelectedValue == DBNull.Value) ? (int?)null : Convert.ToInt32(qlsb_pestDisease_cbb.SelectedValue);
+            string currentStatus = qlsb_currentStatus_tb.Text;
+            string observerCode = (string.IsNullOrEmpty(qlsb_observer_cbb.Text) || qlsb_observer_cbb.SelectedValue == null || qlsb_observer_cbb.SelectedValue == DBNull.Value) ? "" : Convert.ToString(qlsb_observer_cbb.SelectedValue);
+            string treatmentPlan = qlsb_treatmentPlan_tb.Text;
+            string decisionMakerCode = (string.IsNullOrEmpty(qlsb_decisionMaker_cbb.Text) || qlsb_decisionMaker_cbb.SelectedValue == null || qlsb_decisionMaker_cbb.SelectedValue == DBNull.Value) ? "" : Convert.ToString(qlsb_decisionMaker_cbb.SelectedValue);
+
+            if (qlsb_ID_tb.Text.Length != 0)
+                qlsb_updateItem(Convert.ToInt32(qlsb_ID_tb.Text), processDate, location, growwthStatusID, pestDiseaseID, currentStatus, observerCode, treatmentPlan, decisionMakerCode);
+            else
+                qlsb_createItem(processDate, location, growwthStatusID, pestDiseaseID, currentStatus, observerCode, treatmentPlan, decisionMakerCode);
+        }
+                
+        private async void qlth_updateItem(int harvestID, DateTime harvestDate, decimal quantity, string productLotCode, string harvestEmployeeCode, int? receiveDepartmentID)
+        {
+            DataRow[] observerRows = mEmployee_dt.Select($"EmployeeCode = '{observerCode}'");
+            DataRow[] decisionMakerRows = mEmployee_dt.Select($"EmployeeCode = '{decisionMakerCode}'");
+
+            DataRow[] growthStageRows = Array.Empty<DataRow>();
+            if (growwthStatusID.HasValue)
+                growthStageRows = mGrowthStage_dt.Select($"GrowthStageID = {growwthStatusID}");
+
+            DataRow[] pestDiseaseRows = Array.Empty<DataRow>();
+            if (pestDiseaseID.HasValue)
+                pestDiseaseRows = mPestDisease_dt.Select($"PestDiseaseID = {pestDiseaseID}");
+
+            foreach (DataRow row in mPestDiseaseMonitoring_dt.Rows)
+            {
+                int ID = Convert.ToInt32(row["MonitoringID"]);
+                if (ID.CompareTo(monitoringID) == 0)
+                {
+                    DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+                    if (dialogResult == DialogResult.Yes)
+                    {
+                        string growthStageName = growthStageRows.Length > 0 ? growthStageRows[0]["GrowthStageName"].ToString() : "";
+                        string pestDiseaseName = pestDiseaseRows.Length > 0 ? pestDiseaseRows[0]["PestDiseaseName"].ToString() : "";
+                        string observerName = observerRows.Length > 0 ? observerRows[0]["FullName"].ToString() : "";
+                        string decisionMakerName = decisionMakerRows.Length > 0 ? decisionMakerRows[0]["FullName"].ToString() : "";
+
+                        string actionType = "Update ";
+                        string oldValue = $"Ngày: {row["MonitoringDate"]};Vị Trí Mã Lô: {row["Location"]}; Giai Đoạn Sinh Trưởng: {row["GrowthStageName"]}; Tên Sâu Bệnh: {row["PestDiseaseName"]}; Hiện Trạng: {row["CurrentStatus"]}; Người Theo Dõi: {row["ObserverName"]}; Phương Án Xử Lý: {row["PestDiseaseName"]}; Người Quyết Định: {row["DecisionMakerName"]};";
+                        string newValue = $"Ngày: {processDate};Vị Trí Mã Lô: {location}; Giai Đoạn Sinh Trưởng: {growthStageName}; Tên Sâu Bệnh: {pestDiseaseName}; Hiện Trạng: {currentStatus}; Người Theo Dõi: {growthStageName}; Phương Án Xử Lý: {treatmentPlan}; Người Quyết Định: {pestDiseaseName};";
+
+                        int plantingID = Convert.ToInt32(mPlantingRow["PlantingID"]);
+                        try
+                        {
+                            bool isScussess = await SQLManager_KhoVatTu.Instance.updatePestDiseaseMonitoringAsync(plantingID, monitoringID, processDate, location, growwthStatusID, pestDiseaseID, currentStatus, observerCode, treatmentPlan, decisionMakerCode);
+
+                            if (isScussess == true)
+                            {
+                                row["PlantingID"] = plantingID;
+                                row["MonitoringDate"] = processDate;
+                                row["Location"] = location;
+                                row["GrowthStageID"] = growwthStatusID.HasValue ? (object)growwthStatusID.Value : DBNull.Value;
+                                row["PestDiseaseID"] = pestDiseaseID.HasValue ? (object)pestDiseaseID.Value : DBNull.Value;
+                                row["CurrentStatus"] = currentStatus;
+                                row["Observer"] = observerCode;
+                                row["TreatmentPlan"] = treatmentPlan;
+                                row["DecisionMaker"] = decisionMakerCode;
+
+                                row["ObserverName"] = observerName;
+                                row["DecisionMakerName"] = decisionMakerName;
+                                row["GrowthStageName"] = growthStageName;
+                                row["MonitoringDate_Week"] = Utils.GetThu_Viet(processDate);
+                                row["PestDiseaseName"] = pestDiseaseName;
+
+                                actionType += "Success";
+                                qlsb_status_lb.Text = "Thành công.";
+                                qlsb_status_lb.ForeColor = Color.Green;
+                            }
+                            else
+                            {
+                                actionType += "Fail";
+                                qlsb_status_lb.Text = "Thất bại.";
+                                qlsb_status_lb.ForeColor = Color.Red;
+                            }
+                        }
+                        catch
+                        {
+                            actionType += "Exception";
+                            qlsb_status_lb.Text = "Thất bại.";
+                            qlsb_status_lb.ForeColor = Color.Red;
+                        }
+                        finally
+                        {
+                            _ = SQLManager_KhoVatTu.Instance.insertHarvestScheduleLogAsync(plantingID, actionType, oldValue, newValue);
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+
+        private async void qlth_createItem(DateTime harvestDate, decimal quantity, string productLotCode, string harvestEmployeeCode, int? receiveDepartmentID)
+        {
+            DataRow[] harvestEmployeeRows = mEmployee_dt.Select($"EmployeeCode = '{harvestEmployeeCode}'");
+
+            DataRow[] departmentRows = Array.Empty<DataRow>();
+            if (receiveDepartmentID.HasValue)
+                departmentRows = mDepartment_dt.Select($"DepartmentID = {receiveDepartmentID}");
+
+            DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (dialogResult == DialogResult.Yes)
+            {
+                string departmentName = departmentRows.Length > 0 ? departmentRows[0]["DepartmentName"].ToString() : "";
+                string harvestEmployeerName = harvestEmployeeRows.Length > 0 ? harvestEmployeeRows[0]["FullName"].ToString() : "";
+
+                string actionType = "Create ";
+                string oldValue = "";
+                string newValue = $"Ngày: {harvestDate};Số Lượng Thu: {quantity}; Mã Số Thu (LOT): {productLotCode}; Nhân Viên Thu: {harvestEmployeerName}; Phòng Nhận: {departmentName}";
+
+                int plantingID = Convert.ToInt32(mPlantingRow["PlantingID"]);
+
+                try
+                {
+                    int newId = await SQLManager_KhoVatTu.Instance.insertHarvestScheduleAsync(plantingID, harvestDate, quantity, productLotCode, harvestEmployeeCode, receiveDepartmentID);
+                    if (newId > 0)
+                    {
+                        DataRow drToAdd = mHarvestSchedule_dt.NewRow();
+
+                        drToAdd["MonitoringID"] = newId;
+                        drToAdd["PlantingID"] = plantingID;
+                        drToAdd["MonitoringDate"] = processDate;
+                        drToAdd["Location"] = location;
+                        drToAdd["GrowthStageID"] = growwthStatusID.HasValue ? (object)growwthStatusID.Value : DBNull.Value;
+                        drToAdd["PestDiseaseID"] = pestDiseaseID.HasValue ? (object)pestDiseaseID.Value : DBNull.Value;
+                        drToAdd["CurrentStatus"] = currentStatus;
+                        drToAdd["Observer"] = observerCode;
+                        drToAdd["TreatmentPlan"] = treatmentPlan;
+                        drToAdd["DecisionMaker"] = decisionMakerCode;
+
+                        drToAdd["ObserverName"] = observerName;
+                        drToAdd["DecisionMakerName"] = decisionMakerName;
+                        drToAdd["GrowthStageName"] = growthStageName;
+                        drToAdd["MonitoringDate_Week"] = Utils.GetThu_Viet(processDate);
+                        drToAdd["PestDiseaseName"] = pestDiseaseName;
+
+                        mPestDiseaseMonitoring_dt.Rows.Add(drToAdd);
+                        mPestDiseaseMonitoring_dt.AcceptChanges();
+
+                        actionType += "Success";
+                        qlsb_status_lb.Text = "Thành công";
+                        qlsb_status_lb.ForeColor = Color.Green;
+
+                        Qlsb_create_btn_Click(null, null);
+                    }
+                    else
+                    {
+                        actionType += "Fail";
+                        qlsb_status_lb.Text = "Thất bại";
+                        qlsb_status_lb.ForeColor = Color.Red;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    actionType += "Exception";
+                    Console.WriteLine("ERROR: " + ex.Message);
+                    qlsb_status_lb.Text = "Thất bại.";
+                    qlsb_status_lb.ForeColor = Color.Red;
+                }
+                finally
+                {
+                    _ = SQLManager_KhoVatTu.Instance.insertHarvestScheduleLogAsync(plantingID, actionType, oldValue, newValue);
+                }
+            }
+        }
+
+        private void Qlth_Save_btn_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(qlth_Quantity_tb.Text))
+                return;
+
+            DateTime harvestDate = qlth_date_dtp.Value;
+            decimal quantity = Utils.ParseDecimalSmart(qlth_Quantity_tb.Text);
+            string productLotCode = qlth_ProductLotCode_tb.Text;
+            string harvestEmployeeCode = qlth_HarvestEmployee_cbb.SelectedValue.ToString();
+            int? receiveDepartmentID = (string.IsNullOrEmpty(qlth_ReceiveDepartment_cbb.Text) || qlth_ReceiveDepartment_cbb.SelectedValue == null || qlth_ReceiveDepartment_cbb.SelectedValue == DBNull.Value) ? (int?)null : Convert.ToInt32(qlth_ReceiveDepartment_cbb.SelectedValue);
+            
+            if (qlth_ID_tb.Text.Length != 0)
+                qlth_updateItem(Convert.ToInt32(qlth_ID_tb.Text), harvestDate, quantity, productLotCode, harvestEmployeeCode, receiveDepartmentID);
+            else
+                qlth_createItem(harvestDate, quantity, productLotCode, harvestEmployeeCode, receiveDepartmentID);
+        }
         private async void deleteProduct()
         {
             string id = id_tb.Text;
@@ -736,6 +1199,58 @@ namespace RauViet.ui
                         finally
                         {
                             _ = SQLManager_KhoVatTu.Instance.insertCultivationProcessLogAsync(plantingID, actionType, oldValue, "");
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+
+        private async void qlsb_deleteProduct()
+        {
+            string id = qlsb_ID_tb.Text;
+
+            foreach (DataRow row in mPestDiseaseMonitoring_dt.Rows)
+            {
+                string monitoringID = row["MonitoringID"].ToString();
+                if (monitoringID.CompareTo(id) == 0)
+                {
+                    DialogResult dialogResult = MessageBox.Show("Xóa Nha, Chắc Chắn Chưa!", "Thông Báo", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+                    if (dialogResult == DialogResult.Yes)
+                    {
+                        int plantingID = Convert.ToInt32(mPlantingRow["PlantingID"]);
+                        string actionType = "Update ";
+                        string oldValue = $"Ngày: {row["MonitoringDate"]};Vị Trí Mã Lô: {row["Location"]}; Giai Đoạn Sinh Trưởng: {row["GrowthStageName"]}; Tên Sâu Bệnh: {row["PestDiseaseName"]}; Hiện Trạng: {row["CurrentStatus"]}; Người Theo Dõi: {row["ObserverName"]}; Phương Án Xử Lý: {row["PestDiseaseName"]}; Người Quyết Định: {row["DecisionMakerName"]};";
+                        try
+                        {
+                            bool isScussess = await SQLManager_KhoVatTu.Instance.deletetPestDiseaseMonitoringAsync(Convert.ToInt32(id));
+
+                            if (isScussess == true)
+                            {
+                                qlsb_status_lb.Text = "Thành công.";
+                                qlsb_status_lb.ForeColor = Color.Green;
+
+                                mPestDiseaseMonitoring_dt.Rows.Remove(row);
+                                mPestDiseaseMonitoring_dt.AcceptChanges();
+                                actionType += "Success";
+                            }
+                            else
+                            {
+                                actionType += "Fail";
+                                qlsb_status_lb.Text = "Thất bại.";
+                                qlsb_status_lb.ForeColor = Color.Red;
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            actionType += "Exception";
+                            qlsb_status_lb.Text = "Thất bại.";
+                            qlsb_status_lb.ForeColor = Color.Red;
+                        }
+                        finally
+                        {
+                            _ = SQLManager_KhoVatTu.Instance.insertPestDiseaseMonitoringLogAsync(plantingID, actionType, oldValue, "");
                         }
                     }
                     break;
@@ -824,6 +1339,124 @@ namespace RauViet.ui
             LuuThayDoiBtn.Text = "Lưu C.Sửa";
         }
 
+        private void Qlsb_readOnly_btn_Click(object sender, EventArgs e)
+        {
+            qlsb_edit_btn.Visible = true;
+            qlsb_create_btn.Visible = true;
+            qlsb_readOnly_btn.Visible = false;
+            qlsb_Save_btn.Visible = false;
+            qlsb_info_gb.BackColor = Color.DarkGray;
+            qlsb_isNewState = false;
+            qlsb_date_dtp.Enabled = false;
+            qlsb_location_tb.Enabled = false;
+            qlsb_growthStatus_cbb.Enabled = false;
+            qlsb_pestDisease_cbb.Enabled = false;
+            qlsb_currentStatus_tb.Enabled = false;
+            qlsb_observer_cbb.Enabled = false;
+            qlsb_treatmentPlan_tb.Enabled = false;
+            qlsb_decisionMaker_cbb.Enabled = false;
+            
+            if (qlsb_gv.SelectedRows.Count > 0)
+                qlsb_updateRightUI();
+        }
+
+        private void Qlsb_edit_btn_Click(object sender, EventArgs e)
+        {
+            qlsb_edit_btn.Visible = false;
+            qlsb_create_btn.Visible = false;
+            qlsb_Save_btn.Visible = true;
+            qlsb_readOnly_btn.Visible = true;
+            qlsb_info_gb.BackColor = edit_btn.BackColor;
+            qlsb_isNewState = false;
+            qlsb_date_dtp.Enabled = true;
+            qlsb_location_tb.Enabled = true;
+            qlsb_growthStatus_cbb.Enabled = true;
+            qlsb_pestDisease_cbb.Enabled = true;
+            qlsb_currentStatus_tb.Enabled = true;
+            qlsb_observer_cbb.Enabled = true;
+            qlsb_treatmentPlan_tb.Enabled = true;
+            qlsb_decisionMaker_cbb.Enabled = true;
+            qlsb_Save_btn.Text = "Lưu C.Sửa";
+        }
+
+        private void Qlsb_create_btn_Click(object sender, EventArgs e)
+        {
+            qlsb_ID_tb.Text = "";
+            qlsb_status_lb.Text = "";
+
+            qlsb_edit_btn.Visible = false;
+            qlsb_create_btn.Visible = false;
+            qlsb_Save_btn.Visible = true;
+            qlsb_readOnly_btn.Visible = true;
+            qlsb_info_gb.BackColor = qlsb_create_btn.BackColor;
+            qlsb_isNewState = false;
+            qlsb_date_dtp.Enabled = true;
+            qlsb_location_tb.Enabled = true;
+            qlsb_growthStatus_cbb.Enabled = true;
+            qlsb_pestDisease_cbb.Enabled = true;
+            qlsb_currentStatus_tb.Enabled = true;
+            qlsb_observer_cbb.Enabled = true;
+            qlsb_treatmentPlan_tb.Enabled = true;
+            qlsb_decisionMaker_cbb.Enabled = true;
+            qlsb_Save_btn.Text = "Lưu Mới";
+        }
+
+        private void Qlth_readOnly_btn_Click(object sender, EventArgs e)
+        {
+            qlth_edit_btn.Visible = true;
+            qlth_create_btn.Visible = true;
+            qlth_readOnly_btn.Visible = false;
+            qlth_Save_btn.Visible = false;
+            qlth_info_gb.BackColor = Color.DarkGray;
+
+            qlth_isNewState = false;
+            qlth_date_dtp.Enabled = false;
+            qlth_Quantity_tb.Enabled = false;
+            qlth_ProductLotCode_tb.Enabled = false;
+            qlth_HarvestEmployee_cbb.Enabled = false;
+            qlth_ReceiveDepartment_cbb.Enabled = false;
+
+            if (qlth_gv.SelectedRows.Count > 0)
+                qlth_updateRightUI();
+        }
+
+        private void Qlth_edit_btn_Click(object sender, EventArgs e)
+        {
+            qlth_edit_btn.Visible = false;
+            qlth_create_btn.Visible = false;
+            qlth_Save_btn.Visible = true;
+            qlth_readOnly_btn.Visible = true;
+            qlth_info_gb.BackColor = edit_btn.BackColor;
+
+            qlth_isNewState = false;
+            qlth_date_dtp.Enabled = true;
+            qlth_Quantity_tb.Enabled = true;
+            qlth_ProductLotCode_tb.Enabled = true;
+            qlth_HarvestEmployee_cbb.Enabled = true;
+            qlth_ReceiveDepartment_cbb.Enabled = true;
+            qlth_Save_btn.Text = "Lưu C.Sửa";
+        }
+
+        private void Qlth_create_btn_Click(object sender, EventArgs e)
+        {
+            qlth_ID_tb.Text = "";
+            qlth_status_lb.Text = "";
+
+            qlth_edit_btn.Visible = false;
+            qlth_create_btn.Visible = false;
+            qlth_Save_btn.Visible = true;
+            qlth_readOnly_btn.Visible = true;
+            qlth_info_gb.BackColor = qlsb_create_btn.BackColor;
+
+            qlth_isNewState = true;
+            qlth_date_dtp.Enabled = true;
+            qlth_Quantity_tb.Enabled = true;
+            qlth_ProductLotCode_tb.Enabled = true;
+            qlth_HarvestEmployee_cbb.Enabled = true;
+            qlth_ReceiveDepartment_cbb.Enabled = true;
+            qlth_Save_btn.Text = "Lưu Mới";
+        }
+
         private void updateRightUI()
         {
             congViec_CBB.SelectionLength = 0;
@@ -887,6 +1520,110 @@ namespace RauViet.ui
             }
         }
 
+        private void qlsb_updateRightUI()
+        {
+            try
+            {
+                if (isNewState) return;
+
+                if (qlsb_gv.SelectedRows.Count > 0)
+                {
+                    var cells = qlsb_gv.SelectedRows[0].Cells;
+
+                    int growthStageID = int.TryParse(cells["GrowthStageID"].Value?.ToString(), out int growthStage) ? growthStage : -1;
+                    int pestDiseaseID = int.TryParse(cells["PestDiseaseID"].Value?.ToString(), out int pestDisease) ? pestDisease : -1;
+                    string observerCode = cells["Observer"].Value.ToString();
+                    string decisionMakerCode = cells["DecisionMaker"].Value.ToString();
+
+                    if (!qlsb_growthStatus_cbb.Items.Cast<object>().Any(i => ((DataRowView)i)["GrowthStageID"].ToString() == growthStageID.ToString()))
+                    {
+                        qlsb_growthStatus_cbb.DataSource = mGrowthStage_dt;
+                    }
+
+                    if (!qlsb_pestDisease_cbb.Items.Cast<object>().Any(i => ((DataRowView)i)["PestDiseaseID"].ToString() == pestDiseaseID.ToString()))
+                    {
+                        qlsb_pestDisease_cbb.DataSource = mPestDisease_dt;
+                    }
+
+                    if (!qlsb_observer_cbb.Items.Cast<object>().Any(i => ((DataRowView)i)["EmployeeCode"].ToString() == observerCode))
+                    {
+                        qlsb_observer_cbb.DataSource = mEmployee_dt.Copy();
+                    }
+
+                    if (!qlsb_decisionMaker_cbb.Items.Cast<object>().Any(i => ((DataRowView)i)["EmployeeCode"].ToString() == decisionMakerCode))
+                    {
+                        qlsb_decisionMaker_cbb.DataSource = mEmployee_dt.Copy();
+                    }
+
+                    qlsb_ID_tb.Text = cells["MonitoringID"].Value.ToString();
+                    qlsb_date_dtp.Value = Convert.ToDateTime(cells["MonitoringDate"].Value);
+                    qlsb_location_tb.Text = cells["Location"].Value.ToString();
+                    qlsb_growthStatus_cbb.SelectedValue = growthStageID;
+                    qlsb_pestDisease_cbb.SelectedValue = pestDiseaseID;
+                    qlsb_currentStatus_tb.Text = cells["CurrentStatus"].Value.ToString();
+                    qlsb_observer_cbb.SelectedValue = observerCode;
+                    qlsb_treatmentPlan_tb.Text = cells["TreatmentPlan"].Value.ToString();
+                    qlsb_decisionMaker_cbb.SelectedValue = decisionMakerCode;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("ERROR: " + ex.Message);
+            }
+        }
+
+        private void qlth_updateRightUI()
+        {
+            try
+            {
+                if (isNewState) return;
+
+                if (qlsb_gv.SelectedRows.Count > 0)
+                {
+                    var cells = qlsb_gv.SelectedRows[0].Cells;
+
+                    int growthStageID = int.TryParse(cells["GrowthStageID"].Value?.ToString(), out int growthStage) ? growthStage : -1;
+                    int pestDiseaseID = int.TryParse(cells["PestDiseaseID"].Value?.ToString(), out int pestDisease) ? pestDisease : -1;
+                    string observerCode = cells["Observer"].Value.ToString();
+                    string decisionMakerCode = cells["DecisionMaker"].Value.ToString();
+
+                    if (!qlsb_growthStatus_cbb.Items.Cast<object>().Any(i => ((DataRowView)i)["GrowthStageID"].ToString() == growthStageID.ToString()))
+                    {
+                        qlsb_growthStatus_cbb.DataSource = mGrowthStage_dt;
+                    }
+
+                    if (!qlsb_pestDisease_cbb.Items.Cast<object>().Any(i => ((DataRowView)i)["PestDiseaseID"].ToString() == pestDiseaseID.ToString()))
+                    {
+                        qlsb_pestDisease_cbb.DataSource = mPestDisease_dt;
+                    }
+
+                    if (!qlsb_observer_cbb.Items.Cast<object>().Any(i => ((DataRowView)i)["EmployeeCode"].ToString() == observerCode))
+                    {
+                        qlsb_observer_cbb.DataSource = mEmployee_dt.Copy();
+                    }
+
+                    if (!qlsb_decisionMaker_cbb.Items.Cast<object>().Any(i => ((DataRowView)i)["EmployeeCode"].ToString() == decisionMakerCode))
+                    {
+                        qlsb_decisionMaker_cbb.DataSource = mEmployee_dt.Copy();
+                    }
+
+                    qlsb_ID_tb.Text = cells["MonitoringID"].Value.ToString();
+                    qlsb_date_dtp.Value = Convert.ToDateTime(cells["MonitoringDate"].Value);
+                    qlsb_location_tb.Text = cells["Location"].Value.ToString();
+                    qlsb_growthStatus_cbb.SelectedValue = growthStageID;
+                    qlsb_pestDisease_cbb.SelectedValue = pestDiseaseID;
+                    qlsb_currentStatus_tb.Text = cells["CurrentStatus"].Value.ToString();
+                    qlsb_observer_cbb.SelectedValue = observerCode;
+                    qlsb_treatmentPlan_tb.Text = cells["TreatmentPlan"].Value.ToString();
+                    qlsb_decisionMaker_cbb.SelectedValue = decisionMakerCode;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("ERROR: " + ex.Message);
+            }
+        }
+
 
         private void Tb_KeyPress_OnlyNumber(object sender, KeyPressEventArgs e)
         {
@@ -929,7 +1666,8 @@ namespace RauViet.ui
                 int workTypeID = Convert.ToInt32(rowItem["WorkTypeID"]);                
                 int ? materialID = rowItem["MaterialID"] == DBNull.Value ? (int?)null : Convert.ToInt32(rowItem["MaterialID"]);
                 decimal materialQuantity = Convert.ToDecimal(rowItem["MaterialQuantity"]);
-                decimal waterAmount = Convert.ToDecimal(rowItem["WaterAmount"]);                
+                decimal waterAmount = Convert.ToDecimal(rowItem["WaterAmount"]);
+                bool IsMultiplyArea = Convert.ToBoolean(rowItem["IsMultiplyArea"]);
 
                 DateTime processDate = Convert.ToDateTime(mPlantingRow[baseDateType]).AddDays(daysAfter);
                 int? departmentIdTemp = departmentId;
@@ -948,7 +1686,11 @@ namespace RauViet.ui
                         materialPrice = Convert.ToInt32(materiaRow["MaterialPrice"]);
                 }
 
-                data.Add((plantingID, processDate, fertilizationWorkTypeID, workTypeID, materialID, materialPrice, materialQuantity * area, waterAmount * area, departmentIdTemp, employeeCodeTemp));
+                decimal materialQuantity_Erea = materialQuantity * area;
+                if (!IsMultiplyArea)
+                    materialQuantity_Erea = materialQuantity;
+
+                data.Add((plantingID, processDate, fertilizationWorkTypeID, workTypeID, materialID, materialPrice, materialQuantity_Erea, waterAmount * area, departmentIdTemp, employeeCodeTemp));
             }
 
             if(data.Count <= 0)
@@ -963,6 +1705,441 @@ namespace RauViet.ui
 
             SQLStore_KhoVatTu.Instance.removeCultivationProcess(plantingID);
             ShowData();
+        }
+
+        private async void ExportExcel_btn_Click(object sender, EventArgs e)
+        {
+            loadingOverlay = new LoadingOverlay(this);
+            loadingOverlay.Message = "Đang xử lý ...";
+            loadingOverlay.Show();
+            await Task.Delay(100);
+
+            try
+            {
+                using (var wb = new XLWorkbook())
+                {
+                    var ws_LSX = wb.Worksheets.Add("Lệnh sản xuất");
+                    ws_LSX.Style.Font.FontName = "Times New Roman";
+                    ws_LSX.Style.Font.FontSize = 12;
+                    ws_LSX.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+                    WS_LenhSanXuat(ws_LSX);
+
+                    var ws_NKTD = wb.Worksheets.Add("Nhật ký theo dõi");
+                    ws_NKTD.Style.Font.FontName = "Times New Roman";
+                    ws_NKTD.Style.Font.FontSize = 12;
+                    ws_NKTD.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+                    WS_NhatKyTheoDoi(ws_NKTD);
+
+                    var ws_QLSB = wb.Worksheets.Add("Quản lý sâu bệnh");
+                    ws_QLSB.Style.Font.FontName = "Times New Roman";
+                    ws_QLSB.Style.Font.FontSize = 12;
+                    ws_QLSB.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+                    WS_QLSauBenh(ws_QLSB);
+
+                    var ws_TH = wb.Worksheets.Add("Thu Hoạch");
+                    ws_TH.Style.Font.FontName = "Times New Roman";
+                    ws_TH.Style.Font.FontSize = 12;
+                    ws_TH.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+                    WS_QThuHoach(ws_TH);
+
+                    //ws.Column(8).Width = 27;
+                    // ===== Save file =====
+                    using (SaveFileDialog sfd = new SaveFileDialog())
+                    {
+                        sfd.Filter = "Excel Workbook|*.xlsx";
+                        sfd.FileName = $"{Utils.RemoveVietnameseSigns(mPlantingRow["PlantName"].ToString()).Replace(" ", "")}_{mPlantingRow["ProductionOrder"].ToString()}";
+                        if (sfd.ShowDialog() == DialogResult.OK)
+                        {
+                            wb.SaveAs(sfd.FileName);
+                            DialogResult result = MessageBox.Show("Bạn có muốn mở file này không?", "Lưu file thành công", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                            if (result == DialogResult.Yes)
+                            {
+                                try
+                                {
+                                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo()
+                                    {
+                                        FileName = sfd.FileName,
+                                        UseShellExecute = true
+                                    });
+                                }
+                                catch (Exception ex)
+                                {
+                                    MessageBox.Show("Không thể mở file: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi khi xuất Excel: " + ex.Message);
+            }
+            finally
+            {
+                await Task.Delay(200);
+                loadingOverlay.Hide();
+            }
+        }
+
+
+        void WS_LenhSanXuat(IXLWorksheet ws)
+        {
+            int rowInd = 1;
+            int columnInd = 1;
+
+            var image = Properties.Resources.logo_vr_1;
+
+            using (var ms = new MemoryStream())
+            {
+                image.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+                ms.Position = 0;
+
+                var picture = ws.AddPicture(ms)
+                                .MoveTo(ws.Cell(rowInd, columnInd));
+            }
+
+            columnInd++;
+            ws.Cell(rowInd, columnInd).Value = "LỆNH SẢN XUẤT";
+            ws.Cell(rowInd, columnInd).Style.Font.Bold = true;
+            ws.Cell(rowInd, columnInd).Style.Font.FontSize = 14;
+            ws.Cell(rowInd, columnInd).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            ws.Cell(rowInd, columnInd).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+
+            columnInd++;
+            ws.Cell(rowInd, columnInd).Value = "Số hiệu:\nNgày ban hành:\nLần ban hành:\nSố trang:";
+            ws.Cell(rowInd, columnInd).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+            ws.Cell(rowInd, columnInd).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+            ws.Cell(rowInd, columnInd).Style.Alignment.WrapText = true;
+
+            columnInd++;
+            ws.Cell(rowInd, columnInd).Value = "VRF_GAP_BM05\n12/02/22\n02\npage 1 of 1";
+            ws.Cell(rowInd, columnInd).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+            ws.Cell(rowInd, columnInd).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+            ws.Cell(rowInd, columnInd).Style.Alignment.WrapText = true;
+            rowInd = 2;
+            columnInd = 1;
+            // ===== Header cấp 2 và cấp 3 =====
+            string[] columnsName = new string[] { "Tên sản phẩm:", "Mã sản phẩm:", "Số lệnh sản xuất:", "Mã quy trình:", "Ngày gieo hạt:", "Số thứ tự trồng:", "Diện tích:", "Số lượng cây (cây):", "Ngày trồng:", "Phụ trách kỹ thuật:", "Ngày thu hoạch:", "Tổ phụ trách:", "Vị trí trồng:", "Người phụ trách:" };
+            string[] exportColumns = new string[] { "PlantName", "SKU", "ProductionOrder", "MaQuyTrinh", "NurseryDate", "SoThuVuTrong", "Area", "Quantity", "PlantingDate", "SupervisorName", "HarvestDate", "DepartmentName", "ViTriTrong", "NguoiPhuTrach" };
+            string[] typeColumns = new string[] { "string", "int", "string", "string", "date", "string", "decimal", "decimal", "date", "string", "date", "string", "string", "string" };
+            for (int i = 0; i < columnsName.Length; i++)
+            {
+                var titleCell = ws.Cell(rowInd, columnInd);
+                titleCell.Value = columnsName[i];
+                titleCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+                titleCell.Style.Border.OutsideBorder = XLBorderStyleValues.Thin; // Đóng khung
+
+                string valueStr = "";
+
+                if (exportColumns[i].CompareTo("SoThuVuTrong") == 0)
+                {
+                    string productionOrder = mPlantingRow["ProductionOrder"].ToString();
+
+                    string last3 = productionOrder.Length >= 3 ? productionOrder.Substring(productionOrder.Length - 3) : "";
+                    string twoFromMinus3 = productionOrder.Length >= 5 ? productionOrder.Substring(productionOrder.Length - 5, 2) : "";
+
+                    valueStr = last3 + "/" + twoFromMinus3;
+                }
+                else if (exportColumns[i].CompareTo("NguoiPhuTrach") == 0)
+                {
+                    int departmentID = Convert.ToInt32(mPlantingRow["Department"]);
+                    DataRow[] rows = mEmployee_dt.Select($"DepartmentID = {departmentID} AND PositionID = 17");
+                    if (rows.Length > 0)
+                        valueStr = rows[0]["FullName"].ToString();
+                }
+                else if (mPlantingRow.Table.Columns.Contains(exportColumns[i]))
+                    valueStr = mPlantingRow[exportColumns[i]].ToString();
+
+                var valueCell = ws.Cell(rowInd, columnInd + 1);
+                valueCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+                valueCell.Style.Border.OutsideBorder = XLBorderStyleValues.Thin; // Đóng khung
+
+                if (string.IsNullOrEmpty(valueStr))
+                    valueCell.Value = valueStr;
+                else
+                {
+                    if (typeColumns[i].CompareTo("int") == 0)
+                        valueCell.Value = Convert.ToInt32(valueStr);
+                    else if (typeColumns[i].CompareTo("date") == 0)
+                        valueCell.Value = Convert.ToDateTime(valueStr);
+                    else if (typeColumns[i].CompareTo("decimal") == 0)
+                        valueCell.Value = Convert.ToDecimal(valueStr);
+                    else
+                        valueCell.Value = valueStr;
+                }
+
+                columnInd += 2;
+                if (columnInd > 3)
+                {
+                    columnInd = 1;
+                    rowInd++;
+                }
+
+            }
+            ws.Column(1).Width = 16;
+            ws.Column(2).Width = 25;
+            ws.Column(3).Width = 17.5;
+            ws.Column(4).Width = 30;
+            ws.Row(1).Height = 62;
+        }
+
+        void WS_NhatKyTheoDoi(IXLWorksheet ws)
+        {
+            // Danh sách cột muốn xuất theo Name
+
+            int numColumn = 6;
+            int rowInd = 1;
+            int columnInd = 1;
+
+            var image = Properties.Resources.logo_vr_1;
+
+            using (var ms = new MemoryStream())
+            {
+                image.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+                ms.Position = 0;
+
+                var picture = ws.AddPicture(ms)
+                                .MoveTo(ws.Cell(rowInd, columnInd));
+            }
+
+            columnInd+=2;
+            ws.Range(rowInd, columnInd, rowInd, columnInd + 10).Merge();
+            ws.Cell(rowInd, columnInd).Value = "BIỂU MẪU GIÁM SÁT NHẬT KÝ SẢN XUẤT";
+            ws.Cell(rowInd, columnInd).Style.Font.Bold = true;
+            ws.Cell(rowInd, columnInd).Style.Font.FontSize = 14;
+            ws.Cell(rowInd, columnInd).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            ws.Cell(rowInd, columnInd).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+
+            columnInd+=11;
+            ws.Range(rowInd, columnInd, rowInd, columnInd + 1).Merge();
+            ws.Cell(rowInd, columnInd).Value = "Số hiệu:\nNgày ban hành:\nLần ban hành:\nSố trang:";
+            ws.Cell(rowInd, columnInd).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+            ws.Cell(rowInd, columnInd).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+            ws.Cell(rowInd, columnInd).Style.Alignment.WrapText = true;
+
+            columnInd+=2;
+            ws.Range(rowInd, columnInd, rowInd, columnInd + 1).Merge();
+            ws.Cell(rowInd, columnInd).Value = "VRF_GAP_BM05\n12/02/22\n02\npage 1 of 1";
+            ws.Cell(rowInd, columnInd).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+            ws.Cell(rowInd, columnInd).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+            ws.Cell(rowInd, columnInd).Style.Alignment.WrapText = true;
+
+            rowInd = 2;
+            columnInd = 1;
+            string[] columnsName = new string[] { "Ngày", "Thứ", "Loại Công Việc", "Tên Vật Tư", "Số Lượng", "Đơn Vị", "Mã LOT Vật Tư", "Liều Lượng", "Tình Trạng Cây Trồng", "Thành Phần/ Hoạt Chất", "Người Thực Hiện", "Thời Gian Cách Li (Ngày )", "Ngày Hết Cách Li", "Tổ Ph.Trách", "Vị Trí Trồng", "Lượng Nước Tưới (L/h))", "Ghi Chú" };
+            string[] exportColumns = new string[] { "ProcessDate", "ProcessDate_Week", "WorkTypeName", "MaterialName", "MaterialQuantity", "MaterialUnit", "maLotVT", "Dosage", "PlantStatus", "ActiveIngredient", "EmployeeName", "IsolationDays", "IsolationEndDate", "DepartmentName", "PlantLocation", "WaterAmount", "Note1" };
+            string[] typeColumns = new string[] { "date", "string", "string", "string", "decimal", "string", "string", "string", "string", "string", "string", "int", "date", "sring", "string", "decimal", "string" };
+            float[] widthColumns = new float[] { 11, 5, 17, 45, 9.8f, 7.2f, 17f, 12, 22, 24, 30, 27, 18, 20, 13, 25, 12 };
+            foreach (var tile in columnsName)
+            {
+                var titleCell = ws.Cell(rowInd, columnInd);
+                titleCell.Style.Font.Bold = true;
+
+                titleCell.Value = tile;
+                titleCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+                titleCell.Style.Border.OutsideBorder = XLBorderStyleValues.Thin; // Đóng khung
+
+                columnInd++;
+            }
+
+            rowInd++;
+
+            foreach (DataRow row in mCultivationProcess_dt.Rows)
+            {
+                for (int i = 0; i < exportColumns.Length; i++)
+                {
+                    columnInd = i + 1;
+                    var valueCell = ws.Cell(rowInd, columnInd);
+                    valueCell.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                    if (!mCultivationProcess_dt.Columns.Contains(exportColumns[i]))
+                        continue;
+
+                    string valueStr = row[exportColumns[i]].ToString();
+                    if (string.IsNullOrEmpty(valueStr))
+                        valueCell.Value = valueStr;
+                    else
+                    {
+                        if (typeColumns[i].CompareTo("int") == 0)
+                            valueCell.Value = Convert.ToInt32(valueStr);
+                        else if (typeColumns[i].CompareTo("date") == 0)
+                            valueCell.Value = Convert.ToDateTime(valueStr);
+                        else if (typeColumns[i].CompareTo("decimal") == 0)
+                            valueCell.Value = Convert.ToDecimal(valueStr);
+                        else
+                            valueCell.Value = valueStr;
+                    }
+
+                    valueCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+                }
+
+                rowInd++;
+            }
+
+            for(int i =0; i < widthColumns.Length; i++)
+            {
+                ws.Column(i+1).Width = widthColumns[i];
+            }
+            ws.Row(1).Height = 63;
+        }
+
+        void WS_QLSauBenh(IXLWorksheet ws)
+        {
+            // Danh sách cột muốn xuất theo Name
+
+            int numColumn = 6;
+            int rowInd = 1;
+            int columnInd = 1;
+
+            var image = Properties.Resources.logo_vr_1;
+
+            using (var ms = new MemoryStream())
+            {
+                image.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+                ms.Position = 0;
+
+                var picture = ws.AddPicture(ms)
+                                .MoveTo(ws.Cell(rowInd, columnInd));
+            }
+
+            columnInd ++;
+            ws.Range(rowInd, columnInd, rowInd, columnInd + 4).Merge();
+            ws.Cell(rowInd, columnInd).Value = "NHẬT KÍ QUẢN LÝ SÂU BỆNH";
+            ws.Cell(rowInd, columnInd).Style.Font.Bold = true;
+            ws.Cell(rowInd, columnInd).Style.Font.FontSize = 14;
+            ws.Cell(rowInd, columnInd).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            ws.Cell(rowInd, columnInd).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+
+            columnInd +=5;
+            ws.Cell(rowInd, columnInd).Value = "Số hiệu:\nNgày ban hành:\nLần ban hành:\nSố trang:";
+            ws.Cell(rowInd, columnInd).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+            ws.Cell(rowInd, columnInd).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+            ws.Cell(rowInd, columnInd).Style.Alignment.WrapText = true;
+
+            columnInd ++;
+            ws.Cell(rowInd, columnInd).Value = "VRF_GAP_BM05\n12/02/22\n02\npage 1 of 1";
+            ws.Cell(rowInd, columnInd).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+            ws.Cell(rowInd, columnInd).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+            ws.Cell(rowInd, columnInd).Style.Alignment.WrapText = true;
+
+            rowInd = 2;
+            columnInd = 1;
+            string[] columnsName = new string[] { "Ngày Theo Dõi", "Vị Trí Mã Lô", "Giai Đoạn Sinh Trưởng", "Tên Sâu Bệnh Hại", "Hiện Trạng Và Mật Độ Sâu Bệnh", "Người Theo Dõi", "Phương Án Xử Lý Và Sử Dụng Thuốc BVTV", "Người Quyết Định Phương Án Xử Lý"};
+            string[] exportColumns = new string[] { "MonitoringDate", "Location", "GrowthStageName", "PestDiseaseName", "CurrentStatus", "ObserverName", "TreatmentPlan", "DecisionMakerName" };
+            foreach (var tile in columnsName)
+            {
+                var titleCell = ws.Cell(rowInd, columnInd);
+                titleCell.Style.Font.Bold = true;
+
+                titleCell.Value = tile;
+                titleCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+                titleCell.Style.Border.OutsideBorder = XLBorderStyleValues.Thin; // Đóng khung
+                titleCell.Style.Alignment.WrapText = true;
+                columnInd++;
+            }
+
+            rowInd++;
+            
+            foreach (DataRow row in mPestDiseaseMonitoring_dt.Rows)
+            {
+                columnInd = 1;
+                foreach (var columnName in exportColumns)
+                {
+                    string valueStr = row[columnName].ToString();
+                    var titleCell = ws.Cell(rowInd, columnInd);
+
+                    if (columnName.CompareTo("MonitoringDate") == 0)
+                        titleCell.Value = Convert.ToDateTime(valueStr).Date;
+                    else
+                        titleCell.Value = valueStr;
+
+                    titleCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+                    titleCell.Style.Border.OutsideBorder = XLBorderStyleValues.Thin; // Đóng khung
+                    columnInd++;
+                }
+                
+                rowInd++;
+            }
+
+            
+
+            ws.Column(1).Width = 16;
+            ws.Column(2).Width = 14;
+            ws.Column(3).Width = 18;
+            ws.Column(4).Width = 19;
+            ws.Column(5).Width = 17;
+            ws.Column(6).Width = 24.2;
+            ws.Column(7).Width = 20;
+            ws.Column(8).Width = 23.75;
+            ws.Row(1).Height = 63;
+            ws.Row(2).Height = 32;
+        }
+
+        void WS_QThuHoach(IXLWorksheet ws)
+        {
+            // Danh sách cột muốn xuất theo Name
+
+            int numColumn = 6;
+            int rowInd = 1;
+            int columnInd = 1;
+
+            var image = Properties.Resources.logo_vr_1;
+
+            using (var ms = new MemoryStream())
+            {
+                image.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+                ms.Position = 0;
+
+                var picture = ws.AddPicture(ms)
+                                .MoveTo(ws.Cell(rowInd, columnInd));
+            }
+
+            columnInd++;
+            ws.Range(rowInd, columnInd, rowInd, columnInd + 5).Merge();
+            ws.Cell(rowInd, columnInd).Value = "BIỂU MẪU GIÁM SÁT THU HOẠCH";
+            ws.Cell(rowInd, columnInd).Style.Font.Bold = true;
+            ws.Cell(rowInd, columnInd).Style.Font.FontSize = 14;
+            ws.Cell(rowInd, columnInd).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            ws.Cell(rowInd, columnInd).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+
+            columnInd += 6;
+            ws.Cell(rowInd, columnInd).Value = "Số hiệu:\nNgày ban hành:\nLần ban hành:\nSố trang:";
+            ws.Cell(rowInd, columnInd).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+            ws.Cell(rowInd, columnInd).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+            ws.Cell(rowInd, columnInd).Style.Alignment.WrapText = true;
+
+            columnInd++;
+            ws.Cell(rowInd, columnInd).Value = "VRF_GAP_BM05\n12/02/22\n02\npage 1 of 1";
+            ws.Cell(rowInd, columnInd).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+            ws.Cell(rowInd, columnInd).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+            ws.Cell(rowInd, columnInd).Style.Alignment.WrapText = true;
+
+            rowInd = 2;
+            columnInd = 1;
+            string[] columnsName = new string[] { "Ngày Thu Hoạch", "Thứ", "Loại Sản Phẩm", "Sản Lượng(kg)", "Vị Trí Thu Hoạch", "Mã Số Lô Sản Phẩm (LOT)", "Người Giám Sát", "Người Thu Hoạch", "Nơi Nhận Sản Phẩm" };
+            foreach (var tile in columnsName)
+            {
+                var titleCell = ws.Cell(rowInd, columnInd);
+                titleCell.Style.Font.Bold = true;
+
+                titleCell.Value = tile;
+                titleCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+                titleCell.Style.Border.OutsideBorder = XLBorderStyleValues.Thin; // Đóng khung
+
+                columnInd++;
+            }
+
+            rowInd++;
+
+            ws.Column(1).Width = 16;
+            ws.Column(2).Width = 14;
+            ws.Column(3).Width = 18;
+            ws.Column(4).Width = 15;
+            ws.Column(5).Width = 17;
+            ws.Column(6).Width = 22;
+            ws.Column(7).Width = 19;
+            ws.Row(1).Height = 63;
+            ws.Row(2).Height = 32;
         }
 
         //System.Data.DataTable excelData;

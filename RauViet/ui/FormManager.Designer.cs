@@ -101,7 +101,7 @@
             this.materialExport_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.materialImport_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.tonKhoVatTu_mi = new System.Windows.Forms.ToolStripMenuItem();
-            this.khoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.QLCT_group_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.plantingManagement_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.cultivationProcessTemplate_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripMenuItem();
@@ -167,7 +167,7 @@
             this.orderDomestic_group_mi,
             this.toolStripMenuItem3,
             this.qlVatTu_group,
-            this.khoToolStripMenuItem,
+            this.QLCT_group_mi,
             this.toolStripMenuItem4,
             this.thongke_main_mi,
             this.toolStripMenuItem2,
@@ -689,16 +689,16 @@
             this.tonKhoVatTu_mi.Size = new System.Drawing.Size(183, 22);
             this.tonKhoVatTu_mi.Text = "Tồn Kho Vật Tư";
             // 
-            // khoToolStripMenuItem
+            // QLCT_group_mi
             // 
-            this.khoToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.QLCT_group_mi.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.plantingManagement_mi,
             this.cultivationProcessTemplate_mi});
-            this.khoToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.khoToolStripMenuItem.ForeColor = System.Drawing.Color.MediumBlue;
-            this.khoToolStripMenuItem.Name = "khoToolStripMenuItem";
-            this.khoToolStripMenuItem.Size = new System.Drawing.Size(135, 21);
-            this.khoToolStripMenuItem.Text = "Quản Lý Cây Trồng";
+            this.QLCT_group_mi.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.QLCT_group_mi.ForeColor = System.Drawing.Color.MediumBlue;
+            this.QLCT_group_mi.Name = "QLCT_group_mi";
+            this.QLCT_group_mi.Size = new System.Drawing.Size(135, 21);
+            this.QLCT_group_mi.Text = "Quản Lý Cây Trồng";
             // 
             // plantingManagement_mi
             // 
@@ -967,7 +967,7 @@
         private System.Windows.Forms.ToolStripMenuItem xuatNhapRauCuQua_mi;
         private System.Windows.Forms.ToolStripMenuItem thongKeTonKhoHangRauCu_mi;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem4;
-        private System.Windows.Forms.ToolStripMenuItem khoToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem QLCT_group_mi;
         private System.Windows.Forms.ToolStripMenuItem plantingManagement_mi;
         private System.Windows.Forms.ToolStripMenuItem qlVatTu_group;
         private System.Windows.Forms.ToolStripMenuItem khoVaTu_mi;

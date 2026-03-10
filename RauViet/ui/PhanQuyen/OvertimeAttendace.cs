@@ -164,7 +164,7 @@ namespace RauViet.ui
                 mEmployeeDV = new DataView(mEmployee_dt);
                 dataGV.DataSource = mEmployeeDV;
 
-                Utils.HideColumns(departmentGV, new[] { "DepartmentID", "Description", "IsActive", "CreatedAt" });
+                Utils.HideColumns(departmentGV, new[] { "DepartmentID", "Description", "IsActive", "CreatedAt", "WorkBlock" });
                 Utils.HideColumns(dataGV, new[] { "DepartmentID", "PositionName", "ContractTypeName" });
                 Utils.HideColumns(log_GV, new[] { "EmployeeCode", "LogID" });
 

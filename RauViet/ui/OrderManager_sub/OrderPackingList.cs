@@ -7,7 +7,9 @@ using System.Data;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Forms;
+using MessageBox = System.Windows.Forms.MessageBox;
 
 namespace RauViet.ui
 {
@@ -287,14 +289,14 @@ namespace RauViet.ui
                 mOrders_dt.Rows.InsertAt(newRow, insertInd);
                 mOrders_dt.AcceptChanges();
 
-                dataGV.ClearSelection();
-                var newRowView = mOrders_dt.DefaultView[insertInd];
-                int gridIndex = dataGV.Rows.Cast<DataGridViewRow>().First(r => ((DataRowView)r.DataBoundItem).Row == newRowView.Row).Index;
+                //dataGV.ClearSelection();
+                //var newRowView = mOrders_dt.DefaultView[insertInd];
+                //int gridIndex = dataGV.Rows.Cast<DataGridViewRow>().First(r => ((DataRowView)r.DataBoundItem).Row == newRowView.Row).Index;
 
-                if (string.Equals(packageVal, "weight", StringComparison.OrdinalIgnoreCase))
-                    dataGV.CurrentCell = dataGV.Rows[gridIndex].Cells["NWReal"];
-                else
-                    dataGV.CurrentCell = dataGV.Rows[gridIndex].Cells["PCSReal"];
+                //if (string.Equals(packageVal, "weight", StringComparison.OrdinalIgnoreCase))
+                //    dataGV.CurrentCell = dataGV.Rows[gridIndex].Cells["NWReal"];
+                //else
+                //    dataGV.CurrentCell = dataGV.Rows[gridIndex].Cells["PCSReal"];
 
                 _ = SQLManager_Kho.Instance.InsertOrderPackingLogAsync(exportCodeId, newId, "chia Đơn Từ: " + orderId + " thành công", null, null, null, "");
             }
@@ -1899,11 +1901,14 @@ namespace RauViet.ui
 
             string packing = row["packing"].ToString();
             int Amount = Convert.ToInt32(row["Amount"]);
+            string amountPackingStr = $"{Amount} {packing}";
+            if (packing.CompareTo("weight") == 0)
+                amountPackingStr = "weight";
 
             var printer = new LabelPrinter(
                 SKURows[0]["ProductNameEN"].ToString(),
                 SKURows[0]["BotanicalName"].ToString(),
-                $"{Amount} {packing}",
+                amountPackingStr,
                 packingRows[0]["BarCodeEAN13"].ToString(),
                 SKU.ToString(),
                 LOTCodeComplete,

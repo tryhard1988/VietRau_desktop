@@ -220,6 +220,13 @@ namespace RauViet.ui
                 ReadOnly_btn_Click(null, null);
                 dataGV.SelectionChanged += this.dataGV_CellClick;
                 monthYear_dtp.ValueChanged += monthYearDtp_ValueChanged;
+
+                if (UserManager.Instance.hasRole_QLK_QuanLyLichUom_ReadOnly())
+                {
+                    newCustomerBtn.Visible = false;
+                    edit_btn.Visible = false;
+                    readOnly_btn.Visible = false;
+                }
             }
             catch
             {
@@ -842,6 +849,12 @@ namespace RauViet.ui
                 case 221: //tía tô
                     nextDate = ngayUom_dtp.Value.AddDays(24);
                     break;
+                case 111: //Ớt Hiểm
+                    nextDate = ngayUom_dtp.Value.AddDays(27);
+                    break;
+                case 101: //Cà Pháo
+                    nextDate = ngayUom_dtp.Value.AddDays(25);
+                    break;
             }
             ngaytrong_dtp.Value = nextDate;
         }
@@ -901,6 +914,12 @@ namespace RauViet.ui
                     break;
                 case 221: //tía tô
                     nextDate = ngaytrong_dtp.Value.AddDays(25);
+                    break;
+                case 111: //Ớt Hiểm
+                    nextDate = ngaytrong_dtp.Value.AddDays(52);
+                    break;
+                case 101: //Cà Pháo
+                    nextDate = ngaytrong_dtp.Value.AddDays(50);
                     break;
             }
             
