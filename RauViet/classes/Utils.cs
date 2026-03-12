@@ -594,4 +594,9 @@ public static class Utils
         }
         catch { }
     }
+
+    public static int WorkType_ThuHoach()
+    {
+        return 20;
+    }
 }

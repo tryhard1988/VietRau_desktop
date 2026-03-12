@@ -24,6 +24,7 @@ namespace RauViet.classes
         DataTable mMaterialCategory_dt = null;
         DataTable mMaterial_dt = null;
         DataTable mCultivationProcessTemplate_dt = null;
+        DataTable mFarm_dt = null;
 
         Dictionary<int, DataTable> mCultivationProcesses = null;
         Dictionary<int, DataTable> mPestDiseaseMonitorings = null;
@@ -268,14 +269,18 @@ namespace RauViet.classes
             data.Columns.Add("SupervisorName", typeof(string));
             data.Columns.Add("CultivationTypeName", typeof(string));
             data.Columns.Add("search_nosign", typeof(string));
+            data.Columns.Add("FarmName", typeof(string));
 
             DataTable employee_dt = await SQLStore_QLNS.Instance.GetEmployeesAsync();
             DataTable department_dt = await SQLStore_QLNS.Instance.GetDepartmentAsync();
             DataTable product_dt = await SQLStore_Kho.Instance.getProductSKUAsync();
             await SQLStore_KhoVatTu.Instance.GetCultivationTypeAsync();
+            await SQLStore_KhoVatTu.Instance.GetFarmsAsync();
+
             foreach (DataRow row in data.Rows)
             {
                 int sku = Convert.ToInt32(row["SKU"]);
+                int? farmID = row.Field<int?>("FarmID");
                 int? department = row.Field<int?>("Department");
                 int? cultivationTypeID = row.Field<int?>("CultivationTypeID");
                 string Supervisor = row["Supervisor"].ToString();
@@ -298,6 +303,14 @@ namespace RauViet.classes
                     if (cultivationRow != null)
                         row["CultivationTypeName"] = cultivationRow["CultivationTypeName"];
                 }
+
+                if (farmID.HasValue)
+                {
+                    DataRow farmRow = mFarm_dt.AsEnumerable().FirstOrDefault(r => r.Field<int>("FarmID") == farmID);
+                    if (farmRow != null)
+                        row["FarmName"] = farmRow["FarmName"];
+                }
+
                 row["search_nosign"] = Utils.RemoveVietnameseSigns($"{row["ProductionOrder"]} {row["PlantName"]}");
             }
         }
@@ -376,6 +389,24 @@ namespace RauViet.classes
             }
 
             return mCultivationType_dt;
+        }
+
+        public async Task<DataTable> GetFarmsAsync()
+        {
+            if (mFarm_dt == null)
+            {
+                try
+                {
+                    mFarm_dt = await SQLManager_KhoVatTu.Instance.GetFarmsAsync();
+                }
+                catch
+                {
+                    Console.WriteLine("error GetFarmsAsync SQLStore");
+                    return null;
+                }
+            }
+
+            return mFarm_dt;
         }
 
         public DataTable GetBaseDateType()
@@ -967,46 +998,28 @@ namespace RauViet.classes
             data.Columns.Add("HarvestEmployeeName", typeof(string));
             data.Columns.Add("ReceiveDepartmentName", typeof(string));
 
-            return;
-
             DataTable employee_dt = await SQLStore_QLNS.Instance.GetEmployeesAsync();
-            DataTable growthStage_dt = await SQLStore_KhoVatTu.Instance.GetGrowthStageAsync();
-            DataTable pestDisease_dt = await SQLStore_KhoVatTu.Instance.GetPestDiseaseAsync();
+            DataTable department_dt = await SQLStore_QLNS.Instance.GetDepartmentAsync();
 
             foreach (DataRow rowItem in data.Rows)
             {
-                int? growthStageID = rowItem["GrowthStageID"] == DBNull.Value ? (int?)null : Convert.ToInt32(rowItem["GrowthStageID"]);
-                int? pestDiseaseID = rowItem["PestDiseaseID"] == DBNull.Value ? (int?)null : Convert.ToInt32(rowItem["PestDiseaseID"]);
-                string observer = rowItem["Observer"].ToString().Trim();
-                string decisionMaker = rowItem["DecisionMaker"].ToString().Trim();
-                DateTime MonitoringDate = Convert.ToDateTime(rowItem["MonitoringDate"]);
-                rowItem["MonitoringDate_Week"] = Utils.GetThu_Viet(MonitoringDate);
+                int? receiveDepartmentID = rowItem["ReceiveDepartmentID"] == DBNull.Value ? (int?)null : Convert.ToInt32(rowItem["ReceiveDepartmentID"]);
+                string harvestEmployee = rowItem["HarvestEmployee"].ToString().Trim();
 
-                if (growthStageID.HasValue)
+                rowItem["HarvestDate_Week"] = Utils.GetThu_Viet(Convert.ToDateTime(rowItem["HarvestDate"]));
+
+                if (receiveDepartmentID.HasValue)
                 {
-                    DataRow growthStageRow = growthStage_dt.AsEnumerable().FirstOrDefault(r => r.Field<int>("GrowthStageID") == growthStageID);
-                    if (growthStageRow != null)
-                        rowItem["GrowthStageName"] = growthStageRow["GrowthStageName"].ToString();
-                }
-                if (pestDiseaseID.HasValue)
-                {
-                    DataRow pestDiseaseRow = pestDisease_dt.AsEnumerable().FirstOrDefault(r => r.Field<int>("PestDiseaseID") == pestDiseaseID);
-                    if (pestDiseaseRow != null)
-                        rowItem["PestDiseaseName"] = pestDiseaseRow["PestDiseaseName"].ToString();
+                    DataRow departmentRow = department_dt.AsEnumerable().FirstOrDefault(r => r.Field<int>("DepartmentID") == receiveDepartmentID);
+                    if (departmentRow != null)
+                        rowItem["ReceiveDepartmentName"] = departmentRow["DepartmentName"].ToString();
                 }
 
-                if (!string.IsNullOrEmpty(observer))
+                if (!string.IsNullOrEmpty(harvestEmployee))
                 {
-                    DataRow employeeRow = employee_dt.AsEnumerable().FirstOrDefault(r => r.Field<string>("EmployeeCode") == observer);
+                    DataRow employeeRow = employee_dt.AsEnumerable().FirstOrDefault(r => r.Field<string>("EmployeeCode") == harvestEmployee);
                     if (employeeRow != null)
-                        rowItem["ObserverName"] = employeeRow["FullName"].ToString();
-                }
-
-                if (!string.IsNullOrEmpty(decisionMaker))
-                {
-                    DataRow employeeRow = employee_dt.AsEnumerable().FirstOrDefault(r => r.Field<string>("EmployeeCode") == decisionMaker);
-                    if (employeeRow != null)
-                        rowItem["DecisionMakerName"] = employeeRow["FullName"].ToString();
+                        rowItem["HarvestEmployeeName"] = employeeRow["FullName"].ToString();
                 }
             }
         }
@@ -1028,6 +1041,11 @@ namespace RauViet.classes
             }
 
             return mHarvestScheduleLogs[plantingID];
+        }
+
+        public void removeHarvestSchedule(int plantingID)
+        {
+            mHarvestSchedules.Remove(plantingID);
         }
     }
 }

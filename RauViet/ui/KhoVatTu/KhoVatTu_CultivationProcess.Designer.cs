@@ -58,8 +58,6 @@ namespace RauViet.ui
             this.label14 = new System.Windows.Forms.Label();
             this.isolationDays_tb = new System.Windows.Forms.TextBox();
             this.label13 = new System.Windows.Forms.Label();
-            this.activeIngredient_tb = new System.Windows.Forms.TextBox();
-            this.label12 = new System.Windows.Forms.Label();
             this.plantStatus_tb = new System.Windows.Forms.TextBox();
             this.label11 = new System.Windows.Forms.Label();
             this.dosage_tb = new System.Windows.Forms.TextBox();
@@ -113,15 +111,18 @@ namespace RauViet.ui
             this.qlsb_status_lb = new System.Windows.Forms.Label();
             this.qlsb_Save_btn = new System.Windows.Forms.Button();
             this.thuHoach_tp = new System.Windows.Forms.TabPage();
-            this.panel2 = new System.Windows.Forms.Panel();
-            this.plant_lb = new System.Windows.Forms.Label();
-            this.panel4 = new System.Windows.Forms.Panel();
-            this.exportExcel_btn = new System.Windows.Forms.Button();
+            this.panel9 = new System.Windows.Forms.Panel();
+            this.qlth_gv = new System.Windows.Forms.DataGridView();
+            this.label36 = new System.Windows.Forms.Label();
+            this.qlth_Log_gv = new System.Windows.Forms.DataGridView();
             this.panel8 = new System.Windows.Forms.Panel();
             this.qlth_readOnly_btn = new System.Windows.Forms.Button();
             this.qlth_edit_btn = new System.Windows.Forms.Button();
             this.qlth_create_btn = new System.Windows.Forms.Button();
             this.qlth_info_gb = new System.Windows.Forms.GroupBox();
+            this.label26 = new System.Windows.Forms.Label();
+            this.qlth_ProductLotCode_tb = new System.Windows.Forms.TextBox();
+            this.label30 = new System.Windows.Forms.Label();
             this.qlth_HarvestEmployee_cbb = new System.Windows.Forms.ComboBox();
             this.label29 = new System.Windows.Forms.Label();
             this.qlth_date_dtp = new System.Windows.Forms.DateTimePicker();
@@ -133,12 +134,10 @@ namespace RauViet.ui
             this.qlth_ID_tb = new System.Windows.Forms.TextBox();
             this.qlth_status_lb = new System.Windows.Forms.Label();
             this.qlth_Save_btn = new System.Windows.Forms.Button();
-            this.panel9 = new System.Windows.Forms.Panel();
-            this.qlth_gv = new System.Windows.Forms.DataGridView();
-            this.label36 = new System.Windows.Forms.Label();
-            this.qlth_Log_gv = new System.Windows.Forms.DataGridView();
-            this.qlth_ProductLotCode_tb = new System.Windows.Forms.TextBox();
-            this.label30 = new System.Windows.Forms.Label();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.plant_lb = new System.Windows.Forms.Label();
+            this.panel4 = new System.Windows.Forms.Panel();
+            this.exportExcel_btn = new System.Windows.Forms.Button();
             this.panel3.SuspendLayout();
             this.data_tc.SuspendLayout();
             this.nhatKyTheoDoi_tp.SuspendLayout();
@@ -154,13 +153,13 @@ namespace RauViet.ui
             this.panel6.SuspendLayout();
             this.qlsb_info_gb.SuspendLayout();
             this.thuHoach_tp.SuspendLayout();
-            this.panel2.SuspendLayout();
-            this.panel4.SuspendLayout();
-            this.panel8.SuspendLayout();
-            this.qlth_info_gb.SuspendLayout();
             this.panel9.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.qlth_gv)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.qlth_Log_gv)).BeginInit();
+            this.panel8.SuspendLayout();
+            this.qlth_info_gb.SuspendLayout();
+            this.panel2.SuspendLayout();
+            this.panel4.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel3
@@ -322,8 +321,6 @@ namespace RauViet.ui
             this.info_gb.Controls.Add(this.label14);
             this.info_gb.Controls.Add(this.isolationDays_tb);
             this.info_gb.Controls.Add(this.label13);
-            this.info_gb.Controls.Add(this.activeIngredient_tb);
-            this.info_gb.Controls.Add(this.label12);
             this.info_gb.Controls.Add(this.plantStatus_tb);
             this.info_gb.Controls.Add(this.label11);
             this.info_gb.Controls.Add(this.dosage_tb);
@@ -347,7 +344,7 @@ namespace RauViet.ui
             this.info_gb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.info_gb.Location = new System.Drawing.Point(7, 50);
             this.info_gb.Name = "info_gb";
-            this.info_gb.Size = new System.Drawing.Size(460, 495);
+            this.info_gb.Size = new System.Drawing.Size(460, 452);
             this.info_gb.TabIndex = 43;
             this.info_gb.TabStop = false;
             // 
@@ -355,7 +352,7 @@ namespace RauViet.ui
             // 
             this.label24.AutoSize = true;
             this.label24.ForeColor = System.Drawing.Color.Red;
-            this.label24.Location = new System.Drawing.Point(415, 273);
+            this.label24.Location = new System.Drawing.Point(415, 242);
             this.label24.Name = "label24";
             this.label24.Size = new System.Drawing.Size(15, 16);
             this.label24.TabIndex = 111;
@@ -365,7 +362,7 @@ namespace RauViet.ui
             // 
             this.label23.AutoSize = true;
             this.label23.ForeColor = System.Drawing.Color.Red;
-            this.label23.Location = new System.Drawing.Point(264, 400);
+            this.label23.Location = new System.Drawing.Point(264, 369);
             this.label23.Name = "label23";
             this.label23.Size = new System.Drawing.Size(15, 16);
             this.label23.TabIndex = 110;
@@ -375,7 +372,7 @@ namespace RauViet.ui
             // 
             this.label22.AutoSize = true;
             this.label22.ForeColor = System.Drawing.Color.Red;
-            this.label22.Location = new System.Drawing.Point(323, 368);
+            this.label22.Location = new System.Drawing.Point(323, 337);
             this.label22.Name = "label22";
             this.label22.Size = new System.Drawing.Size(15, 16);
             this.label22.TabIndex = 109;
@@ -385,7 +382,7 @@ namespace RauViet.ui
             // 
             this.label21.AutoSize = true;
             this.label21.ForeColor = System.Drawing.Color.Red;
-            this.label21.Location = new System.Drawing.Point(354, 336);
+            this.label21.Location = new System.Drawing.Point(354, 305);
             this.label21.Name = "label21";
             this.label21.Size = new System.Drawing.Size(15, 16);
             this.label21.TabIndex = 108;
@@ -395,7 +392,7 @@ namespace RauViet.ui
             // 
             this.label20.AutoSize = true;
             this.label20.ForeColor = System.Drawing.Color.Red;
-            this.label20.Location = new System.Drawing.Point(227, 305);
+            this.label20.Location = new System.Drawing.Point(227, 274);
             this.label20.Name = "label20";
             this.label20.Size = new System.Drawing.Size(15, 16);
             this.label20.TabIndex = 107;
@@ -461,7 +458,7 @@ namespace RauViet.ui
             // 
             // note_tb
             // 
-            this.note_tb.Location = new System.Drawing.Point(163, 425);
+            this.note_tb.Location = new System.Drawing.Point(163, 394);
             this.note_tb.Multiline = true;
             this.note_tb.Name = "note_tb";
             this.note_tb.Size = new System.Drawing.Size(277, 49);
@@ -470,7 +467,7 @@ namespace RauViet.ui
             // label14
             // 
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(98, 441);
+            this.label14.Location = new System.Drawing.Point(98, 410);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(56, 16);
             this.label14.TabIndex = 99;
@@ -478,7 +475,7 @@ namespace RauViet.ui
             // 
             // isolationDays_tb
             // 
-            this.isolationDays_tb.Location = new System.Drawing.Point(163, 302);
+            this.isolationDays_tb.Location = new System.Drawing.Point(163, 271);
             this.isolationDays_tb.Name = "isolationDays_tb";
             this.isolationDays_tb.Size = new System.Drawing.Size(61, 23);
             this.isolationDays_tb.TabIndex = 98;
@@ -486,27 +483,11 @@ namespace RauViet.ui
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(47, 302);
+            this.label13.Location = new System.Drawing.Point(47, 271);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(107, 16);
             this.label13.TabIndex = 97;
             this.label13.Text = "Số Ngày Cách Ly:";
-            // 
-            // activeIngredient_tb
-            // 
-            this.activeIngredient_tb.Location = new System.Drawing.Point(163, 239);
-            this.activeIngredient_tb.Name = "activeIngredient_tb";
-            this.activeIngredient_tb.Size = new System.Drawing.Size(277, 23);
-            this.activeIngredient_tb.TabIndex = 96;
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(5, 240);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(149, 16);
-            this.label12.TabIndex = 95;
-            this.label12.Text = "Thành Phần / Hoạt Chất:";
             // 
             // plantStatus_tb
             // 
@@ -549,7 +530,7 @@ namespace RauViet.ui
             // 
             // waterAmount_tb
             // 
-            this.waterAmount_tb.Location = new System.Drawing.Point(163, 396);
+            this.waterAmount_tb.Location = new System.Drawing.Point(163, 365);
             this.waterAmount_tb.Name = "waterAmount_tb";
             this.waterAmount_tb.Size = new System.Drawing.Size(98, 23);
             this.waterAmount_tb.TabIndex = 89;
@@ -557,7 +538,7 @@ namespace RauViet.ui
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(74, 395);
+            this.label2.Location = new System.Drawing.Point(74, 364);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(80, 16);
             this.label2.TabIndex = 88;
@@ -565,7 +546,7 @@ namespace RauViet.ui
             // 
             // plantLocation_tb
             // 
-            this.plantLocation_tb.Location = new System.Drawing.Point(163, 365);
+            this.plantLocation_tb.Location = new System.Drawing.Point(163, 334);
             this.plantLocation_tb.Name = "plantLocation_tb";
             this.plantLocation_tb.Size = new System.Drawing.Size(157, 23);
             this.plantLocation_tb.TabIndex = 87;
@@ -573,7 +554,7 @@ namespace RauViet.ui
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(73, 364);
+            this.label10.Location = new System.Drawing.Point(73, 333);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(81, 16);
             this.label10.TabIndex = 86;
@@ -592,7 +573,7 @@ namespace RauViet.ui
             // 
             this.employee_CBB.FormattingEnabled = true;
             this.employee_CBB.IntegralHeight = false;
-            this.employee_CBB.Location = new System.Drawing.Point(163, 270);
+            this.employee_CBB.Location = new System.Drawing.Point(163, 239);
             this.employee_CBB.Name = "employee_CBB";
             this.employee_CBB.Size = new System.Drawing.Size(251, 24);
             this.employee_CBB.TabIndex = 83;
@@ -600,7 +581,7 @@ namespace RauViet.ui
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(47, 271);
+            this.label8.Location = new System.Drawing.Point(47, 240);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(107, 16);
             this.label8.TabIndex = 82;
@@ -610,7 +591,7 @@ namespace RauViet.ui
             // 
             this.department_CBB.FormattingEnabled = true;
             this.department_CBB.IntegralHeight = false;
-            this.department_CBB.Location = new System.Drawing.Point(163, 333);
+            this.department_CBB.Location = new System.Drawing.Point(163, 302);
             this.department_CBB.Name = "department_CBB";
             this.department_CBB.Size = new System.Drawing.Size(188, 24);
             this.department_CBB.TabIndex = 81;
@@ -636,7 +617,7 @@ namespace RauViet.ui
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(65, 333);
+            this.label5.Location = new System.Drawing.Point(65, 302);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(89, 16);
             this.label5.TabIndex = 73;
@@ -1019,48 +1000,53 @@ namespace RauViet.ui
             this.thuHoach_tp.Text = "Thu Hoạch";
             this.thuHoach_tp.UseVisualStyleBackColor = true;
             // 
-            // panel2
+            // panel9
             // 
-            this.panel2.Controls.Add(this.plant_lb);
-            this.panel2.Controls.Add(this.panel4);
-            this.panel2.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel2.Location = new System.Drawing.Point(0, 0);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(1349, 43);
-            this.panel2.TabIndex = 0;
+            this.panel9.Controls.Add(this.qlth_gv);
+            this.panel9.Controls.Add(this.label36);
+            this.panel9.Controls.Add(this.qlth_Log_gv);
+            this.panel9.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel9.Location = new System.Drawing.Point(3, 3);
+            this.panel9.Name = "panel9";
+            this.panel9.Size = new System.Drawing.Size(824, 683);
+            this.panel9.TabIndex = 74;
             // 
-            // plant_lb
+            // qlth_gv
             // 
-            this.plant_lb.BackColor = System.Drawing.Color.AntiqueWhite;
-            this.plant_lb.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.plant_lb.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.plant_lb.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.plant_lb.Location = new System.Drawing.Point(0, 0);
-            this.plant_lb.Name = "plant_lb";
-            this.plant_lb.Size = new System.Drawing.Size(1190, 43);
-            this.plant_lb.TabIndex = 85;
-            this.plant_lb.Text = "Cải Bẹ Xanh - Thổ Canh";
-            this.plant_lb.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.qlth_gv.AllowUserToAddRows = false;
+            this.qlth_gv.AllowUserToDeleteRows = false;
+            this.qlth_gv.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.qlth_gv.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.qlth_gv.Location = new System.Drawing.Point(0, 0);
+            this.qlth_gv.Name = "qlth_gv";
+            this.qlth_gv.ReadOnly = true;
+            this.qlth_gv.Size = new System.Drawing.Size(824, 479);
+            this.qlth_gv.TabIndex = 78;
             // 
-            // panel4
+            // label36
             // 
-            this.panel4.Controls.Add(this.exportExcel_btn);
-            this.panel4.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel4.Location = new System.Drawing.Point(1190, 0);
-            this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(159, 43);
-            this.panel4.TabIndex = 84;
+            this.label36.BackColor = System.Drawing.Color.PeachPuff;
+            this.label36.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.label36.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label36.ForeColor = System.Drawing.Color.DarkOliveGreen;
+            this.label36.Location = new System.Drawing.Point(0, 479);
+            this.label36.Name = "label36";
+            this.label36.Size = new System.Drawing.Size(824, 23);
+            this.label36.TabIndex = 77;
+            this.label36.Text = "Lịch sử thay đổi";
+            this.label36.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // exportExcel_btn
+            // qlth_Log_gv
             // 
-            this.exportExcel_btn.BackColor = System.Drawing.SystemColors.Highlight;
-            this.exportExcel_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.exportExcel_btn.Location = new System.Drawing.Point(29, 6);
-            this.exportExcel_btn.Name = "exportExcel_btn";
-            this.exportExcel_btn.Size = new System.Drawing.Size(104, 31);
-            this.exportExcel_btn.TabIndex = 72;
-            this.exportExcel_btn.Text = "Xuất File";
-            this.exportExcel_btn.UseVisualStyleBackColor = false;
+            this.qlth_Log_gv.AllowUserToAddRows = false;
+            this.qlth_Log_gv.AllowUserToDeleteRows = false;
+            this.qlth_Log_gv.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.qlth_Log_gv.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.qlth_Log_gv.Location = new System.Drawing.Point(0, 502);
+            this.qlth_Log_gv.Name = "qlth_Log_gv";
+            this.qlth_Log_gv.ReadOnly = true;
+            this.qlth_Log_gv.Size = new System.Drawing.Size(824, 181);
+            this.qlth_Log_gv.TabIndex = 76;
             // 
             // panel8
             // 
@@ -1112,6 +1098,7 @@ namespace RauViet.ui
             // 
             // qlth_info_gb
             // 
+            this.qlth_info_gb.Controls.Add(this.label26);
             this.qlth_info_gb.Controls.Add(this.qlth_ProductLotCode_tb);
             this.qlth_info_gb.Controls.Add(this.label30);
             this.qlth_info_gb.Controls.Add(this.qlth_HarvestEmployee_cbb);
@@ -1128,6 +1115,32 @@ namespace RauViet.ui
             this.qlth_info_gb.Size = new System.Drawing.Size(498, 201);
             this.qlth_info_gb.TabIndex = 43;
             this.qlth_info_gb.TabStop = false;
+            // 
+            // label26
+            // 
+            this.label26.AutoSize = true;
+            this.label26.ForeColor = System.Drawing.Color.Red;
+            this.label26.Location = new System.Drawing.Point(282, 57);
+            this.label26.Name = "label26";
+            this.label26.Size = new System.Drawing.Size(15, 16);
+            this.label26.TabIndex = 110;
+            this.label26.Text = "*";
+            // 
+            // qlth_ProductLotCode_tb
+            // 
+            this.qlth_ProductLotCode_tb.Location = new System.Drawing.Point(163, 90);
+            this.qlth_ProductLotCode_tb.Name = "qlth_ProductLotCode_tb";
+            this.qlth_ProductLotCode_tb.Size = new System.Drawing.Size(148, 23);
+            this.qlth_ProductLotCode_tb.TabIndex = 109;
+            // 
+            // label30
+            // 
+            this.label30.AutoSize = true;
+            this.label30.Location = new System.Drawing.Point(23, 93);
+            this.label30.Name = "label30";
+            this.label30.Size = new System.Drawing.Size(131, 16);
+            this.label30.TabIndex = 108;
+            this.label30.Text = "Mã Thu Hoạch (LOT):";
             // 
             // qlth_HarvestEmployee_cbb
             // 
@@ -1191,11 +1204,11 @@ namespace RauViet.ui
             // label33
             // 
             this.label33.AutoSize = true;
-            this.label33.Location = new System.Drawing.Point(62, 59);
+            this.label33.Location = new System.Drawing.Point(34, 59);
             this.label33.Name = "label33";
-            this.label33.Size = new System.Drawing.Size(92, 16);
+            this.label33.Size = new System.Drawing.Size(120, 16);
             this.label33.TabIndex = 47;
-            this.label33.Text = "Số Lượng Thu:";
+            this.label33.Text = "Số Lượng Thu (Kg):";
             // 
             // qlth_ID_tb
             // 
@@ -1227,69 +1240,48 @@ namespace RauViet.ui
             this.qlth_Save_btn.Text = "Lưu";
             this.qlth_Save_btn.UseVisualStyleBackColor = false;
             // 
-            // panel9
+            // panel2
             // 
-            this.panel9.Controls.Add(this.qlth_gv);
-            this.panel9.Controls.Add(this.label36);
-            this.panel9.Controls.Add(this.qlth_Log_gv);
-            this.panel9.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel9.Location = new System.Drawing.Point(3, 3);
-            this.panel9.Name = "panel9";
-            this.panel9.Size = new System.Drawing.Size(824, 683);
-            this.panel9.TabIndex = 74;
+            this.panel2.Controls.Add(this.plant_lb);
+            this.panel2.Controls.Add(this.panel4);
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel2.Location = new System.Drawing.Point(0, 0);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(1349, 43);
+            this.panel2.TabIndex = 0;
             // 
-            // qlth_gv
+            // plant_lb
             // 
-            this.qlth_gv.AllowUserToAddRows = false;
-            this.qlth_gv.AllowUserToDeleteRows = false;
-            this.qlth_gv.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.qlth_gv.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.qlth_gv.Location = new System.Drawing.Point(0, 0);
-            this.qlth_gv.Name = "qlth_gv";
-            this.qlth_gv.ReadOnly = true;
-            this.qlth_gv.Size = new System.Drawing.Size(824, 479);
-            this.qlth_gv.TabIndex = 78;
+            this.plant_lb.BackColor = System.Drawing.Color.AntiqueWhite;
+            this.plant_lb.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.plant_lb.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.plant_lb.ForeColor = System.Drawing.SystemColors.HotTrack;
+            this.plant_lb.Location = new System.Drawing.Point(0, 0);
+            this.plant_lb.Name = "plant_lb";
+            this.plant_lb.Size = new System.Drawing.Size(1190, 43);
+            this.plant_lb.TabIndex = 85;
+            this.plant_lb.Text = "Cải Bẹ Xanh - Thổ Canh";
+            this.plant_lb.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // label36
+            // panel4
             // 
-            this.label36.BackColor = System.Drawing.Color.PeachPuff;
-            this.label36.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.label36.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label36.ForeColor = System.Drawing.Color.DarkOliveGreen;
-            this.label36.Location = new System.Drawing.Point(0, 479);
-            this.label36.Name = "label36";
-            this.label36.Size = new System.Drawing.Size(824, 23);
-            this.label36.TabIndex = 77;
-            this.label36.Text = "Lịch sử thay đổi";
-            this.label36.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.panel4.Controls.Add(this.exportExcel_btn);
+            this.panel4.Dock = System.Windows.Forms.DockStyle.Right;
+            this.panel4.Location = new System.Drawing.Point(1190, 0);
+            this.panel4.Name = "panel4";
+            this.panel4.Size = new System.Drawing.Size(159, 43);
+            this.panel4.TabIndex = 84;
             // 
-            // qlth_Log_gv
+            // exportExcel_btn
             // 
-            this.qlth_Log_gv.AllowUserToAddRows = false;
-            this.qlth_Log_gv.AllowUserToDeleteRows = false;
-            this.qlth_Log_gv.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.qlth_Log_gv.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.qlth_Log_gv.Location = new System.Drawing.Point(0, 502);
-            this.qlth_Log_gv.Name = "qlth_Log_gv";
-            this.qlth_Log_gv.ReadOnly = true;
-            this.qlth_Log_gv.Size = new System.Drawing.Size(824, 181);
-            this.qlth_Log_gv.TabIndex = 76;
-            // 
-            // qlth_ProductLotCode_tb
-            // 
-            this.qlth_ProductLotCode_tb.Location = new System.Drawing.Point(163, 90);
-            this.qlth_ProductLotCode_tb.Name = "qlth_ProductLotCode_tb";
-            this.qlth_ProductLotCode_tb.Size = new System.Drawing.Size(148, 23);
-            this.qlth_ProductLotCode_tb.TabIndex = 109;
-            // 
-            // label30
-            // 
-            this.label30.AutoSize = true;
-            this.label30.Location = new System.Drawing.Point(23, 93);
-            this.label30.Name = "label30";
-            this.label30.Size = new System.Drawing.Size(131, 16);
-            this.label30.TabIndex = 108;
-            this.label30.Text = "Mã Thu Hoạch (LOT):";
+            this.exportExcel_btn.BackColor = System.Drawing.SystemColors.Highlight;
+            this.exportExcel_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.exportExcel_btn.Location = new System.Drawing.Point(29, 6);
+            this.exportExcel_btn.Name = "exportExcel_btn";
+            this.exportExcel_btn.Size = new System.Drawing.Size(104, 31);
+            this.exportExcel_btn.TabIndex = 72;
+            this.exportExcel_btn.Text = "Xuất File";
+            this.exportExcel_btn.UseVisualStyleBackColor = false;
             // 
             // KhoVatTu_CultivationProcess
             // 
@@ -1319,15 +1311,15 @@ namespace RauViet.ui
             this.qlsb_info_gb.ResumeLayout(false);
             this.qlsb_info_gb.PerformLayout();
             this.thuHoach_tp.ResumeLayout(false);
-            this.panel2.ResumeLayout(false);
-            this.panel4.ResumeLayout(false);
+            this.panel9.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.qlth_gv)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.qlth_Log_gv)).EndInit();
             this.panel8.ResumeLayout(false);
             this.panel8.PerformLayout();
             this.qlth_info_gb.ResumeLayout(false);
             this.qlth_info_gb.PerformLayout();
-            this.panel9.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.qlth_gv)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.qlth_Log_gv)).EndInit();
+            this.panel2.ResumeLayout(false);
+            this.panel4.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -1365,8 +1357,6 @@ namespace RauViet.ui
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.TextBox isolationDays_tb;
         private System.Windows.Forms.Label label13;
-        private System.Windows.Forms.TextBox activeIngredient_tb;
-        private System.Windows.Forms.Label label12;
         private System.Windows.Forms.TextBox plantStatus_tb;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.TextBox dosage_tb;
@@ -1442,5 +1432,6 @@ namespace RauViet.ui
         private System.Windows.Forms.DataGridView qlth_Log_gv;
         private System.Windows.Forms.TextBox qlth_ProductLotCode_tb;
         private System.Windows.Forms.Label label30;
+        private System.Windows.Forms.Label label26;
     }
 }

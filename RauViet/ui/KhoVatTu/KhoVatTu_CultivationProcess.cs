@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Media.Media3D;
 using Color = System.Drawing.Color;
 
 namespace RauViet.ui
@@ -28,6 +29,8 @@ namespace RauViet.ui
         private Timer qlsb_ObserverDebounceTimer = new Timer { Interval = 300 };
         private Timer qlsb_DecisionMakerDebounceTimer = new Timer { Interval = 300 };
         private Timer qlsb_GrowthStageDebounceTimer = new Timer { Interval = 300 };
+        private Timer qlth_HarvestEmployeeDebounceTimer = new Timer { Interval = 300 };
+        private Timer qlth_ReceiveDepartmentDebounceTimer = new Timer { Interval = 300 };
         bool isNewState = false;
         bool qlsb_isNewState = false;
         bool qlth_isNewState = false;
@@ -43,6 +46,9 @@ namespace RauViet.ui
 
             qlsb_gv.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             qlsb_gv.MultiSelect = false;
+
+            qlth_gv.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            qlth_gv.MultiSelect = false;
 
             processDate_dtp.Format = DateTimePickerFormat.Custom;
             processDate_dtp.CustomFormat = "dd/MM/yyyy";
@@ -89,7 +95,8 @@ namespace RauViet.ui
             MaterialDebounceTimer.Tick += MaterialDebounceTimer_Tick;
             vatTu_CB.TextUpdate += VatTu_CB_TextUpdate;
             department_CBB.TextUpdate += Department_CBB_TextUpdate;
-                        
+            vatTu_CB.SelectedIndexChanged += VatTu_CB_SelectedIndexChanged;
+
             qlsb_PestDiseaseDebounceTimer.Tick += Qlsb_PestDiseaseDebounceTimer_Tick;
             qlsb_pestDisease_cbb.TextUpdate += Qlsb_pestDisease_cbb_TextUpdate;
 
@@ -104,13 +111,18 @@ namespace RauViet.ui
 
             EmployeeDebounceTimer.Tick += EmployeeDebounceTimer_Tick;
             employee_CBB.TextUpdate += Employee_CBB_TextUpdate;
-            
+
+            qlth_HarvestEmployeeDebounceTimer.Tick += Qlth_HarvestEmployeeDebounceTimer_Tick;
+            qlth_HarvestEmployee_cbb.TextUpdate += Qlth_HarvestEmployee_cbb_TextUpdate;
+
+            qlth_ReceiveDepartmentDebounceTimer.Tick += Qlth_ReceiveDepartmentDebounceTimer_Tick;
+            qlth_ReceiveDepartment_cbb.TextUpdate += Qlth_ReceiveDepartment_cbb_TextUpdate;
+
             materialQuantity_tb.KeyPress += Tb_KeyPress_OnlyNumber;
             waterAmount_tb.KeyPress += Tb_KeyPress_OnlyNumber;
             isolationDays_tb.KeyPress += Tb_KeyPress_OnlyNumber;
             qlth_Quantity_tb.KeyPress += Tb_KeyPress_OnlyNumber;
         }
-
 
         private void form_KeyDown(object sender, KeyEventArgs e)
         {
@@ -121,25 +133,31 @@ namespace RauViet.ui
                     SQLStore_KhoVatTu.Instance.removeCultivationProcess(plantingID);
                 else if(data_tc.SelectedTab == quanLySauBenh_tp)
                     SQLStore_KhoVatTu.Instance.removePestDiseaseMonitoring(plantingID);
+                else if (data_tc.SelectedTab == thuHoach_tp)
+                    SQLStore_KhoVatTu.Instance.removeHarvestSchedule(plantingID);
 
                 ShowData();
             }
             else if ((!isNewState && !edit_btn.Visible && data_tc.SelectedTab == nhatKyTheoDoi_tp) || 
-                (!qlsb_isNewState && !qlsb_edit_btn.Visible && data_tc.SelectedTab == quanLySauBenh_tp))
+                (!qlsb_isNewState && !qlsb_edit_btn.Visible && data_tc.SelectedTab == quanLySauBenh_tp) ||
+                (!qlth_isNewState && !qlth_edit_btn.Visible && data_tc.SelectedTab == thuHoach_tp))
             {
                 if (e.KeyCode == Keys.Delete)
                 {
                     System.Windows.Forms.Control ctrl = this.ActiveControl;
 
-                    if (ctrl is System.Windows.Controls.TextBox || ctrl is RichTextBox ||(ctrl is DataGridView dgv && dgv.CurrentCell != null && dgv.IsCurrentCellInEditMode))
+                    if (ctrl is System.Windows.Controls.TextBox || ctrl is RichTextBox ||
+                        (ctrl is DataGridView dgv && dgv.CurrentCell != null && dgv.IsCurrentCellInEditMode))
                     {
                         return; // không xử lý Delete
                     }
 
                     if((!isNewState && !edit_btn.Visible && data_tc.SelectedTab == nhatKyTheoDoi_tp))
-                        deleteProduct();
+                        nktd_deleteProduct(id_tb.Text);
                     else if((!qlsb_isNewState && !qlsb_edit_btn.Visible && data_tc.SelectedTab == quanLySauBenh_tp))
-                        qlsb_deleteProduct();
+                        qlsb_deleteProduct(qlsb_ID_tb.Text);
+                    else if ((!qlth_isNewState && !qlth_edit_btn.Visible && data_tc.SelectedTab == thuHoach_tp))
+                        qlth_deleteProduct(qlth_ID_tb.Text);
                 }
             }
         }
@@ -148,6 +166,7 @@ namespace RauViet.ui
         {
             dataGV.SelectionChanged -= this.dataGV_CellClick;
             qlsb_gv.SelectionChanged -= this.qlsb_gv_CellClick;
+            qlth_gv.SelectionChanged -= this.qlth_gv_CellClick;
             await Task.Delay(50);
             loadingOverlay = new LoadingOverlay(this);
             loadingOverlay.Show();
@@ -236,6 +255,16 @@ namespace RauViet.ui
                 department_CBB.DisplayMember = "DepartmentName";  // hiển thị tên
                 department_CBB.ValueMember = "DepartmentID";
                 department_CBB.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+
+                qlth_HarvestEmployee_cbb.DataSource = mEmployee_dt.Copy();
+                qlth_HarvestEmployee_cbb.DisplayMember = "FullName";  // hiển thị tên
+                qlth_HarvestEmployee_cbb.ValueMember = "EmployeeCode";
+                qlth_HarvestEmployee_cbb.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+
+                qlth_ReceiveDepartment_cbb.DataSource = mDepartment_dt.Copy();
+                qlth_ReceiveDepartment_cbb.DisplayMember = "DepartmentName";  // hiển thị tên
+                qlth_ReceiveDepartment_cbb.ValueMember = "DepartmentID";
+                qlth_ReceiveDepartment_cbb.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
 
                 dataGV.DataSource = mCultivationProcess_dt;
                 qlsb_gv.DataSource = mPestDiseaseMonitoring_dt;
@@ -378,7 +407,6 @@ namespace RauViet.ui
                 materialQuantity_tb.TabIndex = countTab++; materialQuantity_tb.TabStop = true;
                 dosage_tb.TabIndex = countTab++; dosage_tb.TabStop = true;
                 plantStatus_tb.TabIndex = countTab++; plantStatus_tb.TabStop = true;
-                activeIngredient_tb.TabIndex = countTab++; activeIngredient_tb.TabStop = true;
                 employee_CBB.TabIndex = countTab++; employee_CBB.TabStop = true;
                 isolationDays_tb.TabIndex = countTab++; isolationDays_tb.TabStop = true;
                 department_CBB.TabIndex = countTab++; department_CBB.TabStop = true;
@@ -412,6 +440,7 @@ namespace RauViet.ui
                 Qlth_readOnly_btn_Click(null, null);
                 dataGV.SelectionChanged += this.dataGV_CellClick;
                 qlsb_gv.SelectionChanged += this.qlsb_gv_CellClick;
+                qlth_gv.SelectionChanged += this.qlth_gv_CellClick;
             }
                 catch
             {
@@ -460,6 +489,36 @@ namespace RauViet.ui
             departmentDebounceTimer.Stop();
             Utils.ComboBoxSearchResult(department_CBB, mDepartment_dt, "DepartmentName", false);            
         }
+
+        private void VatTu_CB_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (!isNewState) return;
+
+            int? materialID = (string.IsNullOrEmpty(vatTu_CB.Text) || vatTu_CB.SelectedValue == null || vatTu_CB.SelectedValue == DBNull.Value) ? (int?)null : Convert.ToInt32(vatTu_CB.SelectedValue);
+            if (!materialID.HasValue)
+            {
+                dosage_tb.Text = "";
+            }
+            else
+            {
+                DataRow[] matiralRows = mMaterial_dt.Select($"MaterialID = {materialID}");
+
+                string composition = matiralRows.Length > 0 ? matiralRows[0]["Composition"].ToString() : "";
+                dosage_tb.Text = composition.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries)
+                                    .FirstOrDefault(l => Utils.RemoveVietnameseSigns(l).ToLower().Contains("lieu luong"))
+                                    ?.Split(':')[1]
+                                    .Trim();
+
+                isolationDays_tb.Text = composition.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries)
+                                            .FirstOrDefault(l => Utils.RemoveVietnameseSigns(l).ToLower().Contains("thoi gian canh ly"))
+                                            ?.Split(':')[1]
+                                            .Trim()
+                                            .TrimEnd('.');
+
+                
+            }
+        }
+                
         private void VatTu_CB_TextUpdate(object sender, EventArgs e)
         {
             MaterialDebounceTimer.Stop();
@@ -531,6 +590,30 @@ namespace RauViet.ui
             Utils.ComboBoxSearchResult(qlsb_growthStatus_cbb, mGrowthStage_dt, "search_nosign");
         }
 
+        private void Qlth_HarvestEmployee_cbb_TextUpdate(object sender, EventArgs e)
+        {
+            qlth_HarvestEmployeeDebounceTimer.Stop();
+            qlth_HarvestEmployeeDebounceTimer.Start();
+        }
+
+        private void Qlth_HarvestEmployeeDebounceTimer_Tick(object sender, EventArgs e)
+        {
+            qlsb_GrowthStageDebounceTimer.Stop();
+            Utils.ComboBoxSearchResult(qlth_HarvestEmployee_cbb, mEmployee_dt, "EmployessName_NoSign");
+        }
+
+        private void Qlth_ReceiveDepartment_cbb_TextUpdate(object sender, EventArgs e)
+        {
+            qlth_ReceiveDepartmentDebounceTimer.Stop();
+            qlth_ReceiveDepartmentDebounceTimer.Start();
+        }
+
+        private void Qlth_ReceiveDepartmentDebounceTimer_Tick(object sender, EventArgs e)
+        {
+            qlth_ReceiveDepartmentDebounceTimer.Stop();
+            Utils.ComboBoxSearchResult(qlth_ReceiveDepartment_cbb, mDepartment_dt, "DepartmentName", false);
+        }
+
         private void dataGV_CellClick(object sender, EventArgs e)
         {
             updateRightUI();            
@@ -540,7 +623,12 @@ namespace RauViet.ui
             qlsb_updateRightUI();
         }
 
-        private async void updateItem(
+        private void qlth_gv_CellClick(object sender, EventArgs e)
+        {
+            qlth_updateRightUI();
+        }
+
+        private async void nktd_updateItem(
             int cultivationProcessID,
             DateTime processDate,
             int fertilizationWorkTypeID,
@@ -549,7 +637,6 @@ namespace RauViet.ui
             decimal materialQuantity,
             string dosage,
             string plantStatus,
-            string activeIngredient,
             string employeeCode,
             int isolationDays,
             int? departmentID,
@@ -584,6 +671,14 @@ namespace RauViet.ui
                         string departmentName = departmentRows.Length > 0 ? departmentRows[0]["DepartmentName"].ToString() : "";
                         string materialName = matiralRows.Length > 0 ? matiralRows[0]["MaterialName"].ToString() : "";
                         string unitName = matiralRows.Length > 0 ? matiralRows[0]["UnitName"].ToString() : "";
+                        string composition = matiralRows.Length > 0 ? matiralRows[0]["Composition"].ToString() : "";
+
+                        string activeIngredient = composition?.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries)
+                                                    .FirstOrDefault(l => Utils.RemoveVietnameseSigns(l).ToLower().Contains("hoat chat"))
+                                                    ?.Split(':')
+                                                    .Skip(1)
+                                                    .FirstOrDefault()
+                                                    ?.Trim() ?? "";
 
                         string actionType = "Update ";
                         string oldValue = $"Ngày: {row["ProcessDate"]}; Hình Thức: {row["FertilizationWorkTypeName"]}; Công Việc: {row["WorkTypeName"]}; Vật Tư: {row["MaterialName"]}; S.Lượng VT: {row["MaterialQuantity"]}; Liều Lượng: {row["Dosage"]}; Tình Trạng Cây: {row["PlantStatus"]}; Hoạt Chất: {row["ActiveIngredient"]}; Người TH: {row["EmployeeName"]}; S.Ngày C.Li: {row["IsolationDays"]}; Tổ P.Trách: {row["DepartmentName"]}; V.Trí Trồng: {row["PlantLocation"]}; Lượng Nước: {row["WaterAmount"]}, Ghi Chú: {row["Note"]}";
@@ -655,7 +750,7 @@ namespace RauViet.ui
             }
         }
 
-        private async void createItem(
+        private async void nktd_createItem(
             DateTime processDate,
             int fertilizationWorkTypeID, 
             int workTypeID, 
@@ -663,13 +758,12 @@ namespace RauViet.ui
             decimal materialQuantity,
             string dosage,
             string plantStatus,
-            string activeIngredient,
             string employeeCode,
             int isolationDays,
             int? departmentID,
             string plantLocation,
             decimal waterAmount,
-            string note)
+            string note, bool isAskQuestion = true)
         {
             DataRow[] fertilizationWorkRows = mWorkType_dt.Select($"WorkTypeID = {fertilizationWorkTypeID}");
             DataRow[] workTypeRows = mWorkType_dt.Select($"WorkTypeID = {workTypeID}");
@@ -683,16 +777,26 @@ namespace RauViet.ui
             if (departmentID.HasValue)
                 departmentRows = mDepartment_dt.Select($"DepartmentID = {departmentID}");
 
-            DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            DialogResult dialogResult = DialogResult.No;
+            if (isAskQuestion)
+                dialogResult = MessageBox.Show("Chắc chắn chưa ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
-            if (dialogResult == DialogResult.Yes)
+            if (dialogResult == DialogResult.Yes || isAskQuestion == false)
             {
                 string workTypeName = workTypeRows.Length > 0 ? workTypeRows[0]["WorkTypeName"].ToString() : "";
                 string fertilizationWorkTypeName = fertilizationWorkRows.Length > 0 ? workTypeRows[0]["WorkTypeName"].ToString() : "";
                 string employeeName = employeeRows.Length > 0 ? employeeRows[0]["FullName"].ToString() : "";
                 string departmentName = departmentRows.Length > 0 ? departmentRows[0]["DepartmentName"].ToString() : "";
                 string materialName = matiralRows.Length > 0 ? matiralRows[0]["MaterialName"].ToString() : "";
+                string composition = matiralRows.Length > 0 ? matiralRows[0]["Composition"].ToString() : "";
                 string unitName = matiralRows.Length > 0 ? matiralRows[0]["UnitName"].ToString() : "";
+
+                string activeIngredient = composition?.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries)
+                                                    .FirstOrDefault(l => Utils.RemoveVietnameseSigns(l).ToLower().Contains("hoat chat"))
+                                                    ?.Split(':')
+                                                    .Skip(1)
+                                                    .FirstOrDefault()
+                                                    ?.Trim() ?? "";
 
                 string actionType = "Create ";
                 string oldValue = "";
@@ -786,7 +890,6 @@ namespace RauViet.ui
             decimal materialQuantity = Utils.ParseDecimalSmart(materialQuantity_tb.Text);
             string dosage = dosage_tb.Text;
             string plantStatus= plantStatus_tb.Text;
-            string activeIngredient = activeIngredient_tb.Text;
             string employeeCode = Convert.ToString(employee_CBB.SelectedValue);
             int isolationDays = Convert.ToInt32(isolationDays_tb.Text);
             int? departmentID = (string.IsNullOrEmpty(department_CBB.Text) || department_CBB.SelectedValue == null || department_CBB.SelectedValue == DBNull.Value) ? (int?)null : Convert.ToInt32(department_CBB.SelectedValue);
@@ -795,11 +898,11 @@ namespace RauViet.ui
             string note = note_tb.Text;
 
             if (id_tb.Text.Length != 0)
-                updateItem(Convert.ToInt32(id_tb.Text), processDate, fertilizationWorkTypeID, workTypeID, materialID, materialQuantity, dosage, plantStatus,
-                            activeIngredient, employeeCode, isolationDays, departmentID, plantLocation, waterAmount, note);
+                nktd_updateItem(Convert.ToInt32(id_tb.Text), processDate, fertilizationWorkTypeID, workTypeID, materialID, materialQuantity, dosage, plantStatus,
+                            employeeCode, isolationDays, departmentID, plantLocation, waterAmount, note);
             else
-                createItem(processDate, fertilizationWorkTypeID, workTypeID, materialID, materialQuantity, dosage, plantStatus, 
-                            activeIngredient, employeeCode, isolationDays, departmentID, plantLocation, waterAmount, note);
+                nktd_createItem(processDate, fertilizationWorkTypeID, workTypeID, materialID, materialQuantity, dosage, plantStatus, 
+                            employeeCode, isolationDays, departmentID, plantLocation, waterAmount, note);
 
         }
 
@@ -884,7 +987,7 @@ namespace RauViet.ui
             }
         }
 
-        private async void qlsb_createItem(DateTime processDate, string location, int? growwthStatusID, int? pestDiseaseID, string currentStatus, string observerCode, string treatmentPlan, string decisionMakerCode)
+        private async Task qlsb_createItem(DateTime processDate, string location, int? growwthStatusID, int? pestDiseaseID, string currentStatus, string observerCode, string treatmentPlan, string decisionMakerCode, bool isAskQuestion = true)
         {
             DataRow[] observerRows = mEmployee_dt.Select($"EmployeeCode = '{observerCode}'");
             DataRow[] decisionMakerRows = mEmployee_dt.Select($"EmployeeCode = '{decisionMakerCode}'");
@@ -897,7 +1000,9 @@ namespace RauViet.ui
             if (pestDiseaseID.HasValue)
                 pestDiseaseRows = mPestDisease_dt.Select($"PestDiseaseID = {pestDiseaseID}");
 
-            DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            DialogResult dialogResult = DialogResult.Yes;
+            if(isAskQuestion)
+                dialogResult = MessageBox.Show("Chắc chắn chưa ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
             if (dialogResult == DialogResult.Yes)
             {
@@ -984,74 +1089,63 @@ namespace RauViet.ui
                 
         private async void qlth_updateItem(int harvestID, DateTime harvestDate, decimal quantity, string productLotCode, string harvestEmployeeCode, int? receiveDepartmentID)
         {
-            DataRow[] observerRows = mEmployee_dt.Select($"EmployeeCode = '{observerCode}'");
-            DataRow[] decisionMakerRows = mEmployee_dt.Select($"EmployeeCode = '{decisionMakerCode}'");
+            DataRow[] harvestEmployeeRows = mEmployee_dt.Select($"EmployeeCode = '{harvestEmployeeCode}'");
 
-            DataRow[] growthStageRows = Array.Empty<DataRow>();
-            if (growwthStatusID.HasValue)
-                growthStageRows = mGrowthStage_dt.Select($"GrowthStageID = {growwthStatusID}");
+            DataRow[] departmentRows = Array.Empty<DataRow>();
+            if (receiveDepartmentID.HasValue)
+                departmentRows = mDepartment_dt.Select($"DepartmentID = {receiveDepartmentID}");
 
-            DataRow[] pestDiseaseRows = Array.Empty<DataRow>();
-            if (pestDiseaseID.HasValue)
-                pestDiseaseRows = mPestDisease_dt.Select($"PestDiseaseID = {pestDiseaseID}");
-
-            foreach (DataRow row in mPestDiseaseMonitoring_dt.Rows)
+            foreach (DataRow row in mHarvestSchedule_dt.Rows)
             {
-                int ID = Convert.ToInt32(row["MonitoringID"]);
-                if (ID.CompareTo(monitoringID) == 0)
+                int ID = Convert.ToInt32(row["HarvestID"]);
+                if (ID.CompareTo(harvestID) == 0)
                 {
                     DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
                     if (dialogResult == DialogResult.Yes)
                     {
-                        string growthStageName = growthStageRows.Length > 0 ? growthStageRows[0]["GrowthStageName"].ToString() : "";
-                        string pestDiseaseName = pestDiseaseRows.Length > 0 ? pestDiseaseRows[0]["PestDiseaseName"].ToString() : "";
-                        string observerName = observerRows.Length > 0 ? observerRows[0]["FullName"].ToString() : "";
-                        string decisionMakerName = decisionMakerRows.Length > 0 ? decisionMakerRows[0]["FullName"].ToString() : "";
+                        string departmentName = departmentRows.Length > 0 ? departmentRows[0]["DepartmentName"].ToString() : "";
+                        string harvestEmployeerName = harvestEmployeeRows.Length > 0 ? harvestEmployeeRows[0]["FullName"].ToString() : "";
 
                         string actionType = "Update ";
-                        string oldValue = $"Ngày: {row["MonitoringDate"]};Vị Trí Mã Lô: {row["Location"]}; Giai Đoạn Sinh Trưởng: {row["GrowthStageName"]}; Tên Sâu Bệnh: {row["PestDiseaseName"]}; Hiện Trạng: {row["CurrentStatus"]}; Người Theo Dõi: {row["ObserverName"]}; Phương Án Xử Lý: {row["PestDiseaseName"]}; Người Quyết Định: {row["DecisionMakerName"]};";
-                        string newValue = $"Ngày: {processDate};Vị Trí Mã Lô: {location}; Giai Đoạn Sinh Trưởng: {growthStageName}; Tên Sâu Bệnh: {pestDiseaseName}; Hiện Trạng: {currentStatus}; Người Theo Dõi: {growthStageName}; Phương Án Xử Lý: {treatmentPlan}; Người Quyết Định: {pestDiseaseName};";
+                        string oldValue = $"Ngày: {row["HarvestDate"]};Số Lượng Thu: {row["Quantity"]}; Mã Số Thu (LOT): {row["ProductLotCode"]}; Nhân Viên Thu: {row["HarvestEmployeeName"]}; Phòng Nhận: {row["ReceiveDepartmentName"]}";
+                        string newValue = $"Ngày: {harvestDate};Số Lượng Thu: {quantity}; Mã Số Thu (LOT): {productLotCode}; Nhân Viên Thu: {harvestEmployeerName}; Phòng Nhận: {departmentName}";
 
                         int plantingID = Convert.ToInt32(mPlantingRow["PlantingID"]);
                         try
                         {
-                            bool isScussess = await SQLManager_KhoVatTu.Instance.updatePestDiseaseMonitoringAsync(plantingID, monitoringID, processDate, location, growwthStatusID, pestDiseaseID, currentStatus, observerCode, treatmentPlan, decisionMakerCode);
+                            bool isScussess = await SQLManager_KhoVatTu.Instance.updatePestDiseaseMonitoringAsync(harvestID, plantingID, harvestDate, quantity, productLotCode, harvestEmployeeCode, receiveDepartmentID);
 
                             if (isScussess == true)
                             {
-                                row["PlantingID"] = plantingID;
-                                row["MonitoringDate"] = processDate;
-                                row["Location"] = location;
-                                row["GrowthStageID"] = growwthStatusID.HasValue ? (object)growwthStatusID.Value : DBNull.Value;
-                                row["PestDiseaseID"] = pestDiseaseID.HasValue ? (object)pestDiseaseID.Value : DBNull.Value;
-                                row["CurrentStatus"] = currentStatus;
-                                row["Observer"] = observerCode;
-                                row["TreatmentPlan"] = treatmentPlan;
-                                row["DecisionMaker"] = decisionMakerCode;
+                                row["HarvestDate"] = harvestDate;
+                                row["Quantity"] = quantity;
+                                row["ProductLotCode"] = productLotCode;
+                                row["HarvestEmployee"] = harvestEmployeeCode;
+                                row["ReceiveDepartmentID"] = receiveDepartmentID.HasValue ? (object)receiveDepartmentID.Value : DBNull.Value;
 
-                                row["ObserverName"] = observerName;
-                                row["DecisionMakerName"] = decisionMakerName;
-                                row["GrowthStageName"] = growthStageName;
-                                row["MonitoringDate_Week"] = Utils.GetThu_Viet(processDate);
-                                row["PestDiseaseName"] = pestDiseaseName;
+                                row["HarvestDate_Week"] = Utils.GetThu_Viet(harvestDate);
+                                row["HarvestEmployeeName"] = harvestEmployeerName;
+                                row["ReceiveDepartmentName"] = departmentName;
+
+                                updateTongThuHoach();
 
                                 actionType += "Success";
-                                qlsb_status_lb.Text = "Thành công.";
-                                qlsb_status_lb.ForeColor = Color.Green;
+                                qlth_status_lb.Text = "Thành công.";
+                                qlth_status_lb.ForeColor = Color.Green;
                             }
                             else
                             {
                                 actionType += "Fail";
-                                qlsb_status_lb.Text = "Thất bại.";
-                                qlsb_status_lb.ForeColor = Color.Red;
+                                qlth_status_lb.Text = "Thất bại.";
+                                qlth_status_lb.ForeColor = Color.Red;
                             }
                         }
                         catch
                         {
                             actionType += "Exception";
-                            qlsb_status_lb.Text = "Thất bại.";
-                            qlsb_status_lb.ForeColor = Color.Red;
+                            qlth_status_lb.Text = "Thất bại.";
+                            qlth_status_lb.ForeColor = Color.Red;
                         }
                         finally
                         {
@@ -1091,51 +1185,92 @@ namespace RauViet.ui
                     {
                         DataRow drToAdd = mHarvestSchedule_dt.NewRow();
 
-                        drToAdd["MonitoringID"] = newId;
+                        drToAdd["HarvestID"] = newId;
                         drToAdd["PlantingID"] = plantingID;
-                        drToAdd["MonitoringDate"] = processDate;
-                        drToAdd["Location"] = location;
-                        drToAdd["GrowthStageID"] = growwthStatusID.HasValue ? (object)growwthStatusID.Value : DBNull.Value;
-                        drToAdd["PestDiseaseID"] = pestDiseaseID.HasValue ? (object)pestDiseaseID.Value : DBNull.Value;
-                        drToAdd["CurrentStatus"] = currentStatus;
-                        drToAdd["Observer"] = observerCode;
-                        drToAdd["TreatmentPlan"] = treatmentPlan;
-                        drToAdd["DecisionMaker"] = decisionMakerCode;
+                        drToAdd["HarvestDate"] = harvestDate;
+                        drToAdd["Quantity"] = quantity;
+                        drToAdd["ProductLotCode"] = productLotCode;
+                        drToAdd["HarvestEmployee"] = harvestEmployeeCode;
+                        drToAdd["ReceiveDepartmentID"] = receiveDepartmentID.HasValue ? (object)receiveDepartmentID.Value : DBNull.Value;
 
-                        drToAdd["ObserverName"] = observerName;
-                        drToAdd["DecisionMakerName"] = decisionMakerName;
-                        drToAdd["GrowthStageName"] = growthStageName;
-                        drToAdd["MonitoringDate_Week"] = Utils.GetThu_Viet(processDate);
-                        drToAdd["PestDiseaseName"] = pestDiseaseName;
+                        drToAdd["HarvestDate_Week"] = Utils.GetThu_Viet(harvestDate);
+                        drToAdd["HarvestEmployeeName"] = harvestEmployeerName;
+                        drToAdd["ReceiveDepartmentName"] = departmentName;
 
-                        mPestDiseaseMonitoring_dt.Rows.Add(drToAdd);
-                        mPestDiseaseMonitoring_dt.AcceptChanges();
+                        mHarvestSchedule_dt.Rows.Add(drToAdd);
+                        mHarvestSchedule_dt.AcceptChanges();
 
                         actionType += "Success";
-                        qlsb_status_lb.Text = "Thành công";
-                        qlsb_status_lb.ForeColor = Color.Green;
+                        qlth_status_lb.Text = "Thành công";
+                        qlth_status_lb.ForeColor = Color.Green;
 
+                        updateTongThuHoach();
                         Qlsb_create_btn_Click(null, null);
                     }
                     else
                     {
                         actionType += "Fail";
-                        qlsb_status_lb.Text = "Thất bại";
-                        qlsb_status_lb.ForeColor = Color.Red;
+                        qlth_status_lb.Text = "Thất bại";
+                        qlth_status_lb.ForeColor = Color.Red;
                     }
                 }
                 catch (Exception ex)
                 {
                     actionType += "Exception";
                     Console.WriteLine("ERROR: " + ex.Message);
-                    qlsb_status_lb.Text = "Thất bại.";
-                    qlsb_status_lb.ForeColor = Color.Red;
+                    qlth_status_lb.Text = "Thất bại.";
+                    qlth_status_lb.ForeColor = Color.Red;
                 }
                 finally
                 {
                     _ = SQLManager_KhoVatTu.Instance.insertHarvestScheduleLogAsync(plantingID, actionType, oldValue, newValue);
                 }
             }
+        }
+
+        private async void updateTongThuHoach()
+        {
+            var result = mHarvestSchedule_dt.AsEnumerable()
+                .GroupBy(r => r.Field<DateTime>("HarvestDate"))
+                .Select(g => new
+                {
+                    HarvestDate = g.Key,
+                    TotalQuantity = g.Sum(r => r.Field<decimal>("Quantity"))
+                })
+                .OrderBy(r => r.HarvestDate)
+                .ToList();
+
+            DataRow cultivationProcessRowTemp = mCultivationProcess_dt.AsEnumerable().LastOrDefault(r => r.Field<int>("WorkTypeID") == Utils.WorkType_ThuHoach());
+
+            foreach (var item in result)
+            {
+                DataRow cultivationProcessRow = mCultivationProcess_dt.AsEnumerable().FirstOrDefault(r => r.Field<int>("WorkTypeID") == Utils.WorkType_ThuHoach() && r.Field<DateTime>("ProcessDate").Date == item.HarvestDate.Date);
+                if(cultivationProcessRow != null)
+                {
+                    await SQLManager_KhoVatTu.Instance.updateCultivationProcessAsync_ThuHoach(Convert.ToInt32(cultivationProcessRow["CultivationProcessID"]), item.TotalQuantity);
+                    cultivationProcessRow["MaterialQuantity"] = item.TotalQuantity;
+                }
+                else if(cultivationProcessRowTemp != null)
+                {
+                    int FertilizationWorkTypeID = Convert.ToInt32(cultivationProcessRowTemp["FertilizationWorkTypeID"]);
+                    int WorkTypeID = Convert.ToInt32(cultivationProcessRowTemp["WorkTypeID"]);
+                    int? MaterialID = cultivationProcessRowTemp.Field<int?>("MaterialID");
+                    
+                    string Dosage = cultivationProcessRowTemp["Dosage"].ToString();
+                    string PlantStatus =cultivationProcessRowTemp["PlantStatus"].ToString();
+                    string EmployeeCode = cultivationProcessRowTemp["EmployeeCode"].ToString();
+                    int isolationDays = cultivationProcessRowTemp.Field<int?>("IsolationDays") ?? 0;
+                    int? DepartmentID = cultivationProcessRowTemp.Field<int?>("DepartmentID");
+                    string PlantLocation = cultivationProcessRowTemp["PlantLocation"].ToString();
+                    int WaterAmount = Convert.ToInt32(cultivationProcessRowTemp["WaterAmount"]);
+
+                    if (cultivationProcessRowTemp != null) {
+                        nktd_createItem(item.HarvestDate, FertilizationWorkTypeID, WorkTypeID, MaterialID, item.TotalQuantity, Dosage, PlantStatus, EmployeeCode, isolationDays,
+                            DepartmentID, PlantLocation, WaterAmount, "", false);
+                    }
+                }
+            }
+
         }
 
         private void Qlth_Save_btn_Click(object sender, EventArgs e)
@@ -1154,21 +1289,22 @@ namespace RauViet.ui
             else
                 qlth_createItem(harvestDate, quantity, productLotCode, harvestEmployeeCode, receiveDepartmentID);
         }
-        private async void deleteProduct()
+        private async void nktd_deleteProduct(string id, bool isAskQuest = true)
         {
-            string id = id_tb.Text;
-
             foreach (DataRow row in mCultivationProcess_dt.Rows)
             {
                 string cultivationProcessID = row["CultivationProcessID"].ToString();
                 if (cultivationProcessID.CompareTo(id) == 0)
                 {
-                    DialogResult dialogResult = MessageBox.Show("Xóa Nha, Chắc Chắn Chưa!", "Thông Báo", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                    DialogResult dialogResult = DialogResult.Yes;
+
+                    if(isAskQuest)
+                        dialogResult = MessageBox.Show("Xóa Nha, Chắc Chắn Chưa!", "Thông Báo", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
                     if (dialogResult == DialogResult.Yes)
                     {
                         int plantingID = Convert.ToInt32(mPlantingRow["PlantingID"]);
-                        string actionType = "Update ";
+                        string actionType = "Detele ";
                         string oldValue = $"Ngày: {row["ProcessDate"]}; Hình Thức: {row["FertilizationWorkTypeName"]}; Công Việc: {row["WorkTypeName"]}; Vật Tư: {row["MaterialName"]}; S.Lượng VT: {row["MaterialQuantity"]}; Liều Lượng: {row["Dosage"]}; Tình Trạng Cây: {row["PlantStatus"]}; Hoạt Chất: {row["ActiveIngredient"]}; Người TH: {row["EmployeeName"]}; S.Ngày C.Li: {row["IsolationDays"]}; Tổ P.Trách: {row["DepartmentName"]}; V.Trí Trồng: {row["PlantLocation"]}; Lượng Nước: {row["WaterAmount"]}, Ghi Chú: {row["Note"]}";
                         try
                         {
@@ -1182,6 +1318,8 @@ namespace RauViet.ui
                                 mCultivationProcess_dt.Rows.Remove(row);
                                 mCultivationProcess_dt.AcceptChanges();
                                 actionType += "Success";
+
+                                updateTongThuHoach();
                             }
                             else
                             {
@@ -1206,10 +1344,8 @@ namespace RauViet.ui
             }
         }
 
-        private async void qlsb_deleteProduct()
+        private async void qlsb_deleteProduct(string id)
         {
-            string id = qlsb_ID_tb.Text;
-
             foreach (DataRow row in mPestDiseaseMonitoring_dt.Rows)
             {
                 string monitoringID = row["MonitoringID"].ToString();
@@ -1220,7 +1356,7 @@ namespace RauViet.ui
                     if (dialogResult == DialogResult.Yes)
                     {
                         int plantingID = Convert.ToInt32(mPlantingRow["PlantingID"]);
-                        string actionType = "Update ";
+                        string actionType = "Datele ";
                         string oldValue = $"Ngày: {row["MonitoringDate"]};Vị Trí Mã Lô: {row["Location"]}; Giai Đoạn Sinh Trưởng: {row["GrowthStageName"]}; Tên Sâu Bệnh: {row["PestDiseaseName"]}; Hiện Trạng: {row["CurrentStatus"]}; Người Theo Dõi: {row["ObserverName"]}; Phương Án Xử Lý: {row["PestDiseaseName"]}; Người Quyết Định: {row["DecisionMakerName"]};";
                         try
                         {
@@ -1258,6 +1394,66 @@ namespace RauViet.ui
             }
         }
 
+        private async void qlth_deleteProduct(string id)
+        {
+            foreach (DataRow row in mHarvestSchedule_dt.Rows)
+            {
+                string harvestID = row["HarvestID"].ToString();
+                if (harvestID.CompareTo(id) == 0)
+                {
+                    DialogResult dialogResult = MessageBox.Show("Xóa Nha, Chắc Chắn Chưa!", "Thông Báo", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+                    if (dialogResult == DialogResult.Yes)
+                    {
+                        int plantingID = Convert.ToInt32(mPlantingRow["PlantingID"]);
+                        DateTime harvestDate = Convert.ToDateTime(row["HarvestDate"]);
+                        string actionType = "Delete ";
+                        string oldValue = $"Ngày: {row["HarvestDate"]};Số Lượng Thu: {row["Quantity"]}; Mã Số Thu (LOT): {row["ProductLotCode"]}; Nhân Viên Thu: {row["HarvestEmployeeName"]}; Phòng Nhận: {row["ReceiveDepartmentName"]}";
+                        try
+                        {
+                            bool isScussess = await SQLManager_KhoVatTu.Instance.deletetHarvestScheduleAsync(Convert.ToInt32(id));
+
+                            if (isScussess == true)
+                            {
+                                qlth_status_lb.Text = "Thành công.";
+                                qlth_status_lb.ForeColor = Color.Green;
+
+                                mHarvestSchedule_dt.Rows.Remove(row);
+                                mHarvestSchedule_dt.AcceptChanges();
+
+                                DataRow cultivationProcessRow = mCultivationProcess_dt.AsEnumerable().FirstOrDefault(r => r.Field<int>("WorkTypeID") == Utils.WorkType_ThuHoach() && r.Field<DateTime>("ProcessDate").Date == harvestDate.Date);
+                                if (cultivationProcessRow != null)
+                                {
+                                    nktd_deleteProduct(cultivationProcessRow["CultivationProcessID"].ToString(), false);
+
+                                    
+                                }
+
+                                actionType += "Success";
+                            }
+                            else
+                            {
+                                actionType += "Fail";
+                                qlth_status_lb.Text = "Thất bại.";
+                                qlth_status_lb.ForeColor = Color.Red;
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            actionType += "Exception";
+                            qlth_status_lb.Text = "Thất bại.";
+                            qlth_status_lb.ForeColor = Color.Red;
+                        }
+                        finally
+                        {
+                            _ = SQLManager_KhoVatTu.Instance.insertHarvestScheduleLogAsync(plantingID, actionType, oldValue, "");
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+
         private void newBtn_Click(object sender, EventArgs e)
         {
             id_tb.Text = "";
@@ -1278,7 +1474,6 @@ namespace RauViet.ui
             processDate_dtp.Enabled = true;
             dosage_tb.Enabled = true;
             plantStatus_tb.Enabled = true;
-            activeIngredient_tb.Enabled = true;
             employee_CBB.Enabled = true;
             isolationDays_tb.Enabled = true;
             plantLocation_tb.Enabled = true;
@@ -1286,6 +1481,8 @@ namespace RauViet.ui
             note_tb.Enabled = true;
             hinhThucBon_CBB.Enabled = true;
             processDate_dtp.Focus();
+
+            VatTu_CB_SelectedIndexChanged(null, null);
         }
 
         private void ReadOnly_btn_Click(object sender, EventArgs e)
@@ -1303,7 +1500,6 @@ namespace RauViet.ui
             processDate_dtp.Enabled = false;
             dosage_tb.Enabled = false;
             plantStatus_tb.Enabled = false;
-            activeIngredient_tb.Enabled = false;
             employee_CBB.Enabled = false;
             isolationDays_tb.Enabled = false;
             plantLocation_tb.Enabled = false;
@@ -1329,7 +1525,6 @@ namespace RauViet.ui
             processDate_dtp.Enabled = true;
             dosage_tb.Enabled = true;
             plantStatus_tb.Enabled = true;
-            activeIngredient_tb.Enabled = true;
             employee_CBB.Enabled = true;
             isolationDays_tb.Enabled = true;
             plantLocation_tb.Enabled = true;
@@ -1429,7 +1624,7 @@ namespace RauViet.ui
             qlth_info_gb.BackColor = edit_btn.BackColor;
 
             qlth_isNewState = false;
-            qlth_date_dtp.Enabled = true;
+            qlth_date_dtp.Enabled = false;
             qlth_Quantity_tb.Enabled = true;
             qlth_ProductLotCode_tb.Enabled = true;
             qlth_HarvestEmployee_cbb.Enabled = true;
@@ -1439,8 +1634,11 @@ namespace RauViet.ui
 
         private void Qlth_create_btn_Click(object sender, EventArgs e)
         {
+            string productionOrder = mPlantingRow["ProductionOrder"].ToString();
+
             qlth_ID_tb.Text = "";
             qlth_status_lb.Text = "";
+            qlth_ProductLotCode_tb.Text = productionOrder + (mHarvestSchedule_dt.Rows.Count + 1).ToString("D2");
 
             qlth_edit_btn.Visible = false;
             qlth_create_btn.Visible = false;
@@ -1505,7 +1703,6 @@ namespace RauViet.ui
                     materialQuantity_tb.Text = Convert.ToDecimal(cells["MaterialQuantity"].Value).ToString("G29", CultureInfo.InvariantCulture);
                     dosage_tb.Text = cells["Dosage"].Value.ToString();
                     plantStatus_tb.Text = cells["PlantStatus"].Value.ToString();
-                    activeIngredient_tb.Text = cells["ActiveIngredient"].Value.ToString();
                     employee_CBB.SelectedValue = employeeCode;
                     isolationDays_tb.Text = cells["IsolationDays"].Value.ToString();
                     department_CBB.SelectedValue = departmentID;
@@ -1524,7 +1721,7 @@ namespace RauViet.ui
         {
             try
             {
-                if (isNewState) return;
+                if (qlsb_isNewState) return;
 
                 if (qlsb_gv.SelectedRows.Count > 0)
                 {
@@ -1576,46 +1773,32 @@ namespace RauViet.ui
         {
             try
             {
-                if (isNewState) return;
+                if (qlth_isNewState)
+                    return;
 
-                if (qlsb_gv.SelectedRows.Count > 0)
+                if (qlth_gv.SelectedRows.Count > 0)
                 {
-                    var cells = qlsb_gv.SelectedRows[0].Cells;
+                    var cells = qlth_gv.SelectedRows[0].Cells;
 
-                    int growthStageID = int.TryParse(cells["GrowthStageID"].Value?.ToString(), out int growthStage) ? growthStage : -1;
-                    int pestDiseaseID = int.TryParse(cells["PestDiseaseID"].Value?.ToString(), out int pestDisease) ? pestDisease : -1;
-                    string observerCode = cells["Observer"].Value.ToString();
-                    string decisionMakerCode = cells["DecisionMaker"].Value.ToString();
+                    int receiveDepartmentID = int.TryParse(cells["ReceiveDepartmentID"].Value?.ToString(), out int receiveDepartment) ? receiveDepartment : -1;
+                    string harvestEmployeeCode = cells["HarvestEmployee"].Value.ToString();
 
-                    if (!qlsb_growthStatus_cbb.Items.Cast<object>().Any(i => ((DataRowView)i)["GrowthStageID"].ToString() == growthStageID.ToString()))
+                    if (!qlth_HarvestEmployee_cbb.Items.Cast<object>().Any(i => ((DataRowView)i)["EmployeeCode"].ToString() == harvestEmployeeCode))
                     {
-                        qlsb_growthStatus_cbb.DataSource = mGrowthStage_dt;
+                        qlth_HarvestEmployee_cbb.DataSource = mEmployee_dt.Copy();
                     }
 
-                    if (!qlsb_pestDisease_cbb.Items.Cast<object>().Any(i => ((DataRowView)i)["PestDiseaseID"].ToString() == pestDiseaseID.ToString()))
+                    if (!qlth_ReceiveDepartment_cbb.Items.Cast<object>().Any(i => ((DataRowView)i)["DepartmentID"].ToString() == receiveDepartmentID.ToString()))
                     {
-                        qlsb_pestDisease_cbb.DataSource = mPestDisease_dt;
+                        qlth_ReceiveDepartment_cbb.DataSource = mDepartment_dt.Copy();
                     }
 
-                    if (!qlsb_observer_cbb.Items.Cast<object>().Any(i => ((DataRowView)i)["EmployeeCode"].ToString() == observerCode))
-                    {
-                        qlsb_observer_cbb.DataSource = mEmployee_dt.Copy();
-                    }
-
-                    if (!qlsb_decisionMaker_cbb.Items.Cast<object>().Any(i => ((DataRowView)i)["EmployeeCode"].ToString() == decisionMakerCode))
-                    {
-                        qlsb_decisionMaker_cbb.DataSource = mEmployee_dt.Copy();
-                    }
-
-                    qlsb_ID_tb.Text = cells["MonitoringID"].Value.ToString();
-                    qlsb_date_dtp.Value = Convert.ToDateTime(cells["MonitoringDate"].Value);
-                    qlsb_location_tb.Text = cells["Location"].Value.ToString();
-                    qlsb_growthStatus_cbb.SelectedValue = growthStageID;
-                    qlsb_pestDisease_cbb.SelectedValue = pestDiseaseID;
-                    qlsb_currentStatus_tb.Text = cells["CurrentStatus"].Value.ToString();
-                    qlsb_observer_cbb.SelectedValue = observerCode;
-                    qlsb_treatmentPlan_tb.Text = cells["TreatmentPlan"].Value.ToString();
-                    qlsb_decisionMaker_cbb.SelectedValue = decisionMakerCode;
+                    qlth_ID_tb.Text = cells["HarvestID"].Value.ToString();
+                    qlth_date_dtp.Value = Convert.ToDateTime(cells["HarvestDate"].Value);
+                    qlth_Quantity_tb.Text = Convert.ToDecimal(cells["Quantity"].Value).ToString("G29", CultureInfo.InvariantCulture);
+                    qlth_ProductLotCode_tb.Text = cells["ProductLotCode"].Value.ToString();
+                    qlth_HarvestEmployee_cbb.SelectedValue = harvestEmployeeCode;
+                    qlth_ReceiveDepartment_cbb.SelectedValue = receiveDepartmentID;
                 }
             }
             catch (Exception ex)
@@ -1649,6 +1832,7 @@ namespace RauViet.ui
                 return;
 
             int plantingID = Convert.ToInt32(mPlantingRow["PlantingID"]);
+            DateTime plantingDate = Convert.ToDateTime(mPlantingRow["PlantingDate"]);
             int sku = Convert.ToInt32(mPlantingRow["SKU"]);
             int cultivationTypeID = Convert.ToInt32(mPlantingRow["CultivationTypeID"]);
             int? departmentId = mPlantingRow["Department"] == DBNull.Value ? (int?)null : Convert.ToInt32(mPlantingRow["Department"]);
@@ -1701,7 +1885,14 @@ namespace RauViet.ui
 
             bool isSuccess = await SQLManager_KhoVatTu.Instance.InsertCultivationProcessListAsync(data);
             if (!isSuccess)
+            {
                 MessageBox.Show("Có Lỗi Xảy Ra", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            await qlsb_createItem(plantingDate.AddDays(7), "", 1, 20, "", employeeCode, "", "", false);
+            await qlsb_createItem(plantingDate.AddDays(14), "", 2, 20, "", employeeCode, "", "", false);
+            await qlsb_createItem(plantingDate.AddDays(21), "", 2, 20, "", employeeCode, "", "", false);
 
             SQLStore_KhoVatTu.Instance.removeCultivationProcess(plantingID);
             ShowData();
@@ -1937,7 +2128,7 @@ namespace RauViet.ui
                 titleCell.Style.Font.Bold = true;
 
                 titleCell.Value = tile;
-                titleCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+                titleCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
                 titleCell.Style.Border.OutsideBorder = XLBorderStyleValues.Thin; // Đóng khung
 
                 columnInd++;
@@ -2032,7 +2223,7 @@ namespace RauViet.ui
                 titleCell.Style.Font.Bold = true;
 
                 titleCell.Value = tile;
-                titleCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+                titleCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
                 titleCell.Style.Border.OutsideBorder = XLBorderStyleValues.Thin; // Đóng khung
                 titleCell.Style.Alignment.WrapText = true;
                 columnInd++;
@@ -2116,28 +2307,70 @@ namespace RauViet.ui
 
             rowInd = 2;
             columnInd = 1;
-            string[] columnsName = new string[] { "Ngày Thu Hoạch", "Thứ", "Loại Sản Phẩm", "Sản Lượng(kg)", "Vị Trí Thu Hoạch", "Mã Số Lô Sản Phẩm (LOT)", "Người Giám Sát", "Người Thu Hoạch", "Nơi Nhận Sản Phẩm" };
+            string[] columnsName = new string[] { "Ngày Thu Hoạch", "Thứ", "Loại Sản Phẩm", "Sản Lượng (kg)", "Vị Trí Thu Hoạch", "Mã Số Lô Sản Phẩm (LOT)", "Người Giám Sát", "Người Thu Hoạch", "Nơi Nhận Sản Phẩm" };
+            string[] exportColumns = new string[] { "HarvestDate", "HarvestDate_Week", "PlantName", "Quantity", "PlantLocation", "ProductLotCode", "EmployeeName", "HarvestEmployeeName", "ReceiveDepartmentName" };
+
+            DataRow cultivationProcessfirstRow = mCultivationProcess_dt.Select($"WorkTypeID = 20").FirstOrDefault();
+
             foreach (var tile in columnsName)
             {
                 var titleCell = ws.Cell(rowInd, columnInd);
                 titleCell.Style.Font.Bold = true;
 
                 titleCell.Value = tile;
-                titleCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+                titleCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
                 titleCell.Style.Border.OutsideBorder = XLBorderStyleValues.Thin; // Đóng khung
-
+                titleCell.Style.Alignment.WrapText = true;
                 columnInd++;
             }
-
             rowInd++;
 
-            ws.Column(1).Width = 16;
-            ws.Column(2).Width = 14;
+            foreach(DataRow row in mHarvestSchedule_dt.Rows)
+            {
+                columnInd = 1;
+                foreach (var columnName in exportColumns)
+                {
+                    string valueStr = "";
+                    if (columnName.CompareTo("PlantName") == 0)
+                    {
+                        valueStr = mPlantingRow[columnName].ToString();
+                    }
+                    else if (columnName.CompareTo("PlantLocation") == 0 || columnName.CompareTo("EmployeeName") == 0)
+                    {
+                        if (cultivationProcessfirstRow != null)
+                            valueStr = cultivationProcessfirstRow[columnName].ToString();
+                    }
+                    else
+                    {
+                        valueStr = row[columnName].ToString();
+                    }
+
+                    var titleCell = ws.Cell(rowInd, columnInd);
+
+                    if (columnName.CompareTo("HarvestDate") == 0)
+                        titleCell.Value = Convert.ToDateTime(valueStr).Date;
+                    else if(columnName.CompareTo("Quantity") == 0)
+                        titleCell.Value = Convert.ToDecimal(valueStr);
+                    else
+                        titleCell.Value = valueStr;
+
+                    titleCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+                    titleCell.Style.Border.OutsideBorder = XLBorderStyleValues.Thin; // Đóng khung
+                    columnInd++;
+                }
+
+                rowInd++;
+            }
+
+            ws.Column(1).Width = 16.72;
+            ws.Column(2).Width = 5;
             ws.Column(3).Width = 18;
-            ws.Column(4).Width = 15;
-            ws.Column(5).Width = 17;
+            ws.Column(4).Width = 14;
+            ws.Column(5).Width = 18;
             ws.Column(6).Width = 22;
-            ws.Column(7).Width = 19;
+            ws.Column(7).Width = 30;
+            ws.Column(8).Width = 20;
+            ws.Column(9).Width = 21;
             ws.Row(1).Height = 63;
             ws.Row(2).Height = 32;
         }

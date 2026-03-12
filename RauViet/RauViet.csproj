@@ -261,6 +261,7 @@
     <Compile Include="classes\DataTableExtensions.cs" />
     <Compile Include="classes\Ean13Generator.cs" />
     <Compile Include="classes\ICanSave.cs" />
+    <Compile Include="classes\printer\KhoVatTu_PhieuSX_Trong_Printer.cs" />
     <Compile Include="classes\printer\PhieuDuToanLuong_Printer.cs" />
     <Compile Include="classes\printer\PCTienAnDem_Printer.cs" />
     <Compile Include="classes\printer\BangChamTăngCa_Printer.cs" />
