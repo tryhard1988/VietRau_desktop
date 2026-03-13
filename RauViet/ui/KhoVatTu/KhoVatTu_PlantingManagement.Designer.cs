@@ -30,10 +30,10 @@ namespace RauViet.ui
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
+            this.phieuSX_uom_gb = new System.Windows.Forms.GroupBox();
+            this.excelPhieuSX_uom_btn = new System.Windows.Forms.Button();
+            this.inPhieuSX_uom_btn = new System.Windows.Forms.Button();
+            this.xemPhieuSX_uom_btn = new System.Windows.Forms.Button();
             this.phieuGiaoHang_gb = new System.Windows.Forms.GroupBox();
             this.excelPhieuSX_btn = new System.Windows.Forms.Button();
             this.inPhieuSX_btn = new System.Windows.Forms.Button();
@@ -89,8 +89,12 @@ namespace RauViet.ui
             this.locTheoNgayUom_CB = new System.Windows.Forms.CheckBox();
             this.search_tb = new System.Windows.Forms.TextBox();
             this.panel3 = new System.Windows.Forms.Panel();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.excelKeHoachSX_btn = new System.Windows.Forms.Button();
+            this.inKeHoachSX_btn = new System.Windows.Forms.Button();
+            this.xemKeHoachSX_btn = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
-            this.groupBox1.SuspendLayout();
+            this.phieuSX_uom_gb.SuspendLayout();
             this.phieuGiaoHang_gb.SuspendLayout();
             this.info_gb.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -103,11 +107,13 @@ namespace RauViet.ui
             this.panel7.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.monthGV)).BeginInit();
             this.panel4.SuspendLayout();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel1
             // 
             this.panel1.Controls.Add(this.groupBox1);
+            this.panel1.Controls.Add(this.phieuSX_uom_gb);
             this.panel1.Controls.Add(this.phieuGiaoHang_gb);
             this.panel1.Controls.Add(this.monthYear_dtp);
             this.panel1.Controls.Add(this.label12);
@@ -124,59 +130,61 @@ namespace RauViet.ui
             this.panel1.Size = new System.Drawing.Size(533, 741);
             this.panel1.TabIndex = 69;
             // 
-            // groupBox1
+            // phieuSX_uom_gb
             // 
-            this.groupBox1.BackColor = System.Drawing.Color.Moccasin;
-            this.groupBox1.Controls.Add(this.button1);
-            this.groupBox1.Controls.Add(this.button2);
-            this.groupBox1.Controls.Add(this.button3);
-            this.groupBox1.Location = new System.Drawing.Point(275, 520);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(245, 71);
-            this.groupBox1.TabIndex = 75;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Phiếu Sản Xuất (Ươm)";
+            this.phieuSX_uom_gb.BackColor = System.Drawing.Color.LemonChiffon;
+            this.phieuSX_uom_gb.Controls.Add(this.excelPhieuSX_uom_btn);
+            this.phieuSX_uom_gb.Controls.Add(this.inPhieuSX_uom_btn);
+            this.phieuSX_uom_gb.Controls.Add(this.xemPhieuSX_uom_btn);
+            this.phieuSX_uom_gb.ForeColor = System.Drawing.Color.RoyalBlue;
+            this.phieuSX_uom_gb.Location = new System.Drawing.Point(15, 607);
+            this.phieuSX_uom_gb.Name = "phieuSX_uom_gb";
+            this.phieuSX_uom_gb.Size = new System.Drawing.Size(245, 71);
+            this.phieuSX_uom_gb.TabIndex = 75;
+            this.phieuSX_uom_gb.TabStop = false;
+            this.phieuSX_uom_gb.Text = "Phiếu Sản Xuất (Ươm)";
             // 
-            // button1
+            // excelPhieuSX_uom_btn
             // 
-            this.button1.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
-            this.button1.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button1.Location = new System.Drawing.Point(165, 25);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(73, 38);
-            this.button1.TabIndex = 61;
-            this.button1.Text = "Excel";
-            this.button1.UseVisualStyleBackColor = false;
+            this.excelPhieuSX_uom_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.excelPhieuSX_uom_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.excelPhieuSX_uom_btn.Location = new System.Drawing.Point(165, 25);
+            this.excelPhieuSX_uom_btn.Name = "excelPhieuSX_uom_btn";
+            this.excelPhieuSX_uom_btn.Size = new System.Drawing.Size(73, 38);
+            this.excelPhieuSX_uom_btn.TabIndex = 61;
+            this.excelPhieuSX_uom_btn.Text = "Excel";
+            this.excelPhieuSX_uom_btn.UseVisualStyleBackColor = false;
             // 
-            // button2
+            // inPhieuSX_uom_btn
             // 
-            this.button2.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
-            this.button2.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button2.Location = new System.Drawing.Point(7, 25);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(73, 38);
-            this.button2.TabIndex = 59;
-            this.button2.Text = "In";
-            this.button2.UseVisualStyleBackColor = false;
+            this.inPhieuSX_uom_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.inPhieuSX_uom_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.inPhieuSX_uom_btn.Location = new System.Drawing.Point(7, 25);
+            this.inPhieuSX_uom_btn.Name = "inPhieuSX_uom_btn";
+            this.inPhieuSX_uom_btn.Size = new System.Drawing.Size(73, 38);
+            this.inPhieuSX_uom_btn.TabIndex = 59;
+            this.inPhieuSX_uom_btn.Text = "In";
+            this.inPhieuSX_uom_btn.UseVisualStyleBackColor = false;
             // 
-            // button3
+            // xemPhieuSX_uom_btn
             // 
-            this.button3.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
-            this.button3.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button3.Location = new System.Drawing.Point(86, 25);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(73, 38);
-            this.button3.TabIndex = 60;
-            this.button3.Text = "Xem";
-            this.button3.UseVisualStyleBackColor = false;
+            this.xemPhieuSX_uom_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.xemPhieuSX_uom_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.xemPhieuSX_uom_btn.Location = new System.Drawing.Point(86, 25);
+            this.xemPhieuSX_uom_btn.Name = "xemPhieuSX_uom_btn";
+            this.xemPhieuSX_uom_btn.Size = new System.Drawing.Size(73, 38);
+            this.xemPhieuSX_uom_btn.TabIndex = 60;
+            this.xemPhieuSX_uom_btn.Text = "Xem";
+            this.xemPhieuSX_uom_btn.UseVisualStyleBackColor = false;
             // 
             // phieuGiaoHang_gb
             // 
-            this.phieuGiaoHang_gb.BackColor = System.Drawing.Color.Moccasin;
+            this.phieuGiaoHang_gb.BackColor = System.Drawing.Color.LemonChiffon;
             this.phieuGiaoHang_gb.Controls.Add(this.excelPhieuSX_btn);
             this.phieuGiaoHang_gb.Controls.Add(this.inPhieuSX_btn);
             this.phieuGiaoHang_gb.Controls.Add(this.xemPhieuSX_btn);
-            this.phieuGiaoHang_gb.Location = new System.Drawing.Point(24, 520);
+            this.phieuGiaoHang_gb.ForeColor = System.Drawing.Color.ForestGreen;
+            this.phieuGiaoHang_gb.Location = new System.Drawing.Point(15, 520);
             this.phieuGiaoHang_gb.Name = "phieuGiaoHang_gb";
             this.phieuGiaoHang_gb.Size = new System.Drawing.Size(245, 71);
             this.phieuGiaoHang_gb.TabIndex = 74;
@@ -749,6 +757,53 @@ namespace RauViet.ui
             this.panel3.Size = new System.Drawing.Size(911, 28);
             this.panel3.TabIndex = 0;
             // 
+            // groupBox1
+            // 
+            this.groupBox1.BackColor = System.Drawing.Color.LemonChiffon;
+            this.groupBox1.Controls.Add(this.excelKeHoachSX_btn);
+            this.groupBox1.Controls.Add(this.inKeHoachSX_btn);
+            this.groupBox1.Controls.Add(this.xemKeHoachSX_btn);
+            this.groupBox1.ForeColor = System.Drawing.Color.Red;
+            this.groupBox1.Location = new System.Drawing.Point(276, 520);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(245, 71);
+            this.groupBox1.TabIndex = 76;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Kế Hoạch Sản Xuất";
+            // 
+            // excelKeHoachSX_btn
+            // 
+            this.excelKeHoachSX_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.excelKeHoachSX_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.excelKeHoachSX_btn.Location = new System.Drawing.Point(165, 25);
+            this.excelKeHoachSX_btn.Name = "excelKeHoachSX_btn";
+            this.excelKeHoachSX_btn.Size = new System.Drawing.Size(73, 38);
+            this.excelKeHoachSX_btn.TabIndex = 61;
+            this.excelKeHoachSX_btn.Text = "Excel";
+            this.excelKeHoachSX_btn.UseVisualStyleBackColor = false;
+            // 
+            // inKeHoachSX_btn
+            // 
+            this.inKeHoachSX_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.inKeHoachSX_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.inKeHoachSX_btn.Location = new System.Drawing.Point(7, 25);
+            this.inKeHoachSX_btn.Name = "inKeHoachSX_btn";
+            this.inKeHoachSX_btn.Size = new System.Drawing.Size(73, 38);
+            this.inKeHoachSX_btn.TabIndex = 59;
+            this.inKeHoachSX_btn.Text = "In";
+            this.inKeHoachSX_btn.UseVisualStyleBackColor = false;
+            // 
+            // xemKeHoachSX_btn
+            // 
+            this.xemKeHoachSX_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.xemKeHoachSX_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.xemKeHoachSX_btn.Location = new System.Drawing.Point(86, 25);
+            this.xemKeHoachSX_btn.Name = "xemKeHoachSX_btn";
+            this.xemKeHoachSX_btn.Size = new System.Drawing.Size(73, 38);
+            this.xemKeHoachSX_btn.TabIndex = 60;
+            this.xemKeHoachSX_btn.Text = "Xem";
+            this.xemKeHoachSX_btn.UseVisualStyleBackColor = false;
+            // 
             // KhoVatTu_PlantingManagement
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -760,7 +815,7 @@ namespace RauViet.ui
             this.Text = "FormTableData";
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
-            this.groupBox1.ResumeLayout(false);
+            this.phieuSX_uom_gb.ResumeLayout(false);
             this.phieuGiaoHang_gb.ResumeLayout(false);
             this.info_gb.ResumeLayout(false);
             this.info_gb.PerformLayout();
@@ -775,6 +830,7 @@ namespace RauViet.ui
             ((System.ComponentModel.ISupportInitialize)(this.monthGV)).EndInit();
             this.panel4.ResumeLayout(false);
             this.panel4.PerformLayout();
+            this.groupBox1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -836,9 +892,13 @@ namespace RauViet.ui
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.Panel panel7;
         private System.Windows.Forms.DataGridView monthGV;
+        private System.Windows.Forms.GroupBox phieuSX_uom_gb;
+        private System.Windows.Forms.Button excelPhieuSX_uom_btn;
+        private System.Windows.Forms.Button inPhieuSX_uom_btn;
+        private System.Windows.Forms.Button xemPhieuSX_uom_btn;
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Button excelKeHoachSX_btn;
+        private System.Windows.Forms.Button inKeHoachSX_btn;
+        private System.Windows.Forms.Button xemKeHoachSX_btn;
     }
 }

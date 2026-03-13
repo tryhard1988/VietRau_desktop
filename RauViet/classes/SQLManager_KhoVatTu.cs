@@ -1852,6 +1852,25 @@ namespace RauViet.classes
             }
             catch { return false; }
         }
+
+        public async Task<DataTable> GetPlantTrayDensityAsync()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT * FROM PlantTrayDensity";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
+        }
     }
 }
 

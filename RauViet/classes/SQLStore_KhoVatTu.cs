@@ -1,10 +1,8 @@
-﻿using DocumentFormat.OpenXml.Bibliography;
+﻿
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using DataTable = System.Data.DataTable;
 
@@ -25,6 +23,7 @@ namespace RauViet.classes
         DataTable mMaterial_dt = null;
         DataTable mCultivationProcessTemplate_dt = null;
         DataTable mFarm_dt = null;
+        DataTable mPlantTrayDensity_dt = null;
 
         Dictionary<int, DataTable> mCultivationProcesses = null;
         Dictionary<int, DataTable> mPestDiseaseMonitorings = null;
@@ -1046,6 +1045,25 @@ namespace RauViet.classes
         public void removeHarvestSchedule(int plantingID)
         {
             mHarvestSchedules.Remove(plantingID);
+        }
+
+
+        public async Task<DataTable> GetPlantTrayDensityAsync()
+        {
+            if (mPlantTrayDensity_dt == null)
+            {
+                try
+                {
+                    mPlantTrayDensity_dt = await SQLManager_KhoVatTu.Instance.GetPlantTrayDensityAsync();
+                }
+                catch
+                {
+                    Console.WriteLine("error GetPlantTrayDensityAsync SQLStore");
+                    return null;
+                }
+            }
+
+            return mPlantTrayDensity_dt;
         }
     }
 }
