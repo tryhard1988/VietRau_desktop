@@ -30,6 +30,10 @@ namespace RauViet.ui
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.excelKeHoachSX_btn = new System.Windows.Forms.Button();
+            this.inKeHoachSX_btn = new System.Windows.Forms.Button();
+            this.xemKeHoachSX_btn = new System.Windows.Forms.Button();
             this.phieuSX_uom_gb = new System.Windows.Forms.GroupBox();
             this.excelPhieuSX_uom_btn = new System.Windows.Forms.Button();
             this.inPhieuSX_uom_btn = new System.Windows.Forms.Button();
@@ -76,6 +80,9 @@ namespace RauViet.ui
             this.label4 = new System.Windows.Forms.Label();
             this.log_GV = new System.Windows.Forms.DataGridView();
             this.panel5 = new System.Windows.Forms.Panel();
+            this.panel9 = new System.Windows.Forms.Panel();
+            this.weekInYear_GV = new System.Windows.Forms.DataGridView();
+            this.label15 = new System.Windows.Forms.Label();
             this.panel8 = new System.Windows.Forms.Panel();
             this.toPhuTrach_GV = new System.Windows.Forms.DataGridView();
             this.label14 = new System.Windows.Forms.Label();
@@ -89,11 +96,17 @@ namespace RauViet.ui
             this.locTheoNgayUom_CB = new System.Windows.Forms.CheckBox();
             this.search_tb = new System.Windows.Forms.TextBox();
             this.panel3 = new System.Windows.Forms.Panel();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.excelKeHoachSX_btn = new System.Windows.Forms.Button();
-            this.inKeHoachSX_btn = new System.Windows.Forms.Button();
-            this.xemKeHoachSX_btn = new System.Windows.Forms.Button();
+            this.locTheoTuan_CB = new System.Windows.Forms.CheckBox();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.excelLichUom_btn = new System.Windows.Forms.Button();
+            this.inLichUom_btn = new System.Windows.Forms.Button();
+            this.xemLichUom_btn = new System.Windows.Forms.Button();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.excelLichGiao_btn = new System.Windows.Forms.Button();
+            this.inLichGiao_btn = new System.Windows.Forms.Button();
+            this.xemLichGiao_btn = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
+            this.groupBox1.SuspendLayout();
             this.phieuSX_uom_gb.SuspendLayout();
             this.phieuGiaoHang_gb.SuspendLayout();
             this.info_gb.SuspendLayout();
@@ -102,16 +115,21 @@ namespace RauViet.ui
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.log_GV)).BeginInit();
             this.panel5.SuspendLayout();
+            this.panel9.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.weekInYear_GV)).BeginInit();
             this.panel8.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.toPhuTrach_GV)).BeginInit();
             this.panel7.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.monthGV)).BeginInit();
             this.panel4.SuspendLayout();
-            this.groupBox1.SuspendLayout();
+            this.groupBox2.SuspendLayout();
+            this.groupBox3.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.groupBox3);
+            this.panel1.Controls.Add(this.groupBox2);
             this.panel1.Controls.Add(this.groupBox1);
             this.panel1.Controls.Add(this.phieuSX_uom_gb);
             this.panel1.Controls.Add(this.phieuGiaoHang_gb);
@@ -127,8 +145,55 @@ namespace RauViet.ui
             this.panel1.Dock = System.Windows.Forms.DockStyle.Right;
             this.panel1.Location = new System.Drawing.Point(911, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(533, 741);
+            this.panel1.Size = new System.Drawing.Size(533, 776);
             this.panel1.TabIndex = 69;
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.BackColor = System.Drawing.Color.LemonChiffon;
+            this.groupBox1.Controls.Add(this.excelKeHoachSX_btn);
+            this.groupBox1.Controls.Add(this.inKeHoachSX_btn);
+            this.groupBox1.Controls.Add(this.xemKeHoachSX_btn);
+            this.groupBox1.ForeColor = System.Drawing.Color.Red;
+            this.groupBox1.Location = new System.Drawing.Point(17, 676);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(245, 71);
+            this.groupBox1.TabIndex = 76;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Kế Hoạch Sản Xuất";
+            // 
+            // excelKeHoachSX_btn
+            // 
+            this.excelKeHoachSX_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.excelKeHoachSX_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.excelKeHoachSX_btn.Location = new System.Drawing.Point(165, 25);
+            this.excelKeHoachSX_btn.Name = "excelKeHoachSX_btn";
+            this.excelKeHoachSX_btn.Size = new System.Drawing.Size(73, 38);
+            this.excelKeHoachSX_btn.TabIndex = 61;
+            this.excelKeHoachSX_btn.Text = "Excel";
+            this.excelKeHoachSX_btn.UseVisualStyleBackColor = false;
+            // 
+            // inKeHoachSX_btn
+            // 
+            this.inKeHoachSX_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.inKeHoachSX_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.inKeHoachSX_btn.Location = new System.Drawing.Point(7, 25);
+            this.inKeHoachSX_btn.Name = "inKeHoachSX_btn";
+            this.inKeHoachSX_btn.Size = new System.Drawing.Size(73, 38);
+            this.inKeHoachSX_btn.TabIndex = 59;
+            this.inKeHoachSX_btn.Text = "In";
+            this.inKeHoachSX_btn.UseVisualStyleBackColor = false;
+            // 
+            // xemKeHoachSX_btn
+            // 
+            this.xemKeHoachSX_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.xemKeHoachSX_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.xemKeHoachSX_btn.Location = new System.Drawing.Point(86, 25);
+            this.xemKeHoachSX_btn.Name = "xemKeHoachSX_btn";
+            this.xemKeHoachSX_btn.Size = new System.Drawing.Size(73, 38);
+            this.xemKeHoachSX_btn.TabIndex = 60;
+            this.xemKeHoachSX_btn.Text = "Xem";
+            this.xemKeHoachSX_btn.UseVisualStyleBackColor = false;
             // 
             // phieuSX_uom_gb
             // 
@@ -137,7 +202,7 @@ namespace RauViet.ui
             this.phieuSX_uom_gb.Controls.Add(this.inPhieuSX_uom_btn);
             this.phieuSX_uom_gb.Controls.Add(this.xemPhieuSX_uom_btn);
             this.phieuSX_uom_gb.ForeColor = System.Drawing.Color.RoyalBlue;
-            this.phieuSX_uom_gb.Location = new System.Drawing.Point(15, 607);
+            this.phieuSX_uom_gb.Location = new System.Drawing.Point(17, 599);
             this.phieuSX_uom_gb.Name = "phieuSX_uom_gb";
             this.phieuSX_uom_gb.Size = new System.Drawing.Size(245, 71);
             this.phieuSX_uom_gb.TabIndex = 75;
@@ -545,7 +610,7 @@ namespace RauViet.ui
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel2.Location = new System.Drawing.Point(0, 0);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(911, 741);
+            this.panel2.Size = new System.Drawing.Size(911, 776);
             this.panel2.TabIndex = 70;
             // 
             // panel6
@@ -556,7 +621,7 @@ namespace RauViet.ui
             this.panel6.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel6.Location = new System.Drawing.Point(137, 33);
             this.panel6.Name = "panel6";
-            this.panel6.Size = new System.Drawing.Size(774, 680);
+            this.panel6.Size = new System.Drawing.Size(774, 715);
             this.panel6.TabIndex = 4;
             // 
             // dataGV
@@ -568,7 +633,7 @@ namespace RauViet.ui
             this.dataGV.Location = new System.Drawing.Point(0, 0);
             this.dataGV.Name = "dataGV";
             this.dataGV.ReadOnly = true;
-            this.dataGV.Size = new System.Drawing.Size(774, 517);
+            this.dataGV.Size = new System.Drawing.Size(774, 552);
             this.dataGV.TabIndex = 78;
             // 
             // label4
@@ -577,7 +642,7 @@ namespace RauViet.ui
             this.label4.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.label4.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label4.ForeColor = System.Drawing.Color.DarkOliveGreen;
-            this.label4.Location = new System.Drawing.Point(0, 517);
+            this.label4.Location = new System.Drawing.Point(0, 552);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(774, 23);
             this.label4.TabIndex = 77;
@@ -590,7 +655,7 @@ namespace RauViet.ui
             this.log_GV.AllowUserToDeleteRows = false;
             this.log_GV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.log_GV.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.log_GV.Location = new System.Drawing.Point(0, 540);
+            this.log_GV.Location = new System.Drawing.Point(0, 575);
             this.log_GV.Name = "log_GV";
             this.log_GV.ReadOnly = true;
             this.log_GV.Size = new System.Drawing.Size(774, 140);
@@ -598,6 +663,8 @@ namespace RauViet.ui
             // 
             // panel5
             // 
+            this.panel5.Controls.Add(this.panel9);
+            this.panel5.Controls.Add(this.label15);
             this.panel5.Controls.Add(this.panel8);
             this.panel5.Controls.Add(this.label14);
             this.panel5.Controls.Add(this.panel7);
@@ -605,17 +672,52 @@ namespace RauViet.ui
             this.panel5.Dock = System.Windows.Forms.DockStyle.Left;
             this.panel5.Location = new System.Drawing.Point(0, 33);
             this.panel5.Name = "panel5";
-            this.panel5.Size = new System.Drawing.Size(137, 680);
+            this.panel5.Size = new System.Drawing.Size(137, 715);
             this.panel5.TabIndex = 3;
+            // 
+            // panel9
+            // 
+            this.panel9.BackColor = System.Drawing.Color.Wheat;
+            this.panel9.Controls.Add(this.weekInYear_GV);
+            this.panel9.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel9.Location = new System.Drawing.Point(0, 458);
+            this.panel9.Name = "panel9";
+            this.panel9.Size = new System.Drawing.Size(137, 257);
+            this.panel9.TabIndex = 82;
+            // 
+            // weekInYear_GV
+            // 
+            this.weekInYear_GV.AllowUserToAddRows = false;
+            this.weekInYear_GV.AllowUserToDeleteRows = false;
+            this.weekInYear_GV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.weekInYear_GV.ColumnHeadersVisible = false;
+            this.weekInYear_GV.Dock = System.Windows.Forms.DockStyle.Left;
+            this.weekInYear_GV.Location = new System.Drawing.Point(0, 0);
+            this.weekInYear_GV.Name = "weekInYear_GV";
+            this.weekInYear_GV.ReadOnly = true;
+            this.weekInYear_GV.Size = new System.Drawing.Size(131, 257);
+            this.weekInYear_GV.TabIndex = 4;
+            // 
+            // label15
+            // 
+            this.label15.BackColor = System.Drawing.Color.Wheat;
+            this.label15.Dock = System.Windows.Forms.DockStyle.Top;
+            this.label15.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label15.Location = new System.Drawing.Point(0, 426);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(137, 32);
+            this.label15.TabIndex = 81;
+            this.label15.Text = "Tuần";
+            this.label15.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // panel8
             // 
             this.panel8.BackColor = System.Drawing.Color.Wheat;
             this.panel8.Controls.Add(this.toPhuTrach_GV);
             this.panel8.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel8.Location = new System.Drawing.Point(0, 370);
+            this.panel8.Location = new System.Drawing.Point(0, 324);
             this.panel8.Name = "panel8";
-            this.panel8.Size = new System.Drawing.Size(137, 144);
+            this.panel8.Size = new System.Drawing.Size(137, 102);
             this.panel8.TabIndex = 80;
             // 
             // toPhuTrach_GV
@@ -628,7 +730,7 @@ namespace RauViet.ui
             this.toPhuTrach_GV.Location = new System.Drawing.Point(0, 0);
             this.toPhuTrach_GV.Name = "toPhuTrach_GV";
             this.toPhuTrach_GV.ReadOnly = true;
-            this.toPhuTrach_GV.Size = new System.Drawing.Size(131, 144);
+            this.toPhuTrach_GV.Size = new System.Drawing.Size(131, 102);
             this.toPhuTrach_GV.TabIndex = 4;
             // 
             // label14
@@ -636,7 +738,7 @@ namespace RauViet.ui
             this.label14.BackColor = System.Drawing.Color.Wheat;
             this.label14.Dock = System.Windows.Forms.DockStyle.Top;
             this.label14.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label14.Location = new System.Drawing.Point(0, 338);
+            this.label14.Location = new System.Drawing.Point(0, 292);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(137, 32);
             this.label14.TabIndex = 79;
@@ -650,7 +752,7 @@ namespace RauViet.ui
             this.panel7.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel7.Location = new System.Drawing.Point(0, 32);
             this.panel7.Name = "panel7";
-            this.panel7.Size = new System.Drawing.Size(137, 306);
+            this.panel7.Size = new System.Drawing.Size(137, 260);
             this.panel7.TabIndex = 77;
             // 
             // monthGV
@@ -663,7 +765,7 @@ namespace RauViet.ui
             this.monthGV.Location = new System.Drawing.Point(0, 0);
             this.monthGV.Name = "monthGV";
             this.monthGV.ReadOnly = true;
-            this.monthGV.Size = new System.Drawing.Size(131, 306);
+            this.monthGV.Size = new System.Drawing.Size(131, 260);
             this.monthGV.TabIndex = 4;
             // 
             // label13
@@ -681,6 +783,7 @@ namespace RauViet.ui
             // panel4
             // 
             this.panel4.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.panel4.Controls.Add(this.locTheoTuan_CB);
             this.panel4.Controls.Add(this.locTheoTo_CB);
             this.panel4.Controls.Add(this.locTheoNgayThu_CB);
             this.panel4.Controls.Add(this.locTheoNgayTrong_CB);
@@ -698,7 +801,7 @@ namespace RauViet.ui
             this.locTheoTo_CB.BackColor = System.Drawing.Color.Moccasin;
             this.locTheoTo_CB.Checked = true;
             this.locTheoTo_CB.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.locTheoTo_CB.Location = new System.Drawing.Point(440, 8);
+            this.locTheoTo_CB.Location = new System.Drawing.Point(433, 8);
             this.locTheoTo_CB.Name = "locTheoTo_CB";
             this.locTheoTo_CB.Size = new System.Drawing.Size(91, 17);
             this.locTheoTo_CB.TabIndex = 87;
@@ -708,8 +811,8 @@ namespace RauViet.ui
             // locTheoNgayThu_CB
             // 
             this.locTheoNgayThu_CB.AutoSize = true;
-            this.locTheoNgayThu_CB.BackColor = System.Drawing.Color.Orange;
-            this.locTheoNgayThu_CB.Location = new System.Drawing.Point(301, 8);
+            this.locTheoNgayThu_CB.BackColor = System.Drawing.Color.DarkOrange;
+            this.locTheoNgayThu_CB.Location = new System.Drawing.Point(297, 8);
             this.locTheoNgayThu_CB.Name = "locTheoNgayThu_CB";
             this.locTheoNgayThu_CB.Size = new System.Drawing.Size(125, 17);
             this.locTheoNgayThu_CB.TabIndex = 86;
@@ -719,8 +822,10 @@ namespace RauViet.ui
             // locTheoNgayTrong_CB
             // 
             this.locTheoNgayTrong_CB.AutoSize = true;
-            this.locTheoNgayTrong_CB.BackColor = System.Drawing.Color.PapayaWhip;
-            this.locTheoNgayTrong_CB.Location = new System.Drawing.Point(155, 8);
+            this.locTheoNgayTrong_CB.BackColor = System.Drawing.Color.DarkOrange;
+            this.locTheoNgayTrong_CB.Checked = true;
+            this.locTheoNgayTrong_CB.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.locTheoNgayTrong_CB.Location = new System.Drawing.Point(152, 8);
             this.locTheoNgayTrong_CB.Name = "locTheoNgayTrong_CB";
             this.locTheoNgayTrong_CB.Size = new System.Drawing.Size(134, 17);
             this.locTheoNgayTrong_CB.TabIndex = 85;
@@ -731,8 +836,6 @@ namespace RauViet.ui
             // 
             this.locTheoNgayUom_CB.AutoSize = true;
             this.locTheoNgayUom_CB.BackColor = System.Drawing.Color.DarkOrange;
-            this.locTheoNgayUom_CB.Checked = true;
-            this.locTheoNgayUom_CB.CheckState = System.Windows.Forms.CheckState.Checked;
             this.locTheoNgayUom_CB.Location = new System.Drawing.Point(13, 8);
             this.locTheoNgayUom_CB.Name = "locTheoNgayUom_CB";
             this.locTheoNgayUom_CB.Size = new System.Drawing.Size(128, 17);
@@ -752,69 +855,128 @@ namespace RauViet.ui
             // panel3
             // 
             this.panel3.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel3.Location = new System.Drawing.Point(0, 713);
+            this.panel3.Location = new System.Drawing.Point(0, 748);
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(911, 28);
             this.panel3.TabIndex = 0;
             // 
-            // groupBox1
+            // locTheoTuan_CB
             // 
-            this.groupBox1.BackColor = System.Drawing.Color.LemonChiffon;
-            this.groupBox1.Controls.Add(this.excelKeHoachSX_btn);
-            this.groupBox1.Controls.Add(this.inKeHoachSX_btn);
-            this.groupBox1.Controls.Add(this.xemKeHoachSX_btn);
-            this.groupBox1.ForeColor = System.Drawing.Color.Red;
-            this.groupBox1.Location = new System.Drawing.Point(276, 520);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(245, 71);
-            this.groupBox1.TabIndex = 76;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Kế Hoạch Sản Xuất";
+            this.locTheoTuan_CB.AutoSize = true;
+            this.locTheoTuan_CB.BackColor = System.Drawing.Color.DarkGoldenrod;
+            this.locTheoTuan_CB.Location = new System.Drawing.Point(535, 8);
+            this.locTheoTuan_CB.Name = "locTheoTuan_CB";
+            this.locTheoTuan_CB.Size = new System.Drawing.Size(103, 17);
+            this.locTheoTuan_CB.TabIndex = 88;
+            this.locTheoTuan_CB.Text = "Lọc Theo Tuần.";
+            this.locTheoTuan_CB.UseVisualStyleBackColor = false;
             // 
-            // excelKeHoachSX_btn
+            // groupBox2
             // 
-            this.excelKeHoachSX_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
-            this.excelKeHoachSX_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.excelKeHoachSX_btn.Location = new System.Drawing.Point(165, 25);
-            this.excelKeHoachSX_btn.Name = "excelKeHoachSX_btn";
-            this.excelKeHoachSX_btn.Size = new System.Drawing.Size(73, 38);
-            this.excelKeHoachSX_btn.TabIndex = 61;
-            this.excelKeHoachSX_btn.Text = "Excel";
-            this.excelKeHoachSX_btn.UseVisualStyleBackColor = false;
+            this.groupBox2.BackColor = System.Drawing.Color.LemonChiffon;
+            this.groupBox2.Controls.Add(this.excelLichUom_btn);
+            this.groupBox2.Controls.Add(this.inLichUom_btn);
+            this.groupBox2.Controls.Add(this.xemLichUom_btn);
+            this.groupBox2.ForeColor = System.Drawing.Color.DarkSlateGray;
+            this.groupBox2.Location = new System.Drawing.Point(273, 520);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(245, 71);
+            this.groupBox2.TabIndex = 77;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Lịch Ươm Cây (Theo Tuần)";
             // 
-            // inKeHoachSX_btn
+            // excelLichUom_btn
             // 
-            this.inKeHoachSX_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
-            this.inKeHoachSX_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.inKeHoachSX_btn.Location = new System.Drawing.Point(7, 25);
-            this.inKeHoachSX_btn.Name = "inKeHoachSX_btn";
-            this.inKeHoachSX_btn.Size = new System.Drawing.Size(73, 38);
-            this.inKeHoachSX_btn.TabIndex = 59;
-            this.inKeHoachSX_btn.Text = "In";
-            this.inKeHoachSX_btn.UseVisualStyleBackColor = false;
+            this.excelLichUom_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.excelLichUom_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.excelLichUom_btn.Location = new System.Drawing.Point(165, 25);
+            this.excelLichUom_btn.Name = "excelLichUom_btn";
+            this.excelLichUom_btn.Size = new System.Drawing.Size(73, 38);
+            this.excelLichUom_btn.TabIndex = 61;
+            this.excelLichUom_btn.Text = "Excel";
+            this.excelLichUom_btn.UseVisualStyleBackColor = false;
             // 
-            // xemKeHoachSX_btn
+            // inLichUom_btn
             // 
-            this.xemKeHoachSX_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
-            this.xemKeHoachSX_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.xemKeHoachSX_btn.Location = new System.Drawing.Point(86, 25);
-            this.xemKeHoachSX_btn.Name = "xemKeHoachSX_btn";
-            this.xemKeHoachSX_btn.Size = new System.Drawing.Size(73, 38);
-            this.xemKeHoachSX_btn.TabIndex = 60;
-            this.xemKeHoachSX_btn.Text = "Xem";
-            this.xemKeHoachSX_btn.UseVisualStyleBackColor = false;
+            this.inLichUom_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.inLichUom_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.inLichUom_btn.Location = new System.Drawing.Point(7, 25);
+            this.inLichUom_btn.Name = "inLichUom_btn";
+            this.inLichUom_btn.Size = new System.Drawing.Size(73, 38);
+            this.inLichUom_btn.TabIndex = 59;
+            this.inLichUom_btn.Text = "In";
+            this.inLichUom_btn.UseVisualStyleBackColor = false;
+            // 
+            // xemLichUom_btn
+            // 
+            this.xemLichUom_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.xemLichUom_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.xemLichUom_btn.Location = new System.Drawing.Point(86, 25);
+            this.xemLichUom_btn.Name = "xemLichUom_btn";
+            this.xemLichUom_btn.Size = new System.Drawing.Size(73, 38);
+            this.xemLichUom_btn.TabIndex = 60;
+            this.xemLichUom_btn.Text = "Xem";
+            this.xemLichUom_btn.UseVisualStyleBackColor = false;
+            // 
+            // groupBox3
+            // 
+            this.groupBox3.BackColor = System.Drawing.Color.LemonChiffon;
+            this.groupBox3.Controls.Add(this.excelLichGiao_btn);
+            this.groupBox3.Controls.Add(this.inLichGiao_btn);
+            this.groupBox3.Controls.Add(this.xemLichGiao_btn);
+            this.groupBox3.ForeColor = System.Drawing.Color.BlueViolet;
+            this.groupBox3.Location = new System.Drawing.Point(273, 599);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(245, 71);
+            this.groupBox3.TabIndex = 78;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "Lịch Giao Cây (Theo Tuần)";
+            // 
+            // excelLichGiao_btn
+            // 
+            this.excelLichGiao_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.excelLichGiao_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.excelLichGiao_btn.Location = new System.Drawing.Point(165, 25);
+            this.excelLichGiao_btn.Name = "excelLichGiao_btn";
+            this.excelLichGiao_btn.Size = new System.Drawing.Size(73, 38);
+            this.excelLichGiao_btn.TabIndex = 61;
+            this.excelLichGiao_btn.Text = "Excel";
+            this.excelLichGiao_btn.UseVisualStyleBackColor = false;
+            // 
+            // inLichGiao_btn
+            // 
+            this.inLichGiao_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.inLichGiao_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.inLichGiao_btn.Location = new System.Drawing.Point(7, 25);
+            this.inLichGiao_btn.Name = "inLichGiao_btn";
+            this.inLichGiao_btn.Size = new System.Drawing.Size(73, 38);
+            this.inLichGiao_btn.TabIndex = 59;
+            this.inLichGiao_btn.Text = "In";
+            this.inLichGiao_btn.UseVisualStyleBackColor = false;
+            // 
+            // xemLichGiao_btn
+            // 
+            this.xemLichGiao_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.xemLichGiao_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.xemLichGiao_btn.Location = new System.Drawing.Point(86, 25);
+            this.xemLichGiao_btn.Name = "xemLichGiao_btn";
+            this.xemLichGiao_btn.Size = new System.Drawing.Size(73, 38);
+            this.xemLichGiao_btn.TabIndex = 60;
+            this.xemLichGiao_btn.Text = "Xem";
+            this.xemLichGiao_btn.UseVisualStyleBackColor = false;
             // 
             // KhoVatTu_PlantingManagement
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1444, 741);
+            this.ClientSize = new System.Drawing.Size(1444, 776);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.Name = "KhoVatTu_PlantingManagement";
             this.Text = "FormTableData";
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            this.groupBox1.ResumeLayout(false);
             this.phieuSX_uom_gb.ResumeLayout(false);
             this.phieuGiaoHang_gb.ResumeLayout(false);
             this.info_gb.ResumeLayout(false);
@@ -824,13 +986,16 @@ namespace RauViet.ui
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.log_GV)).EndInit();
             this.panel5.ResumeLayout(false);
+            this.panel9.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.weekInYear_GV)).EndInit();
             this.panel8.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.toPhuTrach_GV)).EndInit();
             this.panel7.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.monthGV)).EndInit();
             this.panel4.ResumeLayout(false);
             this.panel4.PerformLayout();
-            this.groupBox1.ResumeLayout(false);
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox3.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -900,5 +1065,17 @@ namespace RauViet.ui
         private System.Windows.Forms.Button excelKeHoachSX_btn;
         private System.Windows.Forms.Button inKeHoachSX_btn;
         private System.Windows.Forms.Button xemKeHoachSX_btn;
+        private System.Windows.Forms.Panel panel9;
+        private System.Windows.Forms.DataGridView weekInYear_GV;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.CheckBox locTheoTuan_CB;
+        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.Button excelLichGiao_btn;
+        private System.Windows.Forms.Button inLichGiao_btn;
+        private System.Windows.Forms.Button xemLichGiao_btn;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.Button excelLichUom_btn;
+        private System.Windows.Forms.Button inLichUom_btn;
+        private System.Windows.Forms.Button xemLichUom_btn;
     }
 }

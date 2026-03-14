@@ -1,18 +1,18 @@
-﻿using RauViet.ui;
+﻿
+using RauViet.classes;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.Drawing.Printing;
-using System.Linq;
 using System.Windows.Forms;
 
 public class KhoVatTu_PhieuSX_Trong_Printer
 {
-    private DataTable mPlantingManagement_dt;
+    private DataTable mPlantingManagement_dt, mCultivationProcess_dt;
     private int rowIndex = 0; // để phân trang
     private int startX = 0;
-    private int lineHeight = 23;
+    private int lineHeight = 35;
 
     public KhoVatTu_PhieuSX_Trong_Printer(List<int> departmentIDs, DataTable plantingManagement_dt, int month, int year)
     {
@@ -43,7 +43,7 @@ public class KhoVatTu_PhieuSX_Trong_Printer
         rowIndex = 0; // reset trước khi in
         PrintDocument pd = new PrintDocument();
         pd.DefaultPageSettings.PaperSize = new PaperSize("A4", 827, 1169);
-        pd.DefaultPageSettings.Landscape = true;
+        pd.DefaultPageSettings.Landscape = false;
         pd.PrintPage += Pd_PrintPage;
         PrintPreviewDialog preview = new PrintPreviewDialog();
         preview.Document = pd;
@@ -78,7 +78,7 @@ public class KhoVatTu_PhieuSX_Trong_Printer
         rowIndex = 0; // reset trước khi in
 
         PrintDocument pd = new PrintDocument();
-        pd.DefaultPageSettings.Landscape = true;
+        pd.DefaultPageSettings.Landscape = false;
         pd.PrintPage += Pd_PrintPage;
 
         // 🔹 Hộp thoại chọn máy in
@@ -95,7 +95,7 @@ public class KhoVatTu_PhieuSX_Trong_Printer
         }
     }
 
-    private void Pd_PrintPage(object sender, PrintPageEventArgs e)
+    private async void Pd_PrintPage(object sender, PrintPageEventArgs e)
     {
         Graphics g = e.Graphics;
         int pageWidth = e.PageBounds.Width;
@@ -114,8 +114,11 @@ public class KhoVatTu_PhieuSX_Trong_Printer
 
             DateTime plantingDate = Convert.ToDateTime(row["PlantingDate"]);
             int departmentID = Convert.ToInt32(row["Department"]);
+            
             if (departmentID == 27)
-                numRow = 8;
+            {
+                numRow = 8;                
+            }                
 
             int y = startX + (lineHeight * numRow + distanceHeight) * (int)(intdex / 3);
             int colHeaderX = startX + (col1Width + col2Width + distanceWidth) * (intdex% 3);
@@ -145,7 +148,7 @@ public class KhoVatTu_PhieuSX_Trong_Printer
 
             g.DrawLine(Pens.Black, colHeaderX, y, colHeaderX + col1Width + col2Width, y);
             DrawCellText(g, "Diện Tích", headerFont, new Rectangle(colHeaderX + offsetX, y, col1Width, lineHeight));
-            DrawCellText(g, row["Area"].ToString(), normalFont, new Rectangle(colHeaderX + col1Width + offsetX, y, col2Width, lineHeight)); y += lineHeight;
+            DrawCellText(g, Convert.ToDecimal(row["Area"]).ToString("0.##"), normalFont, new Rectangle(colHeaderX + col1Width + offsetX, y, col2Width, lineHeight)); y += lineHeight;
 
             g.DrawLine(Pens.Black, colHeaderX, y, colHeaderX + col1Width + col2Width, y);
             DrawCellText(g, "Ngày Trồng", headerFont, new Rectangle(colHeaderX + offsetX, y, col1Width, lineHeight));
@@ -165,8 +168,11 @@ public class KhoVatTu_PhieuSX_Trong_Printer
                 g.DrawLine(Pens.Black, colHeaderX, y, colHeaderX + col1Width + col2Width, y);
                 DrawCellText(g, "Vị Trí", headerFont, new Rectangle(colHeaderX, y, col1Width + col2Width, lineHeight), StringAlignment.Center); y += lineHeight;
 
+                int plantingID = Convert.ToInt32(row["PlantingID"]);
+                var cultivationProcess_dt = await SQLStore_KhoVatTu.Instance.GetCultivationProcessAsync(plantingID);
+
                 g.DrawLine(Pens.Black, colHeaderX, y, colHeaderX + col1Width + col2Width, y);
-                DrawCellText(g, "A02: 202 - 206", normalFont, new Rectangle(colHeaderX, y, col1Width + col2Width, lineHeight*2), StringAlignment.Center);
+                DrawCellText(g, row["PlantLocation"].ToString(), normalFont, new Rectangle(colHeaderX, y, col1Width + col2Width, lineHeight*2), StringAlignment.Center);
             }
             
             rowIndex++;

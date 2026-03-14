@@ -12,7 +12,7 @@ public class KhoVatTu_PhieuSX_Uom_Printer
     private DataTable mPlantingManagement_dt, mPlantTrayDensity_dt;
     private int rowIndex = 0; // để phân trang
     private int startX = 0;
-    private int lineHeight = 23;
+    private int lineHeight = 35;
 
     public KhoVatTu_PhieuSX_Uom_Printer(List<int> departmentIDs, DataTable plantTrayDensity, DataTable plantingManagement_dt, int month, int year)
     {
@@ -44,7 +44,7 @@ public class KhoVatTu_PhieuSX_Uom_Printer
         rowIndex = 0; // reset trước khi in
         PrintDocument pd = new PrintDocument();
         pd.DefaultPageSettings.PaperSize = new PaperSize("A4", 827, 1169);
-        pd.DefaultPageSettings.Landscape = true;
+        pd.DefaultPageSettings.Landscape = false;
         pd.PrintPage += Pd_PrintPage;
         PrintPreviewDialog preview = new PrintPreviewDialog();
         preview.Document = pd;
@@ -79,7 +79,7 @@ public class KhoVatTu_PhieuSX_Uom_Printer
         rowIndex = 0; // reset trước khi in
 
         PrintDocument pd = new PrintDocument();
-        pd.DefaultPageSettings.Landscape = true;
+        pd.DefaultPageSettings.Landscape = false;
         pd.PrintPage += Pd_PrintPage;
 
         // 🔹 Hộp thoại chọn máy in
@@ -106,7 +106,7 @@ public class KhoVatTu_PhieuSX_Uom_Printer
         Font headerFont1 = new Font("Times New Roman", 11, FontStyle.Bold | FontStyle.Underline);
         Font normalFont = new Font("Times New Roman", 11);
 
-        int col1Width = 150, col2Width = 100, distanceWidth = 15, distanceHeight = 15;
+        int col1Width = 140, col2Width = 110, distanceWidth = 15, distanceHeight = 15;
         int numRow = 8;
         int intdex = 0;
         int offsetX = 5;

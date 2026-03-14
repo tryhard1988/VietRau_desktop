@@ -406,7 +406,17 @@ namespace RauViet.classes
             using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
             {
                 await con.OpenAsync();
-                string query = @"SELECT * FROM PlantingManagement WHERE YEAR(NurseryDate) = @Year;";
+                string query = @"SELECT pm.*, cp.PlantLocation
+                                FROM PlantingManagement pm
+                                OUTER APPLY
+                                (
+                                    SELECT TOP 1 PlantLocation
+                                    FROM CultivationProcess
+                                    WHERE PlantingID = pm.PlantingID
+                                          AND ISNULL(PlantLocation,'') <> ''
+                                    ORDER BY CultivationProcessID
+                                ) cp
+                                WHERE YEAR(pm.NurseryDate) = @Year;";
 
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 {
@@ -1117,7 +1127,8 @@ namespace RauViet.classes
             return dt;
         }
 
-        public async Task<bool> InsertCultivationProcessListAsync(List<(int PlantingID, DateTime ProcessDate, int? FertilizationWorkTypeID, int WorkTypeID, int? MaterialID, int? MaterialPrice, decimal? MaterialQuantity, decimal? WaterAmount, int? DepartmentID, string EmployeeCode)> list)
+        public async Task<bool> InsertCultivationProcessListAsync(List<(int PlantingID, DateTime ProcessDate, int? FertilizationWorkTypeID, int WorkTypeID, int? MaterialID, int? MaterialPrice, 
+            decimal? MaterialQuantity, decimal? WaterAmount, int? DepartmentID, string EmployeeCode, string dosage, string activeIngredientStr, int? isolationDays)> list)
         {
             try
             {
@@ -1137,6 +1148,9 @@ namespace RauViet.classes
                     dt.Columns.Add("WaterAmount", typeof(decimal));
                     dt.Columns.Add("DepartmentID", typeof(int));
                     dt.Columns.Add("EmployeeCode", typeof(string));
+                    dt.Columns.Add("Dosage", typeof(string));
+                    dt.Columns.Add("ActiveIngredient", typeof(string));
+                    dt.Columns.Add("IsolationDays", typeof(int));
 
                     foreach (var item in list)
                     {
@@ -1149,7 +1163,10 @@ namespace RauViet.classes
                                     (object)item.MaterialQuantity ?? DBNull.Value,
                                     (object)item.WaterAmount ?? DBNull.Value,
                                     (object)item.DepartmentID ?? DBNull.Value,
-                                    item.EmployeeCode);
+                                    item.EmployeeCode,
+                                    item.dosage,
+                                    item.activeIngredientStr,
+                                    (object)item.isolationDays ?? DBNull.Value);
                     }
 
                     // 2️⃣ Gọi SP

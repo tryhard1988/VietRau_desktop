@@ -3076,6 +3076,28 @@ namespace RauViet.classes
             }
             catch { return false; }
         }
+
+        public async Task CopyLotCodeAsync(int fromExportCodeID, int toExportCodeID)
+        {
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand("sp_CopyLOTCode", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@FromExportCodeID ", (object)fromExportCodeID);
+                        cmd.Parameters.AddWithValue("@ToExportCodeID ", (object)toExportCodeID);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error Auto Update ExportCode: {ex.Message}");
+            }
+        }
     }
 }
 

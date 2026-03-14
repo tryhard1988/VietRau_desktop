@@ -204,7 +204,7 @@ public class KhoVatTu_KeHoachSX_Printer
             DrawCellText(g, $"{quantity.ToString("N0")} cây", normalFont, new Rectangle(col_SL + 2, y, colWidth_SL, lineHeight));
             DrawCellText(g, nurseryDate.ToString("dd/MM/yyyy"), normalFont, new Rectangle(col_NgayUom, y, colWidth_Ngay, lineHeight), StringAlignment.Far);
             DrawCellText(g, plantingDate.ToString("dd/MM/yyyy"), normalFont, new Rectangle(col_NgayTrong, y, colWidth_Ngay, lineHeight), StringAlignment.Far);
-            DrawCellText(g, area.ToString("N0"), normalFont, new Rectangle(col_Area, y, colWidth_area, lineHeight), StringAlignment.Far);
+            DrawCellText(g, area.ToString("0.##"), normalFont, new Rectangle(col_Area, y, colWidth_area, lineHeight), StringAlignment.Far);
             DrawCellText(g, harvestDate.ToString("dd/MM/yyyy"), normalFont, new Rectangle(col_NgayThu, y, colWidth_Ngay, lineHeight), StringAlignment.Far);
             DrawCellText(g, Utils.GetThu_Viet(plantingDate), normalFont, new Rectangle(col_ThuTrong, y, colWidth_Thu, lineHeight), StringAlignment.Center);
             DrawCellText(g, Utils.GetThu_Viet(harvestDate), normalFont, new Rectangle(col_ThuTH, y, colWidth_Thu, lineHeight), StringAlignment.Center);

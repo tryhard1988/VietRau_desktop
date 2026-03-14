@@ -37,9 +37,13 @@ namespace RauViet.ui
             this.logGV = new System.Windows.Forms.DataGridView();
             this.exportCode_cbb = new System.Windows.Forms.ComboBox();
             this.status_lb = new System.Windows.Forms.Label();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.copy_btn = new System.Windows.Forms.Button();
+            this.fromExportCode_cbb = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.logGV)).BeginInit();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // contextMenuStrip1
@@ -61,6 +65,7 @@ namespace RauViet.ui
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.groupBox1);
             this.panel1.Controls.Add(this.label11);
             this.panel1.Controls.Add(this.logGV);
             this.panel1.Controls.Add(this.exportCode_cbb);
@@ -116,6 +121,40 @@ namespace RauViet.ui
             this.status_lb.TabIndex = 26;
             this.status_lb.Text = "Email";
             // 
+            // groupBox1
+            // 
+            this.groupBox1.BackColor = System.Drawing.Color.LightSalmon;
+            this.groupBox1.Controls.Add(this.copy_btn);
+            this.groupBox1.Controls.Add(this.fromExportCode_cbb);
+            this.groupBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.groupBox1.Location = new System.Drawing.Point(62, 156);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(302, 138);
+            this.groupBox1.TabIndex = 93;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Copy Mã Lot từ Đơn Hàng khác";
+            // 
+            // copy_btn
+            // 
+            this.copy_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.copy_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.copy_btn.Location = new System.Drawing.Point(126, 82);
+            this.copy_btn.Name = "copy_btn";
+            this.copy_btn.Size = new System.Drawing.Size(59, 38);
+            this.copy_btn.TabIndex = 94;
+            this.copy_btn.Text = "Copy";
+            this.copy_btn.UseVisualStyleBackColor = false;
+            // 
+            // fromExportCode_cbb
+            // 
+            this.fromExportCode_cbb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.fromExportCode_cbb.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.fromExportCode_cbb.FormattingEnabled = true;
+            this.fromExportCode_cbb.Location = new System.Drawing.Point(69, 31);
+            this.fromExportCode_cbb.Name = "fromExportCode_cbb";
+            this.fromExportCode_cbb.Size = new System.Drawing.Size(177, 23);
+            this.fromExportCode_cbb.TabIndex = 93;
+            // 
             // LOTCode
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -129,6 +168,7 @@ namespace RauViet.ui
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.logGV)).EndInit();
+            this.groupBox1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -141,5 +181,8 @@ namespace RauViet.ui
         private System.Windows.Forms.DataGridView logGV;
         private System.Windows.Forms.ComboBox exportCode_cbb;
         private System.Windows.Forms.Label status_lb;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Button copy_btn;
+        private System.Windows.Forms.ComboBox fromExportCode_cbb;
     }
 }

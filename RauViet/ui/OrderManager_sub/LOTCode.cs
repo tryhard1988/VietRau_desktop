@@ -36,9 +36,9 @@ namespace RauViet.ui
             dataGV.CellBeginEdit += dataGV_CellBeginEdit;
             dataGV.SelectionChanged += DataGV_SelectionChanged; ;
             this.KeyDown += LOTCode_KeyDown;
-        }
 
-        
+            copy_btn.Click += Copy_btn_Click;
+        }
 
         private void LOTCode_KeyDown(object sender, KeyEventArgs e)
         {
@@ -126,6 +126,12 @@ namespace RauViet.ui
                 exportCode_cbb.ValueMember = "ExportCodeID";
                 exportCode_cbb.SelectedValue = mCurrentExportID;
                 exportCode_cbb.SelectedIndexChanged += exportCode_search_cbb_SelectedIndexChanged;
+
+
+                fromExportCode_cbb.DataSource = mExportCode_dt.Copy();
+                fromExportCode_cbb.DisplayMember = "ExportCode";  // hiển thị tên
+                fromExportCode_cbb.ValueMember = "ExportCodeID";
+                fromExportCode_cbb.SelectedValue = mCurrentExportID;
 
                 Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
                     {"Description", "Hành động" },
@@ -409,6 +415,17 @@ namespace RauViet.ui
             sourceTable.Clear();
             foreach (DataRow r in uniqueRows.Rows)
                 sourceTable.ImportRow(r);
+        }
+
+
+        private async void Copy_btn_Click(object sender, EventArgs e)
+        {
+            int from = Convert.ToInt32(fromExportCode_cbb.SelectedValue);
+            int to = Convert.ToInt32(exportCode_cbb.SelectedValue);
+            await SQLManager_Kho.Instance.CopyLotCodeAsync(from, to);
+
+            SQLStore_Kho.Instance.removeLOTCode(to);
+            ShowData();
         }
     }
 }

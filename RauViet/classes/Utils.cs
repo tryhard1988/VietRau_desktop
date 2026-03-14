@@ -476,19 +476,6 @@ public static class Utils
         File.SetAttributes(path, FileAttributes.Hidden | FileAttributes.System);
     }
 
-    public static string ToAcronym(string input)
-    {
-        if (string.IsNullOrWhiteSpace(input))
-            return "";
-
-        return string.Concat(
-            input
-                .Trim()
-                .Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
-                .Select(word => char.ToUpper(word[0]))
-        );
-    }
-
     public static decimal ParseDecimalSmart(string input)
     {
         if (string.IsNullOrWhiteSpace(input))
@@ -551,6 +538,43 @@ public static class Utils
             dr["Month"] = month;
             dr["MonthName"] =$"Tháng {month.ToString("D2")}";
             dt.Rows.Add(dr);
+        }
+
+        return dt;
+    }
+
+    public static DataTable GetWeeksInYearTable(int year)
+    {
+        DataTable dt = new DataTable();
+        dt.Columns.Add("WeekNumber", typeof(int));
+        dt.Columns.Add("WeekName", typeof(string));
+        dt.Columns.Add("StartDate", typeof(DateTime));
+        dt.Columns.Add("EndDate", typeof(DateTime));
+
+        DateTime startOfYear = new DateTime(year, 1, 1);
+        DateTime endOfYear = new DateTime(year, 12, 31);
+
+        // tìm Monday của tuần chứa 1/1
+        int diff = startOfYear.DayOfWeek == DayOfWeek.Sunday ? -6 : DayOfWeek.Monday - startOfYear.DayOfWeek;
+        DateTime weekStart = startOfYear.AddDays(diff);
+
+        int week = 1;
+
+        while (weekStart <= endOfYear)
+        {
+            DateTime startDate = weekStart;
+            DateTime endDate = weekStart.AddDays(6);
+
+            if (startDate < startOfYear)
+                startDate = startOfYear;
+
+            if (endDate > endOfYear)
+                endDate = endOfYear;
+
+            dt.Rows.Add(week, $"Tuần {week.ToString("D2")}", startDate, endDate);
+
+            weekStart = weekStart.AddDays(7);
+            week++;
         }
 
         return dt;

@@ -47,6 +47,8 @@ namespace RauViet.ui
             monthGV.MultiSelect = false;
             toPhuTrach_GV.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             toPhuTrach_GV.MultiSelect = false;
+            weekInYear_GV.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            weekInYear_GV.MultiSelect = false;
 
             status_lb.Text = "";
 
@@ -77,10 +79,12 @@ namespace RauViet.ui
 
             monthGV.SelectionChanged += MonthGV_SelectionChanged;
             toPhuTrach_GV.SelectionChanged += MonthGV_SelectionChanged;
+            weekInYear_GV.SelectionChanged += MonthGV_SelectionChanged;
             locTheoNgayThu_CB.CheckedChanged += Loc_CheckedChanged;
             locTheoNgayTrong_CB.CheckedChanged += Loc_CheckedChanged;
             locTheoNgayUom_CB.CheckedChanged += Loc_CheckedChanged;
             locTheoTo_CB.CheckedChanged += Loc_CheckedChanged;
+            locTheoTuan_CB.CheckedChanged += Loc_CheckedChanged;
 
             inPhieuSX_btn.Click += InPhieuSX_btn_Click;
             xemPhieuSX_btn.Click += XemPhieuSX_btn_Click;
@@ -92,7 +96,11 @@ namespace RauViet.ui
 
             inKeHoachSX_btn.Click += InKeHoachSX_btn_Click; ;
             xemKeHoachSX_btn.Click += XemKeHoachSX_btn_Click; ;
-            excelKeHoachSX_btn.Click += ExcelKeHoachSX_btn_Click; ;
+            excelKeHoachSX_btn.Click += ExcelKeHoachSX_btn_Click;
+
+            inLichUom_btn.Click += InLichUom_btn_Click;
+            xemLichUom_btn.Click += XemLichUom_btn_Click;
+            excelLichUom_btn.Click += ExcelLichUom_btn_Click;
         }
 
         private void Kho_Materials_KeyDown(object sender, KeyEventArgs e)
@@ -181,11 +189,12 @@ namespace RauViet.ui
                 log_GV.DataSource = mLog_dv;
                 dataGV.DataSource = mPlantingManagement_dt;
                 monthGV.DataSource = Utils.CreateMonthsInYearTable();
+                weekInYear_GV.DataSource = Utils.GetWeeksInYearTable(monthYear_dtp.Value.Year);
                 toPhuTrach_GV.DataSource = department_dt;
 
                 Utils.HideColumns(toPhuTrach_GV, new[] { "Department" });
                 Utils.HideColumns(dataGV, new[] { "PlantingID", "SKU", "Department", "Supervisor", "CreatedAt", "search_nosign", "CultivationTypeID", "FarmID" });
-                Utils.SetGridOrdinal(mPlantingManagement_dt, new[] { "IsCompleted", "FarmName", "ProductionOrder", "PlantName", "CultivationTypeName", "Quantity", "NurseryDate", "PlantingDate", "Area", "HarvestDate", "DepartmentName", "SupervisorName", "Note", "PlantingID", "Department" });
+                Utils.SetGridOrdinal(mPlantingManagement_dt, new[] { "IsCompleted", "FarmName", "ProductionOrder", "PlantName", "CultivationTypeName", "Quantity", "NurseryDate", "PlantingDate", "Area", "HarvestDate", "DepartmentName", "SupervisorName", "PlantLocation", "Note", "PlantingID", "Department" });
                 Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
                         {"ProductionOrder", "Lệnh\nSản Xuất" },
                         {"Area", "Diện\nTích" },
@@ -198,6 +207,7 @@ namespace RauViet.ui
                         {"PlantName", "Tên\nCây Trồng" },
                         {"IsCompleted", "Đóng Lệnh" },
                         {"Note", "Ghi Chú" },
+                        {"PlantLocation", "V.Trí Trồng" },
                         {"CultivationTypeName", "Canh Tác" }
                     });
 
@@ -216,9 +226,15 @@ namespace RauViet.ui
                         {"CultivationTypeName",100}
                     });
 
+                Utils.HideColumns(weekInYear_GV, new[] { "WeekNumber", "StartDate", "EndDate" });
                 Utils.HideColumns(monthGV, new[] { "Month"});
                 Utils.SetGridHeaders(monthGV, new System.Collections.Generic.Dictionary<string, string> {{"MonthName", "Tháng" }});
                 Utils.SetGridWidths(monthGV, new System.Collections.Generic.Dictionary<string, int> { { "MonthName", 70}});
+
+                Utils.SetGridWidths(weekInYear_GV, new System.Collections.Generic.Dictionary<string, int> {
+                        {"WeekName", 60}
+                    });
+
 
                 Utils.HideColumns(log_GV, new[] { "LogID"});
                 Utils.SetGridHeaders(log_GV, new System.Collections.Generic.Dictionary<string, string> {
@@ -1245,17 +1261,18 @@ namespace RauViet.ui
         private void MonthGV_SelectionChanged(object sender, EventArgs e)
         {
 
-            if (monthGV.SelectedRows.Count == 0 || toPhuTrach_GV.SelectedRows.Count == 0)
+            if (monthGV.SelectedRows.Count == 0 || toPhuTrach_GV.SelectedRows.Count == 0 || weekInYear_GV.SelectedRows.Count == 0)
                 return;
             var monthCell = monthGV.SelectedRows[0].Cells;
             var departmentCell = toPhuTrach_GV.SelectedRows[0].Cells;
-            if (monthCell == null && departmentCell == null) return;
-            int month = Convert.ToInt32(monthCell["Month"].Value);
-            int department = Convert.ToInt32(departmentCell["Department"].Value);
-            DateTime fromDate = new DateTime(monthYear_dtp.Value.Year, month, 1);
-            DateTime toDate = fromDate.AddMonths(1);
+            var weekInYearCell = weekInYear_GV.SelectedRows[0].Cells;
+            if (monthCell == null || departmentCell == null || weekInYearCell == null) 
+                return;
 
-            phieuSX_uom_gb.Enabled = department == 27;            
+            int month = Convert.ToInt32(monthCell["Month"].Value);
+            
+            DateTime fromDate = new DateTime(monthYear_dtp.Value.Year, month, 1);
+            DateTime toDate = fromDate.AddMonths(1);       
 
             List<string> orConditions = new List<string>();
             List<string> andConditions = new List<string>();
@@ -1277,7 +1294,16 @@ namespace RauViet.ui
 
             if (locTheoTo_CB.Checked)
             {
+                int department = Convert.ToInt32(departmentCell["Department"].Value);
                 andConditions.Add($"Department = {department}");
+            }
+
+            if (locTheoTuan_CB.Checked)
+            {
+                DateTime startDay = Convert.ToDateTime(weekInYearCell["StartDate"].Value);
+                DateTime endDay = Convert.ToDateTime(weekInYearCell["EndDate"].Value);
+
+                andConditions.Add($"PlantingDate >= '{startDay:yyyy-MM-dd}' AND PlantingDate <= '{endDay:yyyy-MM-dd}'");
             }
 
             string filter = "";
@@ -1334,12 +1360,163 @@ namespace RauViet.ui
             InPhieuSX_trong(true);
         }
 
-        private void ExcelPhieuSX_btn_Click(object sender, EventArgs e)
+        private async void ExcelPhieuSX_btn_Click(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
-        }
+            if (monthGV.SelectedRows.Count == 0 || toPhuTrach_GV.SelectedRows.Count == 0)
+                return;
 
-        private void InPhieuSX_trong(bool isPrintPreview)
+            var monthCell = monthGV.SelectedRows[0].Cells;
+            var depCell = toPhuTrach_GV.SelectedRows[0].Cells;
+            if (monthCell == null || depCell == null) return;
+
+            int month = Convert.ToInt32(monthCell["Month"].Value);
+            int year = monthYear_dtp.Value.Year;
+
+            int depID = Convert.ToInt32(depCell["Department"].Value);
+            string depName = depCell["DepartmentName"].Value.ToString();
+
+            loadingOverlay = new LoadingOverlay(this);
+            loadingOverlay.Message = "Đang xử lý ...";
+            loadingOverlay.Show();
+            await Task.Delay(100);
+
+            try
+            {
+                using (var wb = new XLWorkbook())
+                {
+                    DateTime start = new DateTime(year, month, 1);
+                    DateTime end = start.AddMonths(1);
+                    DataView dv = new DataView(mPlantingManagement_dt);
+                    dv.RowFilter = $"PlantingDate >= #{start:MM/dd/yyyy}# AND PlantingDate < #{end:MM/dd/yyyy}# AND Department = ({depID})";
+                    dv.Sort = "PlantingDate ASC";
+
+                    DataTable filterResult_dt = dv.ToTable();
+
+                    var ws = wb.Worksheets.Add("Kế Hoạch Trồng");
+
+                    int rowExcel_dock = 1;
+                    int rowExcel = 1;
+                    int colExcel = 1;
+
+                    int col1Width = 20;
+                    int col2Width = 15;
+
+                    foreach (DataRow row in filterResult_dt.Rows)
+                    {
+                        DateTime plantingDate = Convert.ToDateTime(row["PlantingDate"]);
+                        int departmentID = Convert.ToInt32(row["Department"]);
+
+                        ws.Cell(rowExcel, colExcel).Value = "Lệnh Sản Xuất";
+                        ws.Cell(rowExcel, colExcel + 1).Value = row["ProductionOrder"].ToString();
+                        rowExcel++;
+
+                        ws.Cell(rowExcel, colExcel).Value = "Tên Cây Trồng";
+                        ws.Cell(rowExcel, colExcel + 1).Value = row["PlantName"].ToString();
+                        rowExcel++;
+
+                        if (departmentID != 27)
+                        {
+                            ws.Cell(rowExcel, colExcel).Value = "Mã Cây Trồng";
+                            ws.Cell(rowExcel, colExcel + 1).Value = row["SKU"].ToString();
+                            rowExcel++;
+                        }
+
+                        ws.Cell(rowExcel, colExcel).Value = "Diện Tích";
+                        ws.Cell(rowExcel, colExcel + 1).Value =Convert.ToDecimal(row["Area"]).ToString("0.##");
+                        rowExcel++;
+
+                        ws.Cell(rowExcel, colExcel).Value = "Ngày Trồng";
+                        ws.Cell(rowExcel, colExcel + 1).Value = plantingDate.ToString("dd/MM/yyyy");
+                        rowExcel++;
+
+                        ws.Cell(rowExcel, colExcel).Value = "Ngày Thu Hoạch";
+                        ws.Cell(rowExcel, colExcel + 1).Value =
+                            Convert.ToDateTime(row["HarvestDate"]).ToString("dd/MM/yyyy");
+                        rowExcel++;
+
+                        if (departmentID != 27)
+                        {
+                            ws.Cell(rowExcel, colExcel).Value = "S.Lượng Dự Kiến";
+                            ws.Range(rowExcel_dock, colExcel, rowExcel_dock + 6, colExcel).Style.Font.Bold = true;
+                        }
+                        else
+                        {
+                            ws.Range(rowExcel, colExcel, rowExcel, colExcel + 1).Merge();
+                            ws.Cell(rowExcel, colExcel).Value = "Vị Trí";
+                            
+                            ws.Range(rowExcel_dock, colExcel, rowExcel_dock + 5, colExcel).Style.Font.Bold = true;
+
+                            ws.Range(rowExcel + 1, colExcel, rowExcel + 1, colExcel + 1).Merge();
+                            ws.Cell(rowExcel + 1, colExcel).Value = row["PlantLocation"].ToString();
+                            ws.Cell(rowExcel + 1, colExcel).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                            ws.Row(rowExcel + 1).Height = 30;
+                        }
+
+                        
+                        ws.Range(rowExcel_dock, colExcel, rowExcel_dock + 6, colExcel + 1).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                        ws.Range(rowExcel_dock, colExcel, rowExcel_dock + 6, colExcel + 1).Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+
+                        colExcel += 3;
+                        if (colExcel > 8)
+                        {
+                            colExcel = 1;
+                            rowExcel_dock += 8;
+                        }
+
+                        rowExcel = rowExcel_dock;
+                    }
+
+                    ws.Column(1).Width = col1Width;
+                    ws.Column(2).Width = col2Width;
+                    ws.Column(3).Width = 1.5;
+                    ws.Column(4).Width = col1Width;
+                    ws.Column(5).Width = col2Width;
+                    ws.Column(6).Width = 1.5;
+                    ws.Column(7).Width = col1Width;
+                    ws.Column(8).Width = col2Width;
+
+                    ws.Style.Font.FontName = "Times New Roman";
+                    ws.Style.Font.FontSize = 11;
+
+                    using (SaveFileDialog sfd = new SaveFileDialog())
+                    {
+                        sfd.Filter = "Excel Workbook|*.xlsx";
+                        sfd.FileName = $"PhieuTrong_Thang{month.ToString("D2")}{year.ToString()}_{Utils.RemoveVietnameseSigns(depName).Replace(" ", "")}";
+                        if (sfd.ShowDialog() == DialogResult.OK)
+                        {
+                            wb.SaveAs(sfd.FileName);
+                            DialogResult result = MessageBox.Show("Bạn có muốn mở file này không?", "Lưu file thành công", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                            if (result == DialogResult.Yes)
+                            {
+                                try
+                                {
+                                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo()
+                                    {
+                                        FileName = sfd.FileName,
+                                        UseShellExecute = true
+                                    });
+                                }
+                                catch (Exception ex)
+                                {
+                                    MessageBox.Show("Không thể mở file: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi khi xuất Excel: " + ex.Message);
+            }
+            finally
+            {
+                await Task.Delay(200);
+                loadingOverlay.Hide();
+            }
+        }        
+
+        private async void InPhieuSX_trong(bool isPrintPreview)
         {
             if (monthGV.SelectedRows.Count == 0 || toPhuTrach_GV.SelectedRows.Count == 0)
                 return;
@@ -1375,9 +1552,151 @@ namespace RauViet.ui
             _ = InPhieuSX_uom(true);
         }
 
-        private void ExcelPhieuSX_uom_btn_Click(object sender, EventArgs e)
+        private async void ExcelPhieuSX_uom_btn_Click(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            if (monthGV.SelectedRows.Count == 0 || toPhuTrach_GV.SelectedRows.Count == 0)
+                return;
+
+            var monthCell = monthGV.SelectedRows[0].Cells;
+            var depCell = toPhuTrach_GV.SelectedRows[0].Cells;
+            if (monthCell == null || depCell == null) return;
+
+            int month = Convert.ToInt32(monthCell["Month"].Value);
+            int year = monthYear_dtp.Value.Year;
+
+            int depID = Convert.ToInt32(depCell["Department"].Value);
+            string depName = depCell["DepartmentName"].Value.ToString();
+
+            loadingOverlay = new LoadingOverlay(this);
+            loadingOverlay.Message = "Đang xử lý ...";
+            loadingOverlay.Show();
+            await Task.Delay(100);
+
+            try
+            {
+                using (var wb = new XLWorkbook())
+                {
+                    DateTime start = new DateTime(year, month, 1);
+                    DateTime end = start.AddMonths(1);
+                    DataView dv = new DataView(mPlantingManagement_dt);
+                    dv.RowFilter = $"PlantingDate >= #{start:MM/dd/yyyy}# AND PlantingDate < #{end:MM/dd/yyyy}# AND Department = ({depID})";
+                    dv.Sort = "PlantingDate ASC";
+
+                    DataTable filterResult_dt = dv.ToTable();
+
+                    var ws = wb.Worksheets.Add("Uom");
+
+                    int col1Width = 20;
+                    int col2Width = 15;
+                    int distanceWidth = 2;
+                    int numRow = 8;
+
+                    int excelRow = 1;
+                    int index = 0;
+
+                    DataTable plantTrayDensity = await SQLStore_KhoVatTu.Instance.GetPlantTrayDensityAsync();
+
+                    foreach (DataRow row in filterResult_dt.Rows)
+                    {
+                        int sku = Convert.ToInt32(row["SKU"]);
+                        DateTime plantingDate = Convert.ToDateTime(row["PlantingDate"]);
+                        DataRow plantTrayDensityRow = plantTrayDensity.Select($"SKU = '{sku}'").FirstOrDefault();
+
+                        decimal trayPerSquareMeter = 0;
+                        if (plantTrayDensityRow != null)
+                            trayPerSquareMeter = Convert.ToDecimal(plantTrayDensityRow["TrayPerSquareMeter"]);
+
+                        decimal soKhay = Convert.ToDecimal(row["Area"]) * trayPerSquareMeter;
+
+                        int blockCol = (index % 3) * (1 + distanceWidth) + 1;
+                        int blockRow = excelRow + (index / 3) * (numRow + 1);
+
+                        int r = blockRow;
+
+                        ws.Range(r, blockCol, r, blockCol + 1).Merge().Value = "Tên Cây Trồng";
+                        ws.Range(r, blockCol, r, blockCol + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                        ws.Range(r, blockCol, r, blockCol + 1).Style.Font.Bold = true;
+                        r++;
+
+                        ws.Range(r, blockCol, r, blockCol + 1).Merge().Value = row["PlantName"].ToString();
+                        ws.Range(r, blockCol, r, blockCol + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                        ws.Range(r, blockCol, r, blockCol + 1).Style.Font.Bold = true;
+                        ws.Range(r, blockCol, r, blockCol + 1).Style.Font.Underline = XLFontUnderlineValues.Single;
+                        r++;
+
+                        ws.Cell(r, blockCol).Value = "Lệnh Sản Xuất";
+                        ws.Cell(r, blockCol + 1).Value = row["ProductionOrder"].ToString();
+                        r++;
+
+                        ws.Cell(r, blockCol).Value = "Số Khay";
+                        ws.Cell(r, blockCol + 1).Value = soKhay.ToString("#,##0");
+                        r++;
+
+                        ws.Cell(r, blockCol).Value = "Ngày Ươm";
+                        ws.Cell(r, blockCol + 1).Value = Convert.ToDateTime(row["NurseryDate"]).ToString("dd/MM/yyyy");
+                        r++;
+
+                        ws.Cell(r, blockCol).Value = "Ngày Trồng";
+                        ws.Cell(r, blockCol + 1).Value = plantingDate.ToString("dd/MM/yyyy");
+                        r++;
+
+                        ws.Range(r, blockCol, r + 1, blockCol + 1).Merge().Value = $"Ghi Chú: {row["Note"]}";
+                        ws.Range(r, blockCol, r + 1, blockCol + 1).Style.Alignment.Vertical = XLAlignmentVerticalValues.Top;
+
+                        var borderRange = ws.Range(blockRow, blockCol, blockRow + numRow - 1, blockCol + 1);
+                        borderRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                        borderRange.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+
+                        index++;
+                    }
+
+                    ws.Column(1).Width = col1Width;
+                    ws.Column(2).Width = col2Width;
+                    ws.Column(3).Width = 1.5;
+                    ws.Column(4).Width = col1Width;
+                    ws.Column(5).Width = col2Width;
+                    ws.Column(6).Width = 1.5;
+                    ws.Column(7).Width = col1Width;
+                    ws.Column(8).Width = col2Width;
+                    ws.Style.Font.FontName = "Times New Roman";
+                    ws.Style.Font.FontSize = 11;
+
+                    using (SaveFileDialog sfd = new SaveFileDialog())
+                    {
+                        sfd.Filter = "Excel Workbook|*.xlsx";
+                        sfd.FileName = $"PhieuUom_Thang{month.ToString("D2")}{year.ToString()}_{Utils.RemoveVietnameseSigns(depName).Replace(" ", "")}";
+                        if (sfd.ShowDialog() == DialogResult.OK)
+                        {
+                            wb.SaveAs(sfd.FileName);
+                            DialogResult result = MessageBox.Show("Bạn có muốn mở file này không?", "Lưu file thành công", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                            if (result == DialogResult.Yes)
+                            {
+                                try
+                                {
+                                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo()
+                                    {
+                                        FileName = sfd.FileName,
+                                        UseShellExecute = true
+                                    });
+                                }
+                                catch (Exception ex)
+                                {
+                                    MessageBox.Show("Không thể mở file: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi khi xuất Excel: " + ex.Message);
+            }
+            finally
+            {
+                await Task.Delay(200);
+                loadingOverlay.Hide();
+            }
         }
 
         private async Task InPhieuSX_uom(bool isPrintPreview)
@@ -1574,7 +1893,179 @@ namespace RauViet.ui
                 printer.PrintDirect();
         }
 
+        private void InLichUom_btn_Click(object sender, EventArgs e)
+        {
+            _ = InLichUom(false);
+        }
 
+        private void XemLichUom_btn_Click(object sender, EventArgs e)
+        {
+            _ = InLichUom(true);
+        }
+
+        private async void ExcelLichUom_btn_Click(object sender, EventArgs e)
+        {
+            if (weekInYear_GV.SelectedRows.Count == 0)
+                return;
+
+            var weekInYearCell = weekInYear_GV.SelectedRows[0].Cells;
+            if (weekInYearCell == null) return;
+
+            DateTime startDate = Convert.ToDateTime(weekInYearCell["StartDate"].Value);
+            DateTime endDate = Convert.ToDateTime(weekInYearCell["EndDate"].Value);
+            string weekName = Convert.ToString(weekInYearCell["WeekName"].Value);
+            DataTable plantTrayDensity = await SQLStore_KhoVatTu.Instance.GetPlantTrayDensityAsync();
+
+            DataView dv = new DataView(mPlantingManagement_dt);
+            dv.RowFilter = $"PlantingDate >= #{startDate:MM/dd/yyyy}# AND PlantingDate < #{endDate:MM/dd/yyyy}#";
+            dv.Sort = "PlantingDate ASC";
+
+            DataTable filterResult_dt = dv.ToTable();
+
+            loadingOverlay = new LoadingOverlay(this);
+            loadingOverlay.Message = "Đang xử lý ...";
+            loadingOverlay.Show();
+            await Task.Delay(100);
+
+            try
+            {
+                using (var wb = new XLWorkbook())
+                {
+                    var ws = wb.Worksheets.Add("Lịch Ươm Cây");
+                    ws.Style.Font.FontName = "Times New Roman";
+                    ws.Style.Font.FontSize = 12;
+
+                    int rowExcel = 1;
+
+                    // Title
+                    ws.Cell(rowExcel, 1).Value = $"LỊCH ƯƠM HẠT {weekName.ToUpper()}";
+                    ws.Range(rowExcel, 1, rowExcel, 9).Merge();
+                    ws.Cell(rowExcel, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    ws.Cell(rowExcel, 1).Style.Font.Bold = true;
+                    ws.Cell(rowExcel, 1).Style.Font.FontSize = 24;
+
+                    rowExcel++;
+
+                    ws.Cell(rowExcel, 1).Value = $"({startDate:dd/MM} - {endDate:dd/MM})";
+                    ws.Range(rowExcel, 1, rowExcel, 9).Merge();
+                    ws.Cell(rowExcel, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    ws.Cell(rowExcel, 1).Style.Font.Bold = true;
+                    ws.Cell(rowExcel, 1).Style.Font.FontSize = 24;
+
+                    rowExcel ++;
+
+                    // Header
+                    ws.Cell(rowExcel, 1).Value = "Thứ";
+                    ws.Cell(rowExcel, 2).Value = "Ngày Ươm";
+                    ws.Cell(rowExcel, 3).Value = "Lệnh SX";
+                    ws.Cell(rowExcel, 4).Value = "Tên Cây";
+                    ws.Cell(rowExcel, 5).Value = "S.Lượng";
+                    ws.Cell(rowExcel, 6).Value = "S.Khay";
+                    ws.Cell(rowExcel, 7).Value = "Ngày Trồng";
+                    ws.Cell(rowExcel, 8).Value = "D.Tích";
+                    ws.Cell(rowExcel, 9).Value = "Ghi Chú";
+
+                    ws.Range(rowExcel, 1, rowExcel, 9).Style.Font.Bold = true;
+
+                    rowExcel++;
+
+                    foreach (DataRow row in filterResult_dt.Rows)
+                    {
+                        string productionOrder = row["ProductionOrder"].ToString();
+                        string note = row["Note"].ToString();
+                        string plantName = row["PlantName"].ToString();
+                        int quantity = Convert.ToInt32(row["Quantity"]);
+                        DateTime nurseryDate = Convert.ToDateTime(row["NurseryDate"]);
+                        DateTime plantingDate = Convert.ToDateTime(row["PlantingDate"]);
+                        decimal area = Convert.ToDecimal(row["Area"]);
+                        int sku = Convert.ToInt32(row["SKU"]);
+
+                        DataRow plantTrayDensityRow = plantTrayDensity.Select($"SKU = '{sku}'").FirstOrDefault();
+
+                        decimal trayPerSquareMeter = 0;
+
+                        if (plantTrayDensityRow != null)
+                            trayPerSquareMeter = Convert.ToDecimal(plantTrayDensityRow["TrayPerSquareMeter"]);
+
+                        decimal soKhay = area * trayPerSquareMeter;
+
+                        ws.Cell(rowExcel, 1).Value = Utils.GetThu_Viet(nurseryDate);
+                        ws.Cell(rowExcel, 2).Value = nurseryDate;
+                        ws.Cell(rowExcel, 3).Value = productionOrder;
+                        ws.Cell(rowExcel, 4).Value = plantName;
+                        ws.Cell(rowExcel, 5).Value = quantity;
+                        ws.Cell(rowExcel, 6).Value = soKhay;
+                        ws.Cell(rowExcel, 7).Value = plantingDate;
+                        ws.Cell(rowExcel, 8).Value = area;
+                        ws.Cell(rowExcel, 9).Value = note;
+
+                        ws.Cell(rowExcel, 2).Style.DateFormat.Format = "dd/MM/yyyy";
+                        ws.Cell(rowExcel, 7).Style.DateFormat.Format = "dd/MM/yyyy";
+
+                        rowExcel++;
+                    }
+
+                    ws.Range(3, 1, rowExcel - 1, 9).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                    ws.Range(3, 1, rowExcel - 1, 9).Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+                    ws.Columns().AdjustToContents();
+
+                    using (SaveFileDialog sfd = new SaveFileDialog())
+                    {
+                        sfd.Filter = "Excel Workbook|*.xlsx";
+                        sfd.FileName = $"LichUomCay_{Utils.RemoveVietnameseSigns(weekName).Replace(" ", "")}";
+                        if (sfd.ShowDialog() == DialogResult.OK)
+                        {
+                            wb.SaveAs(sfd.FileName);
+                            DialogResult result = MessageBox.Show("Bạn có muốn mở file này không?", "Lưu file thành công", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                            if (result == DialogResult.Yes)
+                            {
+                                try
+                                {
+                                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo()
+                                    {
+                                        FileName = sfd.FileName,
+                                        UseShellExecute = true
+                                    });
+                                }
+                                catch (Exception ex)
+                                {
+                                    MessageBox.Show("Không thể mở file: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi khi xuất Excel: " + ex.Message);
+            }
+            finally
+            {
+                await Task.Delay(200);
+                loadingOverlay.Hide();
+            }
+        }
+
+        private async Task InLichUom(bool isPrintPreview)
+        {
+            if (weekInYear_GV.SelectedRows.Count == 0)
+                return;
+
+            var weekInYearCell = weekInYear_GV.SelectedRows[0].Cells;
+            if (weekInYearCell == null) return;
+
+            DateTime startDate = Convert.ToDateTime(weekInYearCell["StartDate"].Value);
+            DateTime endDate = Convert.ToDateTime(weekInYearCell["EndDate"].Value);
+            string weekName = Convert.ToString(weekInYearCell["WeekName"].Value);
+            DataTable plantTrayDensity = await SQLStore_KhoVatTu.Instance.GetPlantTrayDensityAsync();
+            KhoVatTu_LichUomCay_Printer printer = new KhoVatTu_LichUomCay_Printer(weekName, startDate, endDate, plantTrayDensity, mPlantingManagement_dt);
+
+            if (isPrintPreview)
+                printer.PrintPreview(this);
+            else
+                printer.PrintDirect();
+        }
         //System.Data.DataTable excelData;
         //private async void button1_Click(object sender, EventArgs e)
         //{

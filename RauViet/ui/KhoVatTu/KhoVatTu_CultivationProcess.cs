@@ -1840,7 +1840,8 @@ namespace RauViet.ui
             decimal area = Convert.ToDecimal(mPlantingRow["Area"]);
             var filteredRows = mCultivationProcessTemplate_dt.AsEnumerable().Where(r =>r.Field<int>("SKU") == sku &&  r.Field<int>("CultivationTypeID") == cultivationTypeID);
 
-            List<(int PlantingID, DateTime ProcessDate, int? FertilizationWorkTypeID, int WorkTypeID, int? MaterialID, int? MaterialPrice, decimal? MaterialQuantity, decimal? WaterAmount, int? DepartmentID, string EmployeeCode)> data = new List<(int, DateTime, int?, int, int?, int?, decimal?, decimal?, int?, string)>();
+            List<(int PlantingID, DateTime ProcessDate, int? FertilizationWorkTypeID, int WorkTypeID, int? MaterialID, int? MaterialPrice, decimal? MaterialQuantity, decimal? WaterAmount, int? DepartmentID, string EmployeeCode, string dosage, string activeIngredientStr, int? isolationDays)> data = 
+                new List<(int, DateTime, int?, int, int?, int?, decimal?, decimal?, int?, string, string, string, int?)>();
            
             foreach(DataRow rowItem in filteredRows)
             {
@@ -1863,18 +1864,46 @@ namespace RauViet.ui
                 }
 
                 int? materialPrice = null;
+                string dosageStr = "";
+                string activeIngredientStr = "";
+                int? isolationDays = null;
                 if (materialID.HasValue)
                 {
                     DataRow materiaRow = mMaterial_dt.AsEnumerable().FirstOrDefault(r => Convert.ToInt32(r["MaterialID"]) == materialID);
                     if (materiaRow != null)
+                    {
                         materialPrice = Convert.ToInt32(materiaRow["MaterialPrice"]);
+                        string composition = materiaRow["Composition"] != DBNull.Value ? materiaRow["Composition"].ToString() : "";
+
+                        dosageStr = composition.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries)
+                                            .FirstOrDefault(l => Utils.RemoveVietnameseSigns(l).ToLower().Contains("lieu luong"))
+                                            ?.Split(':')[1]
+                                            .Trim();
+
+                        activeIngredientStr = composition?.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries)
+                                                    .FirstOrDefault(l => Utils.RemoveVietnameseSigns(l).ToLower().Contains("hoat chat"))
+                                                    ?.Split(':')
+                                                    .Skip(1)
+                                                    .FirstOrDefault()
+                                                    ?.Trim() ?? "";
+
+                        string isolationDaysStr = composition.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries)
+                                                    .FirstOrDefault(l => Utils.RemoveVietnameseSigns(l).ToLower().Contains("thoi gian canh ly"))
+                                                    ?.Split(':')[1]
+                                                    .Trim()
+                                                    .TrimEnd('.');
+
+                        if (int.TryParse(isolationDaysStr, out int temp))
+                            isolationDays = temp;
+                    }
+
                 }
 
                 decimal materialQuantity_Erea = materialQuantity * area;
                 if (!IsMultiplyArea)
                     materialQuantity_Erea = materialQuantity;
 
-                data.Add((plantingID, processDate, fertilizationWorkTypeID, workTypeID, materialID, materialPrice, materialQuantity_Erea, waterAmount * area, departmentIdTemp, employeeCodeTemp));
+                data.Add((plantingID, processDate, fertilizationWorkTypeID, workTypeID, materialID, materialPrice, materialQuantity_Erea, waterAmount * area, departmentIdTemp, employeeCodeTemp, dosageStr, activeIngredientStr, isolationDays));
             }
 
             if(data.Count <= 0)
