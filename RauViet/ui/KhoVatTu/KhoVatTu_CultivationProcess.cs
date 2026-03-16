@@ -276,7 +276,7 @@ namespace RauViet.ui
 
                 LoadDefaultData_btn.Visible = mCultivationProcess_dt.Rows.Count <= 0;
                 
-                Utils.HideColumns(dataGV, new[] { "CultivationProcessID", "PlantingID", "MaterialID", "WorkTypeID", "WorkTypeID", "MaterialID" , "EmployeeCode" , "DepartmentID", "FertilizationWorkTypeID" });
+                Utils.HideColumns(dataGV, new[] { "CultivationProcessID", "PlantingID", "MaterialID", "WorkTypeID", "WorkTypeID", "MaterialID" , "EmployeeCode" , "DepartmentID", "FertilizationWorkTypeID", "CategoryCode" });
                 Utils.SetGridOrdinal(mCultivationProcess_dt, new[] { "ProcessDate", "ProcessDate_Week", "FertilizationWorkTypeName", "WorkTypeName", "MaterialName", "MaterialQuantity", "MaterialUnit", "Dosage", "PlantStatus", "EmployeeName", "IsolationDays", "IsolationEndDate", "DepartmentName", "PlantLocation", "WaterAmount", "MaterialPrice", "TotalMaterialCost", "Note" });
                 Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
                         {"ProcessDate", "Ngày Xử Lý" },

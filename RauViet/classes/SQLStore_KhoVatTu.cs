@@ -778,9 +778,11 @@ namespace RauViet.classes
             data.Columns.Add("MaterialUnit", typeof(string)); 
             data.Columns.Add("TotalMaterialCost", typeof(string));
             data.Columns.Add("ProcessDate_Week", typeof(string));
+            data.Columns.Add("CategoryCode", typeof(string));
 
             DataTable workType_dt = await GetWorkTypeAsync();
             DataTable material_dt = await getMaterialAsync();
+            DataTable category_dt = await GetMaterialCategoryAsync();
             DataTable employee_dt = await SQLStore_QLNS.Instance.GetEmployeesAsync();
             DataTable department_dt = await SQLStore_QLNS.Instance.GetDepartmentAsync();
             foreach (DataRow rowItem in data.Rows) 
@@ -801,10 +803,15 @@ namespace RauViet.classes
                     if (materialRow != null)
                     {
                         decimal materialQuantity = Convert.ToDecimal(rowItem["MaterialQuantity"]);
-                        int materialPrice = Convert.ToInt32(rowItem["MaterialPrice"]);
+                        int materialPrice = Convert.ToInt32(rowItem["MaterialPrice"]);                        
                         string unit = materialRow["UnitName"].ToString();
                         DateTime processDate = Convert.ToDateTime(rowItem["ProcessDate"]);
-
+                        int? categoryID = materialRow.Field<int?>("CategoryID");
+                        if (categoryID.HasValue)
+                        {
+                            DataRow categoryRow = category_dt.AsEnumerable().FirstOrDefault(r => r.Field<int>("CategoryID") == categoryID);
+                            rowItem["CategoryCode"] = categoryRow["CategoryCode"].ToString();
+                        }
                         if (unit.CompareTo("Bao") == 0)
                             unit = "Kg";
 

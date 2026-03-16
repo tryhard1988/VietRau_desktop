@@ -28,16 +28,6 @@ public class KhoVatTu_PhieuSX_Trong_Printer
         this.mPlantingManagement_dt = dv.ToTable();
     }
 
-    private void DrawCellText(Graphics g, string text, Font font, Rectangle rect, StringAlignment alignment = StringAlignment.Near)
-    {
-        StringFormat format = new StringFormat()
-        {
-            Alignment = alignment,
-            LineAlignment = StringAlignment.Center
-        };
-        g.DrawString(text, font, Brushes.Black, rect, format);
-    }
-
     public void PrintPreview(Form owner)
     {
         rowIndex = 0; // reset trước khi in
@@ -132,47 +122,47 @@ public class KhoVatTu_PhieuSX_Trong_Printer
                 g.DrawLine(Pens.Black, colHeaderX + col1Width, y, colHeaderX + col1Width, y + lineHeight * (numRow - 3));
 
             g.DrawLine(Pens.Black, colHeaderX, y, colHeaderX + col1Width + col2Width, y);
-            DrawCellText(g, "Lệnh Sản Xuất", headerFont, new Rectangle(colHeaderX + offsetX, y, col1Width, lineHeight));
-            DrawCellText(g, row["ProductionOrder"].ToString(), normalFont, new Rectangle(colHeaderX + col1Width + offsetX, y, col2Width, lineHeight)); y += lineHeight;
+            Utils.DrawCellText(g, "Lệnh Sản Xuất", headerFont, new Rectangle(colHeaderX + offsetX, y, col1Width, lineHeight));
+            Utils.DrawCellText(g, row["ProductionOrder"].ToString(), normalFont, new Rectangle(colHeaderX + col1Width + offsetX, y, col2Width, lineHeight)); y += lineHeight;
 
             g.DrawLine(Pens.Black, colHeaderX, y, colHeaderX + col1Width + col2Width, y);
-            DrawCellText(g, "Tên Cây Trồng", headerFont, new Rectangle(colHeaderX + offsetX, y, col1Width, lineHeight));
-            DrawCellText(g, row["PlantName"].ToString(), normalFont, new Rectangle(colHeaderX + col1Width + offsetX, y, col2Width, lineHeight)); y += lineHeight;
+            Utils.DrawCellText(g, "Tên Cây Trồng", headerFont, new Rectangle(colHeaderX + offsetX, y, col1Width, lineHeight));
+            Utils.DrawCellText(g, row["PlantName"].ToString(), normalFont, new Rectangle(colHeaderX + col1Width + offsetX, y, col2Width, lineHeight)); y += lineHeight;
 
             if (departmentID != 27)
             {
                 g.DrawLine(Pens.Black, colHeaderX, y, colHeaderX + col1Width + col2Width, y);
-                DrawCellText(g, "Mã Cây Trồng", headerFont, new Rectangle(colHeaderX + offsetX, y, col1Width, lineHeight));
-                DrawCellText(g, row["SKU"].ToString(), normalFont, new Rectangle(colHeaderX + col1Width + offsetX, y, col2Width, lineHeight)); y += lineHeight;
+                Utils.DrawCellText(g, "Mã Cây Trồng", headerFont, new Rectangle(colHeaderX + offsetX, y, col1Width, lineHeight));
+                Utils.DrawCellText(g, row["SKU"].ToString(), normalFont, new Rectangle(colHeaderX + col1Width + offsetX, y, col2Width, lineHeight)); y += lineHeight;
             }
 
             g.DrawLine(Pens.Black, colHeaderX, y, colHeaderX + col1Width + col2Width, y);
-            DrawCellText(g, "Diện Tích", headerFont, new Rectangle(colHeaderX + offsetX, y, col1Width, lineHeight));
-            DrawCellText(g, Convert.ToDecimal(row["Area"]).ToString("0.##"), normalFont, new Rectangle(colHeaderX + col1Width + offsetX, y, col2Width, lineHeight)); y += lineHeight;
+            Utils.DrawCellText(g, "Diện Tích", headerFont, new Rectangle(colHeaderX + offsetX, y, col1Width, lineHeight));
+            Utils.DrawCellText(g, Convert.ToDecimal(row["Area"]).ToString("0.##"), normalFont, new Rectangle(colHeaderX + col1Width + offsetX, y, col2Width, lineHeight)); y += lineHeight;
 
             g.DrawLine(Pens.Black, colHeaderX, y, colHeaderX + col1Width + col2Width, y);
-            DrawCellText(g, "Ngày Trồng", headerFont, new Rectangle(colHeaderX + offsetX, y, col1Width, lineHeight));
-            DrawCellText(g, plantingDate.ToString("dd/MM/yyyy"), normalFont, new Rectangle(colHeaderX + col1Width + offsetX, y, col2Width, lineHeight)); y += lineHeight;
+            Utils.DrawCellText(g, "Ngày Trồng", headerFont, new Rectangle(colHeaderX + offsetX, y, col1Width, lineHeight));
+            Utils.DrawCellText(g, plantingDate.ToString("dd/MM/yyyy"), normalFont, new Rectangle(colHeaderX + col1Width + offsetX, y, col2Width, lineHeight)); y += lineHeight;
 
             g.DrawLine(Pens.Black, colHeaderX, y, colHeaderX + col1Width + col2Width, y);
-            DrawCellText(g, "Ngày Thu Hoạch", headerFont, new Rectangle(colHeaderX + offsetX, y, col1Width, lineHeight));
-            DrawCellText(g, Convert.ToDateTime(row["HarvestDate"]).ToString("dd/MM/yyyy"), normalFont, new Rectangle(colHeaderX + col1Width + offsetX, y, col2Width, lineHeight)); y += lineHeight;
+            Utils.DrawCellText(g, "Ngày Thu Hoạch", headerFont, new Rectangle(colHeaderX + offsetX, y, col1Width, lineHeight));
+            Utils.DrawCellText(g, Convert.ToDateTime(row["HarvestDate"]).ToString("dd/MM/yyyy"), normalFont, new Rectangle(colHeaderX + col1Width + offsetX, y, col2Width, lineHeight)); y += lineHeight;
 
             if (departmentID != 27)
             {
                 g.DrawLine(Pens.Black, colHeaderX, y, colHeaderX + col1Width + col2Width, y);
-                DrawCellText(g, "S.Lượng Dự Kiến", headerFont, new Rectangle(colHeaderX + offsetX, y, col1Width, lineHeight));
+                Utils.DrawCellText(g, "S.Lượng Dự Kiến", headerFont, new Rectangle(colHeaderX + offsetX, y, col1Width, lineHeight));
             }
             else
             {
                 g.DrawLine(Pens.Black, colHeaderX, y, colHeaderX + col1Width + col2Width, y);
-                DrawCellText(g, "Vị Trí", headerFont, new Rectangle(colHeaderX, y, col1Width + col2Width, lineHeight), StringAlignment.Center); y += lineHeight;
+                Utils.DrawCellText(g, "Vị Trí", headerFont, new Rectangle(colHeaderX, y, col1Width + col2Width, lineHeight), StringAlignment.Center); y += lineHeight;
 
                 int plantingID = Convert.ToInt32(row["PlantingID"]);
                 var cultivationProcess_dt = await SQLStore_KhoVatTu.Instance.GetCultivationProcessAsync(plantingID);
 
                 g.DrawLine(Pens.Black, colHeaderX, y, colHeaderX + col1Width + col2Width, y);
-                DrawCellText(g, row["PlantLocation"].ToString(), normalFont, new Rectangle(colHeaderX, y, col1Width + col2Width, lineHeight*2), StringAlignment.Center);
+                Utils.DrawCellText(g, row["PlantLocation"].ToString(), normalFont, new Rectangle(colHeaderX, y, col1Width + col2Width, lineHeight*2), StringAlignment.Center);
             }
             
             rowIndex++;

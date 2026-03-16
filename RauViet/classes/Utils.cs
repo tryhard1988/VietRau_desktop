@@ -1,8 +1,11 @@
 ﻿using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Bibliography;
 using DocumentFormat.OpenXml.Wordprocessing;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Drawing;
+using System.Drawing.Printing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -617,6 +620,29 @@ public static class Utils
             ccb.SelectionLength = 0;
         }
         catch { }
+    }
+
+    public static void DrawPageNumber(Graphics g, PrintPageEventArgs e, int pageNumber)
+    {
+        string pageText = $"Trang {pageNumber}";
+
+        System.Drawing.Font pageFont = new System.Drawing.Font("Times New Roman", 10);
+        SizeF size = g.MeasureString(pageText, pageFont);
+
+        float x = e.MarginBounds.Right - size.Width;
+        float y = e.MarginBounds.Bottom + 10;
+
+        g.DrawString(pageText, pageFont, Brushes.Black, x, y);
+    }
+
+    public static void DrawCellText(Graphics g, string text, System.Drawing.Font font, Rectangle rect, StringAlignment alignment = StringAlignment.Near)
+    {
+        StringFormat format = new StringFormat()
+        {
+            Alignment = alignment,
+            LineAlignment = StringAlignment.Center
+        };
+        g.DrawString(text, font, Brushes.Black, rect, format);
     }
 
     public static int WorkType_ThuHoach()

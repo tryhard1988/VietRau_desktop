@@ -406,7 +406,9 @@ namespace RauViet.classes
             using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
             {
                 await con.OpenAsync();
-                string query = @"SELECT pm.*, cp.PlantLocation
+                string query = $@"SELECT pm.*,
+                                       cp.PlantLocation,
+                                       ISNULL(harvest.TotalQuantity,0) AS HarvestQuantity
                                 FROM PlantingManagement pm
                                 OUTER APPLY
                                 (
@@ -416,8 +418,15 @@ namespace RauViet.classes
                                           AND ISNULL(PlantLocation,'') <> ''
                                     ORDER BY CultivationProcessID
                                 ) cp
+                                OUTER APPLY
+                                (
+                                    SELECT SUM(MaterialQuantity) AS TotalQuantity
+                                    FROM CultivationProcess
+                                    WHERE PlantingID = pm.PlantingID
+                                          AND WorkTypeID = {Utils.WorkType_ThuHoach()}
+                                ) harvest
                                 WHERE YEAR(pm.NurseryDate) = @Year;";
-
+                
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 {
                     cmd.Parameters.Add("@Year", SqlDbType.Int).Value = year;

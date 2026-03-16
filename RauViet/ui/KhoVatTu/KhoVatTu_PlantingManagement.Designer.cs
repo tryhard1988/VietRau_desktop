@@ -29,24 +29,32 @@ namespace RauViet.ui
         /// </summary>
         private void InitializeComponent()
         {
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.excelKeHoachSX_btn = new System.Windows.Forms.Button();
-            this.inKeHoachSX_btn = new System.Windows.Forms.Button();
-            this.xemKeHoachSX_btn = new System.Windows.Forms.Button();
-            this.phieuSX_uom_gb = new System.Windows.Forms.GroupBox();
-            this.excelPhieuSX_uom_btn = new System.Windows.Forms.Button();
-            this.inPhieuSX_uom_btn = new System.Windows.Forms.Button();
-            this.xemPhieuSX_uom_btn = new System.Windows.Forms.Button();
-            this.phieuGiaoHang_gb = new System.Windows.Forms.GroupBox();
-            this.excelPhieuSX_btn = new System.Windows.Forms.Button();
-            this.inPhieuSX_btn = new System.Windows.Forms.Button();
-            this.xemPhieuSX_btn = new System.Windows.Forms.Button();
-            this.monthYear_dtp = new System.Windows.Forms.DateTimePicker();
-            this.label12 = new System.Windows.Forms.Label();
-            this.readOnly_btn = new System.Windows.Forms.Button();
-            this.edit_btn = new System.Windows.Forms.Button();
-            this.newCustomerBtn = new System.Windows.Forms.Button();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.panel6 = new System.Windows.Forms.Panel();
+            this.dataGV = new System.Windows.Forms.DataGridView();
+            this.label4 = new System.Windows.Forms.Label();
+            this.log_GV = new System.Windows.Forms.DataGridView();
+            this.panel5 = new System.Windows.Forms.Panel();
+            this.panel9 = new System.Windows.Forms.Panel();
+            this.weekInYear_GV = new System.Windows.Forms.DataGridView();
+            this.label15 = new System.Windows.Forms.Label();
+            this.panel8 = new System.Windows.Forms.Panel();
+            this.toPhuTrach_GV = new System.Windows.Forms.DataGridView();
+            this.label14 = new System.Windows.Forms.Label();
+            this.panel7 = new System.Windows.Forms.Panel();
+            this.monthGV = new System.Windows.Forms.DataGridView();
+            this.label13 = new System.Windows.Forms.Label();
+            this.panel4 = new System.Windows.Forms.Panel();
+            this.locTheoTuan_CB = new System.Windows.Forms.CheckBox();
+            this.locTheoTo_CB = new System.Windows.Forms.CheckBox();
+            this.locTheoNgayThu_CB = new System.Windows.Forms.CheckBox();
+            this.locTheoNgayTrong_CB = new System.Windows.Forms.CheckBox();
+            this.locTheoNgayUom_CB = new System.Windows.Forms.CheckBox();
+            this.search_tb = new System.Windows.Forms.TextBox();
+            this.panel3 = new System.Windows.Forms.Panel();
+            this.LuuThayDoiBtn = new System.Windows.Forms.Button();
+            this.status_lb = new System.Windows.Forms.Label();
+            this.id_tb = new System.Windows.Forms.TextBox();
             this.info_gb = new System.Windows.Forms.GroupBox();
             this.farm_cbb = new System.Windows.Forms.ComboBox();
             this.cultivationType_CB = new System.Windows.Forms.ComboBox();
@@ -71,32 +79,23 @@ namespace RauViet.ui
             this.label2 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
-            this.id_tb = new System.Windows.Forms.TextBox();
-            this.status_lb = new System.Windows.Forms.Label();
-            this.LuuThayDoiBtn = new System.Windows.Forms.Button();
-            this.panel2 = new System.Windows.Forms.Panel();
-            this.panel6 = new System.Windows.Forms.Panel();
-            this.dataGV = new System.Windows.Forms.DataGridView();
-            this.label4 = new System.Windows.Forms.Label();
-            this.log_GV = new System.Windows.Forms.DataGridView();
-            this.panel5 = new System.Windows.Forms.Panel();
-            this.panel9 = new System.Windows.Forms.Panel();
-            this.weekInYear_GV = new System.Windows.Forms.DataGridView();
-            this.label15 = new System.Windows.Forms.Label();
-            this.panel8 = new System.Windows.Forms.Panel();
-            this.toPhuTrach_GV = new System.Windows.Forms.DataGridView();
-            this.label14 = new System.Windows.Forms.Label();
-            this.panel7 = new System.Windows.Forms.Panel();
-            this.monthGV = new System.Windows.Forms.DataGridView();
-            this.label13 = new System.Windows.Forms.Label();
-            this.panel4 = new System.Windows.Forms.Panel();
-            this.locTheoTo_CB = new System.Windows.Forms.CheckBox();
-            this.locTheoNgayThu_CB = new System.Windows.Forms.CheckBox();
-            this.locTheoNgayTrong_CB = new System.Windows.Forms.CheckBox();
-            this.locTheoNgayUom_CB = new System.Windows.Forms.CheckBox();
-            this.search_tb = new System.Windows.Forms.TextBox();
-            this.panel3 = new System.Windows.Forms.Panel();
-            this.locTheoTuan_CB = new System.Windows.Forms.CheckBox();
+            this.newCustomerBtn = new System.Windows.Forms.Button();
+            this.edit_btn = new System.Windows.Forms.Button();
+            this.readOnly_btn = new System.Windows.Forms.Button();
+            this.label12 = new System.Windows.Forms.Label();
+            this.monthYear_dtp = new System.Windows.Forms.DateTimePicker();
+            this.phieuGiaoHang_gb = new System.Windows.Forms.GroupBox();
+            this.excelPhieuSX_btn = new System.Windows.Forms.Button();
+            this.inPhieuSX_btn = new System.Windows.Forms.Button();
+            this.xemPhieuSX_btn = new System.Windows.Forms.Button();
+            this.phieuSX_uom_gb = new System.Windows.Forms.GroupBox();
+            this.excelPhieuSX_uom_btn = new System.Windows.Forms.Button();
+            this.inPhieuSX_uom_btn = new System.Windows.Forms.Button();
+            this.xemPhieuSX_uom_btn = new System.Windows.Forms.Button();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.excelKeHoachSX_btn = new System.Windows.Forms.Button();
+            this.inKeHoachSX_btn = new System.Windows.Forms.Button();
+            this.xemKeHoachSX_btn = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.excelLichUom_btn = new System.Windows.Forms.Button();
             this.inLichUom_btn = new System.Windows.Forms.Button();
@@ -105,11 +104,11 @@ namespace RauViet.ui
             this.excelLichGiao_btn = new System.Windows.Forms.Button();
             this.inLichGiao_btn = new System.Windows.Forms.Button();
             this.xemLichGiao_btn = new System.Windows.Forms.Button();
-            this.panel1.SuspendLayout();
-            this.groupBox1.SuspendLayout();
-            this.phieuSX_uom_gb.SuspendLayout();
-            this.phieuGiaoHang_gb.SuspendLayout();
-            this.info_gb.SuspendLayout();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.excelCapPhan_btn = new System.Windows.Forms.Button();
+            this.inCapPhan_btn = new System.Windows.Forms.Button();
+            this.xemCapPhan_btn = new System.Windows.Forms.Button();
+            this.panel1 = new System.Windows.Forms.Panel();
             this.panel2.SuspendLayout();
             this.panel6.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
@@ -122,223 +121,315 @@ namespace RauViet.ui
             this.panel7.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.monthGV)).BeginInit();
             this.panel4.SuspendLayout();
+            this.info_gb.SuspendLayout();
+            this.phieuGiaoHang_gb.SuspendLayout();
+            this.phieuSX_uom_gb.SuspendLayout();
+            this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
+            this.groupBox4.SuspendLayout();
+            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
-            // panel1
+            // panel2
             // 
-            this.panel1.Controls.Add(this.groupBox3);
-            this.panel1.Controls.Add(this.groupBox2);
-            this.panel1.Controls.Add(this.groupBox1);
-            this.panel1.Controls.Add(this.phieuSX_uom_gb);
-            this.panel1.Controls.Add(this.phieuGiaoHang_gb);
-            this.panel1.Controls.Add(this.monthYear_dtp);
-            this.panel1.Controls.Add(this.label12);
-            this.panel1.Controls.Add(this.readOnly_btn);
-            this.panel1.Controls.Add(this.edit_btn);
-            this.panel1.Controls.Add(this.newCustomerBtn);
-            this.panel1.Controls.Add(this.info_gb);
-            this.panel1.Controls.Add(this.id_tb);
-            this.panel1.Controls.Add(this.status_lb);
-            this.panel1.Controls.Add(this.LuuThayDoiBtn);
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel1.Location = new System.Drawing.Point(911, 0);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(533, 776);
-            this.panel1.TabIndex = 69;
+            this.panel2.Controls.Add(this.panel6);
+            this.panel2.Controls.Add(this.panel5);
+            this.panel2.Controls.Add(this.panel4);
+            this.panel2.Controls.Add(this.panel3);
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel2.Location = new System.Drawing.Point(0, 0);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(911, 776);
+            this.panel2.TabIndex = 70;
             // 
-            // groupBox1
+            // panel6
             // 
-            this.groupBox1.BackColor = System.Drawing.Color.LemonChiffon;
-            this.groupBox1.Controls.Add(this.excelKeHoachSX_btn);
-            this.groupBox1.Controls.Add(this.inKeHoachSX_btn);
-            this.groupBox1.Controls.Add(this.xemKeHoachSX_btn);
-            this.groupBox1.ForeColor = System.Drawing.Color.Red;
-            this.groupBox1.Location = new System.Drawing.Point(17, 676);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(245, 71);
-            this.groupBox1.TabIndex = 76;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Kế Hoạch Sản Xuất";
+            this.panel6.Controls.Add(this.dataGV);
+            this.panel6.Controls.Add(this.label4);
+            this.panel6.Controls.Add(this.log_GV);
+            this.panel6.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel6.Location = new System.Drawing.Point(137, 33);
+            this.panel6.Name = "panel6";
+            this.panel6.Size = new System.Drawing.Size(774, 715);
+            this.panel6.TabIndex = 4;
             // 
-            // excelKeHoachSX_btn
+            // dataGV
             // 
-            this.excelKeHoachSX_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
-            this.excelKeHoachSX_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.excelKeHoachSX_btn.Location = new System.Drawing.Point(165, 25);
-            this.excelKeHoachSX_btn.Name = "excelKeHoachSX_btn";
-            this.excelKeHoachSX_btn.Size = new System.Drawing.Size(73, 38);
-            this.excelKeHoachSX_btn.TabIndex = 61;
-            this.excelKeHoachSX_btn.Text = "Excel";
-            this.excelKeHoachSX_btn.UseVisualStyleBackColor = false;
+            this.dataGV.AllowUserToAddRows = false;
+            this.dataGV.AllowUserToDeleteRows = false;
+            this.dataGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGV.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dataGV.Location = new System.Drawing.Point(0, 0);
+            this.dataGV.Name = "dataGV";
+            this.dataGV.ReadOnly = true;
+            this.dataGV.Size = new System.Drawing.Size(774, 552);
+            this.dataGV.TabIndex = 78;
             // 
-            // inKeHoachSX_btn
+            // label4
             // 
-            this.inKeHoachSX_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
-            this.inKeHoachSX_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.inKeHoachSX_btn.Location = new System.Drawing.Point(7, 25);
-            this.inKeHoachSX_btn.Name = "inKeHoachSX_btn";
-            this.inKeHoachSX_btn.Size = new System.Drawing.Size(73, 38);
-            this.inKeHoachSX_btn.TabIndex = 59;
-            this.inKeHoachSX_btn.Text = "In";
-            this.inKeHoachSX_btn.UseVisualStyleBackColor = false;
+            this.label4.BackColor = System.Drawing.Color.PeachPuff;
+            this.label4.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.label4.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label4.ForeColor = System.Drawing.Color.DarkOliveGreen;
+            this.label4.Location = new System.Drawing.Point(0, 552);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(774, 23);
+            this.label4.TabIndex = 77;
+            this.label4.Text = "Lịch sử thay đổi";
+            this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // xemKeHoachSX_btn
+            // log_GV
             // 
-            this.xemKeHoachSX_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
-            this.xemKeHoachSX_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.xemKeHoachSX_btn.Location = new System.Drawing.Point(86, 25);
-            this.xemKeHoachSX_btn.Name = "xemKeHoachSX_btn";
-            this.xemKeHoachSX_btn.Size = new System.Drawing.Size(73, 38);
-            this.xemKeHoachSX_btn.TabIndex = 60;
-            this.xemKeHoachSX_btn.Text = "Xem";
-            this.xemKeHoachSX_btn.UseVisualStyleBackColor = false;
+            this.log_GV.AllowUserToAddRows = false;
+            this.log_GV.AllowUserToDeleteRows = false;
+            this.log_GV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.log_GV.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.log_GV.Location = new System.Drawing.Point(0, 575);
+            this.log_GV.Name = "log_GV";
+            this.log_GV.ReadOnly = true;
+            this.log_GV.Size = new System.Drawing.Size(774, 140);
+            this.log_GV.TabIndex = 76;
             // 
-            // phieuSX_uom_gb
+            // panel5
             // 
-            this.phieuSX_uom_gb.BackColor = System.Drawing.Color.LemonChiffon;
-            this.phieuSX_uom_gb.Controls.Add(this.excelPhieuSX_uom_btn);
-            this.phieuSX_uom_gb.Controls.Add(this.inPhieuSX_uom_btn);
-            this.phieuSX_uom_gb.Controls.Add(this.xemPhieuSX_uom_btn);
-            this.phieuSX_uom_gb.ForeColor = System.Drawing.Color.RoyalBlue;
-            this.phieuSX_uom_gb.Location = new System.Drawing.Point(17, 599);
-            this.phieuSX_uom_gb.Name = "phieuSX_uom_gb";
-            this.phieuSX_uom_gb.Size = new System.Drawing.Size(245, 71);
-            this.phieuSX_uom_gb.TabIndex = 75;
-            this.phieuSX_uom_gb.TabStop = false;
-            this.phieuSX_uom_gb.Text = "Phiếu Sản Xuất (Ươm)";
+            this.panel5.Controls.Add(this.panel9);
+            this.panel5.Controls.Add(this.label15);
+            this.panel5.Controls.Add(this.panel8);
+            this.panel5.Controls.Add(this.label14);
+            this.panel5.Controls.Add(this.panel7);
+            this.panel5.Controls.Add(this.label13);
+            this.panel5.Dock = System.Windows.Forms.DockStyle.Left;
+            this.panel5.Location = new System.Drawing.Point(0, 33);
+            this.panel5.Name = "panel5";
+            this.panel5.Size = new System.Drawing.Size(137, 715);
+            this.panel5.TabIndex = 3;
             // 
-            // excelPhieuSX_uom_btn
+            // panel9
             // 
-            this.excelPhieuSX_uom_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
-            this.excelPhieuSX_uom_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.excelPhieuSX_uom_btn.Location = new System.Drawing.Point(165, 25);
-            this.excelPhieuSX_uom_btn.Name = "excelPhieuSX_uom_btn";
-            this.excelPhieuSX_uom_btn.Size = new System.Drawing.Size(73, 38);
-            this.excelPhieuSX_uom_btn.TabIndex = 61;
-            this.excelPhieuSX_uom_btn.Text = "Excel";
-            this.excelPhieuSX_uom_btn.UseVisualStyleBackColor = false;
+            this.panel9.BackColor = System.Drawing.Color.Wheat;
+            this.panel9.Controls.Add(this.weekInYear_GV);
+            this.panel9.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel9.Location = new System.Drawing.Point(0, 458);
+            this.panel9.Name = "panel9";
+            this.panel9.Size = new System.Drawing.Size(137, 257);
+            this.panel9.TabIndex = 82;
             // 
-            // inPhieuSX_uom_btn
+            // weekInYear_GV
             // 
-            this.inPhieuSX_uom_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
-            this.inPhieuSX_uom_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.inPhieuSX_uom_btn.Location = new System.Drawing.Point(7, 25);
-            this.inPhieuSX_uom_btn.Name = "inPhieuSX_uom_btn";
-            this.inPhieuSX_uom_btn.Size = new System.Drawing.Size(73, 38);
-            this.inPhieuSX_uom_btn.TabIndex = 59;
-            this.inPhieuSX_uom_btn.Text = "In";
-            this.inPhieuSX_uom_btn.UseVisualStyleBackColor = false;
+            this.weekInYear_GV.AllowUserToAddRows = false;
+            this.weekInYear_GV.AllowUserToDeleteRows = false;
+            this.weekInYear_GV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.weekInYear_GV.ColumnHeadersVisible = false;
+            this.weekInYear_GV.Dock = System.Windows.Forms.DockStyle.Left;
+            this.weekInYear_GV.Location = new System.Drawing.Point(0, 0);
+            this.weekInYear_GV.Name = "weekInYear_GV";
+            this.weekInYear_GV.ReadOnly = true;
+            this.weekInYear_GV.Size = new System.Drawing.Size(131, 257);
+            this.weekInYear_GV.TabIndex = 4;
             // 
-            // xemPhieuSX_uom_btn
+            // label15
             // 
-            this.xemPhieuSX_uom_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
-            this.xemPhieuSX_uom_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.xemPhieuSX_uom_btn.Location = new System.Drawing.Point(86, 25);
-            this.xemPhieuSX_uom_btn.Name = "xemPhieuSX_uom_btn";
-            this.xemPhieuSX_uom_btn.Size = new System.Drawing.Size(73, 38);
-            this.xemPhieuSX_uom_btn.TabIndex = 60;
-            this.xemPhieuSX_uom_btn.Text = "Xem";
-            this.xemPhieuSX_uom_btn.UseVisualStyleBackColor = false;
+            this.label15.BackColor = System.Drawing.Color.Wheat;
+            this.label15.Dock = System.Windows.Forms.DockStyle.Top;
+            this.label15.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label15.Location = new System.Drawing.Point(0, 426);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(137, 32);
+            this.label15.TabIndex = 81;
+            this.label15.Text = "Tuần";
+            this.label15.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // phieuGiaoHang_gb
+            // panel8
             // 
-            this.phieuGiaoHang_gb.BackColor = System.Drawing.Color.LemonChiffon;
-            this.phieuGiaoHang_gb.Controls.Add(this.excelPhieuSX_btn);
-            this.phieuGiaoHang_gb.Controls.Add(this.inPhieuSX_btn);
-            this.phieuGiaoHang_gb.Controls.Add(this.xemPhieuSX_btn);
-            this.phieuGiaoHang_gb.ForeColor = System.Drawing.Color.ForestGreen;
-            this.phieuGiaoHang_gb.Location = new System.Drawing.Point(15, 520);
-            this.phieuGiaoHang_gb.Name = "phieuGiaoHang_gb";
-            this.phieuGiaoHang_gb.Size = new System.Drawing.Size(245, 71);
-            this.phieuGiaoHang_gb.TabIndex = 74;
-            this.phieuGiaoHang_gb.TabStop = false;
-            this.phieuGiaoHang_gb.Text = "Phiếu Sản Xuất (Trồng)";
+            this.panel8.BackColor = System.Drawing.Color.Wheat;
+            this.panel8.Controls.Add(this.toPhuTrach_GV);
+            this.panel8.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel8.Location = new System.Drawing.Point(0, 324);
+            this.panel8.Name = "panel8";
+            this.panel8.Size = new System.Drawing.Size(137, 102);
+            this.panel8.TabIndex = 80;
             // 
-            // excelPhieuSX_btn
+            // toPhuTrach_GV
             // 
-            this.excelPhieuSX_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
-            this.excelPhieuSX_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.excelPhieuSX_btn.Location = new System.Drawing.Point(165, 25);
-            this.excelPhieuSX_btn.Name = "excelPhieuSX_btn";
-            this.excelPhieuSX_btn.Size = new System.Drawing.Size(73, 38);
-            this.excelPhieuSX_btn.TabIndex = 61;
-            this.excelPhieuSX_btn.Text = "Excel";
-            this.excelPhieuSX_btn.UseVisualStyleBackColor = false;
+            this.toPhuTrach_GV.AllowUserToAddRows = false;
+            this.toPhuTrach_GV.AllowUserToDeleteRows = false;
+            this.toPhuTrach_GV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.toPhuTrach_GV.ColumnHeadersVisible = false;
+            this.toPhuTrach_GV.Dock = System.Windows.Forms.DockStyle.Left;
+            this.toPhuTrach_GV.Location = new System.Drawing.Point(0, 0);
+            this.toPhuTrach_GV.Name = "toPhuTrach_GV";
+            this.toPhuTrach_GV.ReadOnly = true;
+            this.toPhuTrach_GV.Size = new System.Drawing.Size(131, 102);
+            this.toPhuTrach_GV.TabIndex = 4;
             // 
-            // inPhieuSX_btn
+            // label14
             // 
-            this.inPhieuSX_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
-            this.inPhieuSX_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.inPhieuSX_btn.Location = new System.Drawing.Point(7, 25);
-            this.inPhieuSX_btn.Name = "inPhieuSX_btn";
-            this.inPhieuSX_btn.Size = new System.Drawing.Size(73, 38);
-            this.inPhieuSX_btn.TabIndex = 59;
-            this.inPhieuSX_btn.Text = "In";
-            this.inPhieuSX_btn.UseVisualStyleBackColor = false;
+            this.label14.BackColor = System.Drawing.Color.Wheat;
+            this.label14.Dock = System.Windows.Forms.DockStyle.Top;
+            this.label14.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label14.Location = new System.Drawing.Point(0, 292);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(137, 32);
+            this.label14.TabIndex = 79;
+            this.label14.Text = "Tổ Phụ Trách";
+            this.label14.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // xemPhieuSX_btn
+            // panel7
             // 
-            this.xemPhieuSX_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
-            this.xemPhieuSX_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.xemPhieuSX_btn.Location = new System.Drawing.Point(86, 25);
-            this.xemPhieuSX_btn.Name = "xemPhieuSX_btn";
-            this.xemPhieuSX_btn.Size = new System.Drawing.Size(73, 38);
-            this.xemPhieuSX_btn.TabIndex = 60;
-            this.xemPhieuSX_btn.Text = "Xem";
-            this.xemPhieuSX_btn.UseVisualStyleBackColor = false;
+            this.panel7.BackColor = System.Drawing.Color.PaleGoldenrod;
+            this.panel7.Controls.Add(this.monthGV);
+            this.panel7.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel7.Location = new System.Drawing.Point(0, 32);
+            this.panel7.Name = "panel7";
+            this.panel7.Size = new System.Drawing.Size(137, 260);
+            this.panel7.TabIndex = 77;
             // 
-            // monthYear_dtp
+            // monthGV
             // 
-            this.monthYear_dtp.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.monthYear_dtp.Location = new System.Drawing.Point(246, 13);
-            this.monthYear_dtp.Name = "monthYear_dtp";
-            this.monthYear_dtp.Size = new System.Drawing.Size(72, 26);
-            this.monthYear_dtp.TabIndex = 72;
+            this.monthGV.AllowUserToAddRows = false;
+            this.monthGV.AllowUserToDeleteRows = false;
+            this.monthGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.monthGV.ColumnHeadersVisible = false;
+            this.monthGV.Dock = System.Windows.Forms.DockStyle.Left;
+            this.monthGV.Location = new System.Drawing.Point(0, 0);
+            this.monthGV.Name = "monthGV";
+            this.monthGV.ReadOnly = true;
+            this.monthGV.Size = new System.Drawing.Size(131, 260);
+            this.monthGV.TabIndex = 4;
             // 
-            // label12
+            // label13
             // 
-            this.label12.AutoSize = true;
-            this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label12.Location = new System.Drawing.Point(196, 15);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(46, 20);
-            this.label12.TabIndex = 71;
-            this.label12.Text = "Năm:";
+            this.label13.BackColor = System.Drawing.Color.PaleGoldenrod;
+            this.label13.Dock = System.Windows.Forms.DockStyle.Top;
+            this.label13.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label13.Location = new System.Drawing.Point(0, 0);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(137, 32);
+            this.label13.TabIndex = 76;
+            this.label13.Text = "Tháng";
+            this.label13.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // readOnly_btn
+            // panel4
             // 
-            this.readOnly_btn.BackColor = System.Drawing.Color.MediumSlateBlue;
-            this.readOnly_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.readOnly_btn.Location = new System.Drawing.Point(490, 46);
-            this.readOnly_btn.Name = "readOnly_btn";
-            this.readOnly_btn.Size = new System.Drawing.Size(42, 32);
-            this.readOnly_btn.TabIndex = 48;
-            this.readOnly_btn.Text = "X";
-            this.readOnly_btn.UseVisualStyleBackColor = false;
+            this.panel4.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.panel4.Controls.Add(this.locTheoTuan_CB);
+            this.panel4.Controls.Add(this.locTheoTo_CB);
+            this.panel4.Controls.Add(this.locTheoNgayThu_CB);
+            this.panel4.Controls.Add(this.locTheoNgayTrong_CB);
+            this.panel4.Controls.Add(this.locTheoNgayUom_CB);
+            this.panel4.Controls.Add(this.search_tb);
+            this.panel4.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel4.Location = new System.Drawing.Point(0, 0);
+            this.panel4.Name = "panel4";
+            this.panel4.Size = new System.Drawing.Size(911, 33);
+            this.panel4.TabIndex = 1;
             // 
-            // edit_btn
+            // locTheoTuan_CB
             // 
-            this.edit_btn.BackColor = System.Drawing.SystemColors.MenuHighlight;
-            this.edit_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.edit_btn.Location = new System.Drawing.Point(363, 46);
-            this.edit_btn.Name = "edit_btn";
-            this.edit_btn.Size = new System.Drawing.Size(94, 32);
-            this.edit_btn.TabIndex = 47;
-            this.edit_btn.Text = "Chỉnh sửa";
-            this.edit_btn.UseVisualStyleBackColor = false;
+            this.locTheoTuan_CB.AutoSize = true;
+            this.locTheoTuan_CB.BackColor = System.Drawing.Color.DarkGoldenrod;
+            this.locTheoTuan_CB.Location = new System.Drawing.Point(535, 8);
+            this.locTheoTuan_CB.Name = "locTheoTuan_CB";
+            this.locTheoTuan_CB.Size = new System.Drawing.Size(103, 17);
+            this.locTheoTuan_CB.TabIndex = 88;
+            this.locTheoTuan_CB.Text = "Lọc Theo Tuần.";
+            this.locTheoTuan_CB.UseVisualStyleBackColor = false;
             // 
-            // newCustomerBtn
+            // locTheoTo_CB
             // 
-            this.newCustomerBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
-            this.newCustomerBtn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.newCustomerBtn.Location = new System.Drawing.Point(459, 46);
-            this.newCustomerBtn.Name = "newCustomerBtn";
-            this.newCustomerBtn.Size = new System.Drawing.Size(74, 32);
-            this.newCustomerBtn.TabIndex = 46;
-            this.newCustomerBtn.Text = "Tạo mới";
-            this.newCustomerBtn.UseVisualStyleBackColor = false;
+            this.locTheoTo_CB.AutoSize = true;
+            this.locTheoTo_CB.BackColor = System.Drawing.Color.Moccasin;
+            this.locTheoTo_CB.Checked = true;
+            this.locTheoTo_CB.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.locTheoTo_CB.Location = new System.Drawing.Point(433, 8);
+            this.locTheoTo_CB.Name = "locTheoTo_CB";
+            this.locTheoTo_CB.Size = new System.Drawing.Size(91, 17);
+            this.locTheoTo_CB.TabIndex = 87;
+            this.locTheoTo_CB.Text = "Lọc Theo Tổ.";
+            this.locTheoTo_CB.UseVisualStyleBackColor = false;
+            // 
+            // locTheoNgayThu_CB
+            // 
+            this.locTheoNgayThu_CB.AutoSize = true;
+            this.locTheoNgayThu_CB.BackColor = System.Drawing.Color.DarkOrange;
+            this.locTheoNgayThu_CB.Location = new System.Drawing.Point(297, 8);
+            this.locTheoNgayThu_CB.Name = "locTheoNgayThu_CB";
+            this.locTheoNgayThu_CB.Size = new System.Drawing.Size(125, 17);
+            this.locTheoNgayThu_CB.TabIndex = 86;
+            this.locTheoNgayThu_CB.Text = "Lọc Theo Ngày Thu.";
+            this.locTheoNgayThu_CB.UseVisualStyleBackColor = false;
+            // 
+            // locTheoNgayTrong_CB
+            // 
+            this.locTheoNgayTrong_CB.AutoSize = true;
+            this.locTheoNgayTrong_CB.BackColor = System.Drawing.Color.DarkOrange;
+            this.locTheoNgayTrong_CB.Checked = true;
+            this.locTheoNgayTrong_CB.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.locTheoNgayTrong_CB.Location = new System.Drawing.Point(152, 8);
+            this.locTheoNgayTrong_CB.Name = "locTheoNgayTrong_CB";
+            this.locTheoNgayTrong_CB.Size = new System.Drawing.Size(134, 17);
+            this.locTheoNgayTrong_CB.TabIndex = 85;
+            this.locTheoNgayTrong_CB.Text = "Lọc Theo Ngày Trồng.";
+            this.locTheoNgayTrong_CB.UseVisualStyleBackColor = false;
+            // 
+            // locTheoNgayUom_CB
+            // 
+            this.locTheoNgayUom_CB.AutoSize = true;
+            this.locTheoNgayUom_CB.BackColor = System.Drawing.Color.DarkOrange;
+            this.locTheoNgayUom_CB.Location = new System.Drawing.Point(13, 8);
+            this.locTheoNgayUom_CB.Name = "locTheoNgayUom_CB";
+            this.locTheoNgayUom_CB.Size = new System.Drawing.Size(128, 17);
+            this.locTheoNgayUom_CB.TabIndex = 84;
+            this.locTheoNgayUom_CB.Text = "Lọc Theo Ngày Ươm.";
+            this.locTheoNgayUom_CB.UseVisualStyleBackColor = false;
+            // 
+            // search_tb
+            // 
+            this.search_tb.Dock = System.Windows.Forms.DockStyle.Right;
+            this.search_tb.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.search_tb.Location = new System.Drawing.Point(681, 0);
+            this.search_tb.Name = "search_tb";
+            this.search_tb.Size = new System.Drawing.Size(230, 26);
+            this.search_tb.TabIndex = 69;
+            // 
+            // panel3
+            // 
+            this.panel3.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.panel3.Location = new System.Drawing.Point(0, 748);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(911, 28);
+            this.panel3.TabIndex = 0;
+            // 
+            // LuuThayDoiBtn
+            // 
+            this.LuuThayDoiBtn.BackColor = System.Drawing.SystemColors.Highlight;
+            this.LuuThayDoiBtn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.LuuThayDoiBtn.Location = new System.Drawing.Point(273, 465);
+            this.LuuThayDoiBtn.Name = "LuuThayDoiBtn";
+            this.LuuThayDoiBtn.Size = new System.Drawing.Size(104, 43);
+            this.LuuThayDoiBtn.TabIndex = 25;
+            this.LuuThayDoiBtn.Text = "Lưu";
+            this.LuuThayDoiBtn.UseVisualStyleBackColor = false;
+            // 
+            // status_lb
+            // 
+            this.status_lb.AutoSize = true;
+            this.status_lb.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.status_lb.Location = new System.Drawing.Point(13, 474);
+            this.status_lb.Name = "status_lb";
+            this.status_lb.Size = new System.Drawing.Size(59, 23);
+            this.status_lb.TabIndex = 40;
+            this.status_lb.Text = "status";
+            // 
+            // id_tb
+            // 
+            this.id_tb.Location = new System.Drawing.Point(372, 0);
+            this.id_tb.Name = "id_tb";
+            this.id_tb.ReadOnly = true;
+            this.id_tb.Size = new System.Drawing.Size(31, 20);
+            this.id_tb.TabIndex = 42;
+            this.id_tb.Visible = false;
             // 
             // info_gb
             // 
@@ -541,7 +632,7 @@ namespace RauViet.ui
             this.deparment_CBB.IntegralHeight = false;
             this.deparment_CBB.Location = new System.Drawing.Point(167, 232);
             this.deparment_CBB.Name = "deparment_CBB";
-            this.deparment_CBB.Size = new System.Drawing.Size(285, 24);
+            this.deparment_CBB.Size = new System.Drawing.Size(219, 24);
             this.deparment_CBB.TabIndex = 66;
             // 
             // label2
@@ -571,305 +662,197 @@ namespace RauViet.ui
             this.label1.TabIndex = 47;
             this.label1.Text = "Lệnh SX:";
             // 
-            // id_tb
+            // newCustomerBtn
             // 
-            this.id_tb.Location = new System.Drawing.Point(372, 0);
-            this.id_tb.Name = "id_tb";
-            this.id_tb.ReadOnly = true;
-            this.id_tb.Size = new System.Drawing.Size(31, 20);
-            this.id_tb.TabIndex = 42;
-            this.id_tb.Visible = false;
+            this.newCustomerBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
+            this.newCustomerBtn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.newCustomerBtn.Location = new System.Drawing.Point(459, 46);
+            this.newCustomerBtn.Name = "newCustomerBtn";
+            this.newCustomerBtn.Size = new System.Drawing.Size(74, 32);
+            this.newCustomerBtn.TabIndex = 46;
+            this.newCustomerBtn.Text = "Tạo mới";
+            this.newCustomerBtn.UseVisualStyleBackColor = false;
             // 
-            // status_lb
+            // edit_btn
             // 
-            this.status_lb.AutoSize = true;
-            this.status_lb.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.status_lb.Location = new System.Drawing.Point(13, 474);
-            this.status_lb.Name = "status_lb";
-            this.status_lb.Size = new System.Drawing.Size(59, 23);
-            this.status_lb.TabIndex = 40;
-            this.status_lb.Text = "status";
+            this.edit_btn.BackColor = System.Drawing.SystemColors.MenuHighlight;
+            this.edit_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.edit_btn.Location = new System.Drawing.Point(363, 46);
+            this.edit_btn.Name = "edit_btn";
+            this.edit_btn.Size = new System.Drawing.Size(94, 32);
+            this.edit_btn.TabIndex = 47;
+            this.edit_btn.Text = "Chỉnh sửa";
+            this.edit_btn.UseVisualStyleBackColor = false;
             // 
-            // LuuThayDoiBtn
+            // readOnly_btn
             // 
-            this.LuuThayDoiBtn.BackColor = System.Drawing.SystemColors.Highlight;
-            this.LuuThayDoiBtn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LuuThayDoiBtn.Location = new System.Drawing.Point(273, 465);
-            this.LuuThayDoiBtn.Name = "LuuThayDoiBtn";
-            this.LuuThayDoiBtn.Size = new System.Drawing.Size(104, 43);
-            this.LuuThayDoiBtn.TabIndex = 25;
-            this.LuuThayDoiBtn.Text = "Lưu";
-            this.LuuThayDoiBtn.UseVisualStyleBackColor = false;
+            this.readOnly_btn.BackColor = System.Drawing.Color.MediumSlateBlue;
+            this.readOnly_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.readOnly_btn.Location = new System.Drawing.Point(490, 46);
+            this.readOnly_btn.Name = "readOnly_btn";
+            this.readOnly_btn.Size = new System.Drawing.Size(42, 32);
+            this.readOnly_btn.TabIndex = 48;
+            this.readOnly_btn.Text = "X";
+            this.readOnly_btn.UseVisualStyleBackColor = false;
             // 
-            // panel2
+            // label12
             // 
-            this.panel2.Controls.Add(this.panel6);
-            this.panel2.Controls.Add(this.panel5);
-            this.panel2.Controls.Add(this.panel4);
-            this.panel2.Controls.Add(this.panel3);
-            this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel2.Location = new System.Drawing.Point(0, 0);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(911, 776);
-            this.panel2.TabIndex = 70;
+            this.label12.AutoSize = true;
+            this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label12.Location = new System.Drawing.Point(196, 15);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(46, 20);
+            this.label12.TabIndex = 71;
+            this.label12.Text = "Năm:";
             // 
-            // panel6
+            // monthYear_dtp
             // 
-            this.panel6.Controls.Add(this.dataGV);
-            this.panel6.Controls.Add(this.label4);
-            this.panel6.Controls.Add(this.log_GV);
-            this.panel6.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel6.Location = new System.Drawing.Point(137, 33);
-            this.panel6.Name = "panel6";
-            this.panel6.Size = new System.Drawing.Size(774, 715);
-            this.panel6.TabIndex = 4;
+            this.monthYear_dtp.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.monthYear_dtp.Location = new System.Drawing.Point(246, 13);
+            this.monthYear_dtp.Name = "monthYear_dtp";
+            this.monthYear_dtp.Size = new System.Drawing.Size(72, 26);
+            this.monthYear_dtp.TabIndex = 72;
             // 
-            // dataGV
+            // phieuGiaoHang_gb
             // 
-            this.dataGV.AllowUserToAddRows = false;
-            this.dataGV.AllowUserToDeleteRows = false;
-            this.dataGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGV.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dataGV.Location = new System.Drawing.Point(0, 0);
-            this.dataGV.Name = "dataGV";
-            this.dataGV.ReadOnly = true;
-            this.dataGV.Size = new System.Drawing.Size(774, 552);
-            this.dataGV.TabIndex = 78;
+            this.phieuGiaoHang_gb.BackColor = System.Drawing.Color.LemonChiffon;
+            this.phieuGiaoHang_gb.Controls.Add(this.excelPhieuSX_btn);
+            this.phieuGiaoHang_gb.Controls.Add(this.inPhieuSX_btn);
+            this.phieuGiaoHang_gb.Controls.Add(this.xemPhieuSX_btn);
+            this.phieuGiaoHang_gb.ForeColor = System.Drawing.Color.ForestGreen;
+            this.phieuGiaoHang_gb.Location = new System.Drawing.Point(15, 520);
+            this.phieuGiaoHang_gb.Name = "phieuGiaoHang_gb";
+            this.phieuGiaoHang_gb.Size = new System.Drawing.Size(245, 71);
+            this.phieuGiaoHang_gb.TabIndex = 74;
+            this.phieuGiaoHang_gb.TabStop = false;
+            this.phieuGiaoHang_gb.Text = "Phiếu Sản Xuất (Trồng)";
             // 
-            // label4
+            // excelPhieuSX_btn
             // 
-            this.label4.BackColor = System.Drawing.Color.PeachPuff;
-            this.label4.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.label4.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.ForeColor = System.Drawing.Color.DarkOliveGreen;
-            this.label4.Location = new System.Drawing.Point(0, 552);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(774, 23);
-            this.label4.TabIndex = 77;
-            this.label4.Text = "Lịch sử thay đổi";
-            this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.excelPhieuSX_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.excelPhieuSX_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.excelPhieuSX_btn.Location = new System.Drawing.Point(165, 25);
+            this.excelPhieuSX_btn.Name = "excelPhieuSX_btn";
+            this.excelPhieuSX_btn.Size = new System.Drawing.Size(73, 38);
+            this.excelPhieuSX_btn.TabIndex = 61;
+            this.excelPhieuSX_btn.Text = "Excel";
+            this.excelPhieuSX_btn.UseVisualStyleBackColor = false;
             // 
-            // log_GV
+            // inPhieuSX_btn
             // 
-            this.log_GV.AllowUserToAddRows = false;
-            this.log_GV.AllowUserToDeleteRows = false;
-            this.log_GV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.log_GV.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.log_GV.Location = new System.Drawing.Point(0, 575);
-            this.log_GV.Name = "log_GV";
-            this.log_GV.ReadOnly = true;
-            this.log_GV.Size = new System.Drawing.Size(774, 140);
-            this.log_GV.TabIndex = 76;
+            this.inPhieuSX_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.inPhieuSX_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.inPhieuSX_btn.Location = new System.Drawing.Point(7, 25);
+            this.inPhieuSX_btn.Name = "inPhieuSX_btn";
+            this.inPhieuSX_btn.Size = new System.Drawing.Size(73, 38);
+            this.inPhieuSX_btn.TabIndex = 59;
+            this.inPhieuSX_btn.Text = "In";
+            this.inPhieuSX_btn.UseVisualStyleBackColor = false;
             // 
-            // panel5
+            // xemPhieuSX_btn
             // 
-            this.panel5.Controls.Add(this.panel9);
-            this.panel5.Controls.Add(this.label15);
-            this.panel5.Controls.Add(this.panel8);
-            this.panel5.Controls.Add(this.label14);
-            this.panel5.Controls.Add(this.panel7);
-            this.panel5.Controls.Add(this.label13);
-            this.panel5.Dock = System.Windows.Forms.DockStyle.Left;
-            this.panel5.Location = new System.Drawing.Point(0, 33);
-            this.panel5.Name = "panel5";
-            this.panel5.Size = new System.Drawing.Size(137, 715);
-            this.panel5.TabIndex = 3;
+            this.xemPhieuSX_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.xemPhieuSX_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.xemPhieuSX_btn.Location = new System.Drawing.Point(86, 25);
+            this.xemPhieuSX_btn.Name = "xemPhieuSX_btn";
+            this.xemPhieuSX_btn.Size = new System.Drawing.Size(73, 38);
+            this.xemPhieuSX_btn.TabIndex = 60;
+            this.xemPhieuSX_btn.Text = "Xem";
+            this.xemPhieuSX_btn.UseVisualStyleBackColor = false;
             // 
-            // panel9
+            // phieuSX_uom_gb
             // 
-            this.panel9.BackColor = System.Drawing.Color.Wheat;
-            this.panel9.Controls.Add(this.weekInYear_GV);
-            this.panel9.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel9.Location = new System.Drawing.Point(0, 458);
-            this.panel9.Name = "panel9";
-            this.panel9.Size = new System.Drawing.Size(137, 257);
-            this.panel9.TabIndex = 82;
+            this.phieuSX_uom_gb.BackColor = System.Drawing.Color.LemonChiffon;
+            this.phieuSX_uom_gb.Controls.Add(this.excelPhieuSX_uom_btn);
+            this.phieuSX_uom_gb.Controls.Add(this.inPhieuSX_uom_btn);
+            this.phieuSX_uom_gb.Controls.Add(this.xemPhieuSX_uom_btn);
+            this.phieuSX_uom_gb.ForeColor = System.Drawing.Color.RoyalBlue;
+            this.phieuSX_uom_gb.Location = new System.Drawing.Point(17, 599);
+            this.phieuSX_uom_gb.Name = "phieuSX_uom_gb";
+            this.phieuSX_uom_gb.Size = new System.Drawing.Size(245, 71);
+            this.phieuSX_uom_gb.TabIndex = 75;
+            this.phieuSX_uom_gb.TabStop = false;
+            this.phieuSX_uom_gb.Text = "Phiếu Sản Xuất (Ươm)";
             // 
-            // weekInYear_GV
+            // excelPhieuSX_uom_btn
             // 
-            this.weekInYear_GV.AllowUserToAddRows = false;
-            this.weekInYear_GV.AllowUserToDeleteRows = false;
-            this.weekInYear_GV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.weekInYear_GV.ColumnHeadersVisible = false;
-            this.weekInYear_GV.Dock = System.Windows.Forms.DockStyle.Left;
-            this.weekInYear_GV.Location = new System.Drawing.Point(0, 0);
-            this.weekInYear_GV.Name = "weekInYear_GV";
-            this.weekInYear_GV.ReadOnly = true;
-            this.weekInYear_GV.Size = new System.Drawing.Size(131, 257);
-            this.weekInYear_GV.TabIndex = 4;
+            this.excelPhieuSX_uom_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.excelPhieuSX_uom_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.excelPhieuSX_uom_btn.Location = new System.Drawing.Point(165, 25);
+            this.excelPhieuSX_uom_btn.Name = "excelPhieuSX_uom_btn";
+            this.excelPhieuSX_uom_btn.Size = new System.Drawing.Size(73, 38);
+            this.excelPhieuSX_uom_btn.TabIndex = 61;
+            this.excelPhieuSX_uom_btn.Text = "Excel";
+            this.excelPhieuSX_uom_btn.UseVisualStyleBackColor = false;
             // 
-            // label15
+            // inPhieuSX_uom_btn
             // 
-            this.label15.BackColor = System.Drawing.Color.Wheat;
-            this.label15.Dock = System.Windows.Forms.DockStyle.Top;
-            this.label15.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label15.Location = new System.Drawing.Point(0, 426);
-            this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(137, 32);
-            this.label15.TabIndex = 81;
-            this.label15.Text = "Tuần";
-            this.label15.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.inPhieuSX_uom_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.inPhieuSX_uom_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.inPhieuSX_uom_btn.Location = new System.Drawing.Point(7, 25);
+            this.inPhieuSX_uom_btn.Name = "inPhieuSX_uom_btn";
+            this.inPhieuSX_uom_btn.Size = new System.Drawing.Size(73, 38);
+            this.inPhieuSX_uom_btn.TabIndex = 59;
+            this.inPhieuSX_uom_btn.Text = "In";
+            this.inPhieuSX_uom_btn.UseVisualStyleBackColor = false;
             // 
-            // panel8
+            // xemPhieuSX_uom_btn
             // 
-            this.panel8.BackColor = System.Drawing.Color.Wheat;
-            this.panel8.Controls.Add(this.toPhuTrach_GV);
-            this.panel8.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel8.Location = new System.Drawing.Point(0, 324);
-            this.panel8.Name = "panel8";
-            this.panel8.Size = new System.Drawing.Size(137, 102);
-            this.panel8.TabIndex = 80;
+            this.xemPhieuSX_uom_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.xemPhieuSX_uom_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.xemPhieuSX_uom_btn.Location = new System.Drawing.Point(86, 25);
+            this.xemPhieuSX_uom_btn.Name = "xemPhieuSX_uom_btn";
+            this.xemPhieuSX_uom_btn.Size = new System.Drawing.Size(73, 38);
+            this.xemPhieuSX_uom_btn.TabIndex = 60;
+            this.xemPhieuSX_uom_btn.Text = "Xem";
+            this.xemPhieuSX_uom_btn.UseVisualStyleBackColor = false;
             // 
-            // toPhuTrach_GV
+            // groupBox1
             // 
-            this.toPhuTrach_GV.AllowUserToAddRows = false;
-            this.toPhuTrach_GV.AllowUserToDeleteRows = false;
-            this.toPhuTrach_GV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.toPhuTrach_GV.ColumnHeadersVisible = false;
-            this.toPhuTrach_GV.Dock = System.Windows.Forms.DockStyle.Left;
-            this.toPhuTrach_GV.Location = new System.Drawing.Point(0, 0);
-            this.toPhuTrach_GV.Name = "toPhuTrach_GV";
-            this.toPhuTrach_GV.ReadOnly = true;
-            this.toPhuTrach_GV.Size = new System.Drawing.Size(131, 102);
-            this.toPhuTrach_GV.TabIndex = 4;
+            this.groupBox1.BackColor = System.Drawing.Color.LemonChiffon;
+            this.groupBox1.Controls.Add(this.excelKeHoachSX_btn);
+            this.groupBox1.Controls.Add(this.inKeHoachSX_btn);
+            this.groupBox1.Controls.Add(this.xemKeHoachSX_btn);
+            this.groupBox1.ForeColor = System.Drawing.Color.Red;
+            this.groupBox1.Location = new System.Drawing.Point(17, 676);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(245, 71);
+            this.groupBox1.TabIndex = 76;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Kế Hoạch Sản Xuất";
             // 
-            // label14
+            // excelKeHoachSX_btn
             // 
-            this.label14.BackColor = System.Drawing.Color.Wheat;
-            this.label14.Dock = System.Windows.Forms.DockStyle.Top;
-            this.label14.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label14.Location = new System.Drawing.Point(0, 292);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(137, 32);
-            this.label14.TabIndex = 79;
-            this.label14.Text = "Tổ Phụ Trách";
-            this.label14.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.excelKeHoachSX_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.excelKeHoachSX_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.excelKeHoachSX_btn.Location = new System.Drawing.Point(165, 25);
+            this.excelKeHoachSX_btn.Name = "excelKeHoachSX_btn";
+            this.excelKeHoachSX_btn.Size = new System.Drawing.Size(73, 38);
+            this.excelKeHoachSX_btn.TabIndex = 61;
+            this.excelKeHoachSX_btn.Text = "Excel";
+            this.excelKeHoachSX_btn.UseVisualStyleBackColor = false;
             // 
-            // panel7
+            // inKeHoachSX_btn
             // 
-            this.panel7.BackColor = System.Drawing.Color.PaleGoldenrod;
-            this.panel7.Controls.Add(this.monthGV);
-            this.panel7.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel7.Location = new System.Drawing.Point(0, 32);
-            this.panel7.Name = "panel7";
-            this.panel7.Size = new System.Drawing.Size(137, 260);
-            this.panel7.TabIndex = 77;
+            this.inKeHoachSX_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.inKeHoachSX_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.inKeHoachSX_btn.Location = new System.Drawing.Point(7, 25);
+            this.inKeHoachSX_btn.Name = "inKeHoachSX_btn";
+            this.inKeHoachSX_btn.Size = new System.Drawing.Size(73, 38);
+            this.inKeHoachSX_btn.TabIndex = 59;
+            this.inKeHoachSX_btn.Text = "In";
+            this.inKeHoachSX_btn.UseVisualStyleBackColor = false;
             // 
-            // monthGV
+            // xemKeHoachSX_btn
             // 
-            this.monthGV.AllowUserToAddRows = false;
-            this.monthGV.AllowUserToDeleteRows = false;
-            this.monthGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.monthGV.ColumnHeadersVisible = false;
-            this.monthGV.Dock = System.Windows.Forms.DockStyle.Left;
-            this.monthGV.Location = new System.Drawing.Point(0, 0);
-            this.monthGV.Name = "monthGV";
-            this.monthGV.ReadOnly = true;
-            this.monthGV.Size = new System.Drawing.Size(131, 260);
-            this.monthGV.TabIndex = 4;
-            // 
-            // label13
-            // 
-            this.label13.BackColor = System.Drawing.Color.PaleGoldenrod;
-            this.label13.Dock = System.Windows.Forms.DockStyle.Top;
-            this.label13.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label13.Location = new System.Drawing.Point(0, 0);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(137, 32);
-            this.label13.TabIndex = 76;
-            this.label13.Text = "Tháng";
-            this.label13.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // panel4
-            // 
-            this.panel4.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
-            this.panel4.Controls.Add(this.locTheoTuan_CB);
-            this.panel4.Controls.Add(this.locTheoTo_CB);
-            this.panel4.Controls.Add(this.locTheoNgayThu_CB);
-            this.panel4.Controls.Add(this.locTheoNgayTrong_CB);
-            this.panel4.Controls.Add(this.locTheoNgayUom_CB);
-            this.panel4.Controls.Add(this.search_tb);
-            this.panel4.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel4.Location = new System.Drawing.Point(0, 0);
-            this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(911, 33);
-            this.panel4.TabIndex = 1;
-            // 
-            // locTheoTo_CB
-            // 
-            this.locTheoTo_CB.AutoSize = true;
-            this.locTheoTo_CB.BackColor = System.Drawing.Color.Moccasin;
-            this.locTheoTo_CB.Checked = true;
-            this.locTheoTo_CB.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.locTheoTo_CB.Location = new System.Drawing.Point(433, 8);
-            this.locTheoTo_CB.Name = "locTheoTo_CB";
-            this.locTheoTo_CB.Size = new System.Drawing.Size(91, 17);
-            this.locTheoTo_CB.TabIndex = 87;
-            this.locTheoTo_CB.Text = "Lọc Theo Tổ.";
-            this.locTheoTo_CB.UseVisualStyleBackColor = false;
-            // 
-            // locTheoNgayThu_CB
-            // 
-            this.locTheoNgayThu_CB.AutoSize = true;
-            this.locTheoNgayThu_CB.BackColor = System.Drawing.Color.DarkOrange;
-            this.locTheoNgayThu_CB.Location = new System.Drawing.Point(297, 8);
-            this.locTheoNgayThu_CB.Name = "locTheoNgayThu_CB";
-            this.locTheoNgayThu_CB.Size = new System.Drawing.Size(125, 17);
-            this.locTheoNgayThu_CB.TabIndex = 86;
-            this.locTheoNgayThu_CB.Text = "Lọc Theo Ngày Thu.";
-            this.locTheoNgayThu_CB.UseVisualStyleBackColor = false;
-            // 
-            // locTheoNgayTrong_CB
-            // 
-            this.locTheoNgayTrong_CB.AutoSize = true;
-            this.locTheoNgayTrong_CB.BackColor = System.Drawing.Color.DarkOrange;
-            this.locTheoNgayTrong_CB.Checked = true;
-            this.locTheoNgayTrong_CB.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.locTheoNgayTrong_CB.Location = new System.Drawing.Point(152, 8);
-            this.locTheoNgayTrong_CB.Name = "locTheoNgayTrong_CB";
-            this.locTheoNgayTrong_CB.Size = new System.Drawing.Size(134, 17);
-            this.locTheoNgayTrong_CB.TabIndex = 85;
-            this.locTheoNgayTrong_CB.Text = "Lọc Theo Ngày Trồng.";
-            this.locTheoNgayTrong_CB.UseVisualStyleBackColor = false;
-            // 
-            // locTheoNgayUom_CB
-            // 
-            this.locTheoNgayUom_CB.AutoSize = true;
-            this.locTheoNgayUom_CB.BackColor = System.Drawing.Color.DarkOrange;
-            this.locTheoNgayUom_CB.Location = new System.Drawing.Point(13, 8);
-            this.locTheoNgayUom_CB.Name = "locTheoNgayUom_CB";
-            this.locTheoNgayUom_CB.Size = new System.Drawing.Size(128, 17);
-            this.locTheoNgayUom_CB.TabIndex = 84;
-            this.locTheoNgayUom_CB.Text = "Lọc Theo Ngày Ươm.";
-            this.locTheoNgayUom_CB.UseVisualStyleBackColor = false;
-            // 
-            // search_tb
-            // 
-            this.search_tb.Dock = System.Windows.Forms.DockStyle.Right;
-            this.search_tb.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.search_tb.Location = new System.Drawing.Point(681, 0);
-            this.search_tb.Name = "search_tb";
-            this.search_tb.Size = new System.Drawing.Size(230, 26);
-            this.search_tb.TabIndex = 69;
-            // 
-            // panel3
-            // 
-            this.panel3.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel3.Location = new System.Drawing.Point(0, 748);
-            this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(911, 28);
-            this.panel3.TabIndex = 0;
-            // 
-            // locTheoTuan_CB
-            // 
-            this.locTheoTuan_CB.AutoSize = true;
-            this.locTheoTuan_CB.BackColor = System.Drawing.Color.DarkGoldenrod;
-            this.locTheoTuan_CB.Location = new System.Drawing.Point(535, 8);
-            this.locTheoTuan_CB.Name = "locTheoTuan_CB";
-            this.locTheoTuan_CB.Size = new System.Drawing.Size(103, 17);
-            this.locTheoTuan_CB.TabIndex = 88;
-            this.locTheoTuan_CB.Text = "Lọc Theo Tuần.";
-            this.locTheoTuan_CB.UseVisualStyleBackColor = false;
+            this.xemKeHoachSX_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.xemKeHoachSX_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.xemKeHoachSX_btn.Location = new System.Drawing.Point(86, 25);
+            this.xemKeHoachSX_btn.Name = "xemKeHoachSX_btn";
+            this.xemKeHoachSX_btn.Size = new System.Drawing.Size(73, 38);
+            this.xemKeHoachSX_btn.TabIndex = 60;
+            this.xemKeHoachSX_btn.Text = "Xem";
+            this.xemKeHoachSX_btn.UseVisualStyleBackColor = false;
             // 
             // groupBox2
             // 
@@ -965,6 +948,76 @@ namespace RauViet.ui
             this.xemLichGiao_btn.Text = "Xem";
             this.xemLichGiao_btn.UseVisualStyleBackColor = false;
             // 
+            // groupBox4
+            // 
+            this.groupBox4.BackColor = System.Drawing.Color.LemonChiffon;
+            this.groupBox4.Controls.Add(this.excelCapPhan_btn);
+            this.groupBox4.Controls.Add(this.inCapPhan_btn);
+            this.groupBox4.Controls.Add(this.xemCapPhan_btn);
+            this.groupBox4.ForeColor = System.Drawing.Color.Fuchsia;
+            this.groupBox4.Location = new System.Drawing.Point(273, 677);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(245, 71);
+            this.groupBox4.TabIndex = 79;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "Cấp Phân";
+            // 
+            // excelCapPhan_btn
+            // 
+            this.excelCapPhan_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.excelCapPhan_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.excelCapPhan_btn.Location = new System.Drawing.Point(165, 25);
+            this.excelCapPhan_btn.Name = "excelCapPhan_btn";
+            this.excelCapPhan_btn.Size = new System.Drawing.Size(73, 38);
+            this.excelCapPhan_btn.TabIndex = 61;
+            this.excelCapPhan_btn.Text = "Excel";
+            this.excelCapPhan_btn.UseVisualStyleBackColor = false;
+            // 
+            // inCapPhan_btn
+            // 
+            this.inCapPhan_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.inCapPhan_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.inCapPhan_btn.Location = new System.Drawing.Point(7, 25);
+            this.inCapPhan_btn.Name = "inCapPhan_btn";
+            this.inCapPhan_btn.Size = new System.Drawing.Size(73, 38);
+            this.inCapPhan_btn.TabIndex = 59;
+            this.inCapPhan_btn.Text = "In";
+            this.inCapPhan_btn.UseVisualStyleBackColor = false;
+            // 
+            // xemCapPhan_btn
+            // 
+            this.xemCapPhan_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.xemCapPhan_btn.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.xemCapPhan_btn.Location = new System.Drawing.Point(86, 25);
+            this.xemCapPhan_btn.Name = "xemCapPhan_btn";
+            this.xemCapPhan_btn.Size = new System.Drawing.Size(73, 38);
+            this.xemCapPhan_btn.TabIndex = 60;
+            this.xemCapPhan_btn.Text = "Xem";
+            this.xemCapPhan_btn.UseVisualStyleBackColor = false;
+            // 
+            // panel1
+            // 
+            this.panel1.Controls.Add(this.groupBox4);
+            this.panel1.Controls.Add(this.groupBox3);
+            this.panel1.Controls.Add(this.groupBox2);
+            this.panel1.Controls.Add(this.groupBox1);
+            this.panel1.Controls.Add(this.phieuSX_uom_gb);
+            this.panel1.Controls.Add(this.phieuGiaoHang_gb);
+            this.panel1.Controls.Add(this.monthYear_dtp);
+            this.panel1.Controls.Add(this.label12);
+            this.panel1.Controls.Add(this.readOnly_btn);
+            this.panel1.Controls.Add(this.edit_btn);
+            this.panel1.Controls.Add(this.newCustomerBtn);
+            this.panel1.Controls.Add(this.info_gb);
+            this.panel1.Controls.Add(this.id_tb);
+            this.panel1.Controls.Add(this.status_lb);
+            this.panel1.Controls.Add(this.LuuThayDoiBtn);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Right;
+            this.panel1.Location = new System.Drawing.Point(911, 0);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(533, 776);
+            this.panel1.TabIndex = 69;
+            // 
             // KhoVatTu_PlantingManagement
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -974,13 +1027,6 @@ namespace RauViet.ui
             this.Controls.Add(this.panel1);
             this.Name = "KhoVatTu_PlantingManagement";
             this.Text = "FormTableData";
-            this.panel1.ResumeLayout(false);
-            this.panel1.PerformLayout();
-            this.groupBox1.ResumeLayout(false);
-            this.phieuSX_uom_gb.ResumeLayout(false);
-            this.phieuGiaoHang_gb.ResumeLayout(false);
-            this.info_gb.ResumeLayout(false);
-            this.info_gb.PerformLayout();
             this.panel2.ResumeLayout(false);
             this.panel6.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).EndInit();
@@ -994,27 +1040,55 @@ namespace RauViet.ui
             ((System.ComponentModel.ISupportInitialize)(this.monthGV)).EndInit();
             this.panel4.ResumeLayout(false);
             this.panel4.PerformLayout();
+            this.info_gb.ResumeLayout(false);
+            this.info_gb.PerformLayout();
+            this.phieuGiaoHang_gb.ResumeLayout(false);
+            this.phieuSX_uom_gb.ResumeLayout(false);
+            this.groupBox1.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
+            this.groupBox4.ResumeLayout(false);
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
             this.ResumeLayout(false);
 
         }
 
         #endregion
-        private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.TextBox id_tb;
-        private System.Windows.Forms.Button readOnly_btn;
-        private System.Windows.Forms.Button edit_btn;
-        private System.Windows.Forms.Button newCustomerBtn;
-        private System.Windows.Forms.GroupBox info_gb;
-        private System.Windows.Forms.TextBox lenhSX_tb;
-        private System.Windows.Forms.ComboBox caytrong_CB;
-        private System.Windows.Forms.ComboBox deparment_CBB;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label status_lb;
+        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.Panel panel4;
+        private System.Windows.Forms.TextBox search_tb;
+        private System.Windows.Forms.Panel panel6;
+        private System.Windows.Forms.Panel panel5;
+        private System.Windows.Forms.CheckBox locTheoNgayThu_CB;
+        private System.Windows.Forms.CheckBox locTheoNgayTrong_CB;
+        private System.Windows.Forms.CheckBox locTheoNgayUom_CB;
+        private System.Windows.Forms.DataGridView dataGV;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.DataGridView log_GV;
+        private System.Windows.Forms.CheckBox locTheoTo_CB;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Panel panel8;
+        private System.Windows.Forms.DataGridView toPhuTrach_GV;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Panel panel7;
+        private System.Windows.Forms.DataGridView monthGV;
+        private System.Windows.Forms.Panel panel9;
+        private System.Windows.Forms.DataGridView weekInYear_GV;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.CheckBox locTheoTuan_CB;
         private System.Windows.Forms.Button LuuThayDoiBtn;
+        private System.Windows.Forms.Label status_lb;
+        private System.Windows.Forms.TextBox id_tb;
+        private System.Windows.Forms.GroupBox info_gb;
+        private System.Windows.Forms.ComboBox farm_cbb;
+        private System.Windows.Forms.ComboBox cultivationType_CB;
+        private System.Windows.Forms.TextBox soLuong_tb;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.CheckBox complete_cb;
+        private System.Windows.Forms.TextBox note_tb;
+        private System.Windows.Forms.Label label11;
         private System.Windows.Forms.ComboBox nguoiPhuTrach_CB;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.TextBox dientich_tb;
@@ -1025,38 +1099,21 @@ namespace RauViet.ui
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.DateTimePicker ngayUom_dtp;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.TextBox note_tb;
-        private System.Windows.Forms.Label label11;
-        private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.Panel panel3;
-        private System.Windows.Forms.CheckBox complete_cb;
-        private System.Windows.Forms.DateTimePicker monthYear_dtp;
+        private System.Windows.Forms.TextBox lenhSX_tb;
+        private System.Windows.Forms.ComboBox caytrong_CB;
+        private System.Windows.Forms.ComboBox deparment_CBB;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Button newCustomerBtn;
+        private System.Windows.Forms.Button edit_btn;
+        private System.Windows.Forms.Button readOnly_btn;
         private System.Windows.Forms.Label label12;
-        private System.Windows.Forms.Panel panel4;
-        private System.Windows.Forms.TextBox search_tb;
-        private System.Windows.Forms.TextBox soLuong_tb;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Panel panel6;
-        private System.Windows.Forms.Panel panel5;
-        private System.Windows.Forms.CheckBox locTheoNgayThu_CB;
-        private System.Windows.Forms.CheckBox locTheoNgayTrong_CB;
-        private System.Windows.Forms.CheckBox locTheoNgayUom_CB;
-        private System.Windows.Forms.ComboBox cultivationType_CB;
-        private System.Windows.Forms.DataGridView dataGV;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.DataGridView log_GV;
-        private System.Windows.Forms.ComboBox farm_cbb;
+        private System.Windows.Forms.DateTimePicker monthYear_dtp;
         private System.Windows.Forms.GroupBox phieuGiaoHang_gb;
         private System.Windows.Forms.Button excelPhieuSX_btn;
         private System.Windows.Forms.Button inPhieuSX_btn;
         private System.Windows.Forms.Button xemPhieuSX_btn;
-        private System.Windows.Forms.CheckBox locTheoTo_CB;
-        private System.Windows.Forms.Label label13;
-        private System.Windows.Forms.Panel panel8;
-        private System.Windows.Forms.DataGridView toPhuTrach_GV;
-        private System.Windows.Forms.Label label14;
-        private System.Windows.Forms.Panel panel7;
-        private System.Windows.Forms.DataGridView monthGV;
         private System.Windows.Forms.GroupBox phieuSX_uom_gb;
         private System.Windows.Forms.Button excelPhieuSX_uom_btn;
         private System.Windows.Forms.Button inPhieuSX_uom_btn;
@@ -1065,17 +1122,18 @@ namespace RauViet.ui
         private System.Windows.Forms.Button excelKeHoachSX_btn;
         private System.Windows.Forms.Button inKeHoachSX_btn;
         private System.Windows.Forms.Button xemKeHoachSX_btn;
-        private System.Windows.Forms.Panel panel9;
-        private System.Windows.Forms.DataGridView weekInYear_GV;
-        private System.Windows.Forms.Label label15;
-        private System.Windows.Forms.CheckBox locTheoTuan_CB;
-        private System.Windows.Forms.GroupBox groupBox3;
-        private System.Windows.Forms.Button excelLichGiao_btn;
-        private System.Windows.Forms.Button inLichGiao_btn;
-        private System.Windows.Forms.Button xemLichGiao_btn;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Button excelLichUom_btn;
         private System.Windows.Forms.Button inLichUom_btn;
         private System.Windows.Forms.Button xemLichUom_btn;
+        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.Button excelLichGiao_btn;
+        private System.Windows.Forms.Button inLichGiao_btn;
+        private System.Windows.Forms.Button xemLichGiao_btn;
+        private System.Windows.Forms.GroupBox groupBox4;
+        private System.Windows.Forms.Button excelCapPhan_btn;
+        private System.Windows.Forms.Button inCapPhan_btn;
+        private System.Windows.Forms.Button xemCapPhan_btn;
+        private System.Windows.Forms.Panel panel1;
     }
 }
