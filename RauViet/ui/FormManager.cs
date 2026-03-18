@@ -206,17 +206,25 @@ namespace RauViet.ui
             {
                 sumaryAttendanceReport_mi.Click += SumaryAttendanceReport_mi_Click;
                 reportSalary_Month_mi.Click += ReportSalary_Month_mi_Click;
+
                 reportOrderIn1Year_mi.Click += ReportExportYear_mi_Click;
                 reportOrderIn1Month_mi.Click += ReportOrderIn1Month_mi_Click;
                 monthlyReportForYear_mi.Click += monthlyReportForYear_mi_Click;
                 yearlyReport_mi.Click += YearlyReport_mi_Click;
                 monthlyTotalPerYear_mi.Click += MonthlyTotalPerYear_mi_Click;
+
                 ResoncileDomesticDebts_Month_mi.Click += ResoncileDomesticDebts_Month_mi_Click;
                 resoncileDomesticDebts_Year_mi.Click += ResoncileDomesticDebts_Year_mi_Click;
+
+                qlk_SanLuongThangCuaTungLenhSX_mi.Click += Qlk_thongKeSanLuongThang_mi_Click;
+                qlk_sanLuongCayTrongCacNam_mi.Click += Qlk_thongKeSanLuongNam_mi_Click;
             }
             else
             {
-                thongke_main_mi.Visible = false;
+                bcnsGroup_mi.Visible = false;
+                bcdntnGroup_mi.Visible = false;
+                bcdhnnGroup_mi.Visible = false;
+                bcqlctGroup_mi.Visible = false;
             }
 
             if (UserManager.Instance.hasRole_CreateQR())
@@ -400,7 +408,9 @@ namespace RauViet.ui
             KhoVatTu_MaterialInvenStore,
             SumaryAttendanceReport,
             Supplier,
-            KhoVatTu_CultivationProcessTemplate
+            KhoVatTu_CultivationProcessTemplate,
+            KhoVatTu_TKSanLuongTrong_Thang,
+            KhoVatTu_TKSanLuongTrong_Nam
         }
 
         private void openCurrentForm(EForm status)
@@ -620,9 +630,15 @@ namespace RauViet.ui
                     break;
                 case EForm.Supplier:
                     SwitchChildForm<Supplier>("Nhà Cung Cấp");
-                    break;
+                    break; 
                 case EForm.KhoVatTu_CultivationProcessTemplate:
                     SwitchChildForm<KhoVatTu_CultivationProcessTemplate>("Các Mẫu Quy Trình Sản Xuất Cây Trồng");
+                    break;
+                case EForm.KhoVatTu_TKSanLuongTrong_Thang:
+                    SwitchChildForm<KhoVatTu_TKSanLuongTrong_Thang>("Thống Kê Sản Lượng Cây Trồng Theo Tháng");
+                    break;
+                case EForm.KhoVatTu_TKSanLuongTrong_Nam:
+                    SwitchChildForm<KhoVatTu_TKSanLuongTrong_Nam>("Thống Kê Sản Lượng Cây Trồng Theo Năm");
                     break;
             }
             
@@ -703,6 +719,8 @@ namespace RauViet.ui
         private void MaterialImport_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.KhoVatTu_MaterialImport); }
         private void TonKhoVatTu_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.KhoVatTu_MaterialInvenStore); }
         private void Supplier_mi_Click(object sender, EventArgs e){ openCurrentForm(EForm.Supplier); }
+        private void Qlk_thongKeSanLuongThang_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.KhoVatTu_TKSanLuongTrong_Thang); }
+        private void Qlk_thongKeSanLuongNam_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.KhoVatTu_TKSanLuongTrong_Nam); }
         private async void checkLoginTimer_Tick(object sender, EventArgs e)
         {
             var isHave = await SQLManager.Instance.HaveOtherComputerLoginAsync();

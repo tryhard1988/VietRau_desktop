@@ -542,7 +542,7 @@ namespace RauViet.ui
                         drToAdd["IsCompleted"] = false;
                         drToAdd["IsCompleted"] = false;
                         drToAdd["FarmID"] = farmId;
-
+                        drToAdd["HarvestQuantity"] = 0;
                         drToAdd["search_nosign"] = Utils.RemoveVietnameseSigns( $"{ProductionOrder} {productRows[0]["ProductNameVN"].ToString()}");
 
                         mPlantingManagement_dt.Rows.Add(drToAdd);

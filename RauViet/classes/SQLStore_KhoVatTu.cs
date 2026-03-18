@@ -238,6 +238,53 @@ namespace RauViet.classes
             return mPlantingManagements[year];
         }
 
+        public async Task<DataTable> getPlantingManagementAsync_HarvestQuantityMonth(int year)
+        {
+                try
+                {
+                    DataTable data = await SQLManager_KhoVatTu.Instance.getPlantingManagementAsync_HarvestQuantityMonth(year);
+                    editPlantingManagement(data);
+                    return data;
+                }
+                catch
+                {
+                    Console.WriteLine("error getMaterialAsync SQLStore");
+                    return null;
+                }
+        }
+
+        public async Task<DataTable> getPlantingManagementAsync_HarvestQuantity()
+        {
+            try
+            {
+                DataTable data = await SQLManager_KhoVatTu.Instance.getPlantingManagementAsync_HarvestQuantity();
+                editPlantingManagement_HarvestQuantity(data);
+                return data;
+            }
+            catch
+            {
+                Console.WriteLine("error getPlantingManagementAsync_HarvestQuantity SQLStore");
+                return null;
+            }
+        }
+
+        private async void editPlantingManagement_HarvestQuantity(DataTable data)
+        {
+            data.Columns.Add("PlantName", typeof(string));
+            DataTable product_dt = await SQLStore_Kho.Instance.getProductSKUAsync();
+
+            foreach (DataRow row in data.Rows)
+            {
+                int sku = Convert.ToInt32(row["SKU"]);
+                decimal TotalArea = Convert.ToDecimal(row["TotalArea"]);
+                decimal HarvestQuantity = Convert.ToDecimal(row["HarvestQuantity"]);
+
+                DataRow productRow = product_dt.AsEnumerable().FirstOrDefault(r => r.Field<int>("ProductSKU") == sku);
+                if (productRow != null)
+                    row["PlantName"] = productRow["ProductNameVN"];
+            }
+        }
+
         public async Task<DataTable> getPlantingManagementAsync(bool isComplete)
         {
             try
@@ -1072,5 +1119,6 @@ namespace RauViet.classes
 
             return mPlantTrayDensity_dt;
         }
+
     }
 }

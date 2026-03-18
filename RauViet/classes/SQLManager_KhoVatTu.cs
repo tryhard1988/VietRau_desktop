@@ -439,6 +439,93 @@ namespace RauViet.classes
             return dt;
         }
 
+        public async Task<DataTable> getPlantingManagementAsync_HarvestQuantityMonth(int year)
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
+            {
+                await con.OpenAsync();
+                string query = $@"SELECT 
+                                    pm.*,
+                                    ISNULL(harvest.TotalQuantity, 0) AS HarvestQuantity,
+                                    harvest.ProcessDate_Month,
+                                    harvest.ProcessDate_Year
+                                FROM PlantingManagement pm
+
+                                CROSS APPLY
+                                (
+                                    SELECT 
+                                        SUM(MaterialQuantity) AS TotalQuantity,
+                                        MONTH(ProcessDate) AS ProcessDate_Month,
+                                        YEAR(ProcessDate) AS ProcessDate_Year
+                                    FROM CultivationProcess
+                                    WHERE PlantingID = pm.PlantingID
+                                          AND WorkTypeID = {Utils.WorkType_ThuHoach()}
+                                    GROUP BY 
+                                        YEAR(ProcessDate),
+                                        MONTH(ProcessDate)
+                                ) harvest
+
+                                WHERE YEAR(pm.NurseryDate) = @Year;";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    cmd.Parameters.Add("@Year", SqlDbType.Int).Value = year;
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
+        }
+
+        public async Task<DataTable> getPlantingManagementAsync_HarvestQuantity()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
+            {
+                await con.OpenAsync();
+                string query = $@"SELECT 
+                                    pm.SKU,
+                                    pm.FarmID,
+                                    SUM(pm.Area) AS TotalArea,
+                                    SUM(ISNULL(harvest.TotalQuantity, 0)) AS HarvestQuantity,
+                                    harvest.ProcessDate_Month,
+                                    harvest.ProcessDate_Year
+                                FROM PlantingManagement pm
+
+                                CROSS APPLY
+                                (
+                                    SELECT 
+                                        SUM(MaterialQuantity) AS TotalQuantity,
+                                        MONTH(ProcessDate) AS ProcessDate_Month,
+                                        YEAR(ProcessDate) AS ProcessDate_Year
+                                    FROM CultivationProcess
+                                    WHERE PlantingID = pm.PlantingID
+                                          AND WorkTypeID = {Utils.WorkType_ThuHoach()}
+                                    GROUP BY 
+                                        YEAR(ProcessDate),
+                                        MONTH(ProcessDate)
+                                ) harvest
+                                GROUP BY 
+                                    pm.SKU,
+                                    pm.FarmID,
+                                    harvest.ProcessDate_Year,
+                                    harvest.ProcessDate_Month";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
+        }
+
+
         public async Task<DataTable> getPlantingManagementAsync(bool isComplete)
         {
             DataTable dt = new DataTable();

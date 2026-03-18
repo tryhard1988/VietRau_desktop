@@ -1508,6 +1508,14 @@ namespace RauViet.ui
             hinhThucBon_CBB.Enabled = false;
             if (dataGV.SelectedRows.Count > 0)
                 updateRightUI();
+
+            bool isCompleted = Convert.ToBoolean(mPlantingRow["IsCompleted"]);
+            if (isCompleted)
+            {
+                edit_btn.Visible = false;
+                newCustomerBtn.Visible = false;
+                LoadDefaultData_btn.Visible = false;
+            }
         }
 
         private void Edit_btn_Click(object sender, EventArgs e)
@@ -1553,6 +1561,13 @@ namespace RauViet.ui
             
             if (qlsb_gv.SelectedRows.Count > 0)
                 qlsb_updateRightUI();
+
+            bool isCompleted = Convert.ToBoolean(mPlantingRow["IsCompleted"]);
+            if (isCompleted)
+            {
+                qlsb_edit_btn.Visible = false;
+                qlsb_create_btn.Visible = false;
+            }
         }
 
         private void Qlsb_edit_btn_Click(object sender, EventArgs e)
@@ -1613,6 +1628,13 @@ namespace RauViet.ui
 
             if (qlth_gv.SelectedRows.Count > 0)
                 qlth_updateRightUI();
+
+            bool isCompleted = Convert.ToBoolean(mPlantingRow["IsCompleted"]);
+            if (isCompleted)
+            {
+                qlth_edit_btn.Visible = false;
+                qlth_create_btn.Visible = false;
+            }
         }
 
         private void Qlth_edit_btn_Click(object sender, EventArgs e)
