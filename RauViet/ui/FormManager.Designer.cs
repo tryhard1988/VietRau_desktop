@@ -117,6 +117,9 @@
             this.plantingManagement_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.cultivationProcessTemplate_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.bcqlctGroup_mi = new System.Windows.Forms.ToolStripMenuItem();
+            this.qlk_SanLuongThangCuaTungLenhSX_mi = new System.Windows.Forms.ToolStripMenuItem();
+            this.qlk_sanLuongCayTrongCacNam_mi = new System.Windows.Forms.ToolStripMenuItem();
+            this.qlk_TKCapPhan_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripMenuItem();
             this.extension_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.QR_mi = new System.Windows.Forms.ToolStripMenuItem();
@@ -125,9 +128,6 @@
             this.loadExcelOrderReportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.content_panel = new System.Windows.Forms.Panel();
             this.bbbbbbbbb_mi = new System.Windows.Forms.ToolStripMenuItem();
-            this.qlk_SanLuongThangCuaTungLenhSX_mi = new System.Windows.Forms.ToolStripMenuItem();
-            this.qlk_sanLuongCayTrongCacNam_mi = new System.Windows.Forms.ToolStripMenuItem();
-            this.phânBónToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1.SuspendLayout();
             this.LOT_menuitem.SuspendLayout();
             this.SuspendLayout();
@@ -358,31 +358,31 @@
             // deduction_VEG_mi
             // 
             this.deduction_VEG_mi.Name = "deduction_VEG_mi";
-            this.deduction_VEG_mi.Size = new System.Drawing.Size(180, 22);
+            this.deduction_VEG_mi.Size = new System.Drawing.Size(172, 22);
             this.deduction_VEG_mi.Text = "Tiền Rau";
             // 
             // deduction_ADV_mi
             // 
             this.deduction_ADV_mi.Name = "deduction_ADV_mi";
-            this.deduction_ADV_mi.Size = new System.Drawing.Size(180, 22);
+            this.deduction_ADV_mi.Size = new System.Drawing.Size(172, 22);
             this.deduction_ADV_mi.Text = "Ứng Lương";
             // 
             // deduction_ATT_mi
             // 
             this.deduction_ATT_mi.Name = "deduction_ATT_mi";
-            this.deduction_ATT_mi.Size = new System.Drawing.Size(180, 22);
+            this.deduction_ATT_mi.Size = new System.Drawing.Size(172, 22);
             this.deduction_ATT_mi.Text = "Trừ Chuyên Cần";
             // 
             // deduction_CEP_mi
             // 
             this.deduction_CEP_mi.Name = "deduction_CEP_mi";
-            this.deduction_CEP_mi.Size = new System.Drawing.Size(180, 22);
+            this.deduction_CEP_mi.Size = new System.Drawing.Size(172, 22);
             this.deduction_CEP_mi.Text = "Thu Hộ CEP";
             // 
             // deduction_OTH_mi
             // 
             this.deduction_OTH_mi.Name = "deduction_OTH_mi";
-            this.deduction_OTH_mi.Size = new System.Drawing.Size(180, 22);
+            this.deduction_OTH_mi.Size = new System.Drawing.Size(172, 22);
             this.deduction_OTH_mi.Text = "Trừ Khác";
             // 
             // bcnsGroup_mi
@@ -820,11 +820,29 @@
             this.bcqlctGroup_mi.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.qlk_SanLuongThangCuaTungLenhSX_mi,
             this.qlk_sanLuongCayTrongCacNam_mi,
-            this.phânBónToolStripMenuItem});
+            this.qlk_TKCapPhan_mi});
             this.bcqlctGroup_mi.ForeColor = System.Drawing.Color.Red;
             this.bcqlctGroup_mi.Name = "bcqlctGroup_mi";
             this.bcqlctGroup_mi.Size = new System.Drawing.Size(224, 22);
             this.bcqlctGroup_mi.Text = "Báo Cáo Thông Kê";
+            // 
+            // qlk_SanLuongThangCuaTungLenhSX_mi
+            // 
+            this.qlk_SanLuongThangCuaTungLenhSX_mi.Name = "qlk_SanLuongThangCuaTungLenhSX_mi";
+            this.qlk_SanLuongThangCuaTungLenhSX_mi.Size = new System.Drawing.Size(296, 22);
+            this.qlk_SanLuongThangCuaTungLenhSX_mi.Text = "Sản Lượng Tháng Của Từng Lệnh SX";
+            // 
+            // qlk_sanLuongCayTrongCacNam_mi
+            // 
+            this.qlk_sanLuongCayTrongCacNam_mi.Name = "qlk_sanLuongCayTrongCacNam_mi";
+            this.qlk_sanLuongCayTrongCacNam_mi.Size = new System.Drawing.Size(296, 22);
+            this.qlk_sanLuongCayTrongCacNam_mi.Text = "Sản Lượng Cây Trồng Các năm";
+            // 
+            // qlk_TKCapPhan_mi
+            // 
+            this.qlk_TKCapPhan_mi.Name = "qlk_TKCapPhan_mi";
+            this.qlk_TKCapPhan_mi.Size = new System.Drawing.Size(296, 22);
+            this.qlk_TKCapPhan_mi.Text = "Phân Bón";
             // 
             // toolStripMenuItem4
             // 
@@ -885,24 +903,6 @@
             // 
             this.bbbbbbbbb_mi.Name = "bbbbbbbbb_mi";
             this.bbbbbbbbb_mi.Size = new System.Drawing.Size(32, 19);
-            // 
-            // qlk_SanLuongThangCuaTungLenhSX_mi
-            // 
-            this.qlk_SanLuongThangCuaTungLenhSX_mi.Name = "qlk_SanLuongThangCuaTungLenhSX_mi";
-            this.qlk_SanLuongThangCuaTungLenhSX_mi.Size = new System.Drawing.Size(296, 22);
-            this.qlk_SanLuongThangCuaTungLenhSX_mi.Text = "Sản Lượng Tháng Của Từng Lệnh SX";
-            // 
-            // qlk_sanLuongCayTrongCacNam_mi
-            // 
-            this.qlk_sanLuongCayTrongCacNam_mi.Name = "qlk_sanLuongCayTrongCacNam_mi";
-            this.qlk_sanLuongCayTrongCacNam_mi.Size = new System.Drawing.Size(296, 22);
-            this.qlk_sanLuongCayTrongCacNam_mi.Text = "Sản Lượng Cây Trồng Các năm";
-            // 
-            // phânBónToolStripMenuItem
-            // 
-            this.phânBónToolStripMenuItem.Name = "phânBónToolStripMenuItem";
-            this.phânBónToolStripMenuItem.Size = new System.Drawing.Size(296, 22);
-            this.phânBónToolStripMenuItem.Text = "Phân Bón";
             // 
             // FormManager
             // 
@@ -1023,6 +1023,6 @@
         private System.Windows.Forms.ToolStripMenuItem bcqlctGroup_mi;
         private System.Windows.Forms.ToolStripMenuItem qlk_SanLuongThangCuaTungLenhSX_mi;
         private System.Windows.Forms.ToolStripMenuItem qlk_sanLuongCayTrongCacNam_mi;
-        private System.Windows.Forms.ToolStripMenuItem phânBónToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem qlk_TKCapPhan_mi;
     }
 }

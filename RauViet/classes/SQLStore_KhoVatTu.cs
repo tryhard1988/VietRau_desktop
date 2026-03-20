@@ -14,6 +14,7 @@ namespace RauViet.classes
         private static readonly object padlock = new object();
 
         //suong
+        DataTable MaterialDepartment = null;
         DataTable mWorkType_dt = null;
         DataTable mGrowthStage_dt = null;
         DataTable mPestDisease_dt = null;
@@ -25,6 +26,7 @@ namespace RauViet.classes
         DataTable mFarm_dt = null;
         DataTable mPlantTrayDensity_dt = null;
 
+        Dictionary<string, DataTable> mCultivationProcesses_MY = null;
         Dictionary<int, DataTable> mCultivationProcesses = null;
         Dictionary<int, DataTable> mPestDiseaseMonitorings = null;
         Dictionary<int, DataTable>  mHarvestSchedules = null;
@@ -61,6 +63,7 @@ namespace RauViet.classes
             {
                 int year = DateTime.Now.Year;
 
+                mCultivationProcesses_MY = new Dictionary<string, DataTable>();
                 mPlantingManagements = new Dictionary<int, DataTable>();
                 mMaterialExports = new Dictionary<string, DataTable>();
                 mMaterialImports = new Dictionary<string, DataTable>();
@@ -380,6 +383,24 @@ namespace RauViet.classes
             return mWorkType_dt;
         }
 
+        public async Task<DataTable> GetMaterialDepartmentAsync()
+        {
+            if (MaterialDepartment == null)
+            {
+                try
+                {
+                    MaterialDepartment = await SQLManager_KhoVatTu.Instance.GetMaterialDepartmentAsync();
+                }
+                catch
+                {
+                    Console.WriteLine("error GetWorkTypeAsync SQLStore");
+                    return null;
+                }
+            }
+
+            return MaterialDepartment;
+        }
+
         public async Task<DataTable> GetGrowthStageAsync()
         {
             if (mGrowthStage_dt == null)
@@ -539,15 +560,18 @@ namespace RauViet.classes
             data.Columns.Add("WorkTypeName", typeof(string));
             data.Columns.Add("RecieverName", typeof(string));
             data.Columns.Add("UnitName", typeof(string));
+            data.Columns.Add("MaterialDepartmentName", typeof(string));
 
             DataTable employee_dt = await SQLStore_QLNS.Instance.GetEmployeesAsync();
             DataTable workType_dt = await SQLStore_KhoVatTu.Instance.GetWorkTypeAsync();
             DataTable material_dt = await SQLStore_KhoVatTu.Instance.getMaterialAsync();
+            DataTable materialDepartment_dt = await SQLStore_KhoVatTu.Instance.GetMaterialDepartmentAsync();
             foreach (DataRow row in data.Rows)
             {
                 int? plantingID = row.Field<int?>("PlantingID");
                 int? workTypeID = row.Field<int?>("WorkTypeID");
                 int? materialID = row.Field<int?>("MaterialID");
+                int? materialDepartmentID = row.Field<int?>("MaterialDepartmentID");
                 string Receiver = row["Receiver"].ToString();
 
                 if (plantingID.HasValue)
@@ -577,6 +601,15 @@ namespace RauViet.classes
                     {
                         row["UnitName"] = materialRow["UnitName"];
                         row["MaterialName"] = materialRow["MaterialName"];
+                    }
+                }
+
+                if (materialDepartmentID.HasValue)
+                {
+                    DataRow materialDepartmentRow = materialDepartment_dt.AsEnumerable().FirstOrDefault(r => r.Field<int>("MaterialDepartmentID") == materialDepartmentID);
+                    if (materialDepartmentRow != null)
+                    {
+                        row["MaterialDepartmentName"] = materialDepartmentRow["MaterialDepartmentName"];
                     }
                 }
             }
@@ -814,7 +847,49 @@ namespace RauViet.classes
             return mCultivationProcesses[plantingID];
         }
 
-        private async void editCultivationProcess(DataTable data)
+        public async Task<DataTable> GetCultivationProcessAsync(int month, int year, int departmentID)
+        {
+            string key = $"{month}_{year}_{departmentID}";
+            if (!mCultivationProcesses_MY.ContainsKey(key))
+            {
+                try
+                {
+                    DataTable data = await SQLManager_KhoVatTu.Instance.GetCultivationProcessAsync(month, year, departmentID);
+                    editCultivationProcess(data, true);
+                    mCultivationProcesses_MY[key] = data;
+
+                }
+                catch
+                {
+                    Console.WriteLine("error GetMaterialCategoryAsync SQLStore");
+                    return null;
+                }
+            }
+            return mCultivationProcesses_MY[key];
+        }
+
+        public async Task<DataTable> GetCultivationProcessAsync(int month, int year, bool isKeep_Bao = false)
+        {
+            string key = $"{month}_{year}";
+            if (!mCultivationProcesses_MY.ContainsKey(key))
+            {
+                try
+                {
+                    DataTable data = await SQLManager_KhoVatTu.Instance.GetCultivationProcessAsync(month, year);
+                    editCultivationProcess(data, true, isKeep_Bao);
+                    mCultivationProcesses_MY[key] = data;
+
+                }
+                catch
+                {
+                    Console.WriteLine("error GetMaterialCategoryAsync SQLStore");
+                    return null;
+                }
+            }
+            return mCultivationProcesses_MY[key];
+        }
+
+        private async void editCultivationProcess(DataTable data, bool isMY = false, bool isKeep_Bao = false)
         {
             data.Columns.Add("WorkTypeName", typeof(string));
             data.Columns.Add("MaterialName", typeof(string));
@@ -826,15 +901,20 @@ namespace RauViet.classes
             data.Columns.Add("TotalMaterialCost", typeof(string));
             data.Columns.Add("ProcessDate_Week", typeof(string));
             data.Columns.Add("CategoryCode", typeof(string));
+            if (isMY)
+            {
+                data.Columns.Add("PlantName", typeof(string));
+            }
 
             DataTable workType_dt = await GetWorkTypeAsync();
             DataTable material_dt = await getMaterialAsync();
             DataTable category_dt = await GetMaterialCategoryAsync();
             DataTable employee_dt = await SQLStore_QLNS.Instance.GetEmployeesAsync();
             DataTable department_dt = await SQLStore_QLNS.Instance.GetDepartmentAsync();
+            DataTable productSKU_dt = await SQLStore_Kho.Instance.getProductSKUAsync();
             foreach (DataRow rowItem in data.Rows) 
             {
-                int workTypeID = Convert.ToInt32(rowItem["WorkTypeID"]);
+                int workTypeID = Convert.ToInt32(rowItem["WorkTypeID"]);                
                 int? fertilizationWorkTypeID = rowItem["FertilizationWorkTypeID"] == DBNull.Value ? (int?)null : Convert.ToInt32(rowItem["FertilizationWorkTypeID"]);
                 int? materialID = rowItem["MaterialID"] == DBNull.Value ? (int?)null : Convert.ToInt32(rowItem["MaterialID"]);
                 int? departmentID = rowItem["DepartmentID"] == DBNull.Value ? (int?)null : Convert.ToInt32(rowItem["DepartmentID"]);
@@ -859,7 +939,7 @@ namespace RauViet.classes
                             DataRow categoryRow = category_dt.AsEnumerable().FirstOrDefault(r => r.Field<int>("CategoryID") == categoryID);
                             rowItem["CategoryCode"] = categoryRow["CategoryCode"].ToString();
                         }
-                        if (unit.CompareTo("Bao") == 0)
+                        if (unit.CompareTo("Bao") == 0 && !isKeep_Bao)
                             unit = "Kg";
 
                         rowItem["MaterialName"] = materialRow["MaterialName"].ToString();
@@ -888,6 +968,14 @@ namespace RauViet.classes
                     DataRow employeeRow = employee_dt.AsEnumerable().FirstOrDefault(r => r.Field<string>("EmployeeCode") == employeeCode);
                     if (employeeRow != null)
                         rowItem["EmployeeName"] = employeeRow["FullName"].ToString();
+                }
+
+                if (isMY)
+                {
+                    int sku = Convert.ToInt32(rowItem["SKU"]);
+                    DataRow skuRow = productSKU_dt.AsEnumerable().FirstOrDefault(r => r.Field<int>("ProductSKU") == sku);
+                    if (skuRow != null)
+                        rowItem["PlantName"] = skuRow["ProductNameVN"].ToString();
                 }
             }
         }
@@ -1120,5 +1208,41 @@ namespace RauViet.classes
             return mPlantTrayDensity_dt;
         }
 
+
+        public async Task<DataTable> getThongKeCapPhanAsync()
+        {
+            try
+            {
+                DataTable data = await SQLManager_KhoVatTu.Instance.getThongKeCapPhanAsync();
+                editThongKeCapPhan(data);
+                return data;
+            }
+            catch
+            {
+                Console.WriteLine("error getThongKeCapPhanAsync SQLStore");
+                return null;
+            }
+        }
+
+        private async void editThongKeCapPhan(DataTable data)
+        {
+            data.Columns.Add("MaterialName", typeof(string));
+            data.Columns.Add("UnitName", typeof(string));
+
+            var material_dt = await getMaterialAsync();
+            foreach(DataRow row in data.Rows)
+            {
+                int? materialID = row.Field<int?>("MaterialID");
+                if (materialID.HasValue)
+                {
+                    DataRow materialRow = material_dt.AsEnumerable().FirstOrDefault(r => r.Field<int>("MaterialID") == materialID);
+                    if(materialRow != null)
+                    {
+                        row["MaterialName"] = materialRow["MaterialName"];
+                        row["UnitName"] = materialRow["UnitName"];
+                    }
+                }
+            }
+        }
     }
 }

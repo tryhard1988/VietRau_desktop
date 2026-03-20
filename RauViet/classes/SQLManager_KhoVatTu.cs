@@ -305,6 +305,25 @@ namespace RauViet.classes
             return dt;
         }
 
+        public async Task<DataTable> GetMaterialDepartmentAsync()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT * FROM MaterialDepartment";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
+        }
+
         public async Task<DataTable> GetGrowthStageAsync()
         {
             DataTable dt = new DataTable();
@@ -655,13 +674,13 @@ namespace RauViet.classes
             catch { return false; }
         }
 
-        public async Task<int> insertMaterialExportAsync(DateTime ExportDate, int MaterialID, decimal Amount, int? PlantingID, int? WorkTypeID, string Receiver, string Note)
+        public async Task<int> insertMaterialExportAsync(DateTime ExportDate, int MaterialID, decimal Amount, int? PlantingID, int? WorkTypeID, string Receiver, string Note, int MaterialDepartmentID)
         {
             int newId = -1;
 
-            string insertQuery = @"INSERT INTO MaterialExport (ExportDate, MaterialID, Amount, PlantingID, WorkTypeID, Receiver, Note)
+            string insertQuery = @"INSERT INTO MaterialExport (ExportDate, MaterialID, Amount, PlantingID, WorkTypeID, Receiver, Note, MaterialDepartmentID)
                                     OUTPUT INSERTED.ExportID
-                                    VALUES (@ExportDate, @MaterialID, @Amount, @PlantingID, @WorkTypeID, @Receiver, @Note)";
+                                    VALUES (@ExportDate, @MaterialID, @Amount, @PlantingID, @WorkTypeID, @Receiver, @Note, @MaterialDepartmentID)";
 
             try
             {
@@ -675,6 +694,7 @@ namespace RauViet.classes
                         cmd.Parameters.Add("@ExportDate", SqlDbType.DateTime).Value = ExportDate;
                         cmd.Parameters.Add("@MaterialID", SqlDbType.Int).Value = MaterialID;
                         cmd.Parameters.Add("@Amount", SqlDbType.Decimal).Value = Amount;
+                        cmd.Parameters.Add("@MaterialDepartmentID", SqlDbType.Int).Value = MaterialDepartmentID;
                         cmd.Parameters.Add("@PlantingID", SqlDbType.Int).Value = PlantingID.HasValue ? (object)PlantingID.Value : DBNull.Value;
                         cmd.Parameters.Add("@WorkTypeID", SqlDbType.Int).Value = WorkTypeID.HasValue ? (object)WorkTypeID.Value : DBNull.Value;
                         cmd.Parameters.Add("@Receiver", SqlDbType.NVarChar).Value = string.IsNullOrWhiteSpace(Receiver) ? (object)DBNull.Value : Receiver;
@@ -695,7 +715,68 @@ namespace RauViet.classes
             }
         }
 
-        public async Task<bool> updateMaterialExportAsync(int ExportID, DateTime ExportDate, int MaterialID, decimal Amount, int? PlantingID, int? WorkTypeID, string Receiver, string Note)
+        public async Task<bool> InsertMaterialExportBatchAsync(List<(DateTime ExportDate, int MaterialID, decimal Amount, int? PlantingID, int? WorkTypeID, string Receiver, string Note, int MaterialDepartmentID)> list)
+        {
+            if (list == null || list.Count == 0)
+                return false;
+
+            bool isSuccess = false;
+
+            try
+            {
+                DataTable dt = new DataTable();
+
+                dt.Columns.Add("ExportDate", typeof(DateTime));
+                dt.Columns.Add("MaterialID", typeof(int));
+                dt.Columns.Add("Amount", typeof(decimal));
+                dt.Columns.Add("PlantingID", typeof(int));
+                dt.Columns.Add("WorkTypeID", typeof(int));
+                dt.Columns.Add("Receiver", typeof(string));
+                dt.Columns.Add("Note", typeof(string));
+                dt.Columns.Add("MaterialDepartmentID", typeof(int));
+
+                foreach (var item in list)
+                {
+                    dt.Rows.Add(
+                        item.ExportDate,
+                        item.MaterialID,
+                        item.Amount,
+                        item.PlantingID ?? (object)DBNull.Value,
+                        item.WorkTypeID ?? (object)DBNull.Value,
+                        string.IsNullOrWhiteSpace(item.Receiver) ? (object)DBNull.Value : item.Receiver,
+                        item.Note ?? (object)DBNull.Value,
+                        item.MaterialDepartmentID
+                    );
+                }
+
+                using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
+                {
+                    await con.OpenAsync();
+
+                    using (SqlCommand cmd = new SqlCommand("sp_InsertMaterialExport_Batch", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        SqlParameter param = cmd.Parameters.AddWithValue("@MaterialExports", dt);
+                        param.SqlDbType = SqlDbType.Structured;
+                        param.TypeName = "MaterialExportType";
+
+                        object result = await cmd.ExecuteScalarAsync();
+
+                        if (result != null)
+                            isSuccess = Convert.ToInt32(result) == 1;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("ERROR: " + ex.Message);
+            }
+
+            return isSuccess;
+        }
+
+        public async Task<bool> updateMaterialExportAsync(int ExportID, DateTime ExportDate, int MaterialID, decimal Amount, int? PlantingID, int? WorkTypeID, string Receiver, string Note, int MaterialDepartmentID)
         {
             string query = @"UPDATE MaterialExport SET
                                 ExportDate=@ExportDate,
@@ -704,6 +785,7 @@ namespace RauViet.classes
                                 PlantingID=@PlantingID,
                                 WorkTypeID=@WorkTypeID,
                                 Receiver=@Receiver,
+                                MaterialDepartmentID=@MaterialDepartmentID,
                                 Note=@Note
                              WHERE ExportID=@ExportID";
             try
@@ -717,6 +799,7 @@ namespace RauViet.classes
                         cmd.Parameters.Add("@ExportDate", SqlDbType.DateTime).Value = ExportDate;
                         cmd.Parameters.Add("@MaterialID", SqlDbType.Int).Value = MaterialID;
                         cmd.Parameters.Add("@Amount", SqlDbType.Decimal).Value = Amount;
+                        cmd.Parameters.Add("@MaterialDepartmentID", SqlDbType.Int).Value = MaterialDepartmentID;
                         cmd.Parameters.Add("@PlantingID", SqlDbType.Int).Value = PlantingID.HasValue ? (object)PlantingID.Value : DBNull.Value;
                         cmd.Parameters.Add("@WorkTypeID", SqlDbType.Int).Value = WorkTypeID.HasValue ? (object)WorkTypeID.Value : DBNull.Value;
                         cmd.Parameters.Add("@Receiver", SqlDbType.NVarChar).Value = string.IsNullOrWhiteSpace(Receiver) ? (object)DBNull.Value : Receiver;
@@ -1213,6 +1296,71 @@ namespace RauViet.classes
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 {
                     cmd.Parameters.Add("@PlantingID", SqlDbType.Int).Value = plantingID;
+
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
+        }
+
+        public async Task<DataTable> GetCultivationProcessAsync(int month, int year, int departmentID)
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT cp.*,
+                                        pm.ProductionOrder,
+                                        pm.CultivationTypeID,
+                                        pm.SKU
+                                    FROM CultivationProcess cp
+                                    LEFT JOIN PlantingManagement pm 
+                                        ON cp.PlantingID = pm.PlantingID
+                                    WHERE 
+                                        MONTH(cp.ProcessDate) = @Month 
+                                        AND YEAR(cp.ProcessDate) = @Year
+                                        AND Department = @Department;";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    cmd.Parameters.Add("@Month", SqlDbType.Int).Value = month;
+                    cmd.Parameters.Add("@Year", SqlDbType.Int).Value = year;
+                    cmd.Parameters.Add("@Department", SqlDbType.Int).Value = departmentID;
+
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
+        }
+
+        public async Task<DataTable> GetCultivationProcessAsync(int month, int year)
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT cp.*,
+                                        pm.ProductionOrder,
+                                        pm.CultivationTypeID,
+                                        pm.FarmID,
+                                        pm.SKU
+                                    FROM CultivationProcess cp
+                                    LEFT JOIN PlantingManagement pm 
+                                        ON cp.PlantingID = pm.PlantingID
+                                    WHERE 
+                                        MONTH(cp.ProcessDate) = @Month 
+                                        AND YEAR(cp.ProcessDate) = @Year;";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    cmd.Parameters.Add("@Month", SqlDbType.Int).Value = month;
+                    cmd.Parameters.Add("@Year", SqlDbType.Int).Value = year;
 
                     using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                     {
@@ -1973,6 +2121,49 @@ namespace RauViet.classes
             {
                 await con.OpenAsync();
                 string query = @"SELECT * FROM PlantTrayDensity";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
+        }
+
+        public async Task<DataTable> getThongKeCapPhanAsync()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
+            {
+                await con.OpenAsync();
+                string query = $@"WITH ProcessSum AS
+                                (
+                                    SELECT 
+                                        MaterialID,
+                                        YEAR(ProcessDate) AS [Year],
+                                        MONTH(ProcessDate) AS [Month],
+                                        SUM(MaterialQuantity) AS TotalMaterialQuantity
+                                    FROM CultivationProcess
+                                    GROUP BY 
+                                        MaterialID,
+                                        YEAR(ProcessDate),
+                                        MONTH(ProcessDate)
+                                )
+
+                                SELECT 
+                                    m.MaterialID,
+                                    ps.[Year],
+                                    ps.[Month],
+                                    ps.TotalMaterialQuantity
+                                FROM Materials m
+                                LEFT JOIN ProcessSum ps 
+                                    ON m.MaterialID = ps.MaterialID
+                                WHERE ps.[Month] IS NOT NULL
+                                ORDER BY 
+                                    m.MaterialID, ps.[Year], ps.[Month];";
 
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 {

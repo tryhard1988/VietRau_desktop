@@ -2292,13 +2292,10 @@ namespace RauViet.ui
             {
                 using (var wb = new XLWorkbook())
                 {
-                    DateTime start = new DateTime(year, month, 1);
-                    DateTime end = start.AddMonths(1);
-                    DataView dv = new DataView(mPlantingManagement_dt);
-                    dv.RowFilter = $"PlantingDate >= #{start:MM/dd/yyyy}# AND PlantingDate < #{end:MM/dd/yyyy}# AND Department = ({depID})";
-                    dv.Sort = "PlantingDate ASC";
-
-                    DataTable filterResult_dt = dv.ToTable();
+                    DataTable dt = await SQLStore_KhoVatTu.Instance.GetCultivationProcessAsync(month, year, depID);
+                    DataView dv = new DataView(dt);
+                    dv.Sort = "ProcessDate ASC";
+                    DataTable cultivation_dt = dv.ToTable();
 
                     var ws = wb.Worksheets.Add("Cấp Phân");
                     ws.Style.Font.FontName = "Times New Roman";
@@ -2325,50 +2322,43 @@ namespace RauViet.ui
                     ws.Range(rowExcel, 1, rowExcel, 8).Style.Font.Bold = true;
                     rowExcel++;
 
-                    foreach (DataRow row in filterResult_dt.Rows)
+                    foreach (DataRow row in cultivation_dt.Rows)
                     {
                         string productionOrder = row["ProductionOrder"].ToString();
                         string plantName = row["PlantName"].ToString();
                         int plantingID = Convert.ToInt32(row["PlantingID"]);
                         int cultivationTypeID = Convert.ToInt32(row["CultivationTypeID"]);
 
-                        DataTable tempdt = await SQLStore_KhoVatTu.Instance.GetCultivationProcessAsync(plantingID);
-                        DataView tempdtdv = new DataView(tempdt);
-                        tempdtdv.Sort = "ProcessDate ASC";
 
-                        DataTable cultivation_dt = tempdtdv.ToTable();
+                        string categoryCode = row["CategoryCode"].ToString();
+                        int workTypeID = Convert.ToInt32(row["WorkTypeID"]);
 
-                        foreach (DataRow cpRow in cultivation_dt.Rows)
+                        if (cultivationTypeID == 4)
                         {
-                            string categoryCode = cpRow["CategoryCode"].ToString();
-                            int workTypeID = Convert.ToInt32(cpRow["WorkTypeID"]);
-
-                            if (cultivationTypeID == 4)
-                            {
-                                string workTypeName_nosign = Utils.RemoveVietnameseSigns(cpRow["WorkTypeName"].ToString()).ToLower().Trim();
-                                if (workTypeName_nosign.StartsWith("bon thuc") && workTypeName_nosign.CompareTo("bon thuc 1") != 0)
-                                    continue;
-                            }
-
-                            if (workTypeID == 11 || workTypeID == 18)
+                            string workTypeName_nosign = Utils.RemoveVietnameseSigns(row["WorkTypeName"].ToString()).ToLower().Trim();
+                            if (workTypeName_nosign.StartsWith("bon thuc") && workTypeName_nosign.CompareTo("bon thuc 1") != 0)
                                 continue;
-
-                            if (categoryCode != "PBL" && categoryCode != "PHC" && categoryCode != "PVC" &&  categoryCode != "VTNN" &&  categoryCode != "CPSH")
-                                continue;
-
-                            DateTime processDate = Convert.ToDateTime(cpRow["ProcessDate"]);
-
-                            ws.Cell(rowExcel, 1).Value = plantName;
-                            ws.Cell(rowExcel, 2).Value = productionOrder;
-                            ws.Cell(rowExcel, 3).Value = processDate;
-                            ws.Cell(rowExcel, 4).Value = Utils.GetThu_Viet(processDate);
-                            ws.Cell(rowExcel, 5).Value = cpRow["WorkTypeName"].ToString();
-                            ws.Cell(rowExcel, 6).Value = cpRow["MaterialName"].ToString();
-                            ws.Cell(rowExcel, 7).Value = Convert.ToDecimal(cpRow["MaterialQuantity"]);
-                            ws.Cell(rowExcel, 8).Value = cpRow["MaterialUnit"].ToString();
-
-                            rowExcel++;
                         }
+
+                        if (workTypeID == 11 || workTypeID == 18)
+                            continue;
+
+                        if (categoryCode != "PBL" && categoryCode != "PHC" && categoryCode != "PVC" && categoryCode != "VTNN" && categoryCode != "CPSH")
+                            continue;
+
+                        DateTime processDate = Convert.ToDateTime(row["ProcessDate"]);
+
+                        ws.Cell(rowExcel, 1).Value = plantName;
+                        ws.Cell(rowExcel, 2).Value = productionOrder;
+                        ws.Cell(rowExcel, 3).Value = processDate;
+                        ws.Cell(rowExcel, 4).Value = Utils.GetThu_Viet(processDate);
+                        ws.Cell(rowExcel, 5).Value = row["WorkTypeName"].ToString();
+                        ws.Cell(rowExcel, 6).Value = row["MaterialName"].ToString();
+                        ws.Cell(rowExcel, 7).Value = Convert.ToDecimal(row["MaterialQuantity"]);
+                        ws.Cell(rowExcel, 8).Value = row["MaterialUnit"].ToString();
+
+                        rowExcel++;
+
                     }
 
                     ws.Range(2, 1, rowExcel - 1, 8).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
@@ -2428,7 +2418,7 @@ namespace RauViet.ui
             int depID = Convert.ToInt32(depCell["Department"].Value);
             string depName = depCell["DepartmentName"].Value.ToString();
 
-            KhoVatTu_CapPhan_Printer printer = new KhoVatTu_CapPhan_Printer(depID, depName, mPlantingManagement_dt, month, year);
+            KhoVatTu_CapPhan_Printer printer = new KhoVatTu_CapPhan_Printer(depID, depName, month, year);
             await printer.LoadCultivationCacheAsync();
 
             if (isPrintPreview)

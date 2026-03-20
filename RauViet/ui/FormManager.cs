@@ -218,6 +218,7 @@ namespace RauViet.ui
 
                 qlk_SanLuongThangCuaTungLenhSX_mi.Click += Qlk_thongKeSanLuongThang_mi_Click;
                 qlk_sanLuongCayTrongCacNam_mi.Click += Qlk_thongKeSanLuongNam_mi_Click;
+                qlk_TKCapPhan_mi.Click += Qlk_thongKeCapPhan_mi_Click;
             }
             else
             {
@@ -410,7 +411,8 @@ namespace RauViet.ui
             Supplier,
             KhoVatTu_CultivationProcessTemplate,
             KhoVatTu_TKSanLuongTrong_Thang,
-            KhoVatTu_TKSanLuongTrong_Nam
+            KhoVatTu_TKSanLuongTrong_Nam,
+            KhoVatTu_TKCapPhanBon
         }
 
         private void openCurrentForm(EForm status)
@@ -640,6 +642,9 @@ namespace RauViet.ui
                 case EForm.KhoVatTu_TKSanLuongTrong_Nam:
                     SwitchChildForm<KhoVatTu_TKSanLuongTrong_Nam>("Thống Kê Sản Lượng Cây Trồng Theo Năm");
                     break;
+                case EForm.KhoVatTu_TKCapPhanBon:
+                    SwitchChildForm<KhoVatTu_TKCapPhanBon>("Thống Kê Cấp Phân Theo Năm");
+                    break;
             }
             
             Properties.Settings.Default.current_form = status.ToString();
@@ -721,6 +726,7 @@ namespace RauViet.ui
         private void Supplier_mi_Click(object sender, EventArgs e){ openCurrentForm(EForm.Supplier); }
         private void Qlk_thongKeSanLuongThang_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.KhoVatTu_TKSanLuongTrong_Thang); }
         private void Qlk_thongKeSanLuongNam_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.KhoVatTu_TKSanLuongTrong_Nam); }
+        private void Qlk_thongKeCapPhan_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.KhoVatTu_TKCapPhanBon); }
         private async void checkLoginTimer_Tick(object sender, EventArgs e)
         {
             var isHave = await SQLManager.Instance.HaveOtherComputerLoginAsync();

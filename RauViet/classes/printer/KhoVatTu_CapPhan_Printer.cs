@@ -9,46 +9,30 @@ using System.Windows.Forms;
 
 public class KhoVatTu_CapPhan_Printer
 {
-    private DataTable mPlantingManagement_dt;
     private int rowIndex = 0; // để phân trang
     private int startX = 0;
     private int lineHeight = 27;
     private string mDepartmentName;
-    Dictionary<int, DataTable> mCultivationCache;
     DataTable mCultivation_dt = null;
-    private int mCultivationRowIndex = 0; // để phân trang
     private int pageNumber = 1;
-    private int mMonth, mYear;
-    public KhoVatTu_CapPhan_Printer(int departmentID, string departmentName, DataTable plantingManagement_dt, int month, int year)
+    private int mMonth, mYear, mDepartmentID;
+    public KhoVatTu_CapPhan_Printer(int departmentID, string departmentName, int month, int year)
     {
-        mCultivationCache = new Dictionary<int, DataTable>();
-
-        DateTime start = new DateTime(year, month, 1);
-        DateTime end = start.AddMonths(1);
-
-        DataView dv = new DataView(plantingManagement_dt);
-        dv.RowFilter = $"PlantingDate >= #{start:MM/dd/yyyy}# AND PlantingDate < #{end:MM/dd/yyyy}# AND Department = ({departmentID})";
-        dv.Sort = "PlantingDate ASC";
-
-        this.mPlantingManagement_dt = dv.ToTable();
         this.mDepartmentName = departmentName;
         this.mMonth = month;
         this.mYear = year;
+        this.mDepartmentID = departmentID;
     }
 
 
     public async Task LoadCultivationCacheAsync()
     {
-        foreach (DataRow row in mPlantingManagement_dt.Rows)
-        {
-            int plantingID = Convert.ToInt32(row["PlantingID"]);
-            DataTable dt = await SQLStore_KhoVatTu.Instance.GetCultivationProcessAsync(plantingID);
+        DataTable dt = await SQLStore_KhoVatTu.Instance.GetCultivationProcessAsync(mMonth, mYear, mDepartmentID);
 
-            DataView dv = new DataView(dt);
-            dv.Sort = "ProcessDate ASC";
+        DataView dv = new DataView(dt);
+        dv.Sort = "ProcessDate ASC";
 
-            mCultivationCache[plantingID] = dv.ToTable();
-        }
+        mCultivation_dt = dv.ToTable();
     }
 
     public void PrintPreview(Form owner)
@@ -134,7 +118,7 @@ public class KhoVatTu_CapPhan_Printer
 
         int y = e.MarginBounds.Top;
         // Header chỉ in 1 lần ở đầu trang
-        if (rowIndex == 0 && mCultivationRowIndex == 0)
+        if (rowIndex == 0)
         {
             Utils.DrawCellText(g, $"CẤP PHÂN THÁNG {mMonth.ToString("D2")}/{mYear.ToString()} - {mDepartmentName}", titleFont, new Rectangle(col_TenSP, y, col_DonVi + colWidth_DonVi - col_TenSP, lineHeight * 2), StringAlignment.Center);
         }
@@ -166,91 +150,78 @@ public class KhoVatTu_CapPhan_Printer
         y += tableHeaderLineHeight;
 
         // Table Data với phân trang
-        while (rowIndex < mPlantingManagement_dt.Rows.Count)
+        while (rowIndex < mCultivation_dt.Rows.Count)
         {
-            DataRow row = mPlantingManagement_dt.Rows[rowIndex];
+            DataRow row = mCultivation_dt.Rows[rowIndex];
             string productionOrder = row["ProductionOrder"].ToString();
             string plantName = row["PlantName"].ToString();
             int plantingID = Convert.ToInt32(row["PlantingID"]);
             int cultivationTypeID = Convert.ToInt32(row["CultivationTypeID"]);
 
-            if (mCultivation_dt == null)
+            if (y + lineHeight > e.MarginBounds.Bottom)
             {
-                mCultivation_dt = mCultivationCache[plantingID];
-                mCultivationRowIndex = 0;
+
+                Utils.DrawPageNumber(g, e, pageNumber); // vẽ số trang trước khi sang trang
+                pageNumber++;
+                e.HasMorePages = true;
+                return; // sang trang tiếp theo
             }
-            
-            while (mCultivationRowIndex < mCultivation_dt.Rows.Count)
+
+            string categoryCode = row["CategoryCode"].ToString();
+            int workTypeID = Convert.ToInt32(row["WorkTypeID"]);
+
+            if (cultivationTypeID == 4)
             {
-                if (y + lineHeight > e.MarginBounds.Bottom)
+                string workTypeName_nosign = Utils.RemoveVietnameseSigns(row["WorkTypeName"].ToString()).ToLower().Trim();
+                if (workTypeName_nosign.StartsWith("bon thuc") && workTypeName_nosign.CompareTo("bon thuc 1") != 0)
                 {
-
-                    Utils.DrawPageNumber(g, e, pageNumber); // vẽ số trang trước khi sang trang
-                    pageNumber++;
-                    e.HasMorePages = true;
-                    return; // sang trang tiếp theo
-                }
-
-                DataRow cpRow = mCultivation_dt.Rows[mCultivationRowIndex];
-                string categoryCode = cpRow["CategoryCode"].ToString();
-                int workTypeID = Convert.ToInt32(cpRow["WorkTypeID"]);
-                
-                if (cultivationTypeID == 4)
-                {
-                    string workTypeName_nosign = Utils.RemoveVietnameseSigns(cpRow["WorkTypeName"].ToString()).ToLower().Trim();
-                    if (workTypeName_nosign.StartsWith("bon thuc") && workTypeName_nosign.CompareTo("bon thuc 1") != 0)
-                    {
-                        mCultivationRowIndex++;
-                        continue;
-                    }
-                }
-
-                if (workTypeID == 11 || workTypeID == 18)
-                {
-                    mCultivationRowIndex++;
+                    rowIndex++;
                     continue;
                 }
-
-                if (categoryCode.CompareTo("PBL") != 0 && categoryCode.CompareTo("PHC") != 0 && categoryCode.CompareTo("PVC") != 0 && categoryCode.CompareTo("VTNN") != 0 && categoryCode.CompareTo("CPSH") != 0)
-                {
-                    mCultivationRowIndex++;
-                    continue;
-                }
-
-                float width = col_DonVi +colWidth_DonVi - col_TenSP;
-                Console.WriteLine($"x={col_TenSP}, y={y}, width={width}, height={lineHeight}");
-
-                g.DrawRectangle(Pens.Gray, col_TenSP, y, width, lineHeight);
-                g.DrawLine(Pens.Gray, col_LenhSX, y, col_LenhSX, y + lineHeight);
-                g.DrawLine(Pens.Gray, col_Ngay, y, col_Ngay, y + lineHeight);
-                g.DrawLine(Pens.Gray, col_Thu, y, col_Thu, y + lineHeight);
-                g.DrawLine(Pens.Gray, col_CongViec, y, col_CongViec, y + lineHeight);
-                g.DrawLine(Pens.Gray, col_VatTu, y, col_VatTu, y + lineHeight);
-                g.DrawLine(Pens.Gray, col_SL, y, col_SL, y + lineHeight);
-                g.DrawLine(Pens.Gray, col_DonVi, y, col_DonVi, y + lineHeight);
-
-                DateTime processDate = Convert.ToDateTime(cpRow["ProcessDate"]);
-
-                Utils.DrawCellText(g, plantName, normalFont, new Rectangle(col_TenSP, y, colWidth_TenSP, lineHeight), StringAlignment.Near);
-                Utils.DrawCellText(g, productionOrder, normalFont, new Rectangle(col_LenhSX, y, colWidth_LenhSX, lineHeight), StringAlignment.Near);
-                Utils.DrawCellText(g, processDate.ToString("dd/MM/yyyy"), normalFont, new Rectangle(col_Ngay, y, colWidth_Ngay, lineHeight), StringAlignment.Near);
-                Utils.DrawCellText(g, Utils.GetThu_Viet(processDate), normalFont, new Rectangle(col_Thu, y, colWidth_Thu, lineHeight), StringAlignment.Center);
-                Utils.DrawCellText(g, cpRow["WorkTypeName"].ToString(), normalFont, new Rectangle(col_CongViec, y, colWidth_CongViec, lineHeight), StringAlignment.Near);
-                Utils.DrawCellText(g, cpRow["MaterialName"].ToString(), normalFont, new Rectangle(col_VatTu, y, colWidth_VatTu, lineHeight), StringAlignment.Near);
-                Utils.DrawCellText(g, Convert.ToDecimal(cpRow["MaterialQuantity"]).ToString("0.##"), normalFont, new Rectangle(col_SL, y, colWidth_SL, lineHeight), StringAlignment.Far);
-                Utils.DrawCellText(g, cpRow["MaterialUnit"].ToString(), normalFont, new Rectangle(col_DonVi, y, colWidth_DonVi, lineHeight), StringAlignment.Center);
-
-                y += lineHeight;
-
-                mCultivationRowIndex++;
             }
+
+            if (workTypeID == 11 || workTypeID == 18)
+            {
+                rowIndex++;
+                continue;
+            }
+
+            if (categoryCode.CompareTo("PBL") != 0 && categoryCode.CompareTo("PHC") != 0 && categoryCode.CompareTo("PVC") != 0 && categoryCode.CompareTo("VTNN") != 0 && categoryCode.CompareTo("CPSH") != 0)
+            {
+                rowIndex++;
+                continue;
+            }
+
+            float width = col_DonVi + colWidth_DonVi - col_TenSP;
+            Console.WriteLine($"x={col_TenSP}, y={y}, width={width}, height={lineHeight}");
+
+            g.DrawRectangle(Pens.Gray, col_TenSP, y, width, lineHeight);
+            g.DrawLine(Pens.Gray, col_LenhSX, y, col_LenhSX, y + lineHeight);
+            g.DrawLine(Pens.Gray, col_Ngay, y, col_Ngay, y + lineHeight);
+            g.DrawLine(Pens.Gray, col_Thu, y, col_Thu, y + lineHeight);
+            g.DrawLine(Pens.Gray, col_CongViec, y, col_CongViec, y + lineHeight);
+            g.DrawLine(Pens.Gray, col_VatTu, y, col_VatTu, y + lineHeight);
+            g.DrawLine(Pens.Gray, col_SL, y, col_SL, y + lineHeight);
+            g.DrawLine(Pens.Gray, col_DonVi, y, col_DonVi, y + lineHeight);
+
+            DateTime processDate = Convert.ToDateTime(row["ProcessDate"]);
+
+            Utils.DrawCellText(g, plantName, normalFont, new Rectangle(col_TenSP, y, colWidth_TenSP, lineHeight), StringAlignment.Near);
+            Utils.DrawCellText(g, productionOrder, normalFont, new Rectangle(col_LenhSX, y, colWidth_LenhSX, lineHeight), StringAlignment.Near);
+            Utils.DrawCellText(g, processDate.ToString("dd/MM/yyyy"), normalFont, new Rectangle(col_Ngay, y, colWidth_Ngay, lineHeight), StringAlignment.Near);
+            Utils.DrawCellText(g, Utils.GetThu_Viet(processDate), normalFont, new Rectangle(col_Thu, y, colWidth_Thu, lineHeight), StringAlignment.Center);
+            Utils.DrawCellText(g, row["WorkTypeName"].ToString(), normalFont, new Rectangle(col_CongViec, y, colWidth_CongViec, lineHeight), StringAlignment.Near);
+            Utils.DrawCellText(g, row["MaterialName"].ToString(), normalFont, new Rectangle(col_VatTu, y, colWidth_VatTu, lineHeight), StringAlignment.Near);
+            Utils.DrawCellText(g, Convert.ToDecimal(row["MaterialQuantity"]).ToString("0.##"), normalFont, new Rectangle(col_SL, y, colWidth_SL, lineHeight), StringAlignment.Far);
+            Utils.DrawCellText(g, row["MaterialUnit"].ToString(), normalFont, new Rectangle(col_DonVi, y, colWidth_DonVi, lineHeight), StringAlignment.Center);
+
+            y += lineHeight;
+
+
 
             rowIndex++;
-            mCultivation_dt = null;
-            mCultivationRowIndex = 0;
+
+            e.HasMorePages = false;
         }
-
-        e.HasMorePages = false;
-
     }
 }

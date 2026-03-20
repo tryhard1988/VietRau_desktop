@@ -1,4 +1,5 @@
-﻿using RauViet.classes;
+﻿
+using RauViet.classes;
 using System;
 using System.Data;
 using System.Globalization;
@@ -11,7 +12,7 @@ namespace RauViet.ui
 {
     public partial class KhoVatTu_MaterialExport : Form
     {
-        System.Data.DataTable mMaterial_dt, mEmployee_dt, mWorkType_dt, mPlantingManagement_dt, mMaterialExport_dt;
+        System.Data.DataTable mMaterial_dt, mEmployee_dt, mWorkType_dt, mPlantingManagement_dt, mMaterialExport_dt, mMaterialDepartment_dt;
         private DataView mLogDV;
         private Timer _monthYearDebounceTimer = new Timer { Interval = 500 };
         private Timer PlantingManagementDebounceTimer = new Timer { Interval = 300 };
@@ -64,6 +65,7 @@ namespace RauViet.ui
             soLuong_tb.KeyPress += Tb_KeyPress_OnlyNumber;
 
             dayGV.SelectionChanged += DayGV_SelectionChanged;
+            goiYCapPhan_btn.Click += GoiYCapPhan_btn_Click;
         }
 
         private void Kho_Materials_KeyDown(object sender, KeyEventArgs e)
@@ -111,16 +113,18 @@ namespace RauViet.ui
                 var plantingManagementTask = SQLStore_KhoVatTu.Instance.getPlantingManagementAsync(false);
                 var materialTask = SQLStore_KhoVatTu.Instance.getMaterialAsync();
                 var workTypeTask = SQLStore_KhoVatTu.Instance.GetWorkTypeAsync();
+                var materialDepartmentTask = SQLStore_KhoVatTu.Instance.GetMaterialDepartmentAsync();
                 var employeeTask = SQLStore_QLNS.Instance.GetEmployeesAsync(empKeepColumns);
                 var materialExportTask = SQLStore_KhoVatTu.Instance.GetMaterialExportAsync(month, year);
                 var logDataTask = SQLStore_KhoVatTu.Instance.GetMaterialExportLogAsync(month, year);
 
-                await Task.WhenAll(plantingManagementTask, cateloryTask, materialTask, employeeTask, workTypeTask, materialExportTask, logDataTask);
+                await Task.WhenAll(plantingManagementTask, cateloryTask, materialTask, employeeTask, workTypeTask, materialExportTask, logDataTask, materialDepartmentTask);
 
                 mPlantingManagement_dt = plantingManagementTask.Result;
                 mMaterial_dt = materialTask.Result;
                 mEmployee_dt = employeeTask.Result;
                 mWorkType_dt = workTypeTask.Result;
+                mMaterialDepartment_dt = materialDepartmentTask.Result;
                 mMaterialExport_dt = materialExportTask.Result;
                 mLogDV = new DataView(logDataTask.Result);
 
@@ -146,9 +150,14 @@ namespace RauViet.ui
                 LenhSX_CBB.ValueMember = "PlantingID";
                 LenhSX_CBB.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
 
+                boPhan_cbb.DataSource = mMaterialDepartment_dt;
+                boPhan_cbb.DisplayMember = "MaterialDepartmentName";  // hiển thị tên
+                boPhan_cbb.ValueMember = "MaterialDepartmentID";
+
                 dataGV.DataSource = mMaterialExport_dt;
                 log_GV.DataSource = mLogDV;
-                Utils.HideColumns(dataGV, new[] { "NurseryDate", "PlantingID", "Receiver", "MaterialID", "WorkTypeID", "ExportID" });                
+                Utils.HideColumns(dataGV, new[] { "NurseryDate", "PlantingID", "Receiver", "MaterialID", "WorkTypeID", "ExportID", "MaterialDepartmentID", "IsCompleted" });
+                Utils.SetGridOrdinal(mMaterialExport_dt, new[] { "ExportDate", "MaterialName", "UnitName", "Amount", "ProductionOrder", "WorkTypeName", "RecieverName", "MaterialDepartmentName", "Note" });
                 Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
                         {"ExportDate", "Ngày Xuất" },
                         {"Amount", "S.Lượng" },
@@ -159,7 +168,8 @@ namespace RauViet.ui
                         {"PlantName", "Cây Trồng" },
                         {"MaterialName", "Vật Tư" },
                         {"IsCompleted", "Đóng" },
-                        {"UnitName", "Đ.Vị" }
+                        {"UnitName", "Đ.Vị" },
+                        {"MaterialDepartmentName", "Bộ Phận" }
                     });
 
                 Utils.HideColumns(log_GV, new[] { "LogID", "ExportDate" });
@@ -180,7 +190,8 @@ namespace RauViet.ui
                         {"PlantName", 100 },
                         {"IsCompleted", 50 },
                         {"UnitName", 50 },
-                        {"MaterialName", 230 }
+                        {"MaterialName", 180 },
+                        {"MaterialDepartmentName", 65 }
                     });
 
                 
@@ -396,7 +407,7 @@ namespace RauViet.ui
             updateRightUI();            
         }
 
-        private async void updateItem(int ExportID, DateTime ExportDate, int MaterialID, Decimal Amount, int? PlantingID, int? WorkTypeID, string Receiver, string Note)
+        private async void updateItem(int ExportID, DateTime ExportDate, int MaterialID, Decimal Amount, int? PlantingID, int? WorkTypeID, string Receiver, string Note, int MaterialDepartmentID)
         {
             DataRow[] plantingRows = Array.Empty<DataRow>();
             if (PlantingID.HasValue)
@@ -408,6 +419,7 @@ namespace RauViet.ui
 
             DataRow[] matiralRows = matiralRows = mMaterial_dt.Select($"MaterialID = {MaterialID}");
             DataRow[] employeeRows = mEmployee_dt.Select($"EmployeeCode = '{Receiver}'");
+            DataRow[] materialDepartmentRows = mMaterialDepartment_dt.Select($"MaterialDepartmentID = {MaterialDepartmentID}");
 
             foreach (DataRow row in mMaterialExport_dt.Rows)
             {
@@ -422,7 +434,7 @@ namespace RauViet.ui
                         string newValue = "";
                         try
                         {
-                            bool isScussess = await SQLManager_KhoVatTu.Instance.updateMaterialExportAsync(ExportID, ExportDate, MaterialID, Amount, PlantingID, WorkTypeID, Receiver, Note);
+                            bool isScussess = await SQLManager_KhoVatTu.Instance.updateMaterialExportAsync(ExportID, ExportDate, MaterialID, Amount, PlantingID, WorkTypeID, Receiver, Note, MaterialDepartmentID);
 
                             if (isScussess == true)
                             {
@@ -431,6 +443,8 @@ namespace RauViet.ui
                                 row["MaterialID"] = MaterialID;
                                 row["Amount"] = Amount;
                                 row["Note"] = Note;
+                                row["MaterialDepartmentID"] = MaterialDepartmentID;
+                                row["MaterialDepartmentName"] = materialDepartmentRows[0]["MaterialDepartmentName"].ToString();
 
                                 if (PlantingID.HasValue)
                                 {
@@ -494,7 +508,7 @@ namespace RauViet.ui
             }
         }
 
-        private async void createItem(DateTime ExportDate, int MaterialID, Decimal Amount,int? PlantingID, int? WorkTypeID, string Receiver, string Note)
+        private async void createItem(DateTime ExportDate, int MaterialID, Decimal Amount,int? PlantingID, int? WorkTypeID, string Receiver, string Note, int MaterialDepartmentID)
         {
             DataRow[] plantingRows = Array.Empty<DataRow>();
             if (PlantingID.HasValue)
@@ -506,6 +520,7 @@ namespace RauViet.ui
 
             DataRow[] matiralRows = matiralRows = mMaterial_dt.Select($"MaterialID = {MaterialID}");
             DataRow[] employeeRows = mEmployee_dt.Select($"EmployeeCode = '{Receiver}'");
+            DataRow[] materialDepartmentRows = mMaterialDepartment_dt.Select($"MaterialDepartmentID = {MaterialDepartmentID}");
 
             DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
@@ -515,7 +530,7 @@ namespace RauViet.ui
                 string newValue = "";
                 try
                 {
-                    int newId = await SQLManager_KhoVatTu.Instance.insertMaterialExportAsync(ExportDate, MaterialID, Amount, PlantingID, WorkTypeID, Receiver, Note);
+                    int newId = await SQLManager_KhoVatTu.Instance.insertMaterialExportAsync(ExportDate, MaterialID, Amount, PlantingID, WorkTypeID, Receiver, Note, MaterialDepartmentID);
                     if (newId > 0)
                     {
                         DataRow drToAdd = mMaterialExport_dt.NewRow();
@@ -525,6 +540,8 @@ namespace RauViet.ui
                         drToAdd["MaterialID"] = MaterialID;
                         drToAdd["Amount"] = Amount;
                         drToAdd["Note"] = Note;
+                        drToAdd["MaterialDepartmentID"] = MaterialDepartmentID;
+                        drToAdd["MaterialDepartmentName"] = materialDepartmentRows[0]["MaterialDepartmentName"].ToString();
 
                         if (PlantingID.HasValue)
                         {
@@ -591,7 +608,7 @@ namespace RauViet.ui
         }
         private void saveBtn_Click(object sender, EventArgs e)
         {
-            if (vatTu_CB.SelectedValue == null || string.IsNullOrEmpty(soLuong_tb.Text.Trim())) return;
+            if (boPhan_cbb.SelectedValue == null ||vatTu_CB.SelectedValue == null || string.IsNullOrEmpty(soLuong_tb.Text.Trim())) return;
 
             DateTime ngayXuat = ngayXuat_dtp.Value;
             int vatTu = Convert.ToInt32(vatTu_CB.SelectedValue);
@@ -608,11 +625,12 @@ namespace RauViet.ui
             string name = soLuong_tb.Text;
             int unitID = Convert.ToInt32(LenhSX_CBB.SelectedValue);
             int cateloryID = Convert.ToInt32(vatTu_CB.SelectedValue);
+            int materialDepartmentID = Convert.ToInt32(boPhan_cbb.SelectedValue);
 
             if (id_tb.Text.Length != 0)
-                updateItem(Convert.ToInt32(id_tb.Text), ngayXuat, vatTu, soLuong, lenhSX, congViec, nguoiNhan, note);
+                updateItem(Convert.ToInt32(id_tb.Text), ngayXuat, vatTu, soLuong, lenhSX, congViec, nguoiNhan, note, materialDepartmentID);
             else
-                createItem(ngayXuat, vatTu, soLuong, lenhSX, congViec, nguoiNhan, note);
+                createItem(ngayXuat, vatTu, soLuong, lenhSX, congViec, nguoiNhan, note, materialDepartmentID);
 
         }
         private async void deleteProduct()
@@ -684,6 +702,7 @@ namespace RauViet.ui
             soLuong_tb.Enabled = true;
             LenhSX_CBB.Enabled = true;
             vatTu_CB.Enabled = true;
+            boPhan_cbb.Enabled = true;
             ngayXuat_dtp.Enabled = true;
             congViec_CBB.Enabled = true;
             nguoiNhan_CBB.Enabled = true;
@@ -702,6 +721,7 @@ namespace RauViet.ui
             soLuong_tb.Enabled = false;
             LenhSX_CBB.Enabled = false;
             vatTu_CB.Enabled = false;
+            boPhan_cbb.Enabled = false;
             ngayXuat_dtp.Enabled = false;
             congViec_CBB.Enabled = false;
             nguoiNhan_CBB.Enabled = false;
@@ -715,6 +735,7 @@ namespace RauViet.ui
             soLuong_tb.Enabled = true;
             LenhSX_CBB.Enabled = true;
             vatTu_CB.Enabled = true;
+            boPhan_cbb.Enabled = true;
             edit_btn.Visible = false;
             newCustomerBtn.Visible = false;
             readOnly_btn.Visible = true;
@@ -756,6 +777,7 @@ namespace RauViet.ui
                     int materialID = int.TryParse(cells["MaterialID"].Value?.ToString(), out int materialTemp) ? materialTemp : -1;
                     int workTypeID = int.TryParse(cells["WorkTypeID"].Value?.ToString(), out int workTypeTemp) ? workTypeTemp : -1;
                     int plantingID = int.TryParse(cells["PlantingID"].Value?.ToString(), out int plantingTemp) ? plantingTemp : -1;
+                    int materialDepartmentID = int.TryParse(cells["MaterialDepartmentID"].Value?.ToString(), out int materialDepartmentTemp) ? materialDepartmentTemp : -1;
 
                     if (!vatTu_CB.Items.Cast<object>().Any(i => ((DataRowView)i)["MaterialID"].ToString() == materialID.ToString()))
                     {
@@ -778,6 +800,8 @@ namespace RauViet.ui
                     congViec_CBB.SelectedValue = workTypeID;
                     LenhSX_CBB.SelectedValue = plantingID;
                     nguoiNhan_CBB.SelectedValue = receiver;
+                    nguoiNhan_CBB.SelectedValue = receiver;
+                    boPhan_cbb.SelectedValue = materialDepartmentID;
                     soLuong_tb.Text = Convert.ToDecimal(cells["Amount"].Value).ToString("G29", CultureInfo.InvariantCulture);
                     note_tb.Text = Convert.ToString(cells["Note"].Value);
                 }
@@ -806,124 +830,24 @@ namespace RauViet.ui
             }
         }
 
-        //System.Data.DataTable excelData;
-        //private async void button1_Click(object sender, EventArgs e)
-        //{
+        private void GoiYCapPhan_btn_Click(object sender, EventArgs e)
+        {
+            monthYear_dtp.ValueChanged -= monthYearDtp_ValueChanged;
+            int month = monthYear_dtp.Value.Month;
+            int year = monthYear_dtp.Value.Year;
+            KhoVatTu_GoiYCapPhan frm = new KhoVatTu_GoiYCapPhan(month, year);
+            frm.FormClosed += KhoVatTu_GoiYCapPhan_FormClosed;
+            frm.ShowData();
+            frm.ShowDialog();
+        }
 
-        //    var unit_dt = await SQLManager_KhoVatTu.Instance.GetUnitAsync();
-        //    var materialCategory_dt = await SQLManager_KhoVatTu.Instance.GetMaterialCategoryAsync();
-
-        //    using (System.Windows.Forms.OpenFileDialog ofd = new System.Windows.Forms.OpenFileDialog())
-        //    {
-        //        ofd.Title = "Chọn file Excel";
-        //        ofd.Filter = "Excel Files|*.xlsx;*.xls|All Files|*.*";
-        //        ofd.Multiselect = false; // chỉ cho chọn 1 file
-
-        //        if (ofd.ShowDialog() == DialogResult.OK)
-        //        {
-        //            string filePath = ofd.FileName;
-        //            excelData = Utils.LoadExcel_NoHeader(filePath);
-
-        //            Utils.AddColumnIfNotExists(excelData, "WorkTypeID", typeof(int));
-        //            Utils.AddColumnIfNotExists(excelData, "MaterialID", typeof(int));
-        //            Utils.AddColumnIfNotExists(excelData, "PlantingID", typeof(int));
-        //            Utils.AddColumnIfNotExists(excelData, "EmployeeCode", typeof(string));
-        //            Utils.AddColumnIfNotExists(excelData, "Note", typeof(string));
-        //            foreach (DataRow row in excelData.Rows)
-        //            {
-        //                string raw = Utils.RemoveVietnameseSigns(row["Column2"].ToString());
-
-        //                if(raw.CompareTo(Utils.RemoveVietnameseSigns("Magnesium sulphate (Green mag)")) == 0)
-        //                    raw = Utils.RemoveVietnameseSigns("BitterMag (MgSO4)");
-        //                else if (raw.CompareTo(Utils.RemoveVietnameseSigns("YaraMila Winner")) == 0)
-        //                    raw = Utils.RemoveVietnameseSigns("YaraMila Winner (15-9-20)");
-        //                else if (raw.CompareTo(Utils.RemoveVietnameseSigns("Solu-K 0-0-51")) == 0)
-        //                    raw = Utils.RemoveVietnameseSigns("Solu-K (K2SO4 Hàn Quốc)");
-
-        //                DataRow material = mMaterial_dt.AsEnumerable().FirstOrDefault(r => Utils.RemoveVietnameseSigns(r.Field<string>("MaterialName")).Trim().ToLower().Equals(raw.Trim().ToLower(), StringComparison.OrdinalIgnoreCase));
-        //                if(material != null)
-        //                    row["MaterialID"] = material["MaterialID"];
-
-        //                raw = Utils.RemoveVietnameseSigns(row["Column6"].ToString());
-        //                DataRow employee = mEmployee_dt.AsEnumerable().FirstOrDefault(r => Utils.RemoveVietnameseSigns(r.Field<string>("FullName")).Trim().ToLower().Equals(raw.Trim().ToLower(), StringComparison.OrdinalIgnoreCase));
-        //                if (employee != null)
-        //                    row["EmployeeCode"] = employee["EmployeeCode"];
-
-        //                raw = Utils.RemoveVietnameseSigns(row["Column5"].ToString());
-        //                DataRow workType = mWorkType_dt.AsEnumerable().FirstOrDefault(r => Utils.RemoveVietnameseSigns(r.Field<string>("WorkTypeName")).Trim().ToLower().Equals(raw.Trim().ToLower(), StringComparison.OrdinalIgnoreCase));
-        //                if (workType != null)
-        //                    row["WorkTypeID"] = workType["WorkTypeID"];
-
-        //                raw = Utils.RemoveVietnameseSigns(row["Column4"].ToString()).Trim();
-        //                if (raw.CompareTo("28125020") == 0)
-        //                    raw = "28126001";
-        //                else if (raw.CompareTo("11126001") == 0)
-        //                    raw = "11125005";
-        //                else if (raw.CompareTo("143250100") == 0)
-        //                    raw = "14325100";
-        //                else if (raw.CompareTo("12126005") == 0) 
-        //                    raw = "12125007";
-        //                else if (raw.CompareTo("17225053") == 0)
-        //                    raw = "17226001";
-        //                else if (raw.StartsWith("MXC")) 
-        //                {
-        //                    row["Note"] = raw;
-        //                    row["Column4"] = "";
-        //                    raw = "";
-        //                }
-        //                else if (raw.CompareTo("33125001") == 0 || raw.CompareTo("32324002") == 0)
-        //                {
-        //                    row["Note"] = raw;
-        //                    row["Column4"] = "";
-        //                    raw = "";
-        //                }
-
-        //                DataRow plantingManagement = mPlantingManagement_dt.AsEnumerable().FirstOrDefault(r => Utils.RemoveVietnameseSigns(r.Field<string>("ProductionOrder")).Trim().ToLower().Equals(raw.Trim().ToLower(), StringComparison.OrdinalIgnoreCase));
-        //                if (plantingManagement != null)
-        //                    row["PlantingID"] = plantingManagement["PlantingID"];
-        //            }
-                    
-        //            dataGV.DataSource = excelData;
-        //            dataGV.Columns["Column2"].Visible = false;
-        //            dataGV.Columns["Column6"].Visible = false;
-        //            dataGV.Columns["Column5"].Visible = false;
-        //            }
-        //    }
-        //}
-
-        //private async void button2_Click(object sender, EventArgs e)
-        //{
-        //    try
-        //    {
-        //        foreach (DataRow edr in excelData.Rows)
-        //        {
-        //            if (string.IsNullOrWhiteSpace(edr["Column3"].ToString())) 
-        //                continue;
-
-        //            DateTime ExportDate = Convert.ToDateTime(edr["Column1"]);
-        //            int MaterialID = Convert.ToInt32(edr["MaterialID"]);
-        //            decimal Amount = Convert.ToDecimal(edr["Column3"]);
-        //            int? PlantingID = edr["PlantingID"] == DBNull.Value ? (int?)null : Convert.ToInt32(edr["PlantingID"]);
-        //            int? WorkTypeID = edr["WorkTypeID"] == DBNull.Value ? (int?)null : Convert.ToInt32(edr["WorkTypeID"]);
-        //            string EmployeeCode = Convert.ToString(edr["EmployeeCode"]);
-        //            string Note = Convert.ToString(edr["Note"]);
-
-
-        //            int salaryInfoID = await SQLManager_KhoVatTu.Instance.insertMaterialExportAsync(ExportDate, MaterialID, Amount, PlantingID, WorkTypeID, EmployeeCode, Note);
-        //            if(salaryInfoID <= 0)
-        //            {
-        //                MessageBox.Show("có lỗi ");
-        //                return;
-        //            }
-
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        MessageBox.Show("có lỗi " + ex.Message);
-        //    }
-        //    MessageBox.Show("xong");
-        //}
-
+        private void KhoVatTu_GoiYCapPhan_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            monthYear_dtp.ValueChanged -= monthYearDtp_ValueChanged;
+            int month = monthYear_dtp.Value.Month;
+            int year = monthYear_dtp.Value.Year;
+            SQLStore_KhoVatTu.Instance.removeMaterialExport(month, year);
+            this.ShowData();
+        }
     }
 }
