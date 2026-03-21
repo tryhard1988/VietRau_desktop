@@ -14,13 +14,12 @@ namespace RauViet.ui
     {
         DataTable mCultivationProcess_dt;
         private LoadingOverlay loadingOverlay;
-        int mMonth, mYear;
-        public KhoVatTu_GoiYCapPhan(int month, int year)
+        DateTime mdate;
+        public KhoVatTu_GoiYCapPhan(DateTime date)
         {
             InitializeComponent();
             this.KeyPreview = true;
-            mMonth = month;
-            mYear = year;
+            mdate = date;
 
             farm_cbb.SelectedIndexChanged += Farm_cbb_SelectedIndexChanged;
             capPhan_btn.Click += CapPhan_btn_Click;
@@ -39,8 +38,8 @@ namespace RauViet.ui
 
             try
             {
-                mCultivationProcess_dt = await SQLStore_KhoVatTu.Instance.GetCultivationProcessAsync(mMonth, mYear, true);
-                var materialExport_dt = await SQLStore_KhoVatTu.Instance.GetMaterialExportAsync(mMonth, mYear);
+                mCultivationProcess_dt = await SQLStore_KhoVatTu.Instance.GetCultivationProcessAsync(mdate, true);
+                var materialExport_dt = await SQLStore_KhoVatTu.Instance.GetMaterialExportAsync(mdate.Month, mdate.Year);
                 var farm_dt = await SQLStore_KhoVatTu.Instance.GetFarmsAsync();
 
                 var exportSet = new HashSet<string>();
@@ -74,20 +73,11 @@ namespace RauViet.ui
                 }
 
                 DataView dv = new DataView(mCultivationProcess_dt);
-                dv.RowFilter = @"
+                dv.RowFilter = $@"
                     MaterialID IS NOT NULL 
                     AND MaterialQuantity > 0 
                     AND CategoryCode <> 'DDTP'
-                    AND (
-                        CultivationTypeID <> 4
-                        OR (
-                            CultivationTypeID = 4
-                            AND (
-                                WorkTypeName_Normalized NOT LIKE 'bon thuc%'
-                                OR WorkTypeName_Normalized = 'bon thuc 1'
-                            )
-                        )
-                    )
+                    AND ProcessDate = #{mdate:MM/dd/yyyy}#
                 ";
 
                 mCultivationProcess_dt = dv.ToTable(false,
@@ -185,7 +175,7 @@ namespace RauViet.ui
 
             int farmId;
             if (!int.TryParse(farm_cbb.SelectedValue.ToString(), out farmId))
-                return;
+                return; 
 
             mCultivationProcess_dt.DefaultView.RowFilter = $"FarmID = {farmId}";
         }

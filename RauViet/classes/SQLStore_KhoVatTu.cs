@@ -868,25 +868,19 @@ namespace RauViet.classes
             return mCultivationProcesses_MY[key];
         }
 
-        public async Task<DataTable> GetCultivationProcessAsync(int month, int year, bool isKeep_Bao = false)
+        public async Task<DataTable> GetCultivationProcessAsync(DateTime date, bool isKeep_Bao = false)
         {
-            string key = $"{month}_{year}";
-            if (!mCultivationProcesses_MY.ContainsKey(key))
+            try
             {
-                try
-                {
-                    DataTable data = await SQLManager_KhoVatTu.Instance.GetCultivationProcessAsync(month, year);
-                    editCultivationProcess(data, true, isKeep_Bao);
-                    mCultivationProcesses_MY[key] = data;
-
-                }
-                catch
-                {
-                    Console.WriteLine("error GetMaterialCategoryAsync SQLStore");
-                    return null;
-                }
+                DataTable data = await SQLManager_KhoVatTu.Instance.GetCultivationProcessAsync(date);
+                editCultivationProcess(data, true, isKeep_Bao);
+                return data;
             }
-            return mCultivationProcesses_MY[key];
+            catch
+            {
+                Console.WriteLine("error GetMaterialCategoryAsync SQLStore");
+                return null;
+            }
         }
 
         private async void editCultivationProcess(DataTable data, bool isMY = false, bool isKeep_Bao = false)
@@ -924,6 +918,9 @@ namespace RauViet.classes
                 if (workTypeRow != null)
                     rowItem["WorkTypeName"] = workTypeRow["WorkTypeName"].ToString();
 
+                DateTime processDate = Convert.ToDateTime(rowItem["ProcessDate"]);
+                rowItem["ProcessDate_Week"] = Utils.GetThu_Viet(processDate);
+
                 if (materialID.HasValue)
                 {
                     DataRow materialRow = material_dt.AsEnumerable().FirstOrDefault(r => r.Field<int>("MaterialID") == materialID);
@@ -932,7 +929,7 @@ namespace RauViet.classes
                         decimal materialQuantity = Convert.ToDecimal(rowItem["MaterialQuantity"]);
                         int materialPrice = Convert.ToInt32(rowItem["MaterialPrice"]);                        
                         string unit = materialRow["UnitName"].ToString();
-                        DateTime processDate = Convert.ToDateTime(rowItem["ProcessDate"]);
+                        
                         int? categoryID = materialRow.Field<int?>("CategoryID");
                         if (categoryID.HasValue)
                         {
@@ -944,8 +941,7 @@ namespace RauViet.classes
 
                         rowItem["MaterialName"] = materialRow["MaterialName"].ToString();
                         rowItem["MaterialUnit"] = unit;
-                        rowItem["TotalMaterialCost"] = materialQuantity * materialPrice;
-                        rowItem["ProcessDate_Week"] = Utils.GetThu_Viet(processDate);
+                        rowItem["TotalMaterialCost"] = materialQuantity * materialPrice;                        
                     }
                 }
 
@@ -1242,6 +1238,41 @@ namespace RauViet.classes
                         row["UnitName"] = materialRow["UnitName"];
                     }
                 }
+            }
+        }
+
+        public async Task<DataTable> getThongKeVatTuTheoNamAsync()
+        {
+            try
+            {
+                DataTable data = await SQLManager_KhoVatTu.Instance.getThongKeVatTuTheoNamAsync();
+                editThongKeVatTuTheoNam(data);
+                return data;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("error getThongKeVatTuTheoNamAsync SQLStore: " + ex.Message);
+                return null;
+            }
+        }
+
+        public async void editThongKeVatTuTheoNam(DataTable data)
+        {
+            var material_dt = await getMaterialAsync();
+            data.Columns.Add("MaterialName", typeof(string));
+            data.Columns.Add("UnitName", typeof(string));
+
+            foreach (DataRow row in data.Rows)
+            {
+                int materialID = Convert.ToInt32(row["MaterialID"]);
+
+                DataRow materialRow = material_dt.AsEnumerable().FirstOrDefault(r => r.Field<int>("MaterialID") == materialID);
+                if (materialRow != null)
+                {
+                    row["MaterialName"] = materialRow["MaterialName"];
+                    row["UnitName"] = materialRow["UnitName"];
+                }
+
             }
         }
     }

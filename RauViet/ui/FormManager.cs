@@ -202,10 +202,41 @@ namespace RauViet.ui
             else
                 chamcong_pmi.Visible = false;
 
-            if (UserManager.Instance.hasRole_ThongKe())
+            if (UserManager.Instance.hasRole_ThongKeVatTu())
+            {
+
+                qlk_xuatNhapVTQuaCacNam_mi.Click += Qlk_xuatNhapVTQuaCacNam_mi_Click;
+            }
+            else
+            {
+                qlk_bcvt_group_mi.Visible = false;
+            }
+
+            if (UserManager.Instance.hasRole_ThongKeFarm())
+            {
+
+                qlk_SanLuongThangCuaTungLenhSX_mi.Click += Qlk_thongKeSanLuongThang_mi_Click;
+                qlk_sanLuongCayTrongCacNam_mi.Click += Qlk_thongKeSanLuongNam_mi_Click;
+                qlk_TKCapPhan_mi.Click += Qlk_thongKeCapPhan_mi_Click;
+            }
+            else
+            {
+                bcqlctGroup_mi.Visible = false;
+            }
+
+            if (UserManager.Instance.hasRole_ThongKeNS())
             {
                 sumaryAttendanceReport_mi.Click += SumaryAttendanceReport_mi_Click;
                 reportSalary_Month_mi.Click += ReportSalary_Month_mi_Click;
+
+            }
+            else
+            {
+                bcnsGroup_mi.Visible = false;
+            }
+
+            if (UserManager.Instance.hasRole_ThongKeKho())
+            {
 
                 reportOrderIn1Year_mi.Click += ReportExportYear_mi_Click;
                 reportOrderIn1Month_mi.Click += ReportOrderIn1Month_mi_Click;
@@ -215,17 +246,11 @@ namespace RauViet.ui
 
                 ResoncileDomesticDebts_Month_mi.Click += ResoncileDomesticDebts_Month_mi_Click;
                 resoncileDomesticDebts_Year_mi.Click += ResoncileDomesticDebts_Year_mi_Click;
-
-                qlk_SanLuongThangCuaTungLenhSX_mi.Click += Qlk_thongKeSanLuongThang_mi_Click;
-                qlk_sanLuongCayTrongCacNam_mi.Click += Qlk_thongKeSanLuongNam_mi_Click;
-                qlk_TKCapPhan_mi.Click += Qlk_thongKeCapPhan_mi_Click;
             }
             else
             {
-                bcnsGroup_mi.Visible = false;
                 bcdntnGroup_mi.Visible = false;
                 bcdhnnGroup_mi.Visible = false;
-                bcqlctGroup_mi.Visible = false;
             }
 
             if (UserManager.Instance.hasRole_CreateQR())
@@ -412,7 +437,8 @@ namespace RauViet.ui
             KhoVatTu_CultivationProcessTemplate,
             KhoVatTu_TKSanLuongTrong_Thang,
             KhoVatTu_TKSanLuongTrong_Nam,
-            KhoVatTu_TKCapPhanBon
+            KhoVatTu_TKCapPhanBon,
+            KhoVatTu_TKXuatNhapVatTuTheo_Nam
         }
 
         private void openCurrentForm(EForm status)
@@ -641,9 +667,12 @@ namespace RauViet.ui
                     break;
                 case EForm.KhoVatTu_TKSanLuongTrong_Nam:
                     SwitchChildForm<KhoVatTu_TKSanLuongTrong_Nam>("Thống Kê Sản Lượng Cây Trồng Theo Năm");
-                    break;
+                    break; 
                 case EForm.KhoVatTu_TKCapPhanBon:
                     SwitchChildForm<KhoVatTu_TKCapPhanBon>("Thống Kê Cấp Phân Theo Năm");
+                    break;
+                case EForm.KhoVatTu_TKXuatNhapVatTuTheo_Nam:
+                    SwitchChildForm<KhoVatTu_TKXuatNhapVatTuTheo_Nam>("Thống Kê Xuất Nhập Vật Tư Theo Năm");
                     break;
             }
             
@@ -723,8 +752,9 @@ namespace RauViet.ui
         private void materialExport_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.KhoVatTu_MaterialExport); }
         private void MaterialImport_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.KhoVatTu_MaterialImport); }
         private void TonKhoVatTu_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.KhoVatTu_MaterialInvenStore); }
-        private void Supplier_mi_Click(object sender, EventArgs e){ openCurrentForm(EForm.Supplier); }
+        private void Supplier_mi_Click(object sender, EventArgs e){ openCurrentForm(EForm.Supplier); }        
         private void Qlk_thongKeSanLuongThang_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.KhoVatTu_TKSanLuongTrong_Thang); }
+        private void Qlk_xuatNhapVTQuaCacNam_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.KhoVatTu_TKXuatNhapVatTuTheo_Nam); }
         private void Qlk_thongKeSanLuongNam_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.KhoVatTu_TKSanLuongTrong_Nam); }
         private void Qlk_thongKeCapPhan_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.KhoVatTu_TKCapPhanBon); }
         private async void checkLoginTimer_Tick(object sender, EventArgs e)

@@ -1,6 +1,9 @@
 ﻿
+using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Bibliography;
 using RauViet.classes;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
 using System.Linq;
@@ -12,7 +15,7 @@ namespace RauViet.ui
 {
     public partial class KhoVatTu_MaterialExport : Form
     {
-        System.Data.DataTable mMaterial_dt, mEmployee_dt, mWorkType_dt, mPlantingManagement_dt, mMaterialExport_dt, mMaterialDepartment_dt;
+        System.Data.DataTable mMaterial_dt, mEmployee_dt, mWorkType_dt, mPlantingManagement_dt, mMaterialExport_dt, mMaterialDepartment_dt, mReciever_dt;
         private DataView mLogDV;
         private Timer _monthYearDebounceTimer = new Timer { Interval = 500 };
         private Timer PlantingManagementDebounceTimer = new Timer { Interval = 300 };
@@ -42,6 +45,9 @@ namespace RauViet.ui
             dayGV.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dayGV.MultiSelect = false;
 
+            NVPhuTrach_GV.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            NVPhuTrach_GV.MultiSelect = false;
+
             status_lb.Text = "";
 
             _monthYearDebounceTimer.Tick += MonthYearDebounceTimer_Tick;
@@ -65,7 +71,15 @@ namespace RauViet.ui
             soLuong_tb.KeyPress += Tb_KeyPress_OnlyNumber;
 
             dayGV.SelectionChanged += DayGV_SelectionChanged;
+            NVPhuTrach_GV.SelectionChanged += DayGV_SelectionChanged;
             goiYCapPhan_btn.Click += GoiYCapPhan_btn_Click;
+
+            locTheoNgay_CB.CheckedChanged += Loc_CheckedChanged;
+            locTheoNguoiPTrach_CB.CheckedChanged += Loc_CheckedChanged;
+
+            excelPhanCongCV_btn.Click += ExcelPhanCongCV_btn_Click;
+            xemPhanCongCV_btn.Click += XemPhanCongCV_btn_Click;
+            inPhanCongCV_btn.Click += InPhanCongCV_btn_Click;
         }
 
         private void Kho_Materials_KeyDown(object sender, KeyEventArgs e)
@@ -128,6 +142,10 @@ namespace RauViet.ui
                 mMaterialExport_dt = materialExportTask.Result;
                 mLogDV = new DataView(logDataTask.Result);
 
+                DataView materialExportDV = new DataView(mMaterialExport_dt);
+                materialExportDV.RowFilter = "Receiver IS NOT NULL AND Receiver <> ''";
+                mReciever_dt = materialExportDV.ToTable(true, "RecieverName", "Receiver");
+
                 dayGV.DataSource = Utils.CreateDateTable(month, year);
 
                 vatTu_CB.DataSource = mMaterial_dt;
@@ -154,8 +172,18 @@ namespace RauViet.ui
                 boPhan_cbb.DisplayMember = "MaterialDepartmentName";  // hiển thị tên
                 boPhan_cbb.ValueMember = "MaterialDepartmentID";
 
+                NVPhuTrach_GV.DataSource = mReciever_dt;
                 dataGV.DataSource = mMaterialExport_dt;
                 log_GV.DataSource = mLogDV;
+
+            //    Utils.HideColumns(NVPhuTrach_GV, new[] { "Receiver" });
+                Utils.SetGridHeaders(NVPhuTrach_GV, new System.Collections.Generic.Dictionary<string, string> {
+                        {"RecieverName", "Người Phụ Trách" }
+                    });
+                Utils.SetGridWidths(NVPhuTrach_GV, new System.Collections.Generic.Dictionary<string, int> {
+                        {"RecieverName", 150 }
+                    });
+
                 Utils.HideColumns(dataGV, new[] { "NurseryDate", "PlantingID", "Receiver", "MaterialID", "WorkTypeID", "ExportID", "MaterialDepartmentID", "IsCompleted" });
                 Utils.SetGridOrdinal(mMaterialExport_dt, new[] { "ExportDate", "MaterialName", "UnitName", "Amount", "ProductionOrder", "WorkTypeName", "RecieverName", "MaterialDepartmentName", "Note" });
                 Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
@@ -388,18 +416,43 @@ namespace RauViet.ui
 
         private void DayGV_SelectionChanged(object sender, EventArgs e)
         {
-            if (dayGV.SelectedRows.Count == 0)
-                return;
-            var cells = dayGV.SelectedRows[0].Cells;
-            if (cells == null) return;
-            DateTime date = Convert.ToDateTime(cells["Date"].Value);
+            List<string> andConditions = new List<string>();
 
+            if (locTheoNgay_CB.Checked && dayGV.SelectedRows.Count > 0)
+            {
+                var cells = dayGV.SelectedRows[0].Cells;
+                if (cells == null) 
+                    return;
+                DateTime date = Convert.ToDateTime(cells["Date"].Value);
+                andConditions.Add($"ExportDate >= #{date:MM/dd/yyyy}# AND ExportDate < #{date.AddDays(1):MM/dd/yyyy}#");
+            }
+
+            if (locTheoNguoiPTrach_CB.Checked && NVPhuTrach_GV.SelectedRows.Count > 0)
+            {
+                var cells = NVPhuTrach_GV.SelectedRows[0].Cells;
+                if (cells == null)
+                    return;
+                string receiver = Convert.ToString(cells["Receiver"].Value);
+                andConditions.Add($"Receiver = '{receiver}'");
+            }
+
+            string filter = "";
+            if (andConditions.Count > 0)
+            {
+                filter += string.Join(" AND ", andConditions);
+            }
 
             DataView dv = mMaterialExport_dt.DefaultView;
-            dv.RowFilter = $"ExportDate >= #{date:MM/dd/yyyy}# AND ExportDate < #{date.AddDays(1):MM/dd/yyyy}#";
+            dv.RowFilter = filter;
 
-            mLogDV.RowFilter = $"ExportDate >= #{date:MM/dd/yyyy}# AND ExportDate < #{date.AddDays(1):MM/dd/yyyy}#";
-
+            if (dayGV.SelectedRows.Count > 0)
+            {
+                var cells = dayGV.SelectedRows[0].Cells;
+                if (cells == null)
+                    return;
+                DateTime date = Convert.ToDateTime(cells["Date"].Value);
+                mLogDV.RowFilter = $"ExportDate >= #{date:MM/dd/yyyy}# AND ExportDate < #{date.AddDays(1):MM/dd/yyyy}#";
+            }
         }
 
         private void dataGV_CellClick(object sender, EventArgs e)
@@ -832,10 +885,16 @@ namespace RauViet.ui
 
         private void GoiYCapPhan_btn_Click(object sender, EventArgs e)
         {
+            if (dayGV.SelectedRows.Count == 0)
+                return;
+            var cells = dayGV.SelectedRows[0].Cells;
+            if (cells == null) return;
+            DateTime date = Convert.ToDateTime(cells["Date"].Value);
+
             monthYear_dtp.ValueChanged -= monthYearDtp_ValueChanged;
             int month = monthYear_dtp.Value.Month;
             int year = monthYear_dtp.Value.Year;
-            KhoVatTu_GoiYCapPhan frm = new KhoVatTu_GoiYCapPhan(month, year);
+            KhoVatTu_GoiYCapPhan frm = new KhoVatTu_GoiYCapPhan(date);
             frm.FormClosed += KhoVatTu_GoiYCapPhan_FormClosed;
             frm.ShowData();
             frm.ShowDialog();
@@ -848,6 +907,149 @@ namespace RauViet.ui
             int year = monthYear_dtp.Value.Year;
             SQLStore_KhoVatTu.Instance.removeMaterialExport(month, year);
             this.ShowData();
+        }
+
+        private void Loc_CheckedChanged(object sender, EventArgs e)
+        {
+            DayGV_SelectionChanged(null, null);
+        }
+
+        private void InPhanCongCV_btn_Click(object sender, EventArgs e)
+        {
+            PhanCongCVPrinter(false);
+        }
+
+        private void XemPhanCongCV_btn_Click(object sender, EventArgs e)
+        {
+            PhanCongCVPrinter(true);
+        }
+
+        private async void ExcelPhanCongCV_btn_Click(object sender, EventArgs e)
+        {
+            if (dayGV.SelectedRows.Count == 0 || NVPhuTrach_GV.SelectedRows.Count == 0)
+                return;
+
+            string empCode = Convert.ToString(NVPhuTrach_GV.SelectedRows[0].Cells["Receiver"].Value);
+            string empName = Convert.ToString(NVPhuTrach_GV.SelectedRows[0].Cells["RecieverName"].Value);
+            DateTime date = Convert.ToDateTime(dayGV.SelectedRows[0].Cells["Date"].Value);
+
+            loadingOverlay = new LoadingOverlay(this);
+            loadingOverlay.Message = "Đang xử lý ...";
+            loadingOverlay.Show();
+            await Task.Delay(100);
+
+            try
+            {
+                DateTime start = date;
+                DateTime end = start.AddDays(1);
+
+                DataView dv = new DataView(mMaterialExport_dt);
+                dv.RowFilter = $"ExportDate >= #{start:MM/dd/yyyy}# AND ExportDate < #{end:MM/dd/yyyy}# AND Receiver = '{empCode}'";
+                dv.Sort = "ExportDate ASC";
+
+                var resultFilter_dt = dv.ToTable();
+
+                using (var wb = new XLWorkbook())
+                {
+                    var ws = wb.Worksheets.Add("PhanCongCV");
+
+                    int row = 1;
+
+                    // 🔹 Title
+                    ws.Cell(row, 1).Value = $"BẢNG PHÂN CÔNG CÔNG VIỆC {date:dd/MM/yyyy}";
+                    ws.Range(row, 1, row, 8).Merge().Style.Font.SetBold().Font.SetFontSize(16).Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
+                    row++;
+
+                    // 🔹 Header
+                    string[] headers = { "Ngày", "Tên Cây Trồng", "LSX", "Công Việc", "Tên Vật Tư", "Số Lượng", "ĐVT", "Người Ph.Trách" };
+
+                    for (int i = 0; i < headers.Length; i++)
+                    {
+                        ws.Cell(row, i + 1).Value = headers[i];
+                        ws.Cell(row, i + 1).Style.Font.Bold = true;
+                        ws.Cell(row, i + 1).Style.Fill.BackgroundColor = XLColor.LightGray;
+                    }
+                    row++;
+
+                    // 🔹 Data
+                    foreach (DataRow dr in resultFilter_dt.Rows)
+                    {
+                        ws.Cell(row, 1).Value = Convert.ToDateTime(dr["ExportDate"]).ToString("dd/MM/yyyy");
+                        ws.Cell(row, 2).Value = dr["PlantName"].ToString();
+                        ws.Cell(row, 3).Value = dr["ProductionOrder"].ToString();
+                        ws.Cell(row, 4).Value = dr["WorkTypeName"].ToString();
+                        ws.Cell(row, 5).Value = dr["MaterialName"].ToString();
+                        ws.Cell(row, 6).Value = Convert.ToDecimal(dr["Amount"]);
+                        ws.Cell(row, 7).Value = dr["UnitName"].ToString();
+                        ws.Cell(row, 8).Value = dr["RecieverName"].ToString();
+
+                        row++;
+                    }
+
+                    ws.Style.Font.FontName = "Times New Roman";
+                    ws.Style.Font.FontSize = 11;
+                    ws.Range(2, 1, row - 1, 8).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                    ws.Range(2, 1, row - 1, 8).Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+                    // 🔹 Format số
+                    ws.Column(6).Style.NumberFormat.Format = "#,##0.00";
+
+                    // 🔹 Auto width
+                    ws.Columns().AdjustToContents();
+
+                    
+                    using (SaveFileDialog sfd = new SaveFileDialog())
+                    {
+                        sfd.Filter = "Excel Workbook|*.xlsx";
+                        sfd.FileName = $"BangPhanCongCV_{date.ToString("dd_MM_yyyy")}_{Utils.RemoveVietnameseSigns(empName).Replace(" ", "")}";
+                        if (sfd.ShowDialog() == DialogResult.OK)
+                        {
+                            wb.SaveAs(sfd.FileName);
+                            DialogResult result = MessageBox.Show("Bạn có muốn mở file này không?", "Lưu file thành công", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                            if (result == DialogResult.Yes)
+                            {
+                                try
+                                {
+                                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo()
+                                    {
+                                        FileName = sfd.FileName,
+                                        UseShellExecute = true
+                                    });
+                                }
+                                catch (Exception ex)
+                                {
+                                    MessageBox.Show("Không thể mở file: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi khi xuất Excel: " + ex.Message);
+            }
+            finally
+            {
+                await Task.Delay(200);
+                loadingOverlay.Hide();
+            }
+        }
+
+        async void PhanCongCVPrinter(bool isPreview)
+        {
+            if (dayGV.SelectedRows.Count == 0 || NVPhuTrach_GV.SelectedRows.Count == 0)
+                return;
+
+            string empCode = Convert.ToString(NVPhuTrach_GV.SelectedRows[0].Cells["Receiver"].Value);
+            string empName = Convert.ToString(NVPhuTrach_GV.SelectedRows[0].Cells["RecieverName"].Value);
+            DateTime date = Convert.ToDateTime(dayGV.SelectedRows[0].Cells["Date"].Value);
+
+            KhoVatTu_PhanCongCV_Printer printer = new KhoVatTu_PhanCongCV_Printer(empName, empCode, mMaterialExport_dt, date);
+
+            if (isPreview)
+                printer.PrintPreview(this);
+            else
+                printer.PrintDirect();
         }
     }
 }

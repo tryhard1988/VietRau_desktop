@@ -2189,6 +2189,8 @@ namespace RauViet.ui
 
             foreach (DataRow row in mCultivationProcess_dt.Rows)
             {
+                int? workTypeID = row.Field<int?>("WorkTypeID");
+
                 for (int i = 0; i < exportColumns.Length; i++)
                 {
                     columnInd = i + 1;
@@ -2199,7 +2201,19 @@ namespace RauViet.ui
 
                     string valueStr = row[exportColumns[i]].ToString();
                     if (string.IsNullOrEmpty(valueStr))
-                        valueCell.Value = valueStr;
+                    {
+                        if (workTypeID == Utils.WorkType_ThuHoach())
+                        {
+                            if (exportColumns[i].CompareTo("MaterialName") == 0)
+                                valueCell.Value = mPlantingRow["PlantName"].ToString();
+                            else if (exportColumns[i].CompareTo("MaterialUnit") == 0)
+                                valueCell.Value = "Kg";
+                            else
+                                valueCell.Value = valueStr;
+                        }
+                        else
+                            valueCell.Value = valueStr;
+                    }
                     else
                     {
                         if (typeColumns[i].CompareTo("int") == 0)
@@ -2209,7 +2223,22 @@ namespace RauViet.ui
                         else if (typeColumns[i].CompareTo("decimal") == 0)
                             valueCell.Value = Convert.ToDecimal(valueStr);
                         else
-                            valueCell.Value = valueStr;
+                        {
+                            if (workTypeID == Utils.WorkType_ThuHoach())
+                            {
+                                if (exportColumns[i].CompareTo("MaterialName") == 0)
+                                    valueCell.Value = mPlantingRow["PlantName"].ToString();
+                                else if (exportColumns[i].CompareTo("MaterialUnit") == 0)
+                                    valueCell.Value = "Kg";
+                                else
+                                    valueCell.Value = valueStr;
+                            }
+
+                            else
+                            {
+                                valueCell.Value = valueStr;
+                            }
+                        }
                     }
 
                     valueCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;

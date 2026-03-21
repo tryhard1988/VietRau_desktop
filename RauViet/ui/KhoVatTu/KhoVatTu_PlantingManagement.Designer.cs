@@ -109,6 +109,9 @@ namespace RauViet.ui
             this.inCapPhan_btn = new System.Windows.Forms.Button();
             this.xemCapPhan_btn = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.locTheoLSX_DaDong_CB = new System.Windows.Forms.CheckBox();
+            this.locTheoLSX_DangHoatDong_CB = new System.Windows.Forms.CheckBox();
+            this.panel10 = new System.Windows.Forms.Panel();
             this.panel2.SuspendLayout();
             this.panel6.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
@@ -129,6 +132,7 @@ namespace RauViet.ui
             this.groupBox3.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.panel1.SuspendLayout();
+            this.panel10.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel2
@@ -149,9 +153,9 @@ namespace RauViet.ui
             this.panel6.Controls.Add(this.label4);
             this.panel6.Controls.Add(this.log_GV);
             this.panel6.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel6.Location = new System.Drawing.Point(137, 33);
+            this.panel6.Location = new System.Drawing.Point(137, 53);
             this.panel6.Name = "panel6";
-            this.panel6.Size = new System.Drawing.Size(774, 715);
+            this.panel6.Size = new System.Drawing.Size(774, 695);
             this.panel6.TabIndex = 4;
             // 
             // dataGV
@@ -163,7 +167,7 @@ namespace RauViet.ui
             this.dataGV.Location = new System.Drawing.Point(0, 0);
             this.dataGV.Name = "dataGV";
             this.dataGV.ReadOnly = true;
-            this.dataGV.Size = new System.Drawing.Size(774, 552);
+            this.dataGV.Size = new System.Drawing.Size(774, 532);
             this.dataGV.TabIndex = 78;
             // 
             // label4
@@ -172,7 +176,7 @@ namespace RauViet.ui
             this.label4.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.label4.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label4.ForeColor = System.Drawing.Color.DarkOliveGreen;
-            this.label4.Location = new System.Drawing.Point(0, 552);
+            this.label4.Location = new System.Drawing.Point(0, 532);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(774, 23);
             this.label4.TabIndex = 77;
@@ -185,7 +189,7 @@ namespace RauViet.ui
             this.log_GV.AllowUserToDeleteRows = false;
             this.log_GV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.log_GV.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.log_GV.Location = new System.Drawing.Point(0, 575);
+            this.log_GV.Location = new System.Drawing.Point(0, 555);
             this.log_GV.Name = "log_GV";
             this.log_GV.ReadOnly = true;
             this.log_GV.Size = new System.Drawing.Size(774, 140);
@@ -200,9 +204,9 @@ namespace RauViet.ui
             this.panel5.Controls.Add(this.panel7);
             this.panel5.Controls.Add(this.label13);
             this.panel5.Dock = System.Windows.Forms.DockStyle.Left;
-            this.panel5.Location = new System.Drawing.Point(0, 33);
+            this.panel5.Location = new System.Drawing.Point(0, 53);
             this.panel5.Name = "panel5";
-            this.panel5.Size = new System.Drawing.Size(137, 715);
+            this.panel5.Size = new System.Drawing.Size(137, 695);
             this.panel5.TabIndex = 3;
             // 
             // panel9
@@ -210,9 +214,9 @@ namespace RauViet.ui
             this.panel9.BackColor = System.Drawing.Color.Wheat;
             this.panel9.Controls.Add(this.weekInYear_GV);
             this.panel9.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel9.Location = new System.Drawing.Point(0, 458);
+            this.panel9.Location = new System.Drawing.Point(0, 473);
             this.panel9.Name = "panel9";
-            this.panel9.Size = new System.Drawing.Size(137, 257);
+            this.panel9.Size = new System.Drawing.Size(137, 222);
             this.panel9.TabIndex = 82;
             // 
             // weekInYear_GV
@@ -225,7 +229,7 @@ namespace RauViet.ui
             this.weekInYear_GV.Location = new System.Drawing.Point(0, 0);
             this.weekInYear_GV.Name = "weekInYear_GV";
             this.weekInYear_GV.ReadOnly = true;
-            this.weekInYear_GV.Size = new System.Drawing.Size(131, 257);
+            this.weekInYear_GV.Size = new System.Drawing.Size(131, 222);
             this.weekInYear_GV.TabIndex = 4;
             // 
             // label15
@@ -233,7 +237,7 @@ namespace RauViet.ui
             this.label15.BackColor = System.Drawing.Color.Wheat;
             this.label15.Dock = System.Windows.Forms.DockStyle.Top;
             this.label15.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label15.Location = new System.Drawing.Point(0, 426);
+            this.label15.Location = new System.Drawing.Point(0, 441);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(137, 32);
             this.label15.TabIndex = 81;
@@ -245,9 +249,9 @@ namespace RauViet.ui
             this.panel8.BackColor = System.Drawing.Color.Wheat;
             this.panel8.Controls.Add(this.toPhuTrach_GV);
             this.panel8.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel8.Location = new System.Drawing.Point(0, 324);
+            this.panel8.Location = new System.Drawing.Point(0, 321);
             this.panel8.Name = "panel8";
-            this.panel8.Size = new System.Drawing.Size(137, 102);
+            this.panel8.Size = new System.Drawing.Size(137, 120);
             this.panel8.TabIndex = 80;
             // 
             // toPhuTrach_GV
@@ -260,7 +264,7 @@ namespace RauViet.ui
             this.toPhuTrach_GV.Location = new System.Drawing.Point(0, 0);
             this.toPhuTrach_GV.Name = "toPhuTrach_GV";
             this.toPhuTrach_GV.ReadOnly = true;
-            this.toPhuTrach_GV.Size = new System.Drawing.Size(131, 102);
+            this.toPhuTrach_GV.Size = new System.Drawing.Size(131, 120);
             this.toPhuTrach_GV.TabIndex = 4;
             // 
             // label14
@@ -268,7 +272,7 @@ namespace RauViet.ui
             this.label14.BackColor = System.Drawing.Color.Wheat;
             this.label14.Dock = System.Windows.Forms.DockStyle.Top;
             this.label14.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label14.Location = new System.Drawing.Point(0, 292);
+            this.label14.Location = new System.Drawing.Point(0, 289);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(137, 32);
             this.label14.TabIndex = 79;
@@ -282,7 +286,7 @@ namespace RauViet.ui
             this.panel7.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel7.Location = new System.Drawing.Point(0, 32);
             this.panel7.Name = "panel7";
-            this.panel7.Size = new System.Drawing.Size(137, 260);
+            this.panel7.Size = new System.Drawing.Size(137, 257);
             this.panel7.TabIndex = 77;
             // 
             // monthGV
@@ -295,7 +299,7 @@ namespace RauViet.ui
             this.monthGV.Location = new System.Drawing.Point(0, 0);
             this.monthGV.Name = "monthGV";
             this.monthGV.ReadOnly = true;
-            this.monthGV.Size = new System.Drawing.Size(131, 260);
+            this.monthGV.Size = new System.Drawing.Size(131, 257);
             this.monthGV.TabIndex = 4;
             // 
             // label13
@@ -312,28 +316,30 @@ namespace RauViet.ui
             // 
             // panel4
             // 
-            this.panel4.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.panel4.BackColor = System.Drawing.Color.Teal;
+            this.panel4.Controls.Add(this.panel10);
+            this.panel4.Controls.Add(this.locTheoLSX_DangHoatDong_CB);
+            this.panel4.Controls.Add(this.locTheoLSX_DaDong_CB);
             this.panel4.Controls.Add(this.locTheoTuan_CB);
             this.panel4.Controls.Add(this.locTheoTo_CB);
             this.panel4.Controls.Add(this.locTheoNgayThu_CB);
             this.panel4.Controls.Add(this.locTheoNgayTrong_CB);
             this.panel4.Controls.Add(this.locTheoNgayUom_CB);
-            this.panel4.Controls.Add(this.search_tb);
             this.panel4.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel4.Location = new System.Drawing.Point(0, 0);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(911, 33);
+            this.panel4.Size = new System.Drawing.Size(911, 53);
             this.panel4.TabIndex = 1;
             // 
             // locTheoTuan_CB
             // 
             this.locTheoTuan_CB.AutoSize = true;
-            this.locTheoTuan_CB.BackColor = System.Drawing.Color.DarkGoldenrod;
-            this.locTheoTuan_CB.Location = new System.Drawing.Point(535, 8);
+            this.locTheoTuan_CB.BackColor = System.Drawing.Color.Moccasin;
+            this.locTheoTuan_CB.Location = new System.Drawing.Point(256, 29);
             this.locTheoTuan_CB.Name = "locTheoTuan_CB";
-            this.locTheoTuan_CB.Size = new System.Drawing.Size(103, 17);
+            this.locTheoTuan_CB.Size = new System.Drawing.Size(82, 17);
             this.locTheoTuan_CB.TabIndex = 88;
-            this.locTheoTuan_CB.Text = "Lọc Theo Tuần.";
+            this.locTheoTuan_CB.Text = "Theo Tuần.";
             this.locTheoTuan_CB.UseVisualStyleBackColor = false;
             // 
             // locTheoTo_CB
@@ -342,22 +348,22 @@ namespace RauViet.ui
             this.locTheoTo_CB.BackColor = System.Drawing.Color.Moccasin;
             this.locTheoTo_CB.Checked = true;
             this.locTheoTo_CB.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.locTheoTo_CB.Location = new System.Drawing.Point(433, 8);
+            this.locTheoTo_CB.Location = new System.Drawing.Point(256, 5);
             this.locTheoTo_CB.Name = "locTheoTo_CB";
-            this.locTheoTo_CB.Size = new System.Drawing.Size(91, 17);
+            this.locTheoTo_CB.Size = new System.Drawing.Size(70, 17);
             this.locTheoTo_CB.TabIndex = 87;
-            this.locTheoTo_CB.Text = "Lọc Theo Tổ.";
+            this.locTheoTo_CB.Text = "Theo Tổ.";
             this.locTheoTo_CB.UseVisualStyleBackColor = false;
             // 
             // locTheoNgayThu_CB
             // 
             this.locTheoNgayThu_CB.AutoSize = true;
             this.locTheoNgayThu_CB.BackColor = System.Drawing.Color.DarkOrange;
-            this.locTheoNgayThu_CB.Location = new System.Drawing.Point(297, 8);
+            this.locTheoNgayThu_CB.Location = new System.Drawing.Point(8, 29);
             this.locTheoNgayThu_CB.Name = "locTheoNgayThu_CB";
-            this.locTheoNgayThu_CB.Size = new System.Drawing.Size(125, 17);
+            this.locTheoNgayThu_CB.Size = new System.Drawing.Size(76, 17);
             this.locTheoNgayThu_CB.TabIndex = 86;
-            this.locTheoNgayThu_CB.Text = "Lọc Theo Ngày Thu.";
+            this.locTheoNgayThu_CB.Text = "Ngày Thu.";
             this.locTheoNgayThu_CB.UseVisualStyleBackColor = false;
             // 
             // locTheoNgayTrong_CB
@@ -366,31 +372,30 @@ namespace RauViet.ui
             this.locTheoNgayTrong_CB.BackColor = System.Drawing.Color.DarkOrange;
             this.locTheoNgayTrong_CB.Checked = true;
             this.locTheoNgayTrong_CB.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.locTheoNgayTrong_CB.Location = new System.Drawing.Point(152, 8);
+            this.locTheoNgayTrong_CB.Location = new System.Drawing.Point(106, 5);
             this.locTheoNgayTrong_CB.Name = "locTheoNgayTrong_CB";
-            this.locTheoNgayTrong_CB.Size = new System.Drawing.Size(134, 17);
+            this.locTheoNgayTrong_CB.Size = new System.Drawing.Size(85, 17);
             this.locTheoNgayTrong_CB.TabIndex = 85;
-            this.locTheoNgayTrong_CB.Text = "Lọc Theo Ngày Trồng.";
+            this.locTheoNgayTrong_CB.Text = "Ngày Trồng.";
             this.locTheoNgayTrong_CB.UseVisualStyleBackColor = false;
             // 
             // locTheoNgayUom_CB
             // 
             this.locTheoNgayUom_CB.AutoSize = true;
             this.locTheoNgayUom_CB.BackColor = System.Drawing.Color.DarkOrange;
-            this.locTheoNgayUom_CB.Location = new System.Drawing.Point(13, 8);
+            this.locTheoNgayUom_CB.Location = new System.Drawing.Point(8, 5);
             this.locTheoNgayUom_CB.Name = "locTheoNgayUom_CB";
-            this.locTheoNgayUom_CB.Size = new System.Drawing.Size(128, 17);
+            this.locTheoNgayUom_CB.Size = new System.Drawing.Size(79, 17);
             this.locTheoNgayUom_CB.TabIndex = 84;
-            this.locTheoNgayUom_CB.Text = "Lọc Theo Ngày Ươm.";
+            this.locTheoNgayUom_CB.Text = "Ngày Ươm.";
             this.locTheoNgayUom_CB.UseVisualStyleBackColor = false;
             // 
             // search_tb
             // 
-            this.search_tb.Dock = System.Windows.Forms.DockStyle.Right;
             this.search_tb.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.search_tb.Location = new System.Drawing.Point(681, 0);
+            this.search_tb.Location = new System.Drawing.Point(3, 12);
             this.search_tb.Name = "search_tb";
-            this.search_tb.Size = new System.Drawing.Size(230, 26);
+            this.search_tb.Size = new System.Drawing.Size(186, 26);
             this.search_tb.TabIndex = 69;
             // 
             // panel3
@@ -1018,6 +1023,39 @@ namespace RauViet.ui
             this.panel1.Size = new System.Drawing.Size(533, 776);
             this.panel1.TabIndex = 69;
             // 
+            // locTheoLSX_DaDong_CB
+            // 
+            this.locTheoLSX_DaDong_CB.AutoSize = true;
+            this.locTheoLSX_DaDong_CB.BackColor = System.Drawing.Color.YellowGreen;
+            this.locTheoLSX_DaDong_CB.Location = new System.Drawing.Point(391, 5);
+            this.locTheoLSX_DaDong_CB.Name = "locTheoLSX_DaDong_CB";
+            this.locTheoLSX_DaDong_CB.Size = new System.Drawing.Size(122, 17);
+            this.locTheoLSX_DaDong_CB.TabIndex = 89;
+            this.locTheoLSX_DaDong_CB.Text = "Lênh SX - Đã Đóng.";
+            this.locTheoLSX_DaDong_CB.UseVisualStyleBackColor = false;
+            // 
+            // locTheoLSX_DangHoatDong_CB
+            // 
+            this.locTheoLSX_DangHoatDong_CB.AutoSize = true;
+            this.locTheoLSX_DangHoatDong_CB.BackColor = System.Drawing.Color.YellowGreen;
+            this.locTheoLSX_DangHoatDong_CB.Checked = true;
+            this.locTheoLSX_DangHoatDong_CB.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.locTheoLSX_DangHoatDong_CB.Location = new System.Drawing.Point(391, 29);
+            this.locTheoLSX_DangHoatDong_CB.Name = "locTheoLSX_DangHoatDong_CB";
+            this.locTheoLSX_DangHoatDong_CB.Size = new System.Drawing.Size(160, 17);
+            this.locTheoLSX_DangHoatDong_CB.TabIndex = 90;
+            this.locTheoLSX_DangHoatDong_CB.Text = "Lênh SX - Đang Hoạt Động.";
+            this.locTheoLSX_DangHoatDong_CB.UseVisualStyleBackColor = false;
+            // 
+            // panel10
+            // 
+            this.panel10.Controls.Add(this.search_tb);
+            this.panel10.Dock = System.Windows.Forms.DockStyle.Right;
+            this.panel10.Location = new System.Drawing.Point(692, 0);
+            this.panel10.Name = "panel10";
+            this.panel10.Size = new System.Drawing.Size(219, 53);
+            this.panel10.TabIndex = 91;
+            // 
             // KhoVatTu_PlantingManagement
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1050,6 +1088,8 @@ namespace RauViet.ui
             this.groupBox4.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            this.panel10.ResumeLayout(false);
+            this.panel10.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -1135,5 +1175,8 @@ namespace RauViet.ui
         private System.Windows.Forms.Button inCapPhan_btn;
         private System.Windows.Forms.Button xemCapPhan_btn;
         private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.CheckBox locTheoLSX_DaDong_CB;
+        private System.Windows.Forms.CheckBox locTheoLSX_DangHoatDong_CB;
+        private System.Windows.Forms.Panel panel10;
     }
 }

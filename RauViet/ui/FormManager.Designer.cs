@@ -128,6 +128,8 @@
             this.loadExcelOrderReportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.content_panel = new System.Windows.Forms.Panel();
             this.bbbbbbbbb_mi = new System.Windows.Forms.ToolStripMenuItem();
+            this.qlk_bcvt_group_mi = new System.Windows.Forms.ToolStripMenuItem();
+            this.qlk_xuatNhapVTQuaCacNam_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1.SuspendLayout();
             this.LOT_menuitem.SuspendLayout();
             this.SuspendLayout();
@@ -759,7 +761,8 @@
             this.khoVaTu_mi,
             this.materialExport_mi,
             this.materialImport_mi,
-            this.tonKhoVatTu_mi});
+            this.tonKhoVatTu_mi,
+            this.qlk_bcvt_group_mi});
             this.qlVatTu_group.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.qlVatTu_group.ForeColor = System.Drawing.Color.Blue;
             this.qlVatTu_group.Name = "qlVatTu_group";
@@ -769,25 +772,25 @@
             // khoVaTu_mi
             // 
             this.khoVaTu_mi.Name = "khoVaTu_mi";
-            this.khoVaTu_mi.Size = new System.Drawing.Size(183, 22);
+            this.khoVaTu_mi.Size = new System.Drawing.Size(188, 22);
             this.khoVaTu_mi.Text = "Danh Sách Vật Tư";
             // 
             // materialExport_mi
             // 
             this.materialExport_mi.Name = "materialExport_mi";
-            this.materialExport_mi.Size = new System.Drawing.Size(183, 22);
+            this.materialExport_mi.Size = new System.Drawing.Size(188, 22);
             this.materialExport_mi.Text = "Xuất Kho Vật Tư";
             // 
             // materialImport_mi
             // 
             this.materialImport_mi.Name = "materialImport_mi";
-            this.materialImport_mi.Size = new System.Drawing.Size(183, 22);
+            this.materialImport_mi.Size = new System.Drawing.Size(188, 22);
             this.materialImport_mi.Text = "Nhập Kho Vật Tư";
             // 
             // tonKhoVatTu_mi
             // 
             this.tonKhoVatTu_mi.Name = "tonKhoVatTu_mi";
-            this.tonKhoVatTu_mi.Size = new System.Drawing.Size(183, 22);
+            this.tonKhoVatTu_mi.Size = new System.Drawing.Size(188, 22);
             this.tonKhoVatTu_mi.Text = "Tồn Kho Vật Tư";
             // 
             // QLCT_group_mi
@@ -842,7 +845,7 @@
             // 
             this.qlk_TKCapPhan_mi.Name = "qlk_TKCapPhan_mi";
             this.qlk_TKCapPhan_mi.Size = new System.Drawing.Size(296, 22);
-            this.qlk_TKCapPhan_mi.Text = "Phân Bón";
+            this.qlk_TKCapPhan_mi.Text = "Tiêu Thụ Vật Tư Các Năm";
             // 
             // toolStripMenuItem4
             // 
@@ -903,6 +906,22 @@
             // 
             this.bbbbbbbbb_mi.Name = "bbbbbbbbb_mi";
             this.bbbbbbbbb_mi.Size = new System.Drawing.Size(32, 19);
+            // 
+            // qlk_bcvt_group_mi
+            // 
+            this.qlk_bcvt_group_mi.BackColor = System.Drawing.SystemColors.ScrollBar;
+            this.qlk_bcvt_group_mi.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.qlk_xuatNhapVTQuaCacNam_mi});
+            this.qlk_bcvt_group_mi.ForeColor = System.Drawing.Color.Red;
+            this.qlk_bcvt_group_mi.Name = "qlk_bcvt_group_mi";
+            this.qlk_bcvt_group_mi.Size = new System.Drawing.Size(188, 22);
+            this.qlk_bcvt_group_mi.Text = "Báo Cáo Thông Kê";
+            // 
+            // qlk_xuatNhapVTQuaCacNam_mi
+            // 
+            this.qlk_xuatNhapVTQuaCacNam_mi.Name = "qlk_xuatNhapVTQuaCacNam_mi";
+            this.qlk_xuatNhapVTQuaCacNam_mi.Size = new System.Drawing.Size(247, 22);
+            this.qlk_xuatNhapVTQuaCacNam_mi.Text = "Xuất Nhập VT Qua Các Năm";
             // 
             // FormManager
             // 
@@ -1024,5 +1043,7 @@
         private System.Windows.Forms.ToolStripMenuItem qlk_SanLuongThangCuaTungLenhSX_mi;
         private System.Windows.Forms.ToolStripMenuItem qlk_sanLuongCayTrongCacNam_mi;
         private System.Windows.Forms.ToolStripMenuItem qlk_TKCapPhan_mi;
+        private System.Windows.Forms.ToolStripMenuItem qlk_bcvt_group_mi;
+        private System.Windows.Forms.ToolStripMenuItem qlk_xuatNhapVTQuaCacNam_mi;
     }
 }

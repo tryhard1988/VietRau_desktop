@@ -84,6 +84,8 @@ namespace RauViet.ui
             locTheoNgayUom_CB.CheckedChanged += Loc_CheckedChanged;
             locTheoTo_CB.CheckedChanged += Loc_CheckedChanged;
             locTheoTuan_CB.CheckedChanged += Loc_CheckedChanged;
+            locTheoLSX_DaDong_CB.CheckedChanged += Loc_CheckedChanged;
+            locTheoLSX_DangHoatDong_CB.CheckedChanged += Loc_CheckedChanged;
 
             inPhieuSX_btn.Click += InPhieuSX_btn_Click;
             xemPhieuSX_btn.Click += XemPhieuSX_btn_Click;
@@ -166,6 +168,7 @@ namespace RauViet.ui
                 if (mPlantingManagement_dt.Rows.Count > 0)
                 {
                     DataView dv = new DataView(mPlantingManagement_dt);
+                    dv.RowFilter = "Department IS NOT NULL";
                     department_dt = dv.ToTable(true, "Department", "DepartmentName");
                 }
 
@@ -1287,6 +1290,7 @@ namespace RauViet.ui
 
             List<string> orConditions = new List<string>();
             List<string> andConditions = new List<string>();
+            List<string> OrConditions_LSX = new List<string>();
 
             if (locTheoNgayUom_CB.Checked)
             {
@@ -1317,6 +1321,16 @@ namespace RauViet.ui
                 andConditions.Add($"PlantingDate >= '{startDay:yyyy-MM-dd}' AND PlantingDate <= '{endDay:yyyy-MM-dd}'");
             }
 
+            if (locTheoLSX_DangHoatDong_CB.Checked)
+            {
+                OrConditions_LSX.Add($"IsCompleted = {false}");
+            }
+
+            if (locTheoLSX_DaDong_CB.Checked)
+            {
+                OrConditions_LSX.Add($"IsCompleted = {true}");
+            }
+
             string filter = "";
             string filterLog = "";
 
@@ -1334,6 +1348,14 @@ namespace RauViet.ui
                 filter += string.Join(" AND ", andConditions);
             }
 
+            if (OrConditions_LSX.Count > 0)
+            {
+                if (filter.Length > 0)
+                    filter += " AND ";
+
+                filter += "(" + string.Join(" OR ", OrConditions_LSX) + ")";
+            }
+
             DataView dv = mPlantingManagement_dt.DefaultView;
             dv.RowFilter = filter;
 
@@ -1343,6 +1365,8 @@ namespace RauViet.ui
 
         private void DataGV_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
+            if (!UserManager.Instance.hasRole_QLK_NhatKySanXuat())
+                return;
             if (e.RowIndex < 0) return; // tránh click header
 
             DataRowView drv = dataGV.Rows[e.RowIndex].DataBoundItem as DataRowView;
@@ -1928,8 +1952,8 @@ namespace RauViet.ui
             DataTable plantTrayDensity = await SQLStore_KhoVatTu.Instance.GetPlantTrayDensityAsync();
 
             DataView dv = new DataView(mPlantingManagement_dt);
-            dv.RowFilter = $"PlantingDate >= #{startDate:MM/dd/yyyy}# AND PlantingDate < #{endDate:MM/dd/yyyy}#";
-            dv.Sort = "PlantingDate ASC";
+            dv.RowFilter = $"NurseryDate >= #{startDate:MM/dd/yyyy}# AND NurseryDate < #{endDate:MM/dd/yyyy}#";
+            dv.Sort = "NurseryDate ASC";
 
             DataTable filterResult_dt = dv.ToTable();
 
@@ -2426,103 +2450,5 @@ namespace RauViet.ui
             else
                 printer.PrintDirect();
         }
-        //System.Data.DataTable excelData;
-        //private async void button1_Click(object sender, EventArgs e)
-        //{
-
-        //    var unit_dt = await SQLManager_KhoVatTu.Instance.GetUnitAsync();
-        //    var materialCategory_dt = await SQLManager_KhoVatTu.Instance.GetMaterialCategoryAsync();
-
-        //    using (System.Windows.Forms.OpenFileDialog ofd = new System.Windows.Forms.OpenFileDialog())
-        //    {
-        //        ofd.Title = "Chọn file Excel";
-        //        ofd.Filter = "Excel Files|*.xlsx;*.xls|All Files|*.*";
-        //        ofd.Multiselect = false; // chỉ cho chọn 1 file
-
-        //        if (ofd.ShowDialog() == DialogResult.OK)
-        //        {
-        //            string filePath = ofd.FileName;
-        //            excelData = Utils.LoadExcel_NoHeader(filePath);
-
-        //            var employees = await SQLStore_QLNS.Instance.GetEmployeesAsync();
-        //            var departments = await SQLStore_QLNS.Instance.GetDepartmentAsync();
-        //            var products = await SQLStore_Kho.Instance.getProductSKUAsync();
-
-        //            Utils.AddColumnIfNotExists(excelData, "Quantity", typeof(int));
-        //            Utils.AddColumnIfNotExists(excelData, "Area", typeof(decimal));
-        //            Utils.AddColumnIfNotExists(excelData, "Supervisor", typeof(string));
-        //            Utils.AddColumnIfNotExists(excelData, "Department", typeof(int));
-        //            Utils.AddColumnIfNotExists(excelData, "SKU", typeof(int));
-        //            foreach (DataRow row in excelData.Rows)
-        //            {
-        //                string raw = row["Column3"].ToString(); 
-        //                string numberPart = raw.Replace("cây", "").Trim();
-        //                numberPart = numberPart.Replace(".", "");
-        //                row["Quantity"] = int.Parse(numberPart);
-
-        //                raw = row["Column6"].ToString().ToLower();
-        //                numberPart = raw.Replace("m2", "").Trim();
-        //                numberPart = numberPart.Replace("m3", "").Trim();
-        //                numberPart = numberPart.Replace(",", ".");
-        //                if (string.IsNullOrWhiteSpace(numberPart))
-        //                    numberPart = "0";
-        //                row["Area"] = decimal.Parse(numberPart, System.Globalization.CultureInfo.InvariantCulture);
-
-        //                raw = row["Column9"].ToString().ToLower();
-        //                DataRow emp = employees.AsEnumerable().FirstOrDefault(r => r.Field<string>("FullName").Trim().ToLower().Equals(raw.Trim().ToLower(), StringComparison.OrdinalIgnoreCase));
-        //                if(emp != null)
-        //                    row["Supervisor"] = emp["EmployeeCode"];
-
-        //                raw = row["Column8"].ToString().ToLower();
-        //                if (raw.CompareTo("farm") == 0)
-        //                    raw = "farm vr";
-        //                DataRow dep = departments.AsEnumerable().FirstOrDefault(r => r.Field<string>("DepartmentName").Trim().ToLower().Equals(raw.Trim().ToLower(), StringComparison.OrdinalIgnoreCase));
-        //                if (dep != null)
-        //                    row["Department"] = dep["DepartmentID"];
-
-        //                raw = row["Column2"].ToString().ToLower();
-        //                if (raw.CompareTo("cải cúc") == 0)
-        //                    raw = "tần ô (cải cúc)";
-        //                DataRow product = products.AsEnumerable().FirstOrDefault(r => r.Field<string>("ProductNameVN").Trim().ToLower().Equals(raw.Trim().ToLower(), StringComparison.OrdinalIgnoreCase));
-        //                if (product != null)
-        //                    row["SKU"] = product["SKU"];
-        //            }
-
-        //            dataGV.DataSource = excelData;
-        //        }
-        //    }
-        //}
-
-        //private async void button2_Click(object sender, EventArgs e)
-        //{
-        //    try
-        //    {
-        //        foreach (DataRow edr in excelData.Rows)
-        //        {
-
-        //            string ProductionOrder = edr["Column1"].ToString();
-        //            int SKU = Convert.ToInt32(edr["SKU"]);
-        //            decimal Area = Convert.ToDecimal(edr["Area"]);
-        //            int Quantity = Convert.ToInt32(edr["Quantity"]);
-        //            DateTime NurseryDate = Convert.ToDateTime(edr["Column4"]);
-        //            DateTime PlantingDate = Convert.ToDateTime(edr["Column5"]);
-        //            DateTime HarvestDate = Convert.ToDateTime(edr["Column7"]);
-        //            int? department = edr["Department"] == DBNull.Value ? (int?)null : Convert.ToInt32(edr["Department"]);
-        //            string Supervisor = Convert.ToString(edr["Supervisor"]);
-
-        //            string Note = "";
-        //            if (excelData.Columns.Contains("Column10"))
-        //                Note = Convert.ToString(edr["Column10"]);
-
-        //            int salaryInfoID = await SQLManager_KhoVatTu.Instance.insertPlantingManagementAsync(ProductionOrder, SKU, Area, Quantity, NurseryDate, PlantingDate, HarvestDate, department, Supervisor, Note);
-
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        MessageBox.Show("có lỗi " + ex.Message);
-        //    }
-        //    MessageBox.Show("xong");
-        //}
     }
 }

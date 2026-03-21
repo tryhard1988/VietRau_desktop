@@ -102,7 +102,11 @@ namespace RauViet.classes
         public bool hasRole_TruChuyenCan() { return hasRole("tt_CCan"); }
         public bool hasRole_TruCEP() { return hasRole("tt_CEP"); }
         public bool hasRole_TruKhac() { return hasRole("tt_Other"); }
-        public bool hasRole_ThongKe() { return hasRole("tknsvk"); }
+
+        public bool hasRole_ThongKeNS() { return hasRole("tknsvk"); }
+        public bool hasRole_ThongKeKho() { return hasRole("xtkk"); }
+        public bool hasRole_ThongKeFarm() { return hasRole("xtkf"); }
+        public bool hasRole_ThongKeVatTu() { return hasRole("xtkvt"); }
         public bool hasRole_CreateQR() { return hasRole("tqr"); }
         public bool hasRole_NhapDonTrongNuoc() { return hasRole("ndtn"); }
         public bool hasRole_QLK_VatTu() { return hasRole("qlk_vt"); }
@@ -110,6 +114,7 @@ namespace RauViet.classes
         public bool hasRole_QLK_QuanLyLichUom_ReadOnly() { return hasRole("QLLU_RO"); }
         public bool hasRole_QLK_QuanLyMauSanXuat() { return hasRole("QLMSX"); }
         public bool hasRole_QLK_QuanLyMauSanXuat_ReadOnly() { return hasRole("QLMSX_RO"); }
+        public bool hasRole_QLK_NhatKySanXuat() { return hasRole("NKSX_FULL"); }
         public bool hasRole_SuaDonTrongNuoc() { return hasRole("csdtn"); }
         public int[] get_ChamCongTangCa_Departments()
         {

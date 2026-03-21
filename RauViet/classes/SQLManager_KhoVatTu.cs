@@ -1,4 +1,5 @@
 ﻿
+using DocumentFormat.OpenXml.Bibliography;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -1339,28 +1340,31 @@ namespace RauViet.classes
             return dt;
         }
 
-        public async Task<DataTable> GetCultivationProcessAsync(int month, int year)
+        public async Task<DataTable> GetCultivationProcessAsync(DateTime date)
         {
             DataTable dt = new DataTable();
             using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
             {
                 await con.OpenAsync();
-                string query = @"SELECT cp.*,
-                                        pm.ProductionOrder,
-                                        pm.CultivationTypeID,
-                                        pm.FarmID,
-                                        pm.SKU
-                                    FROM CultivationProcess cp
-                                    LEFT JOIN PlantingManagement pm 
-                                        ON cp.PlantingID = pm.PlantingID
-                                    WHERE 
-                                        MONTH(cp.ProcessDate) = @Month 
-                                        AND YEAR(cp.ProcessDate) = @Year;";
+                string query = @"
+                                SELECT cp.*,
+                                       pm.ProductionOrder,
+                                       pm.CultivationTypeID,
+                                       pm.FarmID,
+                                       pm.SKU
+                                FROM CultivationProcess cp
+                                LEFT JOIN PlantingManagement pm 
+                                    ON cp.PlantingID = pm.PlantingID
+                                WHERE cp.ProcessDate >= @FromDate
+                                  AND cp.ProcessDate < @ToDate;";
 
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 {
-                    cmd.Parameters.Add("@Month", SqlDbType.Int).Value = month;
-                    cmd.Parameters.Add("@Year", SqlDbType.Int).Value = year;
+                    DateTime fromDate = date.Date;
+                    DateTime toDate = date.Date.AddDays(1);
+
+                    cmd.Parameters.Add("@FromDate", SqlDbType.DateTime).Value = fromDate;
+                    cmd.Parameters.Add("@ToDate", SqlDbType.DateTime).Value = toDate;
 
                     using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                     {
@@ -2164,6 +2168,43 @@ namespace RauViet.classes
                                 WHERE ps.[Month] IS NOT NULL
                                 ORDER BY 
                                     m.MaterialID, ps.[Year], ps.[Month];";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
+        }
+
+        public async Task<DataTable> getThongKeVatTuTheoNamAsync()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
+            {
+                await con.OpenAsync();
+                string query = $@"SELECT 
+                                    m.MaterialID,
+                                    MONTH(t.Date) AS Month,
+                                    YEAR(t.Date) AS Year,
+                                    SUM(t.ImportQty) AS TotalImport,
+                                    SUM(t.ExportQty) AS TotalExport
+                                FROM
+                                (
+                                    SELECT MaterialID, ImportDate AS Date, Amount AS ImportQty, 0 AS ExportQty
+                                    FROM MaterialImport
+
+                                    UNION ALL
+
+                                    SELECT MaterialID, ExportDate, 0, Amount
+                                    FROM MaterialExport
+                                ) t
+                                JOIN Materials m ON m.MaterialID = t.MaterialID
+                                GROUP BY m.MaterialID, MONTH(t.Date), YEAR(t.Date)
+                                ORDER BY m.MaterialID, Year, Month;";
 
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 {
