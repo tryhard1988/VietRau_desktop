@@ -19,6 +19,7 @@ namespace RauViet.classes
         private static SQLStore_QLNS ins = null;
         private static readonly object padlock = new object();
 
+        DataTable mMealOrder_dt = null;
         DataTable mSalaryLock_dt = null;
         DataTable mOvertimeType_dt = null;
         DataTable mLeaveType_dt = null;
@@ -1583,6 +1584,41 @@ namespace RauViet.classes
                 mEmployeeAllowances_dt = await SQLManager_QLNS.Instance.GetEmployeeAllowances_AllAsync();
             }
             return mEmployeeAllowances_dt;
+        }
+
+        public void removeMealOrder() { mMealOrder_dt = null; }
+        public async Task<DataTable> GetMealOrderAsync()
+        {
+            if (mMealOrder_dt == null)
+            {
+                try
+                {
+                    mMealOrder_dt = await SQLManager_QLNS.Instance.GetMealOrderAsybc();
+                    editMealOrder(mMealOrder_dt);
+                }
+                catch
+                {
+                    Console.WriteLine("GetMealOrderAsybc errror");
+                    return null;
+                }
+            }
+
+            return mMealOrder_dt;
+        }
+
+        void editMealOrder(DataTable data)
+        {
+            Utils.AddColumnIfNotExists(data, "TotalMoney", typeof(int));
+            Utils.AddColumnIfNotExists(data, "TotalMoney_VAT", typeof(int));
+            foreach (DataRow row in data.Rows)
+            {
+                int quantity = Convert.ToInt32(row["Quantity"]);
+                int price = Convert.ToInt32(row["Price"]);
+                decimal VAT = Convert.ToDecimal(row["VAT"]);
+
+                row["TotalMoney"] = quantity * price;
+                row["TotalMoney_VAT"] = Convert.ToInt32((quantity * price)*( 1 + VAT/100.0m));
+            }
         }
     }
 }

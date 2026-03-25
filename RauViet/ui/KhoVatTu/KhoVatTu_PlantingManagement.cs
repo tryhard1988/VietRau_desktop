@@ -71,8 +71,6 @@ namespace RauViet.ui
             dataGV.CellFormatting += dataGV_CellFormatting;
             dataGV.CellDoubleClick += DataGV_CellDoubleClick;
 
-            search_tb.TextChanged += Search_tb_TextChanged;
-
             ngaytrong_dtp.ValueChanged += Ngaytrong_dtp_ValueChanged;
             ngayUom_dtp.ValueChanged += NgayUom_dtp_ValueChanged;
 
@@ -86,6 +84,7 @@ namespace RauViet.ui
             locTheoTuan_CB.CheckedChanged += Loc_CheckedChanged;
             locTheoLSX_DaDong_CB.CheckedChanged += Loc_CheckedChanged;
             locTheoLSX_DangHoatDong_CB.CheckedChanged += Loc_CheckedChanged;
+            search_tb.TextChanged += Search_tb_TextChanged;
 
             inPhieuSX_btn.Click += InPhieuSX_btn_Click;
             xemPhieuSX_btn.Click += XemPhieuSX_btn_Click;
@@ -845,14 +844,8 @@ namespace RauViet.ui
 
         private void Search_tb_TextChanged(object sender, EventArgs e)
         {
-            string keyword = Utils.RemoveVietnameseSigns(search_tb.Text.Trim().ToLower())
-                     .Replace("'", "''"); // tránh lỗi cú pháp '
-
-            DataTable dt = dataGV.DataSource as DataTable;
-            if (dt == null) return;
-
-            DataView dv = dt.DefaultView;
-            dv.RowFilter = $"[search_nosign] LIKE '%{keyword}%'";
+            MonthGV_SelectionChanged(null, null);
+                        
         }
 
         private void Caytrong_CB_SelectedIndexChanged(object sender, EventArgs e)
@@ -1319,6 +1312,13 @@ namespace RauViet.ui
                 DateTime endDay = Convert.ToDateTime(weekInYearCell["EndDate"].Value);
 
                 andConditions.Add($"PlantingDate >= '{startDay:yyyy-MM-dd}' AND PlantingDate <= '{endDay:yyyy-MM-dd}'");
+            }
+
+            if(string.IsNullOrWhiteSpace(search_tb.Text) == false)
+            {
+                string keyword = Utils.RemoveVietnameseSigns(search_tb.Text.Trim().ToLower())
+                     .Replace("'", "''");
+                andConditions.Add($"[search_nosign] LIKE '%{keyword}%'");
             }
 
             if (locTheoLSX_DangHoatDong_CB.Checked)
@@ -1837,6 +1837,7 @@ namespace RauViet.ui
 
                     rowExcel++;
                     int countSTT = 1;
+                    decimal totalArea = 0;
                     foreach (DataRow row in filterResult_dt.Rows)
                     {
                         ws.Cell(rowExcel, 1).Value = countSTT;
@@ -1850,12 +1851,17 @@ namespace RauViet.ui
                         ws.Cell(rowExcel, 9).Value = Utils.GetThu_Viet(Convert.ToDateTime(row["PlantingDate"]));
                         ws.Cell(rowExcel, 10).Value = Utils.GetThu_Viet(Convert.ToDateTime(row["HarvestDate"]));
 
-
+                        totalArea += Convert.ToDecimal(row["Area"]);
                         ws.Cell(rowExcel, 4).Style.NumberFormat.Format = "#,##0 \"cây\"";
                         rowExcel++;
                         countSTT++;
                     }
 
+                    ws.Cell(rowExcel, 1).Value = "TOTAL";
+                    ws.Cell(rowExcel, 7).Value = totalArea;
+                    ws.Cell(rowExcel, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    ws.Range(rowExcel, 1, rowExcel, 6).Merge();                    
+                    ws.Range(rowExcel, 1, rowExcel, 11).Style.Font.Bold = true;
                     // format ngày
                     ws.Column(5).Style.DateFormat.Format = "dd/MM/yyyy";
                     ws.Column(6).Style.DateFormat.Format = "dd/MM/yyyy";

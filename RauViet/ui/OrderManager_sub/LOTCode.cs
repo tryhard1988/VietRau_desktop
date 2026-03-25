@@ -88,7 +88,7 @@ namespace RauViet.ui
                 dv.RowFilter = $"ExportCodeID = {mCurrentExportID}";
                 dataGV.DataSource = dv;
 
-                Utils.HideColumns(dataGV, new[] { "SKU", "ExportCode", "ExportCodeID" });
+                Utils.HideColumns(dataGV, new[] { "SKU", "ExportCode", "ExportCodeID", "GroupProduct" });
                 Utils.HideColumns(logGV, new[] { "LogID", "ExportCodeID", "SKU" });
 
                 dataGV.ReadOnly = false;

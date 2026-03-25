@@ -454,7 +454,7 @@ namespace RauViet.classes
             using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
             {
                 await con.OpenAsync();
-                string query = "SELECT TOP 30 * FROM ExportCodes ORDER BY Complete ASC, ExportCodeID DESC";
+                string query = "SELECT * FROM ExportCodes WHERE ExportDate >= DATEADD(DAY, -50, GETDATE()) ORDER BY ExportDate ASC, ExportCodeID DESC";
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                 {
@@ -990,6 +990,7 @@ namespace RauViet.classes
                 await con.OpenAsync();
                 string query = @"SELECT DISTINCT
                                         p.SKU,
+                                        s.GroupProduct,
                                         o.ExportCodeID,
                                         e.ExportCode,
                                         s.ProductNameVN,

@@ -206,6 +206,7 @@ namespace RauViet.ui
             {
 
                 qlk_xuatNhapVTQuaCacNam_mi.Click += Qlk_xuatNhapVTQuaCacNam_mi_Click;
+                giamSatTiepNhanRau_mi.Click += Qlk_GiamSatNhanRau_mi_Click;
             }
             else
             {
@@ -253,9 +254,17 @@ namespace RauViet.ui
                 bcdhnnGroup_mi.Visible = false;
             }
 
-            if (UserManager.Instance.hasRole_CreateQR())
+            if (UserManager.Instance.hasRole_Extention())
             {
-                QR_mi.Click += CreateQR_mi_Click;
+                if (UserManager.Instance.hasRole_CreateQR())
+                    QR_mi.Click += CreateQR_mi_Click;
+                else
+                    QR_mi.Visible = false;
+
+                if (UserManager.Instance.hasRole_MealOther())
+                    datDoAn_mi.Click += DatDoAn_mi_Click;
+                else
+                    datDoAn_mi.Visible = false;
             }
             else
             {
@@ -438,7 +447,9 @@ namespace RauViet.ui
             KhoVatTu_TKSanLuongTrong_Thang,
             KhoVatTu_TKSanLuongTrong_Nam,
             KhoVatTu_TKCapPhanBon,
-            KhoVatTu_TKXuatNhapVatTuTheo_Nam
+            KhoVatTu_TKXuatNhapVatTuTheo_Nam,
+            KhoVatTu_GiamSatTiepNhanRau,
+            MealOrder
         }
 
         private void openCurrentForm(EForm status)
@@ -674,6 +685,12 @@ namespace RauViet.ui
                 case EForm.KhoVatTu_TKXuatNhapVatTuTheo_Nam:
                     SwitchChildForm<KhoVatTu_TKXuatNhapVatTuTheo_Nam>("Thống Kê Xuất Nhập Vật Tư Theo Năm");
                     break;
+                case EForm.KhoVatTu_GiamSatTiepNhanRau:
+                    SwitchChildForm<KhoVatTu_GiamSatTiepNhanRau>("Giám Sát Qua Trình Nhận Rau");
+                    break;
+                case EForm.MealOrder:
+                    SwitchChildForm<MealOrder>("Theo Dõi Xuất Ăn Trưa");
+                    break;
             }
             
             Properties.Settings.Default.current_form = status.ToString();
@@ -755,8 +772,10 @@ namespace RauViet.ui
         private void Supplier_mi_Click(object sender, EventArgs e){ openCurrentForm(EForm.Supplier); }        
         private void Qlk_thongKeSanLuongThang_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.KhoVatTu_TKSanLuongTrong_Thang); }
         private void Qlk_xuatNhapVTQuaCacNam_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.KhoVatTu_TKXuatNhapVatTuTheo_Nam); }
+        private void Qlk_GiamSatNhanRau_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.KhoVatTu_GiamSatTiepNhanRau); }
         private void Qlk_thongKeSanLuongNam_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.KhoVatTu_TKSanLuongTrong_Nam); }
         private void Qlk_thongKeCapPhan_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.KhoVatTu_TKCapPhanBon); }
+        private void DatDoAn_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.MealOrder); }
         private async void checkLoginTimer_Tick(object sender, EventArgs e)
         {
             var isHave = await SQLManager.Instance.HaveOtherComputerLoginAsync();

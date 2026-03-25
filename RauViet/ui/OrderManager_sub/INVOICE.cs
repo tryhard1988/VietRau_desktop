@@ -59,8 +59,10 @@ namespace RauViet.ui
             try
             {
                 string[] keepColumns = { "ExportCodeID", "ExportCode", "ExportDate", "ExchangeRate", "ShippingCost", "ExportCodeIndex" };
-                var parameters = new Dictionary<string, object> { { "Complete", false } };
-                mExportCode_dt = await SQLStore_Kho.Instance.getExportCodesAsync(keepColumns, parameters);                  
+                var parameters = new Dictionary<string, object> {};
+                mExportCode_dt = await SQLStore_Kho.Instance.getExportCodesAsync(keepColumns, parameters);
+                mExportCode_dt.DefaultView.Sort = "ExportDate DESC";
+                mExportCode_dt = mExportCode_dt.DefaultView.ToTable();
 
                 if (mCurrentExportID <= 0 && mExportCode_dt.Rows.Count > 0)
                 {

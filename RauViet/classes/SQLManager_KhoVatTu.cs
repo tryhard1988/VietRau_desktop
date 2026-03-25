@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Linq;
 using System.Threading.Tasks;
 using DataTable = System.Data.DataTable;
 
@@ -456,6 +457,34 @@ namespace RauViet.classes
                     }
                 }
             }
+            return dt;
+        }
+
+        public async Task<DataTable> getPlantingManagementAsync_ProductionOrder(List<string> productionOrders)
+        {
+            DataTable dt = new DataTable();
+
+            using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
+            {
+                await con.OpenAsync();
+
+                var paramNames = productionOrders.Select((x, i) => $"@p{i}").ToList();
+                string query = $@"SELECT * FROM PlantingManagement WHERE ProductionOrder IN ({string.Join(",", paramNames)})";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    for (int i = 0; i < productionOrders.Count; i++)
+                    {
+                        cmd.Parameters.AddWithValue(paramNames[i], productionOrders[i]);
+                    }
+
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+
             return dt;
         }
 
@@ -2215,6 +2244,76 @@ namespace RauViet.classes
                 }
             }
             return dt;
+        }
+
+        public async Task<DataTable> getGlobalGapProductsAsync()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT * FROM GlobalGapProducts";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
+        }
+
+        public async Task<bool> InsertHarvestScheduleGlobalGapListAsync(List<(int PlantingID, DateTime HarvestDate, decimal Quantity, string ProductLotCode, string HarvestEmployee, string SupervisorEmployee, int ReceiveDepartmentID)> list)
+        {
+            try
+            {
+                using (var con = new SqlConnection(ql_khoVatTu_conStr()))
+                {
+                    await con.OpenAsync();
+
+                    // 1️⃣ Chuẩn bị DataTable khớp với kiểu TVP
+                    var dt = new DataTable();
+                    dt.Columns.Add("PlantingID", typeof(int));
+                    dt.Columns.Add("HarvestDate", typeof(DateTime));
+                    dt.Columns.Add("Quantity", typeof(decimal));
+                    dt.Columns.Add("ProductLotCode", typeof(string));
+                    dt.Columns.Add("HarvestEmployee", typeof(string));
+                    dt.Columns.Add("SupervisorEmployee", typeof(string));
+                    dt.Columns.Add("ReceiveDepartmentID", typeof(int));
+
+                    foreach (var item in list)
+                    {
+                        dt.Rows.Add(item.PlantingID,
+                                    item.HarvestDate,
+                                    item.Quantity,
+                                    item.ProductLotCode,
+                                    item.HarvestEmployee,
+                                    item.SupervisorEmployee,
+                                    item.ReceiveDepartmentID);
+                    }
+
+                    // 2️⃣ Gọi SP
+                    using (var cmd = new SqlCommand("dbo.sp_Upsert_HarvestSchedule_GlobalGap", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        var param = cmd.Parameters.AddWithValue("@Data", dt);
+                        param.SqlDbType = SqlDbType.Structured;
+                        param.TypeName = "dbo.HarvestSchedule_GlobalGap_Type";
+
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[InsertCultivationProcessListAsync] Error: {ex.Message}");
+                Console.WriteLine(ex.StackTrace);
+                return false;
+            }
         }
     }
 }

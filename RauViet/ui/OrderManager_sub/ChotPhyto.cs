@@ -66,7 +66,7 @@ namespace RauViet.ui
                 mOrdersTotal_dt = await SQLStore_Kho.Instance.getOrdersChotPhytosync(mCurrentExportID);
                 DataView dv = new DataView(mOrdersTotal_dt);
                 dataGV_DK.DataSource = dv;
-                Utils.HideColumns(dataGV_DK, new[] { "ExportCodeID", "PlantingAreaCode" });
+                Utils.HideColumns(dataGV_DK, new[] { "ExportCodeID", "PlantingAreaCode", "GroupProduct" });
 
                 Utils.SetGridHeaders(dataGV_DK, new System.Collections.Generic.Dictionary<string, string> {
                     {"ProductNameEN", "English Name" },

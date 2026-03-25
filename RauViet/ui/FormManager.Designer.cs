@@ -113,9 +113,12 @@
             this.materialExport_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.materialImport_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.tonKhoVatTu_mi = new System.Windows.Forms.ToolStripMenuItem();
+            this.qlk_bcvt_group_mi = new System.Windows.Forms.ToolStripMenuItem();
+            this.qlk_xuatNhapVTQuaCacNam_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.QLCT_group_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.plantingManagement_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.cultivationProcessTemplate_mi = new System.Windows.Forms.ToolStripMenuItem();
+            this.giamSatTiepNhanRau_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.bcqlctGroup_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.qlk_SanLuongThangCuaTungLenhSX_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.qlk_sanLuongCayTrongCacNam_mi = new System.Windows.Forms.ToolStripMenuItem();
@@ -123,13 +126,12 @@
             this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripMenuItem();
             this.extension_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.QR_mi = new System.Windows.Forms.ToolStripMenuItem();
+            this.datDoAn_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.aaaaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadExcelOrderReportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.content_panel = new System.Windows.Forms.Panel();
             this.bbbbbbbbb_mi = new System.Windows.Forms.ToolStripMenuItem();
-            this.qlk_bcvt_group_mi = new System.Windows.Forms.ToolStripMenuItem();
-            this.qlk_xuatNhapVTQuaCacNam_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1.SuspendLayout();
             this.LOT_menuitem.SuspendLayout();
             this.SuspendLayout();
@@ -793,11 +795,28 @@
             this.tonKhoVatTu_mi.Size = new System.Drawing.Size(188, 22);
             this.tonKhoVatTu_mi.Text = "Tồn Kho Vật Tư";
             // 
+            // qlk_bcvt_group_mi
+            // 
+            this.qlk_bcvt_group_mi.BackColor = System.Drawing.SystemColors.ScrollBar;
+            this.qlk_bcvt_group_mi.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.qlk_xuatNhapVTQuaCacNam_mi});
+            this.qlk_bcvt_group_mi.ForeColor = System.Drawing.Color.Red;
+            this.qlk_bcvt_group_mi.Name = "qlk_bcvt_group_mi";
+            this.qlk_bcvt_group_mi.Size = new System.Drawing.Size(188, 22);
+            this.qlk_bcvt_group_mi.Text = "Báo Cáo Thông Kê";
+            // 
+            // qlk_xuatNhapVTQuaCacNam_mi
+            // 
+            this.qlk_xuatNhapVTQuaCacNam_mi.Name = "qlk_xuatNhapVTQuaCacNam_mi";
+            this.qlk_xuatNhapVTQuaCacNam_mi.Size = new System.Drawing.Size(247, 22);
+            this.qlk_xuatNhapVTQuaCacNam_mi.Text = "Xuất Nhập VT Qua Các Năm";
+            // 
             // QLCT_group_mi
             // 
             this.QLCT_group_mi.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.plantingManagement_mi,
             this.cultivationProcessTemplate_mi,
+            this.giamSatTiepNhanRau_mi,
             this.bcqlctGroup_mi});
             this.QLCT_group_mi.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.QLCT_group_mi.ForeColor = System.Drawing.Color.MediumBlue;
@@ -816,6 +835,12 @@
             this.cultivationProcessTemplate_mi.Name = "cultivationProcessTemplate_mi";
             this.cultivationProcessTemplate_mi.Size = new System.Drawing.Size(224, 22);
             this.cultivationProcessTemplate_mi.Text = "Mẫu Quy Trình Sản Xuất";
+            // 
+            // giamSatTiepNhanRau_mi
+            // 
+            this.giamSatTiepNhanRau_mi.Name = "giamSatTiepNhanRau_mi";
+            this.giamSatTiepNhanRau_mi.Size = new System.Drawing.Size(224, 22);
+            this.giamSatTiepNhanRau_mi.Text = "Giám Sát Tiếp Nhận Rau";
             // 
             // bcqlctGroup_mi
             // 
@@ -857,7 +882,8 @@
             // extension_mi
             // 
             this.extension_mi.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.QR_mi});
+            this.QR_mi,
+            this.datDoAn_mi});
             this.extension_mi.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.extension_mi.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
             this.extension_mi.Name = "extension_mi";
@@ -868,8 +894,14 @@
             // 
             this.QR_mi.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.QR_mi.Name = "QR_mi";
-            this.QR_mi.Size = new System.Drawing.Size(120, 22);
-            this.QR_mi.Text = "Tạo QR";
+            this.QR_mi.Size = new System.Drawing.Size(213, 22);
+            this.QR_mi.Text = "Tạo QRCode";
+            // 
+            // datDoAn_mi
+            // 
+            this.datDoAn_mi.Name = "datDoAn_mi";
+            this.datDoAn_mi.Size = new System.Drawing.Size(213, 22);
+            this.datDoAn_mi.Text = "Theo Dõi Xuất Ăn Trưa";
             // 
             // toolStripMenuItem2
             // 
@@ -906,22 +938,6 @@
             // 
             this.bbbbbbbbb_mi.Name = "bbbbbbbbb_mi";
             this.bbbbbbbbb_mi.Size = new System.Drawing.Size(32, 19);
-            // 
-            // qlk_bcvt_group_mi
-            // 
-            this.qlk_bcvt_group_mi.BackColor = System.Drawing.SystemColors.ScrollBar;
-            this.qlk_bcvt_group_mi.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.qlk_xuatNhapVTQuaCacNam_mi});
-            this.qlk_bcvt_group_mi.ForeColor = System.Drawing.Color.Red;
-            this.qlk_bcvt_group_mi.Name = "qlk_bcvt_group_mi";
-            this.qlk_bcvt_group_mi.Size = new System.Drawing.Size(188, 22);
-            this.qlk_bcvt_group_mi.Text = "Báo Cáo Thông Kê";
-            // 
-            // qlk_xuatNhapVTQuaCacNam_mi
-            // 
-            this.qlk_xuatNhapVTQuaCacNam_mi.Name = "qlk_xuatNhapVTQuaCacNam_mi";
-            this.qlk_xuatNhapVTQuaCacNam_mi.Size = new System.Drawing.Size(247, 22);
-            this.qlk_xuatNhapVTQuaCacNam_mi.Text = "Xuất Nhập VT Qua Các Năm";
             // 
             // FormManager
             // 
@@ -1045,5 +1061,7 @@
         private System.Windows.Forms.ToolStripMenuItem qlk_TKCapPhan_mi;
         private System.Windows.Forms.ToolStripMenuItem qlk_bcvt_group_mi;
         private System.Windows.Forms.ToolStripMenuItem qlk_xuatNhapVTQuaCacNam_mi;
+        private System.Windows.Forms.ToolStripMenuItem giamSatTiepNhanRau_mi;
+        private System.Windows.Forms.ToolStripMenuItem datDoAn_mi;
     }
 }

@@ -1,5 +1,6 @@
 ﻿using ClosedXML.Excel;
 using DocumentFormat.OpenXml.Bibliography;
+using DocumentFormat.OpenXml.InkML;
 using DocumentFormat.OpenXml.Wordprocessing;
 using System;
 using System.Collections.Generic;
@@ -649,4 +650,6 @@ public static class Utils
     {
         return 20;
     }
+
+    public static string VRF_GAP() { return "VRF_GAP_BM05\n12/02/22\n02\npage 1 of 1"; }
 }

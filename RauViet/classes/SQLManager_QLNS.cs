@@ -1,4 +1,5 @@
 ﻿
+using DocumentFormat.OpenXml.Wordprocessing;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -328,7 +329,7 @@ namespace RauViet.classes
                 }
             }
             return dt;
-        }
+        }              
 
         public async Task<bool> updateDepartmentAsync(int departmentID, string departmentName, string description, bool isActive)
         {
@@ -3424,6 +3425,97 @@ namespace RauViet.classes
                 Console.WriteLine("Lỗi khi cập nhật: " + ex.Message);
                 return false;
             }
+        }
+
+        public async Task<DataTable> GetMealOrderAsybc()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT TOP 60 * FROM MealOrders ORDER BY MealOrdersID DESC;";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                {
+                    dt.Load(reader);
+                }
+            }
+            return dt;
+        }
+
+        public async Task<int> insertMealOrderAsync(DateTime orderDate, string note, int quantity, int price, decimal VAT)
+        {
+            int newId = -1;
+
+            string query = @"INSERT INTO MealOrders (OrderDate, Note, Quantity, Price, VAT) 
+                                OUTPUT INSERTED.MealOrdersID
+                                VALUES (@OrderDate, @Note, @Quantity, @Price, @VAT)";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@OrderDate", orderDate);
+                        cmd.Parameters.AddWithValue("@Note", note);
+                        cmd.Parameters.AddWithValue("@Quantity", quantity);
+                        cmd.Parameters.AddWithValue("@Price", price);
+                        cmd.Parameters.AddWithValue("@VAT", VAT);
+                        object result = await cmd.ExecuteScalarAsync();
+                        if (result != null)
+                            newId = Convert.ToInt32(result);
+                    }
+                }
+                return newId;
+            }
+            catch { return -1; }
+        }
+
+        public async Task<bool> updateMealOrderAsync(int mealOrdersID, DateTime orderDate, string note, int quantity, int price, decimal VAT, bool isPaid)
+        {
+            string query = @"UPDATE MealOrders SET OrderDate=@OrderDate, Quantity=@Quantity, Price=@Price, VAT=@VAT, IsPaid=@IsPaid, Note=@Note
+                            WHERE MealOrdersID=@MealOrdersID";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@MealOrdersID", mealOrdersID);
+                        cmd.Parameters.AddWithValue("@OrderDate", orderDate);
+                        cmd.Parameters.AddWithValue("@Quantity", quantity);
+                        cmd.Parameters.AddWithValue("@Price", price);
+                        cmd.Parameters.AddWithValue("@VAT", VAT);
+                        cmd.Parameters.AddWithValue("@IsPaid", isPaid);
+                        cmd.Parameters.AddWithValue("@Note", note);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+                return true;
+            }
+            catch { return false; }
+        }
+
+        public async Task<bool> deleteMealOrderAsync(int ID)
+        {
+            string query = "DELETE FROM MealOrders WHERE MealOrdersID=@MealOrdersID";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@MealOrdersID", ID);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+                return true;
+            }
+            catch { return false; }
         }
     }
 }

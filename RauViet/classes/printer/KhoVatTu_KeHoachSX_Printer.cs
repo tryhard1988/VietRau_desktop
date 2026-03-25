@@ -1,6 +1,4 @@
-﻿using MySqlX.XDevAPI.Common;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Data;
 using System.Drawing;
 using System.Drawing.Printing;
@@ -121,11 +119,12 @@ public class KhoVatTu_KeHoachSX_Printer
         if (rowIndex == 0)
         {
             Utils.DrawCellText(g, $"KẾ HOẠCH SẢN XUẤT THÁNG {mMonth.ToString("D2")}/{mYear.ToString()} - {mDepartmentName}", titleFont, new Rectangle(col_STT, y, col_ViTriTrong + colWidth_ViTriTrong - col_STT, lineHeight*2), StringAlignment.Center);
+            y += lineHeight * 2;
         }
         
-        y += lineHeight * 2;
+        
 
-        int tableHeaderLineHeight = lineHeight * 5;
+        int tableHeaderLineHeight = lineHeight * 3;
         // Table Gray
 
         SolidBrush bgBrush_LightGray = new SolidBrush(Color.FromArgb(217, 217, 217));
@@ -158,6 +157,7 @@ public class KhoVatTu_KeHoachSX_Printer
                 
         y += tableHeaderLineHeight;
 
+        decimal totalArea = 0;
         // Table Data với phân trang
         while (rowIndex < mPlantingManagement_dt.Rows.Count)
         {
@@ -175,7 +175,7 @@ public class KhoVatTu_KeHoachSX_Printer
             DateTime plantingDate = Convert.ToDateTime(row["PlantingDate"]);
             decimal area = Convert.ToDecimal(row["Area"]);
             DateTime harvestDate = Convert.ToDateTime(row["HarvestDate"]);
-
+            totalArea += area;
             g.DrawRectangle(Pens.Gray, col_STT, y, col_ViTriTrong + colWidth_ViTriTrong - col_STT, lineHeight);
             g.DrawLine(Pens.Gray, col_LenhSX, y, col_LenhSX, y + lineHeight);
             g.DrawLine(Pens.Gray, col_TenSP, y, col_TenSP, y + lineHeight);
@@ -203,6 +203,8 @@ public class KhoVatTu_KeHoachSX_Printer
             rowIndex++;
             mCountSTT++;
         }
+        Utils.DrawCellText(g, $"TOTAL", tableHeaderFont, new Rectangle(col_STT, y, col_Area - col_STT, lineHeight), StringAlignment.Center);
+        Utils.DrawCellText(g, totalArea.ToString("0.##"), tableHeaderFont, new Rectangle(col_Area, y, colWidth_area, lineHeight), StringAlignment.Far);
 
         e.HasMorePages = false;
 

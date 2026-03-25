@@ -370,8 +370,7 @@ namespace RauViet.ui
             if (dialogResult == DialogResult.Yes)
             {
                 try
-                {
-                    
+                {                    
                     int employeeDeductionID = await SQLManager_QLNS.Instance.insertEmployeeDeductionAsync(employeeCode, DeductionTypeCode, deductionDate, amount, note);
                     if (employeeDeductionID > 0)
                     {

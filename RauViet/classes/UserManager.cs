@@ -107,7 +107,9 @@ namespace RauViet.classes
         public bool hasRole_ThongKeKho() { return hasRole("xtkk"); }
         public bool hasRole_ThongKeFarm() { return hasRole("xtkf"); }
         public bool hasRole_ThongKeVatTu() { return hasRole("xtkvt"); }
+        public bool hasRole_Extention() { return hasRoles("tqr", "dda"); }
         public bool hasRole_CreateQR() { return hasRole("tqr"); }
+        public bool hasRole_MealOther() { return hasRole("dda"); }
         public bool hasRole_NhapDonTrongNuoc() { return hasRole("ndtn"); }
         public bool hasRole_QLK_VatTu() { return hasRole("qlk_vt"); }
         public bool hasRole_QLK_QuanLyLichUom() { return hasRole("QLLU"); }

@@ -14,6 +14,7 @@ namespace RauViet.classes
         private static readonly object padlock = new object();
 
         //suong
+        DataTable GlobalGapProducts = null;
         DataTable MaterialDepartment = null;
         DataTable mWorkType_dt = null;
         DataTable mGrowthStage_dt = null;
@@ -271,6 +272,22 @@ namespace RauViet.classes
             }
         }
 
+        public async Task<DataTable> getPlantingManagementAsync_ProductionOrder(List<string> productionOrders)
+        {
+                try
+                {
+                    DataTable data = await SQLManager_KhoVatTu.Instance.getPlantingManagementAsync_ProductionOrder(productionOrders);
+                    editPlantingManagement(data);
+
+                    return data;
+                }
+                catch
+                {
+                    Console.WriteLine("error getMaterialAsync SQLStore");
+                    return null;
+                }
+        }
+
         private async void editPlantingManagement_HarvestQuantity(DataTable data)
         {
             data.Columns.Add("PlantName", typeof(string));
@@ -279,8 +296,6 @@ namespace RauViet.classes
             foreach (DataRow row in data.Rows)
             {
                 int sku = Convert.ToInt32(row["SKU"]);
-                decimal TotalArea = Convert.ToDecimal(row["TotalArea"]);
-                decimal HarvestQuantity = Convert.ToDecimal(row["HarvestQuantity"]);
 
                 DataRow productRow = product_dt.AsEnumerable().FirstOrDefault(r => r.Field<int>("ProductSKU") == sku);
                 if (productRow != null)
@@ -1273,6 +1288,39 @@ namespace RauViet.classes
                     row["UnitName"] = materialRow["UnitName"];
                 }
 
+            }
+        }
+
+        public async Task<DataTable> getGlobalGapProductsAsync()
+        {
+            try
+            {
+                if (GlobalGapProducts == null)
+                {
+                    GlobalGapProducts = await SQLManager_KhoVatTu.Instance.getGlobalGapProductsAsync();
+                    editGlobalGapProducts(GlobalGapProducts);
+                }
+                return GlobalGapProducts;
+            }
+            catch
+            {
+                Console.WriteLine("error getGlobalGapProductsAsync SQLStore");
+                return null;
+            }
+        }
+
+        private async void editGlobalGapProducts(DataTable data)
+        {
+            data.Columns.Add("PlantName", typeof(string));
+            DataTable product_dt = await SQLStore_Kho.Instance.getProductSKUAsync();
+
+            foreach (DataRow row in data.Rows)
+            {
+                int sku = Convert.ToInt32(row["SKU"]);
+
+                DataRow productRow = product_dt.AsEnumerable().FirstOrDefault(r => r.Field<int>("ProductSKU") == sku);
+                if (productRow != null)
+                    row["PlantName"] = productRow["ProductNameVN"];
             }
         }
     }

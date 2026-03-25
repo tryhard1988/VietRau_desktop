@@ -28,6 +28,7 @@ namespace RauViet.ui
 
             this.KeyDown += KhoVatTu_KeyDown;
             exportExcel_btn.Click += ExportExcel_btn_Click;
+            search_tb.TextChanged += Search_tb_TextChanged;
         }
 
         private void KhoVatTu_KeyDown(object sender, KeyEventArgs e)
@@ -89,7 +90,7 @@ namespace RauViet.ui
                         Utils.SetGridFormat_Alignment(dataGV, $"Quantity_{key}", DataGridViewContentAlignment.MiddleRight);
                     }
                 }
-                Utils.HideColumns(dataGV, new[] { "MaterialID" });
+                Utils.HideColumns(dataGV, new[] { "MaterialID", "MaterialName_noSign" });
                 Utils.SetGridHeaders(dataGV, gridHeadersDic);
                 Utils.SetGridWidths(dataGV, gridWidthsDic);
                 Utils.SetGridColors(dataGV, gridColorsDic);
@@ -112,6 +113,7 @@ namespace RauViet.ui
             DataTable result = new DataTable();
             result.Columns.Add("MaterialID", typeof(int));
             result.Columns.Add("MaterialName", typeof(string));
+            result.Columns.Add("MaterialName_noSign", typeof(string));
             result.Columns.Add("UnitName", typeof(string));
 
             // Cột theo năm
@@ -144,6 +146,7 @@ namespace RauViet.ui
                 DataRow newRow = result.NewRow();
                 newRow["MaterialID"] = g.Key.MaterialID;
                 newRow["MaterialName"] = g.Key.MaterialName;
+                newRow["MaterialName_noSign"] = Utils.RemoveVietnameseSigns(g.Key.MaterialName);
                 newRow["UnitName"] = g.Key.UnitName;
 
                 // Dictionary để cộng dồn theo năm
@@ -182,6 +185,17 @@ namespace RauViet.ui
             return result;
         }
 
+        private void Search_tb_TextChanged(object sender, EventArgs e)
+        {
+            string keyword = Utils.RemoveVietnameseSigns(search_tb.Text.Trim().ToLower())
+                     .Replace("'", "''"); // tránh lỗi cú pháp '
+
+            DataTable dt = dataGV.DataSource as DataTable;
+            if (dt == null) return;
+
+            DataView dv = dt.DefaultView;
+            dv.RowFilter = $"[MaterialName_noSign] LIKE '%{keyword}%'";
+        }
         private async void ExportExcel_btn_Click(object sender, EventArgs e)
         {
             loadingOverlay = new LoadingOverlay(this);
@@ -193,9 +207,9 @@ namespace RauViet.ui
             {
                 DataTable clonedTable = mThongKeCapPhan_dt.Clone(); // clone structure
 
-                foreach (DataRowView drv in mThongKeCapPhan_dt.DefaultView)
+                foreach (DataRow drv in mThongKeCapPhan_dt.Rows)
                 {
-                    clonedTable.ImportRow(drv.Row);
+                    clonedTable.ImportRow(drv);
                 }
 
                 using (var wb = new XLWorkbook())

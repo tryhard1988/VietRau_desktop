@@ -598,7 +598,7 @@ namespace RauViet.ui
 
         private void Qlth_HarvestEmployeeDebounceTimer_Tick(object sender, EventArgs e)
         {
-            qlsb_GrowthStageDebounceTimer.Stop();
+            qlth_HarvestEmployeeDebounceTimer.Stop();
             Utils.ComboBoxSearchResult(qlth_HarvestEmployee_cbb, mEmployee_dt, "EmployessName_NoSign");
         }
 
@@ -1203,6 +1203,11 @@ namespace RauViet.ui
                         actionType += "Success";
                         qlth_status_lb.Text = "Thành công";
                         qlth_status_lb.ForeColor = Color.Green;
+                        if(receiveDepartmentID.HasValue)
+                            Properties.Settings.Default.ToNhanSPThuHoach = receiveDepartmentID.Value;
+
+                        Properties.Settings.Default.MaToTruong_ThuHoach = harvestEmployeeCode;
+                        Properties.Settings.Default.Save();
 
                         updateTongThuHoach();
                         Qlsb_create_btn_Click(null, null);
@@ -1662,6 +1667,9 @@ namespace RauViet.ui
             qlth_status_lb.Text = "";
             qlth_ProductLotCode_tb.Text = productionOrder + (mHarvestSchedule_dt.Rows.Count + 1).ToString("D2");
 
+            qlth_HarvestEmployee_cbb.SelectedValue = Properties.Settings.Default.MaToTruong_ThuHoach.ToString();
+            qlth_ReceiveDepartment_cbb.SelectedValue = Properties.Settings.Default.ToNhanSPThuHoach;
+
             qlth_edit_btn.Visible = false;
             qlth_create_btn.Visible = false;
             qlth_Save_btn.Visible = true;
@@ -2055,7 +2063,7 @@ namespace RauViet.ui
             ws.Cell(rowInd, columnInd).Style.Alignment.WrapText = true;
 
             columnInd++;
-            ws.Cell(rowInd, columnInd).Value = "VRF_GAP_BM05\n12/02/22\n02\npage 1 of 1";
+            ws.Cell(rowInd, columnInd).Value = Utils.VRF_GAP();
             ws.Cell(rowInd, columnInd).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
             ws.Cell(rowInd, columnInd).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
             ws.Cell(rowInd, columnInd).Style.Alignment.WrapText = true;
@@ -2162,7 +2170,7 @@ namespace RauViet.ui
 
             columnInd+=2;
             ws.Range(rowInd, columnInd, rowInd, columnInd + 1).Merge();
-            ws.Cell(rowInd, columnInd).Value = "VRF_GAP_BM05\n12/02/22\n02\npage 1 of 1";
+            ws.Cell(rowInd, columnInd).Value = Utils.VRF_GAP();
             ws.Cell(rowInd, columnInd).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
             ws.Cell(rowInd, columnInd).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
             ws.Cell(rowInd, columnInd).Style.Alignment.WrapText = true;
@@ -2288,7 +2296,7 @@ namespace RauViet.ui
             ws.Cell(rowInd, columnInd).Style.Alignment.WrapText = true;
 
             columnInd ++;
-            ws.Cell(rowInd, columnInd).Value = "VRF_GAP_BM05\n12/02/22\n02\npage 1 of 1";
+            ws.Cell(rowInd, columnInd).Value = Utils.VRF_GAP();
             ws.Cell(rowInd, columnInd).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
             ws.Cell(rowInd, columnInd).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
             ws.Cell(rowInd, columnInd).Style.Alignment.WrapText = true;
@@ -2380,7 +2388,7 @@ namespace RauViet.ui
             ws.Cell(rowInd, columnInd).Style.Alignment.WrapText = true;
 
             columnInd++;
-            ws.Cell(rowInd, columnInd).Value = "VRF_GAP_BM05\n12/02/22\n02\npage 1 of 1";
+            ws.Cell(rowInd, columnInd).Value = Utils.VRF_GAP();
             ws.Cell(rowInd, columnInd).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
             ws.Cell(rowInd, columnInd).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
             ws.Cell(rowInd, columnInd).Style.Alignment.WrapText = true;
