@@ -3444,6 +3444,59 @@ namespace RauViet.classes
             return dt;
         }
 
+        public async Task<int> insertMealOrderLogAsync(DateTime ExportDate, string actionType, string oldValue, string newValue)
+        {
+            int newId = -1;
+            string insertQuery = @"INSERT INTO MealOrderLogs (ActionType, OrderDate, OldValue, NewValue, ActionBy)
+                                    OUTPUT INSERTED.LogID
+                                    VALUES (@ActionType, @OrderDate, @OldValue, @NewValue, @ActionBy)";
+
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_Log_conStr()))
+                {
+                    await con.OpenAsync();
+
+                    // 2️⃣ Insert và lấy ID mới
+                    using (SqlCommand cmd = new SqlCommand(insertQuery, con))
+                    {
+                        cmd.Parameters.Add("@ActionType", SqlDbType.NVarChar).Value = actionType;
+                        cmd.Parameters.Add("@OrderDate", SqlDbType.DateTime).Value = ExportDate;
+                        cmd.Parameters.Add("@OldValue", SqlDbType.NVarChar).Value = oldValue;
+                        cmd.Parameters.Add("@NewValue", SqlDbType.NVarChar).Value = newValue;
+                        cmd.Parameters.Add("@ActionBy", SqlDbType.NVarChar).Value = UserManager.Instance.fullName;
+
+                        object result = await cmd.ExecuteScalarAsync();
+                        if (result != null)
+                            newId = Convert.ToInt32(result);
+                    }
+                }
+
+                return newId;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("ERROR: " + ex.Message);
+                return -1;
+            }
+        }
+        public async Task<DataTable> GetMealOrderLogAsybc()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_NhanSu_Log_conStr()))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT TOP 100 * FROM MealOrderLogs ORDER BY LogID DESC;";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                {
+                    dt.Load(reader);
+                }
+            }
+            return dt;
+        }
+
         public async Task<int> insertMealOrderAsync(DateTime orderDate, string note, int quantity, int price, decimal VAT)
         {
             int newId = -1;

@@ -1374,12 +1374,6 @@ namespace RauViet.ui
 
             DataRow row = drv.Row;
 
-            int plantingID = row.Field<int>("PlantingID");
-            int sku = row.Field<int>("SKU");
-            int ctID = row.Field<int>("CultivationTypeID");
-            string skuName = row["PlantName"].ToString();
-            string ctName = row["CultivationTypeName"].ToString();
-
             KhoVatTu_CultivationProcess frm = new KhoVatTu_CultivationProcess(row);
             frm.ShowData();
             frm.ShowDialog(); // hoặc Show()

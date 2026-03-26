@@ -2265,6 +2265,26 @@ namespace RauViet.classes
             return dt;
         }
 
+        public async Task<DataTable> GetHarvestScheduleGlobalGAPAsync(int plantingID)
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT * FROM HarvestSchedule_GlobalGap WHERE PlantingID = @PlantingID";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    cmd.Parameters.Add("@PlantingID", SqlDbType.Int).Value = plantingID;
+
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
+        }
         public async Task<bool> InsertHarvestScheduleGlobalGapListAsync(List<(int PlantingID, DateTime HarvestDate, decimal Quantity, string ProductLotCode, string HarvestEmployee, string SupervisorEmployee, int ReceiveDepartmentID)> list)
         {
             try

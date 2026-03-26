@@ -34,13 +34,14 @@ namespace RauViet.ui
         bool isNewState = false;
         bool qlsb_isNewState = false;
         bool qlth_isNewState = false;
+        bool mIsGlobalGap = false;
 
         private LoadingOverlay loadingOverlay;        
-        public KhoVatTu_CultivationProcess(DataRow plantingRow)
+        public KhoVatTu_CultivationProcess(DataRow plantingRow, bool isGlobalGap = false)
         {
             InitializeComponent();
             this.KeyPreview = true;
-
+            mIsGlobalGap = isGlobalGap;
             dataGV.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dataGV.MultiSelect = false;
 
@@ -62,7 +63,8 @@ namespace RauViet.ui
             status_lb.Text = "";
 
             string completeStr = Convert.ToBoolean(plantingRow["IsCompleted"]) ? "Đã Đóng" : "Đang Hoạt Động";
-            plant_lb.Text = $"{plantingRow["ProductionOrder"].ToString()} - {plantingRow["PlantName"].ToString()}({plantingRow["CultivationTypeName"].ToString()}) ==> {completeStr}";
+            string globalGAPStr = mIsGlobalGap ? "Global GAP" : "";
+            plant_lb.Text = $"[{globalGAPStr}]{plantingRow["ProductionOrder"].ToString()} - {plantingRow["PlantName"].ToString()}({plantingRow["CultivationTypeName"].ToString()}) ==> {completeStr}";
             mPlantingRow = plantingRow;
 
 
@@ -122,6 +124,16 @@ namespace RauViet.ui
             waterAmount_tb.KeyPress += Tb_KeyPress_OnlyNumber;
             isolationDays_tb.KeyPress += Tb_KeyPress_OnlyNumber;
             qlth_Quantity_tb.KeyPress += Tb_KeyPress_OnlyNumber;
+
+            if(mIsGlobalGap)
+            {
+                panel1.Visible = false;
+                panel6.Visible = false;
+                panel8.Visible = false;
+                qlsb_LOG_gv.Visible = false;
+                qlth_Log_gv.Visible = false;
+                log_GV.Visible = false;
+            }
         }
 
         private void form_KeyDown(object sender, KeyEventArgs e)
@@ -175,8 +187,10 @@ namespace RauViet.ui
             {
                 int plantingID = Convert.ToInt32(mPlantingRow["PlantingID"]);
 
-                var harvestScheduleTask = SQLStore_KhoVatTu.Instance.GetHarvestScheduleAsync(plantingID);
-                await Task.WhenAll(harvestScheduleTask);
+                if(!mIsGlobalGap)
+                    mHarvestSchedule_dt = await SQLStore_KhoVatTu.Instance.GetHarvestScheduleAsync(plantingID);
+                else
+                    mHarvestSchedule_dt = await SQLStore_KhoVatTu.Instance.GetHarvestScheduleGlobalGAPAsync(plantingID);
 
                 string[] empKeepColumns = { "EmployeeCode", "FullName", "EmployessName_NoSign", "DepartmentID", "PositionID" };
                 var cultivationProcessTask = SQLStore_KhoVatTu.Instance.GetCultivationProcessAsync(plantingID);
@@ -195,11 +209,20 @@ namespace RauViet.ui
                 var employeeTask = SQLStore_QLNS.Instance.GetEmployeesAsync(empKeepColumns);
 
                 await Task.WhenAll(cultivationProcessTask, pestDiseaseMonitoringTask, materialTask, workTypeTask, cultivationProcessTemplateTask, employeeTask, 
-                    departmentTask, logDataTask, growthStageTask, pestDiseaseTask, QLSBlogDataTask, harvestScheduleTask, QLTHlogDataTask);
+                    departmentTask, logDataTask, growthStageTask, pestDiseaseTask, QLSBlogDataTask, QLTHlogDataTask);
 
-                mHarvestSchedule_dt = harvestScheduleTask.Result;
-                mCultivationProcess_dt = cultivationProcessTask.Result;
-                mPestDiseaseMonitoring_dt = pestDiseaseMonitoringTask.Result;
+                if (mIsGlobalGap)
+                {
+                    mCultivationProcess_dt = cultivationProcessTask.Result.Copy();
+                    mPestDiseaseMonitoring_dt = pestDiseaseMonitoringTask.Result.Copy();
+                }
+                else
+                {
+                    mCultivationProcess_dt = cultivationProcessTask.Result;
+                    mPestDiseaseMonitoring_dt = pestDiseaseMonitoringTask.Result;
+                }
+
+                
                 mMaterial_dt = materialTask.Result;
                 mWorkType_dt = workTypeTask.Result;
                 mCultivationProcessTemplate_dt = cultivationProcessTemplateTask.Result;
@@ -210,6 +233,34 @@ namespace RauViet.ui
                 mLogDV = new DataView(logDataTask.Result);
                 mQLSBLogDV = new DataView(QLSBlogDataTask.Result);
                 mQLTHLog_DV = new DataView(QLTHlogDataTask.Result);
+
+
+                if(mIsGlobalGap)
+                {
+                    var thuHoachRows = mCultivationProcess_dt.AsEnumerable().Where(r => r.Field<int>("WorkTypeID") == 20).ToList();
+                    if (thuHoachRows.Any())
+                    {
+                        foreach (DataRow rowItem in mHarvestSchedule_dt.Rows)
+                        {
+                            DataRow newRow = mCultivationProcess_dt.NewRow();
+                            newRow.ItemArray = thuHoachRows[0].ItemArray;
+                            newRow["MaterialQuantity"] = rowItem["Quantity"];
+
+                            mCultivationProcess_dt.Rows.Add(newRow);
+                        }
+
+                        foreach (DataRow row in thuHoachRows)
+                        {
+                            mCultivationProcess_dt.Rows.Remove(row);
+                        }
+                    }
+
+                    var tbRows = mCultivationProcess_dt.AsEnumerable().Where(r => r.Field<string>("CategoryCode") == "TB").ToList();
+                    foreach (var row in tbRows)
+                    {
+                        mCultivationProcess_dt.Rows.Remove(row);
+                    }
+                }
 
                 qlsb_growthStatus_cbb.DataSource = mGrowthStage_dt;
                 qlsb_growthStatus_cbb.DisplayMember = "GrowthStageName";  // hiển thị tên
@@ -338,8 +389,8 @@ namespace RauViet.ui
                         {"DecisionMakerName", 150 }
                     });
 
-                Utils.HideColumns(qlth_gv, new[] { "HarvestID", "PlantingID", "HarvestEmployee", "ReceiveDepartmentID"});
-                Utils.SetGridOrdinal(mHarvestSchedule_dt, new[] { "HarvestDate", "HarvestDate_Week", "Quantity", "ProductLotCode", "HarvestEmployeeName", "ReceiveDepartmentName" });
+                Utils.HideColumns(qlth_gv, new[] { "HarvestGlobalGapID", "SupervisorEmployee", "HarvestID", "PlantingID", "HarvestEmployee", "ReceiveDepartmentID"});
+                Utils.SetGridOrdinal(mHarvestSchedule_dt, new[] { "HarvestDate", "HarvestDate_Week", "Quantity", "ProductLotCode", "SupervisorName", "HarvestEmployeeName", "ReceiveDepartmentName" });
                 Utils.SetGridHeaders(qlth_gv, new System.Collections.Generic.Dictionary<string, string> {
                         {"HarvestDate", "Ngày" },
                         {"HarvestDate_Week", "Thứ" },
@@ -671,6 +722,8 @@ namespace RauViet.ui
                         string departmentName = departmentRows.Length > 0 ? departmentRows[0]["DepartmentName"].ToString() : "";
                         string materialName = matiralRows.Length > 0 ? matiralRows[0]["MaterialName"].ToString() : "";
                         string unitName = matiralRows.Length > 0 ? matiralRows[0]["UnitName"].ToString() : "";
+                        if(unitName.CompareTo("Bao") == 0)
+                            unitName = "Kg";
                         string composition = matiralRows.Length > 0 ? matiralRows[0]["Composition"].ToString() : "";
 
                         string activeIngredient = composition?.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries)
@@ -790,7 +843,8 @@ namespace RauViet.ui
                 string materialName = matiralRows.Length > 0 ? matiralRows[0]["MaterialName"].ToString() : "";
                 string composition = matiralRows.Length > 0 ? matiralRows[0]["Composition"].ToString() : "";
                 string unitName = matiralRows.Length > 0 ? matiralRows[0]["UnitName"].ToString() : "";
-
+                if (unitName.CompareTo("Bao") == 0)
+                    unitName = "Kg";
                 string activeIngredient = composition?.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries)
                                                     .FirstOrDefault(l => Utils.RemoveVietnameseSigns(l).ToLower().Contains("hoat chat"))
                                                     ?.Split(':')
@@ -1296,6 +1350,8 @@ namespace RauViet.ui
         }
         private async void nktd_deleteProduct(string id, bool isAskQuest = true)
         {
+            if (mIsGlobalGap) return;
+
             foreach (DataRow row in mCultivationProcess_dt.Rows)
             {
                 string cultivationProcessID = row["CultivationProcessID"].ToString();
@@ -1351,6 +1407,7 @@ namespace RauViet.ui
 
         private async void qlsb_deleteProduct(string id)
         {
+            if (mIsGlobalGap) return;
             foreach (DataRow row in mPestDiseaseMonitoring_dt.Rows)
             {
                 string monitoringID = row["MonitoringID"].ToString();
@@ -1401,6 +1458,7 @@ namespace RauViet.ui
 
         private async void qlth_deleteProduct(string id)
         {
+            if (mIsGlobalGap) return;
             foreach (DataRow row in mHarvestSchedule_dt.Rows)
             {
                 string harvestID = row["HarvestID"].ToString();
@@ -1997,7 +2055,7 @@ namespace RauViet.ui
                     using (SaveFileDialog sfd = new SaveFileDialog())
                     {
                         sfd.Filter = "Excel Workbook|*.xlsx";
-                        sfd.FileName = $"{Utils.RemoveVietnameseSigns(mPlantingRow["PlantName"].ToString()).Replace(" ", "")}_{mPlantingRow["ProductionOrder"].ToString()}";
+                        sfd.FileName = $"{(mIsGlobalGap? "GlobalGAP_":"")}{Utils.RemoveVietnameseSigns(mPlantingRow["PlantName"].ToString()).Replace(" ", "")}_{mPlantingRow["ProductionOrder"].ToString()}";
                         if (sfd.ShowDialog() == DialogResult.OK)
                         {
                             wb.SaveAs(sfd.FileName);
@@ -2071,7 +2129,7 @@ namespace RauViet.ui
             columnInd = 1;
             // ===== Header cấp 2 và cấp 3 =====
             string[] columnsName = new string[] { "Tên sản phẩm:", "Mã sản phẩm:", "Số lệnh sản xuất:", "Mã quy trình:", "Ngày gieo hạt:", "Số thứ tự trồng:", "Diện tích:", "Số lượng cây (cây):", "Ngày trồng:", "Phụ trách kỹ thuật:", "Ngày thu hoạch:", "Tổ phụ trách:", "Vị trí trồng:", "Người phụ trách:" };
-            string[] exportColumns = new string[] { "PlantName", "SKU", "ProductionOrder", "MaQuyTrinh", "NurseryDate", "SoThuVuTrong", "Area", "Quantity", "PlantingDate", "SupervisorName", "HarvestDate", "DepartmentName", "ViTriTrong", "NguoiPhuTrach" };
+            string[] exportColumns = new string[] { "PlantName", "SKU", "ProductionOrder", "MaQuyTrinh", "NurseryDate", "SoThuVuTrong", "Area", "Quantity", "PlantingDate", "SupervisorName", "HarvestDate", "DepartmentName", "PlantLocation", "NguoiPhuTrach" };
             string[] typeColumns = new string[] { "string", "int", "string", "string", "date", "string", "decimal", "decimal", "date", "string", "date", "string", "string", "string" };
             for (int i = 0; i < columnsName.Length; i++)
             {
@@ -2398,7 +2456,8 @@ namespace RauViet.ui
             string[] columnsName = new string[] { "Ngày Thu Hoạch", "Thứ", "Loại Sản Phẩm", "Sản Lượng (kg)", "Vị Trí Thu Hoạch", "Mã Số Lô Sản Phẩm (LOT)", "Người Giám Sát", "Người Thu Hoạch", "Nơi Nhận Sản Phẩm" };
             string[] exportColumns = new string[] { "HarvestDate", "HarvestDate_Week", "PlantName", "Quantity", "PlantLocation", "ProductLotCode", "EmployeeName", "HarvestEmployeeName", "ReceiveDepartmentName" };
 
-            DataRow cultivationProcessfirstRow = mCultivationProcess_dt.Select($"WorkTypeID = 20").FirstOrDefault();
+            DataRow thuHoachRow = mCultivationProcess_dt.Select($"WorkTypeID = {Utils.WorkType_ThuHoach()}").FirstOrDefault();
+            var plantingLocalRow = mCultivationProcess_dt.AsEnumerable().FirstOrDefault(r =>!string.IsNullOrWhiteSpace(r.Field<string>("PlantLocation")));
 
             foreach (var tile in columnsName)
             {
@@ -2423,14 +2482,22 @@ namespace RauViet.ui
                     {
                         valueStr = mPlantingRow[columnName].ToString();
                     }
-                    else if (columnName.CompareTo("PlantLocation") == 0 || columnName.CompareTo("EmployeeName") == 0)
+                    else if (columnName.CompareTo("EmployeeName") == 0 && !mIsGlobalGap)
                     {
-                        if (cultivationProcessfirstRow != null)
-                            valueStr = cultivationProcessfirstRow[columnName].ToString();
+                        if (thuHoachRow != null)
+                            valueStr = thuHoachRow[columnName].ToString();
+                    }
+                    else if (columnName.CompareTo("PlantLocation") == 0)
+                    {
+                        if (plantingLocalRow != null)
+                            valueStr = plantingLocalRow[columnName].ToString();
                     }
                     else
                     {
-                        valueStr = row[columnName].ToString();
+                        if(columnName.CompareTo("EmployeeName") == 0)
+                            valueStr = row["SupervisorName"].ToString();
+                        else
+                            valueStr = row[columnName].ToString();
                     }
 
                     var titleCell = ws.Cell(rowInd, columnInd);

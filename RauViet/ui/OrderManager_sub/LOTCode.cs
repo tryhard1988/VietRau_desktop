@@ -420,6 +420,15 @@ namespace RauViet.ui
 
         private async void Copy_btn_Click(object sender, EventArgs e)
         {
+
+            var result = MessageBox.Show("Chắc Chắn Chưa?","Xác nhận",
+                                        MessageBoxButtons.YesNo,
+                                        MessageBoxIcon.Question
+                                    );
+
+            if (result != DialogResult.Yes)
+                return;
+
             int from = Convert.ToInt32(fromExportCode_cbb.SelectedValue);
             int to = Convert.ToInt32(exportCode_cbb.SelectedValue);
             await SQLManager_Kho.Instance.CopyLotCodeAsync(from, to);

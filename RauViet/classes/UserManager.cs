@@ -118,6 +118,7 @@ namespace RauViet.classes
         public bool hasRole_QLK_QuanLyMauSanXuat_ReadOnly() { return hasRole("QLMSX_RO"); }
         public bool hasRole_QLK_NhatKySanXuat() { return hasRole("NKSX_FULL"); }
         public bool hasRole_SuaDonTrongNuoc() { return hasRole("csdtn"); }
+        public bool hasRole_GiamSatTiepNhanRau() { return hasRole("kvt_gstnr"); }
         public int[] get_ChamCongTangCa_Departments()
         {
             int[] departmentIDs = roleCodes.Where(r => r.StartsWith("cctc_", StringComparison.OrdinalIgnoreCase))

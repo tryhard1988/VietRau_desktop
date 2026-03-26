@@ -132,6 +132,7 @@
             this.loadExcelOrderReportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.content_panel = new System.Windows.Forms.Panel();
             this.bbbbbbbbb_mi = new System.Windows.Forms.ToolStripMenuItem();
+            this.thôngTinNgườiBánToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1.SuspendLayout();
             this.LOT_menuitem.SuspendLayout();
             this.SuspendLayout();
@@ -217,6 +218,7 @@
             // 
             // sfsdf
             // 
+            this.sfsdf.BackColor = System.Drawing.SystemColors.ScrollBar;
             this.sfsdf.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.employee_mi,
             this.employeeBH_mi,
@@ -319,6 +321,7 @@
             // 
             // allowanceGroup_mi
             // 
+            this.allowanceGroup_mi.BackColor = System.Drawing.SystemColors.ScrollBar;
             this.allowanceGroup_mi.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.employeeAllowance_mi,
             this.monthlyAllowance_mi,
@@ -348,6 +351,7 @@
             // 
             // employeeDeduction_mi
             // 
+            this.employeeDeduction_mi.BackColor = System.Drawing.SystemColors.ScrollBar;
             this.employeeDeduction_mi.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.deduction_VEG_mi,
             this.deduction_ADV_mi,
@@ -468,6 +472,7 @@
             // 
             // khoHangKhoGroup_mi
             // 
+            this.khoHangKhoGroup_mi.BackColor = System.Drawing.SystemColors.ScrollBar;
             this.khoHangKhoGroup_mi.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.inventoryTransaction_mi,
             this.thongKeTonKho_mi});
@@ -490,7 +495,9 @@
             // 
             // khoRauCuQuaGroup_mi
             // 
+            this.khoRauCuQuaGroup_mi.BackColor = System.Drawing.SystemColors.ScrollBar;
             this.khoRauCuQuaGroup_mi.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.thôngTinNgườiBánToolStripMenuItem,
             this.xuatNhapRauCuQua_mi,
             this.thongKeTonKhoHangRauCu_mi});
             this.khoRauCuQuaGroup_mi.ForeColor = System.Drawing.Color.OrangeRed;
@@ -501,13 +508,13 @@
             // xuatNhapRauCuQua_mi
             // 
             this.xuatNhapRauCuQua_mi.Name = "xuatNhapRauCuQua_mi";
-            this.xuatNhapRauCuQua_mi.Size = new System.Drawing.Size(189, 22);
+            this.xuatNhapRauCuQua_mi.Size = new System.Drawing.Size(205, 22);
             this.xuatNhapRauCuQua_mi.Text = "Xuất Nhập Kho";
             // 
             // thongKeTonKhoHangRauCu_mi
             // 
             this.thongKeTonKhoHangRauCu_mi.Name = "thongKeTonKhoHangRauCu_mi";
-            this.thongKeTonKhoHangRauCu_mi.Size = new System.Drawing.Size(189, 22);
+            this.thongKeTonKhoHangRauCu_mi.Size = new System.Drawing.Size(205, 22);
             this.thongKeTonKhoHangRauCu_mi.Text = "Thống Kê Tồn Kho";
             // 
             // donhang_group_mi
@@ -939,6 +946,12 @@
             this.bbbbbbbbb_mi.Name = "bbbbbbbbb_mi";
             this.bbbbbbbbb_mi.Size = new System.Drawing.Size(32, 19);
             // 
+            // thôngTinNgườiBánToolStripMenuItem
+            // 
+            this.thôngTinNgườiBánToolStripMenuItem.Name = "thôngTinNgườiBánToolStripMenuItem";
+            this.thôngTinNgườiBánToolStripMenuItem.Size = new System.Drawing.Size(205, 22);
+            this.thôngTinNgườiBánToolStripMenuItem.Text = "Thông Tin Người Bán";
+            // 
             // FormManager
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1063,5 +1076,6 @@
         private System.Windows.Forms.ToolStripMenuItem qlk_xuatNhapVTQuaCacNam_mi;
         private System.Windows.Forms.ToolStripMenuItem giamSatTiepNhanRau_mi;
         private System.Windows.Forms.ToolStripMenuItem datDoAn_mi;
+        private System.Windows.Forms.ToolStripMenuItem thôngTinNgườiBánToolStripMenuItem;
     }
 }

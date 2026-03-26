@@ -40,7 +40,8 @@ namespace RauViet.classes
         DataTable mEmployeeSalary_Log_dt = null;
         DataTable mMonthlyAllowanceLog_dt = null;
         DataTable mAnnualLeaveBalance_dt = null;
-        DataTable mEmployeeAllowances_dt= null;        
+        DataTable mEmployeeAllowances_dt= null;
+        DataTable mMealOrderLog_dt = null;
 
         Dictionary<int, DataTable> mDeductions;
         Dictionary<string, DataTable> mOvertimeAttendaces;
@@ -1619,6 +1620,24 @@ namespace RauViet.classes
                 row["TotalMoney"] = quantity * price;
                 row["TotalMoney_VAT"] = Convert.ToInt32((quantity * price)*( 1 + VAT/100.0m));
             }
+        }
+
+        public async Task<DataTable> GetMealOrderLogAsync()
+        {
+            if (mMealOrderLog_dt == null)
+            {
+                try
+                {
+                    mMealOrderLog_dt = await SQLManager_QLNS.Instance.GetMealOrderLogAsybc();
+                }
+                catch
+                {
+                    Console.WriteLine("GetMealOrderLogAsync errror");
+                    return null;
+                }
+            }
+
+            return mMealOrderLog_dt;
         }
     }
 }

@@ -1144,11 +1144,32 @@ namespace RauViet.classes
             return mHarvestSchedules[plantingID];
         }
 
+        public async Task<DataTable> GetHarvestScheduleGlobalGAPAsync(int plantingID)
+        {
+            try
+            {
+                DataTable data = await SQLManager_KhoVatTu.Instance.GetHarvestScheduleGlobalGAPAsync(plantingID);
+                editHarvestSchedule(data);
+
+                return data;
+            }
+            catch
+            {
+                Console.WriteLine("error GetHarvestScheduleGlobalGAPAsync SQLStore");
+                return null;
+            }            
+        }
+
         private async void editHarvestSchedule(DataTable data)
         {
             data.Columns.Add("HarvestDate_Week", typeof(string));
             data.Columns.Add("HarvestEmployeeName", typeof(string));
             data.Columns.Add("ReceiveDepartmentName", typeof(string));
+            
+            if (data.Columns.Contains("SupervisorEmployee"))
+            {
+                data.Columns.Add("SupervisorName", typeof(string));
+            }
 
             DataTable employee_dt = await SQLStore_QLNS.Instance.GetEmployeesAsync();
             DataTable department_dt = await SQLStore_QLNS.Instance.GetDepartmentAsync();
@@ -1157,7 +1178,8 @@ namespace RauViet.classes
             {
                 int? receiveDepartmentID = rowItem["ReceiveDepartmentID"] == DBNull.Value ? (int?)null : Convert.ToInt32(rowItem["ReceiveDepartmentID"]);
                 string harvestEmployee = rowItem["HarvestEmployee"].ToString().Trim();
-
+                
+                
                 rowItem["HarvestDate_Week"] = Utils.GetThu_Viet(Convert.ToDateTime(rowItem["HarvestDate"]));
 
                 if (receiveDepartmentID.HasValue)
@@ -1172,6 +1194,17 @@ namespace RauViet.classes
                     DataRow employeeRow = employee_dt.AsEnumerable().FirstOrDefault(r => r.Field<string>("EmployeeCode") == harvestEmployee);
                     if (employeeRow != null)
                         rowItem["HarvestEmployeeName"] = employeeRow["FullName"].ToString();
+                }
+
+                if (data.Columns.Contains("SupervisorEmployee"))
+                {
+                    string supervisorEmployee = rowItem["SupervisorEmployee"].ToString().Trim();
+                    if (!string.IsNullOrEmpty(supervisorEmployee))
+                    {
+                        DataRow employeeRow = employee_dt.AsEnumerable().FirstOrDefault(r => r.Field<string>("EmployeeCode") == supervisorEmployee);
+                        if (employeeRow != null)
+                            rowItem["SupervisorName"] = employeeRow["FullName"].ToString();
+                    }
                 }
             }
         }
@@ -1323,5 +1356,6 @@ namespace RauViet.classes
                     row["PlantName"] = productRow["ProductNameVN"];
             }
         }
+
     }
 }

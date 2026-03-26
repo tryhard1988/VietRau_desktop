@@ -13,7 +13,7 @@ namespace RauViet.ui
 {
     public partial class KhoVatTu_GiamSatTiepNhanRau : Form
     {
-        DataTable mExportCode_dt, mOrdersTotal_dt, mGlobalGapProducts_dt;
+        DataTable mExportCode_dt, mOrdersTotal_dt, mGlobalGapProducts_dt, mPlanting_dt;
         int mCurrentExportID = -1;
         private LoadingOverlay loadingOverlay;
         public KhoVatTu_GiamSatTiepNhanRau()
@@ -31,6 +31,7 @@ namespace RauViet.ui
             exportExcel_btn.Click += ExportExcel_btn_Click;
 
             saveGlobalGAP_btn.Click += SaveGlobalGAP_btn_Click;
+            dataGV.CellDoubleClick += DataGV_CellDoubleClick;
         }
 
         private void KhoVatTu_KeyDown(object sender, KeyEventArgs e)
@@ -95,7 +96,7 @@ namespace RauViet.ui
                 mOrdersTotal_dt.Columns.Add($"Quantity_ThanhPham", typeof(decimal));
                 mOrdersTotal_dt.Columns.Add($"ActualPacking", typeof(string));
                 mOrdersTotal_dt.Columns.Add($"ExcessHandling", typeof(string));
-                mOrdersTotal_dt.Columns.Add($"SoKien", typeof(string));
+                mOrdersTotal_dt.Columns.Add($"SoKien", typeof(int));
                 foreach (DataRow ggpRow in mGlobalGapProducts_dt.Rows)
                 {
                     int DaysBeforeExport = Convert.ToInt32(ggpRow["DaysBeforeExport"]);
@@ -130,16 +131,28 @@ namespace RauViet.ui
                     if (orderRow != null)
                     {
                         newRow["Quantity_ThanhPham"] = orderRow["TotalNetWeight"];
-                        newRow["Quantity_BanDau"] = Math.Round(Convert.ToDecimal(orderRow["TotalNetWeight"]) / (Convert.ToDecimal(ggpRow["UsageRate"]) / 100.0m), 2);
+                        newRow["Quantity_BanDau"] = Convert.ToDecimal(orderRow["TotalNetWeight"]) / (Convert.ToDecimal(ggpRow["UsageRate"]) / 100.0m);
 
-                        newRow["SoKien"] = (Convert.ToDecimal(orderRow["TotalNetWeight"]) * 10) * (PortionsPerBox);
+                        newRow["SoKien"] = Math.Ceiling((Convert.ToDecimal(orderRow["TotalNetWeight"]) * 10) / (PortionsPerBox));
                     }
 
                     mOrdersTotal_dt.Rows.Add(newRow);
                 }
 
+                List<string> productionOrders = new List<string>();
+                foreach (DataRow rowItem in mOrdersTotal_dt.Rows)
+                {
+                    string LotCOT = rowItem["LotCOT"].ToString().Trim();
+                    string productionOrder = LotCOT.Length > 2 ? LotCOT.Substring(0, LotCOT.Length - 2) : LotCOT;
+                    if (string.IsNullOrWhiteSpace(productionOrder) == false && productionOrders.Contains(productionOrder) == false)
+                        productionOrders.Add(productionOrder);
+                }
+                mPlanting_dt = await SQLStore_KhoVatTu.Instance.getPlantingManagementAsync_ProductionOrder(productionOrders);
+
                 dataGV.DataSource = mOrdersTotal_dt;
 
+                Utils.SetGridFormat_NO(dataGV, "SoKien");
+                Utils.SetGridFormat_N2(dataGV, "Quantity_BanDau");
                 Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
                         {"Date", "Ngày" },
                         {"PlantName", "Tên Sản Phẩm" },
@@ -747,22 +760,14 @@ namespace RauViet.ui
 
             List <(int PlantingID, DateTime HarvestDate, decimal Quantity, string ProductLotCode, string HarvestEmployee, string SupervisorEmployee, int ReceiveDepartmentID)> data = new List<(int, DateTime, decimal, string, string, string, int)>();
 
-            List<string> productionOrders = new List<string>();
-            foreach (DataRow rowItem in mOrdersTotal_dt.Rows)
-            {
-                string LotCOT = rowItem["LotCOT"].ToString().Trim();
-                string productionOrder = LotCOT.Length > 2 ? LotCOT.Substring(0, LotCOT.Length - 2) : LotCOT;
-                if (string.IsNullOrWhiteSpace(productionOrder) == false && productionOrders.Contains(productionOrder) == false)
-                    productionOrders.Add(productionOrder);
-            }
-            var planting_dt = await SQLStore_KhoVatTu.Instance.getPlantingManagementAsync_ProductionOrder(productionOrders);
+            
 
             foreach (DataRow rowItem in mOrdersTotal_dt.Rows)
             {
                 string LotCOT = rowItem["LotCOT"].ToString().Trim();
                 string productionOrder = LotCOT.Length > 2 ? LotCOT.Substring(0, LotCOT.Length - 2) : LotCOT;
 
-                var plantingRow = planting_dt.AsEnumerable() .Where(r => r.Field<string>("ProductionOrder") == productionOrder && r.Field<int>("FarmID") == 2) .FirstOrDefault();
+                var plantingRow = mPlanting_dt.AsEnumerable() .Where(r => r.Field<string>("ProductionOrder") == productionOrder && r.Field<int>("FarmID") == 2) .FirstOrDefault();
                 if(plantingRow != null)
                 {
                     int plantingID = Convert.ToInt32(plantingRow["PlantingID"]);
@@ -795,6 +800,29 @@ namespace RauViet.ui
                 MessageBox.Show("Xong!", "SUCCESS", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
+        }
+
+        private void DataGV_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (!UserManager.Instance.hasRole_QLK_NhatKySanXuat())
+                return;
+            if (e.RowIndex < 0) return; // tránh click header
+
+            DataRowView drv = dataGV.Rows[e.RowIndex].DataBoundItem as DataRowView;
+            if (drv == null) return;
+
+            DataRow row = drv.Row;
+
+            string LotCOT = row["LotCOT"].ToString().Trim();
+            string productionOrder = LotCOT.Length > 2 ? LotCOT.Substring(0, LotCOT.Length - 2) : LotCOT;
+
+            var plantingRow = mPlanting_dt.AsEnumerable().FirstOrDefault(r => r.Field<string>("ProductionOrder") == productionOrder);
+            if (plantingRow == null)
+                return;
+
+            KhoVatTu_CultivationProcess frm = new KhoVatTu_CultivationProcess(plantingRow, true);
+            frm.ShowData();
+            frm.ShowDialog(); // hoặc Show()
         }
     }
 }

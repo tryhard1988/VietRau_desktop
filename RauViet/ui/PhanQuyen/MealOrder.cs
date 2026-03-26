@@ -1,4 +1,6 @@
 ﻿
+using DocumentFormat.OpenXml.Bibliography;
+using DocumentFormat.OpenXml.Vml.Office;
 using RauViet.classes;
 using System;
 using System.Collections.Generic;
@@ -14,6 +16,7 @@ namespace RauViet.ui
     public partial class MealOrder : Form
     {
         DataTable mMealOrder_dt;
+        private DataView mLogDV;
         bool isNewState = false;
         public MealOrder()
         {
@@ -100,10 +103,12 @@ namespace RauViet.ui
                 dataGV.SelectionChanged -= this.dataGV_CellClick;
                 // Chạy truy vấn trên thread riêng
                 var mealOrderTask = SQLStore_QLNS.Instance.GetMealOrderAsync();
-
-                await Task.WhenAll(mealOrderTask);
+                var logDataTask = SQLStore_QLNS.Instance.GetMealOrderLogAsync();
+                await Task.WhenAll(mealOrderTask, logDataTask);
                 mMealOrder_dt = mealOrderTask.Result;
+                mLogDV = new DataView(logDataTask.Result);
 
+                log_GV.DataSource = mLogDV;
                 dataGV.DataSource = mMealOrder_dt;
                 Utils.HideColumns(dataGV, new[] { "MealOrdersID" });
                 Utils.SetGridOrdinal(mMealOrder_dt, new[] { "OrderDate", "Note", "Quantity", "Price", "VAT", "TotalMoney" });
@@ -127,6 +132,15 @@ namespace RauViet.ui
                     {"TotalMoney_VAT", 80 }
                 });
 
+                Utils.HideColumns(log_GV, new[] { "LogID", "OrderDate" });
+                Utils.SetGridHeaders(log_GV, new System.Collections.Generic.Dictionary<string, string> {
+                     {"ActionType", "H.Động" },
+                     {"OldValue", "Cũ" },
+                     {"NewValue", "Mới" },
+                     {"CreatedDate", "Ngày tạo" },
+                     {"ActionBy", "Người tạo" }
+                    });
+
 
                 var startRow = mMealOrder_dt.AsEnumerable().Where(r => r.Field<bool>("IsPaid") == false).OrderBy(r => r.Field<DateTime>("OrderDate")).FirstOrDefault();
                 var endRow = mMealOrder_dt.AsEnumerable().Where(r => r.Field<bool>("IsPaid") == false).OrderByDescending(r => r.Field<DateTime>("OrderDate")).FirstOrDefault();
@@ -139,6 +153,7 @@ namespace RauViet.ui
                 ReadOnly_btn_Click(null, null);
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
                 dataGV.SelectionChanged += this.dataGV_CellClick;
             }
@@ -167,6 +182,15 @@ namespace RauViet.ui
             if (dataGV.CurrentRow == null) return;
 
             UpdateRightUI();
+
+            if (dataGV.SelectedRows.Count > 0)
+            {
+                var cells = dataGV.SelectedRows[0].Cells;
+                if (cells == null)
+                    return;
+                DateTime date = Convert.ToDateTime(cells["OrderDate"].Value);
+                mLogDV.RowFilter = $"OrderDate >= #{date:MM/dd/yyyy}# AND OrderDate < #{date.AddDays(1):MM/dd/yyyy}#";
+            }
         }
 
         private void UpdateRightUI()
@@ -202,6 +226,10 @@ namespace RauViet.ui
                     DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                     if (dialogResult == DialogResult.Yes)
                     {
+                        string oldValue = $"Ngày: {Convert.ToDateTime(row["OrderDate"]).ToString("dd/MM/yyyy")}; Diễn Giải: {row["Note"]}; Số Phần: {row["Quantity"]}; Giá: {row["Price"]}; VAT: {row["VAT"]}; Đã Thanh Toán: {row["IsPaid"]}";
+                        string newValue = $"Ngày: {orderDate.ToString("dd/MM/yyyy")}; Diễn Giải: {VAT}; Số Phần: {quantity}; Giá: {price}; VAT: {VAT}; Đã Thanh Toán: {isPaid}";
+                        string actionType = "Update";
+
                         try
                         {
                             bool isScussess = await SQLManager_QLNS.Instance.updateMealOrderAsync(mealOrdersID, orderDate, note, quantity, price, VAT, isPaid);
@@ -220,18 +248,26 @@ namespace RauViet.ui
 
                                 status_lb.Text = "Thành công.";
                                 status_lb.ForeColor = Color.Green;
+
+                                actionType += ": Success";
                             }
                             else
                             {
                                 status_lb.Text = "Thất bại.";
                                 status_lb.ForeColor = Color.Red;
+                                actionType += ": False";
                             }
                         }
-                        catch
+                        catch (Exception ex)
                         {
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;
-                        }  
+                            actionType += $": {ex.Message}";
+                        }
+                        finally
+                        {
+                            _ = SQLManager_QLNS.Instance.insertMealOrderLogAsync(orderDate, actionType, oldValue, newValue);
+                        }
                     }
                     break;
                 }
@@ -244,6 +280,9 @@ namespace RauViet.ui
 
             if (dialogResult == DialogResult.Yes)
             {
+                string oldValue = "";
+                string newValue = $"Ngày: {orderDate.ToString("dd/MM/yyyy")}; Diễn Giải: {VAT}; Số Phần: {quantity}; Giá: {price}; VAT: {VAT}; Đã Thanh Toán: False";
+                string actionType = "Create";
                 try
                 {
                     int MealOrdersID = await SQLManager_QLNS.Instance.insertMealOrderAsync(orderDate, note, quantity, price, VAT);
@@ -275,19 +314,25 @@ namespace RauViet.ui
 
                         status_lb.Text = "Thành công";
                         status_lb.ForeColor = Color.Green;
+                        actionType += ": Success";
                     }
                     else
                     {
                         status_lb.Text = "Thất bại";
                         status_lb.ForeColor = Color.Red;
+                        actionType += ": False";
                     }
                 }
-                catch
+                catch (Exception ex)
                 {
                     status_lb.Text = "Thất bại.";
                     status_lb.ForeColor = Color.Red;
+                    actionType += $": {ex.Message}";
                 }
-                
+                finally
+                {
+                    _ = SQLManager_QLNS.Instance.insertMealOrderLogAsync(orderDate, actionType, oldValue, newValue);
+                }
             }
         }
         private void saveBtn_Click(object sender, EventArgs e)
@@ -330,6 +375,10 @@ namespace RauViet.ui
                     DialogResult dialogResult = MessageBox.Show("XÓA \n Chắc chắn chưa ?", " Xóa Thông Tin", MessageBoxButtons.YesNo);
                     if (dialogResult == DialogResult.Yes)
                     {
+                        DateTime orderDate = Convert.ToDateTime(row["OrderDate"]);
+                        string oldValue = $"Ngày: {orderDate.ToString("dd/MM/yyyy")}; Diễn Giải: {row["Note"]}; Số Phần: {row["Quantity"]}; Giá: {row["Price"]}; VAT: {row["VAT"]}; Đã Thanh Toán: {row["IsPaid"]}";
+                        string newValue = $"";
+                        string actionType = "Delete";
                         try
                         {
                             bool isScussess = await SQLManager_QLNS.Instance.deleteMealOrderAsync(Convert.ToInt32(id));
@@ -341,22 +390,28 @@ namespace RauViet.ui
 
                                 mMealOrder_dt.Rows.Remove(row);
                                 mMealOrder_dt.AcceptChanges();
+
+                                actionType += ": Success";
                             }
                             else
                             {
                                 status_lb.Text = "Thất bại.";
                                 status_lb.ForeColor = Color.Red;
+
+                                actionType += ": False";
                             }
                         }
-                        catch
+                        catch (Exception ex)
                         {
                             status_lb.Text = "Thất bại.";
                             status_lb.ForeColor = Color.Red;
+
+                            actionType += $": {ex.Message}";
                         }
-
-
-
-
+                        finally
+                        {
+                            _ = SQLManager_QLNS.Instance.insertMealOrderLogAsync(orderDate, actionType, oldValue, newValue);
+                        }
                     }
                     break;
                 }

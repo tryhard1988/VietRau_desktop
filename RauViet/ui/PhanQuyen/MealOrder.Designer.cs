@@ -30,6 +30,12 @@ namespace RauViet.ui
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.xem_btn = new System.Windows.Forms.Button();
+            this.in_btn = new System.Windows.Forms.Button();
+            this.in_EndDay_dtp = new System.Windows.Forms.DateTimePicker();
+            this.label7 = new System.Windows.Forms.Label();
+            this.in_StartDay_dtp = new System.Windows.Forms.DateTimePicker();
             this.readOnly_btn = new System.Windows.Forms.Button();
             this.edit_btn = new System.Windows.Forms.Button();
             this.info_gb = new System.Windows.Forms.GroupBox();
@@ -49,20 +55,19 @@ namespace RauViet.ui
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
             this.ID_tb = new System.Windows.Forms.TextBox();
             this.dataGV = new System.Windows.Forms.DataGridView();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.label7 = new System.Windows.Forms.Label();
-            this.in_StartDay_dtp = new System.Windows.Forms.DateTimePicker();
-            this.in_EndDay_dtp = new System.Windows.Forms.DateTimePicker();
-            this.in_btn = new System.Windows.Forms.Button();
-            this.xem_btn = new System.Windows.Forms.Button();
+            this.label5 = new System.Windows.Forms.Label();
+            this.log_GV = new System.Windows.Forms.DataGridView();
             this.panel1.SuspendLayout();
+            this.groupBox1.SuspendLayout();
             this.info_gb.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
-            this.groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.log_GV)).BeginInit();
             this.SuspendLayout();
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.label5);
+            this.panel1.Controls.Add(this.log_GV);
             this.panel1.Controls.Add(this.groupBox1);
             this.panel1.Controls.Add(this.readOnly_btn);
             this.panel1.Controls.Add(this.edit_btn);
@@ -72,10 +77,70 @@ namespace RauViet.ui
             this.panel1.Controls.Add(this.LuuThayDoiBtn);
             this.panel1.Controls.Add(this.ID_tb);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel1.Location = new System.Drawing.Point(960, 0);
+            this.panel1.Location = new System.Drawing.Point(901, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(530, 681);
+            this.panel1.Size = new System.Drawing.Size(589, 681);
             this.panel1.TabIndex = 9;
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.BackColor = System.Drawing.SystemColors.Info;
+            this.groupBox1.Controls.Add(this.xem_btn);
+            this.groupBox1.Controls.Add(this.in_btn);
+            this.groupBox1.Controls.Add(this.in_EndDay_dtp);
+            this.groupBox1.Controls.Add(this.label7);
+            this.groupBox1.Controls.Add(this.in_StartDay_dtp);
+            this.groupBox1.Location = new System.Drawing.Point(29, 348);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(299, 104);
+            this.groupBox1.TabIndex = 33;
+            this.groupBox1.TabStop = false;
+            // 
+            // xem_btn
+            // 
+            this.xem_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.xem_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.xem_btn.Location = new System.Drawing.Point(154, 53);
+            this.xem_btn.Name = "xem_btn";
+            this.xem_btn.Size = new System.Drawing.Size(79, 37);
+            this.xem_btn.TabIndex = 36;
+            this.xem_btn.Text = "Xem";
+            this.xem_btn.UseVisualStyleBackColor = false;
+            // 
+            // in_btn
+            // 
+            this.in_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.in_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.in_btn.Location = new System.Drawing.Point(67, 53);
+            this.in_btn.Name = "in_btn";
+            this.in_btn.Size = new System.Drawing.Size(79, 37);
+            this.in_btn.TabIndex = 35;
+            this.in_btn.Text = "In";
+            this.in_btn.UseVisualStyleBackColor = false;
+            // 
+            // in_EndDay_dtp
+            // 
+            this.in_EndDay_dtp.Location = new System.Drawing.Point(168, 24);
+            this.in_EndDay_dtp.Name = "in_EndDay_dtp";
+            this.in_EndDay_dtp.Size = new System.Drawing.Size(98, 20);
+            this.in_EndDay_dtp.TabIndex = 34;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label7.Location = new System.Drawing.Point(133, 26);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(34, 16);
+            this.label7.TabIndex = 33;
+            this.label7.Text = "==>";
+            // 
+            // in_StartDay_dtp
+            // 
+            this.in_StartDay_dtp.Location = new System.Drawing.Point(32, 24);
+            this.in_StartDay_dtp.Name = "in_StartDay_dtp";
+            this.in_StartDay_dtp.Size = new System.Drawing.Size(98, 20);
+            this.in_StartDay_dtp.TabIndex = 32;
             // 
             // readOnly_btn
             // 
@@ -268,68 +333,33 @@ namespace RauViet.ui
             this.dataGV.Location = new System.Drawing.Point(0, 0);
             this.dataGV.Name = "dataGV";
             this.dataGV.ReadOnly = true;
-            this.dataGV.Size = new System.Drawing.Size(960, 681);
+            this.dataGV.Size = new System.Drawing.Size(901, 681);
             this.dataGV.TabIndex = 1;
             // 
-            // groupBox1
+            // label5
             // 
-            this.groupBox1.BackColor = System.Drawing.SystemColors.Info;
-            this.groupBox1.Controls.Add(this.xem_btn);
-            this.groupBox1.Controls.Add(this.in_btn);
-            this.groupBox1.Controls.Add(this.in_EndDay_dtp);
-            this.groupBox1.Controls.Add(this.label7);
-            this.groupBox1.Controls.Add(this.in_StartDay_dtp);
-            this.groupBox1.Location = new System.Drawing.Point(29, 348);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(299, 104);
-            this.groupBox1.TabIndex = 33;
-            this.groupBox1.TabStop = false;
+            this.label5.BackColor = System.Drawing.Color.PeachPuff;
+            this.label5.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.label5.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label5.ForeColor = System.Drawing.Color.DarkOliveGreen;
+            this.label5.Location = new System.Drawing.Point(0, 477);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(589, 23);
+            this.label5.TabIndex = 72;
+            this.label5.Text = "Lịch sử thay đổi";
+            this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // label7
+            // log_GV
             // 
-            this.label7.AutoSize = true;
-            this.label7.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label7.Location = new System.Drawing.Point(133, 26);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(34, 16);
-            this.label7.TabIndex = 33;
-            this.label7.Text = "==>";
-            // 
-            // in_StartDay_dtp
-            // 
-            this.in_StartDay_dtp.Location = new System.Drawing.Point(32, 24);
-            this.in_StartDay_dtp.Name = "in_StartDay_dtp";
-            this.in_StartDay_dtp.Size = new System.Drawing.Size(98, 20);
-            this.in_StartDay_dtp.TabIndex = 32;
-            // 
-            // in_EndDay_dtp
-            // 
-            this.in_EndDay_dtp.Location = new System.Drawing.Point(168, 24);
-            this.in_EndDay_dtp.Name = "in_EndDay_dtp";
-            this.in_EndDay_dtp.Size = new System.Drawing.Size(98, 20);
-            this.in_EndDay_dtp.TabIndex = 34;
-            // 
-            // in_btn
-            // 
-            this.in_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
-            this.in_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.in_btn.Location = new System.Drawing.Point(67, 53);
-            this.in_btn.Name = "in_btn";
-            this.in_btn.Size = new System.Drawing.Size(79, 37);
-            this.in_btn.TabIndex = 35;
-            this.in_btn.Text = "In";
-            this.in_btn.UseVisualStyleBackColor = false;
-            // 
-            // xem_btn
-            // 
-            this.xem_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
-            this.xem_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.xem_btn.Location = new System.Drawing.Point(154, 53);
-            this.xem_btn.Name = "xem_btn";
-            this.xem_btn.Size = new System.Drawing.Size(79, 37);
-            this.xem_btn.TabIndex = 36;
-            this.xem_btn.Text = "Xem";
-            this.xem_btn.UseVisualStyleBackColor = false;
+            this.log_GV.AllowUserToAddRows = false;
+            this.log_GV.AllowUserToDeleteRows = false;
+            this.log_GV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.log_GV.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.log_GV.Location = new System.Drawing.Point(0, 500);
+            this.log_GV.Name = "log_GV";
+            this.log_GV.ReadOnly = true;
+            this.log_GV.Size = new System.Drawing.Size(589, 181);
+            this.log_GV.TabIndex = 71;
             // 
             // MealOrder
             // 
@@ -342,11 +372,12 @@ namespace RauViet.ui
             this.Text = "FormTableData";
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.info_gb.ResumeLayout(false);
             this.info_gb.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).EndInit();
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.log_GV)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -378,5 +409,7 @@ namespace RauViet.ui
         private System.Windows.Forms.Button xem_btn;
         private System.Windows.Forms.Button in_btn;
         private System.Windows.Forms.DateTimePicker in_EndDay_dtp;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.DataGridView log_GV;
     }
 }

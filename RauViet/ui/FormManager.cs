@@ -205,13 +205,12 @@ namespace RauViet.ui
             if (UserManager.Instance.hasRole_ThongKeVatTu())
             {
 
-                qlk_xuatNhapVTQuaCacNam_mi.Click += Qlk_xuatNhapVTQuaCacNam_mi_Click;
-                giamSatTiepNhanRau_mi.Click += Qlk_GiamSatNhanRau_mi_Click;
+                qlk_xuatNhapVTQuaCacNam_mi.Click += Qlk_xuatNhapVTQuaCacNam_mi_Click;                
             }
             else
             {
                 qlk_bcvt_group_mi.Visible = false;
-            }
+            }            
 
             if (UserManager.Instance.hasRole_ThongKeFarm())
             {
@@ -247,6 +246,11 @@ namespace RauViet.ui
 
                 ResoncileDomesticDebts_Month_mi.Click += ResoncileDomesticDebts_Month_mi_Click;
                 resoncileDomesticDebts_Year_mi.Click += ResoncileDomesticDebts_Year_mi_Click;
+
+                if (UserManager.Instance.hasRole_GiamSatTiepNhanRau())
+                    giamSatTiepNhanRau_mi.Click += Qlk_GiamSatNhanRau_mi_Click;
+                else
+                    giamSatTiepNhanRau_mi.Visible = false;
             }
             else
             {
