@@ -1611,12 +1611,14 @@ namespace RauViet.classes
         {
             Utils.AddColumnIfNotExists(data, "TotalMoney", typeof(int));
             Utils.AddColumnIfNotExists(data, "TotalMoney_VAT", typeof(int));
+            Utils.AddColumnIfNotExists(data, "Week", typeof(string));
             foreach (DataRow row in data.Rows)
             {
                 int quantity = Convert.ToInt32(row["Quantity"]);
                 int price = Convert.ToInt32(row["Price"]);
                 decimal VAT = Convert.ToDecimal(row["VAT"]);
 
+                row["Week"] = Utils.GetThu_Viet(Convert.ToDateTime(row["OrderDate"]));
                 row["TotalMoney"] = quantity * price;
                 row["TotalMoney_VAT"] = Convert.ToInt32((quantity * price)*( 1 + VAT/100.0m));
             }

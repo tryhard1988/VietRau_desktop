@@ -1952,7 +1952,7 @@ namespace RauViet.ui
             DataTable plantTrayDensity = await SQLStore_KhoVatTu.Instance.GetPlantTrayDensityAsync();
 
             DataView dv = new DataView(mPlantingManagement_dt);
-            dv.RowFilter = $"NurseryDate >= #{startDate:MM/dd/yyyy}# AND NurseryDate < #{endDate:MM/dd/yyyy}#";
+            dv.RowFilter = $"NurseryDate >= #{startDate:MM/dd/yyyy}# AND NurseryDate <= #{endDate:MM/dd/yyyy}#";
             dv.Sort = "NurseryDate ASC";
 
             DataTable filterResult_dt = dv.ToTable();
@@ -2127,7 +2127,7 @@ namespace RauViet.ui
             DataTable plantTrayDensity = await SQLStore_KhoVatTu.Instance.GetPlantTrayDensityAsync();
 
             DataView dv = new DataView(mPlantingManagement_dt);
-            dv.RowFilter = $"PlantingDate >= #{startDate:MM/dd/yyyy}# AND PlantingDate < #{endDate:MM/dd/yyyy}#";
+            dv.RowFilter = $"PlantingDate >= #{startDate:MM/dd/yyyy}# AND PlantingDate <= #{endDate:MM/dd/yyyy}#";
             dv.Sort = "PlantingDate ASC";
 
             DataTable filterResult_dt = dv.ToTable();

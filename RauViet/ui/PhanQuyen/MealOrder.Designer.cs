@@ -30,6 +30,8 @@ namespace RauViet.ui
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
+            this.label5 = new System.Windows.Forms.Label();
+            this.log_GV = new System.Windows.Forms.DataGridView();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.xem_btn = new System.Windows.Forms.Button();
             this.in_btn = new System.Windows.Forms.Button();
@@ -44,7 +46,7 @@ namespace RauViet.ui
             this.label1 = new System.Windows.Forms.Label();
             this.price_tb = new System.Windows.Forms.TextBox();
             this.label8 = new System.Windows.Forms.Label();
-            this.orderDate_dtp = new System.Windows.Forms.DateTimePicker();
+            this.orderDate_start_dtp = new System.Windows.Forms.DateTimePicker();
             this.isDone_CB = new System.Windows.Forms.CheckBox();
             this.note_tb = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
@@ -55,13 +57,14 @@ namespace RauViet.ui
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
             this.ID_tb = new System.Windows.Forms.TextBox();
             this.dataGV = new System.Windows.Forms.DataGridView();
-            this.label5 = new System.Windows.Forms.Label();
-            this.log_GV = new System.Windows.Forms.DataGridView();
+            this.orderDate_end_dtp = new System.Windows.Forms.DateTimePicker();
+            this.label6 = new System.Windows.Forms.Label();
+            this.linkStartEnd_cb = new System.Windows.Forms.CheckBox();
             this.panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.log_GV)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.info_gb.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.log_GV)).BeginInit();
             this.SuspendLayout();
             // 
             // panel1
@@ -81,6 +84,31 @@ namespace RauViet.ui
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(589, 681);
             this.panel1.TabIndex = 9;
+            // 
+            // label5
+            // 
+            this.label5.BackColor = System.Drawing.Color.PeachPuff;
+            this.label5.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.label5.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label5.ForeColor = System.Drawing.Color.DarkOliveGreen;
+            this.label5.Location = new System.Drawing.Point(0, 477);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(589, 23);
+            this.label5.TabIndex = 72;
+            this.label5.Text = "Lịch sử thay đổi";
+            this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // log_GV
+            // 
+            this.log_GV.AllowUserToAddRows = false;
+            this.log_GV.AllowUserToDeleteRows = false;
+            this.log_GV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.log_GV.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.log_GV.Location = new System.Drawing.Point(0, 500);
+            this.log_GV.Name = "log_GV";
+            this.log_GV.ReadOnly = true;
+            this.log_GV.Size = new System.Drawing.Size(589, 181);
+            this.log_GV.TabIndex = 71;
             // 
             // groupBox1
             // 
@@ -166,12 +194,15 @@ namespace RauViet.ui
             // 
             // info_gb
             // 
+            this.info_gb.Controls.Add(this.linkStartEnd_cb);
+            this.info_gb.Controls.Add(this.label6);
+            this.info_gb.Controls.Add(this.orderDate_end_dtp);
             this.info_gb.Controls.Add(this.label4);
             this.info_gb.Controls.Add(this.VAT_tb);
             this.info_gb.Controls.Add(this.label1);
             this.info_gb.Controls.Add(this.price_tb);
             this.info_gb.Controls.Add(this.label8);
-            this.info_gb.Controls.Add(this.orderDate_dtp);
+            this.info_gb.Controls.Add(this.orderDate_start_dtp);
             this.info_gb.Controls.Add(this.isDone_CB);
             this.info_gb.Controls.Add(this.note_tb);
             this.info_gb.Controls.Add(this.label2);
@@ -229,12 +260,12 @@ namespace RauViet.ui
             this.label8.TabIndex = 33;
             this.label8.Text = "Ngày:";
             // 
-            // orderDate_dtp
+            // orderDate_start_dtp
             // 
-            this.orderDate_dtp.Location = new System.Drawing.Point(94, 19);
-            this.orderDate_dtp.Name = "orderDate_dtp";
-            this.orderDate_dtp.Size = new System.Drawing.Size(98, 20);
-            this.orderDate_dtp.TabIndex = 32;
+            this.orderDate_start_dtp.Location = new System.Drawing.Point(94, 19);
+            this.orderDate_start_dtp.Name = "orderDate_start_dtp";
+            this.orderDate_start_dtp.Size = new System.Drawing.Size(98, 20);
+            this.orderDate_start_dtp.TabIndex = 32;
             // 
             // isDone_CB
             // 
@@ -336,30 +367,33 @@ namespace RauViet.ui
             this.dataGV.Size = new System.Drawing.Size(901, 681);
             this.dataGV.TabIndex = 1;
             // 
-            // label5
+            // orderDate_end_dtp
             // 
-            this.label5.BackColor = System.Drawing.Color.PeachPuff;
-            this.label5.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.label5.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.ForeColor = System.Drawing.Color.DarkOliveGreen;
-            this.label5.Location = new System.Drawing.Point(0, 477);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(589, 23);
-            this.label5.TabIndex = 72;
-            this.label5.Text = "Lịch sử thay đổi";
-            this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.orderDate_end_dtp.Location = new System.Drawing.Point(242, 21);
+            this.orderDate_end_dtp.Name = "orderDate_end_dtp";
+            this.orderDate_end_dtp.Size = new System.Drawing.Size(98, 20);
+            this.orderDate_end_dtp.TabIndex = 38;
             // 
-            // log_GV
+            // label6
             // 
-            this.log_GV.AllowUserToAddRows = false;
-            this.log_GV.AllowUserToDeleteRows = false;
-            this.log_GV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.log_GV.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.log_GV.Location = new System.Drawing.Point(0, 500);
-            this.log_GV.Name = "log_GV";
-            this.log_GV.ReadOnly = true;
-            this.log_GV.Size = new System.Drawing.Size(589, 181);
-            this.log_GV.TabIndex = 71;
+            this.label6.AutoSize = true;
+            this.label6.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label6.Location = new System.Drawing.Point(203, 23);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(25, 16);
+            this.label6.TabIndex = 39;
+            this.label6.Text = "=>";
+            // 
+            // linkStartEnd_cb
+            // 
+            this.linkStartEnd_cb.AutoSize = true;
+            this.linkStartEnd_cb.Checked = true;
+            this.linkStartEnd_cb.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.linkStartEnd_cb.Location = new System.Drawing.Point(193, 23);
+            this.linkStartEnd_cb.Name = "linkStartEnd_cb";
+            this.linkStartEnd_cb.Size = new System.Drawing.Size(15, 14);
+            this.linkStartEnd_cb.TabIndex = 73;
+            this.linkStartEnd_cb.UseVisualStyleBackColor = true;
             // 
             // MealOrder
             // 
@@ -372,12 +406,12 @@ namespace RauViet.ui
             this.Text = "FormTableData";
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.log_GV)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.info_gb.ResumeLayout(false);
             this.info_gb.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.log_GV)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -398,7 +432,7 @@ namespace RauViet.ui
         private System.Windows.Forms.Button readOnly_btn;
         private System.Windows.Forms.Button edit_btn;
         private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.DateTimePicker orderDate_dtp;
+        private System.Windows.Forms.DateTimePicker orderDate_start_dtp;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox price_tb;
         private System.Windows.Forms.Label label4;
@@ -411,5 +445,8 @@ namespace RauViet.ui
         private System.Windows.Forms.DateTimePicker in_EndDay_dtp;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.DataGridView log_GV;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.DateTimePicker orderDate_end_dtp;
+        private System.Windows.Forms.CheckBox linkStartEnd_cb;
     }
 }

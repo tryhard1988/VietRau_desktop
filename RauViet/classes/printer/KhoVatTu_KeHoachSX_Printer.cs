@@ -13,7 +13,7 @@ public class KhoVatTu_KeHoachSX_Printer
     private int lineHeight = 24;
     private int mMonth, mYear, mCountSTT;
     private string mDepartmentName;
-
+    decimal totalArea = 0;
     public KhoVatTu_KeHoachSX_Printer(int departmentID, string departmentName, DataTable plantingManagement_dt, int month, int year)
     {
         DateTime start = new DateTime(year, month, 1);
@@ -157,7 +157,7 @@ public class KhoVatTu_KeHoachSX_Printer
                 
         y += tableHeaderLineHeight;
 
-        decimal totalArea = 0;
+        
         // Table Data với phân trang
         while (rowIndex < mPlantingManagement_dt.Rows.Count)
         {

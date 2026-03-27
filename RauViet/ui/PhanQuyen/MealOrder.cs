@@ -25,19 +25,22 @@ namespace RauViet.ui
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Dock = DockStyle.Fill;
 
-            orderDate_dtp.Format = DateTimePickerFormat.Custom;
-            orderDate_dtp.CustomFormat = "MM/yyyy";
+            orderDate_start_dtp.Format = DateTimePickerFormat.Custom;
+            orderDate_start_dtp.CustomFormat = "dd/MM/yyyy";
+
+            orderDate_end_dtp.Format = DateTimePickerFormat.Custom;
+            orderDate_end_dtp.CustomFormat = "dd/MM/yyyy";
 
             in_EndDay_dtp.Format = DateTimePickerFormat.Custom;
-            orderDate_dtp.CustomFormat = "dd/MM/yyyy";
+            orderDate_start_dtp.CustomFormat = "dd/MM/yyyy";
 
             in_StartDay_dtp.Format = DateTimePickerFormat.Custom;
-            orderDate_dtp.CustomFormat = "dd/MM/yyyy";
+            orderDate_start_dtp.CustomFormat = "dd/MM/yyyy";
 
             Utils.SetTabStopRecursive(this, false);
 
             int countTab = 0;
-            orderDate_dtp.TabIndex = countTab++; orderDate_dtp.TabStop = true;
+            orderDate_start_dtp.TabIndex = countTab++; orderDate_start_dtp.TabStop = true;
             note_tb.TabIndex = countTab++; note_tb.TabStop = true;
             quantity_tb.TabIndex = countTab++; quantity_tb.TabStop = true;
             price_tb.TabIndex = countTab++; price_tb.TabStop = true;
@@ -66,6 +69,12 @@ namespace RauViet.ui
 
             xem_btn.Click += Xem_btn_Click;
             in_btn.Click += In_btn_Click;
+
+            linkStartEnd_cb.CheckedChanged += LinkStartEnd_cb_CheckedChanged;
+            orderDate_start_dtp.ValueChanged += OrderDateStart_dtp_ValueChanged;
+            orderDate_end_dtp.ValueChanged += OrderDateEnd_dtp_ValueChanged;
+
+            LinkStartEnd_cb_CheckedChanged(null, null);
         }
 
         private void Department_KeyDown(object sender, KeyEventArgs e)
@@ -111,9 +120,10 @@ namespace RauViet.ui
                 log_GV.DataSource = mLogDV;
                 dataGV.DataSource = mMealOrder_dt;
                 Utils.HideColumns(dataGV, new[] { "MealOrdersID" });
-                Utils.SetGridOrdinal(mMealOrder_dt, new[] { "OrderDate", "Note", "Quantity", "Price", "VAT", "TotalMoney" });
+                Utils.SetGridOrdinal(mMealOrder_dt, new[] { "OrderDate", "Week", "Note", "Quantity", "Price", "VAT", "TotalMoney" });
                 Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
                     {"OrderDate", "Ngày" },
+                    {"Week", "Thứ" },
                     {"Quantity", "Số Lượng" },
                     {"Price", "Đơn Giá" },
                     {"IsPaid", "Đã Thanh Toán" },
@@ -206,7 +216,7 @@ namespace RauViet.ui
             Boolean IsPaid = Convert.ToBoolean(cells["IsPaid"].Value);
 
             ID_tb.Text = cells["MealOrdersID"].Value.ToString();
-            orderDate_dtp.Value = OrderDate;
+            orderDate_start_dtp.Value = OrderDate;
             quantity_tb.Text = Quantity.ToString();
             price_tb.Text = Price.ToString();
             VAT_tb.Text = VAT.ToString("G29", CultureInfo.InvariantCulture);
@@ -242,6 +252,7 @@ namespace RauViet.ui
                                 row["VAT"] = VAT;
                                 row["IsPaid"] = isPaid;
                                 row["Note"] = note;
+                                row["Week"] = Utils.GetThu_Viet(orderDate);
 
                                 row["TotalMoney"] = quantity * price;
                                 row["TotalMoney_VAT"] = Convert.ToInt32((quantity * price) * (1 + VAT / 100.0m));
@@ -274,68 +285,63 @@ namespace RauViet.ui
             }
         }
 
-        private async void createNew(DateTime orderDate, string note, int quantity, int price, decimal VAT)
+        private async Task createNew(DateTime orderDate, string note, int quantity, int price, decimal VAT)
         {
-            DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-
-            if (dialogResult == DialogResult.Yes)
+            string oldValue = "";
+            string newValue = $"Ngày: {orderDate.ToString("dd/MM/yyyy")}; Diễn Giải: {VAT}; Số Phần: {quantity}; Giá: {price}; VAT: {VAT}; Đã Thanh Toán: False";
+            string actionType = "Create";
+            try
             {
-                string oldValue = "";
-                string newValue = $"Ngày: {orderDate.ToString("dd/MM/yyyy")}; Diễn Giải: {VAT}; Số Phần: {quantity}; Giá: {price}; VAT: {VAT}; Đã Thanh Toán: False";
-                string actionType = "Create";
-                try
+                int MealOrdersID = await SQLManager_QLNS.Instance.insertMealOrderAsync(orderDate, note, quantity, price, VAT);
+                if (MealOrdersID > 0)
                 {
-                    int MealOrdersID = await SQLManager_QLNS.Instance.insertMealOrderAsync(orderDate, note, quantity, price, VAT);
-                    if (MealOrdersID > 0)
-                    {
-                        DataTable dataTable = (DataTable)dataGV.DataSource;
-                        DataRow drToAdd = dataTable.NewRow();
+                    DataRow drToAdd = mMealOrder_dt.NewRow();
 
-                        drToAdd["MealOrdersID"] = MealOrdersID;
-                        drToAdd["OrderDate"] = orderDate;
-                        drToAdd["Quantity"] = quantity;
-                        drToAdd["Price"] = price;
-                        drToAdd["VAT"] = VAT;
-                        drToAdd["IsPaid"] = false;
-                        drToAdd["Note"] = note;
+                    drToAdd["MealOrdersID"] = MealOrdersID;
+                    drToAdd["OrderDate"] = orderDate;
+                    drToAdd["Quantity"] = quantity;
+                    drToAdd["Price"] = price;
+                    drToAdd["VAT"] = VAT;
+                    drToAdd["IsPaid"] = false;
+                    drToAdd["Note"] = note;
+                    drToAdd["Week"] = Utils.GetThu_Viet(orderDate);
 
-                        drToAdd["TotalMoney"] = quantity * price;
-                        drToAdd["TotalMoney_VAT"] = Convert.ToInt32((quantity * price) * (1 + VAT/100.0m));
+                    drToAdd["TotalMoney"] = quantity * price;
+                    drToAdd["TotalMoney_VAT"] = Convert.ToInt32((quantity * price) * (1 + VAT/100.0m));
 
-                        ID_tb.Text = MealOrdersID.ToString();
+                    ID_tb.Text = MealOrdersID.ToString();
 
 
-                        dataTable.Rows.Add(drToAdd);
-                        dataTable.AcceptChanges();
+                    mMealOrder_dt.Rows.Add(drToAdd);
+                    mMealOrder_dt.AcceptChanges();
 
-                        Properties.Settings.Default.GiaXuatCom = price;
-                        Properties.Settings.Default.VAT = VAT;
-                        Properties.Settings.Default.Save();
+                    Properties.Settings.Default.GiaXuatCom = price;
+                    Properties.Settings.Default.VAT = VAT;
+                    Properties.Settings.Default.Save();
 
-                        status_lb.Text = "Thành công";
-                        status_lb.ForeColor = Color.Green;
-                        actionType += ": Success";
-                    }
-                    else
-                    {
-                        status_lb.Text = "Thất bại";
-                        status_lb.ForeColor = Color.Red;
-                        actionType += ": False";
-                    }
+                    status_lb.Text = "Thành công";
+                    status_lb.ForeColor = Color.Green;
+                    actionType += ": Success";
                 }
-                catch (Exception ex)
+                else
                 {
-                    status_lb.Text = "Thất bại.";
+                    status_lb.Text = "Thất bại";
                     status_lb.ForeColor = Color.Red;
-                    actionType += $": {ex.Message}";
-                }
-                finally
-                {
-                    _ = SQLManager_QLNS.Instance.insertMealOrderLogAsync(orderDate, actionType, oldValue, newValue);
+                    actionType += ": False";
                 }
             }
+            catch (Exception ex)
+            {
+                status_lb.Text = "Thất bại.";
+                status_lb.ForeColor = Color.Red;
+                actionType += $": {ex.Message}";
+            }
+            finally
+            {
+                _ = SQLManager_QLNS.Instance.insertMealOrderLogAsync(orderDate, actionType, oldValue, newValue);
+            }            
         }
-        private void saveBtn_Click(object sender, EventArgs e)
+        private async void saveBtn_Click(object sender, EventArgs e)
         {
             if (note_tb.Text.CompareTo("") == 0)
             {
@@ -348,17 +354,33 @@ namespace RauViet.ui
                 return;
             }
 
-            DateTime date = orderDate_dtp.Value;
+            
             string note = note_tb.Text;
             int quantity = Convert.ToInt32(quantity_tb.Text);
             int price = Convert.ToInt32(price_tb.Text);
             decimal VAT = Utils.ParseDecimalSmart(VAT_tb.Text);
             bool isDone = isDone_CB.Checked;
 
+            DateTime dateStart = orderDate_start_dtp.Value;
+            DateTime dateEnd = orderDate_end_dtp.Value;
+            if (linkStartEnd_cb.Checked == true)
+                dateEnd = dateStart;
+
             if (ID_tb.Text.Length != 0)
-                updateData(Convert.ToInt32(ID_tb.Text), date, note, quantity, price, VAT, isDone);
+                updateData(Convert.ToInt32(ID_tb.Text), dateStart, note, quantity, price, VAT, isDone);
             else
-                createNew(date, note, quantity, price, VAT);
+            {
+                DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if (dialogResult == DialogResult.Yes)
+                {
+                    for (DateTime date = dateStart; date <= dateEnd; date = date.AddDays(1))
+                    {
+                        if (date.DayOfWeek == DayOfWeek.Sunday)
+                            continue;
+                        await createNew(date, note, quantity, price, VAT);
+                    }
+                }
+            }
 
         }
         private async void deleteBtn_Click(object sender, EventArgs e)
@@ -422,7 +444,7 @@ namespace RauViet.ui
         {
             ID_tb.Text = "";
             isDone_CB.Checked = false;
-            orderDate_dtp.Value = DateTime.Now;
+            orderDate_start_dtp.Value = DateTime.Now;
             status_lb.Text = "";
             VAT_tb.Text = Properties.Settings.Default.VAT.ToString("G29", CultureInfo.InvariantCulture);
             price_tb.Text = Properties.Settings.Default.GiaXuatCom.ToString();
@@ -435,8 +457,11 @@ namespace RauViet.ui
             LuuThayDoiBtn.Visible = true;
             isNewState = true;
             isDone_CB.Visible = false;
+            linkStartEnd_cb.Visible = true;
             LuuThayDoiBtn.Text = "Lưu Mới";
             SetUIReadOnly(false);
+
+
         }
 
         private void ReadOnly_btn_Click(object sender, EventArgs e)
@@ -446,11 +471,13 @@ namespace RauViet.ui
             readOnly_btn.Visible = false;
             LuuThayDoiBtn.Visible = false;
             isDone_CB.Visible = true;
+            orderDate_end_dtp.Visible = false;
+            linkStartEnd_cb.Visible = false;
             info_gb.BackColor = Color.DarkGray;
             isNewState = false;
             SetUIReadOnly(true);
             dataGV_CellClick(null, null);
-
+            LinkStartEnd_cb_CheckedChanged(null, null);
         }
 
         private void Edit_btn_Click(object sender, EventArgs e)
@@ -459,15 +486,17 @@ namespace RauViet.ui
             newCustomerBtn.Visible = false;
             readOnly_btn.Visible = true;
             LuuThayDoiBtn.Visible = true;
+            orderDate_end_dtp.Visible = false;
             info_gb.BackColor = edit_btn.BackColor;
             isNewState = false;
+            linkStartEnd_cb.Visible = false;
             LuuThayDoiBtn.Text = "Lưu C.Sửa";
             SetUIReadOnly(false);
         }
 
         private void SetUIReadOnly(bool isReadOnly)
         {
-            orderDate_dtp.Enabled = !isReadOnly;
+            orderDate_start_dtp.Enabled = !isReadOnly;
             isDone_CB.Enabled = !isReadOnly;
             note_tb.ReadOnly = isReadOnly;
             quantity_tb.ReadOnly = isReadOnly;
@@ -510,6 +539,43 @@ namespace RauViet.ui
                 printer.PrintPreview(this);
             else
                 printer.PrintDirect();
+        }
+
+        private void LinkStartEnd_cb_CheckedChanged(object sender, EventArgs e)
+        {
+            orderDate_end_dtp.Visible = !linkStartEnd_cb.Checked;
+            label6.Visible = !linkStartEnd_cb.Checked;
+
+            if (linkStartEnd_cb.Checked)
+            {
+                DateTime dayStart = orderDate_start_dtp.Value.Date;
+                orderDate_end_dtp.Value = dayStart;
+            }
+        }
+
+        private async void OrderDateStart_dtp_ValueChanged(object sender, EventArgs e)
+        {
+            DateTime dateStart = orderDate_start_dtp.Value.Date;
+            if (linkStartEnd_cb.Checked)
+            {
+                orderDate_end_dtp.Value = dateStart;
+            }
+            else
+            {
+                DateTime dateEnd = orderDate_end_dtp.Value.Date;
+                if (dateStart > dateEnd)
+                    orderDate_end_dtp.Value = dateStart;
+            }
+
+        }
+
+        private void OrderDateEnd_dtp_ValueChanged(object sender, EventArgs e)
+        {
+            DateTime dateStart = orderDate_start_dtp.Value.Date;
+            DateTime dateEnd = orderDate_end_dtp.Value.Date;
+            if (dateStart > dateEnd)
+                orderDate_end_dtp.Value = dateStart;
+
         }
     }
 }

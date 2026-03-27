@@ -48,6 +48,22 @@ namespace RauViet.classes
             return dt;
         }
 
+        public async Task<DataTable> getSellerssAsync()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
+            {
+                await con.OpenAsync();
+                string query = "SELECT * FROM Sellers;";
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                {
+                    dt.Load(reader);
+                }
+            }
+            return dt;
+        }
+
         public async Task<bool> updateCustomerAsync(int customerID, string name, string code, int Priority, string home, string company, string address, string email, string taxCode)
         {
             string query = "UPDATE Customers SET FullName=@FullName, CustomerCode=@CustomerCode, Priority=@Priority, Home=@Home, Company=@Company, Address=@Address, TaxCode=@TaxCode, Email=@Email WHERE CustomerID=@CustomerID";
@@ -129,6 +145,64 @@ namespace RauViet.classes
             catch { return false; }
         }
 
+        public async Task<int> insertSellerAsync(string name, string CCCD, string phone, string address, string bankAccount, string bankName)
+        {
+            int newId = -1;
+            string query = @"INSERT INTO Sellers (SellerName, CitizenID, Phone, Address, BankAccount, BankName) 
+                             OUTPUT INSERTED.SellerID
+                            VALUES (@SellerName, @CitizenID, @Phone, @Address, @BankAccount, @BankName)";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@SellerName", name);
+                        cmd.Parameters.AddWithValue("@CitizenID", CCCD);
+                        cmd.Parameters.AddWithValue("@Phone", phone);
+                        cmd.Parameters.AddWithValue("@Address", address);
+                        cmd.Parameters.AddWithValue("@BankAccount", bankAccount);
+                        cmd.Parameters.AddWithValue("@BankName", bankName);
+                        object result = await cmd.ExecuteScalarAsync();
+                        if (result != null)
+                            newId = Convert.ToInt32(result);
+                    }
+                }
+                return newId;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("ERROR: " + ex.Message);
+                return -1;
+            }
+        }
+
+        public async Task<bool> updateSellerAsync(int sellerID, string name, string CCCD, string phone, string address, string bankAccount, string bankName)
+        {
+            string query = "UPDATE Sellers SET SellerName=@SellerName, CitizenID=@CitizenID, Phone=@Phone, Address=@Address, BankAccount=@BankAccount, BankName=@BankName WHERE SellerID=@SellerID";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@SellerID", sellerID);
+                        cmd.Parameters.AddWithValue("@SellerName", name);
+                        cmd.Parameters.AddWithValue("@CitizenID", CCCD);
+                        cmd.Parameters.AddWithValue("@Phone", phone);
+                        cmd.Parameters.AddWithValue("@Address", address);
+                        cmd.Parameters.AddWithValue("@BankAccount", bankAccount);
+                        cmd.Parameters.AddWithValue("@BankName", bankName);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+                return true;
+            }
+            catch { return false; }
+        }
+
         //==============================ProductSKU==============================
         public async Task<DataTable> getProductSKUAsync()
         {
@@ -184,6 +258,28 @@ namespace RauViet.classes
                         cmd.Parameters.AddWithValue("@Priority", priority);
                         cmd.Parameters.AddWithValue("@IsActive", isActive);
                         cmd.Parameters.AddWithValue("@SupplierID", (object)supplierID ?? DBNull.Value);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+                return true;
+            }
+            catch { return false; }
+        }
+
+        public async Task<bool> updatePriceProductSKUAsync(int SKU, decimal PriceCNF)
+        {
+            string query = @"UPDATE ProductSKU SET 
+                                PriceCNF=@PriceCNF
+                             WHERE SKU=@SKU";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@SKU", SKU);
+                        cmd.Parameters.AddWithValue("@PriceCNF", PriceCNF);
                         await cmd.ExecuteNonQueryAsync();
                     }
                 }

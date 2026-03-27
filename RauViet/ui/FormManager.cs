@@ -62,6 +62,12 @@ namespace RauViet.ui
                 {
                     productMain_menuitem.Click += Products_SKU_btn_Click;
                     supplier_mi.Click += Supplier_mi_Click;
+
+                    if (UserManager.Instance.hasRole_AnGiaSanPham() == false)
+                        updatePriceProductSKU_mi.Click += UpdatePriceProductSKU_mi_Click;
+                    else
+                        updatePriceProductSKU_mi.Visible = false;
+
                 }
                 else
                 {
@@ -246,17 +252,18 @@ namespace RauViet.ui
 
                 ResoncileDomesticDebts_Month_mi.Click += ResoncileDomesticDebts_Month_mi_Click;
                 resoncileDomesticDebts_Year_mi.Click += ResoncileDomesticDebts_Year_mi_Click;
-
-                if (UserManager.Instance.hasRole_GiamSatTiepNhanRau())
-                    giamSatTiepNhanRau_mi.Click += Qlk_GiamSatNhanRau_mi_Click;
-                else
-                    giamSatTiepNhanRau_mi.Visible = false;
+               
             }
             else
             {
                 bcdntnGroup_mi.Visible = false;
                 bcdhnnGroup_mi.Visible = false;
             }
+
+            if (UserManager.Instance.hasRole_GiamSatTiepNhanRau())
+                giamSatTiepNhanRau_mi.Click += Qlk_GiamSatNhanRau_mi_Click;
+            else
+                giamSatTiepNhanRau_mi.Visible = false;
 
             if (UserManager.Instance.hasRole_Extention())
             {
@@ -453,7 +460,8 @@ namespace RauViet.ui
             KhoVatTu_TKCapPhanBon,
             KhoVatTu_TKXuatNhapVatTuTheo_Nam,
             KhoVatTu_GiamSatTiepNhanRau,
-            MealOrder
+            MealOrder,
+            UpdatePriceProductSKU
         }
 
         private void openCurrentForm(EForm status)
@@ -463,7 +471,6 @@ namespace RauViet.ui
                 case EForm.ProductSKU:
                     SwitchChildForm<ProductSKU>("Danh Sách Sản Phẩm Chính");
                     break;
-
                 case EForm.ProductList:
                     SwitchChildForm<ProductList>("Danh Sách Sản Phẩm Quy Cách");
                     break;
@@ -695,6 +702,9 @@ namespace RauViet.ui
                 case EForm.MealOrder:
                     SwitchChildForm<MealOrder>("Theo Dõi Xuất Ăn Trưa");
                     break;
+                case EForm.UpdatePriceProductSKU:
+                    SwitchChildForm<UpdatePriceProductSKU>("Cập Nhật Giá Bán Ngoài Nước");
+                    break;
             }
             
             Properties.Settings.Default.current_form = status.ToString();
@@ -780,6 +790,7 @@ namespace RauViet.ui
         private void Qlk_thongKeSanLuongNam_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.KhoVatTu_TKSanLuongTrong_Nam); }
         private void Qlk_thongKeCapPhan_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.KhoVatTu_TKCapPhanBon); }
         private void DatDoAn_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.MealOrder); }
+        private void UpdatePriceProductSKU_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.UpdatePriceProductSKU); }
         private async void checkLoginTimer_Tick(object sender, EventArgs e)
         {
             var isHave = await SQLManager.Instance.HaveOtherComputerLoginAsync();

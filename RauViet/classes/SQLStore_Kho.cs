@@ -26,6 +26,7 @@ namespace RauViet.classes
         DataTable mOrderDomesticCode_dt = null;
         DataTable mEmployeesInDongGoi_dt = null;
         DataTable mCusromer_dt = null;
+        DataTable mSeller_dt = null;
         DataTable mCartonSize_dt = null;
         DataTable mlatestOrders_dt = null;
         DataTable mExportCodeLog_dt = null;
@@ -567,6 +568,24 @@ namespace RauViet.classes
             }
 
             return mCusromer_dt;
+        }
+
+        public async Task<DataTable> getSellersAsync()
+        {
+            if (mSeller_dt == null)
+            {
+                try
+                {
+                    mSeller_dt = await SQLManager_Kho.Instance.getSellerssAsync();
+                }
+                catch
+                {
+                    Console.WriteLine("error getSellersAsync SQLStore");
+                    return null;
+                }
+            }
+
+            return mSeller_dt;
         }
 
         public void removeOrders(int exportCodeID)
@@ -2396,6 +2415,14 @@ namespace RauViet.classes
                 try
                 {
                     mSupplier_dt = await SQLManager_Kho.Instance.GetSupplierAsybc();
+                    mSupplier_dt.Columns.Add(new DataColumn("searching_nosign", typeof(string)));
+
+                    foreach(DataRow row in mSupplier_dt.Rows)
+                    {
+                        string SupplierName = row["SupplierName"].ToString();
+
+                        row["searching_nosign"] = Utils.RemoveVietnameseSigns(SupplierName).ToLower().Trim();
+                    }
                 }
                 catch
                 {

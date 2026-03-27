@@ -53,6 +53,8 @@ namespace RauViet.ui
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
             this.dataGV = new System.Windows.Forms.DataGridView();
+            this.seller_cbb = new System.Windows.Forms.ComboBox();
+            this.label7 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.info_gb.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
@@ -77,7 +79,7 @@ namespace RauViet.ui
             // 
             this.edit_btn.BackColor = System.Drawing.SystemColors.MenuHighlight;
             this.edit_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.edit_btn.Location = new System.Drawing.Point(199, 77);
+            this.edit_btn.Location = new System.Drawing.Point(199, 47);
             this.edit_btn.Name = "edit_btn";
             this.edit_btn.Size = new System.Drawing.Size(94, 32);
             this.edit_btn.TabIndex = 47;
@@ -88,7 +90,7 @@ namespace RauViet.ui
             // 
             this.newCustomerBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
             this.newCustomerBtn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.newCustomerBtn.Location = new System.Drawing.Point(295, 77);
+            this.newCustomerBtn.Location = new System.Drawing.Point(295, 47);
             this.newCustomerBtn.Name = "newCustomerBtn";
             this.newCustomerBtn.Size = new System.Drawing.Size(74, 32);
             this.newCustomerBtn.TabIndex = 46;
@@ -99,7 +101,7 @@ namespace RauViet.ui
             // 
             this.readOnly_btn.BackColor = System.Drawing.Color.MediumSlateBlue;
             this.readOnly_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.readOnly_btn.Location = new System.Drawing.Point(327, 77);
+            this.readOnly_btn.Location = new System.Drawing.Point(327, 47);
             this.readOnly_btn.Name = "readOnly_btn";
             this.readOnly_btn.Size = new System.Drawing.Size(42, 32);
             this.readOnly_btn.TabIndex = 45;
@@ -108,6 +110,8 @@ namespace RauViet.ui
             // 
             // info_gb
             // 
+            this.info_gb.Controls.Add(this.seller_cbb);
+            this.info_gb.Controls.Add(this.label7);
             this.info_gb.Controls.Add(this.farmSourceCode_tb);
             this.info_gb.Controls.Add(this.label6);
             this.info_gb.Controls.Add(this.supplier_CB);
@@ -123,15 +127,15 @@ namespace RauViet.ui
             this.info_gb.Controls.Add(this.amount_lb);
             this.info_gb.Controls.Add(this.label1);
             this.info_gb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.info_gb.Location = new System.Drawing.Point(17, 102);
+            this.info_gb.Location = new System.Drawing.Point(17, 72);
             this.info_gb.Name = "info_gb";
-            this.info_gb.Size = new System.Drawing.Size(352, 304);
+            this.info_gb.Size = new System.Drawing.Size(352, 317);
             this.info_gb.TabIndex = 43;
             this.info_gb.TabStop = false;
             // 
             // farmSourceCode_tb
             // 
-            this.farmSourceCode_tb.Location = new System.Drawing.Point(123, 190);
+            this.farmSourceCode_tb.Location = new System.Drawing.Point(123, 212);
             this.farmSourceCode_tb.Name = "farmSourceCode_tb";
             this.farmSourceCode_tb.Size = new System.Drawing.Size(96, 23);
             this.farmSourceCode_tb.TabIndex = 72;
@@ -139,7 +143,7 @@ namespace RauViet.ui
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(16, 196);
+            this.label6.Location = new System.Drawing.Point(45, 218);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(59, 16);
             this.label6.TabIndex = 71;
@@ -150,7 +154,7 @@ namespace RauViet.ui
             this.supplier_CB.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.supplier_CB.FormattingEnabled = true;
             this.supplier_CB.IntegralHeight = false;
-            this.supplier_CB.Location = new System.Drawing.Point(123, 89);
+            this.supplier_CB.Location = new System.Drawing.Point(123, 85);
             this.supplier_CB.Name = "supplier_CB";
             this.supplier_CB.Size = new System.Drawing.Size(96, 24);
             this.supplier_CB.TabIndex = 70;
@@ -158,7 +162,7 @@ namespace RauViet.ui
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(16, 94);
+            this.label5.Location = new System.Drawing.Point(23, 90);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(81, 16);
             this.label5.TabIndex = 69;
@@ -169,7 +173,7 @@ namespace RauViet.ui
             this.transactionType_CB.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.transactionType_CB.FormattingEnabled = true;
             this.transactionType_CB.IntegralHeight = false;
-            this.transactionType_CB.Location = new System.Drawing.Point(123, 55);
+            this.transactionType_CB.Location = new System.Drawing.Point(123, 53);
             this.transactionType_CB.Name = "transactionType_CB";
             this.transactionType_CB.Size = new System.Drawing.Size(96, 24);
             this.transactionType_CB.TabIndex = 68;
@@ -177,7 +181,7 @@ namespace RauViet.ui
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(16, 60);
+            this.label4.Location = new System.Drawing.Point(2, 58);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(102, 16);
             this.label4.TabIndex = 67;
@@ -185,7 +189,7 @@ namespace RauViet.ui
             // 
             // note_tb
             // 
-            this.note_tb.Location = new System.Drawing.Point(123, 223);
+            this.note_tb.Location = new System.Drawing.Point(123, 244);
             this.note_tb.Multiline = true;
             this.note_tb.Name = "note_tb";
             this.note_tb.Size = new System.Drawing.Size(193, 56);
@@ -194,7 +198,7 @@ namespace RauViet.ui
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(16, 240);
+            this.label3.Location = new System.Drawing.Point(48, 261);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(56, 16);
             this.label3.TabIndex = 65;
@@ -203,7 +207,7 @@ namespace RauViet.ui
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(16, 26);
+            this.label2.Location = new System.Drawing.Point(6, 26);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(98, 16);
             this.label2.TabIndex = 64;
@@ -220,14 +224,14 @@ namespace RauViet.ui
             // 
             this.sku_cbb.FormattingEnabled = true;
             this.sku_cbb.IntegralHeight = false;
-            this.sku_cbb.Location = new System.Drawing.Point(123, 123);
+            this.sku_cbb.Location = new System.Drawing.Point(123, 149);
             this.sku_cbb.Name = "sku_cbb";
             this.sku_cbb.Size = new System.Drawing.Size(193, 24);
             this.sku_cbb.TabIndex = 62;
             // 
             // quantity_tb
             // 
-            this.quantity_tb.Location = new System.Drawing.Point(123, 157);
+            this.quantity_tb.Location = new System.Drawing.Point(123, 181);
             this.quantity_tb.Name = "quantity_tb";
             this.quantity_tb.Size = new System.Drawing.Size(96, 23);
             this.quantity_tb.TabIndex = 60;
@@ -235,7 +239,7 @@ namespace RauViet.ui
             // amount_lb
             // 
             this.amount_lb.AutoSize = true;
-            this.amount_lb.Location = new System.Drawing.Point(16, 162);
+            this.amount_lb.Location = new System.Drawing.Point(38, 186);
             this.amount_lb.Name = "amount_lb";
             this.amount_lb.Size = new System.Drawing.Size(66, 16);
             this.amount_lb.TabIndex = 59;
@@ -244,7 +248,7 @@ namespace RauViet.ui
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(16, 128);
+            this.label1.Location = new System.Drawing.Point(34, 154);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(70, 16);
             this.label1.TabIndex = 47;
@@ -252,7 +256,7 @@ namespace RauViet.ui
             // 
             // id_tb
             // 
-            this.id_tb.Location = new System.Drawing.Point(280, 541);
+            this.id_tb.Location = new System.Drawing.Point(338, 16);
             this.id_tb.Name = "id_tb";
             this.id_tb.ReadOnly = true;
             this.id_tb.Size = new System.Drawing.Size(31, 20);
@@ -263,7 +267,7 @@ namespace RauViet.ui
             // 
             this.status_lb.AutoSize = true;
             this.status_lb.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.status_lb.Location = new System.Drawing.Point(44, 485);
+            this.status_lb.Location = new System.Drawing.Point(13, 407);
             this.status_lb.Name = "status_lb";
             this.status_lb.Size = new System.Drawing.Size(59, 23);
             this.status_lb.TabIndex = 40;
@@ -273,7 +277,7 @@ namespace RauViet.ui
             // 
             this.LuuThayDoiBtn.BackColor = System.Drawing.SystemColors.Highlight;
             this.LuuThayDoiBtn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LuuThayDoiBtn.Location = new System.Drawing.Point(140, 432);
+            this.LuuThayDoiBtn.Location = new System.Drawing.Point(207, 393);
             this.LuuThayDoiBtn.Name = "LuuThayDoiBtn";
             this.LuuThayDoiBtn.Size = new System.Drawing.Size(104, 43);
             this.LuuThayDoiBtn.TabIndex = 25;
@@ -300,6 +304,24 @@ namespace RauViet.ui
             this.dataGV.ReadOnly = true;
             this.dataGV.Size = new System.Drawing.Size(861, 645);
             this.dataGV.TabIndex = 64;
+            // 
+            // seller_cbb
+            // 
+            this.seller_cbb.FormattingEnabled = true;
+            this.seller_cbb.IntegralHeight = false;
+            this.seller_cbb.Location = new System.Drawing.Point(123, 117);
+            this.seller_cbb.Name = "seller_cbb";
+            this.seller_cbb.Size = new System.Drawing.Size(193, 24);
+            this.seller_cbb.TabIndex = 76;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(34, 122);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(70, 16);
+            this.label7.TabIndex = 75;
+            this.label7.Text = "Người Bán:";
             // 
             // VegetableWarehouseTransaction
             // 
@@ -345,5 +367,7 @@ namespace RauViet.ui
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.ComboBox supplier_CB;
         private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.ComboBox seller_cbb;
+        private System.Windows.Forms.Label label7;
     }
 }

@@ -772,7 +772,7 @@ namespace RauViet.ui
                 {
                     int plantingID = Convert.ToInt32(plantingRow["PlantingID"]);
                     DateTime harvestDate = Convert.ToDateTime(rowItem["Date"]);
-                    decimal quantity = Convert.ToDecimal(rowItem["Quantity_BanDau"]);
+                    decimal quantity = rowItem["Quantity_BanDau"] != DBNull.Value ? Convert.ToDecimal(rowItem["Quantity_BanDau"]): 0;
 
                     data.Add((plantingID, harvestDate, quantity, LotCOT, ngThuHoachCode, ngPhuTrach, departID));
                 }

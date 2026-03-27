@@ -198,6 +198,8 @@ namespace RauViet.ui
 
                         status_lb.Text = "Thành công";
                         status_lb.ForeColor = Color.Green;
+
+                        newCustomerBtn_Click(null, null);
                     }
                     else
                     {

@@ -1,8 +1,11 @@
 ﻿using ClosedXML.Excel;
+using PdfSharp.Charting;
 using RauViet.classes;
 using System;
 using System.Data;
 using System.Drawing;
+using System.IO.Packaging;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -13,6 +16,7 @@ namespace RauViet.ui
         bool isNewState = false;
         private LoadingOverlay loadingOverlay;
         DataTable mPoductSKUHistory_dt, mProductSKU_dt, mSupplier_dt;
+        private Timer debounceTimer = new Timer { Interval = 300 };
         public ProductSKU()
         {
             InitializeComponent();
@@ -53,6 +57,9 @@ namespace RauViet.ui
             readOnly_btn.Click += ReadOnly_btn_Click;
             this.KeyDown += ProductSKU_KeyDown;
             sku_tb.Visible = false;
+
+            supplier_cbb.TextUpdate += supplier_cbb_TextUpdate;
+            debounceTimer.Tick += DebounceTimer_Tick;
         }
 
         private void ProductSKU_KeyDown(object sender, KeyEventArgs e)
@@ -643,6 +650,45 @@ namespace RauViet.ui
                 await Task.Delay(200);
                 loadingOverlay.Hide();
             }
+        }
+
+        private void supplier_cbb_TextUpdate(object sender, EventArgs e)
+        {
+            // Restart timer mỗi khi gõ
+            debounceTimer.Stop();
+            debounceTimer.Start();
+        }
+
+        private void DebounceTimer_Tick(object sender, EventArgs e)
+        {
+            try
+            {
+                debounceTimer.Stop();
+
+                string typed = supplier_cbb.Text ?? "";
+                string plain = Utils.RemoveVietnameseSigns(typed).ToLower();
+
+                // Filter bằng LINQ
+                var filtered = mSupplier_dt.AsEnumerable()
+                    .Where(r => r["searching_nosign"].ToString()
+                    .Contains(plain));
+
+                DataTable temp;
+                if (filtered.Any())
+                    temp = filtered.CopyToDataTable();
+                else
+                    temp = mSupplier_dt.Clone(); // nếu không có kết quả thì trả về table rỗng
+
+                // Gán lại DataSource
+                supplier_cbb.DataSource = temp;
+
+                // Giữ lại text người đang gõ
+                supplier_cbb.DroppedDown = true;
+                supplier_cbb.Text = typed;
+                supplier_cbb.SelectionStart = typed.Length;
+                supplier_cbb.SelectionLength = 0;
+            }
+            catch { }
         }
     }
 }

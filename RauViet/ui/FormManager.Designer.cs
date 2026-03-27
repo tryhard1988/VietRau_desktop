@@ -63,12 +63,10 @@
             this.sumaryAttendanceReport_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.reportSalary_Month_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.KhachHang_menuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.sanpham_group_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.supplier_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.productMain_menuitem = new System.Windows.Forms.ToolStripMenuItem();
             this.productPacking_meniitem = new System.Windows.Forms.ToolStripMenuItem();
-            this.productDomesticPrices_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.khoHangKhoGroup_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.inventoryTransaction_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.thongKeTonKho_mi = new System.Windows.Forms.ToolStripMenuItem();
@@ -132,7 +130,10 @@
             this.loadExcelOrderReportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.content_panel = new System.Windows.Forms.Panel();
             this.bbbbbbbbb_mi = new System.Windows.Forms.ToolStripMenuItem();
-            this.thôngTinNgườiBánToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.KhachHang_menuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.giáBánToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.updatePriceProductSKU_mi = new System.Windows.Forms.ToolStripMenuItem();
+            this.productDomesticPrices_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1.SuspendLayout();
             this.LOT_menuitem.SuspendLayout();
             this.SuspendLayout();
@@ -170,7 +171,6 @@
             this.nhansu_group_mi,
             this.chamcong_pmi,
             this.toolStripMenuItem1,
-            this.KhachHang_menuItem,
             this.sanpham_group_mi,
             this.donhang_group_mi,
             this.orderDomestic_group_mi,
@@ -423,21 +423,14 @@
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
             this.toolStripMenuItem1.Size = new System.Drawing.Size(12, 21);
             // 
-            // KhachHang_menuItem
-            // 
-            this.KhachHang_menuItem.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.KhachHang_menuItem.ForeColor = System.Drawing.Color.OrangeRed;
-            this.KhachHang_menuItem.Name = "KhachHang_menuItem";
-            this.KhachHang_menuItem.Size = new System.Drawing.Size(94, 21);
-            this.KhachHang_menuItem.Text = "Khách Hàng";
-            // 
             // sanpham_group_mi
             // 
             this.sanpham_group_mi.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.KhachHang_menuItem,
             this.supplier_mi,
             this.productMain_menuitem,
             this.productPacking_meniitem,
-            this.productDomesticPrices_mi,
+            this.giáBánToolStripMenuItem,
             this.khoHangKhoGroup_mi,
             this.khoRauCuQuaGroup_mi});
             this.sanpham_group_mi.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -449,26 +442,20 @@
             // supplier_mi
             // 
             this.supplier_mi.Name = "supplier_mi";
-            this.supplier_mi.Size = new System.Drawing.Size(216, 22);
+            this.supplier_mi.Size = new System.Drawing.Size(199, 22);
             this.supplier_mi.Text = "Nhà Cung Cấp";
             // 
             // productMain_menuitem
             // 
             this.productMain_menuitem.Name = "productMain_menuitem";
-            this.productMain_menuitem.Size = new System.Drawing.Size(216, 22);
+            this.productMain_menuitem.Size = new System.Drawing.Size(199, 22);
             this.productMain_menuitem.Text = "Sản Phẩm Chính";
             // 
             // productPacking_meniitem
             // 
             this.productPacking_meniitem.Name = "productPacking_meniitem";
-            this.productPacking_meniitem.Size = new System.Drawing.Size(216, 22);
+            this.productPacking_meniitem.Size = new System.Drawing.Size(199, 22);
             this.productPacking_meniitem.Text = "Sản Phẩm Quy Cách";
-            // 
-            // productDomesticPrices_mi
-            // 
-            this.productDomesticPrices_mi.Name = "productDomesticPrices_mi";
-            this.productDomesticPrices_mi.Size = new System.Drawing.Size(216, 22);
-            this.productDomesticPrices_mi.Text = "Giá Bán SP Trong Nước";
             // 
             // khoHangKhoGroup_mi
             // 
@@ -478,7 +465,7 @@
             this.thongKeTonKho_mi});
             this.khoHangKhoGroup_mi.ForeColor = System.Drawing.Color.OrangeRed;
             this.khoHangKhoGroup_mi.Name = "khoHangKhoGroup_mi";
-            this.khoHangKhoGroup_mi.Size = new System.Drawing.Size(216, 22);
+            this.khoHangKhoGroup_mi.Size = new System.Drawing.Size(199, 22);
             this.khoHangKhoGroup_mi.Text = "Kho Hàng Khô";
             // 
             // inventoryTransaction_mi
@@ -497,24 +484,23 @@
             // 
             this.khoRauCuQuaGroup_mi.BackColor = System.Drawing.SystemColors.ScrollBar;
             this.khoRauCuQuaGroup_mi.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.thôngTinNgườiBánToolStripMenuItem,
             this.xuatNhapRauCuQua_mi,
             this.thongKeTonKhoHangRauCu_mi});
             this.khoRauCuQuaGroup_mi.ForeColor = System.Drawing.Color.OrangeRed;
             this.khoRauCuQuaGroup_mi.Name = "khoRauCuQuaGroup_mi";
-            this.khoRauCuQuaGroup_mi.Size = new System.Drawing.Size(216, 22);
+            this.khoRauCuQuaGroup_mi.Size = new System.Drawing.Size(199, 22);
             this.khoRauCuQuaGroup_mi.Text = "Kho Rau, Củ, Quả";
             // 
             // xuatNhapRauCuQua_mi
             // 
             this.xuatNhapRauCuQua_mi.Name = "xuatNhapRauCuQua_mi";
-            this.xuatNhapRauCuQua_mi.Size = new System.Drawing.Size(205, 22);
+            this.xuatNhapRauCuQua_mi.Size = new System.Drawing.Size(189, 22);
             this.xuatNhapRauCuQua_mi.Text = "Xuất Nhập Kho";
             // 
             // thongKeTonKhoHangRauCu_mi
             // 
             this.thongKeTonKhoHangRauCu_mi.Name = "thongKeTonKhoHangRauCu_mi";
-            this.thongKeTonKhoHangRauCu_mi.Size = new System.Drawing.Size(205, 22);
+            this.thongKeTonKhoHangRauCu_mi.Size = new System.Drawing.Size(189, 22);
             this.thongKeTonKhoHangRauCu_mi.Text = "Thống Kê Tồn Kho";
             // 
             // donhang_group_mi
@@ -946,11 +932,34 @@
             this.bbbbbbbbb_mi.Name = "bbbbbbbbb_mi";
             this.bbbbbbbbb_mi.Size = new System.Drawing.Size(32, 19);
             // 
-            // thôngTinNgườiBánToolStripMenuItem
+            // KhachHang_menuItem
             // 
-            this.thôngTinNgườiBánToolStripMenuItem.Name = "thôngTinNgườiBánToolStripMenuItem";
-            this.thôngTinNgườiBánToolStripMenuItem.Size = new System.Drawing.Size(205, 22);
-            this.thôngTinNgườiBánToolStripMenuItem.Text = "Thông Tin Người Bán";
+            this.KhachHang_menuItem.Name = "KhachHang_menuItem";
+            this.KhachHang_menuItem.Size = new System.Drawing.Size(199, 22);
+            this.KhachHang_menuItem.Text = "Khách Hàng";
+            // 
+            // giáBánToolStripMenuItem
+            // 
+            this.giáBánToolStripMenuItem.BackColor = System.Drawing.SystemColors.ScrollBar;
+            this.giáBánToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.updatePriceProductSKU_mi,
+            this.productDomesticPrices_mi});
+            this.giáBánToolStripMenuItem.ForeColor = System.Drawing.Color.OrangeRed;
+            this.giáBánToolStripMenuItem.Name = "giáBánToolStripMenuItem";
+            this.giáBánToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.giáBánToolStripMenuItem.Text = "Giá Bán";
+            // 
+            // updatePriceProductSKU_mi
+            // 
+            this.updatePriceProductSKU_mi.Name = "updatePriceProductSKU_mi";
+            this.updatePriceProductSKU_mi.Size = new System.Drawing.Size(180, 22);
+            this.updatePriceProductSKU_mi.Text = "Ngoài Nước";
+            // 
+            // productDomesticPrices_mi
+            // 
+            this.productDomesticPrices_mi.Name = "productDomesticPrices_mi";
+            this.productDomesticPrices_mi.Size = new System.Drawing.Size(180, 22);
+            this.productDomesticPrices_mi.Text = "Trong Nước";
             // 
             // FormManager
             // 
@@ -983,7 +992,6 @@
         private System.Windows.Forms.ToolStripMenuItem chamcong_pmi;
         private System.Windows.Forms.ToolStripMenuItem attendanceHC_mi;
         private System.Windows.Forms.ToolStripMenuItem overtimeAttendace_mi;
-        private System.Windows.Forms.ToolStripMenuItem KhachHang_menuItem;
         private System.Windows.Forms.ToolStripMenuItem sanpham_group_mi;
         private System.Windows.Forms.ToolStripMenuItem productMain_menuitem;
         private System.Windows.Forms.ToolStripMenuItem productPacking_meniitem;
@@ -1027,7 +1035,6 @@
         private System.Windows.Forms.ToolStripMenuItem yearlyReport_mi;
         private System.Windows.Forms.ToolStripMenuItem monthlyTotalPerYear_mi;
         private System.Windows.Forms.ToolStripMenuItem historyLogin_mi;
-        private System.Windows.Forms.ToolStripMenuItem productDomesticPrices_mi;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem3;
         private System.Windows.Forms.ToolStripMenuItem extension_mi;
         private System.Windows.Forms.ToolStripMenuItem QR_mi;
@@ -1076,6 +1083,9 @@
         private System.Windows.Forms.ToolStripMenuItem qlk_xuatNhapVTQuaCacNam_mi;
         private System.Windows.Forms.ToolStripMenuItem giamSatTiepNhanRau_mi;
         private System.Windows.Forms.ToolStripMenuItem datDoAn_mi;
-        private System.Windows.Forms.ToolStripMenuItem thôngTinNgườiBánToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem KhachHang_menuItem;
+        private System.Windows.Forms.ToolStripMenuItem giáBánToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem updatePriceProductSKU_mi;
+        private System.Windows.Forms.ToolStripMenuItem productDomesticPrices_mi;
     }
 }

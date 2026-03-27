@@ -17,7 +17,7 @@ public class KhoVatTu_LichGiaoCay_Printer
     public KhoVatTu_LichGiaoCay_Printer(string weekName, DateTime startDay, DateTime endDay, DataTable mPlantTrayDensity_dt, DataTable plantingManagement_dt)
     {
         DataView dv = new DataView(plantingManagement_dt);
-        dv.RowFilter = $"PlantingDate >= #{startDay:MM/dd/yyyy}# AND PlantingDate < #{endDay:MM/dd/yyyy}#";
+        dv.RowFilter = $"PlantingDate >= #{startDay:MM/dd/yyyy}# AND PlantingDate <= #{endDay:MM/dd/yyyy}#";
         dv.Sort = "PlantingDate ASC";
 
         this.mPlantingManagement_dt = dv.ToTable();
