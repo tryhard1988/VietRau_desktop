@@ -64,9 +64,15 @@ namespace RauViet.ui
                     supplier_mi.Click += Supplier_mi_Click;
 
                     if (UserManager.Instance.hasRole_AnGiaSanPham() == false)
+                    {
                         updatePriceProductSKU_mi.Click += UpdatePriceProductSKU_mi_Click;
+                        giaThuMua_mi.Click += GiaThuMua_mi_Click;
+                    }
                     else
+                    {
                         updatePriceProductSKU_mi.Visible = false;
+                        giaThuMua_mi.Visible = false;
+                    }
 
                 }
                 else
@@ -461,7 +467,8 @@ namespace RauViet.ui
             KhoVatTu_TKXuatNhapVatTuTheo_Nam,
             KhoVatTu_GiamSatTiepNhanRau,
             MealOrder,
-            UpdatePriceProductSKU
+            UpdatePriceProductSKU,
+            PurchasePrices
         }
 
         private void openCurrentForm(EForm status)
@@ -705,6 +712,9 @@ namespace RauViet.ui
                 case EForm.UpdatePriceProductSKU:
                     SwitchChildForm<UpdatePriceProductSKU>("Cập Nhật Giá Bán Ngoài Nước");
                     break;
+                case EForm.PurchasePrices:
+                    SwitchChildForm<PurchasePrices>("Giá Thu Mua");
+                    break;
             }
             
             Properties.Settings.Default.current_form = status.ToString();
@@ -791,6 +801,8 @@ namespace RauViet.ui
         private void Qlk_thongKeCapPhan_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.KhoVatTu_TKCapPhanBon); }
         private void DatDoAn_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.MealOrder); }
         private void UpdatePriceProductSKU_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.UpdatePriceProductSKU); }
+        private void GiaThuMua_mi_Click(object sender, EventArgs e) { openCurrentForm(EForm.PurchasePrices); }
+
         private async void checkLoginTimer_Tick(object sender, EventArgs e)
         {
             var isHave = await SQLManager.Instance.HaveOtherComputerLoginAsync();

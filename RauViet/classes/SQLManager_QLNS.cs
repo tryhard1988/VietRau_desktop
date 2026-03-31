@@ -3552,6 +3552,27 @@ namespace RauViet.classes
             catch { return false; }
         }
 
+        public async Task<bool> updateMealOrder_ThanhToanAsync(int mealOrdersID, bool isPaid)
+        {
+            string query = @"UPDATE MealOrders SET IsPaid=@IsPaid
+                            WHERE MealOrdersID=@MealOrdersID";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@MealOrdersID", mealOrdersID);
+                        cmd.Parameters.AddWithValue("@IsPaid", isPaid);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+                return true;
+            }
+            catch { return false; }
+        }
+
         public async Task<bool> deleteMealOrderAsync(int ID)
         {
             string query = "DELETE FROM MealOrders WHERE MealOrdersID=@MealOrdersID";
@@ -3570,6 +3591,8 @@ namespace RauViet.classes
             }
             catch { return false; }
         }
+
+        
     }
 }
 

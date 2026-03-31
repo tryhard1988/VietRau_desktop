@@ -515,7 +515,7 @@ namespace RauViet.classes
                                         MONTH(ProcessDate)
                                 ) harvest
 
-                                WHERE YEAR(pm.NurseryDate) = @Year;";
+                                WHERE harvest.ProcessDate_Year = @Year;";
 
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 {

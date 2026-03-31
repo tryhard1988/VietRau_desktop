@@ -914,6 +914,26 @@ namespace RauViet.classes
             return dt;
         }
 
+        public async Task<DataTable> Clean_OrdersTotal_ByExportCodeAsyn(int exportCodeID)
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
+            {
+                await con.OpenAsync();
+
+                using (SqlCommand cmd = new SqlCommand("SP_Clean_OrdersTotal_ByExportCode", con))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@ExportCodeID", exportCodeID);
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
+        }
+
         public async Task<bool> UpsertOrdersTotalListAsync(List<(int ExportCodeID, int ProductPackingID, decimal? NetWeightFinal)> list)
         {
             try
@@ -2943,7 +2963,7 @@ namespace RauViet.classes
             using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
             {
                 await con.OpenAsync();
-                string query = @"SELECT * FROM VegetableWarehouseTransaction";
+                string query = @"SELECT * FROM VegetableWarehouseTransaction WHERE TransactionDate >= DATEADD(MONTH, -2, GETDATE());";
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                 {
@@ -2953,12 +2973,12 @@ namespace RauViet.classes
             return dt;
         }
 
-        public async Task<int> insertVegetableWarehouseTransactionAsync(int SKU, string TransactionType,decimal Quantity,string Supplier, string FarmSourceCode, DateTime TransactionDate, string Note)
+        public async Task<int> insertVegetableWarehouseTransactionAsync(int SKU, string TransactionType,decimal Quantity, string FarmSourceCode, DateTime TransactionDate, string Note, int? sellerID, int price)
         {
             int newId = -1;
-            string query = @"INSERT INTO VegetableWarehouseTransaction (SKU, TransactionType, Quantity, Supplier, FarmSourceCode, TransactionDate, Note)
+            string query = @"INSERT INTO VegetableWarehouseTransaction (SKU, TransactionType, Quantity, FarmSourceCode, TransactionDate, Note, SellerID, Price)
                             OUTPUT INSERTED.TransactionID
-                             VALUES (@SKU, @TransactionType, @Quantity, @Supplier, @FarmSourceCode, @TransactionDate, @Note)";
+                             VALUES (@SKU, @TransactionType, @Quantity, @FarmSourceCode, @TransactionDate, @Note, @SellerID, @Price)";
             try
             {
                 using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
@@ -2969,10 +2989,11 @@ namespace RauViet.classes
                         cmd.Parameters.AddWithValue("@SKU", SKU);
                         cmd.Parameters.AddWithValue("@TransactionType", TransactionType);
                         cmd.Parameters.AddWithValue("@Quantity", Quantity);
-                        cmd.Parameters.AddWithValue("@Supplier", Supplier);
                         cmd.Parameters.AddWithValue("@FarmSourceCode", FarmSourceCode);
                         cmd.Parameters.AddWithValue("@TransactionDate", TransactionDate);
                         cmd.Parameters.AddWithValue("@Note", Note);
+                        cmd.Parameters.AddWithValue("@SellerID", sellerID ?? (object)DBNull.Value);
+                        cmd.Parameters.AddWithValue("@Price", price);
                         object result = await cmd.ExecuteScalarAsync();
                         if (result != null)
                             newId = Convert.ToInt32(result);
@@ -2987,16 +3008,17 @@ namespace RauViet.classes
             }
         }
 
-        public async Task<bool> updateVegetableWarehouseTransactionAsync(int ID, int SKU, string TransactionType, decimal Quantity, string Supplier, string FarmSourceCode, DateTime TransactionDate, string Note)
+        public async Task<bool> updateVegetableWarehouseTransactionAsync(int ID, int SKU, string TransactionType, decimal Quantity, string FarmSourceCode, DateTime TransactionDate, string Note, int? sellerID, int price)
         {
             string query = @"UPDATE VegetableWarehouseTransaction SET
                                 SKU=@SKU, 
                                 TransactionType=@TransactionType, 
-                                Quantity=@Quantity, 
-                                Supplier=@Supplier, 
+                                Quantity=@Quantity,  
                                 FarmSourceCode=@FarmSourceCode, 
                                 TransactionDate=@TransactionDate, 
-                                Note=@Note                              
+                                Note=@Note, 
+                                SellerID=@SellerID, 
+                                Price=@Price                
                              WHERE TransactionID=@ID";
             try
             {
@@ -3009,10 +3031,11 @@ namespace RauViet.classes
                         cmd.Parameters.AddWithValue("@SKU", SKU);
                         cmd.Parameters.AddWithValue("@TransactionType", TransactionType);
                         cmd.Parameters.AddWithValue("@Quantity", Quantity);
-                        cmd.Parameters.AddWithValue("@Supplier", Supplier);
                         cmd.Parameters.AddWithValue("@FarmSourceCode", FarmSourceCode);
                         cmd.Parameters.AddWithValue("@TransactionDate", TransactionDate);
                         cmd.Parameters.AddWithValue("@Note", Note);
+                        cmd.Parameters.AddWithValue("@SellerID", sellerID ?? (object)DBNull.Value);
+                        cmd.Parameters.AddWithValue("@Price", price);
                         await cmd.ExecuteNonQueryAsync();
                     }
                 }
@@ -3044,12 +3067,12 @@ namespace RauViet.classes
             catch { return false; }
         }
 
-        public async Task<int> insertVegetableWarehouseTransactionLOGAsync(int SKU, string oldValue, string newValue)
+        public async Task<int> insertVegetableWarehouseTransactionLOGAsync(string farmSourceCode, string oldValue, string newValue)
         {
             int newId = -1;
-            string query = @"INSERT INTO VegetableWarehouseTransactionLOG (SKU, OldValue, NewValue, ActionBy)
+            string query = @"INSERT INTO VegetableWarehouseTransactionLOG (FarmSourceCode, OldValue, NewValue, ActionBy)
                             OUTPUT INSERTED.LogID
-                             VALUES (@SKU, @OldValue, @NewValue, @ActionBy)";
+                             VALUES (@FarmSourceCode, @OldValue, @NewValue, @ActionBy)";
             try
             {
                 using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr()))
@@ -3057,7 +3080,7 @@ namespace RauViet.classes
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
-                        cmd.Parameters.AddWithValue("@SKU", SKU);
+                        cmd.Parameters.AddWithValue("@FarmSourceCode", farmSourceCode);
                         cmd.Parameters.AddWithValue("@OldValue", oldValue);
                         cmd.Parameters.AddWithValue("@NewValue", newValue);
                         cmd.Parameters.AddWithValue("@ActionBy", UserManager.Instance.fullName);
@@ -3081,7 +3104,7 @@ namespace RauViet.classes
             using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr()))
             {
                 await con.OpenAsync();
-                string query = @"select * from VegetableWarehouseTransactionLOG";
+                string query = @"select * from VegetableWarehouseTransactionLOG WHERE CreateedAt >= DATEADD(MONTH, -3, GETDATE());";
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                 {
@@ -3194,6 +3217,171 @@ namespace RauViet.classes
             {
                 Console.WriteLine($"Error Auto Update ExportCode: {ex.Message}");
             }
+        }
+
+        public async Task<DataTable> getPurchasePricesASync()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT * FROM PurchasePrices;";
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                {
+                    dt.Load(reader);
+                }
+            }
+            return dt;
+        }
+
+        public async Task<int> insertPurchasePricesAsync(int SellerID, int SKU, int price)
+        {
+            int newId = -1;
+            string query = @"INSERT INTO PurchasePrices (SKU, SellerID, Price) OUTPUT INSERTED.PurchasePricesID VALUES (@SKU, @SellerID, @Price)";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@SKU", SKU);
+                        cmd.Parameters.AddWithValue("@SellerID", SellerID);
+                        cmd.Parameters.AddWithValue("@Price", price);
+                        object result = await cmd.ExecuteScalarAsync();
+                        if (result != null)
+                            newId = Convert.ToInt32(result);
+                    }
+                }
+                return newId;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("ERROR: " + ex.Message);
+                return -1;
+            }
+        }
+
+        public async Task<bool> updatePurchasePricesAsync(int ID, int SellerID, int SKU, int price)
+        {
+            string query = @"UPDATE PurchasePrices SET
+                                SKU=@SKU, 
+                                SellerID=@SellerID, 
+                                Price=@Price                        
+                             WHERE PurchasePricesID=@ID";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@ID", ID);
+                        cmd.Parameters.AddWithValue("@SKU", SKU);
+                        cmd.Parameters.AddWithValue("@SellerID", SellerID);
+                        cmd.Parameters.AddWithValue("@Price", price);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("ERROR: " + ex.Message);
+                return false;
+            }
+        }
+
+        public async Task<bool> deletePurchasePricesAsync(int purchasePricesID)
+        {
+            string query = "DELETE FROM PurchasePrices WHERE PurchasePricesID=@PurchasePricesID";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@PurchasePricesID", purchasePricesID);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+                return true;
+            }
+            catch { return false; }
+        }
+
+        public async Task<DataTable> GetPurchasePricesLOGAsync()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr()))
+            {
+                await con.OpenAsync();
+                string query = @"SELECT * FROM PurchasePricesLogs";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            return dt;
+        }
+
+        public async Task<int> insertPurchasePricesLOGAsync(int SKU, int SellerID, string newValue, string oldValue)
+        {
+            int newId = -1;
+            string query = @"INSERT INTO PurchasePricesLogs (SKU, SellerID, OldValue, NewValue, ActionBy)
+                            OUTPUT INSERTED.LogID
+                             VALUES (@SKU, @SellerID, @OldValue, @NewValue, @ActionBy)";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_kho_Log_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@SKU", SKU);
+                        cmd.Parameters.AddWithValue("@SellerID", SellerID);
+                        cmd.Parameters.AddWithValue("@OldValue", oldValue);
+                        cmd.Parameters.AddWithValue("@NewValue", newValue);
+                        cmd.Parameters.AddWithValue("@ActionBy", UserManager.Instance.fullName);
+                        object result = await cmd.ExecuteScalarAsync();
+                        if (result != null)
+                            newId = Convert.ToInt32(result);
+                    }
+                }
+                return newId;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("ERROR: " + ex.Message);
+                return -1;
+            }
+        }
+
+        public async Task<bool> updateVegetableWarehouseTransaction_ThanhToanAsync(int TransactionID, bool isPaid)
+        {
+            string query = @"UPDATE VegetableWarehouseTransaction SET IsPaid=@IsPaid
+                            WHERE TransactionID=@TransactionID";
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@TransactionID", TransactionID);
+                        cmd.Parameters.AddWithValue("@IsPaid", isPaid);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+                return true;
+            }
+            catch { return false; }
         }
     }
 }

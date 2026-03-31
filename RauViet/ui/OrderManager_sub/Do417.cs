@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -64,6 +65,7 @@ namespace RauViet.ui
 
             try
             {
+                
                 string[] keepColumns = { "ExportCodeID", "ExportCode", "InputByName_NoSign" };
                 var parameters = new Dictionary<string, object> { { "Complete", false } };
                 mExportCode_dt = await SQLStore_Kho.Instance.getExportCodesAsync(keepColumns, parameters);
@@ -73,6 +75,8 @@ namespace RauViet.ui
                     mCurrentExportID = Convert.ToInt32(mExportCode_dt.AsEnumerable()
                                    .Max(r => r.Field<int>("ExportCodeID")));
                 }
+
+                await SQLManager_Kho.Instance.Clean_OrdersTotal_ByExportCodeAsyn(mCurrentExportID);
 
                 var ordersTotaltask = SQLStore_Kho.Instance.getOrdersTotalAsync(mCurrentExportID);
                 var do47LogTask = SQLStore_Kho.Instance.GetDo47LogAsync(mCurrentExportID);
@@ -177,24 +181,7 @@ namespace RauViet.ui
 
             mCurrentExportID = exportCodeId;
 
-            var ordersTotaltask = SQLStore_Kho.Instance.getOrdersTotalAsync(mCurrentExportID);
-            var do47LogTask = SQLStore_Kho.Instance.GetDo47LogAsync(mCurrentExportID);
-            await Task.WhenAll(ordersTotaltask, do47LogTask);
-
-            mDo47Log_dv = new DataView(do47LogTask.Result);
-            logGV.DataSource = mDo47Log_dv;
-
-            mOrdersTotal_dt = ordersTotaltask.Result;
-            DataView dv = new DataView(mOrdersTotal_dt);
-            dv.RowFilter = $"ExportCodeID = {exportCodeId}";
-            dataGV.DataSource = dv;
-
-            calvalueRightUI();
-
-            DataRowView dataR = (DataRowView)exportCode_cbb.SelectedItem;
-            string staff = dataR["InputByName_NoSign"].ToString();
-
-            dataGV.ReadOnly = !(UserManager.Instance.fullName_NoSign.CompareTo(staff) == 0);            
+            ShowData();       
         }
 
         private async void DataGV_CellValueChanged(object sender, DataGridViewCellEventArgs e)

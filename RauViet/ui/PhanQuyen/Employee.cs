@@ -99,7 +99,7 @@ namespace RauViet.ui
                 dataGV.DataSource = mEmployees_dt;
                 log_GV.DataSource = mLogDV;
                 Utils.HideColumns(dataGV, new[] { "IssuePlace", "IssueDate", "Hometown", "Address", "EmployeeID", "Gender", "ContractTypeName", "ContractTypeCode", "DepartmentName", "PositionName", "PositionCode", "HealthInsuranceNumber", "SocialInsuranceNumber",
-                                                    "BankAccountHolder","BankAccountNumber","BankBranch","BankName","SalaryGrade","SalaryGradeID", "CreatedAt", "ContractTypeID", "DepartmentID", "PositionID", "NoteResign", "EmployessName_NoSign"});
+                                                    "BankAccountHolder","BankAccountNumber","BankBranch","BankName","SalaryGrade","SalaryGradeID", "CreatedAt", "ContractTypeID", "DepartmentID", "PositionID", "NoteResign", "EmployessName_NoSign", "WorkBlock"});
                 Utils.HideColumns(log_GV, new[] { "LogID", "EmployeeCode" });
 
                 Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {

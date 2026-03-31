@@ -36,12 +36,14 @@ namespace RauViet.ui
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.dataGV = new System.Windows.Forms.DataGridView();
+            this.nw_tb = new System.Windows.Forms.TextBox();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
             this.SuspendLayout();
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.nw_tb);
             this.panel1.Controls.Add(this.exportCode_cbb);
             this.panel1.Controls.Add(this.status_lb);
             this.panel1.Controls.Add(this.LuuThayDoiBtn);
@@ -99,6 +101,17 @@ namespace RauViet.ui
             this.dataGV.Size = new System.Drawing.Size(798, 681);
             this.dataGV.TabIndex = 10;
             // 
+            // nw_tb
+            // 
+            this.nw_tb.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.nw_tb.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.nw_tb.Location = new System.Drawing.Point(153, 172);
+            this.nw_tb.Name = "nw_tb";
+            this.nw_tb.ReadOnly = true;
+            this.nw_tb.Size = new System.Drawing.Size(157, 27);
+            this.nw_tb.TabIndex = 54;
+            this.nw_tb.Text = "vxcv";
+            // 
             // Phyto
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -122,5 +135,6 @@ namespace RauViet.ui
         private System.Windows.Forms.ComboBox exportCode_cbb;
         private System.Windows.Forms.Label status_lb;
         private System.Windows.Forms.DataGridView dataGV;
+        private System.Windows.Forms.TextBox nw_tb;
     }
 }

@@ -661,34 +661,8 @@ namespace RauViet.ui
 
         private void DebounceTimer_Tick(object sender, EventArgs e)
         {
-            try
-            {
-                debounceTimer.Stop();
-
-                string typed = supplier_cbb.Text ?? "";
-                string plain = Utils.RemoveVietnameseSigns(typed).ToLower();
-
-                // Filter bằng LINQ
-                var filtered = mSupplier_dt.AsEnumerable()
-                    .Where(r => r["searching_nosign"].ToString()
-                    .Contains(plain));
-
-                DataTable temp;
-                if (filtered.Any())
-                    temp = filtered.CopyToDataTable();
-                else
-                    temp = mSupplier_dt.Clone(); // nếu không có kết quả thì trả về table rỗng
-
-                // Gán lại DataSource
-                supplier_cbb.DataSource = temp;
-
-                // Giữ lại text người đang gõ
-                supplier_cbb.DroppedDown = true;
-                supplier_cbb.Text = typed;
-                supplier_cbb.SelectionStart = typed.Length;
-                supplier_cbb.SelectionLength = 0;
-            }
-            catch { }
+            debounceTimer.Stop();
+            Utils.ComboBoxSearchResult(supplier_cbb, mSupplier_dt, "searching_nosign");
         }
     }
 }

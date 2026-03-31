@@ -34,6 +34,7 @@ namespace RauViet.classes
         DataTable mInventoryTransaction_dt = null;
         DataTable mVegetableWarehouseTransaction_dt = null;
         DataTable mSupplier_dt = null;
+        DataTable mPurchasePrices_dt = null;
 
         DataTable mProductType_dt = null;
         DataTable mOrderDomesticCodeLog_dt = null;
@@ -43,6 +44,7 @@ namespace RauViet.classes
         DataTable mDomesticLiquidationPriceLog_dt = null;
         DataTable mDomesticLiquidationImportLog_dt = null;
         DataTable mDomesticLiquidationExportLog_dt = null;
+        DataTable mPurchasePricesLogs_dt = null;
 
         Dictionary<int, DataTable> mOrderLists;
         Dictionary<int, DataTable> mOrderDomesticDetails;
@@ -2329,17 +2331,20 @@ namespace RauViet.classes
             return mVegetableWarehouseTransaction_dt;
         }
 
-        private void editVegetableWarehouseTransaction()
+        private async void editVegetableWarehouseTransaction()
         {
+            await GetSupplierAsync();
+
             mVegetableWarehouseTransaction_dt.Columns.Add(new DataColumn("Name_VN", typeof(string)));
             mVegetableWarehouseTransaction_dt.Columns.Add(new DataColumn("TransactionTypeName", typeof(string)));
-            mVegetableWarehouseTransaction_dt.Columns.Add(new DataColumn("SupplierName", typeof(string)));
             mVegetableWarehouseTransaction_dt.Columns.Add(new DataColumn("Package", typeof(string)));
+            mVegetableWarehouseTransaction_dt.Columns.Add(new DataColumn("SellerName", typeof(string)));
             foreach (DataRow row in mVegetableWarehouseTransaction_dt.Rows)
             {
                 int sku = Convert.ToInt32(row["SKU"]);
                 string tranType = Convert.ToString(row["TransactionType"]);
-                string supplier = Convert.ToString(row["Supplier"]);
+                int? sellerID = row["SellerID"] != DBNull.Value ? Convert.ToInt32(row["SellerID"]) : (int?)null;
+
                 DataRow pprow = mProductSKU_dt.Select($"SKU = {sku}").FirstOrDefault();
 
                 if (tranType.CompareTo("N") == 0)
@@ -2354,25 +2359,24 @@ namespace RauViet.classes
                     row["TransactionTypeName"] = "Khác.";
                 else
                     row["TransactionTypeName"] = "--ERROR--";
-
-                if (supplier.CompareTo("VR") == 0)
-                    row["SupplierName"] = "Việt Rau.";
-                else if (supplier.CompareTo("BT") == 0)
-                    row["SupplierName"] = "Bình Thuận.";
-                else if (supplier.CompareTo("MN") == 0)
-                    row["SupplierName"] = "Mua Ngoài.";
-                else
-                    row["SupplierName"] = "--ERROR--";
-
+                               
                 if (pprow != null)
                 {
+                    string Package = pprow["Package"].ToString();
+                    if (Package.CompareTo("weight") == 0)
+                        Package = "kg";
+
                     row["Name_VN"] = pprow["ProductNameVN"].ToString();
-                    row["Package"] = pprow["Package"].ToString();
+                    row["Package"] = Package;
                 }
-                else
+
+                if (sellerID.HasValue)
                 {
-                    row["Name_VN"] = "";
-                    row["Package"] = "";
+                    DataRow sellerRow = mSupplier_dt.Select($"SupplierID = {sellerID}").FirstOrDefault();
+                    if(sellerRow != null)
+                    {
+                        row["SellerName"] = sellerRow["SupplierName"];
+                    }
                 }
             }
 
@@ -2381,11 +2385,12 @@ namespace RauViet.classes
             mVegetableWarehouseTransaction_dt.Columns["TransactionDate"].SetOrdinal(count++);
             mVegetableWarehouseTransaction_dt.Columns["TransactionType"].SetOrdinal(count++);
             mVegetableWarehouseTransaction_dt.Columns["TransactionTypeName"].SetOrdinal(count++);
+            mVegetableWarehouseTransaction_dt.Columns["IsPaid"].SetOrdinal(count++);
+            mVegetableWarehouseTransaction_dt.Columns["SellerName"].SetOrdinal(count++);
             mVegetableWarehouseTransaction_dt.Columns["Name_VN"].SetOrdinal(count++);
             mVegetableWarehouseTransaction_dt.Columns["Package"].SetOrdinal(count++);
-            mVegetableWarehouseTransaction_dt.Columns["Quantity"].SetOrdinal(count++);                        
-            mVegetableWarehouseTransaction_dt.Columns["Supplier"].SetOrdinal(count++);
-            mVegetableWarehouseTransaction_dt.Columns["SupplierName"].SetOrdinal(count++);;
+            mVegetableWarehouseTransaction_dt.Columns["Quantity"].SetOrdinal(count++);
+            mVegetableWarehouseTransaction_dt.Columns["Price"].SetOrdinal(count++);
             mVegetableWarehouseTransaction_dt.Columns["FarmSourceCode"].SetOrdinal(count++);
             mVegetableWarehouseTransaction_dt.Columns["Note"].SetOrdinal(count++);
         }
@@ -2432,6 +2437,73 @@ namespace RauViet.classes
             }
 
             return mSupplier_dt;
+        }
+
+        public async Task<DataTable> getPurchasePricesSync()
+        {
+            if (mPurchasePrices_dt == null)
+            {
+                try
+                {
+                    mPurchasePrices_dt = await SQLManager_Kho.Instance.getPurchasePricesASync();
+                    editPurchasePrices(mPurchasePrices_dt);
+                }
+                catch
+                {
+                    Console.WriteLine("error getVegetableWarehouseTransactionSync SQLStore");
+                    return null;
+                }
+            }
+
+            return mPurchasePrices_dt;
+        }
+
+        private async void editPurchasePrices(DataTable data)
+        {
+            await SQLStore_Kho.Instance.getProductSKUAsync();
+            await SQLStore_Kho.Instance.GetSupplierAsync();
+
+            data.Columns.Add(new DataColumn("Name_VN", typeof(string)));
+            data.Columns.Add(new DataColumn("Package", typeof(string)));
+            data.Columns.Add(new DataColumn("SellerName", typeof(string)));
+            foreach (DataRow row in data.Rows)
+            {
+                int sku = Convert.ToInt32(row["SKU"]);
+                int sellerID = Convert.ToInt32(row["SellerID"]);                
+
+                DataRow pprow = mProductSKU_dt.Select($"SKU = {sku}").FirstOrDefault();
+
+                if (pprow != null)
+                {
+                    string package = pprow["Package"].ToString();
+                    if (package.CompareTo("weight") == 0)
+                        package = "kg";
+
+                    row["Name_VN"] = pprow["ProductNameVN"].ToString();
+                    row["Package"] = package;
+                }
+                
+                DataRow sellerRow = mSupplier_dt.Select($"SupplierID = {sellerID}").FirstOrDefault();
+                if (sellerRow != null)
+                {
+                    row["SellerName"] = sellerRow["SupplierName"];
+                }                
+            }
+        }
+
+        public void removePurchasePrices()
+        {
+            mPurchasePrices_dt = null;
+        }
+
+        public async Task<DataTable> GetPurchasePricesLogsAsync()
+        {
+            if (mPurchasePricesLogs_dt == null)
+            {
+                DataTable dt = await SQLManager_Kho.Instance.GetPurchasePricesLOGAsync();
+                mPurchasePricesLogs_dt = dt;
+            }
+            return mPurchasePricesLogs_dt;
         }
     }
 }

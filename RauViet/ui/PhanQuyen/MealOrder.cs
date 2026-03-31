@@ -69,6 +69,7 @@ namespace RauViet.ui
 
             xem_btn.Click += Xem_btn_Click;
             in_btn.Click += In_btn_Click;
+            thanhToan_btn.Click += ThanhToan_btn_Click;
 
             linkStartEnd_cb.CheckedChanged += LinkStartEnd_cb_CheckedChanged;
             orderDate_start_dtp.ValueChanged += OrderDateStart_dtp_ValueChanged;
@@ -576,6 +577,70 @@ namespace RauViet.ui
             if (dateStart > dateEnd)
                 orderDate_end_dtp.Value = dateStart;
 
+        }
+
+
+        private async void ThanhToan_btn_Click(object sender, EventArgs e)
+        {
+            DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (dialogResult != DialogResult.Yes)
+                return;
+
+            DateTime dateStart = in_StartDay_dtp.Value;
+            DateTime dateEnd = in_EndDay_dtp.Value;
+
+            var filtered = mMealOrder_dt.AsEnumerable() .Where(r => r.Field<DateTime>("OrderDate") >= dateStart && r.Field<DateTime>("OrderDate") <= dateEnd);
+
+            foreach (var item in filtered)
+            {
+                await ThanhToan(Convert.ToInt32(item["MealOrdersID"]), true);
+            }
+        }
+
+        private async Task ThanhToan(int mealOrdersID, bool isPaid)
+        {
+            foreach (DataRow row in mMealOrder_dt.Rows)
+            {
+                int id = Convert.ToInt32(row["MealOrdersID"]);
+                if (id.CompareTo(mealOrdersID) == 0)
+                {
+                    string oldValue = $"Đã Thanh Toán: {row["IsPaid"]}";
+                    string newValue = $"Đã Thanh Toán: {isPaid}";
+                    string actionType = "Thanh Toan";
+
+                    try
+                    {
+                        bool isScussess = await SQLManager_QLNS.Instance.updateMealOrder_ThanhToanAsync(mealOrdersID, isPaid);
+
+                        if (isScussess == true)
+                        {
+                            row["IsPaid"] = isPaid;
+
+                            status_lb.Text = "Thành công.";
+                            status_lb.ForeColor = Color.Green;
+
+                            actionType += ": Success";
+                        }
+                        else
+                        {
+                            status_lb.Text = "Thất bại.";
+                            status_lb.ForeColor = Color.Red;
+                            actionType += ": False";
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        status_lb.Text = "Thất bại.";
+                        status_lb.ForeColor = Color.Red;
+                        actionType += $": {ex.Message}";
+                    }
+                    finally
+                    {
+                        _ = SQLManager_QLNS.Instance.insertMealOrderLogAsync(Convert.ToDateTime(row["OrderDate"]), actionType, oldValue, newValue);
+                    }
+                    break;
+                }
+            }
         }
     }
 }

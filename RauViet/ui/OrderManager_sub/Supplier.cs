@@ -67,6 +67,7 @@ namespace RauViet.ui
 
                 dataGV.DataSource = mSupplier_dt;
 
+                Utils.HideColumns(dataGV, new[] {"searching_nosign" });
                 Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
                     {"SupplierID", "Mã NCC" },
                     {"SupplierName", "Tên Nhà Cung Cấp" },
@@ -130,9 +131,9 @@ namespace RauViet.ui
 
         private async void updateData(int supplierID, string supplierName, string phone)
         {
-            foreach (DataGridViewRow row in dataGV.Rows)
+            foreach (DataRow row in mSupplier_dt.Rows)
             {
-                int id = Convert.ToInt32(row.Cells["SupplierID"].Value);
+                int id = Convert.ToInt32(row["SupplierID"]);
                 if (id.CompareTo(supplierID) == 0)
                 {
                     DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
@@ -147,8 +148,10 @@ namespace RauViet.ui
                                 status_lb.Text = "Thành công.";
                                 status_lb.ForeColor = Color.Green;
 
-                                row.Cells["SupplierName"].Value = supplierName;
-                                row.Cells["Phone"].Value = phone;
+                                row["SupplierName"] = supplierName;
+                                row["Phone"] = phone;
+                                row["searching_nosign"] = Utils.RemoveVietnameseSigns(supplierName).ToLower();
+                                
                             }
                             else
                             {
@@ -184,9 +187,7 @@ namespace RauViet.ui
                         drToAdd["SupplierID"] = supplierID;
                         drToAdd["SupplierName"] = supplierName;
                         drToAdd["Phone"] = phone;
-
-                        supplierID_tb.Text = supplierID.ToString();
-
+                        drToAdd["searching_nosign"] = Utils.RemoveVietnameseSigns(supplierName).ToLower();
 
                         dataTable.Rows.Add(drToAdd);
                         dataTable.AcceptChanges();

@@ -66,6 +66,7 @@ namespace RauViet.ui
                     mCurrentExportID = Convert.ToInt32(mExportCode_dt.AsEnumerable().Max(r => r.Field<int>("ExportCodeID")));
                 }
 
+                await SQLManager_Kho.Instance.Clean_OrdersTotal_ByExportCodeAsyn(mCurrentExportID);
                 mOrdersTotal_dt = await SQLStore_Kho.Instance.getOrdersPhytoAsync(mCurrentExportID);
 
                 
@@ -104,6 +105,9 @@ namespace RauViet.ui
                 exportCode_cbb.SelectedValue = mCurrentExportID;
                 exportCode_cbb.SelectedIndexChanged += exportCode_search_cbb_SelectedIndexChanged;
 
+
+                decimal total = mOrdersTotal_dt.Compute("SUM(NetWeightFinal)", "") != DBNull.Value ? Convert.ToDecimal(mOrdersTotal_dt.Compute("SUM(NetWeightFinal)", "")) : 0;
+                nw_tb.Text = total.ToString("N2");
             }
             catch
             {
@@ -124,9 +128,7 @@ namespace RauViet.ui
 
             mCurrentExportID = exportCodeId;
 
-            mOrdersTotal_dt = await SQLStore_Kho.Instance.getOrdersPhytoAsync(mCurrentExportID);
-            DataView dv = new DataView(mOrdersTotal_dt);
-            dataGV.DataSource = dv;
+            ShowData();
         }
       
         

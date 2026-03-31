@@ -41,6 +41,9 @@ namespace RauViet.ui
             this.readOnly_btn = new System.Windows.Forms.Button();
             this.edit_btn = new System.Windows.Forms.Button();
             this.info_gb = new System.Windows.Forms.GroupBox();
+            this.linkStartEnd_cb = new System.Windows.Forms.CheckBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.orderDate_end_dtp = new System.Windows.Forms.DateTimePicker();
             this.label4 = new System.Windows.Forms.Label();
             this.VAT_tb = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
@@ -57,9 +60,7 @@ namespace RauViet.ui
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
             this.ID_tb = new System.Windows.Forms.TextBox();
             this.dataGV = new System.Windows.Forms.DataGridView();
-            this.orderDate_end_dtp = new System.Windows.Forms.DateTimePicker();
-            this.label6 = new System.Windows.Forms.Label();
-            this.linkStartEnd_cb = new System.Windows.Forms.CheckBox();
+            this.thanhToan_btn = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.log_GV)).BeginInit();
             this.groupBox1.SuspendLayout();
@@ -113,6 +114,7 @@ namespace RauViet.ui
             // groupBox1
             // 
             this.groupBox1.BackColor = System.Drawing.SystemColors.Info;
+            this.groupBox1.Controls.Add(this.thanhToan_btn);
             this.groupBox1.Controls.Add(this.xem_btn);
             this.groupBox1.Controls.Add(this.in_btn);
             this.groupBox1.Controls.Add(this.in_EndDay_dtp);
@@ -120,7 +122,7 @@ namespace RauViet.ui
             this.groupBox1.Controls.Add(this.in_StartDay_dtp);
             this.groupBox1.Location = new System.Drawing.Point(29, 348);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(299, 104);
+            this.groupBox1.Size = new System.Drawing.Size(328, 104);
             this.groupBox1.TabIndex = 33;
             this.groupBox1.TabStop = false;
             // 
@@ -128,7 +130,7 @@ namespace RauViet.ui
             // 
             this.xem_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.xem_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.xem_btn.Location = new System.Drawing.Point(154, 53);
+            this.xem_btn.Location = new System.Drawing.Point(108, 53);
             this.xem_btn.Name = "xem_btn";
             this.xem_btn.Size = new System.Drawing.Size(79, 37);
             this.xem_btn.TabIndex = 36;
@@ -139,7 +141,7 @@ namespace RauViet.ui
             // 
             this.in_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.in_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.in_btn.Location = new System.Drawing.Point(67, 53);
+            this.in_btn.Location = new System.Drawing.Point(21, 53);
             this.in_btn.Name = "in_btn";
             this.in_btn.Size = new System.Drawing.Size(79, 37);
             this.in_btn.TabIndex = 35;
@@ -148,7 +150,7 @@ namespace RauViet.ui
             // 
             // in_EndDay_dtp
             // 
-            this.in_EndDay_dtp.Location = new System.Drawing.Point(168, 24);
+            this.in_EndDay_dtp.Location = new System.Drawing.Point(185, 24);
             this.in_EndDay_dtp.Name = "in_EndDay_dtp";
             this.in_EndDay_dtp.Size = new System.Drawing.Size(98, 20);
             this.in_EndDay_dtp.TabIndex = 34;
@@ -157,7 +159,7 @@ namespace RauViet.ui
             // 
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label7.Location = new System.Drawing.Point(133, 26);
+            this.label7.Location = new System.Drawing.Point(150, 26);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(34, 16);
             this.label7.TabIndex = 33;
@@ -165,7 +167,7 @@ namespace RauViet.ui
             // 
             // in_StartDay_dtp
             // 
-            this.in_StartDay_dtp.Location = new System.Drawing.Point(32, 24);
+            this.in_StartDay_dtp.Location = new System.Drawing.Point(49, 24);
             this.in_StartDay_dtp.Name = "in_StartDay_dtp";
             this.in_StartDay_dtp.Size = new System.Drawing.Size(98, 20);
             this.in_StartDay_dtp.TabIndex = 32;
@@ -213,6 +215,34 @@ namespace RauViet.ui
             this.info_gb.Size = new System.Drawing.Size(422, 190);
             this.info_gb.TabIndex = 28;
             this.info_gb.TabStop = false;
+            // 
+            // linkStartEnd_cb
+            // 
+            this.linkStartEnd_cb.AutoSize = true;
+            this.linkStartEnd_cb.Checked = true;
+            this.linkStartEnd_cb.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.linkStartEnd_cb.Location = new System.Drawing.Point(193, 23);
+            this.linkStartEnd_cb.Name = "linkStartEnd_cb";
+            this.linkStartEnd_cb.Size = new System.Drawing.Size(15, 14);
+            this.linkStartEnd_cb.TabIndex = 73;
+            this.linkStartEnd_cb.UseVisualStyleBackColor = true;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label6.Location = new System.Drawing.Point(203, 23);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(25, 16);
+            this.label6.TabIndex = 39;
+            this.label6.Text = "=>";
+            // 
+            // orderDate_end_dtp
+            // 
+            this.orderDate_end_dtp.Location = new System.Drawing.Point(242, 21);
+            this.orderDate_end_dtp.Name = "orderDate_end_dtp";
+            this.orderDate_end_dtp.Size = new System.Drawing.Size(98, 20);
+            this.orderDate_end_dtp.TabIndex = 38;
             // 
             // label4
             // 
@@ -367,33 +397,16 @@ namespace RauViet.ui
             this.dataGV.Size = new System.Drawing.Size(901, 681);
             this.dataGV.TabIndex = 1;
             // 
-            // orderDate_end_dtp
+            // thanhToan_btn
             // 
-            this.orderDate_end_dtp.Location = new System.Drawing.Point(242, 21);
-            this.orderDate_end_dtp.Name = "orderDate_end_dtp";
-            this.orderDate_end_dtp.Size = new System.Drawing.Size(98, 20);
-            this.orderDate_end_dtp.TabIndex = 38;
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label6.Location = new System.Drawing.Point(203, 23);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(25, 16);
-            this.label6.TabIndex = 39;
-            this.label6.Text = "=>";
-            // 
-            // linkStartEnd_cb
-            // 
-            this.linkStartEnd_cb.AutoSize = true;
-            this.linkStartEnd_cb.Checked = true;
-            this.linkStartEnd_cb.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.linkStartEnd_cb.Location = new System.Drawing.Point(193, 23);
-            this.linkStartEnd_cb.Name = "linkStartEnd_cb";
-            this.linkStartEnd_cb.Size = new System.Drawing.Size(15, 14);
-            this.linkStartEnd_cb.TabIndex = 73;
-            this.linkStartEnd_cb.UseVisualStyleBackColor = true;
+            this.thanhToan_btn.BackColor = System.Drawing.Color.IndianRed;
+            this.thanhToan_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.thanhToan_btn.Location = new System.Drawing.Point(193, 53);
+            this.thanhToan_btn.Name = "thanhToan_btn";
+            this.thanhToan_btn.Size = new System.Drawing.Size(119, 37);
+            this.thanhToan_btn.TabIndex = 37;
+            this.thanhToan_btn.Text = "Thanh Toán";
+            this.thanhToan_btn.UseVisualStyleBackColor = false;
             // 
             // MealOrder
             // 
@@ -448,5 +461,6 @@ namespace RauViet.ui
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.DateTimePicker orderDate_end_dtp;
         private System.Windows.Forms.CheckBox linkStartEnd_cb;
+        private System.Windows.Forms.Button thanhToan_btn;
     }
 }

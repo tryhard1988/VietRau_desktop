@@ -59,7 +59,6 @@ namespace RauViet.ui
 
             try
             {
-
                 _prevYear = monthYearDtp.Value.Year;
 
                 DataTable plantingManagemen_dt = await SQLStore_KhoVatTu.Instance.getPlantingManagementAsync_HarvestQuantityMonth(_prevYear);
