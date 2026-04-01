@@ -2413,6 +2413,7 @@ namespace RauViet.classes
             return mVegetableWarehouseTransactionLOG_dt;
         }
 
+        public void removeSupplier() { mSupplier_dt = null; }
         public async Task<DataTable> GetSupplierAsync()
         {
             if (mSupplier_dt == null)

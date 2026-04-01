@@ -3131,9 +3131,9 @@ namespace RauViet.classes
             return dt;
         }
 
-        public async Task<bool> updateSupplierAsync(int SupplierID, string SupplierName, string Phone)
+        public async Task<bool> updateSupplierAsync(int SupplierID, string SupplierName, string Phone, string citizen, string address, string bankName, string bankAccount)
         {
-            string query = @"UPDATE Supplier SET SupplierName=@SupplierName, Phone=@Phone WHERE SupplierID=@SupplierID";
+            string query = @"UPDATE Supplier SET SupplierName=@SupplierName, Phone=@Phone, Citizen=@Citizen, Address=@Address, BankName=@BankName, BankAccount=@BankAccount WHERE SupplierID=@SupplierID";
             try
             {
                 using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
@@ -3144,6 +3144,10 @@ namespace RauViet.classes
                         cmd.Parameters.AddWithValue("@SupplierID", SupplierID);
                         cmd.Parameters.AddWithValue("@SupplierName", SupplierName);
                         cmd.Parameters.AddWithValue("@Phone", Phone);
+                        cmd.Parameters.AddWithValue("@Citizen", citizen);
+                        cmd.Parameters.AddWithValue("@Address", address);
+                        cmd.Parameters.AddWithValue("@BankName", bankName);
+                        cmd.Parameters.AddWithValue("@BankAccount", bankAccount);
                         await cmd.ExecuteNonQueryAsync();
                     }
                 }
@@ -3152,13 +3156,13 @@ namespace RauViet.classes
             catch { return false; }
         }
 
-        public async Task<int> insertSupplierAsync(string SupplierName, string Phone)
+        public async Task<int> insertSupplierAsync(string SupplierName, string Phone, string citizen, string address, string bankName, string bankAccount)
         {
             int newId = -1;
 
-            string query = @"INSERT INTO Supplier (SupplierName, Phone) 
+            string query = @"INSERT INTO Supplier (SupplierName, Phone, Citizen, Address, BankName, BankAccount) 
                                 OUTPUT INSERTED.SupplierID
-                                VALUES (@SupplierName, @Phone)";
+                                VALUES (@SupplierName, @Phone, @Citizen, @Address, @BankName, @BankAccount)";
             try
             {
                 using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
@@ -3168,6 +3172,10 @@ namespace RauViet.classes
                     {
                         cmd.Parameters.AddWithValue("@SupplierName", SupplierName);
                         cmd.Parameters.AddWithValue("@Phone", Phone);
+                        cmd.Parameters.AddWithValue("@Citizen", citizen);
+                        cmd.Parameters.AddWithValue("@Address", address);
+                        cmd.Parameters.AddWithValue("@BankName", bankName);
+                        cmd.Parameters.AddWithValue("@BankAccount", bankAccount);
                         object result = await cmd.ExecuteScalarAsync();
                         if (result != null)
                             newId = Convert.ToInt32(result);

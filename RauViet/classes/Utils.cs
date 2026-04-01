@@ -652,4 +652,65 @@ public static class Utils
     }
 
     public static string VRF_GAP() { return "VRF_GAP_BM05\n12/02/22\n02\npage 1 of 1"; }
+
+    public static string NumberToText(long number)
+    {
+        string[] unitNumbers = { "", "một", "hai", "ba", "bốn", "năm", "sáu", "bảy", "tám", "chín" };
+        string[] placeValues = { "", "nghìn", "triệu", "tỷ" };
+
+        if (number == 0)
+            return "không đồng";
+
+        string result = "";
+        int place = 0;
+
+        while (number > 0)
+        {
+            int group = (int)(number % 1000);
+            if (group != 0)
+            {
+                string groupText = ReadThreeDigits(group, unitNumbers);
+                result = groupText + " " + placeValues[place] + " " + result;
+            }
+            number /= 1000;
+            place++;
+        }
+
+        return result.Trim() + " đồng";
+    }
+
+    private static string ReadThreeDigits(int number, string[] unitNumbers)
+    {
+        int hundreds = number / 100;
+        int tens = (number % 100) / 10;
+        int ones = number % 10;
+
+        string result = "";
+
+        if (hundreds > 0)
+        {
+            result += unitNumbers[hundreds] + " trăm ";
+        }
+
+        if (tens > 1)
+        {
+            result += unitNumbers[tens] + " mươi ";
+            if (ones == 1) result += "mốt ";
+            else if (ones == 5) result += "lăm ";
+            else if (ones > 0) result += unitNumbers[ones] + " ";
+        }
+        else if (tens == 1)
+        {
+            result += "mười ";
+            if (ones == 5) result += "lăm ";
+            else if (ones > 0) result += unitNumbers[ones] + " ";
+        }
+        else if (tens == 0 && ones > 0)
+        {
+            if (hundreds > 0) result += "lẻ ";
+            result += unitNumbers[ones] + " ";
+        }
+
+        return result;
+    }
 }

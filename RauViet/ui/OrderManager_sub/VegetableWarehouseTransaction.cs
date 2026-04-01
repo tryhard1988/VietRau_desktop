@@ -85,7 +85,10 @@ namespace RauViet.ui
             inBangKe_btn.Click += InBangKe_btn_Click;
             xemBangKe_btn.Click += XemBangKe_btn_Click;
             excelBangKe_btn.Click += ExcelBangKe_btn_Click;
-        }      
+
+            seller_cbb.SelectedIndexChanged += UpdatePrice;
+            sku_cbb.SelectedIndexChanged += UpdatePrice;
+        }
 
         private void ProductList_KeyDown(object sender, KeyEventArgs e)
         {
@@ -384,13 +387,11 @@ namespace RauViet.ui
                         drToAdd["Name_VN"] = productSKUData["ProductNameVN"];
                         drToAdd["Package"] = package;
                         drToAdd["Price"] = price;
+                        drToAdd["IsPaid"] = false;
                         if (sellerID.HasValue)
                             drToAdd["SellerName"] = SellerData["SupplierName"];
 
 
-                        // SKU_tb.Text = newCustomerID.ToString();
-
-                        id_tb.Text = newId.ToString();
                         mInventoryTransaction_dt.Rows.Add(drToAdd);
                         mInventoryTransaction_dt.AcceptChanges();
 
@@ -440,7 +441,7 @@ namespace RauViet.ui
             DateTime tranDate = transactionDate_dtp.Value.Date;
             string note = note_tb.Text;
             int? sellerID = null;
-            int price = 0;
+            int price = Convert.ToInt32(price_tb.Text);
             
 
             if (string.IsNullOrEmpty(farmSourceCode))
@@ -451,13 +452,6 @@ namespace RauViet.ui
             if (seller_cbb.Visible && seller_cbb.SelectedValue != null && seller_cbb.SelectedValue != DBNull.Value && seller_cbb.Text != null)
             {
                 sellerID = Convert.ToInt32(seller_cbb.SelectedValue);
-            }
-
-            if (sellerID.HasValue)
-            {
-                var row = mPurchasePrices_dt.AsEnumerable().FirstOrDefault(r => r.Field<int>("SKU") == sku && r.Field<int>("SellerID") == sellerID);
-                if(row != null)
-                    price = row?["Price"] != DBNull.Value ? Convert.ToInt32(row["Price"]) : 0;
             }
 
             if (id_tb.Text.Length != 0)
@@ -578,7 +572,8 @@ namespace RauViet.ui
                     decimal quantity = Convert.ToDecimal(cells["Quantity"].Value);
                     DateTime tranDate = Convert.ToDateTime(cells["TransactionDate"].Value);
                     string note = cells["Note"].Value.ToString();
-                   
+                    int price = Convert.ToInt32(cells["Price"].Value);
+
                     if (!sku_cbb.Items.Cast<object>().Any(i => ((DataRowView)i)["SKU"].ToString() == SKU.ToString()))
                     {
                         sku_cbb.DataSource = mSKU_dt;
@@ -597,6 +592,7 @@ namespace RauViet.ui
                     note_tb.Text = note.ToString();
                     seller_cbb.SelectedValue = sellerID;
                     farmSourceCode_tb.Text = farmSourceCode;
+                    price_tb.Text = price.ToString();
                     status_lb.Text = "";
                 }
             }
@@ -800,6 +796,38 @@ namespace RauViet.ui
                         }
                     }
                 }
+            }
+        }
+
+        private void UpdatePrice(object sender, EventArgs e)
+        {
+            if (sku_cbb.Text.CompareTo("") == 0 || seller_cbb.Text.CompareTo("") == 0 || sku_cbb.SelectedValue == null || seller_cbb.SelectedValue == null)
+            {
+                return;
+            }
+
+            if (readOnly_btn.Visible == false)
+                return;
+
+            int sSKU = -1;
+            int? sSellerID = null;
+            if (dataGV.SelectedRows.Count > 0)
+            {
+                var cells = dataGV.SelectedRows[0].Cells;
+                sSKU = Convert.ToInt32(cells["SKU"].Value);
+                sSellerID = cells["SellerID"].Value == DBNull.Value ? (int?)null : Convert.ToInt32(cells["SellerID"].Value);
+            }
+
+            int sku = Convert.ToInt32(sku_cbb.SelectedValue);
+            int? sellerID = seller_cbb.Visible ? seller_cbb.SelectedValue as int? : null;
+
+            if (!isNewState && sSKU == sku && sSellerID == sellerID) return;
+
+            if (sellerID.HasValue)
+            {
+                var row = mPurchasePrices_dt.AsEnumerable().FirstOrDefault(r => r.Field<int>("SKU") == sku && r.Field<int>("SellerID") == sellerID);
+                if (row != null)
+                    price_tb.Text = (row?["Price"] != DBNull.Value ? Convert.ToInt32(row["Price"]) : 0).ToString();
             }
         }
     }

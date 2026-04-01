@@ -1,9 +1,10 @@
-﻿using System;
+﻿using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
+using RauViet.classes;
+using System;
 using System.Data;
 using System.Drawing;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using RauViet.classes;
 
 namespace RauViet.ui
 {
@@ -32,7 +33,6 @@ namespace RauViet.ui
 
             newCustomerBtn.Click += newCustomerBtn_Click;
             LuuThayDoiBtn.Click += saveBtn_Click;
-            delete_btn.Click += deleteBtn_Click;
             dataGV.SelectionChanged += this.dataGV_CellClick;
 
             edit_btn.Click += Edit_btn_Click;
@@ -46,8 +46,23 @@ namespace RauViet.ui
         {
             if (e.KeyCode == Keys.F5)
             {
-                SQLStore_QLNS.Instance.removeDepartment();
+                SQLStore_Kho.Instance.removeSupplier();
                 ShowData();
+            }
+            else if (!isNewState && !edit_btn.Visible)
+            {
+                if (e.KeyCode == Keys.Delete)
+                {
+                    Control ctrl = this.ActiveControl;
+
+                    if (ctrl is TextBox || ctrl is RichTextBox ||
+                        (ctrl is DataGridView dgv && dgv.CurrentCell != null && dgv.IsCurrentCellInEditMode))
+                    {
+                        return; // không xử lý Delete
+                    }
+
+                    deleteBtn_Click(null, null);
+                }
             }
         }
 
@@ -72,11 +87,19 @@ namespace RauViet.ui
                     {"SupplierID", "Mã NCC" },
                     {"SupplierName", "Tên Nhà Cung Cấp" },
                     {"Phone", "Số Điện Thoại" },
+                    {"Citizen", "Số CCCD" },
+                    {"Address", "Địa Chỉ" },
+                    {"BankName", "Tên Ngân Hàng" },
+                    {"BacnkAccount", "Số TK" }
                 });
 
                 Utils.SetGridWidths(dataGV, new System.Collections.Generic.Dictionary<string, int> {
                     {"SupplierID", 70},
-                    {"Phone", 100}
+                    {"Phone", 130},
+                    {"Citizen", 200 },
+                    {"Address", 200 },
+                    {"BankName", 150 },
+                    {"BacnkAccount", 150 }
                 });
 
                 Utils.SetGridWidth(dataGV, "SupplierName", DataGridViewAutoSizeColumnMode.Fill);
@@ -122,14 +145,22 @@ namespace RauViet.ui
             int supplierID = Convert.ToInt32(cells["SupplierID"].Value);
             string supplierName = cells["SupplierName"].Value.ToString();
             string phone = cells["Phone"].Value.ToString();
+            string citizen = cells["Citizen"].Value.ToString();
+            string address = cells["Address"].Value.ToString();
+            string bankName = cells["BankName"].Value.ToString();
+            string bankAccount = cells["BankAccount"].Value.ToString();
 
             supplierID_tb.Text = supplierID.ToString();
             Phone_tb.Text = phone;
             SupplierName_tb.Text = supplierName;
+            citizen_tb.Text = citizen;
+            address_tb.Text = address;
+            bankName_tb.Text = bankName;
+            bankAccount_tb.Text = bankAccount;
             status_lb.Text = "";
         }
 
-        private async void updateData(int supplierID, string supplierName, string phone)
+        private async void updateData(int supplierID, string supplierName, string phone, string citizen, string address, string bankName, string bankAccount)
         {
             foreach (DataRow row in mSupplier_dt.Rows)
             {
@@ -141,7 +172,7 @@ namespace RauViet.ui
                     {
                         try
                         {
-                            bool isScussess = await SQLManager_Kho.Instance.updateSupplierAsync(supplierID, supplierName, phone);
+                            bool isScussess = await SQLManager_Kho.Instance.updateSupplierAsync(supplierID, supplierName, phone, citizen, address, bankName, bankAccount);
 
                             if (isScussess == true)
                             {
@@ -150,6 +181,10 @@ namespace RauViet.ui
 
                                 row["SupplierName"] = supplierName;
                                 row["Phone"] = phone;
+                                row["Citizen"] = citizen;
+                                row["Address"] = address;
+                                row["BankName"] = bankName;
+                                row["BankAccount"] = bankAccount;
                                 row["searching_nosign"] = Utils.RemoveVietnameseSigns(supplierName).ToLower();
                                 
                             }
@@ -170,7 +205,7 @@ namespace RauViet.ui
             }
         }
 
-        private async void createNew(string supplierName, string phone)
+        private async void createNew(string supplierName, string phone, string citizen, string address, string bankName, string bankAccount)
         {
             DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
@@ -178,7 +213,7 @@ namespace RauViet.ui
             {
                 try
                 {
-                    int supplierID = await SQLManager_Kho.Instance.insertSupplierAsync(supplierName, phone);
+                    int supplierID = await SQLManager_Kho.Instance.insertSupplierAsync(supplierName, phone, citizen, address, bankName, bankAccount);
                     if (supplierID > 0)
                     {
                         DataTable dataTable = (DataTable)dataGV.DataSource;
@@ -187,15 +222,15 @@ namespace RauViet.ui
                         drToAdd["SupplierID"] = supplierID;
                         drToAdd["SupplierName"] = supplierName;
                         drToAdd["Phone"] = phone;
+                        drToAdd["Citizen"] = citizen;
+                        drToAdd["Address"] = address;
+                        drToAdd["BankName"] = bankName;
+                        drToAdd["BankAccount"] = bankAccount;
                         drToAdd["searching_nosign"] = Utils.RemoveVietnameseSigns(supplierName).ToLower();
 
                         dataTable.Rows.Add(drToAdd);
                         dataTable.AcceptChanges();
 
-                        dataGV.ClearSelection(); // bỏ chọn row cũ
-                        int rowIndex = dataGV.Rows.Count - 1;
-                        dataGV.Rows[rowIndex].Selected = true;
-                        UpdateRightUI(dataGV.Rows.Count - 1);
 
                         status_lb.Text = "Thành công";
                         status_lb.ForeColor = Color.Green;
@@ -231,11 +266,15 @@ namespace RauViet.ui
 
             string supplierName = SupplierName_tb.Text;
             string phone = Phone_tb.Text;
+            string citizen = citizen_tb.Text;
+            string address = address_tb.Text;
+            string bankName = bankName_tb.Text;
+            string bankAccount = bankAccount_tb.Text;
 
             if (supplierID_tb.Text.Length != 0)
-                updateData(Convert.ToInt32(supplierID_tb.Text), supplierName, phone);
+                updateData(Convert.ToInt32(supplierID_tb.Text), supplierName, phone, citizen, address, bankName, bankAccount);
             else
-                createNew(supplierName, phone);
+                createNew(supplierName, phone, citizen, address, bankName, bankAccount);
 
         }
         private async void deleteBtn_Click(object sender, EventArgs e)
@@ -299,7 +338,6 @@ namespace RauViet.ui
             newCustomerBtn.Visible = false;
             readOnly_btn.Visible = true;
             LuuThayDoiBtn.Visible = true;
-            delete_btn.Visible = false;
             isNewState = true;
             LuuThayDoiBtn.Text = "Lưu Mới";
             SetUIReadOnly(false);
@@ -311,7 +349,6 @@ namespace RauViet.ui
             newCustomerBtn.Visible = true;
             readOnly_btn.Visible = false;
             LuuThayDoiBtn.Visible = false;
-            delete_btn.Visible = false;
             info_gb.BackColor = Color.DarkGray;
             isNewState = false;
             SetUIReadOnly(true);
@@ -325,7 +362,6 @@ namespace RauViet.ui
             newCustomerBtn.Visible = false;
             readOnly_btn.Visible = true;
             LuuThayDoiBtn.Visible = true;
-            delete_btn.Visible = true;
             info_gb.BackColor = edit_btn.BackColor;
             isNewState = false;
             LuuThayDoiBtn.Text = "Lưu C.Sửa";

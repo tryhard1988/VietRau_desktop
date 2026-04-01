@@ -297,6 +297,7 @@ namespace RauViet.ui
 
         private void attendanceGV_CellClick(object sender, EventArgs e)
         {
+
             if (attendanceGV.CurrentRow == null) return;
             int rowIndex = attendanceGV.CurrentRow.Index;
             if (rowIndex < 0)

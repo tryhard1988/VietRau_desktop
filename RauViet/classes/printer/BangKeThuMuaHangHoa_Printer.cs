@@ -1,6 +1,7 @@
 ﻿using ClosedXML.Excel;
 using RauViet.classes;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.Drawing.Printing;
@@ -11,11 +12,13 @@ using System.Windows.Forms;
 public class BangKeThuMuaHangHoa_Printer
 {
     private DataTable mData_dt;
+    private List<KeyValuePair<DateTime, DataTable>> mDataGroup;
     private string mReceiveName;
-    private int rowIndex = 0; // để phân trang
-    private int lineHeight = 27;
+    private int rowIndex = 0, groupIndex = 0; // để phân trang
+    private int lineHeight = 24;
     private int mCountSTT;
     private int mSellerID;
+    private int total = 0;
     DataRow mSellerRow;
     private DateTime mFromDate, mToDate;
     public BangKeThuMuaHangHoa_Printer(int month, int year, int sellerID, DataTable data_dt)
@@ -28,9 +31,22 @@ public class BangKeThuMuaHangHoa_Printer
         dv.Sort = "TransactionDate ASC";
 
         this.mData_dt = dv.ToTable();
+
+        mDataGroup = mData_dt.AsEnumerable().GroupBy(r => r.Field<DateTime>("TransactionDate").Date)
+                                        .Select(g =>
+                                        {
+                                            DataTable dt = mData_dt.Clone();
+                                            foreach (var row in g)
+                                            {
+                                                dt.ImportRow(row);
+                                            }
+                                            return new KeyValuePair<DateTime, DataTable>(g.Key, dt);
+                                        }).ToList();
+
         this.mCountSTT = 1;
         mSellerID = sellerID;
         mReceiveName = UserManager.Instance.fullName;
+        total = 0;
     }
 
     public async Task loadData()
@@ -42,8 +58,9 @@ public class BangKeThuMuaHangHoa_Printer
     public void PrintPreview(Form owner)
     {
         rowIndex = 0; // reset trước khi in
+        groupIndex = 0;
         PrintDocument pd = new PrintDocument();
-        pd.DefaultPageSettings.Margins = new Margins(50, 50, 50, 50);
+        pd.DefaultPageSettings.Margins = new Margins(50, 50, 0, 0);
         pd.DefaultPageSettings.PaperSize = new PaperSize("A4", 827, 1169);
         pd.DefaultPageSettings.Landscape = false;
         pd.PrintPage += Pd_PrintPage;
@@ -78,11 +95,15 @@ public class BangKeThuMuaHangHoa_Printer
     public void PrintDirect()
     {
         rowIndex = 0; // reset trước khi in
-
+        groupIndex = 0;
         PrintDocument pd = new PrintDocument();
-        pd.DefaultPageSettings.Margins = new Margins(50, 50, 50, 50);
+        pd.DefaultPageSettings.Margins = new Margins(50, 50, 0, 0);
         pd.DefaultPageSettings.Landscape = false;
         pd.PrintPage += Pd_PrintPage;
+        if (pd.PrinterSettings.CanDuplex)
+        {
+            pd.PrinterSettings.Duplex = Duplex.Vertical;
+        }
 
         // 🔹 Hộp thoại chọn máy in
         PrintDialog printDialog = new PrintDialog();
@@ -105,7 +126,7 @@ public class BangKeThuMuaHangHoa_Printer
         int pageHeight = e.MarginBounds.Height;
 
         // Cột
-        int colWidth_1 = 85, colWidth_2 = 150, colWidth_3 = 110, colWidth_4 = 110, colWidth_5 = 110;
+        int colWidth_1 = 85, colWidth_2 = 220, colWidth_3 = 80, colWidth_4 = 95, colWidth_5 = 110;
         int col_1 = e.MarginBounds.Left;
         int col_2 = col_1 + colWidth_1;
         int col_3 = col_2 + colWidth_2;
@@ -123,7 +144,7 @@ public class BangKeThuMuaHangHoa_Printer
 
         SolidBrush bgBrush_LightGray = new SolidBrush(Color.FromArgb(217, 217, 217));
         // Header chỉ in 1 lần ở đầu trang
-        if (rowIndex == 0)
+        if (groupIndex == 0)
         {
             Utils.DrawCellText(g, $"BẢNG KÊ THU MUA HÀNG HÓA, DỊCH VỤ MUA VÀO KHÔNG CÓ HÓA ĐƠN", titleFont, new Rectangle(col_1, y, col_6 + colWidth_6 - col_1, lineHeight * 3), StringAlignment.Center);
             y += (lineHeight * 3);
@@ -155,6 +176,22 @@ public class BangKeThuMuaHangHoa_Printer
             Utils.DrawCellText(g, "Địa chỉ", tableHeaderFont, new Rectangle(col_5, y, colWidth_5, lineHeight), StringAlignment.Center);
             Utils.DrawCellText(g, "Số TK", tableHeaderFont, new Rectangle(col_6, y, colWidth_6, lineHeight), StringAlignment.Center);
             y += lineHeight;
+
+            g.DrawRectangle(Pens.Gray, col_1, y, col_6 + colWidth_6 - col_1, lineHeight * 3);
+            g.DrawLine(Pens.Gray, col_2, y, col_2, y + lineHeight * 3);
+            g.DrawLine(Pens.Gray, col_3, y, col_3, y + lineHeight * 3);
+            g.DrawLine(Pens.Gray, col_4, y, col_4, y + lineHeight * 3);
+            g.DrawLine(Pens.Gray, col_5, y, col_5, y + lineHeight * 3);
+            g.DrawLine(Pens.Gray, col_6, y, col_6, y + lineHeight * 3);
+
+            Utils.DrawCellText(g, $"{mFromDate.ToString("dd/MM/yyyy")}\nđến\n{mToDate.ToString("dd/MM/yyyy")}", normalFont, new Rectangle(col_1, y, colWidth_1, lineHeight * 3), StringAlignment.Center);
+            Utils.DrawCellText(g, mSellerRow["SupplierName"].ToString().Trim(), normalFont, new Rectangle(col_2, y, colWidth_2, lineHeight*3), StringAlignment.Center);
+            Utils.DrawCellText(g, mSellerRow["Citizen"].ToString().Trim(), normalFont, new Rectangle(col_3, y, colWidth_3, lineHeight*3), StringAlignment.Center);
+            Utils.DrawCellText(g, mSellerRow["Phone"].ToString().Trim(), normalFont, new Rectangle(col_4, y, colWidth_4, lineHeight*3), StringAlignment.Center);
+            Utils.DrawCellText(g, mSellerRow["Address"].ToString().Trim(), normalFont, new Rectangle(col_5, y, colWidth_5, lineHeight*3), StringAlignment.Center);
+            Utils.DrawCellText(g, $"{mSellerRow["BankName"].ToString().Trim()}\n{mSellerRow["BankAccount"].ToString().Trim()}", normalFont, new Rectangle(col_6, y, colWidth_6, lineHeight*3), StringAlignment.Center);
+            y += lineHeight*3;
+
             Utils.DrawCellText(g, "Hàng hóa mua vào", tableHeaderFont, new Rectangle(col_1, y, col_6 + colWidth_6 - col_1, lineHeight), StringAlignment.Center);
             y += lineHeight;
 
@@ -178,46 +215,83 @@ public class BangKeThuMuaHangHoa_Printer
         y += lineHeight*2;
 
 
-        // Table Data với phân trang
-        while (rowIndex < mData_dt.Rows.Count)
+        while (groupIndex < mDataGroup.Count)
         {
-            if (y + lineHeight > pageHeight)
+            var kv = mDataGroup[groupIndex];
+            DateTime date = kv.Key;
+            DataTable data = kv.Value;
+            int count = data.Rows.Count;
+
+            if (y + lineHeight * count > pageHeight)
             {
                 e.HasMorePages = true;
                 return; // sang trang tiếp theo
             }
 
+            g.DrawRectangle(Pens.Gray, col_1, y, col_6 + colWidth_6 - col_1, lineHeight * count);
+            g.DrawLine(Pens.Gray, col_2, y, col_2, y + lineHeight * count);
+            g.DrawLine(Pens.Gray, col_3, y, col_3, y + lineHeight * count);
+            g.DrawLine(Pens.Gray, col_4, y, col_4, y + lineHeight * count);
+            g.DrawLine(Pens.Gray, col_5, y, col_5, y + lineHeight * count);
+            g.DrawLine(Pens.Gray, col_6, y, col_6, y + lineHeight * count);
 
-            DataRow row = mData_dt.Rows[rowIndex];
-            string spName = Convert.ToString(row["Name_VN"]);
-            string unit = Convert.ToString(row["Package"]);
-            DateTime transactionDate = Convert.ToDateTime(row["TransactionDate"]);
-            decimal quantity = Convert.ToDecimal(row["Quantity"]);
-            int price = Convert.ToInt32(row["Price"]);
+            Utils.DrawCellText(g, date.ToString("dd/MM/yyyy"), normalFont, new Rectangle(col_1, y, colWidth_1, lineHeight * count), StringAlignment.Center);
 
+            while (rowIndex < data.Rows.Count)
+            {      
+                DataRow row = data.Rows[rowIndex];
+                string spName = Convert.ToString(row["Name_VN"]);
+                string note = Convert.ToString(row["Note"]);
+                string unit = Convert.ToString(row["Package"]);
+                DateTime transactionDate = Convert.ToDateTime(row["TransactionDate"]);
+                decimal quantity = Convert.ToDecimal(row["Quantity"]);
+                int price = Convert.ToInt32(row["Price"]);
 
-            g.DrawRectangle(Pens.Gray, col_1, y, col_6 + colWidth_6 - col_1, lineHeight);
-            g.DrawLine(Pens.Gray, col_2, y, col_2, y + lineHeight);
-            g.DrawLine(Pens.Gray, col_3, y, col_3, y + lineHeight);
-            g.DrawLine(Pens.Gray, col_4, y, col_4, y + lineHeight);
-            g.DrawLine(Pens.Gray, col_5, y, col_5, y + lineHeight);
-            g.DrawLine(Pens.Gray, col_6, y, col_6, y + lineHeight);
+                string rename = note?.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries)
+                                                    .FirstOrDefault(l => Utils.RemoveVietnameseSigns(l).ToLower().Contains("rename"))
+                                                    ?.Split(':')
+                                                    .Skip(1)
+                                                    .FirstOrDefault()
+                                                    ?.Trim() ?? "";
+                if (string.IsNullOrEmpty(rename) == false)
+                    spName = rename;
 
-            Utils.DrawCellText(g, transactionDate.ToString("dd/MM/yyyy"), normalFont, new Rectangle(col_1, y, colWidth_1, lineHeight), StringAlignment.Center);
-            Utils.DrawCellText(g, spName, normalFont, new Rectangle(col_2, y, colWidth_2, lineHeight), StringAlignment.Center);
-            Utils.DrawCellText(g, unit, normalFont, new Rectangle(col_3, y, colWidth_3, lineHeight), StringAlignment.Center);
-            Utils.DrawCellText(g, quantity.ToString("N1"), normalFont, new Rectangle(col_4, y, colWidth_4, lineHeight), StringAlignment.Center);
-            Utils.DrawCellText(g, price.ToString("N0"), normalFont, new Rectangle(col_5, y, colWidth_5, lineHeight), StringAlignment.Center);
-            Utils.DrawCellText(g, (price* quantity).ToString("N0"), normalFont, new Rectangle(col_6, y, colWidth_6, lineHeight), StringAlignment.Center);
-            y += lineHeight;
-            rowIndex++;
-            mCountSTT++;
+                if (rowIndex > 0)
+                    g.DrawLine(Pens.Gray, col_2, y, col_6 + colWidth_6, y);
+
+                int thanhtien = Convert.ToInt32(price * quantity);
+                total += thanhtien;
+
+                Utils.DrawCellText(g, spName, normalFont, new Rectangle(col_2, y, colWidth_2, lineHeight), StringAlignment.Near);
+                Utils.DrawCellText(g, unit, normalFont, new Rectangle(col_3, y, colWidth_3, lineHeight), StringAlignment.Center);
+                Utils.DrawCellText(g, quantity.ToString("N1"), normalFont, new Rectangle(col_4, y, colWidth_4, lineHeight), StringAlignment.Far);
+                Utils.DrawCellText(g, price.ToString("N0"), normalFont, new Rectangle(col_5, y, colWidth_5, lineHeight), StringAlignment.Far);
+                Utils.DrawCellText(g, thanhtien.ToString("N0"), normalFont, new Rectangle(col_6, y, colWidth_6, lineHeight), StringAlignment.Far);
+                y += lineHeight;
+                rowIndex++;
+                mCountSTT++;
+            }
+
+            groupIndex++;
+            rowIndex = 0;
         }
 
+        if (y + lineHeight * 10 > pageHeight)
+        {
+            e.HasMorePages = true;
+            return; // sang trang tiếp theo
+        }
 
-        DateTime now = DateTime.Now;
-        //Utils.DrawCellText(g, $"Công ty cổ phần Việt Rau, ngày {saleDate:dd}, tháng {saleDate:MM}, năm {saleDate:yyyy}\n\n Người nhận hàng\n\n\n\n\n\n{mReceiveName}", new Font("Times New Roman", 11, FontStyle.Italic), new Rectangle(col_Unit, y, col_Note + colWidth_Note - col_Unit, lineHeight * 8), StringAlignment.Center);
-        //Utils.DrawCellText(g, $"\n\n Người Giao hàng\n\n\n\n\n\n{SellerName}", new Font("Times New Roman", 11, FontStyle.Italic), new Rectangle(col_STT, y, col_Unit - col_STT, lineHeight * 8), StringAlignment.Center);
+        g.DrawRectangle(Pens.Gray, col_1, y, col_6 + colWidth_6 - col_1, lineHeight);
+        g.DrawLine(Pens.Gray, col_6, y, col_6, y + lineHeight);
+        Utils.DrawCellText(g, $"Tổng giá trị hàng hóa mua vào", new Font("Times New Roman", 11, FontStyle.Bold), new Rectangle(col_1, y, col_6 - col_1, lineHeight), StringAlignment.Center);
+        Utils.DrawCellText(g, total.ToString("N0"), new Font("Times New Roman", 11, FontStyle.Bold), new Rectangle(col_6, y, colWidth_6, lineHeight), StringAlignment.Far);
+        y += lineHeight;
+        g.DrawRectangle(Pens.Gray, col_1, y, col_6 + colWidth_6 - col_1, lineHeight*2);
+        Utils.DrawCellText(g,$"Số tiền viết bằng chữ: {Utils.NumberToText(total)}" , new Font("Times New Roman", 11, FontStyle.Italic), new Rectangle(col_1, y, col_6 + colWidth_6 - col_1, lineHeight*2), StringAlignment.Near);
+        y += lineHeight;
+        Utils.DrawCellText(g, $"ngày {mToDate:dd}, tháng {mToDate:MM}, năm {mToDate:yyyy}\n Người bán hàng hóa\n\n\n\n\n\n{mSellerRow["SupplierName"].ToString()}", new Font("Times New Roman", 11, FontStyle.Italic), new Rectangle(col_5, y, col_6 + colWidth_6 - col_5, lineHeight * 8), StringAlignment.Center);
+        Utils.DrawCellText(g, $"\n\n Người mua hàng hóa\n\n\n\n\n\n{mReceiveName}", new Font("Times New Roman", 11, FontStyle.Italic), new Rectangle(col_1, y, col_3 - col_1, lineHeight * 8), StringAlignment.Center);
         e.HasMorePages = false;
 
     }
