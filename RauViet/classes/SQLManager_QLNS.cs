@@ -79,17 +79,21 @@ namespace RauViet.classes
         public async Task<DataTable> GetEmployeesAsync()
         {
             DataTable dt = new DataTable();
+
             using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
             {
                 await con.OpenAsync();
-                string query = @"SELECT * FROM Employee";
-
-                using (SqlCommand cmd = new SqlCommand(query, con))
-                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                using (SqlCommand cmd = new SqlCommand("sp_GetEmployees", con))
                 {
-                    dt.Load(reader);
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
                 }
             }
+
             return dt;
         }
 
@@ -97,54 +101,42 @@ namespace RauViet.classes
                                     bool isMale, string homeTown, string address, string citizenID, DateTime? issueDate, string issuePlace, 
                                     bool isActive, bool canCreateUserName, string phone, string noteResign, bool isInsuranceRefund, int salaryGradeID)
         {
-            string query = @"UPDATE Employee SET 
-                                EmployeeCode=@EmployeeCode, 
-                                FullName=@FullName,
-                                BirthDate=@BirthDate, 
-                                HireDate=@HireDate,
-                                Gender=@Gender, 
-                                Hometown=@Hometown,
-                                Address=@Address, 
-                                CitizenID=@CitizenID,
-                                IssueDate=@IssueDate, 
-                                IssuePlace=@IssuePlace,                                
-                                IsActive=@IsActive,
-                                canCreateUserName=@canCreateUserName,
-                                PhoneNumber=@PhoneNumber,
-                                IsInsuranceRefund=@IsInsuranceRefund,
-                                SalaryGradeID=@SalaryGradeID,
-                                NoteResign=@NoteResign
-                            WHERE EmployeeID=@EmployeeID";
             try
             {
                 using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
-                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    using (SqlCommand cmd = new SqlCommand("sp_UpdateEmployee", con))
                     {
-                        cmd.Parameters.AddWithValue("@EmployeeID", employeeId);
-                        cmd.Parameters.AddWithValue("@EmployeeCode", maNV);
-                        cmd.Parameters.AddWithValue("@FullName", tenNV);
-                        cmd.Parameters.AddWithValue("@BirthDate", birthDate);
-                        cmd.Parameters.AddWithValue("@HireDate", hireDate);
-                        cmd.Parameters.AddWithValue("@Gender", isMale);
-                        cmd.Parameters.AddWithValue("@Hometown", homeTown);
-                        cmd.Parameters.AddWithValue("@Address", address);
-                        cmd.Parameters.AddWithValue("@CitizenID", citizenID);
-                        cmd.Parameters.AddWithValue("@IssueDate", (object)(issueDate ?? (object)DBNull.Value));
-                        cmd.Parameters.AddWithValue("@IssuePlace", issuePlace);
-                        cmd.Parameters.AddWithValue("@IsActive", isActive);
-                        cmd.Parameters.AddWithValue("@canCreateUserName", canCreateUserName);
-                        cmd.Parameters.AddWithValue("@PhoneNumber", phone);
-                        cmd.Parameters.AddWithValue("@NoteResign", noteResign);
-                        cmd.Parameters.AddWithValue("@IsInsuranceRefund", isInsuranceRefund);
-                        cmd.Parameters.AddWithValue("@SalaryGradeID", salaryGradeID);
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        cmd.Parameters.Add("@EmployeeID", SqlDbType.Int).Value = employeeId;
+                        cmd.Parameters.Add("@EmployeeCode", SqlDbType.NVarChar).Value = maNV;
+                        cmd.Parameters.Add("@FullName", SqlDbType.NVarChar).Value = tenNV;
+                        cmd.Parameters.Add("@BirthDate", SqlDbType.Date).Value = birthDate;
+                        cmd.Parameters.Add("@HireDate", SqlDbType.Date).Value = hireDate;
+                        cmd.Parameters.Add("@Gender", SqlDbType.Bit).Value = isMale;
+                        cmd.Parameters.Add("@Hometown", SqlDbType.NVarChar).Value = homeTown;
+                        cmd.Parameters.Add("@Address", SqlDbType.NVarChar).Value = address;
+                        cmd.Parameters.Add("@CitizenID", SqlDbType.NVarChar).Value = citizenID;
+                        cmd.Parameters.Add("@IssueDate", SqlDbType.Date).Value = (object)issueDate ?? DBNull.Value;
+                        cmd.Parameters.Add("@IssuePlace", SqlDbType.NVarChar).Value = issuePlace;
+                        cmd.Parameters.Add("@IsActive", SqlDbType.Bit).Value = isActive;
+                        cmd.Parameters.Add("@canCreateUserName", SqlDbType.Bit).Value = canCreateUserName;
+                        cmd.Parameters.Add("@PhoneNumber", SqlDbType.NVarChar).Value = phone;
+                        cmd.Parameters.Add("@NoteResign", SqlDbType.NVarChar).Value = noteResign;
+                        cmd.Parameters.Add("@IsInsuranceRefund", SqlDbType.Bit).Value = isInsuranceRefund;
+                        cmd.Parameters.Add("@SalaryGradeID", SqlDbType.Int).Value = salaryGradeID;
+
                         await cmd.ExecuteNonQueryAsync();
                     }
                 }
                 return true;
             }
-            catch { return false; }
+            catch
+            {
+                return false;
+            }
         }
 
         public async Task<bool> deleteEmployeeAsync(int employeeID)
@@ -2032,20 +2024,24 @@ namespace RauViet.classes
             catch { return false; }
         }
 
-        public async Task<DataTable> GetEmployeeSalaryInfoAsybc()
+        public async Task<DataTable> GetEmployeeSalaryInfoAsync()
         {
             DataTable dt = new DataTable();
+
             using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
             {
                 await con.OpenAsync();
-                string query = @"SELECT * FROM EmployeeSalaryInfo";
-
-                using (SqlCommand cmd = new SqlCommand(query, con))
-                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                using (SqlCommand cmd = new SqlCommand("sp_GetEmployeeSalaryInfo", con))
                 {
-                    dt.Load(reader);
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
                 }
             }
+
             return dt;
         }
 
@@ -3554,23 +3550,27 @@ namespace RauViet.classes
 
         public async Task<bool> updateMealOrder_ThanhToanAsync(int mealOrdersID, bool isPaid)
         {
-            string query = @"UPDATE MealOrders SET IsPaid=@IsPaid
-                            WHERE MealOrdersID=@MealOrdersID";
             try
             {
                 using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
-                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    using (SqlCommand cmd = new SqlCommand("sp_UpdateMealOrder_ThanhToan", con))
                     {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
                         cmd.Parameters.AddWithValue("@MealOrdersID", mealOrdersID);
                         cmd.Parameters.AddWithValue("@IsPaid", isPaid);
+
                         await cmd.ExecuteNonQueryAsync();
                     }
                 }
                 return true;
             }
-            catch { return false; }
+            catch
+            {
+                return false;
+            }
         }
 
         public async Task<bool> deleteMealOrderAsync(int ID)
@@ -3590,9 +3590,7 @@ namespace RauViet.classes
                 return true;
             }
             catch { return false; }
-        }
-
-        
+        }        
     }
 }
 

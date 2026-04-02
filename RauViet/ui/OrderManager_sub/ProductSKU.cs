@@ -411,8 +411,10 @@ namespace RauViet.ui
                 supplierID = Convert.ToInt32(supplier_cbb.SelectedValue);
 
             if (sku_tb.Text.Length != 0)
+            {
                 updateProductSKU(Convert.ToInt32(sku_tb.Text), productNameVN, productNameEN, packingType, package, packingList, botanicalName_tb.Text,
                     Convert.ToDecimal(priceCNF_tb.Text), Convert.ToInt32(priority_tb.Text), plantingareaCode, lotCode, isActive, supplierID);
+            }
             else
             {
                 createNewProductSKU(productNameVN, productNameEN, packingType, package,

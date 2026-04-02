@@ -142,6 +142,7 @@ namespace RauViet.ui
                     {"PCSReal", "PCS\nĐóng Thùng" },
                     {"NWReal", "NW\nTĐóng Thùng" },
                     {"PCSOther", "PCS\nĐặt Hàng" },
+                    {"NWOther", "NW\nĐặt Hàng" },
                     {"CartonNo", "Carton.No" },
                     {"CartonSize", "Carton Size" },
                     {"Priority", "Ưu\nTiên" },

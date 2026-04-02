@@ -119,7 +119,7 @@ namespace RauViet.classes
                 }
                 var overtimeAttendamceTask1 = SQLManager_QLNS.Instance.GetOvertimeAttendamceAsync(monthCur, yearCur);
                 var overtimeAttendamceTask2 = SQLManager_QLNS.Instance.GetOvertimeAttendamceAsync(monthPre, yearPre);
-                var employeeSalaryInfoAsync = SQLManager_QLNS.Instance.GetEmployeeSalaryInfoAsybc();
+                var employeeSalaryInfoAsync = SQLManager_QLNS.Instance.GetEmployeeSalaryInfoAsync();
                 var leaveAttendanceTask1 = SQLManager_QLNS.Instance.GetLeaveAttendanceAsync(yearCur - 1);
                 var leaveAttendanceTask2 = SQLManager_QLNS.Instance.GetLeaveAttendanceAsync(yearCur);
                 var attendamceTask1 = SQLManager_QLNS.Instance.GetAttendamceAsync(monthCur, yearCur);
@@ -463,7 +463,7 @@ namespace RauViet.classes
             {
                 try
                 {
-                    mEmployeeSalaryInfo_dt = await SQLManager_QLNS.Instance.GetEmployeeSalaryInfoAsybc();
+                    mEmployeeSalaryInfo_dt = await SQLManager_QLNS.Instance.GetEmployeeSalaryInfoAsync();
                     editEmployeeSalaryInfo();
                 }
                 catch

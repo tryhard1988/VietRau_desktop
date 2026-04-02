@@ -109,7 +109,7 @@ namespace RauViet.ui
                         Utils.SetGridFormat_Alignment(dataGV, $"TotalArea_{key}", DataGridViewContentAlignment.MiddleRight);
                     }
                 }
-                Utils.HideColumns(dataGV, new[] { "SKU" });
+                Utils.HideColumns(dataGV, new[] { "SKU", "FarmID" });
                 Utils.SetGridHeaders(dataGV, gridHeadersDic);
                 Utils.SetGridWidths(dataGV, gridWidthsDic);
                 Utils.SetGridColors(dataGV, gridColorsDic);

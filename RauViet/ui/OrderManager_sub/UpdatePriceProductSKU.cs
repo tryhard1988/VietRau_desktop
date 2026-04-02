@@ -84,7 +84,7 @@ namespace RauViet.ui
                 mProductSKU_dt = productSKUATask.Result;
                 mPoductSKUHistory_dt = productSKUHistoryTask.Result;
 
-                if(mProductSKU_dt.Columns.Contains("DaThem"))
+                if(mProductSKU_dt.Columns.Contains("DaThem") == false)
                     mProductSKU_dt.Columns.Add("DaThem", typeof(string));
 
                 Utils.SetGridOrdinal(mProductSKU_dt, new[] { "SKU", "ProductNameVN", "ProductNameEN", "PackingType", "Package", "PackingList", "BotanicalName", "PriceCNF", "PlantingAreaCode", "LOTCodeHeader", "Priority" });

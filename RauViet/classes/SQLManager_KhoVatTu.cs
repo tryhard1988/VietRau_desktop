@@ -32,163 +32,26 @@ namespace RauViet.classes
 
         public string ql_khoVatTu_conStr() { return "Server=192.168.1.8,1433;Database=QL_KhoVatTu;User Id=ql_kho;Password=A7t#kP2x;"; }
         public string ql_khoVatTuLog_conStr() { return "Server=192.168.1.8,1433;Database=QL_KhoVatTu_Log;User Id=ql_kho;Password=A7t#kP2x;"; }
-
-        //==============================Customers==============================
-
-        public async Task<int> insertMaterialCategoryAsync(string name, string code)
-        {
-            int newId = -1;
-
-            string insertQuery = @"INSERT INTO MaterialCategory (CategoryCode, CategoryName)
-                                    OUTPUT INSERTED.CategoryID
-                                    VALUES (@CategoryCode, @CategoryName)";
-
-            try
-            {
-                using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
-                {
-                    await con.OpenAsync();
-
-                    // 2️⃣ Insert và lấy ID mới
-                    using (SqlCommand cmd = new SqlCommand(insertQuery, con))
-                    {
-                        cmd.Parameters.AddWithValue("@CategoryCode", code);
-                        cmd.Parameters.AddWithValue("@CategoryName", name);
-
-                        object result = await cmd.ExecuteScalarAsync();
-                        if (result != null)
-                            newId = Convert.ToInt32(result);
-                    }
-                }
-
-                return newId;
-            }
-            catch
-            {
-                return -1;
-            }
-        }
-
-        public async Task<int> insertWorkTypeAsync(string name)
-        {
-            int newId = -1;
-
-            string insertQuery = @"INSERT INTO WorkType (WorkTypeName)
-                                    OUTPUT INSERTED.WorkTypeID
-                                    VALUES (@WorkTypeName)";
-
-            try
-            {
-                using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
-                {
-                    await con.OpenAsync();
-
-                    // 2️⃣ Insert và lấy ID mới
-                    using (SqlCommand cmd = new SqlCommand(insertQuery, con))
-                    {
-                        cmd.Parameters.AddWithValue("@WorkTypeName", name);
-
-                        object result = await cmd.ExecuteScalarAsync();
-                        if (result != null)
-                            newId = Convert.ToInt32(result);
-                    }
-                }
-
-                return newId;
-            }
-            catch
-            {
-                return -1;
-            }
-        }
-
-        public async Task<int> insertCropAsync(string name)
-        {
-            int newId = -1;
-
-            string insertQuery = @"INSERT INTO Crop (CropName)
-                                    OUTPUT INSERTED.CropID
-                                    VALUES (@CropName)";
-
-            try
-            {
-                using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
-                {
-                    await con.OpenAsync();
-
-                    // 2️⃣ Insert và lấy ID mới
-                    using (SqlCommand cmd = new SqlCommand(insertQuery, con))
-                    {
-                        cmd.Parameters.AddWithValue("@CropName", name);
-
-                        object result = await cmd.ExecuteScalarAsync();
-                        if (result != null)
-                            newId = Convert.ToInt32(result);
-                    }
-                }
-
-                return newId;
-            }
-            catch
-            {
-                return -1;
-            }
-        }
-
-        public async Task<int> insertUnitAsync(string name)
-        {
-            int newId = -1;
-
-            string insertQuery = @"INSERT INTO Units (UnitName)
-                                    OUTPUT INSERTED.UnitID
-                                    VALUES (@UnitName)";
-
-            try
-            {
-                using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
-                {
-                    await con.OpenAsync();
-
-                    // 2️⃣ Insert và lấy ID mới
-                    using (SqlCommand cmd = new SqlCommand(insertQuery, con))
-                    {
-                        cmd.Parameters.AddWithValue("@UnitName", name);
-
-                        object result = await cmd.ExecuteScalarAsync();
-                        if (result != null)
-                            newId = Convert.ToInt32(result);
-                    }
-                }
-
-                return newId;
-            }
-            catch
-            {
-                return -1;
-            }
-        }
-
+                
         public async Task<int> insertMaterialsAsync(string MaterialName, int CategoryID, int UnitID, string composition)
         {
             int newId = -1;
 
-            string insertQuery = @"INSERT INTO Materials (MaterialName, CategoryID, UnitID, Composition)
-                                    OUTPUT INSERTED.MaterialID
-                                    VALUES (@MaterialName, @CategoryID, @UnitID, @Composition)";
-
             try
             {
                 using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
                 {
                     await con.OpenAsync();
 
-                    // 2️⃣ Insert và lấy ID mới
-                    using (SqlCommand cmd = new SqlCommand(insertQuery, con))
+                    using (SqlCommand cmd = new SqlCommand("sp_InsertMaterials", con))
                     {
-                        cmd.Parameters.AddWithValue("@MaterialName", MaterialName);
-                        cmd.Parameters.AddWithValue("@CategoryID", CategoryID);
-                        cmd.Parameters.AddWithValue("@UnitID", UnitID);
-                        cmd.Parameters.AddWithValue("@Composition", composition);
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        cmd.Parameters.Add("@MaterialName", SqlDbType.NVarChar).Value = MaterialName;
+                        cmd.Parameters.Add("@CategoryID", SqlDbType.Int).Value = CategoryID;
+                        cmd.Parameters.Add("@UnitID", SqlDbType.Int).Value = UnitID;
+                        cmd.Parameters.Add("@Composition", SqlDbType.NVarChar).Value =
+                            string.IsNullOrWhiteSpace(composition) ? (object)DBNull.Value : composition;
 
                         object result = await cmd.ExecuteScalarAsync();
                         if (result != null)
@@ -206,30 +69,31 @@ namespace RauViet.classes
 
         public async Task<bool> updateMaterialsAsync(int MaterialID, string MaterialName, int CategoryID, int UnitID, string composition)
         {
-            string query = @"UPDATE Materials SET
-                                MaterialName=@MaterialName,
-                                CategoryID=@CategoryID,
-                                Composition=@Composition,
-                                UnitID=@UnitID
-                             WHERE MaterialID=@MaterialID";
             try
             {
                 using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
                 {
                     await con.OpenAsync();
-                    using (SqlCommand cmd = new SqlCommand(query, con))
+
+                    using (SqlCommand cmd = new SqlCommand("sp_UpdateMaterials", con))
                     {
-                        cmd.Parameters.AddWithValue("@MaterialID", MaterialID);
-                        cmd.Parameters.AddWithValue("@MaterialName", MaterialName);
-                        cmd.Parameters.AddWithValue("@CategoryID", CategoryID);
-                        cmd.Parameters.AddWithValue("@Composition", composition);
-                        cmd.Parameters.AddWithValue("@UnitID", UnitID);
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        cmd.Parameters.Add("@MaterialID", SqlDbType.Int).Value = MaterialID;
+                        cmd.Parameters.Add("@MaterialName", SqlDbType.NVarChar).Value = MaterialName;
+                        cmd.Parameters.Add("@CategoryID", SqlDbType.Int).Value = CategoryID;
+                        cmd.Parameters.Add("@UnitID", SqlDbType.Int).Value = UnitID;
+                        cmd.Parameters.Add("@Composition", SqlDbType.NVarChar).Value = string.IsNullOrWhiteSpace(composition) ? (object)DBNull.Value : composition;
+
                         await cmd.ExecuteNonQueryAsync();
                     }
                 }
                 return true;
             }
-            catch { return false; }
+            catch
+            {
+                return false;
+            }
         }
 
         public async Task<bool> deletetMaterialsAsync(int MaterialID)
@@ -254,19 +118,22 @@ namespace RauViet.classes
         public async Task<DataTable> GetMaterialAsync()
         {
             DataTable dt = new DataTable();
+
             using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
             {
                 await con.OpenAsync();
-                string query = @"SELECT * FROM Materials";
 
-                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlCommand cmd = new SqlCommand("sp_GetMaterials", con))
                 {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
                     using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                     {
                         dt.Load(reader);
                     }
                 }
             }
+
             return dt;
         }
 
@@ -424,39 +291,32 @@ namespace RauViet.classes
         public async Task<DataTable> getPlantingManagementAsync(int year)
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
+            try
             {
-                await con.OpenAsync();
-                string query = $@"SELECT pm.*,
-                                       cp.PlantLocation,
-                                       ISNULL(harvest.TotalQuantity,0) AS HarvestQuantity
-                                FROM PlantingManagement pm
-                                OUTER APPLY
-                                (
-                                    SELECT TOP 1 PlantLocation
-                                    FROM CultivationProcess
-                                    WHERE PlantingID = pm.PlantingID
-                                          AND ISNULL(PlantLocation,'') <> ''
-                                    ORDER BY CultivationProcessID
-                                ) cp
-                                OUTER APPLY
-                                (
-                                    SELECT SUM(MaterialQuantity) AS TotalQuantity
-                                    FROM CultivationProcess
-                                    WHERE PlantingID = pm.PlantingID
-                                          AND WorkTypeID = {Utils.WorkType_ThuHoach()}
-                                ) harvest
-                                WHERE YEAR(pm.NurseryDate) = @Year;";
-                
-                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
                 {
-                    cmd.Parameters.Add("@Year", SqlDbType.Int).Value = year;
-                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    await con.OpenAsync();
+
+                    using (SqlCommand cmd = new SqlCommand("sp_GetPlantingManagementWithHarvest", con))
                     {
-                        dt.Load(reader);
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        // Truyền parameter từ C#
+                        cmd.Parameters.Add("@Year", SqlDbType.Int).Value = year;
+                        cmd.Parameters.Add("@WorkTypeID", SqlDbType.Int).Value = Utils.WorkType_ThuHoach();
+
+                        using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                        {
+                            dt.Load(reader);
+                        }
                     }
                 }
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine("ERROR: " + ex.Message);
+            }
+
             return dt;
         }
 
@@ -491,86 +351,62 @@ namespace RauViet.classes
         public async Task<DataTable> getPlantingManagementAsync_HarvestQuantityMonth(int year)
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
+            try
             {
-                await con.OpenAsync();
-                string query = $@"SELECT 
-                                    pm.*,
-                                    ISNULL(harvest.TotalQuantity, 0) AS HarvestQuantity,
-                                    harvest.ProcessDate_Month,
-                                    harvest.ProcessDate_Year
-                                FROM PlantingManagement pm
-
-                                CROSS APPLY
-                                (
-                                    SELECT 
-                                        SUM(MaterialQuantity) AS TotalQuantity,
-                                        MONTH(ProcessDate) AS ProcessDate_Month,
-                                        YEAR(ProcessDate) AS ProcessDate_Year
-                                    FROM CultivationProcess
-                                    WHERE PlantingID = pm.PlantingID
-                                          AND WorkTypeID = {Utils.WorkType_ThuHoach()}
-                                    GROUP BY 
-                                        YEAR(ProcessDate),
-                                        MONTH(ProcessDate)
-                                ) harvest
-
-                                WHERE harvest.ProcessDate_Year = @Year;";
-
-                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
                 {
-                    cmd.Parameters.Add("@Year", SqlDbType.Int).Value = year;
-                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    await con.OpenAsync();
+
+                    using (SqlCommand cmd = new SqlCommand("sp_GetPlantingHarvestQuantityByYear", con))
                     {
-                        dt.Load(reader);
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        cmd.Parameters.Add("@WorkTypeID", SqlDbType.Int).Value = Utils.WorkType_ThuHoach();
+                        cmd.Parameters.Add("@Year", SqlDbType.Int).Value = year;
+
+                        using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                        {
+                            dt.Load(reader);
+                        }
                     }
                 }
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine("ERROR: " + ex.Message);
+            }
+
             return dt;
         }
 
         public async Task<DataTable> getPlantingManagementAsync_HarvestQuantity()
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
+            try
             {
-                await con.OpenAsync();
-                string query = $@"SELECT 
-                                    pm.SKU,
-                                    pm.FarmID,
-                                    SUM(pm.Area) AS TotalArea,
-                                    SUM(ISNULL(harvest.TotalQuantity, 0)) AS HarvestQuantity,
-                                    harvest.ProcessDate_Month,
-                                    harvest.ProcessDate_Year
-                                FROM PlantingManagement pm
-
-                                CROSS APPLY
-                                (
-                                    SELECT 
-                                        SUM(MaterialQuantity) AS TotalQuantity,
-                                        MONTH(ProcessDate) AS ProcessDate_Month,
-                                        YEAR(ProcessDate) AS ProcessDate_Year
-                                    FROM CultivationProcess
-                                    WHERE PlantingID = pm.PlantingID
-                                          AND WorkTypeID = {Utils.WorkType_ThuHoach()}
-                                    GROUP BY 
-                                        YEAR(ProcessDate),
-                                        MONTH(ProcessDate)
-                                ) harvest
-                                GROUP BY 
-                                    pm.SKU,
-                                    pm.FarmID,
-                                    harvest.ProcessDate_Year,
-                                    harvest.ProcessDate_Month";
-
-                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
                 {
-                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    await con.OpenAsync();
+
+                    using (SqlCommand cmd = new SqlCommand("sp_GetPlantingHarvestQuantity", con))
                     {
-                        dt.Load(reader);
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        // Truyền parameter WorkTypeID (Thu Hoach)
+                        cmd.Parameters.Add("@WorkTypeID", SqlDbType.Int).Value = Utils.WorkType_ThuHoach();
+
+                        using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                        {
+                            dt.Load(reader);
+                        }
                     }
                 }
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine("ERROR: " + ex.Message);
+            }
+
             return dt;
         }
 
@@ -578,20 +414,23 @@ namespace RauViet.classes
         public async Task<DataTable> getPlantingManagementAsync(bool isComplete)
         {
             DataTable dt = new DataTable();
+
             using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
             {
                 await con.OpenAsync();
-                string query = @"SELECT * FROM PlantingManagement WHERE IsCompleted = @IsCompleted;";
-
-                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlCommand cmd = new SqlCommand("sp_GetPlantingManagement", con))
                 {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
                     cmd.Parameters.Add("@IsCompleted", SqlDbType.Bit).Value = isComplete;
+
                     using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                     {
                         dt.Load(reader);
                     }
                 }
             }
+
             return dt;
         }
 
@@ -599,19 +438,16 @@ namespace RauViet.classes
         {
             int newId = -1;
 
-            string insertQuery = @"INSERT INTO PlantingManagement (ProductionOrder, SKU, Area, Quantity, NurseryDate, PlantingDate, HarvestDate, Department, Supervisor, Note, CultivationTypeID, FarmID)
-                                    OUTPUT INSERTED.PlantingID
-                                    VALUES (@ProductionOrder, @SKU, @Area, @Quantity, @NurseryDate, @PlantingDate, @HarvestDate, @Department, @Supervisor, @Note, @CultivationTypeID, @FarmID)";
-
             try
             {
                 using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
                 {
                     await con.OpenAsync();
 
-                    // 2️⃣ Insert và lấy ID mới
-                    using (SqlCommand cmd = new SqlCommand(insertQuery, con))
+                    using (SqlCommand cmd = new SqlCommand("sp_InsertPlantingManagement", con))
                     {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
                         cmd.Parameters.Add("@ProductionOrder", SqlDbType.NVarChar).Value = ProductionOrder;
                         cmd.Parameters.Add("@SKU", SqlDbType.Int).Value = SKU;
                         cmd.Parameters.Add("@Area", SqlDbType.Decimal).Value = Area;
@@ -619,9 +455,9 @@ namespace RauViet.classes
                         cmd.Parameters.Add("@NurseryDate", SqlDbType.Date).Value = NurseryDate;
                         cmd.Parameters.Add("@PlantingDate", SqlDbType.Date).Value = PlantingDate;
                         cmd.Parameters.Add("@HarvestDate", SqlDbType.Date).Value = HarvestDate;
-                        cmd.Parameters.Add("@Department", SqlDbType.Int).Value = Department.HasValue ? (object)Department.Value : DBNull.Value;
+                        cmd.Parameters.Add("@Department", SqlDbType.Int).Value = (object)Department ?? DBNull.Value;
                         cmd.Parameters.Add("@CultivationTypeID", SqlDbType.Int).Value = cultivationTypeID;
-                        cmd.Parameters.Add("@Supervisor", SqlDbType.NVarChar).Value = string.IsNullOrWhiteSpace(Supervisor) ? DBNull.Value : (object)Supervisor;
+                        cmd.Parameters.Add("@Supervisor", SqlDbType.NVarChar).Value = string.IsNullOrWhiteSpace(Supervisor) ? (object)DBNull.Value : Supervisor;
                         cmd.Parameters.Add("@Note", SqlDbType.NVarChar).Value = Note;
                         cmd.Parameters.Add("@FarmID", SqlDbType.Int).Value = farmId;
 
@@ -641,48 +477,40 @@ namespace RauViet.classes
 
         public async Task<bool> updatePlantingManagementAsync(int PlantingID, string ProductionOrder, int SKU, decimal Area, int Quantity, DateTime NurseryDate, DateTime PlantingDate, DateTime HarvestDate, int Department, string Supervisor, string Note,  bool IsCompleted, int cultivationTypeID, int farmId)
         {
-            string query = @"UPDATE PlantingManagement SET
-                                ProductionOrder=@ProductionOrder,
-                                SKU=@SKU,
-                                Area=@Area,
-                                Quantity=@Quantity,
-                                NurseryDate=@NurseryDate,
-                                PlantingDate=@PlantingDate,
-                                HarvestDate=@HarvestDate,
-                                Department=@Department,
-                                Supervisor=@Supervisor,
-                                Note=@Note,
-                                IsCompleted=@IsCompleted,
-                                CultivationTypeID=@CultivationTypeID,
-                                FarmID=@FarmID
-                             WHERE PlantingID=@PlantingID";
             try
             {
                 using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
                 {
                     await con.OpenAsync();
-                    using (SqlCommand cmd = new SqlCommand(query, con))
+
+                    using (SqlCommand cmd = new SqlCommand("sp_UpdatePlantingManagement", con))
                     {
-                        cmd.Parameters.AddWithValue("@PlantingID", PlantingID);
-                        cmd.Parameters.AddWithValue("@ProductionOrder", ProductionOrder);
-                        cmd.Parameters.AddWithValue("@SKU", SKU);
-                        cmd.Parameters.AddWithValue("@Area", Area);
-                        cmd.Parameters.AddWithValue("@Quantity", Quantity);
-                        cmd.Parameters.AddWithValue("@NurseryDate", NurseryDate);
-                        cmd.Parameters.AddWithValue("@PlantingDate", PlantingDate);
-                        cmd.Parameters.AddWithValue("@HarvestDate", HarvestDate);
-                        cmd.Parameters.AddWithValue("@Department", Department);
-                        cmd.Parameters.AddWithValue("@CultivationTypeID", cultivationTypeID);
-                        cmd.Parameters.AddWithValue("@Supervisor", Supervisor);
-                        cmd.Parameters.AddWithValue("@Note", Note);
-                        cmd.Parameters.AddWithValue("@IsCompleted", IsCompleted);
-                        cmd.Parameters.AddWithValue("@FarmID", farmId);
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        cmd.Parameters.Add("@PlantingID", SqlDbType.Int).Value = PlantingID;
+                        cmd.Parameters.Add("@ProductionOrder", SqlDbType.NVarChar).Value = ProductionOrder;
+                        cmd.Parameters.Add("@SKU", SqlDbType.Int).Value = SKU;
+                        cmd.Parameters.Add("@Area", SqlDbType.Decimal).Value = Area;
+                        cmd.Parameters.Add("@Quantity", SqlDbType.Int).Value = Quantity;
+                        cmd.Parameters.Add("@NurseryDate", SqlDbType.Date).Value = NurseryDate;
+                        cmd.Parameters.Add("@PlantingDate", SqlDbType.Date).Value = PlantingDate;
+                        cmd.Parameters.Add("@HarvestDate", SqlDbType.Date).Value = HarvestDate;
+                        cmd.Parameters.Add("@Department", SqlDbType.Int).Value = Department;
+                        cmd.Parameters.Add("@CultivationTypeID", SqlDbType.Int).Value = cultivationTypeID;
+                        cmd.Parameters.Add("@Supervisor", SqlDbType.NVarChar).Value = string.IsNullOrWhiteSpace(Supervisor) ? (object)DBNull.Value : Supervisor;
+                        cmd.Parameters.Add("@Note", SqlDbType.NVarChar).Value = Note;
+                        cmd.Parameters.Add("@IsCompleted", SqlDbType.Bit).Value = IsCompleted;
+                        cmd.Parameters.Add("@FarmID", SqlDbType.Int).Value = farmId;
+
                         await cmd.ExecuteNonQueryAsync();
                     }
                 }
                 return true;
             }
-            catch { return false; }
+            catch
+            {
+                return false;
+            }
         }
 
         public async Task<bool> deletetPlantingManagementAsync(int PlantingID)
@@ -708,25 +536,22 @@ namespace RauViet.classes
         {
             int newId = -1;
 
-            string insertQuery = @"INSERT INTO MaterialExport (ExportDate, MaterialID, Amount, PlantingID, WorkTypeID, Receiver, Note, MaterialDepartmentID)
-                                    OUTPUT INSERTED.ExportID
-                                    VALUES (@ExportDate, @MaterialID, @Amount, @PlantingID, @WorkTypeID, @Receiver, @Note, @MaterialDepartmentID)";
-
             try
             {
                 using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
                 {
                     await con.OpenAsync();
 
-                    // 2️⃣ Insert và lấy ID mới
-                    using (SqlCommand cmd = new SqlCommand(insertQuery, con))
+                    using (SqlCommand cmd = new SqlCommand("sp_InsertMaterialExport", con))
                     {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
                         cmd.Parameters.Add("@ExportDate", SqlDbType.DateTime).Value = ExportDate;
                         cmd.Parameters.Add("@MaterialID", SqlDbType.Int).Value = MaterialID;
                         cmd.Parameters.Add("@Amount", SqlDbType.Decimal).Value = Amount;
                         cmd.Parameters.Add("@MaterialDepartmentID", SqlDbType.Int).Value = MaterialDepartmentID;
-                        cmd.Parameters.Add("@PlantingID", SqlDbType.Int).Value = PlantingID.HasValue ? (object)PlantingID.Value : DBNull.Value;
-                        cmd.Parameters.Add("@WorkTypeID", SqlDbType.Int).Value = WorkTypeID.HasValue ? (object)WorkTypeID.Value : DBNull.Value;
+                        cmd.Parameters.Add("@PlantingID", SqlDbType.Int).Value = (object)PlantingID ?? DBNull.Value;
+                        cmd.Parameters.Add("@WorkTypeID", SqlDbType.Int).Value = (object)WorkTypeID ?? DBNull.Value;
                         cmd.Parameters.Add("@Receiver", SqlDbType.NVarChar).Value = string.IsNullOrWhiteSpace(Receiver) ? (object)DBNull.Value : Receiver;
                         cmd.Parameters.Add("@Note", SqlDbType.NVarChar).Value = Note;
 
@@ -808,30 +633,22 @@ namespace RauViet.classes
 
         public async Task<bool> updateMaterialExportAsync(int ExportID, DateTime ExportDate, int MaterialID, decimal Amount, int? PlantingID, int? WorkTypeID, string Receiver, string Note, int MaterialDepartmentID)
         {
-            string query = @"UPDATE MaterialExport SET
-                                ExportDate=@ExportDate,
-                                MaterialID=@MaterialID,
-                                Amount=@Amount,
-                                PlantingID=@PlantingID,
-                                WorkTypeID=@WorkTypeID,
-                                Receiver=@Receiver,
-                                MaterialDepartmentID=@MaterialDepartmentID,
-                                Note=@Note
-                             WHERE ExportID=@ExportID";
             try
             {
                 using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
                 {
                     await con.OpenAsync();
-                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    using (SqlCommand cmd = new SqlCommand("sp_UpdateMaterialExport", con))
                     {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
                         cmd.Parameters.Add("@ExportID", SqlDbType.Int).Value = ExportID;
                         cmd.Parameters.Add("@ExportDate", SqlDbType.DateTime).Value = ExportDate;
                         cmd.Parameters.Add("@MaterialID", SqlDbType.Int).Value = MaterialID;
                         cmd.Parameters.Add("@Amount", SqlDbType.Decimal).Value = Amount;
                         cmd.Parameters.Add("@MaterialDepartmentID", SqlDbType.Int).Value = MaterialDepartmentID;
-                        cmd.Parameters.Add("@PlantingID", SqlDbType.Int).Value = PlantingID.HasValue ? (object)PlantingID.Value : DBNull.Value;
-                        cmd.Parameters.Add("@WorkTypeID", SqlDbType.Int).Value = WorkTypeID.HasValue ? (object)WorkTypeID.Value : DBNull.Value;
+                        cmd.Parameters.Add("@PlantingID", SqlDbType.Int).Value = (object)PlantingID ?? DBNull.Value;
+                        cmd.Parameters.Add("@WorkTypeID", SqlDbType.Int).Value = (object)WorkTypeID ?? DBNull.Value;
                         cmd.Parameters.Add("@Receiver", SqlDbType.NVarChar).Value = string.IsNullOrWhiteSpace(Receiver) ? (object)DBNull.Value : Receiver;
                         cmd.Parameters.Add("@Note", SqlDbType.NVarChar).Value = Note;
 
@@ -840,21 +657,23 @@ namespace RauViet.classes
                 }
                 return true;
             }
-            catch { return false; }
+            catch
+            {
+                return false;
+            }
         }
 
         public async Task<DataTable> GetMaterialExportAsync(int month, int year)
         {
             DataTable dt = new DataTable();
+
             using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
             {
                 await con.OpenAsync();
-                string query = @"SELECT me.*, pm.NurseryDate, pm.ProductionOrder, pm.IsCompleted FROM MaterialExport me
-                                                            LEFT JOIN PlantingManagement pm ON me.PlantingID = pm.PlantingID
-                                                            WHERE me.ExportDate >= DATEFROMPARTS(@Year, @Month, 1) AND me.ExportDate <  DATEADD(MONTH, 1, DATEFROMPARTS(@Year, @Month, 1))";
-
-                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlCommand cmd = new SqlCommand("sp_GetMaterialExport_ByMonth", con))
                 {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
                     cmd.Parameters.Add("@Month", SqlDbType.Int).Value = month;
                     cmd.Parameters.Add("@Year", SqlDbType.Int).Value = year;
 
@@ -864,6 +683,7 @@ namespace RauViet.classes
                     }
                 }
             }
+
             return dt;
         }
 
@@ -890,23 +710,20 @@ namespace RauViet.classes
         {
             int newId = -1;
 
-            string insertQuery = @"INSERT INTO MaterialImport (ImportDate, MaterialID, Amount, Price, Note)
-                                    OUTPUT INSERTED.ImportID
-                                    VALUES (@ImportDate, @MaterialID, @Amount, @Price, @Note)";
-
             try
             {
                 using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
                 {
                     await con.OpenAsync();
 
-                    // 2️⃣ Insert và lấy ID mới
-                    using (SqlCommand cmd = new SqlCommand(insertQuery, con))
+                    using (SqlCommand cmd = new SqlCommand("sp_InsertMaterialImport", con))
                     {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
                         cmd.Parameters.Add("@ImportDate", SqlDbType.DateTime).Value = ImportDate;
                         cmd.Parameters.Add("@MaterialID", SqlDbType.Int).Value = MaterialID;
                         cmd.Parameters.Add("@Amount", SqlDbType.Decimal).Value = Amount;
-                        cmd.Parameters.Add("@Price", SqlDbType.Int).Value = Price.HasValue ? (object)Price.Value : DBNull.Value;
+                        cmd.Parameters.Add("@Price", SqlDbType.Int).Value = (object)Price ?? DBNull.Value;
                         cmd.Parameters.Add("@Note", SqlDbType.NVarChar).Value = Note;
 
                         object result = await cmd.ExecuteScalarAsync();
@@ -926,25 +743,21 @@ namespace RauViet.classes
 
         public async Task<bool> updateMaterialImportAsync(int ImportID, DateTime ImportDate, int MaterialID, decimal Amount, int? Price, string Note)
         {
-            string query = @"UPDATE MaterialImport SET
-                                ImportDate=@ImportDate,
-                                MaterialID=@MaterialID,
-                                Amount=@Amount,
-                                Price=@Price,
-                                Note=@Note
-                             WHERE ImportID=@ImportID";
             try
             {
                 using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
                 {
                     await con.OpenAsync();
-                    using (SqlCommand cmd = new SqlCommand(query, con))
+
+                    using (SqlCommand cmd = new SqlCommand("sp_UpdateMaterialImport", con))
                     {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
                         cmd.Parameters.Add("@ImportID", SqlDbType.Int).Value = ImportID;
                         cmd.Parameters.Add("@ImportDate", SqlDbType.DateTime).Value = ImportDate;
                         cmd.Parameters.Add("@MaterialID", SqlDbType.Int).Value = MaterialID;
                         cmd.Parameters.Add("@Amount", SqlDbType.Decimal).Value = Amount;
-                        cmd.Parameters.Add("@Price", SqlDbType.Int).Value = Price.HasValue ? (object)Price.Value : DBNull.Value;
+                        cmd.Parameters.Add("@Price", SqlDbType.Int).Value = (object)Price ?? DBNull.Value;
                         cmd.Parameters.Add("@Note", SqlDbType.NVarChar).Value = Note;
 
                         await cmd.ExecuteNonQueryAsync();
@@ -952,54 +765,68 @@ namespace RauViet.classes
                 }
                 return true;
             }
-            catch { return false; }
+            catch
+            {
+                return false;
+            }
         }
 
         public async Task<DataTable> GetMaterialImportAsync(int month, int year)
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
+            try
             {
-                await con.OpenAsync();
-                string query = @"SELECT * FROM MaterialImport WHERE ImportDate >= DATEFROMPARTS(@Year, @Month, 1) AND ImportDate <  DATEADD(MONTH, 1, DATEFROMPARTS(@Year, @Month, 1))";
-
-                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
                 {
-                    cmd.Parameters.Add("@Month", SqlDbType.Int).Value = month;
-                    cmd.Parameters.Add("@Year", SqlDbType.Int).Value = year;
+                    await con.OpenAsync();
 
-                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    using (SqlCommand cmd = new SqlCommand("sp_GetMaterialImportByMonth", con))
                     {
-                        dt.Load(reader);
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        cmd.Parameters.Add("@Month", SqlDbType.Int).Value = month;
+                        cmd.Parameters.Add("@Year", SqlDbType.Int).Value = year;
+
+                        using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                        {
+                            dt.Load(reader);
+                        }
                     }
                 }
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine("ERROR: " + ex.Message);
+            }
+
             return dt;
         }
 
         public async Task<DataTable> GetMaterialPriceAsync()
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
+            try
             {
-                await con.OpenAsync();
-                string query = @"SELECT *
-                                FROM (
-                                    SELECT *,
-                                            ROW_NUMBER() OVER (PARTITION BY MaterialID 
-                                                                ORDER BY ImportDate DESC) AS rn
-                                    FROM MaterialImport
-                                ) t
-                                WHERE rn = 1;";
-
-                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
                 {
-                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    await con.OpenAsync();
+
+                    using (SqlCommand cmd = new SqlCommand("sp_GetMaterialPrice", con))
                     {
-                        dt.Load(reader);
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                        {
+                            dt.Load(reader);
+                        }
                     }
                 }
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine("ERROR: " + ex.Message);
+            }
+
             return dt;
         }
 
@@ -1025,38 +852,44 @@ namespace RauViet.classes
         public async Task<DataTable> GetSumaryMaterialImportAsync()
         {
             DataTable dt = new DataTable();
+
             using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
             {
                 await con.OpenAsync();
-                string query = @"SELECT MaterialID, YEAR(ImportDate) AS ImportYear, SUM(Amount) AS ImportAmount FROM MaterialImport GROUP BY MaterialID, YEAR(ImportDate);";
 
-                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlCommand cmd = new SqlCommand("sp_GetSummaryMaterialImport", con))
                 {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
                     using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                     {
                         dt.Load(reader);
                     }
                 }
             }
+
             return dt;
         }
 
         public async Task<DataTable> GetSumaryMaterialExportAsync()
         {
             DataTable dt = new DataTable();
+
             using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
             {
                 await con.OpenAsync();
-                string query = @"SELECT MaterialID, YEAR(ExportDate) AS ExportYear, SUM(Amount) AS ExportAmount FROM MaterialExport GROUP BY MaterialID, YEAR(ExportDate);";
 
-                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlCommand cmd = new SqlCommand("sp_GetSummaryMaterialExport", con))
                 {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
                     using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                     {
                         dt.Load(reader);
                     }
                 }
             }
+
             return dt;
         }
 
@@ -1197,26 +1030,23 @@ namespace RauViet.classes
         {
             int newId = -1;
 
-            string insertQuery = @"INSERT INTO CultivationProcessTemplate (SKU, CultivationTypeID, BaseDateType, DaysAfter, FertilizationWorkTypeID, WorkTypeID, MaterialID, MaterialQuantity, WaterAmount, IsMultiplyArea)
-                                    OUTPUT INSERTED.ProcessTemplateID
-                                    VALUES (@SKU, @CultivationTypeID, @BaseDateType, @DaysAfter, @FertilizationWorkTypeID, @WorkTypeID, @MaterialID, @MaterialQuantity, @WaterAmount, @IsMultiplyArea)";
-
             try
             {
                 using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
                 {
                     await con.OpenAsync();
 
-                    // 2️⃣ Insert và lấy ID mới
-                    using (SqlCommand cmd = new SqlCommand(insertQuery, con))
+                    using (SqlCommand cmd = new SqlCommand("sp_InsertCultivationProcessTemplate", con))
                     {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
                         cmd.Parameters.Add("@SKU", SqlDbType.Int).Value = sku;
                         cmd.Parameters.Add("@CultivationTypeID", SqlDbType.Int).Value = cultivationTypeID;
                         cmd.Parameters.Add("@BaseDateType", SqlDbType.NVarChar).Value = baseDateType;
                         cmd.Parameters.Add("@DaysAfter", SqlDbType.Int).Value = daysAfter;
-                        cmd.Parameters.Add("@FertilizationWorkTypeID", SqlDbType.Decimal).Value = fertilizationWorkTypeID.HasValue ? (object)fertilizationWorkTypeID.Value : DBNull.Value;
+                        cmd.Parameters.Add("@FertilizationWorkTypeID", SqlDbType.Int).Value = (object)fertilizationWorkTypeID ?? DBNull.Value;
                         cmd.Parameters.Add("@WorkTypeID", SqlDbType.Int).Value = workTypeID;
-                        cmd.Parameters.Add("@MaterialID", SqlDbType.Decimal).Value = materialID.HasValue ? (object)materialID.Value : DBNull.Value;
+                        cmd.Parameters.Add("@MaterialID", SqlDbType.Int).Value = (object)materialID ?? DBNull.Value;
                         cmd.Parameters.Add("@MaterialQuantity", SqlDbType.Decimal).Value = materialQuantity;
                         cmd.Parameters.Add("@WaterAmount", SqlDbType.Decimal).Value = waterAmount;
                         cmd.Parameters.Add("@IsMultiplyArea", SqlDbType.Bit).Value = isMultiplyArea;
@@ -1238,33 +1068,23 @@ namespace RauViet.classes
 
         public async Task<bool> updateCultivationProcessTemplateAsync(int processTemplateID, int sku, int cultivationTypeID, string baseDateType, int daysAfter, int? fertilizationWorkTypeID, int workTypeID, int? materialID, decimal materialQuantity, decimal waterAmount, bool isMultiplyArea)
         {
-            string query = @"UPDATE CultivationProcessTemplate SET
-                                SKU=@SKU,
-                                CultivationTypeID=@CultivationTypeID,
-                                BaseDateType=@BaseDateType,
-                                DaysAfter=@DaysAfter,
-                                FertilizationWorkTypeID = @FertilizationWorkTypeID,
-                                WorkTypeID=@WorkTypeID,
-                                MaterialID=@MaterialID,
-                                MaterialQuantity=@MaterialQuantity,
-                                IsMultiplyArea=@IsMultiplyArea,
-                                WaterAmount=@WaterAmount
-                             WHERE ProcessTemplateID=@ProcessTemplateID";
             try
             {
                 using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
                 {
                     await con.OpenAsync();
-                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    using (SqlCommand cmd = new SqlCommand("sp_UpdateCultivationProcessTemplate", con))
                     {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
                         cmd.Parameters.Add("@ProcessTemplateID", SqlDbType.Int).Value = processTemplateID;
                         cmd.Parameters.Add("@SKU", SqlDbType.Int).Value = sku;
                         cmd.Parameters.Add("@CultivationTypeID", SqlDbType.Int).Value = cultivationTypeID;
                         cmd.Parameters.Add("@BaseDateType", SqlDbType.NVarChar).Value = baseDateType;
                         cmd.Parameters.Add("@DaysAfter", SqlDbType.Int).Value = daysAfter;
-                        cmd.Parameters.Add("@FertilizationWorkTypeID", SqlDbType.Int).Value = fertilizationWorkTypeID.HasValue ? (object)fertilizationWorkTypeID.Value : DBNull.Value;
+                        cmd.Parameters.Add("@FertilizationWorkTypeID", SqlDbType.Int).Value = (object)fertilizationWorkTypeID ?? DBNull.Value;
                         cmd.Parameters.Add("@WorkTypeID", SqlDbType.Int).Value = workTypeID;
-                        cmd.Parameters.Add("@MaterialID", SqlDbType.Decimal).Value = materialID.HasValue ? (object)materialID.Value : DBNull.Value;
+                        cmd.Parameters.Add("@MaterialID", SqlDbType.Int).Value = (object)materialID ?? DBNull.Value;
                         cmd.Parameters.Add("@MaterialQuantity", SqlDbType.Decimal).Value = materialQuantity;
                         cmd.Parameters.Add("@WaterAmount", SqlDbType.Decimal).Value = waterAmount;
                         cmd.Parameters.Add("@IsMultiplyArea", SqlDbType.Bit).Value = isMultiplyArea;
@@ -1274,7 +1094,10 @@ namespace RauViet.classes
                 }
                 return true;
             }
-            catch { return false; }
+            catch
+            {
+                return false;
+            }
         }
 
         public async Task<bool> deletetCultivationProcessTemplateAsync(int ProcessTemplateID)
@@ -1299,32 +1122,35 @@ namespace RauViet.classes
         public async Task<DataTable> GetCultivationProcessTemplateAsync()
         {
             DataTable dt = new DataTable();
+
             using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
             {
                 await con.OpenAsync();
-                string query = @"SELECT * FROM CultivationProcessTemplate";
-
-                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlCommand cmd = new SqlCommand("sp_GetCultivationProcessTemplate", con))
                 {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
                     using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                     {
                         dt.Load(reader);
                     }
                 }
             }
+
             return dt;
         }
 
         public async Task<DataTable> GetCultivationProcessAsync(int plantingID)
         {
             DataTable dt = new DataTable();
+
             using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
             {
                 await con.OpenAsync();
-                string query = @"SELECT * FROM CultivationProcess WHERE PlantingID = @PlantingID";
-
-                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlCommand cmd = new SqlCommand("sp_GetCultivationProcess", con))
                 {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
                     cmd.Parameters.Add("@PlantingID", SqlDbType.Int).Value = plantingID;
 
                     using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
@@ -1333,67 +1159,54 @@ namespace RauViet.classes
                     }
                 }
             }
+
             return dt;
         }
 
         public async Task<DataTable> GetCultivationProcessAsync(int month, int year, int departmentID)
         {
             DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
+            try
             {
-                await con.OpenAsync();
-                string query = @"SELECT cp.*,
-                                        pm.ProductionOrder,
-                                        pm.CultivationTypeID,
-                                        pm.SKU
-                                    FROM CultivationProcess cp
-                                    LEFT JOIN PlantingManagement pm 
-                                        ON cp.PlantingID = pm.PlantingID
-                                    WHERE 
-                                        MONTH(cp.ProcessDate) = @Month 
-                                        AND YEAR(cp.ProcessDate) = @Year
-                                        AND Department = @Department;";
-
-                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
                 {
-                    cmd.Parameters.Add("@Month", SqlDbType.Int).Value = month;
-                    cmd.Parameters.Add("@Year", SqlDbType.Int).Value = year;
-                    cmd.Parameters.Add("@Department", SqlDbType.Int).Value = departmentID;
+                    await con.OpenAsync();
 
-                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    using (SqlCommand cmd = new SqlCommand("sp_GetCultivationProcess1", con))
                     {
-                        dt.Load(reader);
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        cmd.Parameters.Add("@Month", SqlDbType.Int).Value = month;
+                        cmd.Parameters.Add("@Year", SqlDbType.Int).Value = year;
+                        cmd.Parameters.Add("@Department", SqlDbType.Int).Value = departmentID;
+
+                        using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                        {
+                            dt.Load(reader);
+                        }
                     }
                 }
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine("ERROR: " + ex.Message);
+            }
+
             return dt;
         }
 
         public async Task<DataTable> GetCultivationProcessAsync(DateTime date)
         {
             DataTable dt = new DataTable();
+
             using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
             {
                 await con.OpenAsync();
-                string query = @"
-                                SELECT cp.*,
-                                       pm.ProductionOrder,
-                                       pm.CultivationTypeID,
-                                       pm.FarmID,
-                                       pm.SKU
-                                FROM CultivationProcess cp
-                                LEFT JOIN PlantingManagement pm 
-                                    ON cp.PlantingID = pm.PlantingID
-                                WHERE cp.ProcessDate >= @FromDate
-                                  AND cp.ProcessDate < @ToDate;";
-
-                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlCommand cmd = new SqlCommand("sp_GetCultivationProcess_ByDate", con))
                 {
-                    DateTime fromDate = date.Date;
-                    DateTime toDate = date.Date.AddDays(1);
+                    cmd.CommandType = CommandType.StoredProcedure;
 
-                    cmd.Parameters.Add("@FromDate", SqlDbType.DateTime).Value = fromDate;
-                    cmd.Parameters.Add("@ToDate", SqlDbType.DateTime).Value = toDate;
+                    cmd.Parameters.Add("@Date", SqlDbType.Date).Value = date.Date;
 
                     using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                     {
@@ -1401,6 +1214,7 @@ namespace RauViet.classes
                     }
                 }
             }
+
             return dt;
         }
 
@@ -1488,19 +1302,16 @@ namespace RauViet.classes
         {
             int newId = -1;
 
-            string insertQuery = @"INSERT INTO CultivationProcess (PlantingID, MaterialID, WorkTypeID, ProcessDate, MaterialQuantity, WaterAmount, Dosage, PlantStatus, ActiveIngredient, EmployeeCode, IsolationDays, DepartmentID, PlantLocation, Note, FertilizationWorkTypeID, MaterialPrice)
-                                    OUTPUT INSERTED.CultivationProcessID
-                                    VALUES (@PlantingID, @MaterialID, @WorkTypeID, @ProcessDate, @MaterialQuantity, @WaterAmount, @Dosage, @PlantStatus, @ActiveIngredient, @EmployeeCode, @IsolationDays, @DepartmentID, @PlantLocation, @Note, @FertilizationWorkTypeID, @MaterialPrice)";
-
             try
             {
                 using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
                 {
                     await con.OpenAsync();
 
-                    // 2️⃣ Insert và lấy ID mới
-                    using (SqlCommand cmd = new SqlCommand(insertQuery, con))
+                    using (SqlCommand cmd = new SqlCommand("sp_InsertCultivationProcess", con))
                     {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
                         cmd.Parameters.Add("@PlantingID", SqlDbType.Int).Value = PlantingID;
                         cmd.Parameters.Add("@MaterialID", SqlDbType.Int).Value = materialID.HasValue ? (object)materialID.Value : DBNull.Value;
                         cmd.Parameters.Add("@WorkTypeID", SqlDbType.Int).Value = workTypeID;
@@ -1512,15 +1323,23 @@ namespace RauViet.classes
                         cmd.Parameters.Add("@ActiveIngredient", SqlDbType.NVarChar).Value = activeIngredient;
                         cmd.Parameters.Add("@EmployeeCode", SqlDbType.NVarChar).Value = employeeCode;
                         cmd.Parameters.Add("@IsolationDays", SqlDbType.Int).Value = isolationDays;
-                        cmd.Parameters.Add("@DepartmentID", SqlDbType.Int).Value = departmentID;
+                        cmd.Parameters.Add("@DepartmentID", SqlDbType.Int).Value = departmentID.HasValue ? (object)departmentID.Value : DBNull.Value;
                         cmd.Parameters.Add("@PlantLocation", SqlDbType.NVarChar).Value = plantLocation;
                         cmd.Parameters.Add("@Note", SqlDbType.NVarChar).Value = note;
                         cmd.Parameters.Add("@FertilizationWorkTypeID", SqlDbType.Int).Value = fertilizationWorkTypeID;
                         cmd.Parameters.Add("@MaterialPrice", SqlDbType.Int).Value = MaterialPrice.HasValue ? (object)MaterialPrice.Value : DBNull.Value;
 
-                        object result = await cmd.ExecuteScalarAsync();
-                        if (result != null)
-                            newId = Convert.ToInt32(result);
+                        // OUTPUT parameter để lấy ID mới
+                        var outputId = new SqlParameter("@NewID", SqlDbType.Int)
+                        {
+                            Direction = ParameterDirection.Output
+                        };
+                        cmd.Parameters.Add(outputId);
+
+                        await cmd.ExecuteNonQueryAsync();
+
+                        if (outputId.Value != DBNull.Value)
+                            newId = Convert.ToInt32(outputId.Value);
                     }
                 }
 
@@ -1552,31 +1371,15 @@ namespace RauViet.classes
             decimal waterAmount,
             string note)
         {
-            string query = @"UPDATE CultivationProcess SET
-                                PlantingID=@PlantingID, 
-                                MaterialID=@MaterialID, 
-                                WorkTypeID=@WorkTypeID, 
-                                ProcessDate=@ProcessDate, 
-                                MaterialQuantity=@MaterialQuantity, 
-                                WaterAmount=@WaterAmount, 
-                                Dosage=@Dosage, 
-                                PlantStatus=@PlantStatus, 
-                                ActiveIngredient=@ActiveIngredient, 
-                                EmployeeCode=@EmployeeCode, 
-                                IsolationDays=@IsolationDays, 
-                                DepartmentID=@DepartmentID, 
-                                PlantLocation=@PlantLocation, 
-                                Note=@Note, 
-                                FertilizationWorkTypeID=@FertilizationWorkTypeID, 
-                                MaterialPrice=@MaterialPrice
-                             WHERE CultivationProcessID=@CultivationProcessID";
             try
             {
                 using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
                 {
                     await con.OpenAsync();
-                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    using (SqlCommand cmd = new SqlCommand("sp_UpdateCultivationProcess", con))
                     {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
                         cmd.Parameters.Add("@CultivationProcessID", SqlDbType.Int).Value = CultivationProcessID;
                         cmd.Parameters.Add("@PlantingID", SqlDbType.Int).Value = PlantingID;
                         cmd.Parameters.Add("@MaterialID", SqlDbType.Int).Value = materialID.HasValue ? (object)materialID.Value : DBNull.Value;
@@ -1589,7 +1392,7 @@ namespace RauViet.classes
                         cmd.Parameters.Add("@ActiveIngredient", SqlDbType.NVarChar).Value = activeIngredient;
                         cmd.Parameters.Add("@EmployeeCode", SqlDbType.NVarChar).Value = employeeCode;
                         cmd.Parameters.Add("@IsolationDays", SqlDbType.Int).Value = isolationDays;
-                        cmd.Parameters.Add("@DepartmentID", SqlDbType.Int).Value = departmentID;
+                        cmd.Parameters.Add("@DepartmentID", SqlDbType.Int).Value = departmentID.HasValue ? (object)departmentID.Value : DBNull.Value;
                         cmd.Parameters.Add("@PlantLocation", SqlDbType.NVarChar).Value = plantLocation;
                         cmd.Parameters.Add("@Note", SqlDbType.NVarChar).Value = note;
                         cmd.Parameters.Add("@FertilizationWorkTypeID", SqlDbType.Int).Value = fertilizationWorkTypeID;
@@ -1600,30 +1403,36 @@ namespace RauViet.classes
                 }
                 return true;
             }
-            catch { return false; }
+            catch
+            {
+                return false;
+            }
         }
 
         public async Task<bool> updateCultivationProcessAsync_ThuHoach(int cultivationProcessID, decimal quantity)
         {
-            string query = @"UPDATE CultivationProcess SET
-                                MaterialQuantity=@MaterialQuantity
-                             WHERE CultivationProcessID=@CultivationProcessID";
             try
             {
                 using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
                 {
                     await con.OpenAsync();
-                    using (SqlCommand cmd = new SqlCommand(query, con))
+
+                    using (SqlCommand cmd = new SqlCommand("sp_UpdateCultivationProcess_ThuHoach", con))
                     {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
                         cmd.Parameters.Add("@CultivationProcessID", SqlDbType.Int).Value = cultivationProcessID;
-                        cmd.Parameters.Add("@MaterialQuantity", SqlDbType.Decimal).Value = quantity;                      
+                        cmd.Parameters.Add("@MaterialQuantity", SqlDbType.Decimal).Value = quantity;
 
                         await cmd.ExecuteNonQueryAsync();
                     }
                 }
                 return true;
             }
-            catch { return false; }
+            catch
+            {
+                return false;
+            }
         }
 
         public async Task<bool> deletetCultivationProcessAsync(int ProcessID)
@@ -1801,13 +1610,14 @@ namespace RauViet.classes
         public async Task<DataTable> GetPestDiseaseMonitoringAsync(int plantingID)
         {
             DataTable dt = new DataTable();
+
             using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
             {
                 await con.OpenAsync();
-                string query = @"SELECT * FROM PestDiseaseMonitoring WHERE PlantingID = @PlantingID";
-
-                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlCommand cmd = new SqlCommand("sp_GetPestDiseaseMonitoring", con))
                 {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
                     cmd.Parameters.Add("@PlantingID", SqlDbType.Int).Value = plantingID;
 
                     using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
@@ -1816,35 +1626,30 @@ namespace RauViet.classes
                     }
                 }
             }
+
             return dt;
         }
 
         public async Task<bool> updatePestDiseaseMonitoringAsync(int plantingID, int monitoringID, DateTime processDate, string location, int? growwthStatusID, int? pestDiseaseID, string currentStatus, string observerCode, string treatmentPlan, string decisionMakerCode)
         {
-            string query = @"UPDATE PestDiseaseMonitoring SET
-                                PlantingID=@PlantingID, 
-                                MonitoringDate=@MonitoringDate, 
-                                Location=@Location, 
-                                GrowthStageID=@GrowthStageID, 
-                                PestDiseaseID=@PestDiseaseID, 
-                                CurrentStatus=@CurrentStatus, 
-                                Observer=@Observer, 
-                                TreatmentPlan=@TreatmentPlan, 
-                                DecisionMaker=@DecisionMaker
-                             WHERE MonitoringID=@MonitoringID";
             try
             {
                 using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
                 {
                     await con.OpenAsync();
-                    using (SqlCommand cmd = new SqlCommand(query, con))
+
+                    using (SqlCommand cmd = new SqlCommand("sp_UpdatePestDiseaseMonitoring", con))
                     {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
                         cmd.Parameters.Add("@MonitoringID", SqlDbType.Int).Value = monitoringID;
                         cmd.Parameters.Add("@PlantingID", SqlDbType.Int).Value = plantingID;
                         cmd.Parameters.Add("@MonitoringDate", SqlDbType.Date).Value = processDate.Date;
                         cmd.Parameters.Add("@Location", SqlDbType.NVarChar).Value = location;
-                        cmd.Parameters.Add("@GrowthStageID", SqlDbType.Int).Value = growwthStatusID.HasValue ? (object)growwthStatusID.Value : DBNull.Value;
-                        cmd.Parameters.Add("@PestDiseaseID", SqlDbType.Int).Value = pestDiseaseID.HasValue ? (object)pestDiseaseID.Value : DBNull.Value;
+                        cmd.Parameters.Add("@GrowthStageID", SqlDbType.Int).Value =
+                            (object)growwthStatusID ?? DBNull.Value;
+                        cmd.Parameters.Add("@PestDiseaseID", SqlDbType.Int).Value =
+                            (object)pestDiseaseID ?? DBNull.Value;
                         cmd.Parameters.Add("@CurrentStatus", SqlDbType.NVarChar).Value = currentStatus;
                         cmd.Parameters.Add("@Observer", SqlDbType.NVarChar).Value = observerCode;
                         cmd.Parameters.Add("@TreatmentPlan", SqlDbType.NVarChar).Value = treatmentPlan;
@@ -1855,16 +1660,15 @@ namespace RauViet.classes
                 }
                 return true;
             }
-            catch { return false; }
+            catch
+            {
+                return false;
+            }
         }
 
         public async Task<int> insertPestDiseaseMonitoringAsync(int plantingID, DateTime processDate, string location, int? growwthStatusID, int? pestDiseaseID, string currentStatus, string observerCode, string treatmentPlan, string decisionMakerCode)
         {
             int newId = -1;
-
-            string insertQuery = @"INSERT INTO PestDiseaseMonitoring (PlantingID, MonitoringDate, Location, GrowthStageID, PestDiseaseID, CurrentStatus, Observer, TreatmentPlan, DecisionMaker)
-                                    OUTPUT INSERTED.MonitoringID
-                                    VALUES (@PlantingID, @MonitoringDate, @Location, @GrowthStageID, @PestDiseaseID, @CurrentStatus, @Observer, @TreatmentPlan, @DecisionMaker)";
 
             try
             {
@@ -1872,14 +1676,17 @@ namespace RauViet.classes
                 {
                     await con.OpenAsync();
 
-                    // 2️⃣ Insert và lấy ID mới
-                    using (SqlCommand cmd = new SqlCommand(insertQuery, con))
+                    using (SqlCommand cmd = new SqlCommand("sp_InsertPestDiseaseMonitoring", con))
                     {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
                         cmd.Parameters.Add("@PlantingID", SqlDbType.Int).Value = plantingID;
                         cmd.Parameters.Add("@MonitoringDate", SqlDbType.Date).Value = processDate.Date;
                         cmd.Parameters.Add("@Location", SqlDbType.NVarChar).Value = location;
-                        cmd.Parameters.Add("@GrowthStageID", SqlDbType.Int).Value = growwthStatusID.HasValue ? (object)growwthStatusID.Value : DBNull.Value;
-                        cmd.Parameters.Add("@PestDiseaseID", SqlDbType.Int).Value = pestDiseaseID.HasValue ? (object)pestDiseaseID.Value : DBNull.Value;
+                        cmd.Parameters.Add("@GrowthStageID", SqlDbType.Int).Value =
+                            (object)growwthStatusID ?? DBNull.Value;
+                        cmd.Parameters.Add("@PestDiseaseID", SqlDbType.Int).Value =
+                            (object)pestDiseaseID ?? DBNull.Value;
                         cmd.Parameters.Add("@CurrentStatus", SqlDbType.NVarChar).Value = currentStatus;
                         cmd.Parameters.Add("@Observer", SqlDbType.NVarChar).Value = observerCode;
                         cmd.Parameters.Add("@TreatmentPlan", SqlDbType.NVarChar).Value = treatmentPlan;
@@ -1980,13 +1787,14 @@ namespace RauViet.classes
         public async Task<DataTable> GetHarvestScheduleAsync(int plantingID)
         {
             DataTable dt = new DataTable();
+
             using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
             {
                 await con.OpenAsync();
-                string query = @"SELECT * FROM HarvestSchedule WHERE PlantingID = @PlantingID";
-
-                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlCommand cmd = new SqlCommand("sp_GetHarvestSchedule", con))
                 {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
                     cmd.Parameters.Add("@PlantingID", SqlDbType.Int).Value = plantingID;
 
                     using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
@@ -1995,6 +1803,7 @@ namespace RauViet.classes
                     }
                 }
             }
+
             return dt;
         }
 
@@ -2060,25 +1869,23 @@ namespace RauViet.classes
         {
             int newId = -1;
 
-            string insertQuery = @"INSERT INTO HarvestSchedule (PlantingID, HarvestDate, Quantity, ProductLotCode, HarvestEmployee, ReceiveDepartmentID)
-                                    OUTPUT INSERTED.HarvestID
-                                    VALUES (@PlantingID, @HarvestDate, @Quantity, @ProductLotCode, @HarvestEmployee, @ReceiveDepartmentID)";
-
             try
             {
                 using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
                 {
                     await con.OpenAsync();
 
-                    // 2️⃣ Insert và lấy ID mới
-                    using (SqlCommand cmd = new SqlCommand(insertQuery, con))
+                    using (SqlCommand cmd = new SqlCommand("sp_InsertHarvestSchedule", con))
                     {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
                         cmd.Parameters.Add("@PlantingID", SqlDbType.Int).Value = plantingID;
                         cmd.Parameters.Add("@HarvestDate", SqlDbType.Date).Value = harvestDate.Date;
                         cmd.Parameters.Add("@Quantity", SqlDbType.Decimal).Value = quantity;
                         cmd.Parameters.Add("@ProductLotCode", SqlDbType.NVarChar).Value = productLotCode;
                         cmd.Parameters.Add("@HarvestEmployee", SqlDbType.NVarChar).Value = harvestEmployeeCode;
-                        cmd.Parameters.Add("@ReceiveDepartmentID", SqlDbType.Int).Value = receiveDepartmentID.HasValue ? (object)receiveDepartmentID.Value : DBNull.Value; 
+                        cmd.Parameters.Add("@ReceiveDepartmentID", SqlDbType.Int).Value =
+                            (object)receiveDepartmentID ?? DBNull.Value;
 
                         object result = await cmd.ExecuteScalarAsync();
                         if (result != null)
@@ -2097,35 +1904,34 @@ namespace RauViet.classes
 
         public async Task<bool> updatePestDiseaseMonitoringAsync(int harvestID, int plantingID, DateTime harvestDate, decimal quantity, string productLotCode, string harvestEmployeeCode, int? receiveDepartmentID)
         {
-            string query = @"UPDATE HarvestSchedule SET
-                                PlantingID=@PlantingID, 
-                                HarvestDate=@HarvestDate, 
-                                Quantity=@Quantity, 
-                                ProductLotCode=@ProductLotCode, 
-                                HarvestEmployee=@HarvestEmployee, 
-                                ReceiveDepartmentID=@ReceiveDepartmentID
-                             WHERE HarvestID=@HarvestID";
             try
             {
                 using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
                 {
                     await con.OpenAsync();
-                    using (SqlCommand cmd = new SqlCommand(query, con))
+
+                    using (SqlCommand cmd = new SqlCommand("sp_UpdateHarvestSchedule", con))
                     {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
                         cmd.Parameters.Add("@HarvestID", SqlDbType.Int).Value = harvestID;
                         cmd.Parameters.Add("@PlantingID", SqlDbType.Int).Value = plantingID;
                         cmd.Parameters.Add("@HarvestDate", SqlDbType.Date).Value = harvestDate.Date;
                         cmd.Parameters.Add("@Quantity", SqlDbType.Decimal).Value = quantity;
                         cmd.Parameters.Add("@ProductLotCode", SqlDbType.NVarChar).Value = productLotCode;
                         cmd.Parameters.Add("@HarvestEmployee", SqlDbType.NVarChar).Value = harvestEmployeeCode;
-                        cmd.Parameters.Add("@ReceiveDepartmentID", SqlDbType.Int).Value = receiveDepartmentID.HasValue ? (object)receiveDepartmentID.Value : DBNull.Value; ;
+                        cmd.Parameters.Add("@ReceiveDepartmentID", SqlDbType.Int).Value =
+                            (object)receiveDepartmentID ?? DBNull.Value;
 
                         await cmd.ExecuteNonQueryAsync();
                     }
                 }
                 return true;
             }
-            catch { return false; }
+            catch
+            {
+                return false;
+            }
         }
 
         public async Task<bool> deletetHarvestScheduleAsync(int harvestID)
@@ -2169,112 +1975,79 @@ namespace RauViet.classes
         public async Task<DataTable> getThongKeCapPhanAsync()
         {
             DataTable dt = new DataTable();
+
             using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
             {
                 await con.OpenAsync();
-                string query = $@"WITH ProcessSum AS
-                                (
-                                    SELECT 
-                                        MaterialID,
-                                        YEAR(ProcessDate) AS [Year],
-                                        MONTH(ProcessDate) AS [Month],
-                                        SUM(MaterialQuantity) AS TotalMaterialQuantity
-                                    FROM CultivationProcess
-                                    GROUP BY 
-                                        MaterialID,
-                                        YEAR(ProcessDate),
-                                        MONTH(ProcessDate)
-                                )
 
-                                SELECT 
-                                    m.MaterialID,
-                                    ps.[Year],
-                                    ps.[Month],
-                                    ps.TotalMaterialQuantity
-                                FROM Materials m
-                                LEFT JOIN ProcessSum ps 
-                                    ON m.MaterialID = ps.MaterialID
-                                WHERE ps.[Month] IS NOT NULL
-                                ORDER BY 
-                                    m.MaterialID, ps.[Year], ps.[Month];";
-
-                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlCommand cmd = new SqlCommand("sp_GetThongKeCapPhan", con))
                 {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
                     using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                     {
                         dt.Load(reader);
                     }
                 }
             }
+
             return dt;
         }
 
         public async Task<DataTable> getThongKeVatTuTheoNamAsync()
         {
             DataTable dt = new DataTable();
+
             using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
             {
                 await con.OpenAsync();
-                string query = $@"SELECT 
-                                    m.MaterialID,
-                                    MONTH(t.Date) AS Month,
-                                    YEAR(t.Date) AS Year,
-                                    SUM(t.ImportQty) AS TotalImport,
-                                    SUM(t.ExportQty) AS TotalExport
-                                FROM
-                                (
-                                    SELECT MaterialID, ImportDate AS Date, Amount AS ImportQty, 0 AS ExportQty
-                                    FROM MaterialImport
 
-                                    UNION ALL
-
-                                    SELECT MaterialID, ExportDate, 0, Amount
-                                    FROM MaterialExport
-                                ) t
-                                JOIN Materials m ON m.MaterialID = t.MaterialID
-                                GROUP BY m.MaterialID, MONTH(t.Date), YEAR(t.Date)
-                                ORDER BY m.MaterialID, Year, Month;";
-
-                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlCommand cmd = new SqlCommand("sp_GetThongKeVatTuTheoNam", con))
                 {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
                     using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                     {
                         dt.Load(reader);
                     }
                 }
             }
+
             return dt;
         }
 
         public async Task<DataTable> getGlobalGapProductsAsync()
         {
             DataTable dt = new DataTable();
+
             using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
             {
                 await con.OpenAsync();
-                string query = @"SELECT * FROM GlobalGapProducts";
-
-                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlCommand cmd = new SqlCommand("sp_GetGlobalGapProducts", con))
                 {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
                     using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                     {
                         dt.Load(reader);
                     }
                 }
             }
+
             return dt;
         }
 
         public async Task<DataTable> GetHarvestScheduleGlobalGAPAsync(int plantingID)
         {
             DataTable dt = new DataTable();
+
             using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
             {
                 await con.OpenAsync();
-                string query = @"SELECT * FROM HarvestSchedule_GlobalGap WHERE PlantingID = @PlantingID";
-
-                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlCommand cmd = new SqlCommand("sp_GetHarvestSchedule_GlobalGAP", con))
                 {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
                     cmd.Parameters.Add("@PlantingID", SqlDbType.Int).Value = plantingID;
 
                     using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
@@ -2283,8 +2056,10 @@ namespace RauViet.classes
                     }
                 }
             }
+
             return dt;
         }
+
         public async Task<bool> InsertHarvestScheduleGlobalGapListAsync(List<(int PlantingID, DateTime HarvestDate, decimal Quantity, string ProductLotCode, string HarvestEmployee, string SupervisorEmployee, int ReceiveDepartmentID)> list)
         {
             try
