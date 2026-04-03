@@ -456,56 +456,7 @@ namespace RauViet.ui
                 createExportCode(exportCode, exportCodeIndex, exportDate, exRate, shippingCost, inputBy, packingBy);
 
         }
-        private async void deleteBtn_Click(object sender, EventArgs e)
-        {
-            string id = exportCodeId_tb.Text;
-
-            foreach (DataRow row in mExportCode_dt.Rows)
-            {
-                string exportCodeID = row["ExportCodeID"].ToString();
-                string exportCode = row["ExportCode"].ToString();
-                if (exportCodeID.CompareTo(id) == 0)
-                {
-                    DialogResult dialogResult = MessageBox.Show(
-                        "XÓA THÔNG ĐÓ NHA\nChắc chắn chưa?",
-                        "Thông Báo",
-                        MessageBoxButtons.YesNo,
-                        MessageBoxIcon.Warning  // Thêm icon cảnh báo
-                    ); 
-                    if (dialogResult == DialogResult.Yes)
-                    {
-                        try
-                        {
-                            bool isScussess = await SQLManager_Kho.Instance.DeleteExportCodeWithOrdersAsync(Convert.ToInt32(exportCodeID));
-
-                            if (isScussess == true)
-                            {
-                                _ = SQLManager_Kho.Instance.InsertExportCodeLogAsync(exportCode, "Xóa Thành Công", null, null, null, "", "", false);
-                                status_lb.Text = "Thành công.";
-                                status_lb.ForeColor = Color.Green;
-
-                                mExportCode_dt.Rows.Remove(row);
-                                mExportCode_dt.AcceptChanges();
-                            }
-                            else
-                            {
-                                status_lb.Text = "Thất bại.";
-                                status_lb.ForeColor = Color.Red;
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine("ERROR Exception "+ ex.Message);
-                            status_lb.Text = "Thất bại.";
-                            status_lb.ForeColor = Color.Red;
-                        }
-                    }
-                    break;
-                }
-            }
-
-        }
-
+        
         private void newCustomerBtn_Click(object sender, EventArgs e)
         {
             exportCodeId_tb.Text = "";

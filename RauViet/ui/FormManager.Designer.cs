@@ -71,6 +71,7 @@
             this.giáBánToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.updatePriceProductSKU_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.productDomesticPrices_mi = new System.Windows.Forms.ToolStripMenuItem();
+            this.giaThuMua_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.khoHangKhoGroup_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.inventoryTransaction_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.thongKeTonKho_mi = new System.Windows.Forms.ToolStripMenuItem();
@@ -130,11 +131,8 @@
             this.QR_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.datDoAn_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
-            this.aaaaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.loadExcelOrderReportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.content_panel = new System.Windows.Forms.Panel();
             this.bbbbbbbbb_mi = new System.Windows.Forms.ToolStripMenuItem();
-            this.giaThuMua_mi = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1.SuspendLayout();
             this.LOT_menuitem.SuspendLayout();
             this.SuspendLayout();
@@ -180,8 +178,7 @@
             this.QLCT_group_mi,
             this.toolStripMenuItem4,
             this.extension_mi,
-            this.toolStripMenuItem2,
-            this.aaaaToolStripMenuItem});
+            this.toolStripMenuItem2});
             this.LOT_menuitem.Location = new System.Drawing.Point(0, 0);
             this.LOT_menuitem.Name = "LOT_menuitem";
             this.LOT_menuitem.Size = new System.Drawing.Size(1528, 25);
@@ -487,6 +484,12 @@
             this.productDomesticPrices_mi.Name = "productDomesticPrices_mi";
             this.productDomesticPrices_mi.Size = new System.Drawing.Size(198, 22);
             this.productDomesticPrices_mi.Text = "Giá Bán Trong Nước";
+            // 
+            // giaThuMua_mi
+            // 
+            this.giaThuMua_mi.Name = "giaThuMua_mi";
+            this.giaThuMua_mi.Size = new System.Drawing.Size(198, 22);
+            this.giaThuMua_mi.Text = "Giá Thu Mua";
             // 
             // khoHangKhoGroup_mi
             // 
@@ -934,22 +937,6 @@
             this.toolStripMenuItem2.Name = "toolStripMenuItem2";
             this.toolStripMenuItem2.Size = new System.Drawing.Size(12, 21);
             // 
-            // aaaaToolStripMenuItem
-            // 
-            this.aaaaToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.loadExcelOrderReportToolStripMenuItem});
-            this.aaaaToolStripMenuItem.Name = "aaaaToolStripMenuItem";
-            this.aaaaToolStripMenuItem.Size = new System.Drawing.Size(59, 21);
-            this.aaaaToolStripMenuItem.Text = "Debug";
-            this.aaaaToolStripMenuItem.Visible = false;
-            // 
-            // loadExcelOrderReportToolStripMenuItem
-            // 
-            this.loadExcelOrderReportToolStripMenuItem.Name = "loadExcelOrderReportToolStripMenuItem";
-            this.loadExcelOrderReportToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
-            this.loadExcelOrderReportToolStripMenuItem.Text = "LoadExcelOrderReport";
-            this.loadExcelOrderReportToolStripMenuItem.Click += new System.EventHandler(this.loadExcelOrderReportToolStripMenuItem_Click);
-            // 
             // content_panel
             // 
             this.content_panel.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -962,12 +949,6 @@
             // 
             this.bbbbbbbbb_mi.Name = "bbbbbbbbb_mi";
             this.bbbbbbbbb_mi.Size = new System.Drawing.Size(32, 19);
-            // 
-            // giaThuMua_mi
-            // 
-            this.giaThuMua_mi.Name = "giaThuMua_mi";
-            this.giaThuMua_mi.Size = new System.Drawing.Size(198, 22);
-            this.giaThuMua_mi.Text = "Giá Thu Mua";
             // 
             // FormManager
             // 
@@ -1038,8 +1019,6 @@
         private System.Windows.Forms.ToolStripMenuItem reportOrderIn1Year_mi;
         private System.Windows.Forms.ToolStripMenuItem reportOrderIn1Month_mi;
         private System.Windows.Forms.ToolStripMenuItem monthlyReportForYear_mi;
-        private System.Windows.Forms.ToolStripMenuItem aaaaToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem loadExcelOrderReportToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem yearlyReport_mi;
         private System.Windows.Forms.ToolStripMenuItem monthlyTotalPerYear_mi;
         private System.Windows.Forms.ToolStripMenuItem historyLogin_mi;

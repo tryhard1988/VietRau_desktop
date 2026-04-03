@@ -80,11 +80,9 @@ namespace RauViet.ui
 
             inHoaDon_btn.Click += InHoaDon_btn_Click;
             xemHoaDon_btn.Click += XemHoaDon_btn_Click;
-            excelHoaDon_btn.Click += ExcelHoaDon_btn_Click;
 
             inBangKe_btn.Click += InBangKe_btn_Click;
             xemBangKe_btn.Click += XemBangKe_btn_Click;
-            excelBangKe_btn.Click += ExcelBangKe_btn_Click;
 
             seller_cbb.SelectedIndexChanged += UpdatePrice;
             sku_cbb.SelectedIndexChanged += UpdatePrice;
@@ -669,11 +667,6 @@ namespace RauViet.ui
             InHoaDon(2);
         }
 
-        private async void ExcelHoaDon_btn_Click(object sender, EventArgs e)
-        {
-            InHoaDon(3);
-        }
-
         void InHoaDon(int type)
         {
             if (code_GV.SelectedRows.Count > 0)
@@ -708,10 +701,6 @@ namespace RauViet.ui
             inBangrKe(2);
         }
 
-        private void ExcelBangKe_btn_Click(object sender, EventArgs e)
-        {
-            inBangrKe(3);
-        }
 
         async void inBangrKe(int state)
         {

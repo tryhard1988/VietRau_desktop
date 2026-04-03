@@ -39,12 +39,10 @@ namespace RauViet.ui
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle16 = new System.Windows.Forms.DataGridViewCellStyle();
             this.panel1 = new System.Windows.Forms.Panel();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.excelBangKe_btn = new System.Windows.Forms.Button();
             this.xemBangKe_btn = new System.Windows.Forms.Button();
             this.inBangKe_btn = new System.Windows.Forms.Button();
             this.thanhToan_btn = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.excelHoaDon_btn = new System.Windows.Forms.Button();
             this.xemHoaDon_btn = new System.Windows.Forms.Button();
             this.inHoaDon_btn = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
@@ -53,6 +51,7 @@ namespace RauViet.ui
             this.newCustomerBtn = new System.Windows.Forms.Button();
             this.readOnly_btn = new System.Windows.Forms.Button();
             this.info_gb = new System.Windows.Forms.GroupBox();
+            this.label9 = new System.Windows.Forms.Label();
             this.price_tb = new System.Windows.Forms.TextBox();
             this.label8 = new System.Windows.Forms.Label();
             this.seller_cbb = new System.Windows.Forms.ComboBox();
@@ -81,7 +80,6 @@ namespace RauViet.ui
             this.panel6 = new System.Windows.Forms.Panel();
             this.sellerGV = new System.Windows.Forms.DataGridView();
             this.dataGV = new System.Windows.Forms.DataGridView();
-            this.label9 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -120,26 +118,14 @@ namespace RauViet.ui
             // groupBox2
             // 
             this.groupBox2.BackColor = System.Drawing.Color.MistyRose;
-            this.groupBox2.Controls.Add(this.excelBangKe_btn);
             this.groupBox2.Controls.Add(this.xemBangKe_btn);
             this.groupBox2.Controls.Add(this.inBangKe_btn);
-            this.groupBox2.Location = new System.Drawing.Point(153, 481);
+            this.groupBox2.Location = new System.Drawing.Point(240, 404);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(298, 55);
+            this.groupBox2.Size = new System.Drawing.Size(198, 55);
             this.groupBox2.TabIndex = 70;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Bảng Kê Thu Mua";
-            // 
-            // excelBangKe_btn
-            // 
-            this.excelBangKe_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
-            this.excelBangKe_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.excelBangKe_btn.Location = new System.Drawing.Point(206, 12);
-            this.excelBangKe_btn.Name = "excelBangKe_btn";
-            this.excelBangKe_btn.Size = new System.Drawing.Size(79, 37);
-            this.excelBangKe_btn.TabIndex = 38;
-            this.excelBangKe_btn.Text = "Excel";
-            this.excelBangKe_btn.UseVisualStyleBackColor = false;
             // 
             // xemBangKe_btn
             // 
@@ -177,26 +163,14 @@ namespace RauViet.ui
             // groupBox1
             // 
             this.groupBox1.BackColor = System.Drawing.SystemColors.Info;
-            this.groupBox1.Controls.Add(this.excelHoaDon_btn);
             this.groupBox1.Controls.Add(this.xemHoaDon_btn);
             this.groupBox1.Controls.Add(this.inHoaDon_btn);
-            this.groupBox1.Location = new System.Drawing.Point(12, 404);
+            this.groupBox1.Location = new System.Drawing.Point(24, 404);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(294, 55);
+            this.groupBox1.Size = new System.Drawing.Size(191, 55);
             this.groupBox1.TabIndex = 69;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "In Hóa Đơn";
-            // 
-            // excelHoaDon_btn
-            // 
-            this.excelHoaDon_btn.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
-            this.excelHoaDon_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.excelHoaDon_btn.Location = new System.Drawing.Point(202, 13);
-            this.excelHoaDon_btn.Name = "excelHoaDon_btn";
-            this.excelHoaDon_btn.Size = new System.Drawing.Size(79, 37);
-            this.excelHoaDon_btn.TabIndex = 37;
-            this.excelHoaDon_btn.Text = "Excel";
-            this.excelHoaDon_btn.UseVisualStyleBackColor = false;
             // 
             // xemHoaDon_btn
             // 
@@ -303,6 +277,16 @@ namespace RauViet.ui
             this.info_gb.Size = new System.Drawing.Size(454, 303);
             this.info_gb.TabIndex = 43;
             this.info_gb.TabStop = false;
+            // 
+            // label9
+            // 
+            this.label9.ForeColor = System.Drawing.Color.IndianRed;
+            this.label9.Location = new System.Drawing.Point(123, 259);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(310, 33);
+            this.label9.TabIndex = 71;
+            this.label9.Text = "Nếu muốn đổi tên Mặt Hàng thì trong cột ghi chú nhập như sau:  \"rename: [tên mới]" +
+    "\"";
             // 
             // price_tb
             // 
@@ -635,16 +619,6 @@ namespace RauViet.ui
             this.dataGV.Size = new System.Drawing.Size(727, 743);
             this.dataGV.TabIndex = 66;
             // 
-            // label9
-            // 
-            this.label9.ForeColor = System.Drawing.Color.IndianRed;
-            this.label9.Location = new System.Drawing.Point(123, 259);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(310, 33);
-            this.label9.TabIndex = 71;
-            this.label9.Text = "Nếu muốn đổi tên Mặt Hàng thì trong cột ghi chú nhập như sau:  \"rename: [tên mới]" +
-    "\"";
-            // 
             // VegetableWarehouseTransaction
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -710,8 +684,6 @@ namespace RauViet.ui
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Button xemBangKe_btn;
         private System.Windows.Forms.Button inBangKe_btn;
-        private System.Windows.Forms.Button excelBangKe_btn;
-        private System.Windows.Forms.Button excelHoaDon_btn;
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.DataGridView code_GV;
         private System.Windows.Forms.Panel panel5;

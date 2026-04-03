@@ -437,8 +437,10 @@ namespace RauViet.classes
 
             return mExportCodes_dt;
         }
-        private void editExportCodes()
-        {            
+        private async Task editExportCodes()
+        {
+            await GetActiveEmployeesIn_DongGoiAsync();
+
             mExportCodes_dt.Columns.Add(new DataColumn("InputByName", typeof(string)));
             mExportCodes_dt.Columns.Add(new DataColumn("InputByName_NoSign", typeof(string)));
             mExportCodes_dt.Columns.Add(new DataColumn("PackingByName", typeof(string)));
@@ -523,8 +525,9 @@ namespace RauViet.classes
                 }
                 result.Rows.Add(newRow);
             }
-
-            return result;
+            ;
+            //return result;
+            return mExportCodes_dt;
         }
 
         public void removeProductSKUHistory()

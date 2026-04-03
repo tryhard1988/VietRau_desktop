@@ -822,17 +822,6 @@ namespace RauViet.ui
 
         }
 
-        private void loadExcelOrderReportToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            var form = new LoadExcelOrderReport();
-            title_lb.Text = "LoadExcelOrderReport";
-            form.TopLevel = false;
-            form.Parent = this.content_panel;
-            form.Dock = DockStyle.Fill;
-
-            form.Show();
-        }
-
         private void HistoryLogin_mi_Click(object sender, EventArgs e)
         {
             SwitchChildForm<HistoryLogIn>("Lịch sử Đăng Nhập");

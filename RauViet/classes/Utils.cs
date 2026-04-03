@@ -652,6 +652,8 @@ public static class Utils
     }
 
     public static string VRF_GAP() { return "VRF_GAP_BM05\n12/02/22\n02\npage 1 of 1"; }
+    public static string VRF_GAP_TiepNhan() { return "VRF_GAP_BM01\n12/02/22\n02\npage 1 of 1"; }
+    public static string VRF_GAP_BaoQuan() { return "VRF_GAP_BM04\n12/02/22\n02\npage 1 of 1"; }
 
     public static string NumberToText(long number)
     {

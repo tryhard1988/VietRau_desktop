@@ -132,8 +132,10 @@ namespace RauViet.ui
                     {
                         newRow["Quantity_ThanhPham"] = orderRow["TotalNetWeight"];
                         newRow["Quantity_BanDau"] = Convert.ToDecimal(orderRow["TotalNetWeight"]) / (Convert.ToDecimal(ggpRow["UsageRate"]) / 100.0m);
-
-                        newRow["SoKien"] = Math.Ceiling((Convert.ToDecimal(orderRow["TotalNetWeight"]) * 10) / (PortionsPerBox));
+                        if (sku == 121 || sku == 101)
+                            newRow["SoKien"] = Math.Ceiling(Convert.ToDecimal(orderRow["TotalNetWeight"]) / (PortionsPerBox));
+                        else
+                            newRow["SoKien"] = Math.Ceiling((Convert.ToDecimal(orderRow["TotalNetWeight"]) * 10) / (PortionsPerBox));
                     }
 
                     mOrdersTotal_dt.Rows.Add(newRow);
@@ -325,14 +327,14 @@ namespace RauViet.ui
             ws.Cell(rowInd, columnInd).Style.Alignment.WrapText = true;
 
             columnInd += 1;
-            ws.Cell(rowInd, columnInd).Value = Utils.VRF_GAP();
+            ws.Cell(rowInd, columnInd).Value = Utils.VRF_GAP_TiepNhan();
             ws.Cell(rowInd, columnInd).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
             ws.Cell(rowInd, columnInd).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
             ws.Cell(rowInd, columnInd).Style.Alignment.WrapText = true;
 
             rowInd = 3;
             columnInd = 1;
-            string[] columnsName = new string[] { "Ngày", "Loại Sản Phẩm", "Mã Số Lô", "Cảm Quan\n(đ/k)", "Ban Đầu", "Thành Phẩm", "Quy Cách\nThưc Tế(gr)", "Xử Lý\nSản Phẩm Dư Thừa" };
+            string[] columnsName = new string[] { "Ngày", "Loại Sản Phẩm", "Mã Số Lô", "Cảm Quan\n(đ/k)", "Ban Đầu", "Thành Phẩm", "Quy Cách\nThực Tế(gr)", "Xử Lý\nSản Phẩm Dư Thừa" };
             string[] exportColumns = new string[] { "Date", "PlantName", "LotCOT", "CamQUan", "Quantity_BanDau", "Quantity_ThanhPham", "ActualPacking", "ExcessHandling" };
             string[] typeColumns = new string[] { "date", "string", "string", "string", "decimal", "decimal", "string", "string" };
             float[] widthColumns = new float[] { 16.5f, 16.5f, 12, 15, 12.2f, 12.2f, 14.3f, 20.5f };
@@ -468,7 +470,7 @@ namespace RauViet.ui
             ws.Cell(rowInd, columnInd).Style.Alignment.WrapText = true;
 
             columnInd += 1;
-            ws.Cell(rowInd, columnInd).Value = Utils.VRF_GAP();
+            ws.Cell(rowInd, columnInd).Value = Utils.VRF_GAP_BaoQuan();
             ws.Cell(rowInd, columnInd).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
             ws.Cell(rowInd, columnInd).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
             ws.Cell(rowInd, columnInd).Style.Alignment.WrapText = true;
@@ -476,7 +478,7 @@ namespace RauViet.ui
             rowInd = 3;
             columnInd = 1;
             string[] columnsName = new string[] { "Ngày", "Thời Điểm", "Kho NL/BTP", "Kho TP", "Ngày", "Thời Điềm", "Kho NL/BTP", "Kho TP" };
-            float[] widthColumns = new float[] { 16.5f, 16.5f, 12, 15, 12.2f, 16.5f, 16.5f, 12, 15, 12.2f };
+            float[] widthColumns = new float[] { 16.5f, 16.5f, 12, 15, 12.2f, 16.5f, 16.5f, 17.5f };
 
             DateTime ExportDate = DateTime.Now;
             int ExportCodeIndex = 0;
@@ -520,20 +522,6 @@ namespace RauViet.ui
                 columnInd++;
             }
 
-            ws.Cell(5, 1).Value = ExportDate.AddDays(-3);
-            ws.Cell(6, 1).Value = ExportDate.AddDays(-2);
-            ws.Cell(7, 1).Value = ExportDate.AddDays(-1);
-            ws.Cell(5, 5).Value = ExportDate.AddDays(-3);
-            ws.Cell(6, 5).Value = ExportDate.AddDays(-2);
-            ws.Cell(7, 5).Value = ExportDate.AddDays(-1);
-
-            ws.Cell(5, 2).Value = new TimeSpan(9, 0, 0); ws.Cell(5, 2).Style.DateFormat.Format = "HH:mm";
-            ws.Cell(6, 2).Value = new TimeSpan(9, 0, 0); ws.Cell(5, 2).Style.DateFormat.Format = "HH:mm";
-            ws.Cell(7, 2).Value = new TimeSpan(9, 0, 0); ws.Cell(5, 2).Style.DateFormat.Format = "HH:mm";
-            ws.Cell(5, 6).Value = new TimeSpan(15, 0, 0); ws.Cell(5, 2).Style.DateFormat.Format = "HH:mm";
-            ws.Cell(6, 6).Value = new TimeSpan(15, 0, 0); ws.Cell(5, 2).Style.DateFormat.Format = "HH:mm";
-            ws.Cell(7, 6).Value = new TimeSpan(15, 0, 0); ws.Cell(5, 2).Style.DateFormat.Format = "HH:mm";
-
             var rd = new Random();
 
             // Hàm random + làm tròn 1 số lẻ
@@ -567,6 +555,20 @@ namespace RauViet.ui
             ws.Range(5, 1, 7, 8).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
             ws.Range(5, 1, 7, 8).Style.Border.InsideBorder = XLBorderStyleValues.Thin;
             ws.Range(5, 1, 7, 8).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+            ws.Cell(5, 1).Value = ExportDate.AddDays(-3); ws.Cell(5, 1).Style.DateFormat.Format = "dd/MM/yyyy";
+            ws.Cell(6, 1).Value = ExportDate.AddDays(-2); ws.Cell(6, 1).Style.DateFormat.Format = "dd/MM/yyyy";
+            ws.Cell(7, 1).Value = ExportDate.AddDays(-1); ws.Cell(7, 1).Style.DateFormat.Format = "dd/MM/yyyy";
+            ws.Cell(5, 5).Value = ExportDate.AddDays(-3); ws.Cell(5, 5).Style.DateFormat.Format = "dd/MM/yyyy";
+            ws.Cell(6, 5).Value = ExportDate.AddDays(-2); ws.Cell(6, 5).Style.DateFormat.Format = "dd/MM/yyyy";
+            ws.Cell(7, 5).Value = ExportDate.AddDays(-1); ws.Cell(7, 5).Style.DateFormat.Format = "dd/MM/yyyy";
+
+            ws.Cell(5, 2).Value = new TimeSpan(9, 0, 0); ws.Cell(5, 2).Style.DateFormat.Format = "HH:mm";
+            ws.Cell(6, 2).Value = new TimeSpan(9, 0, 0); ws.Cell(6, 2).Style.DateFormat.Format = "HH:mm";
+            ws.Cell(7, 2).Value = new TimeSpan(9, 0, 0); ws.Cell(7, 2).Style.DateFormat.Format = "HH:mm";
+            ws.Cell(5, 6).Value = new TimeSpan(15, 0, 0); ws.Cell(5, 6).Style.DateFormat.Format = "HH:mm";
+            ws.Cell(6, 6).Value = new TimeSpan(15, 0, 0); ws.Cell(6, 6).Style.DateFormat.Format = "HH:mm";
+            ws.Cell(7, 6).Value = new TimeSpan(15, 0, 0); ws.Cell(7, 6).Style.DateFormat.Format = "HH:mm";
 
             rowInd = 8;
             var hdkpCell = ws.Cell(rowInd, 1);
