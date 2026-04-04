@@ -157,8 +157,8 @@ namespace RauViet.classes
                 if (salaryGradeTask.Status == TaskStatus.RanToCompletion && salaryGradeTask.Result != null) mSalaryGrade_dt = salaryGradeTask.Result;
                 if (holidayAsync.Status == TaskStatus.RanToCompletion && holidayAsync.Result != null) mHoliday_dt = holidayAsync.Result;
 
-                editEmployee();
-                editAllowanceType();
+                await editEmployee();
+                await editAllowanceType();
                 editEmployeeSalaryInfo();
                 editAnnualLeaveBalance(mAnnualLeaveBalance_dt);
                 editOvertimeAttendamce(overtimeAttendamceTask1.Result);
@@ -217,8 +217,12 @@ namespace RauViet.classes
             return false;
         }
 
-        private void editEmployee()
+        private async Task editEmployee()
         {
+            await GetPositionAsync();
+            await GetDepartmentAsync();
+            await GetSalaryGradeAsync();
+            await GetContractTypeAsync();
             Utils.AddColumnIfNotExists(mEmployee_dt, "GenderName", typeof(string));
             Utils.AddColumnIfNotExists(mEmployee_dt, "PositionCode", typeof(string));
             Utils.AddColumnIfNotExists(mEmployee_dt, "PositionName", typeof(string));
@@ -662,7 +666,7 @@ namespace RauViet.classes
                 try
                 {
                     mEmployee_dt = await SQLManager_QLNS.Instance.GetEmployeesAsync();
-                    editEmployee();
+                    await editEmployee();
                 }
                 catch
                 {
@@ -969,8 +973,9 @@ namespace RauViet.classes
 
             return activePos;
         }
-        private void editAllowanceType()
+        private async Task editAllowanceType()
         {
+            await GetApplyScopeAsync();
             Utils.AddColumnIfNotExists(mAllowance_dt, "ScopeName", typeof(string));
             foreach (DataRow dr in mAllowance_dt.Rows)
             {
@@ -989,7 +994,7 @@ namespace RauViet.classes
                 try
                 {
                     mAllowance_dt = await SQLManager_QLNS.Instance.GetAllowanceTypeAsync();
-                    editAllowanceType();
+                    await editAllowanceType();
                 }
                 catch
                 {

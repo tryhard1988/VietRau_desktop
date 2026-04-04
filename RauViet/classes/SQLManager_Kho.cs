@@ -36,45 +36,59 @@ namespace RauViet.classes
         public async Task<DataTable> getCustomersAsync()
         {
             DataTable dt = new DataTable();
+
             using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
             {
                 await con.OpenAsync();
-                string query = "SELECT * FROM Customers ORDER BY Priority ASC;";
-                using (SqlCommand cmd = new SqlCommand(query, con))
-                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+
+                using (SqlCommand cmd = new SqlCommand("sp_GetCustomers", con))
                 {
-                    dt.Load(reader);
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
                 }
             }
+
             return dt;
         }
 
         public async Task<DataTable> getSellerssAsync()
         {
             DataTable dt = new DataTable();
+
             using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
             {
                 await con.OpenAsync();
-                string query = "SELECT * FROM Sellers;";
-                using (SqlCommand cmd = new SqlCommand(query, con))
-                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+
+                using (SqlCommand cmd = new SqlCommand("sp_GetSellers", con))
                 {
-                    dt.Load(reader);
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
                 }
             }
+
             return dt;
         }
 
         public async Task<bool> updateCustomerAsync(int customerID, string name, string code, int Priority, string home, string company, string address, string email, string taxCode)
         {
-            string query = "UPDATE Customers SET FullName=@FullName, CustomerCode=@CustomerCode, Priority=@Priority, Home=@Home, Company=@Company, Address=@Address, TaxCode=@TaxCode, Email=@Email WHERE CustomerID=@CustomerID";
             try
             {
                 using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
                 {
                     await con.OpenAsync();
-                    using (SqlCommand cmd = new SqlCommand(query, con))
+
+                    using (SqlCommand cmd = new SqlCommand("sp_UpdateCustomer", con))
                     {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
                         cmd.Parameters.AddWithValue("@CustomerID", customerID);
                         cmd.Parameters.AddWithValue("@FullName", name);
                         cmd.Parameters.AddWithValue("@CustomerCode", code);
@@ -84,27 +98,31 @@ namespace RauViet.classes
                         cmd.Parameters.AddWithValue("@Address", address);
                         cmd.Parameters.AddWithValue("@TaxCode", taxCode);
                         cmd.Parameters.AddWithValue("@Email", email);
-                        await cmd.ExecuteNonQueryAsync();
+
+                        int rows = await cmd.ExecuteNonQueryAsync();
+                        return rows > 0;
                     }
                 }
-                return true;
             }
-            catch { return false; }
+            catch
+            {
+                return false;
+            }
         }
 
         public async Task<int> insertCustomerAsync(string name, string code, int priority, string home, string company, string address, string email, string taxCode)
         {
             int newId = -1;
-            string query = @"INSERT INTO Customers (FullName, CustomerCode, Priority, Home, Company, Address, TaxCode, Email) 
-                             OUTPUT INSERTED.CustomerID
-                            VALUES (@FullName, @CustomerCode, @Priority, @Home, @Company, @Address, @TaxCode, @Email)";
             try
             {
                 using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
                 {
                     await con.OpenAsync();
-                    using (SqlCommand cmd = new SqlCommand(query, con))
+
+                    using (SqlCommand cmd = new SqlCommand("sp_InsertCustomer", con))
                     {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
                         cmd.Parameters.AddWithValue("@FullName", name);
                         cmd.Parameters.AddWithValue("@CustomerCode", code);
                         cmd.Parameters.AddWithValue("@Priority", priority);
@@ -113,58 +131,7 @@ namespace RauViet.classes
                         cmd.Parameters.AddWithValue("@Address", address);
                         cmd.Parameters.AddWithValue("@TaxCode", taxCode);
                         cmd.Parameters.AddWithValue("@Email", email);
-                        object result = await cmd.ExecuteScalarAsync();
-                        if (result != null)
-                            newId = Convert.ToInt32(result);
-                    }
-                }
-                return newId;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("ERROR: " + ex.Message);
-                return -1; 
-            }
-        }
 
-        public async Task<bool> deleteCustomerAsync(int customerID)
-        {
-            string query = "DELETE FROM Customers WHERE CustomerID=@CustomerID";
-            try
-            {
-                using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
-                {
-                    await con.OpenAsync();
-                    using (SqlCommand cmd = new SqlCommand(query, con))
-                    {
-                        cmd.Parameters.AddWithValue("@CustomerID", customerID);
-                        await cmd.ExecuteNonQueryAsync();
-                    }
-                }
-                return true;
-            }
-            catch { return false; }
-        }
-
-        public async Task<int> insertSellerAsync(string name, string CCCD, string phone, string address, string bankAccount, string bankName)
-        {
-            int newId = -1;
-            string query = @"INSERT INTO Sellers (SellerName, CitizenID, Phone, Address, BankAccount, BankName) 
-                             OUTPUT INSERTED.SellerID
-                            VALUES (@SellerName, @CitizenID, @Phone, @Address, @BankAccount, @BankName)";
-            try
-            {
-                using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
-                {
-                    await con.OpenAsync();
-                    using (SqlCommand cmd = new SqlCommand(query, con))
-                    {
-                        cmd.Parameters.AddWithValue("@SellerName", name);
-                        cmd.Parameters.AddWithValue("@CitizenID", CCCD);
-                        cmd.Parameters.AddWithValue("@Phone", phone);
-                        cmd.Parameters.AddWithValue("@Address", address);
-                        cmd.Parameters.AddWithValue("@BankAccount", bankAccount);
-                        cmd.Parameters.AddWithValue("@BankName", bankName);
                         object result = await cmd.ExecuteScalarAsync();
                         if (result != null)
                             newId = Convert.ToInt32(result);
@@ -179,29 +146,28 @@ namespace RauViet.classes
             }
         }
 
-        public async Task<bool> updateSellerAsync(int sellerID, string name, string CCCD, string phone, string address, string bankAccount, string bankName)
+        public async Task<bool> deleteCustomerAsync(int customerID)
         {
-            string query = "UPDATE Sellers SET SellerName=@SellerName, CitizenID=@CitizenID, Phone=@Phone, Address=@Address, BankAccount=@BankAccount, BankName=@BankName WHERE SellerID=@SellerID";
             try
             {
                 using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
                 {
                     await con.OpenAsync();
-                    using (SqlCommand cmd = new SqlCommand(query, con))
+
+                    using (SqlCommand cmd = new SqlCommand("sp_DeleteCustomer", con))
                     {
-                        cmd.Parameters.AddWithValue("@SellerID", sellerID);
-                        cmd.Parameters.AddWithValue("@SellerName", name);
-                        cmd.Parameters.AddWithValue("@CitizenID", CCCD);
-                        cmd.Parameters.AddWithValue("@Phone", phone);
-                        cmd.Parameters.AddWithValue("@Address", address);
-                        cmd.Parameters.AddWithValue("@BankAccount", bankAccount);
-                        cmd.Parameters.AddWithValue("@BankName", bankName);
-                        await cmd.ExecuteNonQueryAsync();
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@CustomerID", customerID);
+
+                        int rows = await cmd.ExecuteNonQueryAsync();
+                        return rows > 0;
                     }
                 }
-                return true;
             }
-            catch { return false; }
+            catch
+            {
+                return false;
+            }
         }
 
         //==============================ProductSKU==============================
@@ -229,27 +195,16 @@ namespace RauViet.classes
         public async Task<bool> updateProductSKUAsync(int SKU, string ProductNameVN, string ProductNameEN, string PackingType, string Package,
             string PackingList, string BotanicalName, decimal PriceCNF, int priority, string plantingareaCode, string LOTCodeHeader, bool isActive, int? supplierID)
         {
-            string query = @"UPDATE ProductSKU SET 
-                                ProductNameVN=@ProductNameVN, 
-                                ProductNameEN=@ProductNameEN, 
-                                PackingType=@PackingType, 
-                                Package=@Package, 
-                                PackingList=@PackingList, 
-                                BotanicalName=@BotanicalName, 
-                                PriceCNF=@PriceCNF,
-                                PlantingAreaCode=@PlantingAreaCode,
-                                LOTCodeHeader=@LOTCodeHeader,
-                                IsActive=@IsActive,
-                                Priority=@Priority,
-                                SupplierID=@SupplierID
-                             WHERE SKU=@SKU";
             try
             {
                 using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
                 {
                     await con.OpenAsync();
-                    using (SqlCommand cmd = new SqlCommand(query, con))
+
+                    using (SqlCommand cmd = new SqlCommand("sp_UpdateProductSKU", con))
                     {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
                         cmd.Parameters.AddWithValue("@SKU", SKU);
                         cmd.Parameters.AddWithValue("@ProductNameVN", ProductNameVN);
                         cmd.Parameters.AddWithValue("@ProductNameEN", ProductNameEN);
@@ -263,34 +218,42 @@ namespace RauViet.classes
                         cmd.Parameters.AddWithValue("@Priority", priority);
                         cmd.Parameters.AddWithValue("@IsActive", isActive);
                         cmd.Parameters.AddWithValue("@SupplierID", (object)supplierID ?? DBNull.Value);
-                        await cmd.ExecuteNonQueryAsync();
+
+                        int rows = await cmd.ExecuteNonQueryAsync();
+                        return rows > 0;
                     }
                 }
-                return true;
             }
-            catch { return false; }
+            catch
+            {
+                return false;
+            }
         }
 
         public async Task<bool> updatePriceProductSKUAsync(int SKU, decimal PriceCNF)
         {
-            string query = @"UPDATE ProductSKU SET 
-                                PriceCNF=@PriceCNF
-                             WHERE SKU=@SKU";
             try
             {
                 using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
                 {
                     await con.OpenAsync();
-                    using (SqlCommand cmd = new SqlCommand(query, con))
+
+                    using (SqlCommand cmd = new SqlCommand("sp_UpdatePriceProductSKU", con))
                     {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
                         cmd.Parameters.AddWithValue("@SKU", SKU);
                         cmd.Parameters.AddWithValue("@PriceCNF", PriceCNF);
-                        await cmd.ExecuteNonQueryAsync();
+
+                        int rows = await cmd.ExecuteNonQueryAsync();
+                        return rows > 0;
                     }
                 }
-                return true;
             }
-            catch { return false; }
+            catch
+            {
+                return false;
+            }
         }
 
         public async Task<int> insertProductSKUAsync(string ProductNameVN, string ProductNameEN, string PackingType, string Package, 
@@ -340,73 +303,63 @@ namespace RauViet.classes
 
         public async Task<bool> deleteProductSKUAsync(int SKU)
         {
-            string query = "DELETE FROM ProductSKU WHERE SKU=@SKU";
             try
             {
                 using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
                 {
                     await con.OpenAsync();
-                    using (SqlCommand cmd = new SqlCommand(query, con))
+
+                    using (SqlCommand cmd = new SqlCommand("sp_DeleteProductSKU", con))
                     {
+                        cmd.CommandType = CommandType.StoredProcedure;
                         cmd.Parameters.AddWithValue("@SKU", SKU);
-                        await cmd.ExecuteNonQueryAsync();
+
+                        int rows = await cmd.ExecuteNonQueryAsync();
+                        return rows > 0;
                     }
                 }
-                return true;
             }
-            catch { return false; }
+            catch
+            {
+                return false;
+            }
         }
 
         //==============================ProductPacking==============================
         public async Task<DataTable> getProductpackingAsync()
         {
             DataTable dt = new DataTable();
+
             using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
             {
                 await con.OpenAsync();
-                string query = @"
-                    SELECT 
-                        p.SKU,
-                        pk.BarCode,   
-                        pk.PLU,        
-                        pk.Packing,    
-                        pk.BarCodeEAN13,
-                        pk.ArtNr,
-                        pk.GGN,
-                        pk.Amount,
-                        pk.IsActive,
-                        pk.ProductPackingID
-                    FROM ProductSKU p
-                    JOIN ProductPacking pk ON p.SKU = pk.SKU;";
-                using (SqlCommand cmd = new SqlCommand(query, con))
-                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+
+                using (SqlCommand cmd = new SqlCommand("sp_GetProductPacking", con))
                 {
-                    dt.Load(reader);
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
                 }
             }
+
             return dt;
         }
 
         public async Task<bool> updateProductpackingAsync(int ID, int SKU, string BarCode, string PLU, int? Amount, string packing, string barCodeEAN13, string artNr, string GGN, bool isActive)
         {
-            string query = @"UPDATE ProductPacking SET
-                                SKU=@SKU, 
-                                BarCode=@BarCode, 
-                                PLU=@PLU, 
-                                Amount=@Amount, 
-                                packing=@packing, 
-                                BarCodeEAN13=@BarCodeEAN13, 
-                                ArtNr=@ArtNr, 
-                                IsActive=@IsActive, 
-                                GGN=@GGN
-                             WHERE ProductPackingID=@ID";
             try
             {
                 using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
                 {
                     await con.OpenAsync();
-                    using (SqlCommand cmd = new SqlCommand(query, con))
+
+                    using (SqlCommand cmd = new SqlCommand("sp_UpdateProductPacking", con))
                     {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
                         cmd.Parameters.AddWithValue("@ID", ID);
                         cmd.Parameters.AddWithValue("@SKU", SKU);
                         cmd.Parameters.AddWithValue("@BarCode", BarCode);
@@ -417,27 +370,31 @@ namespace RauViet.classes
                         cmd.Parameters.AddWithValue("@ArtNr", artNr);
                         cmd.Parameters.AddWithValue("@GGN", GGN);
                         cmd.Parameters.AddWithValue("@IsActive", isActive);
-                        await cmd.ExecuteNonQueryAsync();
+
+                        int rows = await cmd.ExecuteNonQueryAsync();
+                        return rows > 0;
                     }
                 }
-                return true;
             }
-            catch { return false; }
+            catch
+            {
+                return false;
+            }
         }
 
         public async Task<int> insertProductpackingAsync(int SKU, string BarCode, string PLU, int? Amount, string packing, string barCodeEAN13, string artNr, string GGN)
         {
             int newId = -1;
-            string query = @"INSERT INTO ProductPacking (SKU, BarCode, PLU, Amount, packing, BarCodeEAN13, ArtNr, GGN)
-                            OUTPUT INSERTED.ProductPackingID
-                             VALUES (@SKU, @BarCode, @PLU, @Amount, @packing, @BarCodeEAN13, @ArtNr, @GGN)";
             try
             {
                 using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
                 {
                     await con.OpenAsync();
-                    using (SqlCommand cmd = new SqlCommand(query, con))
+
+                    using (SqlCommand cmd = new SqlCommand("sp_InsertProductPacking", con))
                     {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
                         cmd.Parameters.AddWithValue("@SKU", SKU);
                         cmd.Parameters.AddWithValue("@BarCode", BarCode);
                         cmd.Parameters.AddWithValue("@PLU", PLU);
@@ -446,6 +403,7 @@ namespace RauViet.classes
                         cmd.Parameters.AddWithValue("@BarCodeEAN13", barCodeEAN13);
                         cmd.Parameters.AddWithValue("@ArtNr", artNr);
                         cmd.Parameters.AddWithValue("@GGN", GGN);
+
                         object result = await cmd.ExecuteScalarAsync();
                         if (result != null)
                             newId = Convert.ToInt32(result);
@@ -453,53 +411,58 @@ namespace RauViet.classes
                 }
                 return newId;
             }
-            catch { return -1; }
+            catch
+            {
+                return -1;
+            }
         }
 
         public async Task<bool> updateProductDomesticPriceAsync(int SKU, int rawPrice, int refinePrice, int packedPrice, bool isActive)
         {
-            string query = @"UPDATE ProductDomesticPrices SET
-                                RawPrice=@RawPrice, 
-                                RefinedPrice=@RefinedPrice, 
-                                PackedPrice=@PackedPrice, 
-                                IsActive=@IsActive
-                             WHERE SKU=@SKU";
             try
             {
                 using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
                 {
                     await con.OpenAsync();
-                    using (SqlCommand cmd = new SqlCommand(query, con))
+
+                    using (SqlCommand cmd = new SqlCommand("sp_UpdateProductDomesticPrice", con))
                     {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
                         cmd.Parameters.AddWithValue("@SKU", SKU);
                         cmd.Parameters.AddWithValue("@RawPrice", rawPrice);
                         cmd.Parameters.AddWithValue("@RefinedPrice", refinePrice);
                         cmd.Parameters.AddWithValue("@PackedPrice", packedPrice);
                         cmd.Parameters.AddWithValue("@IsActive", isActive);
-                        await cmd.ExecuteNonQueryAsync();
+
+                        int rows = await cmd.ExecuteNonQueryAsync();
+                        return rows > 0;
                     }
                 }
-                return true;
             }
-            catch { return false; }
+            catch
+            {
+                return false;
+            }
         }
         public async Task<int> insertProductDomesticPriceAsync(int SKU, int rawPrice, int refinePrice, int packedPrice)
         {
             int newId = -1;
-            string query = @"INSERT INTO ProductDomesticPrices (SKU, RawPrice, RefinedPrice, PackedPrice)
-                            OUTPUT INSERTED.PriceID
-                             VALUES (@SKU, @RawPrice, @RefinedPrice, @PackedPrice)";
             try
             {
                 using (SqlConnection con = new SqlConnection(ql_kho_conStr()))
                 {
                     await con.OpenAsync();
-                    using (SqlCommand cmd = new SqlCommand(query, con))
+
+                    using (SqlCommand cmd = new SqlCommand("sp_InsertProductDomesticPrice", con))
                     {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
                         cmd.Parameters.AddWithValue("@SKU", SKU);
                         cmd.Parameters.AddWithValue("@RawPrice", rawPrice);
                         cmd.Parameters.AddWithValue("@RefinedPrice", refinePrice);
                         cmd.Parameters.AddWithValue("@PackedPrice", packedPrice);
+
                         object result = await cmd.ExecuteScalarAsync();
                         if (result != null)
                             newId = Convert.ToInt32(result);
@@ -507,7 +470,10 @@ namespace RauViet.classes
                 }
                 return newId;
             }
-            catch { return -1; }
+            catch
+            {
+                return -1;
+            }
         }
 
         public async Task<bool> deleteProductDomesticPriceAsync(int priceID)

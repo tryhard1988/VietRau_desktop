@@ -1789,59 +1789,54 @@ namespace RauViet.classes
 
         public async Task<bool> updateMonthlyAllowanceAsync(int monthlyAllowanceID, string employeeCode, int month, int year, int amount, int allowanceTypeID, string note)
         {
-            string query = @"UPDATE MonthlyAllowance SET 
-                                EmployeeCode=@EmployeeCode, 
-                                AllowanceTypeID=@AllowanceTypeID,
-                                Month=@Month, 
-                                Year=@Year, 
-                                Amount=@Amount, 
-                                Note=@Note
-                            WHERE MonthlyAllowanceID=@MonthlyAllowanceID";
             try
             {
                 using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
-                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    using (SqlCommand cmd = new SqlCommand("sp_UpdateMonthlyAllowance", con))
                     {
-                        cmd.Parameters.AddWithValue("@MonthlyAllowanceID", monthlyAllowanceID);
-                        cmd.Parameters.AddWithValue("@EmployeeCode", employeeCode);
-                        cmd.Parameters.AddWithValue("@AllowanceTypeID", allowanceTypeID);
-                        cmd.Parameters.AddWithValue("@Month", month);
-                        cmd.Parameters.AddWithValue("@Year", year);
-                        cmd.Parameters.AddWithValue("@Amount", amount);
-                        cmd.Parameters.AddWithValue("@Note", note);
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        cmd.Parameters.Add("@MonthlyAllowanceID", SqlDbType.Int).Value = monthlyAllowanceID;
+                        cmd.Parameters.Add("@EmployeeCode", SqlDbType.NVarChar, 50).Value = employeeCode;
+                        cmd.Parameters.Add("@AllowanceTypeID", SqlDbType.Int).Value = allowanceTypeID;
+                        cmd.Parameters.Add("@Month", SqlDbType.Int).Value = month;
+                        cmd.Parameters.Add("@Year", SqlDbType.Int).Value = year;
+                        cmd.Parameters.Add("@Amount", SqlDbType.Int).Value = amount;
+                        cmd.Parameters.Add("@Note", SqlDbType.NVarChar).Value = (object)note ?? DBNull.Value;
+
                         await cmd.ExecuteNonQueryAsync();
                     }
                 }
                 return true;
             }
-            catch { return false; }
+            catch
+            {
+                return false;
+            }
         }
 
         public async Task<int> insertMonthlyAllowanceAsync(string employeeCode, int month, int year, int amount, int allowanceTypeID, string note)
         {
             int newId = -1;
 
-            string insertQuery = @" INSERT INTO MonthlyAllowance (EmployeeCode, AllowanceTypeID, Month, Year, Amount, Note)
-                                    OUTPUT INSERTED.MonthlyAllowanceID
-                                    VALUES (@EmployeeCode, @AllowanceTypeID, @Month, @Year, @Amount, @Note)";
-
             try
             {
                 using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
 
-                    // 2️⃣ Insert và lấy ID mới
-                    using (SqlCommand cmd = new SqlCommand(insertQuery, con))
+                    using (SqlCommand cmd = new SqlCommand("sp_InsertMonthlyAllowance", con))
                     {
-                        cmd.Parameters.AddWithValue("@EmployeeCode", employeeCode);
-                        cmd.Parameters.AddWithValue("@AllowanceTypeID", allowanceTypeID);
-                        cmd.Parameters.AddWithValue("@Month", month);
-                        cmd.Parameters.AddWithValue("@Year", year);
-                        cmd.Parameters.AddWithValue("@Amount", amount);
-                        cmd.Parameters.AddWithValue("@Note", note);
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        cmd.Parameters.Add("@EmployeeCode", SqlDbType.NVarChar, 50).Value = employeeCode;
+                        cmd.Parameters.Add("@AllowanceTypeID", SqlDbType.Int).Value = allowanceTypeID;
+                        cmd.Parameters.Add("@Month", SqlDbType.Int).Value = month;
+                        cmd.Parameters.Add("@Year", SqlDbType.Int).Value = year;
+                        cmd.Parameters.Add("@Amount", SqlDbType.Int).Value = amount;
+                        cmd.Parameters.Add("@Note", SqlDbType.NVarChar).Value = (object)note ?? DBNull.Value;
 
                         object result = await cmd.ExecuteScalarAsync();
                         if (result != null)
@@ -1915,113 +1910,110 @@ namespace RauViet.classes
 
         public async Task<bool> deleteMonthlyAllowanceAsync(int monthlyAllowanceID)
         {
-            string query = "DELETE FROM MonthlyAllowance WHERE MonthlyAllowanceID=@MonthlyAllowanceID";
             try
             {
                 using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
-                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    using (SqlCommand cmd = new SqlCommand("sp_DeleteMonthlyAllowance", con))
                     {
-                        cmd.Parameters.AddWithValue("@MonthlyAllowanceID", monthlyAllowanceID);
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        cmd.Parameters.Add("@MonthlyAllowanceID", SqlDbType.Int).Value = monthlyAllowanceID;
+
                         await cmd.ExecuteNonQueryAsync();
                     }
                 }
                 return true;
             }
-            catch { return false; }
+            catch
+            {
+                return false;
+            }
         }
 
-        public async Task<DataTable> GetSalaryGradeAsync()
+        public async Task<DataTable> GetSalaryGradeAsync(bool? isActive = null)
         {
             DataTable dt = new DataTable();
+
             using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
             {
                 await con.OpenAsync();
-                string query = @"SELECT * FROM SalaryGrade";
-
-                using (SqlCommand cmd = new SqlCommand(query, con))
-                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                using (SqlCommand cmd = new SqlCommand("sp_GetSalaryGrade", con))
                 {
-                    dt.Load(reader);
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    if (isActive.HasValue)
+                        cmd.Parameters.Add("@IsActive", SqlDbType.Bit).Value = isActive.Value;
+
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
                 }
             }
+
             return dt;
         }
 
         public async Task<bool> updateSalaryGradeAsync(int salaryGradeID, string gradeName, int salary, string note, bool isActive)
         {
-            string query = @"UPDATE SalaryGrade SET 
-                                GradeName=@GradeName,
-                                Salary=@Salary, 
-                                Note=@Note, 
-                                IsActive=@IsActive                             
-                            WHERE SalaryGradeID=@SalaryGradeID";
             try
             {
                 using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
-                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    using (SqlCommand cmd = new SqlCommand("sp_UpdateSalaryGrade", con))
                     {
-                        cmd.Parameters.AddWithValue("@SalaryGradeID", salaryGradeID);
-                        cmd.Parameters.AddWithValue("@GradeName", gradeName);
-                        cmd.Parameters.AddWithValue("@Salary", salary);
-                        cmd.Parameters.AddWithValue("@Note", note);
-                        cmd.Parameters.AddWithValue("@IsActive", isActive);
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        cmd.Parameters.Add("@SalaryGradeID", SqlDbType.Int).Value = salaryGradeID;
+                        cmd.Parameters.Add("@GradeName", SqlDbType.NVarChar, 255).Value = gradeName;
+                        cmd.Parameters.Add("@Salary", SqlDbType.Int).Value = salary;
+                        cmd.Parameters.Add("@Note", SqlDbType.NVarChar).Value = (object)note ?? DBNull.Value;
+                        cmd.Parameters.Add("@IsActive", SqlDbType.Bit).Value = isActive;
+
                         await cmd.ExecuteNonQueryAsync();
                     }
                 }
                 return true;
             }
-            catch { return false; }
+            catch
+            {
+                return false;
+            }
         }
 
         public async Task<int> insertSalaryGradeAsync(string gradeName, int salary, string note, bool isActive)
         {
             int newId = -1;
 
-            string query = @"INSERT INTO SalaryGrade (GradeName, Salary, Note, IsActive) 
-                                OUTPUT INSERTED.SalaryGradeID
-                                VALUES (@GradeName, @Salary, @Note, @IsActive)";
             try
             {
                 using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
-                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    using (SqlCommand cmd = new SqlCommand("sp_InsertSalaryGrade", con))
                     {
-                        cmd.Parameters.AddWithValue("@GradeName", gradeName);
-                        cmd.Parameters.AddWithValue("@Salary", salary);
-                        cmd.Parameters.AddWithValue("@Note", note);
-                        cmd.Parameters.AddWithValue("@IsActive", isActive);
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        cmd.Parameters.Add("@GradeName", SqlDbType.NVarChar, 255).Value = gradeName;
+                        cmd.Parameters.Add("@Salary", SqlDbType.Int).Value = salary;
+                        cmd.Parameters.Add("@Note", SqlDbType.NVarChar).Value = (object)note ?? DBNull.Value;
+                        cmd.Parameters.Add("@IsActive", SqlDbType.Bit).Value = isActive;
+
                         object result = await cmd.ExecuteScalarAsync();
                         if (result != null)
                             newId = Convert.ToInt32(result);
                     }
                 }
+
                 return newId;
             }
-            catch { return -1; }
-        }
-
-        public async Task<bool> deleteSalaryGradeAsync(int ID)
-        {
-            string query = "DELETE FROM SalaryGrade WHERE SalaryGradeID=@SalaryGradeID";
-            try
+            catch
             {
-                using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
-                {
-                    await con.OpenAsync();
-                    using (SqlCommand cmd = new SqlCommand(query, con))
-                    {
-                        cmd.Parameters.AddWithValue("@SalaryGradeID", ID);
-                        await cmd.ExecuteNonQueryAsync();
-                    }
-                }
-                return true;
+                return -1;
             }
-            catch { return false; }
         }
 
         public async Task<DataTable> GetEmployeeSalaryInfoAsync()
@@ -2048,19 +2040,24 @@ namespace RauViet.classes
         public async Task<DataTable> GetSalaryHistoryAsyc(int month, int year)
         {
             DataTable dt = new DataTable();
+
             using (SqlConnection con = new SqlConnection(qlnvHis_conStr()))
             {
                 await con.OpenAsync();
-                string query = @"SELECT * FROM EmployeeSalaryHistory WHERE Month=@Month AND Year=@Year";
-                using (SqlCommand cmd = new SqlCommand(query, con)) {
-                    cmd.Parameters.AddWithValue("@Month", month);
-                    cmd.Parameters.AddWithValue("@Year", year);
+                using (SqlCommand cmd = new SqlCommand("sp_GetSalaryHistory", con))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.Add("@Month", SqlDbType.Int).Value = month;
+                    cmd.Parameters.Add("@Year", SqlDbType.Int).Value = year;
+
                     using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                     {
                         dt.Load(reader);
                     }
                 }
             }
+
             return dt;
         }
 
@@ -2068,26 +2065,23 @@ namespace RauViet.classes
         {
             int newId = -1;
 
-            string insertQuery = @" INSERT INTO EmployeeSalaryInfo (EmployeeCode, Month, Year, BaseSalary, InsuranceBaseSalary, Note, ActionBy)
-                                    OUTPUT INSERTED.SalaryInfoID
-                                    VALUES (@EmployeeCode, @Month, @Year, @BaseSalary, @InsuranceBaseSalary, @Note, @ActionBy)";
-
             try
             {
                 using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
 
-                    // 2️⃣ Insert và lấy ID mới
-                    using (SqlCommand cmd = new SqlCommand(insertQuery, con))
+                    using (SqlCommand cmd = new SqlCommand("sp_InsertEmployeeSalaryInfo", con))
                     {
-                        cmd.Parameters.AddWithValue("@EmployeeCode", employeeCode);
-                        cmd.Parameters.AddWithValue("@Month", month);
-                        cmd.Parameters.AddWithValue("@Year", year);
-                        cmd.Parameters.AddWithValue("@BaseSalary", baseSalary);
-                        cmd.Parameters.AddWithValue("@InsuranceBaseSalary", insuranceBaseSalary);
-                        cmd.Parameters.AddWithValue("@Note", note);
-                        cmd.Parameters.AddWithValue("@ActionBy", UserManager.Instance.fullName);
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        cmd.Parameters.Add("@EmployeeCode", SqlDbType.NVarChar).Value = employeeCode;
+                        cmd.Parameters.Add("@Month", SqlDbType.Int).Value = month;
+                        cmd.Parameters.Add("@Year", SqlDbType.Int).Value = year;
+                        cmd.Parameters.Add("@BaseSalary", SqlDbType.Int).Value = baseSalary;
+                        cmd.Parameters.Add("@InsuranceBaseSalary", SqlDbType.Int).Value = insuranceBaseSalary;
+                        cmd.Parameters.Add("@Note", SqlDbType.NVarChar).Value = (object)note ?? DBNull.Value;
+                        cmd.Parameters.Add("@ActionBy", SqlDbType.NVarChar).Value = UserManager.Instance.fullName;
 
                         object result = await cmd.ExecuteScalarAsync();
                         if (result != null)
@@ -2105,221 +2099,177 @@ namespace RauViet.classes
 
         public async Task<bool> deleteEmployeeSalaryInfoAsync(int salaryInfoID)
         {
-            string query = "DELETE FROM EmployeeSalaryInfo WHERE SalaryInfoID=@SalaryInfoID";
             try
             {
                 using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
-                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    using (SqlCommand cmd = new SqlCommand("sp_DeleteEmployeeSalaryInfo", con))
                     {
-                        cmd.Parameters.AddWithValue("@SalaryInfoID", salaryInfoID);
-                        await cmd.ExecuteNonQueryAsync();
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        cmd.Parameters.Add("@SalaryInfoID", SqlDbType.Int).Value = salaryInfoID;
+
+                        var result = await cmd.ExecuteScalarAsync();
+                        return Convert.ToInt32(result) == 1;
                     }
                 }
-                return true;
             }
-            catch { return false; }
+            catch
+            {
+                return false;
+            }
         }
 
         public async Task<bool> updateEmployeeBHAsync(string EmployeeCode, string SocialInsuranceNumber, string HealthInsuranceNumber)
         {
-            string query = @"UPDATE Employee SET 
-                                SocialInsuranceNumber=@SocialInsuranceNumber, HealthInsuranceNumber=@HealthInsuranceNumber
-                            WHERE EmployeeCode=@EmployeeCode";
             try
             {
                 using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
-                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    using (SqlCommand cmd = new SqlCommand("sp_UpdateEmployeeBH", con))
                     {
-                        cmd.Parameters.AddWithValue("@SocialInsuranceNumber", SocialInsuranceNumber);
-                        cmd.Parameters.AddWithValue("@HealthInsuranceNumber", HealthInsuranceNumber);
-                        cmd.Parameters.AddWithValue("@EmployeeCode", EmployeeCode);
-                        await cmd.ExecuteNonQueryAsync();
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        cmd.Parameters.Add("@EmployeeCode", SqlDbType.NVarChar).Value = EmployeeCode;
+                        cmd.Parameters.Add("@SocialInsuranceNumber", SqlDbType.NVarChar).Value = (object)SocialInsuranceNumber ?? DBNull.Value;
+                        cmd.Parameters.Add("@HealthInsuranceNumber", SqlDbType.NVarChar).Value = (object)HealthInsuranceNumber ?? DBNull.Value;
+
+                        var result = await cmd.ExecuteScalarAsync();
+                        return Convert.ToInt32(result) == 1;
                     }
                 }
-                return true;
             }
-            catch { return false; }
+            catch
+            {
+                return false;
+            }
         }
 
         public async Task<bool> updateEmployeeBankAsync(string EmployeeCode, string BankName, string BankBranch, string BankAccountNumber, string BankAccountHolder)
         {
-            string query = @"UPDATE Employee SET 
-                                BankName=@BankName, BankBranch=@BankBranch, BankAccountNumber=@BankAccountNumber, BankAccountHolder=@BankAccountHolder
-                            WHERE EmployeeCode=@EmployeeCode";
             try
             {
                 using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
-                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    using (SqlCommand cmd = new SqlCommand("sp_UpdateEmployeeBank", con))
                     {
-                        cmd.Parameters.AddWithValue("@BankName", BankName);
-                        cmd.Parameters.AddWithValue("@BankBranch", BankBranch);
-                        cmd.Parameters.AddWithValue("@BankAccountNumber", BankAccountNumber);
-                        cmd.Parameters.AddWithValue("@BankAccountHolder", BankAccountHolder);
-                        cmd.Parameters.AddWithValue("@EmployeeCode", EmployeeCode);
-                        await cmd.ExecuteNonQueryAsync();
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        cmd.Parameters.Add("@EmployeeCode", SqlDbType.NVarChar).Value = EmployeeCode;
+                        cmd.Parameters.Add("@BankName", SqlDbType.NVarChar).Value = (object)BankName ?? DBNull.Value;
+                        cmd.Parameters.Add("@BankBranch", SqlDbType.NVarChar).Value = (object)BankBranch ?? DBNull.Value;
+                        cmd.Parameters.Add("@BankAccountNumber", SqlDbType.NVarChar).Value = (object)BankAccountNumber ?? DBNull.Value;
+                        cmd.Parameters.Add("@BankAccountHolder", SqlDbType.NVarChar).Value = (object)BankAccountHolder ?? DBNull.Value;
+
+                        var result = await cmd.ExecuteScalarAsync();
+                        return Convert.ToInt32(result) == 1;
                     }
                 }
-                return true;
             }
-            catch { return false; }
+            catch
+            {
+                return false;
+            }
         }
 
         public async Task<bool> updateEmployeeWorkAsync(string EmployeeCode, int PositionID, int DepartmentID, int ContractTypeID)
         {
-            string query = @"UPDATE Employee SET 
-                                PositionID=@PositionID, DepartmentID=@DepartmentID, ContractTypeID=@ContractTypeID
-                            WHERE EmployeeCode=@EmployeeCode";
             try
             {
                 using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
-                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    using (SqlCommand cmd = new SqlCommand("sp_UpdateEmployeeWork", con))
                     {
-                        cmd.Parameters.AddWithValue("@PositionID", PositionID);
-                        cmd.Parameters.AddWithValue("@DepartmentID", DepartmentID);
-                        cmd.Parameters.AddWithValue("@ContractTypeID", ContractTypeID);
-                        cmd.Parameters.AddWithValue("@EmployeeCode", EmployeeCode);
-                        await cmd.ExecuteNonQueryAsync();
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        cmd.Parameters.Add("@EmployeeCode", SqlDbType.NVarChar).Value = EmployeeCode;
+                        cmd.Parameters.Add("@PositionID", SqlDbType.Int).Value = PositionID;
+                        cmd.Parameters.Add("@DepartmentID", SqlDbType.Int).Value = DepartmentID;
+                        cmd.Parameters.Add("@ContractTypeID", SqlDbType.Int).Value = ContractTypeID;
+
+                        var result = await cmd.ExecuteScalarAsync();
+                        return Convert.ToInt32(result) == 1;
                     }
                 }
-                return true;
             }
-            catch { return false; }
+            catch
+            {
+                return false;
+            }
         }
 
         public async Task<DataTable> GetDeductionTypeAsync()
         {
             DataTable dt = new DataTable();
+
             using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
             {
                 await con.OpenAsync();
-                string query = @"SELECT DeductionTypeCode, DeductionTypeName FROM DeductionType";
-
-                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlCommand cmd = new SqlCommand("sp_GetDeductionType", con))
                 {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
                     using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                     {
                         dt.Load(reader);
                     }
                 }
             }
+
             return dt;
-        }
-
-        public async Task<DataTable> GetEmployeeDeductionAsync(int month, int year, string deductionCode)
-        {
-            DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
-            {
-                await con.OpenAsync();
-                string query = @"SELECT EmployeeDeductionID, EmployeeCode, DeductionDate, Amount, Note, updateHistory
-                         FROM EmployeeDeduction
-                         WHERE DeductionMonth = @Month AND DeductionYear = @Year AND DeductionTypeCode = @DeductionTypeCode";
-
-                using (SqlCommand cmd = new SqlCommand(query, con))
-                {
-                    cmd.Parameters.AddWithValue("@Month", month);
-                    cmd.Parameters.AddWithValue("@Year", year);
-                    cmd.Parameters.AddWithValue("@DeductionTypeCode", deductionCode);
-                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
-                    {
-                        dt.Load(reader);
-                    }
-                }
-            }
-            return dt;
-        }
-        public async Task<DataTable> GetEmployeeDeductionAsync(int year, string deductionCode)
-        {
-            DataTable dt = new DataTable();
-            using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
-            {
-                await con.OpenAsync();
-                string query = @"SELECT EmployeeDeductionID, EmployeeCode, DeductionDate, Amount, Note, updateHistory
-                         FROM EmployeeDeduction
-                         WHERE DeductionYear = @Year AND DeductionTypeCode = @DeductionTypeCode";
-
-                using (SqlCommand cmd = new SqlCommand(query, con))
-                {
-                    cmd.Parameters.AddWithValue("@Year", year);
-                    cmd.Parameters.AddWithValue("@DeductionTypeCode", deductionCode);
-                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
-                    {
-                        dt.Load(reader);
-                    }
-                }
-            }
-            return dt;
-        }
-
+        }       
 
         public async Task<bool> updateEmployeeDeductionAsync(int EmployeeDeductionID, string EmployeeCode, DateTime DeductionDate, int amount, string note)
         {
-            string query = @"UPDATE EmployeeDeduction SET 
-                                EmployeeCode=@EmployeeCode,
-                                DeductionMonth=@DeductionMonth,
-                                DeductionYear=@DeductionYear,
-                                DeductionDate=@DeductionDate,
-                                Amount=@Amount,
-                                Note=@Note
-                            WHERE EmployeeDeductionID=@EmployeeDeductionID";
             try
             {
                 using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
-                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    using (SqlCommand cmd = new SqlCommand("sp_UpdateEmployeeDeduction", con))
                     {
-                        cmd.Parameters.AddWithValue("@EmployeeDeductionID", EmployeeDeductionID);
-                        cmd.Parameters.AddWithValue("@EmployeeCode", EmployeeCode);
-                        cmd.Parameters.AddWithValue("@DeductionMonth", DeductionDate.Month);
-                        cmd.Parameters.AddWithValue("@DeductionYear", DeductionDate.Year);
-                        cmd.Parameters.AddWithValue("@DeductionDate", DeductionDate.Date);
-                        cmd.Parameters.AddWithValue("@Amount", amount);
-                        cmd.Parameters.AddWithValue("@Note", note);
-                        await cmd.ExecuteNonQueryAsync();
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        cmd.Parameters.Add("@EmployeeDeductionID", SqlDbType.Int).Value = EmployeeDeductionID;
+                        cmd.Parameters.Add("@EmployeeCode", SqlDbType.NVarChar).Value = EmployeeCode;
+                        cmd.Parameters.Add("@DeductionDate", SqlDbType.Date).Value = DeductionDate.Date;
+                        cmd.Parameters.Add("@Amount", SqlDbType.Int).Value = amount;
+                        cmd.Parameters.Add("@Note", SqlDbType.NVarChar).Value = (object)note ?? DBNull.Value;
+
+                        var result = await cmd.ExecuteScalarAsync();
+                        return Convert.ToInt32(result) == 1;
                     }
                 }
-                return true;
             }
-            catch { return false; }
+            catch
+            {
+                return false;
+            }
         }
 
         public async Task<int> insertEmployeeDeductionAsync(string EmployeeCode, string DeductionTypeCode, DateTime DeductionDate, int amount, string note)
         {
             int newId = -1;
 
-            string insertQuery = @" INSERT INTO EmployeeDeduction (
-                                        EmployeeCode, DeductionTypeCode, DeductionMonth, DeductionYear, DeductionDate, Amount, Note
-                                    )
-                                    OUTPUT INSERTED.EmployeeDeductionID
-                                    VALUES (
-                                        @EmployeeCode, @DeductionTypeCode, @DeductionMonth, @DeductionYear, @DeductionDate, @Amount, @Note
-                                    )";
-
             try
             {
                 using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
 
-                    // 2️⃣ Insert và lấy ID mới
-                    using (SqlCommand cmd = new SqlCommand(insertQuery, con))
+                    using (SqlCommand cmd = new SqlCommand("sp_InsertEmployeeDeduction", con))
                     {
-                        cmd.Parameters.AddWithValue("@EmployeeCode", EmployeeCode);
-                        cmd.Parameters.AddWithValue("@DeductionTypeCode", DeductionTypeCode);
-                        cmd.Parameters.AddWithValue("@DeductionMonth", DeductionDate.Month);
-                        cmd.Parameters.AddWithValue("@DeductionYear", DeductionDate.Year);
-                        cmd.Parameters.AddWithValue("@DeductionDate", DeductionDate.Date);
-                        cmd.Parameters.AddWithValue("@Amount", amount);
-                        cmd.Parameters.AddWithValue("@Note", note);
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        cmd.Parameters.Add("@EmployeeCode", SqlDbType.NVarChar).Value = EmployeeCode;
+                        cmd.Parameters.Add("@DeductionTypeCode", SqlDbType.NVarChar).Value = DeductionTypeCode;
+                        cmd.Parameters.Add("@DeductionDate", SqlDbType.Date).Value = DeductionDate.Date;
+                        cmd.Parameters.Add("@Amount", SqlDbType.Int).Value = amount;
+                        cmd.Parameters.Add("@Note", SqlDbType.NVarChar).Value = (object)note ?? DBNull.Value;
 
                         object result = await cmd.ExecuteScalarAsync();
                         if (result != null)
@@ -2329,9 +2279,9 @@ namespace RauViet.classes
             }
             catch (Exception ex)
             {
-                // ✅ Tùy chọn: log lỗi ra console hoặc file
-                Console.WriteLine($"[InsertEmployeeDeductionAsync] Error: {ex.Message}");
+                Console.WriteLine($"[insertEmployeeDeductionAsync] Error: {ex.Message}");
             }
+
             return newId;
         }
 
@@ -2430,21 +2380,25 @@ namespace RauViet.classes
 
         public async Task<bool> deleteEmployeeDeductionAsync(int EmployeeDeductionID)
         {
-            string query = "DELETE FROM EmployeeDeduction WHERE EmployeeDeductionID=@EmployeeDeductionID";
             try
             {
                 using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
-                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    using (SqlCommand cmd = new SqlCommand("sp_DeleteEmployeeDeduction", con))
                     {
-                        cmd.Parameters.AddWithValue("@EmployeeDeductionID", EmployeeDeductionID);
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.Add("@EmployeeDeductionID", SqlDbType.Int).Value = EmployeeDeductionID;
+
                         await cmd.ExecuteNonQueryAsync();
                     }
                 }
                 return true;
             }
-            catch { return false; }
+            catch
+            {
+                return false;
+            }
         }
 
         public async Task<DataTable> GetEmployeeAllowanceAsync(int month, int year)
@@ -3297,51 +3251,6 @@ namespace RauViet.classes
             return dt;
         }
 
-        //public async Task updateWorkHourAsync(string employeeCode, DateTime day, decimal wh)
-        //{
-        //    string query = @"UPDATE Attendance 
-        //                            SET WorkingHours = @WorkingHours
-        //                            WHERE EmployeeCode = @EmployeeCode
-        //                              AND WorkDate = @WorkDate;
-        //                            ";
-        //    try
-        //    {
-        //        using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
-        //        {
-        //            await con.OpenAsync();
-        //            using (SqlCommand cmd = new SqlCommand(query, con))
-        //            {
-        //                cmd.Parameters.AddWithValue("@EmployeeCode", employeeCode);
-        //                cmd.Parameters.AddWithValue("@WorkingHours", wh);
-        //                cmd.Parameters.AddWithValue("@WorkDate", day.Date);
-        //                await cmd.ExecuteNonQueryAsync();
-        //            }
-        //        }
-        //    }
-        //    catch { }
-        //}
-        //public async Task PhepAsync(string employeeCode, int phep)
-        //{
-        //    string query = @"UPDATE AnnualLeaveBalance 
-        //                            SET RemainingLeaveDays = @RemainingLeaveDays
-        //                            WHERE EmployeeCode = @EmployeeCode
-        //                            ";
-        //    try
-        //    {
-        //        using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
-        //        {
-        //            await con.OpenAsync();
-        //            using (SqlCommand cmd = new SqlCommand(query, con))
-        //            {
-        //                cmd.Parameters.AddWithValue("@EmployeeCode", employeeCode);
-        //                cmd.Parameters.AddWithValue("@RemainingLeaveDays", phep);
-        //                await cmd.ExecuteNonQueryAsync();
-        //            }
-        //        }
-        //    }
-        //    catch { }
-        //}
-
         public async Task InsertHolidayToAttendanceAsync(DateTime holidayDate, string holidayName)
         {
             try
@@ -3426,17 +3335,21 @@ namespace RauViet.classes
         public async Task<DataTable> GetMealOrderAsybc()
         {
             DataTable dt = new DataTable();
+
             using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
             {
                 await con.OpenAsync();
-                string query = @"SELECT TOP 60 * FROM MealOrders ORDER BY MealOrdersID DESC;";
-
-                using (SqlCommand cmd = new SqlCommand(query, con))
-                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                using (SqlCommand cmd = new SqlCommand("sp_GetMealOrders", con))
                 {
-                    dt.Load(reader);
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
                 }
             }
+
             return dt;
         }
 
@@ -3497,55 +3410,68 @@ namespace RauViet.classes
         {
             int newId = -1;
 
-            string query = @"INSERT INTO MealOrders (OrderDate, Note, Quantity, Price, VAT) 
-                                OUTPUT INSERTED.MealOrdersID
-                                VALUES (@OrderDate, @Note, @Quantity, @Price, @VAT)";
             try
             {
                 using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
-                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    using (SqlCommand cmd = new SqlCommand("sp_InsertMealOrder", con))
                     {
-                        cmd.Parameters.AddWithValue("@OrderDate", orderDate);
-                        cmd.Parameters.AddWithValue("@Note", note);
-                        cmd.Parameters.AddWithValue("@Quantity", quantity);
-                        cmd.Parameters.AddWithValue("@Price", price);
-                        cmd.Parameters.AddWithValue("@VAT", VAT);
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        cmd.Parameters.Add("@OrderDate", SqlDbType.DateTime).Value = orderDate;
+                        cmd.Parameters.Add("@Quantity", SqlDbType.Int).Value = quantity;
+                        cmd.Parameters.Add("@Price", SqlDbType.Int).Value = price;
+
+                        var vatParam = cmd.Parameters.Add("@VAT", SqlDbType.Decimal);
+                        vatParam.Precision = 10;
+                        vatParam.Scale = 2;
+                        vatParam.Value = VAT;
+
+                        cmd.Parameters.Add("@Note", SqlDbType.NVarChar).Value = (object)note ?? DBNull.Value;
+
                         object result = await cmd.ExecuteScalarAsync();
                         if (result != null)
                             newId = Convert.ToInt32(result);
                     }
                 }
+
                 return newId;
             }
-            catch { return -1; }
+            catch
+            {
+                return -1;
+            }
         }
 
         public async Task<bool> updateMealOrderAsync(int mealOrdersID, DateTime orderDate, string note, int quantity, int price, decimal VAT, bool isPaid)
         {
-            string query = @"UPDATE MealOrders SET OrderDate=@OrderDate, Quantity=@Quantity, Price=@Price, VAT=@VAT, IsPaid=@IsPaid, Note=@Note
-                            WHERE MealOrdersID=@MealOrdersID";
             try
             {
                 using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
-                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    using (SqlCommand cmd = new SqlCommand("sp_UpdateMealOrder", con))
                     {
-                        cmd.Parameters.AddWithValue("@MealOrdersID", mealOrdersID);
-                        cmd.Parameters.AddWithValue("@OrderDate", orderDate);
-                        cmd.Parameters.AddWithValue("@Quantity", quantity);
-                        cmd.Parameters.AddWithValue("@Price", price);
-                        cmd.Parameters.AddWithValue("@VAT", VAT);
-                        cmd.Parameters.AddWithValue("@IsPaid", isPaid);
-                        cmd.Parameters.AddWithValue("@Note", note);
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        cmd.Parameters.Add("@MealOrdersID", SqlDbType.Int).Value = mealOrdersID;
+                        cmd.Parameters.Add("@OrderDate", SqlDbType.DateTime).Value = orderDate;
+                        cmd.Parameters.Add("@Quantity", SqlDbType.Int).Value = quantity;
+                        cmd.Parameters.Add("@Price", SqlDbType.Int).Value = price;
+                        cmd.Parameters.Add("@VAT", SqlDbType.Decimal).Value = VAT;
+                        cmd.Parameters.Add("@IsPaid", SqlDbType.Bit).Value = isPaid;
+                        cmd.Parameters.Add("@Note", SqlDbType.NVarChar).Value = (object)note ?? DBNull.Value;
+
                         await cmd.ExecuteNonQueryAsync();
                     }
                 }
                 return true;
             }
-            catch { return false; }
+            catch
+            {
+                return false;
+            }
         }
 
         public async Task<bool> updateMealOrder_ThanhToanAsync(int mealOrdersID, bool isPaid)
@@ -3575,21 +3501,25 @@ namespace RauViet.classes
 
         public async Task<bool> deleteMealOrderAsync(int ID)
         {
-            string query = "DELETE FROM MealOrders WHERE MealOrdersID=@MealOrdersID";
             try
             {
                 using (SqlConnection con = new SqlConnection(ql_NhanSu_conStr()))
                 {
                     await con.OpenAsync();
-                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    using (SqlCommand cmd = new SqlCommand("sp_DeleteMealOrder", con))
                     {
+                        cmd.CommandType = CommandType.StoredProcedure;
                         cmd.Parameters.AddWithValue("@MealOrdersID", ID);
+
                         await cmd.ExecuteNonQueryAsync();
                     }
                 }
                 return true;
             }
-            catch { return false; }
+            catch
+            {
+                return false;
+            }
         }        
     }
 }

@@ -632,6 +632,7 @@ namespace RauViet.classes
         {
             await getProductSKUAsync();
             await getProductpackingAsync();
+            await getCustomersAsync();
             data.Columns.Add(new DataColumn("Search_NoSign", typeof(string)));
             data.Columns.Add(new DataColumn("SKU", typeof(int)));
             data.Columns.Add(new DataColumn("GroupProduct", typeof(int)));
@@ -1568,7 +1569,7 @@ namespace RauViet.classes
             {
                 try
                 {
-                    mOrderDomesticCode_dt = await SQLManager_Kho.Instance.getExportCodesAsync();
+                    mOrderDomesticCode_dt = await SQLManager_Kho.Instance.getOrderDomesticCodeAsync();
                     editOrderDomesticCode();
                 }
                 catch
@@ -1632,8 +1633,10 @@ namespace RauViet.classes
             return result;
         }
 
-        private void editOrderDomesticCode()
+        private async Task editOrderDomesticCode()
         {
+            await getCustomersAsync();
+            await GetActiveEmployeesIn_DongGoiAsync();
             mOrderDomesticCode_dt.Columns.Add(new DataColumn("InputByName", typeof(string)));
             mOrderDomesticCode_dt.Columns.Add(new DataColumn("InputByName_NoSign", typeof(string)));
             mOrderDomesticCode_dt.Columns.Add(new DataColumn("PackingByName", typeof(string)));
@@ -1834,7 +1837,7 @@ namespace RauViet.classes
                 {
                     DataTable dt = await SQLManager_Kho.Instance.GetOrderDomesticByMonthYearAsync(month, year);
                     mtOrderDomestics[year][month] = dt;
-                    editOrderDomesticByMonthYear(dt);
+                    await editOrderDomesticByMonthYear(dt);
                 }
                 catch (Exception ex)
                 {
@@ -1858,7 +1861,7 @@ namespace RauViet.classes
                 try
                 {
                     DataTable dt = await SQLManager_Kho.Instance.GetOrderDomesticByYearAsync(year);
-                    editOrderDomesticByMonthYear(dt);
+                    await editOrderDomesticByMonthYear(dt);
 
                     var monthDict = dt.AsEnumerable()
                                     .Where(r => r.Field<DateTime?>("DeliveryDate") != null)
@@ -1897,8 +1900,10 @@ namespace RauViet.classes
             return dtYear;
         }
 
-        private void editOrderDomesticByMonthYear(DataTable data)
+        private async Task editOrderDomesticByMonthYear(DataTable data)
         {
+            await getProductpackingAsync();
+            await getProductTypeAsync();
             data.Columns.Add(new DataColumn("SKU", typeof(int)));
             data.Columns.Add(new DataColumn("ProductNameVN", typeof(string)));
             data.Columns.Add(new DataColumn("Package", typeof(string)));
