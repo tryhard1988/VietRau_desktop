@@ -154,7 +154,7 @@ public class HoaDonMuaHang_Printer
 
             DataRow row = mData_dt.Rows[rowIndex];
             string spName = Convert.ToString(row["Name_VN"]);
-            string unit = Convert.ToString(row["Package"]);
+            string unit = Convert.ToString(row["unit"]);
             string Note = Convert.ToString(row["Note"]);
             decimal quantity = Convert.ToDecimal(row["Quantity"]);
 

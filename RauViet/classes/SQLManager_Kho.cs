@@ -1,4 +1,5 @@
-﻿using RauViet.ui;
+﻿using PdfSharp.Drawing;
+using RauViet.ui;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -245,8 +246,8 @@ namespace RauViet.classes
                         cmd.Parameters.AddWithValue("@SKU", SKU);
                         cmd.Parameters.AddWithValue("@PriceCNF", PriceCNF);
 
-                        int rows = await cmd.ExecuteNonQueryAsync();
-                        return rows > 0;
+                        await cmd.ExecuteNonQueryAsync();
+                        return true;
                     }
                 }
             }
@@ -3013,7 +3014,7 @@ namespace RauViet.classes
             return dt;
         }
 
-        public async Task<int> insertVegetableWarehouseTransactionAsync(int SKU, string TransactionType,decimal Quantity, string FarmSourceCode, DateTime TransactionDate, string Note, int? sellerID, int price)
+        public async Task<int> insertVegetableWarehouseTransactionAsync(int SKU, string TransactionType,decimal Quantity, string FarmSourceCode, DateTime TransactionDate, string Note, int? sellerID, int price, string unit)
         {
             int newId = -1;
             try
@@ -3034,6 +3035,7 @@ namespace RauViet.classes
                         cmd.Parameters.Add("@Note", SqlDbType.NVarChar, 250).Value = Note;
                         cmd.Parameters.Add("@SellerID", SqlDbType.Int).Value = sellerID ?? (object)DBNull.Value;
                         cmd.Parameters.Add("@Price", SqlDbType.Int).Value = price;
+                        cmd.Parameters.Add("@Unit", SqlDbType.NVarChar).Value = unit;
 
                         object result = await cmd.ExecuteScalarAsync();
                         if (result != null)
@@ -3050,7 +3052,7 @@ namespace RauViet.classes
             }
         }
 
-        public async Task<bool> updateVegetableWarehouseTransactionAsync(int ID, int SKU, string TransactionType, decimal Quantity, string FarmSourceCode, DateTime TransactionDate, string Note, int? sellerID, int price)
+        public async Task<bool> updateVegetableWarehouseTransactionAsync(int ID, int SKU, string TransactionType, decimal Quantity, string FarmSourceCode, DateTime TransactionDate, string Note, int? sellerID, int price, string unit)
         {
             try
             {
@@ -3071,6 +3073,7 @@ namespace RauViet.classes
                         cmd.Parameters.Add("@Note", SqlDbType.NVarChar, 250).Value = Note;
                         cmd.Parameters.Add("@SellerID", SqlDbType.Int).Value = sellerID ?? (object)DBNull.Value;
                         cmd.Parameters.Add("@Price", SqlDbType.Int).Value = price;
+                        cmd.Parameters.Add("@Unit", SqlDbType.NVarChar).Value = unit;
 
                         await cmd.ExecuteNonQueryAsync();
                     }

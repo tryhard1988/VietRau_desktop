@@ -442,7 +442,12 @@ namespace RauViet.ui
                 return;
             }
 
-            string employeeCode = Convert.ToString(dataGV.CurrentRow.Cells["EmployeeCode"].Value);
+            string employeeCode = "";
+            if(isNewState)
+                employeeCode = Convert.ToString(dataGV.CurrentRow.Cells["EmployeeCode"].Value);
+            else
+                employeeCode = Convert.ToString(allowanceGV.CurrentRow.Cells["EmployeeCode"].Value);
+
             decimal amount = Utils.ParseDecimalSmart(amount_tb.Text);
             int giaPhuCap = Convert.ToInt32(giaPhuCap_tb.Text);
             int month = monthYearDtp.Value.Month;

@@ -427,6 +427,9 @@ namespace RauViet.classes
                 {
                     mExportCodes_dt = await SQLManager_Kho.Instance.getExportCodesAsync();
                     editExportCodes();
+
+                    mExportCodes_dt.DefaultView.Sort = "ExportDate DESC"; // hoặc DESC nếu muốn giảm dần
+                    mExportCodes_dt = mExportCodes_dt.DefaultView.ToTable();
                 }
                 catch
                 {
@@ -2345,7 +2348,6 @@ namespace RauViet.classes
 
             mVegetableWarehouseTransaction_dt.Columns.Add(new DataColumn("Name_VN", typeof(string)));
             mVegetableWarehouseTransaction_dt.Columns.Add(new DataColumn("TransactionTypeName", typeof(string)));
-            mVegetableWarehouseTransaction_dt.Columns.Add(new DataColumn("Package", typeof(string)));
             mVegetableWarehouseTransaction_dt.Columns.Add(new DataColumn("SellerName", typeof(string)));
             foreach (DataRow row in mVegetableWarehouseTransaction_dt.Rows)
             {
@@ -2375,7 +2377,6 @@ namespace RauViet.classes
                         Package = "kg";
 
                     row["Name_VN"] = pprow["ProductNameVN"].ToString();
-                    row["Package"] = Package;
                 }
 
                 if (sellerID.HasValue)
@@ -2396,7 +2397,7 @@ namespace RauViet.classes
             mVegetableWarehouseTransaction_dt.Columns["IsPaid"].SetOrdinal(count++);
             mVegetableWarehouseTransaction_dt.Columns["SellerName"].SetOrdinal(count++);
             mVegetableWarehouseTransaction_dt.Columns["Name_VN"].SetOrdinal(count++);
-            mVegetableWarehouseTransaction_dt.Columns["Package"].SetOrdinal(count++);
+            mVegetableWarehouseTransaction_dt.Columns["unit"].SetOrdinal(count++);
             mVegetableWarehouseTransaction_dt.Columns["Quantity"].SetOrdinal(count++);
             mVegetableWarehouseTransaction_dt.Columns["Price"].SetOrdinal(count++);
             mVegetableWarehouseTransaction_dt.Columns["FarmSourceCode"].SetOrdinal(count++);

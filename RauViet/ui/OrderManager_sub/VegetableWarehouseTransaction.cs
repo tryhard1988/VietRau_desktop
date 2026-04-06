@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualBasic;
+using PdfSharp.Drawing.BarCodes;
 using RauViet.classes;
 using System;
 using System.Collections.Generic;
@@ -84,8 +85,15 @@ namespace RauViet.ui
             inBangKe_btn.Click += InBangKe_btn_Click;
             xemBangKe_btn.Click += XemBangKe_btn_Click;
 
+            inBangKe2_btn.Click += InBangKe2_btn_Click;
+            xemBangKe2_btn.Click += XemBangKe2_btn_Click;
+
+            inPhieuDeNghi_btn.Click += InPhieuDeNghi_btn_Click;
+            xemPhieuDeNghi_btn.Click += XemPhieuDeNghi_btn_Click;
+
             seller_cbb.SelectedIndexChanged += UpdatePrice;
-            sku_cbb.SelectedIndexChanged += UpdatePrice;
+            sku_cbb.SelectedIndexChanged += Sku_cbb_SelectedIndexChanged; ;
+
         }
 
         private void ProductList_KeyDown(object sender, KeyEventArgs e)
@@ -180,7 +188,7 @@ namespace RauViet.ui
 
                 Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
                     {"Name_VN", "Tên Tiếng Việt" },
-                    {"Package", "Đ.Vị" },
+                    {"unit", "Đ.Vị" },
                     {"TransactionTypeName", "Loại" },
                     {"Quantity", "Số Lượng" },
                     {"TransactionDate", "Ngày" },
@@ -283,7 +291,7 @@ namespace RauViet.ui
             updateRightUI();            
         }
 
-        private async void updateItem(int ID, int SKU, string TransactionType, decimal Quantity, string FarmSourceCode, DateTime TransactionDate, string Note, int? sellerID, int price)
+        private async void updateItem(int ID, int SKU, string TransactionType, decimal Quantity, string FarmSourceCode, DateTime TransactionDate, string Note, int? sellerID, int price, string unit)
         {
             foreach (DataRow row in mInventoryTransaction_dt.Rows)
             {
@@ -299,16 +307,12 @@ namespace RauViet.ui
                         string oldVallueStr = $"Tên SP: {row["Name_VN"].ToString()}; Hành động: {row["TransactionType"].ToString()}; số lượng: {row["Quantity"].ToString()}; Khu Vực: {row["FarmSourceCode"].ToString()}; ngày: {row["TransactionDate"].ToString()}; ghi chú: {row["Note"].ToString()}; Người Bán: {row["SellerName"]}";
                         try
                         {      
-                            bool isScussess = await SQLManager_Kho.Instance.updateVegetableWarehouseTransactionAsync(ID, SKU, TransactionType, Quantity, FarmSourceCode, TransactionDate, Note, sellerID, price);
+                            bool isScussess = await SQLManager_Kho.Instance.updateVegetableWarehouseTransactionAsync(ID, SKU, TransactionType, Quantity, FarmSourceCode, TransactionDate, Note, sellerID, price, unit);
                             
                             if (isScussess == true)
                             {
                                 status_lb.Text = "Thành công.";
                                 status_lb.ForeColor = Color.Green;
-
-                                string package = productSKUData["Package"].ToString();
-                                if (package.CompareTo("weight") == 0)
-                                    package = "kg";
 
                                 row["SKU"] = SKU;
                                 row["TransactionType"] = TransactionType;
@@ -316,11 +320,11 @@ namespace RauViet.ui
                                 row["Quantity"] = Quantity;
                                 row["FarmSourceCode"] = FarmSourceCode;
                                 row["Name_VN"] = productSKUData["ProductNameVN"];
-                                row["Package"] = package;
                                 row["TransactionDate"] = TransactionDate;
                                 row["Note"] = Note;
                                 row["SellerID"] = sellerID ?? (object)DBNull.Value;
                                 row["Price"] = price;
+                                row["unit"] = unit;
 
                                 if (sellerID.HasValue)
                                     row["SellerName"] = SellerData["SupplierName"];
@@ -350,7 +354,7 @@ namespace RauViet.ui
             }
         }
 
-        private async void createNew(int SKU, string TransactionType, decimal Quantity, string FarmSourceCode, DateTime TransactionDate, string Note, int? sellerID, int price)
+        private async void createNew(int SKU, string TransactionType, decimal Quantity, string FarmSourceCode, DateTime TransactionDate, string Note, int? sellerID, int price, string unit)
         {
             DialogResult dialogResult = MessageBox.Show("Chắc chắn chưa ?", "Thông Tin", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
@@ -362,16 +366,13 @@ namespace RauViet.ui
                 string newVallueStr = $"Tên SP: {productSKUData["ProductNameVN"]}; Hành động: {transactionType_CB.Text}; số lượng: {Quantity}; Khu Vực: {FarmSourceCode}; ngày: {TransactionDate}; ghi chứ: {Note}; Người Bán: {seller_cbb.Text}";
                 try
                 {
-                    int newId = await SQLManager_Kho.Instance.insertVegetableWarehouseTransactionAsync(SKU, TransactionType, Quantity, FarmSourceCode, TransactionDate, Note, sellerID, price);
+                    int newId = await SQLManager_Kho.Instance.insertVegetableWarehouseTransactionAsync(SKU, TransactionType, Quantity, FarmSourceCode, TransactionDate, Note, sellerID, price, unit);
                     
                     if (newId > 0)
                     {
                         
                         DataRow drToAdd = mInventoryTransaction_dt.NewRow();
 
-                        string package = productSKUData["Package"].ToString();
-                        if (package.CompareTo("weight") == 0)
-                            package = "kg";
 
                         drToAdd["TransactionID"] = newId;
                         drToAdd["SKU"] = SKU;
@@ -383,8 +384,8 @@ namespace RauViet.ui
                         drToAdd["Note"] = Note;
                         drToAdd["SellerID"] = sellerID ?? (object)DBNull.Value;
                         drToAdd["Name_VN"] = productSKUData["ProductNameVN"];
-                        drToAdd["Package"] = package;
                         drToAdd["Price"] = price;
+                        drToAdd["unit"] = unit;
                         drToAdd["IsPaid"] = false;
                         if (sellerID.HasValue)
                             drToAdd["SellerName"] = SellerData["SupplierName"];
@@ -438,6 +439,7 @@ namespace RauViet.ui
             string farmSourceCode = farmSourceCode_tb.Text;
             DateTime tranDate = transactionDate_dtp.Value.Date;
             string note = note_tb.Text;
+            string unit = unit_tb.Text;
             int? sellerID = null;
             int price = Convert.ToInt32(price_tb.Text);
             
@@ -453,9 +455,9 @@ namespace RauViet.ui
             }
 
             if (id_tb.Text.Length != 0)
-                updateItem(int.Parse(id_tb.Text), sku, tranType, quantity, farmSourceCode, tranDate, note, sellerID, price);
+                updateItem(int.Parse(id_tb.Text), sku, tranType, quantity, farmSourceCode, tranDate, note, sellerID, price, unit);
             else
-                createNew(sku, tranType, quantity, farmSourceCode, tranDate, note, sellerID, price);
+                createNew(sku, tranType, quantity, farmSourceCode, tranDate, note, sellerID, price, unit);
 
         }
         private async void deleteItemSelected()
@@ -571,6 +573,7 @@ namespace RauViet.ui
                     DateTime tranDate = Convert.ToDateTime(cells["TransactionDate"].Value);
                     string note = cells["Note"].Value.ToString();
                     int price = Convert.ToInt32(cells["Price"].Value);
+                    string unit = cells["unit"].Value.ToString();
 
                     if (!sku_cbb.Items.Cast<object>().Any(i => ((DataRowView)i)["SKU"].ToString() == SKU.ToString()))
                     {
@@ -592,6 +595,7 @@ namespace RauViet.ui
                     farmSourceCode_tb.Text = farmSourceCode;
                     price_tb.Text = price.ToString();
                     status_lb.Text = "";
+                    unit_tb.Text = unit;
                 }
             }
             catch (Exception ex)
@@ -728,6 +732,67 @@ namespace RauViet.ui
             }
         }
 
+        private void InBangKe2_btn_Click(object sender, EventArgs e)
+        {
+            inBangrKe2(1);
+        }
+
+        private void XemBangKe2_btn_Click(object sender, EventArgs e)
+        {
+            inBangrKe2(2);
+        }
+
+
+        async void inBangrKe2(int state)
+        {
+            if (code_GV.SelectedRows.Count > 0)
+            {
+                var cells = code_GV.SelectedRows[0].Cells;
+                var farmSourceCode = cells["FarmSourceCode"].Value.ToString();
+
+                BangKeThuMuaHangHoa_Printer2 printer = new BangKeThuMuaHangHoa_Printer2(farmSourceCode, mInventoryTransaction_dt);
+                await printer.loadData();
+                if (state == 1) //in
+                {
+                    printer.PrintDirect();
+                }
+                else if (state == 2) //xem
+                {
+                    printer.PrintPreview(this);
+                }
+                else if (state == 3) //excel
+                {
+                    printer.ExportExcel();
+                }
+            }
+        }
+
+        private void XemPhieuDeNghi_btn_Click(object sender, EventArgs e)
+        {
+            PhieuDeNghi(true);
+        }
+
+        private void InPhieuDeNghi_btn_Click(object sender, EventArgs e)
+        {
+            PhieuDeNghi(false);
+        }
+
+        void PhieuDeNghi(bool isPreview)
+        {
+            if (code_GV.SelectedRows.Count <= 0) return;
+
+            var cells = code_GV.SelectedRows[0].Cells;
+            var farmSourceCode = cells["FarmSourceCode"].Value.ToString();
+
+            var row = mInventoryTransaction_dt.AsEnumerable().FirstOrDefault(r => r.Field<string>("FarmSourceCode") == farmSourceCode);
+            DateTime transactionDate = row?.Field<DateTime?>("TransactionDate") ?? DateTime.Now;
+
+            decimal total = mInventoryTransaction_dt.AsEnumerable().Where(r => r.Field<string>("FarmSourceCode") == farmSourceCode).Sum(r => r.Field<int>("Price") * r.Field<decimal>("Quantity"));
+            PhieuDeNghiThanhToan form = new PhieuDeNghiThanhToan(transactionDate, Convert.ToInt32(total), farmSourceCode, isPreview);
+            form.ShowData();
+            form.ShowDialog();
+            }
+
         private async void ThanhToan_btn_Click(object sender, EventArgs e)
         {
             DialogResult dialogResult = MessageBox.Show("Hỏi Lần Cuối, Chắc Chắn Chưa!", "Thông Báo", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
@@ -819,5 +884,31 @@ namespace RauViet.ui
                     price_tb.Text = (row?["Price"] != DBNull.Value ? Convert.ToInt32(row["Price"]) : 0).ToString();
             }
         }
+
+        private void Sku_cbb_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (sku_cbb.Text.CompareTo("") == 0 || sku_cbb.SelectedValue == null)
+            {
+                return;                
+            }
+            if (readOnly_btn.Visible == false)
+                return;
+
+            UpdatePrice(sender, e);
+
+            int sku;
+            if (!int.TryParse(sku_cbb.SelectedValue?.ToString(), out sku))
+            {
+                return; // tránh crash
+            }
+
+            DataRow[] rows = mSKU_dt.Select($"SKU = {sku}");
+            string unitName = rows[0]["Package"].ToString();
+            if (unitName.CompareTo("weight") == 0)
+                unitName = "kg";
+
+            unit_tb.Text = unitName;
+        }
+
     }
 }
