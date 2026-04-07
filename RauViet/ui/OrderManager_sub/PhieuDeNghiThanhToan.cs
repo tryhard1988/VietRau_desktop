@@ -20,7 +20,7 @@ namespace RauViet.ui
             ngayMua_dtp.Format = DateTimePickerFormat.Custom;
             ngayMua_dtp.CustomFormat = "dd/MM/yyyy";
 
-            soTien_tb.Text = sotien.ToString("N0");
+            soTien_tb.Text = sotien.ToString();
             ngayMua_dtp.Value = ngayMua;
             noidung_tb.Text = $"Mua hàng chuyến {noidung}";
 
@@ -86,12 +86,14 @@ namespace RauViet.ui
             DeNghiThanhToan_Printer printer = new DeNghiThanhToan_Printer(nguoiDeNghi, supplierID, ngayMua_dtp.Value, Convert.ToInt32(soLan_tb.Text), noidung_tb.Text, Convert.ToInt32(soTien_tb.Text), note_tb.Text);
             try
             {
+                this.Hide();
+                
                 await printer.loadData();
 
                 if (!mIsPrintPreview)
                     printer.PrintDirect();
                 else
-                    printer.PrintPreview(this);
+                    printer.PrintPreview(this.Owner);
 
                 this.Close();
             }

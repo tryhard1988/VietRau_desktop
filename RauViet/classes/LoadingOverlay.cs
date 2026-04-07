@@ -17,12 +17,21 @@ namespace RauViet.classes
             _owner = owner ?? throw new ArgumentNullException(nameof(owner));
         }
 
-        public async void Show()
+        public async Task Show()
         {
+            if (_owner == null || _owner.IsDisposed)
+                return;
+
+            if (_owner.InvokeRequired)
+            {
+                _owner.Invoke(new Action(async () => await Show()));
+                return;
+            }
+
             if (_overlayForm != null && !_overlayForm.IsDisposed)
                 return;
 
-            await Task.Delay(50); // đợi form chính render xong
+            await Task.Yield(); // thay cho Delay
 
             _overlayForm = new Form
             {
@@ -31,20 +40,15 @@ namespace RauViet.classes
                 FormBorderStyle = FormBorderStyle.None,
                 StartPosition = FormStartPosition.Manual,
                 ShowInTaskbar = false,
-                //TopMost = true,
                 Owner = _owner
             };
 
+            if (!_owner.IsHandleCreated)
+                _owner.CreateControl();
+
             _overlayForm.Bounds = _owner.RectangleToScreen(_owner.ClientRectangle);
 
-            var contentPanel = new Panel
-            {
-                Dock = DockStyle.Fill,
-                BackColor = Color.Transparent
-            };
-            _overlayForm.Controls.Add(contentPanel);
-
-            var loadingLabel = new Label
+            var label = new Label
             {
                 AutoSize = true,
                 ForeColor = Color.White,
@@ -53,14 +57,12 @@ namespace RauViet.classes
                 Text = Message
             };
 
-            contentPanel.Controls.Add(loadingLabel);
+            _overlayForm.Controls.Add(label);
             _overlayForm.Show();
-            _overlayForm.BringToFront();
-            _overlayForm.Refresh();
 
-            loadingLabel.Location = new Point(
-                (_overlayForm.ClientSize.Width - loadingLabel.PreferredWidth) / 2,
-                (_overlayForm.ClientSize.Height - loadingLabel.Height) / 2
+            label.Location = new Point(
+                (_overlayForm.ClientSize.Width - label.PreferredWidth) / 2,
+                (_overlayForm.ClientSize.Height - label.Height) / 2
             );
 
         }

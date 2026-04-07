@@ -170,9 +170,9 @@ namespace RauViet.classes
                     editOrderDomesticDetail(data);
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                Console.WriteLine("preload in SQLStore errror");
+                Console.WriteLine($"preload in SQLStore errror:  {ex.Message}");
             }
         }
 

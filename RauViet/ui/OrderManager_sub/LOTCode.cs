@@ -171,25 +171,7 @@ namespace RauViet.ui
                 return;
             mCurrentExportID = exportCodeId;
 
-            var LOTCodeTask = SQLStore_Kho.Instance.GetLOTCodeAsync(mCurrentExportID);
-            var LOTCodeLogTask = SQLStore_Kho.Instance.GetLotCodeLogAsync(mCurrentExportID);
-
-            await Task.WhenAll(LOTCodeTask, LOTCodeLogTask);
-
-            mLOTCode_dt = LOTCodeTask.Result;
-            mLotCodeLog_dv = new DataView(LOTCodeLogTask.Result);
-            logGV.DataSource = mLotCodeLog_dv;
-
-            DataView dv = new DataView(mLOTCode_dt);
-            dv.RowFilter = $"ExportCodeID = {exportCodeId}";
-            dataGV.DataSource = dv;
-
-            await FillMissingLotCodeComplete(mLOTCode_dt);
-
-            DataRowView dataR = (DataRowView)exportCode_cbb.SelectedItem;
-            string staff = dataR["InputByName_NoSign"].ToString();
-
-            dataGV.ReadOnly = !(UserManager.Instance.fullName_NoSign.CompareTo(staff) == 0);
+            ShowData();
         }
 
         private async void dataGV_CellValueChanged(object sender, DataGridViewCellEventArgs e)

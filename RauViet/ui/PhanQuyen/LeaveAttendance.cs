@@ -340,7 +340,7 @@ namespace RauViet.ui
             string employeeCode = cells["EmployeeCode"].Value.ToString();
 
             DataView dv = new DataView(mLeaveAttendance_dt);
-            dv.RowFilter = $"EmployeeCode = '{employeeCode}' AND LeaveTypeCode <> 'NL_1' AND IsRemoved = 0";
+            dv.RowFilter = $"EmployeeCode = '{employeeCode}' AND LeaveTypeCode <> 'NL_1'";
 
             attendanceGV.DataSource = dv;
             mLogDV.RowFilter = $"EmployeeCode = '{employeeCode}'";

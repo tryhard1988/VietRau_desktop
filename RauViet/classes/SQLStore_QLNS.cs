@@ -161,8 +161,8 @@ namespace RauViet.classes
                 await editAllowanceType();
                 editEmployeeSalaryInfo();
                 editAnnualLeaveBalance(mAnnualLeaveBalance_dt);
-                editOvertimeAttendamce(overtimeAttendamceTask1.Result);
-                editOvertimeAttendamce(overtimeAttendamceTask2.Result);
+                await editOvertimeAttendamce(overtimeAttendamceTask1.Result);
+                await editOvertimeAttendamce(overtimeAttendamceTask2.Result);
                 editLeaveAttendances(leaveAttendanceTask1.Result);
                 editLeaveAttendances(leaveAttendanceTask2.Result);
                 editAttendamce(attendamceTask1.Result);
@@ -1303,8 +1303,10 @@ namespace RauViet.classes
             return dtOTDem;
         }
 
-        public void editOvertimeAttendamce(DataTable data)
+        public async Task editOvertimeAttendamce(DataTable data)
         {
+            await GetOvertimeTypeAsync();
+
             Utils.AddColumnIfNotExists(data, "DayOfWeek", typeof(string));
             Utils.AddColumnIfNotExists(data, "OvertimeName", typeof(string));
             Utils.AddColumnIfNotExists(data, "OvertimeTypeCode", typeof(string));

@@ -1,8 +1,11 @@
-﻿using RauViet.classes;
+﻿using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Bibliography;
+using RauViet.classes;
 using System;
 using System.Data;
 using System.Globalization;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Color = System.Drawing.Color;
@@ -54,6 +57,7 @@ namespace RauViet.ui
             monthYearDtp.ValueChanged += MonthYearDtp_ValueChanged;            
             edit_btn.Click += Edit_btn_Click;
             readOnly_btn.Click += ReadOnly_btn_Click;
+            excel_btn.Click += Excel_btn_Click;
             ReadOnly_btn_Click(null, null);
             this.KeyDown += MonthlyAllowance_KeyDown;
 
@@ -126,6 +130,7 @@ namespace RauViet.ui
                 mMonthlyAllowance_dt.Columns.Add(new DataColumn("EmployeeName", typeof(string)));
                 mMonthlyAllowance_dt.Columns.Add(new DataColumn("AllowanceName", typeof(string)));
                 mMonthlyAllowance_dt.Columns.Add(new DataColumn("Date", typeof(string)));
+                mMonthlyAllowance_dt.Columns.Add(new DataColumn("DepartmentName", typeof(string)));
                 foreach (DataRow dr in mMonthlyAllowance_dt.Rows)
                 {
                     int allowanceTypeID = Convert.ToInt32(dr["AllowanceTypeID"]);
@@ -135,8 +140,11 @@ namespace RauViet.ui
 
                     if (applyScopeRows.Length > 0)
                         dr["AllowanceName"] = applyScopeRows[0]["AllowanceName"].ToString();
-                    if(employeeRows.Length > 0)
+                    if (employeeRows.Length > 0)
+                    {
                         dr["EmployeeName"] = employeeRows[0]["FullName"].ToString();
+                        dr["DepartmentName"] = employeeRows[0]["DepartmentName"].ToString();
+                    }
 
                     dr["Date"] = dr["Month"] + "/" + dr["Year"];
                 }
@@ -147,6 +155,8 @@ namespace RauViet.ui
                     if (dr["ContractTypeName"] == DBNull.Value) dr["ContractTypeName"] = "";
                 }
 
+                DataTable distinctTable = mMonthlyAllowance_dt.DefaultView.ToTable(true, "AllowanceName", "AllowanceTypeID");
+                allowanceType_GV.DataSource = distinctTable;
 
                 DataView dv = new DataView(mAllowanceType_dt);
                 dv.RowFilter = "IsActive = 1";
@@ -158,9 +168,16 @@ namespace RauViet.ui
                 dataGV.DataSource = mEmployee_dt;
                 allowanceGV.DataSource = mMonthlyAllowance_dt;
                 log_GV.DataSource = mlog_DV;
+                
 
+
+                Utils.HideColumns(allowanceType_GV, new[] { "AllowanceTypeID" });
                 Utils.HideColumns(dataGV, new[] { "EmployessName_NoSign"});
                 Utils.HideColumns(allowanceGV, new[] { "MonthlyAllowanceID", "AllowanceTypeID", "Month", "Year" });
+
+                Utils.SetGridHeaders(allowanceType_GV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"AllowanceName", "Tên Phụ Cấp" },
+                });
 
                 Utils.SetGridHeaders(allowanceGV, new System.Collections.Generic.Dictionary<string, string> {
                     {"MonthlyAllowanceID", "ID" },
@@ -189,6 +206,10 @@ namespace RauViet.ui
                 });
 
                 Utils.SetGridOrdinal(mMonthlyAllowance_dt, new[] { "EmployeeCode", "EmployeeName", "Date", "AllowanceName", "Amount", "Note"});
+
+                Utils.SetGridWidths(allowanceType_GV, new System.Collections.Generic.Dictionary<string, int> {
+                    {"AllowanceName", 180},
+                });
 
                 Utils.SetGridWidths(dataGV, new System.Collections.Generic.Dictionary<string, int> {
                     {"EmployeeCode", 60},
@@ -358,6 +379,9 @@ namespace RauViet.ui
                                 row.Cells["Date"].Value = month + "/" + year;
                                 row.Cells["Note"].Value = note;
                                 row.Cells["AllowanceName"].Value = allowanceName;
+
+                                DataTable distinctTable = mMonthlyAllowance_dt.DefaultView.ToTable(true, "AllowanceName", "AllowanceTypeID");
+                                allowanceType_GV.DataSource = distinctTable;
                             }
                             else
                             {
@@ -406,13 +430,14 @@ namespace RauViet.ui
                         drToAdd["Note"] = note;
                         drToAdd["AllowanceName"] = mAllowanceType_dt.Select($"AllowanceTypeID = {allowanceTypeID}")[0]["AllowanceName"].ToString();
                         drToAdd["EmployeeName"] = rows[0]["FullName"];
+                        drToAdd["DepartmentName"] = rows[0]["DepartmentName"];
                         mMonthlyAllowance_dt.Rows.Add(drToAdd);
                         mMonthlyAllowance_dt.AcceptChanges();
 
                         _ = SQLManager_QLNS.Instance.InsertMonthlyAllowanceLogAsync(employeeCode, allowanceName, $"Create Success", month, year, amount, note);
 
-                        status_lb.Text = "Thành công";
-                        status_lb.ForeColor = Color.Green;
+                        DataTable distinctTable = mMonthlyAllowance_dt.DefaultView.ToTable(true, "AllowanceName", "AllowanceTypeID");
+                        allowanceType_GV.DataSource = distinctTable;
 
                         newCustomerBtn_Click(null, null);
                     }
@@ -632,6 +657,158 @@ namespace RauViet.ui
 
             int? allowancePrice = row.Field<int?>("AllowancePrice");
             giaPhuCap_tb.Text = (allowancePrice.HasValue ? allowancePrice : 1).ToString();
+        }
+
+        private async void Excel_btn_Click(object sender, EventArgs e)
+        {
+            LoadingOverlay loadingOverlay = new LoadingOverlay(this);
+            loadingOverlay.Message = "Đang xử lý ...";
+            await loadingOverlay.Show();
+            await Task.Delay(100);
+
+            try
+            {
+                DateTime date = monthYearDtp.Value;
+                using (var wb = new XLWorkbook())
+                {
+                    DataView dv = new DataView(mMonthlyAllowance_dt);
+                    dv.Sort = "DepartmentName ASC";
+                    DataTable filterResult_dt = dv.ToTable();
+
+                    foreach (DataGridViewRow dr in allowanceType_GV.SelectedRows)
+                    {
+                        var dataRow = ((DataRowView)dr.DataBoundItem).Row;
+                        string allowanceName = dataRow["AllowanceName"].ToString();
+                        string donvi = "";
+                        var match = Regex.Match(allowanceName, @"\((.*?)\)");
+
+                        if (match.Success)
+                        {
+                            donvi = match.Groups[1].Value;
+                        }
+
+                        allowanceName = Regex.Replace(allowanceName, @"\s*\(.*?\)", "").Trim();
+
+                        int allowanceTypeID = Convert.ToInt32(dataRow["AllowanceTypeID"]);
+                        int prive = 0;
+                        DataRow row1 = mAllowanceType_dt.AsEnumerable().FirstOrDefault(r => r.Field<int>("AllowanceTypeID") == allowanceTypeID);
+                        if (row1 != null)
+                        {
+                            prive = Convert.ToInt32(row1["AllowancePrice"]);
+
+                        }
+                        var ws = wb.Worksheets.Add(allowanceName);
+                        ws.Style.Font.FontName = "Times New Roman";
+                        ws.Style.Font.FontSize = 12;
+
+                        int rowExcel = 1;
+
+                        ws.Range(rowExcel, 1, rowExcel, 8).Merge();
+                        ws.Cell(rowExcel, 1).Value = $"PHỤ CẤP {allowanceName.ToUpper()} THÁNG {date.ToString("MM/yyyy")}";
+                        ws.Cell(rowExcel, 1).Style.Font.Bold = true;
+                        ws.Cell(rowExcel, 1).Style.Font.FontSize = 20;
+
+                        rowExcel++;
+                        // Header
+                        ws.Cell(rowExcel, 1).Value = "STT";
+                        ws.Cell(rowExcel, 2).Value = "Mã NV";
+                        ws.Cell(rowExcel, 3).Value = "Họ Tên NV";
+                        ws.Cell(rowExcel, 4).Value = "Tổ Phụ Trách";
+                        ws.Cell(rowExcel, 5).Value = "ĐVT";
+                        ws.Cell(rowExcel, 6).Value = "Số Lượng";
+                        ws.Cell(rowExcel, 7).Value = "Đơn Giá";
+                        ws.Cell(rowExcel, 8).Value = "Thành Tiền (vnđ)";
+
+                        ws.Range(rowExcel, 1, rowExcel, 8).Style.Font.Bold = true;
+                        ws.Range(rowExcel, 1, rowExcel, 8).Style.Alignment.WrapText = true;
+                        ws.Range(rowExcel - 1, 1, rowExcel, 8).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                        ws.Range(rowExcel - 1, 1, rowExcel, 8).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+                        rowExcel++;
+                        int countSTT = 1;
+                        decimal totalAmount = 0;
+                        decimal totalTT = 0;
+                        foreach (DataRow row in filterResult_dt.Rows)
+                        {
+                            int aTypeID = Convert.ToInt32(row["AllowanceTypeID"]);
+                            if (aTypeID != allowanceTypeID) continue;
+
+                            decimal amount = Convert.ToDecimal(row["Amount"]);
+                            amount = amount / prive;
+                            ws.Cell(rowExcel, 1).Value = countSTT;
+                            ws.Cell(rowExcel, 2).Value = row["EmployeeCode"].ToString();
+                            ws.Cell(rowExcel, 3).Value = row["EmployeeName"].ToString();
+                            ws.Cell(rowExcel, 4).Value = row["DepartmentName"].ToString();
+                            ws.Cell(rowExcel, 5).Value = donvi;
+                            ws.Cell(rowExcel, 6).Value = amount;
+                            ws.Cell(rowExcel, 7).Value = prive;
+                            ws.Cell(rowExcel, 8).Value = amount * prive;
+
+                            ws.Cell(rowExcel, 6).Style.NumberFormat.Format = "#,##0.0";
+                            ws.Cell(rowExcel, 7).Style.NumberFormat.Format = "#,##0";
+                            ws.Cell(rowExcel, 8).Style.NumberFormat.Format = "#,##0";
+                            
+                            totalAmount += amount;
+                            totalTT += (amount * prive);
+
+                            rowExcel++;
+                            countSTT++;
+                        }
+
+                        ws.Cell(rowExcel, 1).Value = "TỔNG";
+                        ws.Cell(rowExcel, 6).Value = totalAmount;
+                        ws.Cell(rowExcel, 8).Value = totalTT;
+                        ws.Cell(rowExcel, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                        ws.Range(rowExcel, 1, rowExcel, 5).Merge().Style.Font.Bold = true;
+
+                        ws.Cell(rowExcel, 6).Style.NumberFormat.Format = "#,##0";
+                        ws.Cell(rowExcel, 8).Style.NumberFormat.Format = "#,##0";
+                        //// 8
+                        ws.Range(1, 1, rowExcel, 8).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                        ws.Range(1, 1, rowExcel, 8).Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+
+                        ws.Columns().AdjustToContents();
+
+                    }
+
+                    
+
+                    using (SaveFileDialog sfd = new SaveFileDialog())
+                    {
+                        sfd.Filter = "Excel Workbook|*.xlsx";
+                        sfd.FileName = $"phucap_Thang{date.Month.ToString("D2")}{date.Year.ToString()}";
+                        if (sfd.ShowDialog() == DialogResult.OK)
+                        {
+                            wb.SaveAs(sfd.FileName);
+                            DialogResult result = MessageBox.Show("Bạn có muốn mở file này không?", "Lưu file thành công", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                            if (result == DialogResult.Yes)
+                            {
+                                try
+                                {
+                                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo()
+                                    {
+                                        FileName = sfd.FileName,
+                                        UseShellExecute = true
+                                    });
+                                }
+                                catch (Exception ex)
+                                {
+                                    MessageBox.Show("Không thể mở file: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi khi xuất Excel: " + ex.Message);
+            }
+            finally
+            {
+                await Task.Delay(200);
+                loadingOverlay.Hide();
+            }
         }
     }
 }

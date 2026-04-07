@@ -26,7 +26,7 @@ namespace RauViet.ui.PhanQuyen
 
         private async void Loading_Load(object sender, EventArgs e)
         {
-            await Task.Delay(200);
+            await Task.Delay(50);
             //var task1 = SQLManager.Instance.AutoDeleteLoginHistoryAsync();
             //var task2 = SQLManager.Instance.AutoDeleteExportCodeLogAsync();
             //var task3 = SQLManager.Instance.AutoDeleteOrderLogAsync();

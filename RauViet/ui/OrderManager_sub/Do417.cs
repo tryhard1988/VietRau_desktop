@@ -64,8 +64,7 @@ namespace RauViet.ui
             await Task.Delay(50);
 
             try
-            {
-                
+            {                
                 string[] keepColumns = { "ExportCodeID", "ExportCode", "InputByName_NoSign" };
                 var parameters = new Dictionary<string, object> { { "Complete", false } };
                 mExportCode_dt = await SQLStore_Kho.Instance.getExportCodesAsync(keepColumns, parameters);
