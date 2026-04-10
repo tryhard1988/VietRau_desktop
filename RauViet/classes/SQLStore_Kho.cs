@@ -130,11 +130,11 @@ namespace RauViet.classes
                 if (orderDomesticCodeTask.Status == TaskStatus.RanToCompletion && orderDomesticCodeTask.Result != null) mOrderDomesticCode_dt = orderDomesticCodeTask.Result;
                 if (productTypeTask.Status == TaskStatus.RanToCompletion && productTypeTask.Result != null) mProductType_dt = productTypeTask.Result;
 
-                editProductSKUA();
-                editExportCodes();
+                await editProductSKUA();
+                await editExportCodes();
                 editProductpacking();
                 editProductDomesticPrices();
-                editOrderDomesticCode();
+                await editOrderDomesticCode();
 
                 mExportCodes_dt.DefaultView.Sort = "ExportCodeID ASC";
                 mExportCodes_dt = mExportCodes_dt.DefaultView.ToTable();
@@ -197,7 +197,7 @@ namespace RauViet.classes
                 try
                 {
                     mProductSKU_dt = await SQLManager_Kho.Instance.getProductSKUAsync();
-                    editProductSKUA();
+                    await editProductSKUA();
                 }
                 catch
                 {
@@ -308,8 +308,9 @@ namespace RauViet.classes
             return mProductDomesticPrices_dt;
         }
 
-        private void editProductpacking()
+        private async void editProductpacking()
         {
+            await getProductSKUAsync();
             mProductpacking_dt.Columns.Add(new DataColumn("ProductSKU", typeof(int)));
             mProductpacking_dt.Columns.Add(new DataColumn("IsActive_SKU", typeof(bool)));
             mProductpacking_dt.Columns.Add(new DataColumn("PackingName", typeof(string)));
@@ -321,6 +322,7 @@ namespace RauViet.classes
             mProductpacking_dt.Columns.Add(new DataColumn("Priority", typeof(int)));
             mProductpacking_dt.Columns.Add(new DataColumn("Package", typeof(string)));
             mProductpacking_dt.Columns.Add(new DataColumn("GroupProduct", typeof(int)));
+            mProductpacking_dt.Columns.Add(new DataColumn("SupplierName", typeof(string)));
 
             foreach (DataRow dr in mProductpacking_dt.Rows)
             {
@@ -331,6 +333,7 @@ namespace RauViet.classes
                 string package = proRow["Package"].ToString();
                 string nameVN = proRow["ProductNameVN"].ToString();
                 string nameEN = proRow["ProductNameEN"].ToString();
+                string supplierName = proRow["SupplierName"].ToString();
                 string packingType = proRow["PackingType"].ToString();
                 int priority = Convert.ToInt32(proRow["Priority"]);
                 int groupProduct = Convert.ToInt32(proRow["GroupProduct"]);
@@ -347,6 +350,7 @@ namespace RauViet.classes
                 dr["Package"] = package;
                 dr["IsActive_SKU"] = isActive_SKU;
                 dr["GroupProduct"] = groupProduct;
+                dr["SupplierName"] = supplierName;
                 dr["PriceCNF"] = proRow["PriceCNF"].ToString();
 
                 if (package.CompareTo("kg") == 0 && packing.CompareTo("") != 0 && amount > 0)

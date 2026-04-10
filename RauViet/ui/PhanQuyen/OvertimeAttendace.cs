@@ -137,7 +137,7 @@ namespace RauViet.ui
                 mEmployee_dt = await SQLStore_QLNS.Instance.GetEmployeesAsync(keepColumns);
                 var departmentTask = SQLStore_QLNS.Instance.GetActiveDepartmentAsync(UserManager.Instance.get_ChamCongTangCa_Departments());
                 var overtimeAttendamceTask = SQLStore_QLNS.Instance.GetOvertimeAttendamceAsync(month, year);
-                var overtimeTypeTask = SQLStore_QLNS.Instance.GetOvertimeTypeAsync(true);
+               var overtimeTypeTask = SQLStore_QLNS.Instance.GetOvertimeTypeAsync(true);
                 var OvertimeAttendanceLogTask = SQLStore_QLNS.Instance.GetOvertimeAttendanceLogAsync(month, year);
                 
                 await Task.WhenAll(overtimeAttendamceTask, overtimeTypeTask, OvertimeAttendanceLogTask, departmentTask);
@@ -154,7 +154,7 @@ namespace RauViet.ui
                 monthYearLabel.Text = $"Tháng {month}/{year}";
 
                 var departmentIds = department_dt.AsEnumerable().Select(r => r.Field<int>("DepartmentID")).ToHashSet();
-                var rows = mEmployee_dt.AsEnumerable().Where(r => departmentIds.Contains(r.Field<int>("DepartmentID")));
+                var rows = mEmployee_dt.AsEnumerable().Where(r => departmentIds.Contains(r.Field<int?>("DepartmentID") ?? -1));
                 mEmployee_dt = rows.Any() ? rows.CopyToDataTable(): mEmployee_dt.Clone();
 
                 overtimeType_cbb.DataSource = mOvertimeType;
@@ -205,7 +205,7 @@ namespace RauViet.ui
                     {"EndTime", 100}
                 });
 
-                Utils.SetGridWidths(departmentGV, new Dictionary<string, int> { { "DepartmentName", 120 } });
+                Utils.SetGridWidths(departmentGV, new Dictionary<string, int> { { "DepartmentName", 150 } });
                 Utils.SetGridWidth(log_GV, "Description", DataGridViewAutoSizeColumnMode.Fill);
 
                 departmentGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;

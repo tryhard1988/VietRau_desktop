@@ -1,6 +1,7 @@
 ﻿using ClosedXML.Excel;
 using DocumentFormat.OpenXml.Bibliography;
 using DocumentFormat.OpenXml.Spreadsheet;
+using MySqlX.XDevAPI.Common;
 using RauViet.classes;
 using System;
 using System.Collections.Generic;
@@ -53,7 +54,7 @@ namespace RauViet.ui
         {
             await Task.Delay(50);
             loadingOverlay = new LoadingOverlay(this);
-            loadingOverlay.Show();
+            await loadingOverlay.Show();
 
             mPlantingManagement_Departments = new Dictionary<string, DataTable>();
 
@@ -92,13 +93,17 @@ namespace RauViet.ui
                             {"ProductionOrder", "Lệnh\nSản Xuất" },
                             {"PlantName", "Tên\nSản Phẩm" },
                             {"HarvestQuantity", "Sản Lượng" },
+                            {"HarvestQuantity_1", "Hủy" },
+                            {"HarvestQuantity_2", "Thu" },
                             {"Area", "Diện\nTích" },
                             {"NangSuatTrong", "Năng\nXuất\n(kg/m2)" }});
 
                     Utils.SetGridWidths(dataGV_A, new System.Collections.Generic.Dictionary<string, int> {
                             {"ProductionOrder", 80 },
                             {"PlantName", 100 },
-                            {"HarvestQuantity", 70 },
+                            {"HarvestQuantity", 50 },
+                            {"HarvestQuantity_1", 50 },
+                            {"HarvestQuantity_2", 50 },
                             {"Area", 65 },
                             {"NangSuatTrong", 70 }});
 
@@ -118,13 +123,17 @@ namespace RauViet.ui
                             {"ProductionOrder", "Lệnh\nSản Xuất" },
                             {"PlantName", "Tên\nSản Phẩm" },
                             {"HarvestQuantity", "Sản Lượng" },
+                            {"HarvestQuantity_1", "Hủy" },
+                            {"HarvestQuantity_2", "Thu" },
                             {"Area", "Diện\nTích" },
                             {"NangSuatTrong", "Năng\nXuất\n(kg/m2)" }});
 
                     Utils.SetGridWidths(dataGV_B, new System.Collections.Generic.Dictionary<string, int> {
                             {"ProductionOrder", 80 },
                             {"PlantName", 100 },
-                            {"HarvestQuantity", 70 },
+                            {"HarvestQuantity", 50 },
+                            {"HarvestQuantity_1", 50 },
+                            {"HarvestQuantity_2", 50 },
                             {"Area", 65 },
                             {"NangSuatTrong", 70 }});
 
@@ -144,13 +153,17 @@ namespace RauViet.ui
                             {"ProductionOrder", "Lệnh\nSản Xuất" },
                             {"PlantName", "Tên\nSản Phẩm" },
                             {"HarvestQuantity", "Sản Lượng" },
+                            {"HarvestQuantity_1", "Hủy" },
+                            {"HarvestQuantity_2", "Thu" },
                             {"Area", "Diện\nTích" },
                             {"NangSuatTrong", "Năng\nXuất\n(kg/m2)" }});
 
                     Utils.SetGridWidths(dataGV_NU, new System.Collections.Generic.Dictionary<string, int> {
                             {"ProductionOrder", 80 },
                             {"PlantName", 100 },
-                            {"HarvestQuantity", 70 },
+                            {"HarvestQuantity", 50 },
+                            {"HarvestQuantity_1", 50 },
+                            {"HarvestQuantity_2", 50 },
                             {"Area", 65 },
                             {"NangSuatTrong", 70 }});
 
@@ -170,13 +183,17 @@ namespace RauViet.ui
                             {"ProductionOrder", "Lệnh\nSản Xuất" },
                             {"PlantName", "Tên\nSản Phẩm" },
                             {"HarvestQuantity", "Sản Lượng" },
+                            {"HarvestQuantity_1", "Hủy" },
+                            {"HarvestQuantity_2", "Thu" },
                             {"Area", "Diện\nTích" },
                             {"NangSuatTrong", "Năng\nXuất\n(kg/m2)" }});
 
                     Utils.SetGridWidths(dataGV_FTB, new System.Collections.Generic.Dictionary<string, int> {
                             {"ProductionOrder", 80 },
                             {"PlantName", 100 },
-                            {"HarvestQuantity", 70 },
+                            {"HarvestQuantity", 50 },
+                            {"HarvestQuantity_1", 50 },
+                            {"HarvestQuantity_2", 50 },
                             {"Area", 65 },
                             {"NangSuatTrong", 70 }});
 
@@ -224,6 +241,8 @@ namespace RauViet.ui
             result.Columns.Add("ProductionOrder", typeof(string));
             result.Columns.Add("PlantName", typeof(string));
             result.Columns.Add("HarvestQuantity", typeof(decimal));
+            result.Columns.Add("HarvestQuantity_1", typeof(decimal));
+            result.Columns.Add("HarvestQuantity_2", typeof(decimal));
             result.Columns.Add("Area", typeof(decimal));
             result.Columns.Add("NangSuatTrong", typeof(decimal)); // năng suất
 
@@ -233,6 +252,8 @@ namespace RauViet.ui
             foreach (DataRow row in Arows)
             {
                 decimal harvestQty = row["HarvestQuantity"] == DBNull.Value ? 0 : Convert.ToDecimal(row["HarvestQuantity"]);
+                decimal harvestQty1 = row["TotalQuantity_1"] == DBNull.Value ? 0 : Convert.ToDecimal(row["TotalQuantity_1"]);
+                decimal harvestQty2 = row["TotalQuantity_2"] == DBNull.Value ? 0 : Convert.ToDecimal(row["TotalQuantity_2"]);
                 decimal area = row["Area"] == DBNull.Value ? 0 : Convert.ToDecimal(row["Area"]);
 
                 decimal nangSuat = (area == 0) ? 0 : harvestQty / area;
@@ -244,6 +265,8 @@ namespace RauViet.ui
                     row["ProductionOrder"],
                     row["PlantName"],
                     harvestQty,
+                    harvestQty1,
+                    harvestQty2,
                     area,
                     nangSuat
                 );

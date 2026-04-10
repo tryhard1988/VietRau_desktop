@@ -181,7 +181,7 @@ namespace RauViet.ui
             this.Controls.Add(this.info_gb);
             this.Controls.Add(this.panel1);
             this.Name = "KhoVatTu_GoiYCapPhan";
-            this.Text = "FormTableData";
+            this.Text = "Gợi Ý Cấp Phân";
             this.panel1.ResumeLayout(false);
             this.info_gb.ResumeLayout(false);
             this.info_gb.PerformLayout();

@@ -45,12 +45,15 @@ namespace RauViet.ui
             this.monthGV = new System.Windows.Forms.DataGridView();
             this.label13 = new System.Windows.Forms.Label();
             this.panel4 = new System.Windows.Forms.Panel();
+            this.panel10 = new System.Windows.Forms.Panel();
+            this.search_tb = new System.Windows.Forms.TextBox();
+            this.locTheoLSX_DangHoatDong_CB = new System.Windows.Forms.CheckBox();
+            this.locTheoLSX_DaDong_CB = new System.Windows.Forms.CheckBox();
             this.locTheoTuan_CB = new System.Windows.Forms.CheckBox();
             this.locTheoTo_CB = new System.Windows.Forms.CheckBox();
             this.locTheoNgayThu_CB = new System.Windows.Forms.CheckBox();
             this.locTheoNgayTrong_CB = new System.Windows.Forms.CheckBox();
             this.locTheoNgayUom_CB = new System.Windows.Forms.CheckBox();
-            this.search_tb = new System.Windows.Forms.TextBox();
             this.panel3 = new System.Windows.Forms.Panel();
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
             this.status_lb = new System.Windows.Forms.Label();
@@ -109,9 +112,8 @@ namespace RauViet.ui
             this.inCapPhan_btn = new System.Windows.Forms.Button();
             this.xemCapPhan_btn = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.locTheoLSX_DaDong_CB = new System.Windows.Forms.CheckBox();
-            this.locTheoLSX_DangHoatDong_CB = new System.Windows.Forms.CheckBox();
-            this.panel10 = new System.Windows.Forms.Panel();
+            this.nhatKyTheoDoi_btn = new System.Windows.Forms.Button();
+            this.nkThuHoach_btn = new System.Windows.Forms.Button();
             this.panel2.SuspendLayout();
             this.panel6.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
@@ -124,6 +126,7 @@ namespace RauViet.ui
             this.panel7.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.monthGV)).BeginInit();
             this.panel4.SuspendLayout();
+            this.panel10.SuspendLayout();
             this.info_gb.SuspendLayout();
             this.phieuGiaoHang_gb.SuspendLayout();
             this.phieuSX_uom_gb.SuspendLayout();
@@ -132,7 +135,6 @@ namespace RauViet.ui
             this.groupBox3.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.panel1.SuspendLayout();
-            this.panel10.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel2
@@ -331,6 +333,47 @@ namespace RauViet.ui
             this.panel4.Size = new System.Drawing.Size(911, 53);
             this.panel4.TabIndex = 1;
             // 
+            // panel10
+            // 
+            this.panel10.Controls.Add(this.search_tb);
+            this.panel10.Dock = System.Windows.Forms.DockStyle.Right;
+            this.panel10.Location = new System.Drawing.Point(692, 0);
+            this.panel10.Name = "panel10";
+            this.panel10.Size = new System.Drawing.Size(219, 53);
+            this.panel10.TabIndex = 91;
+            // 
+            // search_tb
+            // 
+            this.search_tb.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.search_tb.Location = new System.Drawing.Point(3, 12);
+            this.search_tb.Name = "search_tb";
+            this.search_tb.Size = new System.Drawing.Size(186, 26);
+            this.search_tb.TabIndex = 69;
+            // 
+            // locTheoLSX_DangHoatDong_CB
+            // 
+            this.locTheoLSX_DangHoatDong_CB.AutoSize = true;
+            this.locTheoLSX_DangHoatDong_CB.BackColor = System.Drawing.Color.YellowGreen;
+            this.locTheoLSX_DangHoatDong_CB.Checked = true;
+            this.locTheoLSX_DangHoatDong_CB.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.locTheoLSX_DangHoatDong_CB.Location = new System.Drawing.Point(391, 29);
+            this.locTheoLSX_DangHoatDong_CB.Name = "locTheoLSX_DangHoatDong_CB";
+            this.locTheoLSX_DangHoatDong_CB.Size = new System.Drawing.Size(160, 17);
+            this.locTheoLSX_DangHoatDong_CB.TabIndex = 90;
+            this.locTheoLSX_DangHoatDong_CB.Text = "Lênh SX - Đang Hoạt Động.";
+            this.locTheoLSX_DangHoatDong_CB.UseVisualStyleBackColor = false;
+            // 
+            // locTheoLSX_DaDong_CB
+            // 
+            this.locTheoLSX_DaDong_CB.AutoSize = true;
+            this.locTheoLSX_DaDong_CB.BackColor = System.Drawing.Color.YellowGreen;
+            this.locTheoLSX_DaDong_CB.Location = new System.Drawing.Point(391, 5);
+            this.locTheoLSX_DaDong_CB.Name = "locTheoLSX_DaDong_CB";
+            this.locTheoLSX_DaDong_CB.Size = new System.Drawing.Size(122, 17);
+            this.locTheoLSX_DaDong_CB.TabIndex = 89;
+            this.locTheoLSX_DaDong_CB.Text = "Lênh SX - Đã Đóng.";
+            this.locTheoLSX_DaDong_CB.UseVisualStyleBackColor = false;
+            // 
             // locTheoTuan_CB
             // 
             this.locTheoTuan_CB.AutoSize = true;
@@ -390,14 +433,6 @@ namespace RauViet.ui
             this.locTheoNgayUom_CB.Text = "Ngày Ươm.";
             this.locTheoNgayUom_CB.UseVisualStyleBackColor = false;
             // 
-            // search_tb
-            // 
-            this.search_tb.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.search_tb.Location = new System.Drawing.Point(3, 12);
-            this.search_tb.Name = "search_tb";
-            this.search_tb.Size = new System.Drawing.Size(186, 26);
-            this.search_tb.TabIndex = 69;
-            // 
             // panel3
             // 
             this.panel3.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -429,7 +464,7 @@ namespace RauViet.ui
             // 
             // id_tb
             // 
-            this.id_tb.Location = new System.Drawing.Point(372, 0);
+            this.id_tb.Location = new System.Drawing.Point(471, 479);
             this.id_tb.Name = "id_tb";
             this.id_tb.ReadOnly = true;
             this.id_tb.Size = new System.Drawing.Size(31, 20);
@@ -462,9 +497,9 @@ namespace RauViet.ui
             this.info_gb.Controls.Add(this.label7);
             this.info_gb.Controls.Add(this.label1);
             this.info_gb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.info_gb.Location = new System.Drawing.Point(17, 74);
+            this.info_gb.Location = new System.Drawing.Point(17, 89);
             this.info_gb.Name = "info_gb";
-            this.info_gb.Size = new System.Drawing.Size(513, 385);
+            this.info_gb.Size = new System.Drawing.Size(513, 373);
             this.info_gb.TabIndex = 43;
             this.info_gb.TabStop = false;
             // 
@@ -507,7 +542,7 @@ namespace RauViet.ui
             // complete_cb
             // 
             this.complete_cb.AutoSize = true;
-            this.complete_cb.Location = new System.Drawing.Point(22, 358);
+            this.complete_cb.Location = new System.Drawing.Point(22, 350);
             this.complete_cb.Name = "complete_cb";
             this.complete_cb.Size = new System.Drawing.Size(115, 20);
             this.complete_cb.TabIndex = 83;
@@ -671,7 +706,7 @@ namespace RauViet.ui
             // 
             this.newCustomerBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
             this.newCustomerBtn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.newCustomerBtn.Location = new System.Drawing.Point(459, 46);
+            this.newCustomerBtn.Location = new System.Drawing.Point(459, 61);
             this.newCustomerBtn.Name = "newCustomerBtn";
             this.newCustomerBtn.Size = new System.Drawing.Size(74, 32);
             this.newCustomerBtn.TabIndex = 46;
@@ -682,7 +717,7 @@ namespace RauViet.ui
             // 
             this.edit_btn.BackColor = System.Drawing.SystemColors.MenuHighlight;
             this.edit_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.edit_btn.Location = new System.Drawing.Point(363, 46);
+            this.edit_btn.Location = new System.Drawing.Point(363, 61);
             this.edit_btn.Name = "edit_btn";
             this.edit_btn.Size = new System.Drawing.Size(94, 32);
             this.edit_btn.TabIndex = 47;
@@ -693,7 +728,7 @@ namespace RauViet.ui
             // 
             this.readOnly_btn.BackColor = System.Drawing.Color.MediumSlateBlue;
             this.readOnly_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.readOnly_btn.Location = new System.Drawing.Point(490, 46);
+            this.readOnly_btn.Location = new System.Drawing.Point(490, 61);
             this.readOnly_btn.Name = "readOnly_btn";
             this.readOnly_btn.Size = new System.Drawing.Size(42, 32);
             this.readOnly_btn.TabIndex = 48;
@@ -704,7 +739,7 @@ namespace RauViet.ui
             // 
             this.label12.AutoSize = true;
             this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label12.Location = new System.Drawing.Point(196, 15);
+            this.label12.Location = new System.Drawing.Point(223, 7);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(46, 20);
             this.label12.TabIndex = 71;
@@ -713,7 +748,7 @@ namespace RauViet.ui
             // monthYear_dtp
             // 
             this.monthYear_dtp.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.monthYear_dtp.Location = new System.Drawing.Point(246, 13);
+            this.monthYear_dtp.Location = new System.Drawing.Point(273, 5);
             this.monthYear_dtp.Name = "monthYear_dtp";
             this.monthYear_dtp.Size = new System.Drawing.Size(72, 26);
             this.monthYear_dtp.TabIndex = 72;
@@ -1002,6 +1037,8 @@ namespace RauViet.ui
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.nkThuHoach_btn);
+            this.panel1.Controls.Add(this.nhatKyTheoDoi_btn);
             this.panel1.Controls.Add(this.groupBox4);
             this.panel1.Controls.Add(this.groupBox3);
             this.panel1.Controls.Add(this.groupBox2);
@@ -1023,38 +1060,29 @@ namespace RauViet.ui
             this.panel1.Size = new System.Drawing.Size(533, 776);
             this.panel1.TabIndex = 69;
             // 
-            // locTheoLSX_DaDong_CB
+            // nhatKyTheoDoi_btn
             // 
-            this.locTheoLSX_DaDong_CB.AutoSize = true;
-            this.locTheoLSX_DaDong_CB.BackColor = System.Drawing.Color.YellowGreen;
-            this.locTheoLSX_DaDong_CB.Location = new System.Drawing.Point(391, 5);
-            this.locTheoLSX_DaDong_CB.Name = "locTheoLSX_DaDong_CB";
-            this.locTheoLSX_DaDong_CB.Size = new System.Drawing.Size(122, 17);
-            this.locTheoLSX_DaDong_CB.TabIndex = 89;
-            this.locTheoLSX_DaDong_CB.Text = "Lênh SX - Đã Đóng.";
-            this.locTheoLSX_DaDong_CB.UseVisualStyleBackColor = false;
+            this.nhatKyTheoDoi_btn.BackColor = System.Drawing.SystemColors.MenuHighlight;
+            this.nhatKyTheoDoi_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.nhatKyTheoDoi_btn.ForeColor = System.Drawing.Color.DarkRed;
+            this.nhatKyTheoDoi_btn.Location = new System.Drawing.Point(11, 53);
+            this.nhatKyTheoDoi_btn.Name = "nhatKyTheoDoi_btn";
+            this.nhatKyTheoDoi_btn.Size = new System.Drawing.Size(165, 40);
+            this.nhatKyTheoDoi_btn.TabIndex = 80;
+            this.nhatKyTheoDoi_btn.Text = "Nhật Ký Theo Dõi";
+            this.nhatKyTheoDoi_btn.UseVisualStyleBackColor = false;
             // 
-            // locTheoLSX_DangHoatDong_CB
+            // nkThuHoach_btn
             // 
-            this.locTheoLSX_DangHoatDong_CB.AutoSize = true;
-            this.locTheoLSX_DangHoatDong_CB.BackColor = System.Drawing.Color.YellowGreen;
-            this.locTheoLSX_DangHoatDong_CB.Checked = true;
-            this.locTheoLSX_DangHoatDong_CB.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.locTheoLSX_DangHoatDong_CB.Location = new System.Drawing.Point(391, 29);
-            this.locTheoLSX_DangHoatDong_CB.Name = "locTheoLSX_DangHoatDong_CB";
-            this.locTheoLSX_DangHoatDong_CB.Size = new System.Drawing.Size(160, 17);
-            this.locTheoLSX_DangHoatDong_CB.TabIndex = 90;
-            this.locTheoLSX_DangHoatDong_CB.Text = "Lênh SX - Đang Hoạt Động.";
-            this.locTheoLSX_DangHoatDong_CB.UseVisualStyleBackColor = false;
-            // 
-            // panel10
-            // 
-            this.panel10.Controls.Add(this.search_tb);
-            this.panel10.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel10.Location = new System.Drawing.Point(692, 0);
-            this.panel10.Name = "panel10";
-            this.panel10.Size = new System.Drawing.Size(219, 53);
-            this.panel10.TabIndex = 91;
+            this.nkThuHoach_btn.BackColor = System.Drawing.Color.DarkSalmon;
+            this.nkThuHoach_btn.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.nkThuHoach_btn.ForeColor = System.Drawing.Color.DarkRed;
+            this.nkThuHoach_btn.Location = new System.Drawing.Point(11, 9);
+            this.nkThuHoach_btn.Name = "nkThuHoach_btn";
+            this.nkThuHoach_btn.Size = new System.Drawing.Size(165, 40);
+            this.nkThuHoach_btn.TabIndex = 81;
+            this.nkThuHoach_btn.Text = "Nhật Ký Thu Hoạch";
+            this.nkThuHoach_btn.UseVisualStyleBackColor = false;
             // 
             // KhoVatTu_PlantingManagement
             // 
@@ -1078,6 +1106,8 @@ namespace RauViet.ui
             ((System.ComponentModel.ISupportInitialize)(this.monthGV)).EndInit();
             this.panel4.ResumeLayout(false);
             this.panel4.PerformLayout();
+            this.panel10.ResumeLayout(false);
+            this.panel10.PerformLayout();
             this.info_gb.ResumeLayout(false);
             this.info_gb.PerformLayout();
             this.phieuGiaoHang_gb.ResumeLayout(false);
@@ -1088,8 +1118,6 @@ namespace RauViet.ui
             this.groupBox4.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
-            this.panel10.ResumeLayout(false);
-            this.panel10.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -1178,5 +1206,7 @@ namespace RauViet.ui
         private System.Windows.Forms.CheckBox locTheoLSX_DaDong_CB;
         private System.Windows.Forms.CheckBox locTheoLSX_DangHoatDong_CB;
         private System.Windows.Forms.Panel panel10;
+        private System.Windows.Forms.Button nhatKyTheoDoi_btn;
+        private System.Windows.Forms.Button nkThuHoach_btn;
     }
 }

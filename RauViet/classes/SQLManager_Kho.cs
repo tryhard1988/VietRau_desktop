@@ -3023,7 +3023,7 @@ namespace RauViet.classes
                 {
                     await con.OpenAsync();
 
-                    using (SqlCommand cmd = new SqlCommand("sp_InsertVegetableWarehouseTransaction", con))
+                    using (SqlCommand cmd = new SqlCommand("sp_InsertVegetableWarehouseTransaction1", con))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
 

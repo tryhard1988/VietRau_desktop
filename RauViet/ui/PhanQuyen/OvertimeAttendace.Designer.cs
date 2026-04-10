@@ -42,6 +42,7 @@ namespace RauViet.ui
             this.count_label = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.panel3 = new System.Windows.Forms.Panel();
+            this.isIn2Mat_CB = new System.Windows.Forms.CheckBox();
             this.inPreview_btn = new System.Windows.Forms.Button();
             this.attendanceMonth_CB = new System.Windows.Forms.CheckBox();
             this.in_DS_TCa_btn = new System.Windows.Forms.Button();
@@ -63,7 +64,6 @@ namespace RauViet.ui
             this.LuuThayDoiBtn = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.log_GV = new System.Windows.Forms.DataGridView();
-            this.isIn2Mat_CB = new System.Windows.Forms.CheckBox();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.departmentGV)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGV)).BeginInit();
@@ -106,7 +106,7 @@ namespace RauViet.ui
             this.departmentGV.Location = new System.Drawing.Point(0, 56);
             this.departmentGV.Name = "departmentGV";
             this.departmentGV.ReadOnly = true;
-            this.departmentGV.Size = new System.Drawing.Size(170, 748);
+            this.departmentGV.Size = new System.Drawing.Size(195, 748);
             this.departmentGV.TabIndex = 58;
             // 
             // dataGV
@@ -115,7 +115,7 @@ namespace RauViet.ui
             this.dataGV.AllowUserToDeleteRows = false;
             this.dataGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGV.Dock = System.Windows.Forms.DockStyle.Left;
-            this.dataGV.Location = new System.Drawing.Point(170, 56);
+            this.dataGV.Location = new System.Drawing.Point(195, 56);
             this.dataGV.Name = "dataGV";
             this.dataGV.ReadOnly = true;
             this.dataGV.Size = new System.Drawing.Size(253, 748);
@@ -129,9 +129,9 @@ namespace RauViet.ui
             this.panel2.Controls.Add(this.label1);
             this.panel2.Controls.Add(this.log_GV);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel2.Location = new System.Drawing.Point(423, 56);
+            this.panel2.Location = new System.Drawing.Point(448, 56);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(886, 748);
+            this.panel2.Size = new System.Drawing.Size(861, 748);
             this.panel2.TabIndex = 60;
             // 
             // attendanceGV
@@ -143,7 +143,7 @@ namespace RauViet.ui
             this.attendanceGV.Location = new System.Drawing.Point(0, 0);
             this.attendanceGV.Name = "attendanceGV";
             this.attendanceGV.ReadOnly = true;
-            this.attendanceGV.Size = new System.Drawing.Size(543, 470);
+            this.attendanceGV.Size = new System.Drawing.Size(518, 470);
             this.attendanceGV.TabIndex = 68;
             // 
             // panel4
@@ -156,7 +156,7 @@ namespace RauViet.ui
             this.panel4.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panel4.Location = new System.Drawing.Point(0, 470);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(543, 26);
+            this.panel4.Size = new System.Drawing.Size(518, 26);
             this.panel4.TabIndex = 67;
             // 
             // totalHour_label
@@ -231,10 +231,20 @@ namespace RauViet.ui
             this.panel3.Controls.Add(this.status_lb);
             this.panel3.Controls.Add(this.LuuThayDoiBtn);
             this.panel3.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel3.Location = new System.Drawing.Point(543, 0);
+            this.panel3.Location = new System.Drawing.Point(518, 0);
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(343, 496);
             this.panel3.TabIndex = 66;
+            // 
+            // isIn2Mat_CB
+            // 
+            this.isIn2Mat_CB.AutoSize = true;
+            this.isIn2Mat_CB.Location = new System.Drawing.Point(168, 403);
+            this.isIn2Mat_CB.Name = "isIn2Mat_CB";
+            this.isIn2Mat_CB.Size = new System.Drawing.Size(65, 17);
+            this.isIn2Mat_CB.TabIndex = 41;
+            this.isIn2Mat_CB.Text = "In 2 Mặt";
+            this.isIn2Mat_CB.UseVisualStyleBackColor = true;
             // 
             // inPreview_btn
             // 
@@ -440,7 +450,7 @@ namespace RauViet.ui
             this.label1.ForeColor = System.Drawing.Color.DarkOliveGreen;
             this.label1.Location = new System.Drawing.Point(0, 496);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(886, 23);
+            this.label1.Size = new System.Drawing.Size(861, 23);
             this.label1.TabIndex = 64;
             this.label1.Text = "Lịch sử thay đổi";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -454,18 +464,8 @@ namespace RauViet.ui
             this.log_GV.Location = new System.Drawing.Point(0, 519);
             this.log_GV.Name = "log_GV";
             this.log_GV.ReadOnly = true;
-            this.log_GV.Size = new System.Drawing.Size(886, 229);
+            this.log_GV.Size = new System.Drawing.Size(861, 229);
             this.log_GV.TabIndex = 63;
-            // 
-            // isIn2Mat_CB
-            // 
-            this.isIn2Mat_CB.AutoSize = true;
-            this.isIn2Mat_CB.Location = new System.Drawing.Point(168, 403);
-            this.isIn2Mat_CB.Name = "isIn2Mat_CB";
-            this.isIn2Mat_CB.Size = new System.Drawing.Size(65, 17);
-            this.isIn2Mat_CB.TabIndex = 41;
-            this.isIn2Mat_CB.Text = "In 2 Mặt";
-            this.isIn2Mat_CB.UseVisualStyleBackColor = true;
             // 
             // OvertimeAttendace
             // 

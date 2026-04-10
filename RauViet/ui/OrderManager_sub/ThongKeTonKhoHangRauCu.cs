@@ -11,9 +11,7 @@ namespace RauViet.ui
 {
     public partial class ThongKeTonKhoHangRauCu : Form
     {
-        private Timer debounceTimer = new Timer { Interval = 300 };
-        DataView mLogDV;
-        bool isNewState = false;
+
         private LoadingOverlay loadingOverlay;
         public ThongKeTonKhoHangRauCu()
         {
@@ -26,10 +24,9 @@ namespace RauViet.ui
             dataGV.MultiSelect = false;
 
             dataGV.CellFormatting += dataGV_CellFormatting;
-            dataGV.SelectionChanged += this.dataGV_CellClick;
 
             this.KeyDown += ProductList_KeyDown;
-
+            excel_btn.Click += Excel_btn_Click;
         }
 
         private void ProductList_KeyDown(object sender, KeyEventArgs e)
@@ -49,11 +46,9 @@ namespace RauViet.ui
 
             try
             {
-                var logTask = SQLStore_Kho.Instance.getVegetableWarehouseTransactionLOGAsync();
                 var vegetableWarehouseTransactionTask = SQLStore_Kho.Instance.getVegetableWarehouseTransactionSync();
 
-                await Task.WhenAll(logTask, vegetableWarehouseTransactionTask);
-                mLogDV = new DataView(logTask.Result);
+                await Task.WhenAll(vegetableWarehouseTransactionTask);
 
                 int currentYear = DateTime.Now.Year;
                 var result = vegetableWarehouseTransactionTask.Result
@@ -62,90 +57,102 @@ namespace RauViet.ui
                             .Select(g =>
                             {
                                 var firstRow = g.First();
+
+                                Func<DataRow, bool> isVR = r => r.Field<int>("SellerID") == 46;
+                                Func<DataRow, bool> isBT = r => r.Field<int>("SellerID") == 47;
+                                Func<DataRow, bool> isMN = r => r.Field<int>("SellerID") != 46 && r.Field<int>("SellerID") != 47;
+
                                 // Tồn đầu năm
                                 var tonDauNam =
-                                                g.Where(r => r.Field<string>("TransactionType") == "N" && r.Field<DateTime>("TransactionDate").Year < currentYear).Sum(r => r.Field<decimal>("Quantity"))
+                                                g.Where(r => r.Field<string>("TransactionType") == "N" && r.Field<DateTime>("TransactionDate").Year < currentYear)
+                                                 .Sum(r => r.Field<decimal>("Quantity"))
                                               -
-                                                g.Where(r => r.Field<string>("TransactionType") != "N" && r.Field<DateTime>("TransactionDate").Year < currentYear).Sum(r => r.Field<decimal>("Quantity"));
+                                                g.Where(r => r.Field<string>("TransactionType") != "N" && r.Field<DateTime>("TransactionDate").Year < currentYear)
+                                                 .Sum(r => r.Field<decimal>("Quantity"));
 
-                                // Nhập hàng năm hiện tại
-                                var nhapHang_VR = g.Where(r => r.Field<string>("TransactionType") == "N" && r.Field<string>("Supplier") == "VR" && r.Field<DateTime>("TransactionDate").Year == currentYear).Sum(r => r.Field<decimal>("Quantity"));
-                                var nhapHang_BT = g.Where(r => r.Field<string>("TransactionType") == "N" && r.Field<string>("Supplier") == "BT" && r.Field<DateTime>("TransactionDate").Year == currentYear).Sum(r => r.Field<decimal>("Quantity"));
-                                var nhapHang_MN = g.Where(r => r.Field<string>("TransactionType") == "N" && r.Field<string>("Supplier") == "MN" && r.Field<DateTime>("TransactionDate").Year == currentYear).Sum(r => r.Field<decimal>("Quantity"));
+                                // Nhập
+                                var nhapHang_VR = g.Where(r => r.Field<string>("TransactionType") == "N" && isVR(r) && r.Field<DateTime>("TransactionDate").Year == currentYear).Sum(r => r.Field<decimal>("Quantity"));
+                                var nhapHang_BT = g.Where(r => r.Field<string>("TransactionType") == "N" && isBT(r) && r.Field<DateTime>("TransactionDate").Year == currentYear).Sum(r => r.Field<decimal>("Quantity"));
+                                var nhapHang_MN = g.Where(r => r.Field<string>("TransactionType") == "N" && isMN(r) && r.Field<DateTime>("TransactionDate").Year == currentYear).Sum(r => r.Field<decimal>("Quantity"));
 
-                                var xuatDongGoi_VR = g.Where(r => r.Field<string>("TransactionType") == "X" && r.Field<string>("Supplier") == "VR" && r.Field<DateTime>("TransactionDate").Year == currentYear).Sum(r => r.Field<decimal>("Quantity"));
-                                var xuatDongGoi_BT = g.Where(r => r.Field<string>("TransactionType") == "X" && r.Field<string>("Supplier") == "BT" && r.Field<DateTime>("TransactionDate").Year == currentYear).Sum(r => r.Field<decimal>("Quantity"));
-                                var xuatDongGoi_MN = g.Where(r => r.Field<string>("TransactionType") == "X" && r.Field<string>("Supplier") == "MN" && r.Field<DateTime>("TransactionDate").Year == currentYear).Sum(r => r.Field<decimal>("Quantity"));
+                                // Xuất đóng gói
+                                var xuatDongGoi_VR = g.Where(r => r.Field<string>("TransactionType") == "X" && isVR(r) && r.Field<DateTime>("TransactionDate").Year == currentYear).Sum(r => r.Field<decimal>("Quantity"));
+                                var xuatDongGoi_BT = g.Where(r => r.Field<string>("TransactionType") == "X" && isBT(r) && r.Field<DateTime>("TransactionDate").Year == currentYear).Sum(r => r.Field<decimal>("Quantity"));
+                                var xuatDongGoi_MN = g.Where(r => r.Field<string>("TransactionType") == "X" && isMN(r) && r.Field<DateTime>("TransactionDate").Year == currentYear).Sum(r => r.Field<decimal>("Quantity"));
 
-                                var xuatHuy_VR = g.Where(r => r.Field<string>("TransactionType") == "H" && r.Field<string>("Supplier") == "VR" && r.Field<DateTime>("TransactionDate").Year == currentYear).Sum(r => r.Field<decimal>("Quantity"));
-                                var xuatHuy_BT = g.Where(r => r.Field<string>("TransactionType") == "H" && r.Field<string>("Supplier") == "BT" && r.Field<DateTime>("TransactionDate").Year == currentYear).Sum(r => r.Field<decimal>("Quantity"));
-                                var xuatHuy_MN = g.Where(r => r.Field<string>("TransactionType") == "H" && r.Field<string>("Supplier") == "MN" && r.Field<DateTime>("TransactionDate").Year == currentYear).Sum(r => r.Field<decimal>("Quantity"));
+                                // Xuất hủy
+                                var xuatHuy_VR = g.Where(r => r.Field<string>("TransactionType") == "H" && isVR(r) && r.Field<DateTime>("TransactionDate").Year == currentYear).Sum(r => r.Field<decimal>("Quantity"));
+                                var xuatHuy_BT = g.Where(r => r.Field<string>("TransactionType") == "H" && isBT(r) && r.Field<DateTime>("TransactionDate").Year == currentYear).Sum(r => r.Field<decimal>("Quantity"));
+                                var xuatHuy_MN = g.Where(r => r.Field<string>("TransactionType") == "H" && isMN(r) && r.Field<DateTime>("TransactionDate").Year == currentYear).Sum(r => r.Field<decimal>("Quantity"));
 
-                                var xuatPhoi_VR = g.Where(r => r.Field<string>("TransactionType") == "P" && r.Field<string>("Supplier") == "VR" && r.Field<DateTime>("TransactionDate").Year == currentYear).Sum(r => r.Field<decimal>("Quantity"));
-                                var xuatPhoi_BT = g.Where(r => r.Field<string>("TransactionType") == "P" && r.Field<string>("Supplier") == "BT" && r.Field<DateTime>("TransactionDate").Year == currentYear).Sum(r => r.Field<decimal>("Quantity"));
-                                var xuatPhoi_MN = g.Where(r => r.Field<string>("TransactionType") == "P" && r.Field<string>("Supplier") == "MN" && r.Field<DateTime>("TransactionDate").Year == currentYear).Sum(r => r.Field<decimal>("Quantity"));
+                                // Xuất phơi
+                                var xuatPhoi_VR = g.Where(r => r.Field<string>("TransactionType") == "P" && isVR(r) && r.Field<DateTime>("TransactionDate").Year == currentYear).Sum(r => r.Field<decimal>("Quantity"));
+                                var xuatPhoi_BT = g.Where(r => r.Field<string>("TransactionType") == "P" && isBT(r) && r.Field<DateTime>("TransactionDate").Year == currentYear).Sum(r => r.Field<decimal>("Quantity"));
+                                var xuatPhoi_MN = g.Where(r => r.Field<string>("TransactionType") == "P" && isMN(r) && r.Field<DateTime>("TransactionDate").Year == currentYear).Sum(r => r.Field<decimal>("Quantity"));
 
-                                var xuatKhac_VR = g.Where(r => r.Field<string>("TransactionType") == "K" && r.Field<string>("Supplier") == "VR" && r.Field<DateTime>("TransactionDate").Year == currentYear).Sum(r => r.Field<decimal>("Quantity"));
-                                var xuatKhac_BT = g.Where(r => r.Field<string>("TransactionType") == "K" && r.Field<string>("Supplier") == "BT" && r.Field<DateTime>("TransactionDate").Year == currentYear).Sum(r => r.Field<decimal>("Quantity"));
-                                var xuatKhac_MN = g.Where(r => r.Field<string>("TransactionType") == "K" && r.Field<string>("Supplier") == "MN" && r.Field<DateTime>("TransactionDate").Year == currentYear).Sum(r => r.Field<decimal>("Quantity"));
+                                // Xuất khác
+                                var xuatKhac_VR = g.Where(r => r.Field<string>("TransactionType") == "K" && isVR(r) && r.Field<DateTime>("TransactionDate").Year == currentYear).Sum(r => r.Field<decimal>("Quantity"));
+                                var xuatKhac_BT = g.Where(r => r.Field<string>("TransactionType") == "K" && isBT(r) && r.Field<DateTime>("TransactionDate").Year == currentYear).Sum(r => r.Field<decimal>("Quantity"));
+                                var xuatKhac_MN = g.Where(r => r.Field<string>("TransactionType") == "K" && isMN(r) && r.Field<DateTime>("TransactionDate").Year == currentYear).Sum(r => r.Field<decimal>("Quantity"));
+
                                 return new
                                 {
                                     SKU = g.Key,
                                     Name_VN = firstRow.Field<string>("Name_VN"),
-                                    Package = firstRow.Field<string>("Package"),
+                                    Package = firstRow.Field<string>("unit"),
                                     TonDauNam = tonDauNam,
 
-                                    nhapHang_VR = nhapHang_VR,
-                                    nhapHang_BT = nhapHang_BT,
-                                    nhapHang_MN = nhapHang_MN,
+                                    nhapHang_VR,
+                                    nhapHang_BT,
+                                    nhapHang_MN,
 
-                                    xuatDongGoi_VR = xuatDongGoi_VR,
-                                    xuatDongGoi_BT = xuatDongGoi_BT,
-                                    xuatDongGoi_MN = xuatDongGoi_MN,
+                                    xuatDongGoi_VR,
+                                    xuatDongGoi_BT,
+                                    xuatDongGoi_MN,
 
-                                    xuatHuy_VR = xuatHuy_VR,
-                                    xuatHuy_BT = xuatHuy_BT,
-                                    xuatHuy_MN = xuatHuy_MN,
+                                    xuatHuy_VR,
+                                    xuatHuy_BT,
+                                    xuatHuy_MN,
 
-                                    xuatPhoi_VR = xuatPhoi_VR,
-                                    xuatPhoi_BT = xuatPhoi_BT,
-                                    xuatPhoi_MN = xuatPhoi_MN,
+                                    xuatPhoi_VR,
+                                    xuatPhoi_BT,
+                                    xuatPhoi_MN,
 
-                                    xuatKhac_VR = xuatKhac_VR,
-                                    xuatKhac_BT = xuatKhac_BT,
-                                    xuatKhac_MN = xuatKhac_MN
+                                    xuatKhac_VR,
+                                    xuatKhac_BT,
+                                    xuatKhac_MN
                                 };
                             })
                             .ToList();
 
                 DataTable dtResult = new DataTable();
                 dtResult.Columns.Add("SKU", typeof(int));
-                dtResult.Columns.Add("Tên Sản Phẩm", typeof(string));
-                dtResult.Columns.Add("Đ.Vị", typeof(string));
+                dtResult.Columns.Add("TenSP", typeof(string));
+                dtResult.Columns.Add("DVI", typeof(string));
 
-                dtResult.Columns.Add("Tồn\nđầu năm", typeof(decimal));
+                dtResult.Columns.Add("TonDau", typeof(decimal));
 
-                dtResult.Columns.Add("Nhập\n(Việt Rau)", typeof(decimal));
-                dtResult.Columns.Add("Nhập\n(Bình Thuận)", typeof(decimal));
-                dtResult.Columns.Add("Nhập\n(Mua Ngoài)", typeof(decimal));
+                dtResult.Columns.Add("NVR", typeof(decimal));
+                dtResult.Columns.Add("NBT", typeof(decimal));
+                dtResult.Columns.Add("NMN", typeof(decimal));
 
-                dtResult.Columns.Add("X.Đóng Gói\n(Việt Rau)", typeof(decimal));
-                dtResult.Columns.Add("X.Đóng Gói\n(Bình Thuận)", typeof(decimal));
-                dtResult.Columns.Add("X.Đóng Gói\n(Mua Ngoài)", typeof(decimal));
+                dtResult.Columns.Add("XDG_VR", typeof(decimal));
+                dtResult.Columns.Add("XDG_BT", typeof(decimal));
+                dtResult.Columns.Add("XDG_MN", typeof(decimal));
 
-                dtResult.Columns.Add("X.Hủy\n(Việt Rau)", typeof(decimal));
-                dtResult.Columns.Add("X.Hủy\n(Bình Thuận)", typeof(decimal));
-                dtResult.Columns.Add("X.Hủy\n(Mua Ngoài)", typeof(decimal));
+                dtResult.Columns.Add("XH_VR", typeof(decimal));
+                dtResult.Columns.Add("XH_BT", typeof(decimal));
+                dtResult.Columns.Add("XH_MN", typeof(decimal));
 
-                dtResult.Columns.Add("X.Phơi\n(Việt Rau)", typeof(decimal));
-                dtResult.Columns.Add("X.Phơi\n(Bình Thuận)", typeof(decimal));
-                dtResult.Columns.Add("X.Phơi\n(Mua Ngoài)", typeof(decimal));
+                dtResult.Columns.Add("XP_VR", typeof(decimal));
+                dtResult.Columns.Add("XP_BT", typeof(decimal));
+                dtResult.Columns.Add("XP_MN", typeof(decimal));
 
-                dtResult.Columns.Add("X.Khác\n(Việt Rau)", typeof(decimal));
-                dtResult.Columns.Add("X.Khác\n(Bình Thuận)", typeof(decimal));
-                dtResult.Columns.Add("X.Khác\n(Mua Ngoài)", typeof(decimal));
+                dtResult.Columns.Add("XK_VR", typeof(decimal));
+                dtResult.Columns.Add("XK_BT", typeof(decimal));
+                dtResult.Columns.Add("XK_MN", typeof(decimal));
 
-                dtResult.Columns.Add("Tồn\nTrong Kho", typeof(decimal));
+                dtResult.Columns.Add("TonTrongKho", typeof(decimal));
 
                 foreach (var item in result)
                 {
@@ -167,8 +174,30 @@ namespace RauViet.ui
                     );
                 }
 
-                log_GV.DataSource = mLogDV;
                 dataGV.DataSource = dtResult;
+
+                Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
+                    {"SKU", "SKU"},
+                    {"TenSP", "Tên Sản Phẩm"},
+                    {"DVI", "Đ.Vị"},
+                    {"TonDau", "Tồn\nĐầu Năm"},
+                    {"NVR", "Nhập\n(Việt Rau)"},
+                    {"NBT", "Nhập\n(Bình Thuận)"},
+                    {"NMN", "Nhập\n(Mua Ngoài)"},
+                    {"XDG_VR", "X.Đóng Gói\n(Việt Rau)"},
+                    {"XDG_BT", "X.Đóng Gói\n(Bình Thuận)"},
+                    {"XDG_MN", "X.Đóng Gói\n(Mua Ngoài)"},
+                    {"XH_VR", "X.Hủy\n(Việt Rau)"},
+                    {"XH_BT", "X.Hủy\n(Bình Thuận)"},
+                    {"XH_MN", "X.Hủy\n(Mua Ngoài)"},
+                    {"XP_VR", "X.Phơi\n(Việt Rau)"},
+                    {"XP_BT", "X.Phơi\n(Bình Thuận)"},
+                    {"XP_MN", "X.Phơi\n(Mua Ngoài)"},
+                    {"XK_VR", "X.Khác\n(Việt Rau)"},
+                    {"XK_BT", "X.Khác\n(Bình Thuận)"},
+                    {"XK_MN", "X.Khác\n(Mua Ngoài)"},
+                    {"TonTrongKho", "Tồn\nTrong Kho"},
+                });
 
                 Utils.SetGridWidths(dataGV, new System.Collections.Generic.Dictionary<string, int> {
                     {"SKU", 50},
@@ -192,25 +221,13 @@ namespace RauViet.ui
                     {"X.Khác\n(Mua Ngoài)", 90}
                 });
 
-                Utils.SetGridWidths(log_GV, new System.Collections.Generic.Dictionary<string, int> {
-                    {"LogID", 80},
-                    {"ActionBy", 170},
-                    {"CreateedAt", 130}
-                });
-
-                log_GV.Columns["SKU"].Visible = false;
-
-                Utils.SetGridWidth(log_GV, "OldValue", DataGridViewAutoSizeColumnMode.Fill);
-                Utils.SetGridWidth(log_GV, "NewValue", DataGridViewAutoSizeColumnMode.Fill);
-
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                log_GV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
                 Utils.SetTabStopRecursive(this, false);    
             }
-            catch
+            catch (Exception ex)
             {
-               
+                Console.WriteLine("ERROR: " + ex.Message);
             }
             finally
             {
@@ -218,15 +235,6 @@ namespace RauViet.ui
                 loadingOverlay.Hide();
             }
  
-        }
-
-        private void dataGV_CellClick(object sender, EventArgs e)
-        {
-            if (dataGV.CurrentRow == null) return;
-
-            int SKU = Convert.ToInt32(dataGV.CurrentRow.Cells["SKU"].Value);
-
-            mLogDV.RowFilter = $"SKU = {SKU}";
         }
 
         private void dataGV_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
@@ -249,7 +257,11 @@ namespace RauViet.ui
                     e.CellStyle.Font = new Font(dataGV.Font, FontStyle.Bold);
                 }            
             }
+        }
 
+        private void Excel_btn_Click(object sender, EventArgs e)
+        {
+            
         }
     }
 }

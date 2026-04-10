@@ -57,6 +57,7 @@ namespace RauViet.ui
             this.newCustomerBtn = new System.Windows.Forms.Button();
             this.readOnly_btn = new System.Windows.Forms.Button();
             this.info_gb = new System.Windows.Forms.GroupBox();
+            this.unit_tb = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
             this.price_tb = new System.Windows.Forms.TextBox();
             this.label8 = new System.Windows.Forms.Label();
@@ -86,7 +87,7 @@ namespace RauViet.ui
             this.panel6 = new System.Windows.Forms.Panel();
             this.sellerGV = new System.Windows.Forms.DataGridView();
             this.dataGV = new System.Windows.Forms.DataGridView();
-            this.unit_tb = new System.Windows.Forms.TextBox();
+            this.nkth_btn = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -106,6 +107,7 @@ namespace RauViet.ui
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.nkth_btn);
             this.panel1.Controls.Add(this.groupBox4);
             this.panel1.Controls.Add(this.groupBox3);
             this.panel1.Controls.Add(this.groupBox2);
@@ -232,9 +234,9 @@ namespace RauViet.ui
             // 
             this.thanhToan_btn.BackColor = System.Drawing.Color.IndianRed;
             this.thanhToan_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.thanhToan_btn.Location = new System.Drawing.Point(6, 12);
+            this.thanhToan_btn.Location = new System.Drawing.Point(6, 0);
             this.thanhToan_btn.Name = "thanhToan_btn";
-            this.thanhToan_btn.Size = new System.Drawing.Size(119, 37);
+            this.thanhToan_btn.Size = new System.Drawing.Size(75, 49);
             this.thanhToan_btn.TabIndex = 70;
             this.thanhToan_btn.Text = "Thanh Toán";
             this.thanhToan_btn.UseVisualStyleBackColor = false;
@@ -358,8 +360,16 @@ namespace RauViet.ui
             this.info_gb.TabIndex = 43;
             this.info_gb.TabStop = false;
             // 
+            // unit_tb
+            // 
+            this.unit_tb.Location = new System.Drawing.Point(322, 149);
+            this.unit_tb.Name = "unit_tb";
+            this.unit_tb.Size = new System.Drawing.Size(96, 23);
+            this.unit_tb.TabIndex = 79;
+            // 
             // label9
             // 
+            this.label9.BackColor = System.Drawing.Color.PeachPuff;
             this.label9.ForeColor = System.Drawing.Color.IndianRed;
             this.label9.Location = new System.Drawing.Point(123, 259);
             this.label9.Name = "label9";
@@ -699,12 +709,16 @@ namespace RauViet.ui
             this.dataGV.Size = new System.Drawing.Size(706, 743);
             this.dataGV.TabIndex = 66;
             // 
-            // unit_tb
+            // nkth_btn
             // 
-            this.unit_tb.Location = new System.Drawing.Point(322, 149);
-            this.unit_tb.Name = "unit_tb";
-            this.unit_tb.Size = new System.Drawing.Size(96, 23);
-            this.unit_tb.TabIndex = 79;
+            this.nkth_btn.BackColor = System.Drawing.Color.SandyBrown;
+            this.nkth_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.nkth_btn.Location = new System.Drawing.Point(87, 0);
+            this.nkth_btn.Name = "nkth_btn";
+            this.nkth_btn.Size = new System.Drawing.Size(122, 49);
+            this.nkth_btn.TabIndex = 71;
+            this.nkth_btn.Text = "Nhập Kho Thu Hoạch";
+            this.nkth_btn.UseVisualStyleBackColor = false;
             // 
             // VegetableWarehouseTransaction
             // 
@@ -789,5 +803,6 @@ namespace RauViet.ui
         private System.Windows.Forms.Button xemPhieuDeNghi_btn;
         private System.Windows.Forms.Button inPhieuDeNghi_btn;
         private System.Windows.Forms.TextBox unit_tb;
+        private System.Windows.Forms.Button nkth_btn;
     }
 }

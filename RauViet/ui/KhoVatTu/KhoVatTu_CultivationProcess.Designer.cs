@@ -138,6 +138,8 @@ namespace RauViet.ui
             this.plant_lb = new System.Windows.Forms.Label();
             this.panel4 = new System.Windows.Forms.Panel();
             this.exportExcel_btn = new System.Windows.Forms.Button();
+            this.isCancelled_CB = new System.Windows.Forms.CheckBox();
+            this.unit_lb = new System.Windows.Forms.Label();
             this.panel3.SuspendLayout();
             this.data_tc.SuspendLayout();
             this.nhatKyTheoDoi_tp.SuspendLayout();
@@ -306,6 +308,7 @@ namespace RauViet.ui
             // 
             // info_gb
             // 
+            this.info_gb.Controls.Add(this.unit_lb);
             this.info_gb.Controls.Add(this.label24);
             this.info_gb.Controls.Add(this.label23);
             this.info_gb.Controls.Add(this.label22);
@@ -1098,6 +1101,7 @@ namespace RauViet.ui
             // 
             // qlth_info_gb
             // 
+            this.qlth_info_gb.Controls.Add(this.isCancelled_CB);
             this.qlth_info_gb.Controls.Add(this.label26);
             this.qlth_info_gb.Controls.Add(this.qlth_ProductLotCode_tb);
             this.qlth_info_gb.Controls.Add(this.label30);
@@ -1112,7 +1116,7 @@ namespace RauViet.ui
             this.qlth_info_gb.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.qlth_info_gb.Location = new System.Drawing.Point(7, 105);
             this.qlth_info_gb.Name = "qlth_info_gb";
-            this.qlth_info_gb.Size = new System.Drawing.Size(498, 201);
+            this.qlth_info_gb.Size = new System.Drawing.Size(498, 220);
             this.qlth_info_gb.TabIndex = 43;
             this.qlth_info_gb.TabStop = false;
             // 
@@ -1223,7 +1227,7 @@ namespace RauViet.ui
             // 
             this.qlth_status_lb.AutoSize = true;
             this.qlth_status_lb.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.qlth_status_lb.Location = new System.Drawing.Point(5, 325);
+            this.qlth_status_lb.Location = new System.Drawing.Point(5, 340);
             this.qlth_status_lb.Name = "qlth_status_lb";
             this.qlth_status_lb.Size = new System.Drawing.Size(59, 23);
             this.qlth_status_lb.TabIndex = 40;
@@ -1233,7 +1237,7 @@ namespace RauViet.ui
             // 
             this.qlth_Save_btn.BackColor = System.Drawing.SystemColors.Highlight;
             this.qlth_Save_btn.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.qlth_Save_btn.Location = new System.Drawing.Point(214, 316);
+            this.qlth_Save_btn.Location = new System.Drawing.Point(214, 331);
             this.qlth_Save_btn.Name = "qlth_Save_btn";
             this.qlth_Save_btn.Size = new System.Drawing.Size(104, 43);
             this.qlth_Save_btn.TabIndex = 25;
@@ -1282,6 +1286,25 @@ namespace RauViet.ui
             this.exportExcel_btn.TabIndex = 72;
             this.exportExcel_btn.Text = "Xuất File";
             this.exportExcel_btn.UseVisualStyleBackColor = false;
+            // 
+            // isCancelled_CB
+            // 
+            this.isCancelled_CB.AutoSize = true;
+            this.isCancelled_CB.Location = new System.Drawing.Point(163, 194);
+            this.isCancelled_CB.Name = "isCancelled_CB";
+            this.isCancelled_CB.Size = new System.Drawing.Size(136, 20);
+            this.isCancelled_CB.TabIndex = 111;
+            this.isCancelled_CB.Text = "Thu Hoạch Để Hủy.";
+            this.isCancelled_CB.UseVisualStyleBackColor = true;
+            // 
+            // unit_lb
+            // 
+            this.unit_lb.AutoSize = true;
+            this.unit_lb.Location = new System.Drawing.Point(279, 149);
+            this.unit_lb.Name = "unit_lb";
+            this.unit_lb.Size = new System.Drawing.Size(54, 16);
+            this.unit_lb.TabIndex = 112;
+            this.unit_lb.Text = "kg kg kg";
             // 
             // KhoVatTu_CultivationProcess
             // 
@@ -1433,5 +1456,7 @@ namespace RauViet.ui
         private System.Windows.Forms.TextBox qlth_ProductLotCode_tb;
         private System.Windows.Forms.Label label30;
         private System.Windows.Forms.Label label26;
+        private System.Windows.Forms.CheckBox isCancelled_CB;
+        private System.Windows.Forms.Label unit_lb;
     }
 }

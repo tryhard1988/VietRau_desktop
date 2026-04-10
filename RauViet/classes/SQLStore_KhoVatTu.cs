@@ -862,6 +862,38 @@ namespace RauViet.classes
             return mCultivationProcesses[plantingID];
         }
 
+        public async Task GetCultivationProcessAsync(List<int> plantingIDs)
+        {
+            List<int> plantingIDs_edited = new List<int>();
+
+            foreach (int plantingID in plantingIDs)
+            {
+                if (!mCultivationProcesses.ContainsKey(plantingID))
+                {
+                    plantingIDs_edited.Add(plantingID);
+                }
+            }
+            try
+            {
+                DataTable data = await SQLManager_KhoVatTu.Instance.GetCultivationProcessAsync(plantingIDs_edited);
+                editCultivationProcess(data);
+
+                Dictionary<int, DataTable> result = data.AsEnumerable()
+                                                        .GroupBy(r => r.Field<int>("PlantingID"))
+                                                        .ToDictionary(
+                                                            g => g.Key,
+                                                            g => g.CopyToDataTable()
+                                                        );
+
+                foreach(var item in result)
+                    mCultivationProcesses[item.Key] = item.Value;
+            }
+            catch
+            {
+                Console.WriteLine("error GetMaterialCategoryAsync SQLStore");
+            }
+        }
+
         public async Task<DataTable> GetCultivationProcessAsync(int month, int year, int departmentID)
         {
             string key = $"{month}_{year}_{departmentID}";
@@ -1123,6 +1155,22 @@ namespace RauViet.classes
             mPestDiseaseMonitorings.Remove(plantingID);
         }
 
+        public async Task<DataTable> GetHarvestScheduleInYearAsync()
+        {
+                try
+                {
+                    DataTable data = await SQLManager_KhoVatTu.Instance.GetHarvestScheduleInYearAsync();
+                    editHarvestSchedule(data);
+
+                    return data;
+                }
+                catch
+                {
+                    Console.WriteLine("error GetHarvestScheduleAsync SQLStore");
+                    return null;
+                }
+        }
+
         public async Task<DataTable> GetHarvestScheduleAsync(int plantingID)
         {
             if (!mHarvestSchedules.ContainsKey(plantingID))
@@ -1144,6 +1192,22 @@ namespace RauViet.classes
             return mHarvestSchedules[plantingID];
         }
 
+        public async Task<DataTable> GetHarvestScheduleLast3MonthsAsync()
+        {
+                try
+                {
+                    DataTable data = await SQLManager_KhoVatTu.Instance.GetHarvestScheduleLast3MonthsAsync();
+                    await editHarvestScheduleLast3Months(data);
+
+                    return data;
+                }
+                catch
+                {
+                    Console.WriteLine("error GetHarvestScheduleAsync SQLStore");
+                    return null;
+                }
+        }
+
         public async Task<DataTable> GetHarvestScheduleGlobalGAPAsync(int plantingID)
         {
             try
@@ -1160,26 +1224,81 @@ namespace RauViet.classes
             }            
         }
 
+        private async Task editHarvestScheduleLast3Months(DataTable data)
+        {
+            data.Columns.Add("ProductName", typeof(string));
+            data.Columns.Add("MaLenh", typeof(string));
+            data.Columns.Add("SellerID", typeof(int));
+            data.Columns.Add("SellerName", typeof(string));
+            data.Columns.Add("SKU", typeof(int));            
+            data.Columns.Add("ProductionOrder", typeof(string));
+            data.Columns.Add("Note", typeof(string));
+
+            int harvestYear = DateTime.Now.Year;
+            var plantingManagement = await getPlantingManagementAsync(harvestYear);
+            var plantingManagement1 = await getPlantingManagementAsync(harvestYear - 1);
+            var suppliers = await SQLStore_Kho.Instance.GetSupplierAsync();
+            plantingManagement.Merge(plantingManagement1);
+
+            foreach (DataRow rowItem in data.Rows)
+            {
+                int plantingID = Convert.ToInt32(rowItem["PlantingID"]);
+                DateTime harvestDate = Convert.ToDateTime(rowItem["HarvestDate"]);
+
+                DataRow[] rows = plantingManagement.Select($"PlantingID = {plantingID}");
+                if (rows.Length <= 0) continue;
+
+                string maLenh = "VR";
+                int farmID = Convert.ToInt32(rows[0]["FarmID"]);
+                int sellerID = 46;//long thanh                
+                if (farmID == 1)// binh thuan
+                {
+                    sellerID = 47;
+                    maLenh = "BT";
+                }
+
+                DataRow[] supplierRows = suppliers.Select($"SupplierID = {sellerID}");
+
+                rowItem["MaLenh"] = $"{maLenh}_{harvestDate.ToString("dd-MM-yyyy")}";
+                rowItem["SellerID"] = sellerID;
+                rowItem["SellerName"] = supplierRows[0]["SupplierName"].ToString();
+
+
+                rowItem["ProductName"] = rows[0]["PlantName"];
+                rowItem["ProductionOrder"] = rows[0]["ProductionOrder"];
+                rowItem["SKU"] = rows[0]["SKU"];
+            }
+        }
+
         private async void editHarvestSchedule(DataTable data)
         {
             data.Columns.Add("HarvestDate_Week", typeof(string));
             data.Columns.Add("HarvestEmployeeName", typeof(string));
             data.Columns.Add("ReceiveDepartmentName", typeof(string));
-            
+
             if (data.Columns.Contains("SupervisorEmployee"))
             {
                 data.Columns.Add("SupervisorName", typeof(string));
             }
 
+            if (data.Columns.Contains("SKU"))
+            {
+                data.Columns.Add("PlantName", typeof(string));
+            }
+            if (data.Columns.Contains("Department"))
+            {
+                data.Columns.Add("DepartmentName", typeof(string));
+            }
+
             DataTable employee_dt = await SQLStore_QLNS.Instance.GetEmployeesAsync();
             DataTable department_dt = await SQLStore_QLNS.Instance.GetDepartmentAsync();
-
+            DataTable productSku = await SQLStore_Kho.Instance.getProductSKUAsync();
             foreach (DataRow rowItem in data.Rows)
             {
                 int? receiveDepartmentID = rowItem["ReceiveDepartmentID"] == DBNull.Value ? (int?)null : Convert.ToInt32(rowItem["ReceiveDepartmentID"]);
                 string harvestEmployee = rowItem["HarvestEmployee"].ToString().Trim();
-                
-                
+
+
                 rowItem["HarvestDate_Week"] = Utils.GetThu_Viet(Convert.ToDateTime(rowItem["HarvestDate"]));
 
                 if (receiveDepartmentID.HasValue)
@@ -1205,6 +1324,22 @@ namespace RauViet.classes
                         if (employeeRow != null)
                             rowItem["SupervisorName"] = employeeRow["FullName"].ToString();
                     }
+                }
+
+                if (data.Columns.Contains("PlantName"))
+                {
+                    int sku = Convert.ToInt32(rowItem["SKU"]);
+                    var row = productSku.AsEnumerable().FirstOrDefault(r => r.Field<int?>("ProductSKU") == sku);
+                    if(row != null)
+                        rowItem["PlantName"] = row["ProductNameVN"];
+                }
+
+                if (data.Columns.Contains("Department"))
+                {
+                    int department = Convert.ToInt32(rowItem["Department"]);
+                    DataRow departmentRow = department_dt.AsEnumerable().FirstOrDefault(r => r.Field<int>("DepartmentID") == department);
+                    if (departmentRow != null)
+                        rowItem["DepartmentName"] = departmentRow["DepartmentName"].ToString();
                 }
             }
         }

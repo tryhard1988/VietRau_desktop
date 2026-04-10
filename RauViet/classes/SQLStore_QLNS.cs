@@ -1,14 +1,8 @@
-﻿using DocumentFormat.OpenXml.Drawing.Charts;
-using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
-using DocumentFormat.OpenXml.Wordprocessing;
-using MySqlX.XDevAPI.Common;
-using PdfSharp.Pdf.Content.Objects;
-using RauViet.ui;
+﻿
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using DataTable = System.Data.DataTable;
 

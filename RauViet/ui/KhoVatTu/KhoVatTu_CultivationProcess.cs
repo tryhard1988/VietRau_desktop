@@ -179,7 +179,7 @@ namespace RauViet.ui
             qlth_gv.SelectionChanged -= this.qlth_gv_CellClick;
             await Task.Delay(50);
             loadingOverlay = new LoadingOverlay(this);
-            loadingOverlay.Show();
+            await loadingOverlay.Show();
 
             try
             {
@@ -388,14 +388,15 @@ namespace RauViet.ui
                     });
 
                 Utils.HideColumns(qlth_gv, new[] { "HarvestGlobalGapID", "SupervisorEmployee", "HarvestID", "PlantingID", "HarvestEmployee", "ReceiveDepartmentID"});
-                Utils.SetGridOrdinal(mHarvestSchedule_dt, new[] { "HarvestDate", "HarvestDate_Week", "Quantity", "ProductLotCode", "SupervisorName", "HarvestEmployeeName", "ReceiveDepartmentName" });
+                Utils.SetGridOrdinal(mHarvestSchedule_dt, new[] { "HarvestDate", "HarvestDate_Week", "Quantity", "ProductLotCode", "SupervisorName", "HarvestEmployeeName", "ReceiveDepartmentName", "IsCancelled" });
                 Utils.SetGridHeaders(qlth_gv, new System.Collections.Generic.Dictionary<string, string> {
                         {"HarvestDate", "Ngày" },
                         {"HarvestDate_Week", "Thứ" },
                         {"Quantity", "Số Lượng (Kg)" },
                         {"ProductLotCode", "Mã Lô SP" },
                         {"HarvestEmployeeName", "Người Thu Hoạch" },
-                        {"ReceiveDepartmentName", "Nơi Nhận SP" }
+                        {"ReceiveDepartmentName", "Nơi Nhận SP" },
+                        {"IsCancelled", "Hủy" }
                     });
                 Utils.SetGridWidths(qlth_gv, new System.Collections.Generic.Dictionary<string, int> {
                         {"HarvestDate", 70 },
@@ -403,7 +404,8 @@ namespace RauViet.ui
                         {"Quantity", 80 },
                         {"ProductLotCode", 100 },
                         {"HarvestEmployeeName", 180 },
-                        {"ReceiveDepartmentName", 200 }
+                        {"ReceiveDepartmentName", 200 },
+                        {"IsCancelled", 50 }
                     });
 
                 Utils.HideColumns(log_GV, new[] { "LogID", "PlantingID" });
@@ -479,6 +481,7 @@ namespace RauViet.ui
                 qlth_ProductLotCode_tb.TabIndex = countTab++; qlth_ProductLotCode_tb.TabStop = true;
                 qlth_HarvestEmployee_cbb.TabIndex = countTab++; qlth_HarvestEmployee_cbb.TabStop = true;
                 qlth_ReceiveDepartment_cbb.TabIndex = countTab++; qlth_ReceiveDepartment_cbb.TabStop = true;
+                isCancelled_CB.TabIndex = countTab++; isCancelled_CB.TabStop = true;
                 qlth_Save_btn.TabIndex = countTab++; qlth_Save_btn.TabStop = true;
 
                 dataGV.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
@@ -552,6 +555,10 @@ namespace RauViet.ui
             {
                 DataRow[] matiralRows = mMaterial_dt.Select($"MaterialID = {materialID}");
 
+                if(matiralRows.Length > 0)
+                {
+                    unit_lb.Text = matiralRows[0]["UnitName"].ToString();
+                }
                 string composition = matiralRows.Length > 0 ? matiralRows[0]["Composition"].ToString() : "";
                 dosage_tb.Text = composition.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries)
                                     .FirstOrDefault(l => Utils.RemoveVietnameseSigns(l).ToLower().Contains("lieu luong"))
@@ -1139,7 +1146,7 @@ namespace RauViet.ui
                 qlsb_createItem(processDate, location, growwthStatusID, pestDiseaseID, currentStatus, observerCode, treatmentPlan, decisionMakerCode);
         }
                 
-        private async void qlth_updateItem(int harvestID, DateTime harvestDate, decimal quantity, string productLotCode, string harvestEmployeeCode, int? receiveDepartmentID)
+        private async void qlth_updateItem(int harvestID, DateTime harvestDate, decimal quantity, string productLotCode, string harvestEmployeeCode, int? receiveDepartmentID, bool isCanceled)
         {
             DataRow[] harvestEmployeeRows = mEmployee_dt.Select($"EmployeeCode = '{harvestEmployeeCode}'");
 
@@ -1166,7 +1173,7 @@ namespace RauViet.ui
                         int plantingID = Convert.ToInt32(mPlantingRow["PlantingID"]);
                         try
                         {
-                            bool isScussess = await SQLManager_KhoVatTu.Instance.updatePestDiseaseMonitoringAsync(harvestID, plantingID, harvestDate, quantity, productLotCode, harvestEmployeeCode, receiveDepartmentID);
+                            bool isScussess = await SQLManager_KhoVatTu.Instance.updatePestDiseaseMonitoringAsync(harvestID, plantingID, harvestDate, quantity, productLotCode, harvestEmployeeCode, receiveDepartmentID, isCanceled);
 
                             if (isScussess == true)
                             {
@@ -1179,6 +1186,7 @@ namespace RauViet.ui
                                 row["HarvestDate_Week"] = Utils.GetThu_Viet(harvestDate);
                                 row["HarvestEmployeeName"] = harvestEmployeerName;
                                 row["ReceiveDepartmentName"] = departmentName;
+                                row["IsCancelled"] = isCanceled;
 
                                 updateTongThuHoach();
 
@@ -1209,7 +1217,7 @@ namespace RauViet.ui
             }
         }
 
-        private async void qlth_createItem(DateTime harvestDate, decimal quantity, string productLotCode, string harvestEmployeeCode, int? receiveDepartmentID)
+        private async void qlth_createItem(DateTime harvestDate, decimal quantity, string productLotCode, string harvestEmployeeCode, int? receiveDepartmentID, bool isCanceled)
         {
             DataRow[] harvestEmployeeRows = mEmployee_dt.Select($"EmployeeCode = '{harvestEmployeeCode}'");
 
@@ -1232,7 +1240,7 @@ namespace RauViet.ui
 
                 try
                 {
-                    int newId = await SQLManager_KhoVatTu.Instance.insertHarvestScheduleAsync(plantingID, harvestDate, quantity, productLotCode, harvestEmployeeCode, receiveDepartmentID);
+                    int newId = await SQLManager_KhoVatTu.Instance.insertHarvestScheduleAsync(plantingID, harvestDate, quantity, productLotCode, harvestEmployeeCode, receiveDepartmentID, isCanceled);
                     if (newId > 0)
                     {
                         DataRow drToAdd = mHarvestSchedule_dt.NewRow();
@@ -1244,7 +1252,7 @@ namespace RauViet.ui
                         drToAdd["ProductLotCode"] = productLotCode;
                         drToAdd["HarvestEmployee"] = harvestEmployeeCode;
                         drToAdd["ReceiveDepartmentID"] = receiveDepartmentID.HasValue ? (object)receiveDepartmentID.Value : DBNull.Value;
-
+                        drToAdd["IsCancelled"] = isCanceled;
                         drToAdd["HarvestDate_Week"] = Utils.GetThu_Viet(harvestDate);
                         drToAdd["HarvestEmployeeName"] = harvestEmployeerName;
                         drToAdd["ReceiveDepartmentName"] = departmentName;
@@ -1340,11 +1348,12 @@ namespace RauViet.ui
             string productLotCode = qlth_ProductLotCode_tb.Text;
             string harvestEmployeeCode = qlth_HarvestEmployee_cbb.SelectedValue.ToString();
             int? receiveDepartmentID = (string.IsNullOrEmpty(qlth_ReceiveDepartment_cbb.Text) || qlth_ReceiveDepartment_cbb.SelectedValue == null || qlth_ReceiveDepartment_cbb.SelectedValue == DBNull.Value) ? (int?)null : Convert.ToInt32(qlth_ReceiveDepartment_cbb.SelectedValue);
-            
+            bool isCanceled = isCancelled_CB.Checked;
+
             if (qlth_ID_tb.Text.Length != 0)
-                qlth_updateItem(Convert.ToInt32(qlth_ID_tb.Text), harvestDate, quantity, productLotCode, harvestEmployeeCode, receiveDepartmentID);
+                qlth_updateItem(Convert.ToInt32(qlth_ID_tb.Text), harvestDate, quantity, productLotCode, harvestEmployeeCode, receiveDepartmentID, isCanceled);
             else
-                qlth_createItem(harvestDate, quantity, productLotCode, harvestEmployeeCode, receiveDepartmentID);
+                qlth_createItem(harvestDate, quantity, productLotCode, harvestEmployeeCode, receiveDepartmentID, isCanceled);
         }
         private async void nktd_deleteProduct(string id, bool isAskQuest = true)
         {
@@ -1679,7 +1688,7 @@ namespace RauViet.ui
             qlth_readOnly_btn.Visible = false;
             qlth_Save_btn.Visible = false;
             qlth_info_gb.BackColor = Color.DarkGray;
-
+            isCancelled_CB.Enabled = false;
             qlth_isNewState = false;
             qlth_date_dtp.Enabled = false;
             qlth_Quantity_tb.Enabled = false;
@@ -1705,7 +1714,7 @@ namespace RauViet.ui
             qlth_Save_btn.Visible = true;
             qlth_readOnly_btn.Visible = true;
             qlth_info_gb.BackColor = edit_btn.BackColor;
-
+            isCancelled_CB.Enabled = true;
             qlth_isNewState = false;
             qlth_date_dtp.Enabled = false;
             qlth_Quantity_tb.Enabled = true;
@@ -1725,7 +1734,7 @@ namespace RauViet.ui
 
             qlth_HarvestEmployee_cbb.SelectedValue = Properties.Settings.Default.MaToTruong_ThuHoach.ToString();
             qlth_ReceiveDepartment_cbb.SelectedValue = Properties.Settings.Default.ToNhanSPThuHoach;
-
+            isCancelled_CB.Enabled = true;
             qlth_edit_btn.Visible = false;
             qlth_create_btn.Visible = false;
             qlth_Save_btn.Visible = true;
@@ -1795,6 +1804,7 @@ namespace RauViet.ui
                     plantLocation_tb.Text = cells["PlantLocation"].Value.ToString();
                     waterAmount_tb.Text = Convert.ToDecimal(cells["WaterAmount"].Value).ToString("G29", CultureInfo.InvariantCulture);
                     note_tb.Text = cells["Note"].Value.ToString();
+                    unit_lb.Text = cells["MaterialUnit"].Value.ToString();
                 }
             }
             catch (Exception ex)
@@ -2527,125 +2537,5 @@ namespace RauViet.ui
             ws.Row(1).Height = 63;
             ws.Row(2).Height = 32;
         }
-
-        //System.Data.DataTable excelData;
-        //private async void button1_Click(object sender, EventArgs e)
-        //{
-
-        //    var unit_dt = await SQLManager_KhoVatTu.Instance.GetUnitAsync();
-        //    var materialCategory_dt = await SQLManager_KhoVatTu.Instance.GetMaterialCategoryAsync();
-
-        //    using (System.Windows.Forms.OpenFileDialog ofd = new System.Windows.Forms.OpenFileDialog())
-        //    {
-        //        ofd.Title = "Chọn file Excel";
-        //        ofd.Filter = "Excel Files|*.xlsx;*.xls|All Files|*.*";
-        //        ofd.Multiselect = false; // chỉ cho chọn 1 file
-
-        //        if (ofd.ShowDialog() == DialogResult.OK)
-        //        {
-        //            string filePath = ofd.FileName;
-        //            excelData = Utils.LoadExcel_NoHeader(filePath);
-
-        //            Utils.AddColumnIfNotExists(excelData, "WorkTypeID", typeof(int));
-        //            Utils.AddColumnIfNotExists(excelData, "MaterialID", typeof(int));
-        //            Utils.AddColumnIfNotExists(excelData, "PlantingID", typeof(int));
-        //            Utils.AddColumnIfNotExists(excelData, "EmployeeCode", typeof(string));
-        //            Utils.AddColumnIfNotExists(excelData, "Note", typeof(string));
-        //            foreach (DataRow row in excelData.Rows)
-        //            {
-        //                string raw = Utils.RemoveVietnameseSigns(row["Column2"].ToString());
-
-        //                if(raw.CompareTo(Utils.RemoveVietnameseSigns("Magnesium sulphate (Green mag)")) == 0)
-        //                    raw = Utils.RemoveVietnameseSigns("BitterMag (MgSO4)");
-        //                else if (raw.CompareTo(Utils.RemoveVietnameseSigns("YaraMila Winner")) == 0)
-        //                    raw = Utils.RemoveVietnameseSigns("YaraMila Winner (15-9-20)");
-        //                else if (raw.CompareTo(Utils.RemoveVietnameseSigns("Solu-K 0-0-51")) == 0)
-        //                    raw = Utils.RemoveVietnameseSigns("Solu-K (K2SO4 Hàn Quốc)");
-
-        //                DataRow material = mMaterial_dt.AsEnumerable().FirstOrDefault(r => Utils.RemoveVietnameseSigns(r.Field<string>("MaterialName")).Trim().ToLower().Equals(raw.Trim().ToLower(), StringComparison.OrdinalIgnoreCase));
-        //                if(material != null)
-        //                    row["MaterialID"] = material["MaterialID"];
-
-        //                raw = Utils.RemoveVietnameseSigns(row["Column6"].ToString());
-        //                DataRow employee = mEmployee_dt.AsEnumerable().FirstOrDefault(r => Utils.RemoveVietnameseSigns(r.Field<string>("FullName")).Trim().ToLower().Equals(raw.Trim().ToLower(), StringComparison.OrdinalIgnoreCase));
-        //                if (employee != null)
-        //                    row["EmployeeCode"] = employee["EmployeeCode"];
-
-        //                raw = Utils.RemoveVietnameseSigns(row["Column5"].ToString());
-        //                DataRow workType = mWorkType_dt.AsEnumerable().FirstOrDefault(r => Utils.RemoveVietnameseSigns(r.Field<string>("WorkTypeName")).Trim().ToLower().Equals(raw.Trim().ToLower(), StringComparison.OrdinalIgnoreCase));
-        //                if (workType != null)
-        //                    row["WorkTypeID"] = workType["WorkTypeID"];
-
-        //                raw = Utils.RemoveVietnameseSigns(row["Column4"].ToString()).Trim();
-        //                if (raw.CompareTo("28125020") == 0)
-        //                    raw = "28126001";
-        //                else if (raw.CompareTo("11126001") == 0)
-        //                    raw = "11125005";
-        //                else if (raw.CompareTo("143250100") == 0)
-        //                    raw = "14325100";
-        //                else if (raw.CompareTo("12126005") == 0) 
-        //                    raw = "12125007";
-        //                else if (raw.CompareTo("17225053") == 0)
-        //                    raw = "17226001";
-        //                else if (raw.StartsWith("MXC")) 
-        //                {
-        //                    row["Note"] = raw;
-        //                    row["Column4"] = "";
-        //                    raw = "";
-        //                }
-        //                else if (raw.CompareTo("33125001") == 0 || raw.CompareTo("32324002") == 0)
-        //                {
-        //                    row["Note"] = raw;
-        //                    row["Column4"] = "";
-        //                    raw = "";
-        //                }
-
-        //                DataRow plantingManagement = mPlantingManagement_dt.AsEnumerable().FirstOrDefault(r => Utils.RemoveVietnameseSigns(r.Field<string>("ProductionOrder")).Trim().ToLower().Equals(raw.Trim().ToLower(), StringComparison.OrdinalIgnoreCase));
-        //                if (plantingManagement != null)
-        //                    row["PlantingID"] = plantingManagement["PlantingID"];
-        //            }
-
-        //            dataGV.DataSource = excelData;
-        //            dataGV.Columns["Column2"].Visible = false;
-        //            dataGV.Columns["Column6"].Visible = false;
-        //            dataGV.Columns["Column5"].Visible = false;
-        //            }
-        //    }
-        //}
-
-        //private async void button2_Click(object sender, EventArgs e)
-        //{
-        //    try
-        //    {
-        //        foreach (DataRow edr in excelData.Rows)
-        //        {
-        //            if (string.IsNullOrWhiteSpace(edr["Column3"].ToString())) 
-        //                continue;
-
-        //            DateTime ExportDate = Convert.ToDateTime(edr["Column1"]);
-        //            int MaterialID = Convert.ToInt32(edr["MaterialID"]);
-        //            decimal Amount = Convert.ToDecimal(edr["Column3"]);
-        //            int? PlantingID = edr["PlantingID"] == DBNull.Value ? (int?)null : Convert.ToInt32(edr["PlantingID"]);
-        //            int? WorkTypeID = edr["WorkTypeID"] == DBNull.Value ? (int?)null : Convert.ToInt32(edr["WorkTypeID"]);
-        //            string EmployeeCode = Convert.ToString(edr["EmployeeCode"]);
-        //            string Note = Convert.ToString(edr["Note"]);
-
-
-        //            int salaryInfoID = await SQLManager_KhoVatTu.Instance.insertMaterialExportAsync(ExportDate, MaterialID, Amount, PlantingID, WorkTypeID, EmployeeCode, Note);
-        //            if(salaryInfoID <= 0)
-        //            {
-        //                MessageBox.Show("có lỗi ");
-        //                return;
-        //            }
-
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        MessageBox.Show("có lỗi " + ex.Message);
-        //    }
-        //    MessageBox.Show("xong");
-        //}
-
     }
 }

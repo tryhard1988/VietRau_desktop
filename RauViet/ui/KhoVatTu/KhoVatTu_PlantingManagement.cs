@@ -109,6 +109,9 @@ namespace RauViet.ui
             inCapPhan_btn.Click += InCapPhan_btn_Click;
             xemCapPhan_btn.Click += XemCapPhan_btn_Click;
             excelCapPhan_btn.Click += ExcelCapPhan_btn_Click;
+
+            nhatKyTheoDoi_btn.Click += NhatKyTheoDoi_btn_Click;
+            nkThuHoach_btn.Click += NkThuHoach_btn_Click;
         }
 
         private void Kho_Materials_KeyDown(object sender, KeyEventArgs e)
@@ -140,7 +143,7 @@ namespace RauViet.ui
             dataGV.SelectionChanged -= this.dataGV_CellClick;
             await Task.Delay(50);
             loadingOverlay = new LoadingOverlay(this);
-            loadingOverlay.Show();
+            await loadingOverlay.Show();
 
             try
             {
@@ -1316,8 +1319,7 @@ namespace RauViet.ui
 
             if(string.IsNullOrWhiteSpace(search_tb.Text) == false)
             {
-                string keyword = Utils.RemoveVietnameseSigns(search_tb.Text.Trim().ToLower())
-                     .Replace("'", "''");
+                string keyword = Utils.RemoveVietnameseSigns(search_tb.Text.Trim().ToLower()).Replace("'", "''");
                 andConditions.Add($"[search_nosign] LIKE '%{keyword}%'");
             }
 
@@ -2449,6 +2451,23 @@ namespace RauViet.ui
                 printer.PrintPreview(this);
             else
                 printer.PrintDirect();
+        }
+
+
+        private void NhatKyTheoDoi_btn_Click(object sender, EventArgs e)
+        {
+            if (toPhuTrach_GV.SelectedRows.Count <= 0) return;
+            int depID = Convert.ToInt32(toPhuTrach_GV.SelectedRows[0].Cells["Department"].Value);
+            var form = new KhoVatTu_CultivationProcessToMulti_LSX(depID, monthYear_dtp.Value.Year);
+            form.ShowData();
+            form.ShowDialog();
+        }
+
+        private void NkThuHoach_btn_Click(object sender, EventArgs e)
+        {
+            var form = new KhoVatTu_LenhThuTrongNam();
+            form.ShowData();
+            form.ShowDialog();
         }
     }
 }

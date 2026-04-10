@@ -75,7 +75,7 @@ namespace RauViet.ui
         {
             await Task.Delay(50);
             loadingOverlay = new LoadingOverlay(this);
-            loadingOverlay.Show();
+            await loadingOverlay.Show();
 
             try
             {
@@ -102,7 +102,7 @@ namespace RauViet.ui
                 dataGV.DataSource = packing_dt;
                 DataView dv = packing_dt.DefaultView;
                 dv.RowFilter = $"IsActive_SKU = true";
-                Utils.HideColumns(dataGV, new[] { "GroupProduct", "ProductSKU", "Packing", "Amount", "Package", "PackingName", "ProductNameVN_NoSign", "SKU", "PriceCNF", "IsActive_SKU", "ProductPackingID" });
+                Utils.HideColumns(dataGV, new[] { "GroupProduct", "ProductSKU", "Packing", "Amount", "Package", "PackingName", "ProductNameVN_NoSign", "SKU", "PriceCNF", "IsActive_SKU", "ProductPackingID", "SupplierName" });
 
                 Utils.SetGridHeaders(dataGV, new System.Collections.Generic.Dictionary<string, string> {
                     {"Name_VN", "Tên Tiếng Việt" },

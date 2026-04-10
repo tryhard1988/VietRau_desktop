@@ -361,7 +361,6 @@ namespace RauViet.classes
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
 
-                        cmd.Parameters.Add("@WorkTypeID", SqlDbType.Int).Value = Utils.WorkType_ThuHoach();
                         cmd.Parameters.Add("@Year", SqlDbType.Int).Value = year;
 
                         using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
@@ -1163,6 +1162,42 @@ namespace RauViet.classes
             return dt;
         }
 
+        public async Task<DataTable> GetCultivationProcessAsync(List<int> plantingIDs)
+        {
+            DataTable dt = new DataTable();
+
+            using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
+            {
+                await con.OpenAsync();
+
+                using (SqlCommand cmd = new SqlCommand("sp_GetCultivationProcessList", con))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    // 🔥 Tạo DataTable để truyền vào TVP
+                    DataTable dtIDs = new DataTable();
+                    dtIDs.Columns.Add("PlantingID", typeof(int));
+
+                    foreach (int id in plantingIDs)
+                    {
+                        dtIDs.Rows.Add(id);
+                    }
+
+                    // 🔥 Truyền TVP đúng cách
+                    SqlParameter param = cmd.Parameters.AddWithValue("@PlantingIDs", dtIDs);
+                    param.SqlDbType = SqlDbType.Structured;
+                    param.TypeName = "PlantingIDList";
+
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+
+            return dt;
+        }
+
         public async Task<DataTable> GetCultivationProcessAsync(int month, int year, int departmentID)
         {
             DataTable dt = new DataTable();
@@ -1784,6 +1819,27 @@ namespace RauViet.classes
             return dt;
         }
 
+        public async Task<DataTable> GetHarvestScheduleInYearAsync()
+        {
+            DataTable dt = new DataTable();
+
+            using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
+            {
+                await con.OpenAsync();
+                using (SqlCommand cmd = new SqlCommand("[sp_GetHarvestScheduleInYear]", con))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+
+            return dt;
+        }
+
         public async Task<DataTable> GetHarvestScheduleAsync(int plantingID)
         {
             DataTable dt = new DataTable();
@@ -1797,6 +1853,26 @@ namespace RauViet.classes
 
                     cmd.Parameters.Add("@PlantingID", SqlDbType.Int).Value = plantingID;
 
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+
+            return dt;
+        }
+
+        public async Task<DataTable> GetHarvestScheduleLast3MonthsAsync()
+        {
+            DataTable dt = new DataTable();
+
+            using (SqlConnection con = new SqlConnection(ql_khoVatTu_conStr()))
+            {
+                await con.OpenAsync();
+                using (SqlCommand cmd = new SqlCommand("sp_GetHarvestSchedule_Last3Months", con))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
                     using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                     {
                         dt.Load(reader);
@@ -1865,7 +1941,7 @@ namespace RauViet.classes
             }
         }
 
-        public async Task<int> insertHarvestScheduleAsync(int plantingID, DateTime harvestDate, decimal quantity, string productLotCode, string harvestEmployeeCode, int? receiveDepartmentID)
+        public async Task<int> insertHarvestScheduleAsync(int plantingID, DateTime harvestDate, decimal quantity, string productLotCode, string harvestEmployeeCode, int? receiveDepartmentID, bool isCanceled)
         {
             int newId = -1;
 
@@ -1883,6 +1959,7 @@ namespace RauViet.classes
                         cmd.Parameters.Add("@HarvestDate", SqlDbType.Date).Value = harvestDate.Date;
                         cmd.Parameters.Add("@Quantity", SqlDbType.Decimal).Value = quantity;
                         cmd.Parameters.Add("@ProductLotCode", SqlDbType.NVarChar).Value = productLotCode;
+                        cmd.Parameters.Add("@IsCancelled", SqlDbType.NVarChar).Value = isCanceled;
                         cmd.Parameters.Add("@HarvestEmployee", SqlDbType.NVarChar).Value = harvestEmployeeCode;
                         cmd.Parameters.Add("@ReceiveDepartmentID", SqlDbType.Int).Value =
                             (object)receiveDepartmentID ?? DBNull.Value;
@@ -1902,7 +1979,7 @@ namespace RauViet.classes
             }
         }
 
-        public async Task<bool> updatePestDiseaseMonitoringAsync(int harvestID, int plantingID, DateTime harvestDate, decimal quantity, string productLotCode, string harvestEmployeeCode, int? receiveDepartmentID)
+        public async Task<bool> updatePestDiseaseMonitoringAsync(int harvestID, int plantingID, DateTime harvestDate, decimal quantity, string productLotCode, string harvestEmployeeCode, int? receiveDepartmentID, bool isCancelled)
         {
             try
             {
@@ -1920,6 +1997,7 @@ namespace RauViet.classes
                         cmd.Parameters.Add("@Quantity", SqlDbType.Decimal).Value = quantity;
                         cmd.Parameters.Add("@ProductLotCode", SqlDbType.NVarChar).Value = productLotCode;
                         cmd.Parameters.Add("@HarvestEmployee", SqlDbType.NVarChar).Value = harvestEmployeeCode;
+                        cmd.Parameters.Add("@IsCancelled", SqlDbType.NVarChar).Value = isCancelled;
                         cmd.Parameters.Add("@ReceiveDepartmentID", SqlDbType.Int).Value =
                             (object)receiveDepartmentID ?? DBNull.Value;
 

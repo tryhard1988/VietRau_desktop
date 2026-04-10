@@ -1,5 +1,4 @@
 ﻿using Microsoft.VisualBasic;
-using PdfSharp.Drawing.BarCodes;
 using RauViet.classes;
 using System;
 using System.Collections.Generic;
@@ -93,7 +92,7 @@ namespace RauViet.ui
 
             seller_cbb.SelectedIndexChanged += UpdatePrice;
             sku_cbb.SelectedIndexChanged += Sku_cbb_SelectedIndexChanged; ;
-
+            nkth_btn.Click += Nkth_btn_Click;
         }
 
         private void ProductList_KeyDown(object sender, KeyEventArgs e)
@@ -515,6 +514,7 @@ namespace RauViet.ui
             readOnly_btn.Visible = true;
             LuuThayDoiBtn.Visible = true;
             isNewState = true;
+            unit_tb.Enabled = true;
             LuuThayDoiBtn.Text = "Lưu Mới";
             sku_cbb.Enabled = true;
             RightUiReadOnly(false);
@@ -532,6 +532,7 @@ namespace RauViet.ui
             info_gb.BackColor = Color.DarkGray;
             isNewState = false;
             sku_cbb.Enabled = false;
+            unit_tb.Enabled = false;
             RightUiReadOnly(true);
             if (dataGV.SelectedRows.Count > 0)
                 updateRightUI();
@@ -541,6 +542,7 @@ namespace RauViet.ui
 
         private void Edit_btn_Click(object sender, EventArgs e)
         {
+            unit_tb.Enabled = true;
             sku_cbb.Enabled = true;
             edit_btn.Visible = false;
             newCustomerBtn.Visible = false;
@@ -910,5 +912,18 @@ namespace RauViet.ui
             unit_tb.Text = unitName;
         }
 
+        private void Nkth_btn_Click(object sender, EventArgs e)
+        {
+            var frm = new NhapKhoThuHoach(mInventoryTransaction_dt);
+            frm.ShowData();
+            frm.FormClosed += NhapKhoThuHoach_FormClosed;
+            frm.ShowDialog();
+        }
+
+        private void NhapKhoThuHoach_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            SQLStore_Kho.Instance.removeVegetableWarehouseTransaction();
+            ShowData();
+        }
     }
 }
